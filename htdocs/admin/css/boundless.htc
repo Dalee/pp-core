@@ -1,0 +1,24 @@
+<component>
+
+	<implements>
+
+		<attach event="onfocus" onevent="bfocus()" />
+		<attach event="onblur" onevent="bblur()" />
+
+	</implements>
+
+	<SCRIPT LANGUAGE="JScript">
+
+		function bfocus() {
+			element.style.border   = '1px solid #000000';
+			element.style.backgroundColor   = '#FFFFFF';
+		}
+
+		function bblur() {
+			element.style.border   = '0';
+			element.style.background   = 'transparent';
+		}
+
+	</SCRIPT>
+
+</component>

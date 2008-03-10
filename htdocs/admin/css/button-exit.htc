@@ -1,0 +1,44 @@
+<component>
+
+	<implements>
+
+		<attach event="onmouseover" onevent="beover()" />
+		<attach event="onmouseout" onevent="beout()" />
+		<attach event="onmousedown" onevent="bedown()" />
+		<attach event="onmouseup" onevent="beup()" />
+
+	</implements>
+
+	<SCRIPT LANGUAGE="JScript">
+
+		function beover() {
+			element.style.borderLeftColor   = '#E7E9ED';
+			element.style.borderTopColor    = '#E7E9ED';
+			element.style.borderRightColor  = '#333333';
+			element.style.borderBottomColor = '#333333';
+		}
+
+		function beout() {
+			element.style.borderLeftColor   = '#385A94';
+			element.style.borderTopColor    = '#385A94';
+			element.style.borderRightColor  = '#385A94';
+			element.style.borderBottomColor = '#385A94';
+		}
+
+		function bedown() {
+			element.style.borderLeftColor   = '#333333';
+			element.style.borderTopColor    = '#333333';
+			element.style.borderRightColor  = '#E7E9ED';
+			element.style.borderBottomColor = '#E7E9ED';
+		}
+
+		function beup() {
+			element.style.borderLeftColor   = '#E7E9ED';
+			element.style.borderTopColor    = '#E7E9ED';
+			element.style.borderRightColor  = '#333333';
+			element.style.borderBottomColor = '#333333';
+		}
+
+	</SCRIPT>
+
+</component>

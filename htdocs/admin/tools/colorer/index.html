@@ -1,0 +1,631 @@
+<HTML>
+	<HEAD>
+		<TITLE>Color Chooser</TITLE>
+
+		<STYLE>
+			BODY {
+				background-color: #C9CED6;
+				padding: 0;
+				margin: 0;
+			}
+
+			IMG {
+				display: block;
+				border: 0;
+			}
+
+			#colorT {
+				text-transform: uppercase;
+			}
+
+			#colorBG {
+				width:  125px;
+				height: 125px;
+				font-size: 0;
+				border-style: groove;
+			}
+
+			.text {
+				font: normal normal 10px Verdana; 
+			}
+
+			.ruler {
+				width:  8px;
+				height: 24px;
+				position: absolute;
+				background-image: url(ruler.gif);
+				background-repeat: no-repeat;
+				background-position: 50% 50%;
+			}
+
+			.bar {
+				width: 255px;
+				font-size: 0;
+				background-repeat: no-repeat;
+				background-position: 0% 50%;
+			}
+
+			.input {
+				margin-left: 5px;
+				width: 30px;
+				text-align: right;
+			}
+
+			INPUT {
+				font: normal normal 10px Verdana;
+				text-transform: uppercase;
+				height: 18px;
+			}
+
+			.colorbut {
+				width: 20px;
+				height: 19px;
+				font-size: 0;
+				border-style: groove;
+			}
+		</STYLE>
+
+		<SCRIPT>
+			function ReplaceDec(str) {
+				if (!str.length) return '000';
+				return TestDec(str.replace(/[^0-9]/g, '0').substr(0, 3));
+			}
+
+			function ReplaceHex(str) {
+				hex = str.replace(/[^0-9a-fA-F]/g, '0').substr(0, 6);
+				if(hex.length < 6) {
+					for(i=hex.length; i<6; i++) {
+						hex = '0' + hex;
+					}
+				}
+				return hex;
+			}
+
+			function TestDec(dec) {
+				dec = dec > 255 ? 255 : dec;
+				dec = dec <   0 ?   0 : dec;
+
+				return dec;
+			}
+
+			function GetDecColor(color) {
+				dec = document.getElementById(color).value;
+				dec = TestDec(dec);
+				document.getElementById(color).value = dec;
+
+				return dec;
+			}
+
+			function GetHexColor(color) {
+				dec = GetDecColor(color);
+				hex = parseInt(dec).toString(16);
+				return hex.length == 1 ? '0' + hex : hex;
+			}
+
+			function ChangeColor() {
+				color = GetHexColor('red') + GetHexColor('green') + GetHexColor('blue');
+
+				ColorControl.value      = color;
+				ColorBGControl.style.backgroundColor = '#' + color;
+
+				ColorRedControl.value   = GetDecColor('red');
+				ColorGreenControl.value = GetDecColor('green');
+				ColorBlueControl.value  = GetDecColor('blue');
+
+				document.getElementById('colorT').innerText = color;
+				document.getElementById('colorBG').style.backgroundColor = '#' + color;
+			}
+
+			function ChangeHexColor(hex) {
+				ChangeSingleColor('red',   parseInt(hex.substr(0, 2), 16));
+				ChangeSingleColor('green', parseInt(hex.substr(2, 2), 16));
+				ChangeSingleColor('blue',  parseInt(hex.substr(4, 2), 16));
+				document.getElementById('colorT').innerText = hex;
+			}
+
+			function ChangeSingleColor(color, value) {
+				document.getElementById((color+'Ruler')).style.pixelLeft = parseInt(value) + 5;
+				document.getElementById(color).value = value;
+			}
+
+			function PushRuler(ruler) {
+				switch(ruler) {
+					case 'red':
+						ChangeSingleColor('red', (window.event.x - 10));
+						break;
+
+					case 'green':
+						ChangeSingleColor('green', (window.event.x - 10));
+						break;
+
+					case 'blue':
+						ChangeSingleColor('blue', (window.event.x - 10))
+						break;
+				}
+
+				ChangeColor();
+			}
+
+			function MoveRuler() {
+				var obj;
+
+				obj = window.event.srcElement;
+				if((obj.id == 'redRuler' || obj.id == 'greenRuler' || obj.id == 'blueRuler') && window.event.button == 1) {
+					obj.style.cursor = 'hand';
+					left = obj.style.pixelLeft;
+
+					if(left > 264) {
+						obj.style.pixelLeft = 260;
+					} else if(left < 5) {
+						obj.style.pixelLeft = 5;
+					} else {
+						obj.style.pixelLeft = window.event.x - 5;
+					}
+
+					switch(obj.id) {
+						case 'redRuler':
+							ChangeSingleColor('red', (obj.style.pixelLeft - 5));
+							break;
+
+						case 'greenRuler':
+							ChangeSingleColor('green', (obj.style.pixelLeft - 5));
+							break;
+
+						case 'blueRuler':
+							ChangeSingleColor('blue', (obj.style.pixelLeft - 5));
+							break;
+					}
+
+					ChangeColor();
+					window.status = left;
+				} else {
+					obj.style.cursor = 'auto';
+				}
+			}
+
+			function IsVisible() {
+				return ctrl.style.visibility == "visible";
+			}
+
+			function ShowColorer(v) {
+				if(v) {
+					ctrl.style.visibility = "visible";
+				} else {
+					ctrl.style.visibility = "hidden";
+				}
+			}
+
+
+			function DoModal(datefield, redfield, greenfield, bluefield, bgfield) {
+				if(IsVisible()) {
+					ShowColorer(false);
+				}
+
+				ColorControl      = datefield;
+				ColorRedControl   = redfield;
+				ColorGreenControl = greenfield;
+				ColorBlueControl  = bluefield;
+				ColorBGControl    = bgfield;
+
+				ChangeSingleColor('red',   ColorRedControl.value);
+				ChangeSingleColor('green', ColorGreenControl.value);
+				ChangeSingleColor('blue',  ColorBlueControl.value);
+				ChangeColor();
+
+				ShowColorer(true);
+			}
+		</SCRIPT>
+
+		<SCRIPT type="text/javascript" language="JavaScript">
+			var ctrl = parent.document.getElementById(self.name);
+		</SCRIPT>
+	</HEAD>
+
+	<BODY onMouseMove="MoveRuler();">
+		<SCRIPT type="text/javascript" language="JavaScript">
+			eval("parent.ctrlColorer=parent.frames[self.name];");
+			var ColorControl;
+			var ColorRedControl;
+			var ColorGreenControl;
+			var ColorBlueControl;
+			var ColorBGControl;
+
+			parent.document.onclick=function(e){
+				var t=!e?parent.event.srcElement.name:e.target.name;
+				if(t != "") {
+					ShowColorer(false);
+				}
+			}
+		</SCRIPT>
+
+		<FORM onSubmit="ShowColorer(false);">
+			<TABLE border="0" cellpadding="0" cellspacing="5">
+				<TR>
+					<TD class="bar" style="background-image: url(red.gif);" valign="top" onClick="PushRuler('red');">
+						<DIV style="width: 264px; height: 24px;">
+							<DIV class="ruler" id="redRuler" style="left: 5px;"></DIV>
+						</DIV>
+					</TD>
+
+					<TD>
+						<INPUT maxlength="3" type="text" id="red" value="0" class="input" onChange="ChangeSingleColor('red', ReplaceDec(this.value)); ChangeColor()" onFocus="this.select()">
+					</TD>
+				</TR>
+
+				<TR>
+					<TD class="bar" style="background-image: url(green.gif);" valign="top" onClick="PushRuler('green');">
+						<DIV style="width: 256px; height: 24px;">
+							<DIV class="ruler" id="greenRuler" style="left: 5px;"></DIV>
+						</DIV>
+					</TD>
+
+					<TD>
+						<INPUT maxlength="3" type="text" id="green" value="0" class="input" onChange="ChangeSingleColor('green', ReplaceDec(this.value)); ChangeColor()" onFocus="this.select()">
+					</TD>
+				</TR>
+
+				<TR>
+					<TD class="bar" style="background-image: url(blue.gif);" valign="top" onClick="PushRuler('blue');">
+						<DIV style="width: 256px; height: 24px;">
+							<DIV class="ruler" id="blueRuler" style="left: 5px;"></DIV>
+						</DIV>
+					</TD>
+
+					<TD>
+						<INPUT maxlength="3" type="text" id="blue" value="0" class="input" onChange="ChangeSingleColor('blue', ReplaceDec(this.value)); ChangeColor()" onFocus="this.select()">
+					</TD>
+				</TR>
+			</TABLE>
+
+			<TABLE border="0" cellpadding="0" cellspacing="0">
+				<TR>
+					<TD valign="top">
+						<DIV style="width: 173px; height: 173px; overflow: auto;">
+							<TABLE border="0" cellpadding="0" cellspacing="5">
+								<TR>
+									<TD><DIV class="colorbut" style="background-color: #FFFFCC; color: #FFFFCC;" onClick="ChangeHexColor('FFFFCC'); ChangeColor();">FFFFCC</DIV></TD>
+									<TD><DIV class="colorbut" style="background-color: #FFFF99; color: #FFFF99;" onClick="ChangeHexColor('FFFF99'); ChangeColor();">FFFF99</DIV></TD>
+									<TD><DIV class="colorbut" style="background-color: #FFFF66; color: #FFFF66;" onClick="ChangeHexColor('FFFF66'); ChangeColor();">FFFF66</DIV></TD>
+									<TD><DIV class="colorbut" style="background-color: #FFFF33; color: #FFFF33;" onClick="ChangeHexColor('FFFF33'); ChangeColor();">FFFF33</DIV></TD>
+									<TD><DIV class="colorbut" style="background-color: #FFFF00; color: #FFFF00;" onClick="ChangeHexColor('FFFF00'); ChangeColor();">FFFF00</DIV></TD>
+									<TD><DIV class="colorbut" style="background-color: #CCCC00; color: #CCCC00;" onClick="ChangeHexColor('CCCC00'); ChangeColor();">CCCC00</DIV></TD>
+								</TR>
+
+								<TR>
+									<TD><DIV class="colorbut" style="background-color: #FFCC66; color: #FFCC66;" onClick="ChangeHexColor('FFCC66'); ChangeColor();">FFCC66</DIV></TD>
+									<TD><DIV class="colorbut" style="background-color: #FFCC00; color: #FFCC00;" onClick="ChangeHexColor('FFCC00'); ChangeColor();">FFCC00</DIV></TD>
+									<TD><DIV class="colorbut" style="background-color: #FFCC33; color: #FFCC33;" onClick="ChangeHexColor('FFCC33'); ChangeColor();">FFCC33</DIV></TD>
+									<TD><DIV class="colorbut" style="background-color: #CC9900; color: #CC9900;" onClick="ChangeHexColor('CC9900'); ChangeColor();">CC9900</DIV></TD>
+									<TD><DIV class="colorbut" style="background-color: #CC9933; color: #CC9933;" onClick="ChangeHexColor('CC9933'); ChangeColor();">CC9933</DIV></TD>
+									<TD><DIV class="colorbut" style="background-color: #996600; color: #996600;" onClick="ChangeHexColor('996600'); ChangeColor();">996600</DIV></TD>
+								</TR>
+
+								<TR>
+									<TD><DIV class="colorbut" style="background-color: #FF9900; color: #FF9900;" onClick="ChangeHexColor('FF9900'); ChangeColor();">FF9900</DIV></TD>
+									<TD><DIV class="colorbut" style="background-color: #FF9933; color: #FF9933;" onClick="ChangeHexColor('FF9933'); ChangeColor();">FF9933</DIV></TD>
+									<TD><DIV class="colorbut" style="background-color: #CC9966; color: #CC9966;" onClick="ChangeHexColor('CC9966'); ChangeColor();">CC9966</DIV></TD>
+									<TD><DIV class="colorbut" style="background-color: #CC6600; color: #CC6600;" onClick="ChangeHexColor('CC6600'); ChangeColor();">CC6600</DIV></TD>
+									<TD><DIV class="colorbut" style="background-color: #996633; color: #996633;" onClick="ChangeHexColor('996633'); ChangeColor();">996633</DIV></TD>
+									<TD><DIV class="colorbut" style="background-color: #663300; color: #663300;" onClick="ChangeHexColor('663300'); ChangeColor();">663300</DIV></TD>
+								</TR>
+
+								<TR>
+									<TD><DIV class="colorbut" style="background-color: #FFCC99; color: #FFCC99;" onClick="ChangeHexColor('FFCC99'); ChangeColor();">FFCC99</DIV></TD>
+									<TD><DIV class="colorbut" style="background-color: #FF9966; color: #FF9966;" onClick="ChangeHexColor('FF9966'); ChangeColor();">FF9966</DIV></TD>
+									<TD><DIV class="colorbut" style="background-color: #FF6600; color: #FF6600;" onClick="ChangeHexColor('FF6600'); ChangeColor();">FF6600</DIV></TD>
+									<TD><DIV class="colorbut" style="background-color: #CC6633; color: #CC6633;" onClick="ChangeHexColor('CC6633'); ChangeColor();">CC6633</DIV></TD>
+									<TD><DIV class="colorbut" style="background-color: #993300; color: #993300;" onClick="ChangeHexColor('993300'); ChangeColor();">993300</DIV></TD>
+									<TD><DIV class="colorbut" style="background-color: #660000; color: #660000;" onClick="ChangeHexColor('660000'); ChangeColor();">660000</DIV></TD>
+								</TR>
+
+								<TR>
+									<TD><DIV class="colorbut" style="background-color: #FF6633; color: #FF6633;" onClick="ChangeHexColor('FF6633'); ChangeColor();">FF6633</DIV></TD>
+									<TD><DIV class="colorbut" style="background-color: #CC3300; color: #CC3300;" onClick="ChangeHexColor('CC3300'); ChangeColor();">CC3300</DIV></TD>
+									<TD><DIV class="colorbut" style="background-color: #FF3300; color: #FF3300;" onClick="ChangeHexColor('FF3300'); ChangeColor();">FF3300</DIV></TD>
+									<TD><DIV class="colorbut" style="background-color: #FF0000; color: #FF0000;" onClick="ChangeHexColor('FF0000'); ChangeColor();">FF0000</DIV></TD>
+									<TD><DIV class="colorbut" style="background-color: #CC0000; color: #CC0000;" onClick="ChangeHexColor('CC0000'); ChangeColor();">CC0000</DIV></TD>
+									<TD><DIV class="colorbut" style="background-color: #990000; color: #990000;" onClick="ChangeHexColor('990000'); ChangeColor();">990000</DIV></TD>
+								</TR>
+
+								<TR>
+									<TD><DIV class="colorbut" style="background-color: #FFCCCC; color: #FFCCCC;" onClick="ChangeHexColor('FFCCCC'); ChangeColor();">FFCCCC</DIV></TD>
+									<TD><DIV class="colorbut" style="background-color: #FF9999; color: #FF9999;" onClick="ChangeHexColor('FF9999'); ChangeColor();">FF9999</DIV></TD>
+									<TD><DIV class="colorbut" style="background-color: #FF6666; color: #FF6666;" onClick="ChangeHexColor('FF6666'); ChangeColor();">FF6666</DIV></TD>
+									<TD><DIV class="colorbut" style="background-color: #FF3333; color: #FF3333;" onClick="ChangeHexColor('FF3333'); ChangeColor();">FF3333</DIV></TD>
+									<TD><DIV class="colorbut" style="background-color: #FF0033; color: #FF0033;" onClick="ChangeHexColor('FF0033'); ChangeColor();">FF0033</DIV></TD>
+									<TD><DIV class="colorbut" style="background-color: #CC0033; color: #CC0033;" onClick="ChangeHexColor('CC0033'); ChangeColor();">CC0033</DIV></TD>
+								</TR>
+
+								<TR>
+									<TD><DIV class="colorbut" style="background-color: #CC9999; color: #CC9999;" onClick="ChangeHexColor('CC9999'); ChangeColor();">CC9999</DIV></TD>
+									<TD><DIV class="colorbut" style="background-color: #CC6666; color: #CC6666;" onClick="ChangeHexColor('CC6666'); ChangeColor();">CC6666</DIV></TD>
+									<TD><DIV class="colorbut" style="background-color: #CC3333; color: #CC3333;" onClick="ChangeHexColor('CC3333'); ChangeColor();">CC3333</DIV></TD>
+									<TD><DIV class="colorbut" style="background-color: #993333; color: #993333;" onClick="ChangeHexColor('993333'); ChangeColor();">993333</DIV></TD>
+									<TD><DIV class="colorbut" style="background-color: #990033; color: #990033;" onClick="ChangeHexColor('990033'); ChangeColor();">990033</DIV></TD>
+									<TD><DIV class="colorbut" style="background-color: #330000; color: #330000;" onClick="ChangeHexColor('330000'); ChangeColor();">330000</DIV></TD>
+								</TR>
+
+								<TR>
+									<TD><DIV class="colorbut" style="background-color: #FF6699; color: #FF6699;" onClick="ChangeHexColor('FF6699'); ChangeColor();">FF6699</DIV></TD>
+									<TD><DIV class="colorbut" style="background-color: #FF3366; color: #FF3366;" onClick="ChangeHexColor('FF3366'); ChangeColor();">FF3366</DIV></TD>
+									<TD><DIV class="colorbut" style="background-color: #FF0066; color: #FF0066;" onClick="ChangeHexColor('FF0066'); ChangeColor();">FF0066</DIV></TD>
+									<TD><DIV class="colorbut" style="background-color: #CC3366; color: #CC3366;" onClick="ChangeHexColor('CC3366'); ChangeColor();">CC3366</DIV></TD>
+									<TD><DIV class="colorbut" style="background-color: #996666; color: #996666;" onClick="ChangeHexColor('996666'); ChangeColor();">996666</DIV></TD>
+									<TD><DIV class="colorbut" style="background-color: #663333; color: #663333;" onClick="ChangeHexColor('663333'); ChangeColor();">663333</DIV></TD>
+								</TR>
+
+								<TR>
+									<TD><DIV class="colorbut" style="background-color: #FF99CC; color: #FF99CC;" onClick="ChangeHexColor('FF99CC'); ChangeColor();">FF99CC</DIV></TD>
+									<TD><DIV class="colorbut" style="background-color: #FF3399; color: #FF3399;" onClick="ChangeHexColor('FF3399'); ChangeColor();">FF3399</DIV></TD>
+									<TD><DIV class="colorbut" style="background-color: #FF0099; color: #FF0099;" onClick="ChangeHexColor('FF0099'); ChangeColor();">FF0099</DIV></TD>
+									<TD><DIV class="colorbut" style="background-color: #CC0066; color: #CC0066;" onClick="ChangeHexColor('CC0066'); ChangeColor();">CC0066</DIV></TD>
+									<TD><DIV class="colorbut" style="background-color: #993366; color: #993366;" onClick="ChangeHexColor('993366'); ChangeColor();">993366</DIV></TD>
+									<TD><DIV class="colorbut" style="background-color: #660033; color: #660033;" onClick="ChangeHexColor('660033'); ChangeColor();">660033</DIV></TD>
+								</TR>
+
+								<TR>
+									<TD><DIV class="colorbut" style="background-color: #FF66CC; color: #FF66CC;" onClick="ChangeHexColor('FF66CC'); ChangeColor();">FF66CC</DIV></TD>
+									<TD><DIV class="colorbut" style="background-color: #FF00CC; color: #FF00CC;" onClick="ChangeHexColor('FF00CC'); ChangeColor();">FF00CC</DIV></TD>
+									<TD><DIV class="colorbut" style="background-color: #FF33CC; color: #FF33CC;" onClick="ChangeHexColor('FF33CC'); ChangeColor();">FF33CC</DIV></TD>
+									<TD><DIV class="colorbut" style="background-color: #CC6699; color: #CC6699;" onClick="ChangeHexColor('CC6699'); ChangeColor();">CC6699</DIV></TD>
+									<TD><DIV class="colorbut" style="background-color: #CC0099; color: #CC0099;" onClick="ChangeHexColor('CC0099'); ChangeColor();">CC0099</DIV></TD>
+									<TD><DIV class="colorbut" style="background-color: #990066; color: #990066;" onClick="ChangeHexColor('990066'); ChangeColor();">990066</DIV></TD>
+								</TR>
+
+								<TR>
+									<TD><DIV class="colorbut" style="background-color: #FFCCFF; color: #FFCCFF;" onClick="ChangeHexColor('FFCCFF'); ChangeColor();">FFCCFF</DIV></TD>
+									<TD><DIV class="colorbut" style="background-color: #FF99FF; color: #FF99FF;" onClick="ChangeHexColor('FF99FF'); ChangeColor();">FF99FF</DIV></TD>
+									<TD><DIV class="colorbut" style="background-color: #FF66FF; color: #FF66FF;" onClick="ChangeHexColor('FF66FF'); ChangeColor();">FF66FF</DIV></TD>
+									<TD><DIV class="colorbut" style="background-color: #FF33FF; color: #FF33FF;" onClick="ChangeHexColor('FF33FF'); ChangeColor();">FF33FF</DIV></TD>
+									<TD><DIV class="colorbut" style="background-color: #FF00FF; color: #FF00FF;" onClick="ChangeHexColor('FF00FF'); ChangeColor();">FF00FF</DIV></TD>
+									<TD><DIV class="colorbut" style="background-color: #CC3399; color: #CC3399;" onClick="ChangeHexColor('CC3399'); ChangeColor();">CC3399</DIV></TD>
+								</TR>
+
+								<TR>
+									<TD><DIV class="colorbut" style="background-color: #CC99CC; color: #CC99CC;" onClick="ChangeHexColor('CC99CC'); ChangeColor();">CC99CC</DIV></TD>
+									<TD><DIV class="colorbut" style="background-color: #CC66CC; color: #CC66CC;" onClick="ChangeHexColor('CC66CC'); ChangeColor();">CC66CC</DIV></TD>
+									<TD><DIV class="colorbut" style="background-color: #CC00CC; color: #CC00CC;" onClick="ChangeHexColor('CC00CC'); ChangeColor();">CC00CC</DIV></TD>
+									<TD><DIV class="colorbut" style="background-color: #CC33CC; color: #CC33CC;" onClick="ChangeHexColor('CC33CC'); ChangeColor();">CC33CC</DIV></TD>
+									<TD><DIV class="colorbut" style="background-color: #990099; color: #990099;" onClick="ChangeHexColor('990099'); ChangeColor();">990099</DIV></TD>
+									<TD><DIV class="colorbut" style="background-color: #993399; color: #993399;" onClick="ChangeHexColor('993399'); ChangeColor();">993399</DIV></TD>
+								</TR>
+
+								<TR>
+									<TD><DIV class="colorbut" style="background-color: #CC66FF; color: #CC66FF;" onClick="ChangeHexColor('CC66FF'); ChangeColor();">CC66FF</DIV></TD>
+									<TD><DIV class="colorbut" style="background-color: #CC33FF; color: #CC33FF;" onClick="ChangeHexColor('CC33FF'); ChangeColor();">CC33FF</DIV></TD>
+									<TD><DIV class="colorbut" style="background-color: #CC00FF; color: #CC00FF;" onClick="ChangeHexColor('CC00FF'); ChangeColor();">CC00FF</DIV></TD>
+									<TD><DIV class="colorbut" style="background-color: #9900CC; color: #9900CC;" onClick="ChangeHexColor('9900CC'); ChangeColor();">9900CC</DIV></TD>
+									<TD><DIV class="colorbut" style="background-color: #996699; color: #996699;" onClick="ChangeHexColor('996699'); ChangeColor();">996699</DIV></TD>
+									<TD><DIV class="colorbut" style="background-color: #660066; color: #660066;" onClick="ChangeHexColor('660066'); ChangeColor();">660066</DIV></TD>
+								</TR>
+
+								<TR>
+									<TD><DIV class="colorbut" style="background-color: #CC99FF; color: #CC99FF;" onClick="ChangeHexColor('CC99FF'); ChangeColor();">CC99FF</DIV></TD>
+									<TD><DIV class="colorbut" style="background-color: #9933CC; color: #9933CC;" onClick="ChangeHexColor('9933CC'); ChangeColor();">9933CC</DIV></TD>
+									<TD><DIV class="colorbut" style="background-color: #9933FF; color: #9933FF;" onClick="ChangeHexColor('9933FF'); ChangeColor();">9933FF</DIV></TD>
+									<TD><DIV class="colorbut" style="background-color: #9900FF; color: #9900FF;" onClick="ChangeHexColor('9900FF'); ChangeColor();">9900FF</DIV></TD>
+									<TD><DIV class="colorbut" style="background-color: #660099; color: #660099;" onClick="ChangeHexColor('660099'); ChangeColor();">660099</DIV></TD>
+									<TD><DIV class="colorbut" style="background-color: #663366; color: #663366;" onClick="ChangeHexColor('663366'); ChangeColor();">663366</DIV></TD>
+								</TR>
+
+								<TR>
+									<TD><DIV class="colorbut" style="background-color: #9966CC; color: #9966CC;" onClick="ChangeHexColor('9966CC'); ChangeColor();">9966CC</DIV></TD>
+									<TD><DIV class="colorbut" style="background-color: #9966FF; color: #9966FF;" onClick="ChangeHexColor('9966FF'); ChangeColor();">9966FF</DIV></TD>
+									<TD><DIV class="colorbut" style="background-color: #6600CC; color: #6600CC;" onClick="ChangeHexColor('6600CC'); ChangeColor();">6600CC</DIV></TD>
+									<TD><DIV class="colorbut" style="background-color: #6633CC; color: #6633CC;" onClick="ChangeHexColor('6633CC'); ChangeColor();">6633CC</DIV></TD>
+									<TD><DIV class="colorbut" style="background-color: #663399; color: #663399;" onClick="ChangeHexColor('663399'); ChangeColor();">663399</DIV></TD>
+									<TD><DIV class="colorbut" style="background-color: #330033; color: #330033;" onClick="ChangeHexColor('330033'); ChangeColor();">330033</DIV></TD>
+								</TR>
+
+								<TR>
+									<TD><DIV class="colorbut" style="background-color: #CCCCFF; color: #CCCCFF;" onClick="ChangeHexColor('CCCCFF'); ChangeColor();">CCCCFF</DIV></TD>
+									<TD><DIV class="colorbut" style="background-color: #9999FF; color: #9999FF;" onClick="ChangeHexColor('9999FF'); ChangeColor();">9999FF</DIV></TD>
+									<TD><DIV class="colorbut" style="background-color: #6633FF; color: #6633FF;" onClick="ChangeHexColor('6633FF'); ChangeColor();">6633FF</DIV></TD>
+									<TD><DIV class="colorbut" style="background-color: #6600FF; color: #6600FF;" onClick="ChangeHexColor('6600FF'); ChangeColor();">6600FF</DIV></TD>
+									<TD><DIV class="colorbut" style="background-color: #330099; color: #330099;" onClick="ChangeHexColor('330099'); ChangeColor();">330099</DIV></TD>
+									<TD><DIV class="colorbut" style="background-color: #330066; color: #330066;" onClick="ChangeHexColor('330066'); ChangeColor();">330066</DIV></TD>
+								</TR>
+
+								<TR>
+									<TD><DIV class="colorbut" style="background-color: #9999CC; color: #9999CC;" onClick="ChangeHexColor('9999CC'); ChangeColor();">9999CC</DIV></TD>
+									<TD><DIV class="colorbut" style="background-color: #6666FF; color: #6666FF;" onClick="ChangeHexColor('6666FF'); ChangeColor();">6666FF</DIV></TD>
+									<TD><DIV class="colorbut" style="background-color: #6666CC; color: #6666CC;" onClick="ChangeHexColor('6666CC'); ChangeColor();">6666CC</DIV></TD>
+									<TD><DIV class="colorbut" style="background-color: #666699; color: #666699;" onClick="ChangeHexColor('666699'); ChangeColor();">666699</DIV></TD>
+									<TD><DIV class="colorbut" style="background-color: #333399; color: #333399;" onClick="ChangeHexColor('333399'); ChangeColor();">333399</DIV></TD>
+									<TD><DIV class="colorbut" style="background-color: #333366; color: #333366;" onClick="ChangeHexColor('333366'); ChangeColor();">333366</DIV></TD>
+								</TR>
+
+								<TR>
+									<TD><DIV class="colorbut" style="background-color: #3333FF; color: #3333FF;" onClick="ChangeHexColor('3333FF'); ChangeColor();">3333FF</DIV></TD>
+									<TD><DIV class="colorbut" style="background-color: #3300FF; color: #3300FF;" onClick="ChangeHexColor('3300FF'); ChangeColor();">3300FF</DIV></TD>
+									<TD><DIV class="colorbut" style="background-color: #3300CC; color: #3300CC;" onClick="ChangeHexColor('3300CC'); ChangeColor();">3300CC</DIV></TD>
+									<TD><DIV class="colorbut" style="background-color: #3333CC; color: #3333CC;" onClick="ChangeHexColor('3333CC'); ChangeColor();">3333CC</DIV></TD>
+									<TD><DIV class="colorbut" style="background-color: #000099; color: #000099;" onClick="ChangeHexColor('000099'); ChangeColor();">000099</DIV></TD>
+									<TD><DIV class="colorbut" style="background-color: #000066; color: #000066;" onClick="ChangeHexColor('000066'); ChangeColor();">000066</DIV></TD>
+								</TR>
+
+								<TR>
+									<TD><DIV class="colorbut" style="background-color: #6699FF; color: #6699FF;" onClick="ChangeHexColor('6699FF'); ChangeColor();">6699FF</DIV></TD>
+									<TD><DIV class="colorbut" style="background-color: #3366FF; color: #3366FF;" onClick="ChangeHexColor('3366FF'); ChangeColor();">3366FF</DIV></TD>
+									<TD><DIV class="colorbut" style="background-color: #0000FF; color: #0000FF;" onClick="ChangeHexColor('0000FF'); ChangeColor();">0000FF</DIV></TD>
+									<TD><DIV class="colorbut" style="background-color: #0000CC; color: #0000CC;" onClick="ChangeHexColor('0000CC'); ChangeColor();">0000CC</DIV></TD>
+									<TD><DIV class="colorbut" style="background-color: #0033CC; color: #0033CC;" onClick="ChangeHexColor('0033CC'); ChangeColor();">0033CC</DIV></TD>
+									<TD><DIV class="colorbut" style="background-color: #000033; color: #000033;" onClick="ChangeHexColor('000033'); ChangeColor();">000033</DIV></TD>
+								</TR>
+
+								<TR>
+									<TD><DIV class="colorbut" style="background-color: #0066FF; color: #0066FF;" onClick="ChangeHexColor('0066FF'); ChangeColor();">0066FF</DIV></TD>
+									<TD><DIV class="colorbut" style="background-color: #0066CC; color: #0066CC;" onClick="ChangeHexColor('0066CC'); ChangeColor();">0066CC</DIV></TD>
+									<TD><DIV class="colorbut" style="background-color: #3366CC; color: #3366CC;" onClick="ChangeHexColor('3366CC'); ChangeColor();">3366CC</DIV></TD>
+									<TD><DIV class="colorbut" style="background-color: #0033FF; color: #0033FF;" onClick="ChangeHexColor('0033FF'); ChangeColor();">0033FF</DIV></TD>
+									<TD><DIV class="colorbut" style="background-color: #003399; color: #003399;" onClick="ChangeHexColor('003399'); ChangeColor();">003399</DIV></TD>
+									<TD><DIV class="colorbut" style="background-color: #003366; color: #003366;" onClick="ChangeHexColor('003366'); ChangeColor();">003366</DIV></TD>
+								</TR>
+
+								<TR>
+									<TD><DIV class="colorbut" style="background-color: #99CCFF; color: #99CCFF;" onClick="ChangeHexColor('99CCFF'); ChangeColor();">99CCFF</DIV></TD>
+									<TD><DIV class="colorbut" style="background-color: #3399FF; color: #3399FF;" onClick="ChangeHexColor('3399FF'); ChangeColor();">3399FF</DIV></TD>
+									<TD><DIV class="colorbut" style="background-color: #0099FF; color: #0099FF;" onClick="ChangeHexColor('0099FF'); ChangeColor();">0099FF</DIV></TD>
+									<TD><DIV class="colorbut" style="background-color: #6699CC; color: #6699CC;" onClick="ChangeHexColor('6699CC'); ChangeColor();">6699CC</DIV></TD>
+									<TD><DIV class="colorbut" style="background-color: #336699; color: #336699;" onClick="ChangeHexColor('336699'); ChangeColor();">336699</DIV></TD>
+									<TD><DIV class="colorbut" style="background-color: #006699; color: #006699;" onClick="ChangeHexColor('006699'); ChangeColor();">006699</DIV></TD>
+								</TR>
+
+								<TR>
+									<TD><DIV class="colorbut" style="background-color: #66CCFF; color: #66CCFF;" onClick="ChangeHexColor('66CCFF'); ChangeColor();">66CCFF</DIV></TD>
+									<TD><DIV class="colorbut" style="background-color: #33CCFF; color: #33CCFF;" onClick="ChangeHexColor('33CCFF'); ChangeColor();">33CCFF</DIV></TD>
+									<TD><DIV class="colorbut" style="background-color: #00CCFF; color: #00CCFF;" onClick="ChangeHexColor('00CCFF'); ChangeColor();">00CCFF</DIV></TD>
+									<TD><DIV class="colorbut" style="background-color: #3399CC; color: #3399CC;" onClick="ChangeHexColor('3399CC'); ChangeColor();">3399CC</DIV></TD>
+									<TD><DIV class="colorbut" style="background-color: #0099CC; color: #0099CC;" onClick="ChangeHexColor('0099CC'); ChangeColor();">0099CC</DIV></TD>
+									<TD><DIV class="colorbut" style="background-color: #003333; color: #003333;" onClick="ChangeHexColor('003333'); ChangeColor();">003333</DIV></TD>
+								</TR>
+
+								<TR>
+									<TD><DIV class="colorbut" style="background-color: #99CCCC; color: #99CCCC;" onClick="ChangeHexColor('99CCCC'); ChangeColor();">99CCCC</DIV></TD>
+									<TD><DIV class="colorbut" style="background-color: #66CCCC; color: #66CCCC;" onClick="ChangeHexColor('66CCCC'); ChangeColor();">66CCCC</DIV></TD>
+									<TD><DIV class="colorbut" style="background-color: #339999; color: #339999;" onClick="ChangeHexColor('339999'); ChangeColor();">339999</DIV></TD>
+									<TD><DIV class="colorbut" style="background-color: #669999; color: #669999;" onClick="ChangeHexColor('669999'); ChangeColor();">669999</DIV></TD>
+									<TD><DIV class="colorbut" style="background-color: #006666; color: #006666;" onClick="ChangeHexColor('006666'); ChangeColor();">006666</DIV></TD>
+									<TD><DIV class="colorbut" style="background-color: #336666; color: #336666;" onClick="ChangeHexColor('336666'); ChangeColor();">336666</DIV></TD>
+								</TR>
+
+								<TR>
+									<TD><DIV class="colorbut" style="background-color: #CCFFFF; color: #CCFFFF;" onClick="ChangeHexColor('CCFFFF'); ChangeColor();">CCFFFF</DIV></TD>
+									<TD><DIV class="colorbut" style="background-color: #99FFFF; color: #99FFFF;" onClick="ChangeHexColor('99FFFF'); ChangeColor();">99FFFF</DIV></TD>
+									<TD><DIV class="colorbut" style="background-color: #66FFFF; color: #66FFFF;" onClick="ChangeHexColor('66FFFF'); ChangeColor();">66FFFF</DIV></TD>
+									<TD><DIV class="colorbut" style="background-color: #33FFFF; color: #33FFFF;" onClick="ChangeHexColor('33FFFF'); ChangeColor();">33FFFF</DIV></TD>
+									<TD><DIV class="colorbut" style="background-color: #00FFFF; color: #00FFFF;" onClick="ChangeHexColor('00FFFF'); ChangeColor();">00FFFF</DIV></TD>
+									<TD><DIV class="colorbut" style="background-color: #00CCCC; color: #00CCCC;" onClick="ChangeHexColor('00CCCC'); ChangeColor();">00CCCC</DIV></TD>
+								</TR>
+
+								<TR>
+									<TD><DIV class="colorbut" style="background-color: #99FFCC; color: #99FFCC;" onClick="ChangeHexColor('99FFCC'); ChangeColor();">99FFCC</DIV></TD>
+									<TD><DIV class="colorbut" style="background-color: #66FFCC; color: #66FFCC;" onClick="ChangeHexColor('66FFCC'); ChangeColor();">66FFCC</DIV></TD>
+									<TD><DIV class="colorbut" style="background-color: #33FFCC; color: #33FFCC;" onClick="ChangeHexColor('33FFCC'); ChangeColor();">33FFCC</DIV></TD>
+									<TD><DIV class="colorbut" style="background-color: #00FFCC; color: #00FFCC;" onClick="ChangeHexColor('00FFCC'); ChangeColor();">00FFCC</DIV></TD>
+									<TD><DIV class="colorbut" style="background-color: #33CCCC; color: #33CCCC;" onClick="ChangeHexColor('33CCCC'); ChangeColor();">33CCCC</DIV></TD>
+									<TD><DIV class="colorbut" style="background-color: #009999; color: #009999;" onClick="ChangeHexColor('009999'); ChangeColor();">009999</DIV></TD>
+								</TR>
+
+								<TR>
+									<TD><DIV class="colorbut" style="background-color: #66CC99; color: #66CC99;" onClick="ChangeHexColor('66CC99'); ChangeColor();">66CC99</DIV></TD>
+									<TD><DIV class="colorbut" style="background-color: #33CC99; color: #33CC99;" onClick="ChangeHexColor('33CC99'); ChangeColor();">33CC99</DIV></TD>
+									<TD><DIV class="colorbut" style="background-color: #00CC99; color: #00CC99;" onClick="ChangeHexColor('00CC99'); ChangeColor();">00CC99</DIV></TD>
+									<TD><DIV class="colorbut" style="background-color: #339966; color: #339966;" onClick="ChangeHexColor('339966'); ChangeColor();">339966</DIV></TD>
+									<TD><DIV class="colorbut" style="background-color: #009966; color: #009966;" onClick="ChangeHexColor('009966'); ChangeColor();">009966</DIV></TD>
+									<TD><DIV class="colorbut" style="background-color: #006633; color: #006633;" onClick="ChangeHexColor('006633'); ChangeColor();">006633</DIV></TD>
+								</TR>
+
+								<TR>
+									<TD><DIV class="colorbut" style="background-color: #66FF99; color: #66FF99;" onClick="ChangeHexColor('66FF99'); ChangeColor();">66FF99</DIV></TD>
+									<TD><DIV class="colorbut" style="background-color: #33FF99; color: #33FF99;" onClick="ChangeHexColor('33FF99'); ChangeColor();">33FF99</DIV></TD>
+									<TD><DIV class="colorbut" style="background-color: #00FF99; color: #00FF99;" onClick="ChangeHexColor('00FF99'); ChangeColor();">00FF99</DIV></TD>
+									<TD><DIV class="colorbut" style="background-color: #33CC66; color: #33CC66;" onClick="ChangeHexColor('33CC66'); ChangeColor();">33CC66</DIV></TD>
+									<TD><DIV class="colorbut" style="background-color: #00CC66; color: #00CC66;" onClick="ChangeHexColor('00CC66'); ChangeColor();">00CC66</DIV></TD>
+									<TD><DIV class="colorbut" style="background-color: #009933; color: #009933;" onClick="ChangeHexColor('009933'); ChangeColor();">009933</DIV></TD>
+								</TR>
+
+								<TR>
+									<TD><DIV class="colorbut" style="background-color: #99FF99; color: #99FF99;" onClick="ChangeHexColor('99FF99'); ChangeColor();">99FF99</DIV></TD>
+									<TD><DIV class="colorbut" style="background-color: #66FF66; color: #66FF66;" onClick="ChangeHexColor('66FF66'); ChangeColor();">66FF66</DIV></TD>
+									<TD><DIV class="colorbut" style="background-color: #33FF66; color: #33FF66;" onClick="ChangeHexColor('33FF66'); ChangeColor();">33FF66</DIV></TD>
+									<TD><DIV class="colorbut" style="background-color: #00FF66; color: #00FF66;" onClick="ChangeHexColor('00FF66'); ChangeColor();">00FF66</DIV></TD>
+									<TD><DIV class="colorbut" style="background-color: #339933; color: #339933;" onClick="ChangeHexColor('339933'); ChangeColor();">339933</DIV></TD>
+									<TD><DIV class="colorbut" style="background-color: #006600; color: #006600;" onClick="ChangeHexColor('006600'); ChangeColor();">006600</DIV></TD>
+								</TR>
+
+								<TR>
+									<TD><DIV class="colorbut" style="background-color: #CCFFCC; color: #CCFFCC;" onClick="ChangeHexColor('CCFFCC'); ChangeColor();">CCFFCC</DIV></TD>
+									<TD><DIV class="colorbut" style="background-color: #99CC99; color: #99CC99;" onClick="ChangeHexColor('99CC99'); ChangeColor();">99CC99</DIV></TD>
+									<TD><DIV class="colorbut" style="background-color: #66CC66; color: #66CC66;" onClick="ChangeHexColor('66CC66'); ChangeColor();">66CC66</DIV></TD>
+									<TD><DIV class="colorbut" style="background-color: #669966; color: #669966;" onClick="ChangeHexColor('669966'); ChangeColor();">669966</DIV></TD>
+									<TD><DIV class="colorbut" style="background-color: #336633; color: #336633;" onClick="ChangeHexColor('336633'); ChangeColor();">336633</DIV></TD>
+									<TD><DIV class="colorbut" style="background-color: #003300; color: #003300;" onClick="ChangeHexColor('003300'); ChangeColor();">003300</DIV></TD>
+								</TR>
+
+								<TR>
+									<TD><DIV class="colorbut" style="background-color: #33FF33; color: #33FF33;" onClick="ChangeHexColor('33FF33'); ChangeColor();">33FF33</DIV></TD>
+									<TD><DIV class="colorbut" style="background-color: #00FF33; color: #00FF33;" onClick="ChangeHexColor('00FF33'); ChangeColor();">00FF33</DIV></TD>
+									<TD><DIV class="colorbut" style="background-color: #00FF00; color: #00FF00;" onClick="ChangeHexColor('00FF00'); ChangeColor();">00FF00</DIV></TD>
+									<TD><DIV class="colorbut" style="background-color: #00CC00; color: #00CC00;" onClick="ChangeHexColor('00CC00'); ChangeColor();">00CC00</DIV></TD>
+									<TD><DIV class="colorbut" style="background-color: #33CC33; color: #33CC33;" onClick="ChangeHexColor('33CC33'); ChangeColor();">33CC33</DIV></TD>
+									<TD><DIV class="colorbut" style="background-color: #00CC33; color: #00CC33;" onClick="ChangeHexColor('00CC33'); ChangeColor();">00CC33</DIV></TD>
+								</TR>
+
+								<TR>
+									<TD><DIV class="colorbut" style="background-color: #66FF00; color: #66FF00;" onClick="ChangeHexColor('66FF00'); ChangeColor();">66FF00</DIV></TD>
+									<TD><DIV class="colorbut" style="background-color: #66FF33; color: #66FF33;" onClick="ChangeHexColor('66FF33'); ChangeColor();">66FF33</DIV></TD>
+									<TD><DIV class="colorbut" style="background-color: #33FF00; color: #33FF00;" onClick="ChangeHexColor('33FF00'); ChangeColor();">33FF00</DIV></TD>
+									<TD><DIV class="colorbut" style="background-color: #33CC00; color: #33CC00;" onClick="ChangeHexColor('33CC00'); ChangeColor();">33CC00</DIV></TD>
+									<TD><DIV class="colorbut" style="background-color: #339900; color: #339900;" onClick="ChangeHexColor('339900'); ChangeColor();">339900</DIV></TD>
+									<TD><DIV class="colorbut" style="background-color: #009900; color: #009900;" onClick="ChangeHexColor('009900'); ChangeColor();">009900</DIV></TD>
+								</TR>
+
+								<TR>
+									<TD><DIV class="colorbut" style="background-color: #CCFF99; color: #CCFF99;" onClick="ChangeHexColor('CCFF99'); ChangeColor();">CCFF99</DIV></TD>
+									<TD><DIV class="colorbut" style="background-color: #99FF66; color: #99FF66;" onClick="ChangeHexColor('99FF66'); ChangeColor();">99FF66</DIV></TD>
+									<TD><DIV class="colorbut" style="background-color: #66CC00; color: #66CC00;" onClick="ChangeHexColor('66CC00'); ChangeColor();">66CC00</DIV></TD>
+									<TD><DIV class="colorbut" style="background-color: #66CC33; color: #66CC33;" onClick="ChangeHexColor('66CC33'); ChangeColor();">66CC33</DIV></TD>
+									<TD><DIV class="colorbut" style="background-color: #669933; color: #669933;" onClick="ChangeHexColor('669933'); ChangeColor();">669933</DIV></TD>
+									<TD><DIV class="colorbut" style="background-color: #336600; color: #336600;" onClick="ChangeHexColor('336600'); ChangeColor();">336600</DIV></TD>
+								</TR>
+
+								<TR>
+									<TD><DIV class="colorbut" style="background-color: #99FF00; color: #99FF00;" onClick="ChangeHexColor('99FF00'); ChangeColor();">99FF00</DIV></TD>
+									<TD><DIV class="colorbut" style="background-color: #99FF33; color: #99FF33;" onClick="ChangeHexColor('99FF33'); ChangeColor();">99FF33</DIV></TD>
+									<TD><DIV class="colorbut" style="background-color: #99CC66; color: #99CC66;" onClick="ChangeHexColor('99CC66'); ChangeColor();">99CC66</DIV></TD>
+									<TD><DIV class="colorbut" style="background-color: #99CC00; color: #99CC00;" onClick="ChangeHexColor('99CC00'); ChangeColor();">99CC00</DIV></TD>
+									<TD><DIV class="colorbut" style="background-color: #99CC33; color: #99CC33;" onClick="ChangeHexColor('99CC33'); ChangeColor();">99CC33</DIV></TD>
+									<TD><DIV class="colorbut" style="background-color: #669900; color: #669900;" onClick="ChangeHexColor('669900'); ChangeColor();">669900</DIV></TD>
+								</TR>
+
+								<TR>
+									<TD><DIV class="colorbut" style="background-color: #CCFF66; color: #CCFF66;" onClick="ChangeHexColor('CCFF66'); ChangeColor();">CCFF66</DIV></TD>
+									<TD><DIV class="colorbut" style="background-color: #CCFF00; color: #CCFF00;" onClick="ChangeHexColor('CCFF00'); ChangeColor();">CCFF00</DIV></TD>
+									<TD><DIV class="colorbut" style="background-color: #CCFF33; color: #CCFF33;" onClick="ChangeHexColor('CCFF33'); ChangeColor();">CCFF33</DIV></TD>
+									<TD><DIV class="colorbut" style="background-color: #CCCC99; color: #CCCC99;" onClick="ChangeHexColor('CCCC99'); ChangeColor();">CCCC99</DIV></TD>
+									<TD><DIV class="colorbut" style="background-color: #666633; color: #666633;" onClick="ChangeHexColor('666633'); ChangeColor();">666633</DIV></TD>
+									<TD><DIV class="colorbut" style="background-color: #333300; color: #333300;" onClick="ChangeHexColor('333300'); ChangeColor();">333300</DIV></TD>
+								</TR>
+
+								<TR>
+									<TD><DIV class="colorbut" style="background-color: #CCCC66; color: #CCCC66;" onClick="ChangeHexColor('CCCC66'); ChangeColor();">CCCC66</DIV></TD>
+									<TD><DIV class="colorbut" style="background-color: #CCCC33; color: #CCCC33;" onClick="ChangeHexColor('CCCC33'); ChangeColor();">CCCC33</DIV></TD>
+									<TD><DIV class="colorbut" style="background-color: #999966; color: #999966;" onClick="ChangeHexColor('999966'); ChangeColor();">999966</DIV></TD>
+									<TD><DIV class="colorbut" style="background-color: #999933; color: #999933;" onClick="ChangeHexColor('999933'); ChangeColor();">999933</DIV></TD>
+									<TD><DIV class="colorbut" style="background-color: #999900; color: #999900;" onClick="ChangeHexColor('999900'); ChangeColor();">999900</DIV></TD>
+									<TD><DIV class="colorbut" style="background-color: #666600; color: #666600;" onClick="ChangeHexColor('666600'); ChangeColor();">666600</DIV></TD>
+								</TR>
+
+								<TR>
+									<TD><DIV class="colorbut" style="background-color: #FFFFFF; color: #FFFFFF;" onClick="ChangeHexColor('FFFFFF'); ChangeColor();">FFFFFF</DIV></TD>
+									<TD><DIV class="colorbut" style="background-color: #CCCCCC; color: #CCCCCC;" onClick="ChangeHexColor('CCCCCC'); ChangeColor();">CCCCCC</DIV></TD>
+									<TD><DIV class="colorbut" style="background-color: #999999; color: #999999;" onClick="ChangeHexColor('999999'); ChangeColor();">999999</DIV></TD>
+									<TD><DIV class="colorbut" style="background-color: #666666; color: #666666;" onClick="ChangeHexColor('666666'); ChangeColor();">666666</DIV></TD>
+									<TD><DIV class="colorbut" style="background-color: #333333; color: #333333;" onClick="ChangeHexColor('333333'); ChangeColor();">333333</DIV></TD>
+									<TD><DIV class="colorbut" style="background-color: #000000; color: #000000;" onClick="ChangeHexColor('000000'); ChangeColor();">000000</DIV></TD>
+								</TR>
+							</TABLE>
+						</DIV>
+					</TD>
+
+					<TD valign="top" align="right">
+						<TABLE border="0" cellpadding="0" cellspacing="5">
+							<TR>
+								<TD valign="top" align="right">
+									<DIV id="colorBG" style="background-color: #000000;" title="Закрыть" onClick="ShowColorer(false);"></DIV>
+								</TD>
+							</TR>
+
+							<TR>
+								<TD align="center">
+									# <INPUT maxlength="6" type="text" id="colorT" value="000000" style="width: 50px; text-align: center;"  onChange="ChangeHexColor(ReplaceHex(this.value)); ChangeColor();" onFocus="this.select()">
+								</TD>
+							</TR>
+						</TABLE>
+					</TD>
+				</TR>
+			</TABLE>
+		</FORM>
+	</BODY>
+</HTML>

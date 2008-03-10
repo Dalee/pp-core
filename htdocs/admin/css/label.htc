@@ -1,0 +1,11 @@
+<component>
+	<implements>
+		<attach event="onclick" onevent="lclick()" />
+	</implements>
+
+	<SCRIPT LANGUAGE="JScript">
+		function lclick() {
+			element.style.fontWeight = (window.document.getElementById(element.getAttribute('checkbox')).checked) ? 'normal' : 'bold';
+		}
+	</SCRIPT>
+</component>

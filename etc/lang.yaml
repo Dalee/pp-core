@@ -1,0 +1,83 @@
+### COMMON ########################################################################################
+# основные переменные
+isEnglish:
+	rus: 0
+	eng: 1
+
+isRussian:
+	rus: 1
+	eng: 0
+
+# стрелка вверх
+up:
+	rus: наверх
+	eng: up
+
+# размер в килобайтах
+kb:
+	rus: Кб
+	eng: Kb
+
+# Подробнее
+more:
+	rus: Подробнее
+	eng: More
+
+# Вернуться
+back:
+	rus: Вернуться
+	eng: Back
+
+# дата
+date:
+	rus: %e %B2 %Y
+	eng: %e %BE %Y
+
+weekdays:
+	rus:
+		- Понедельник
+		- Вторник
+		- Среда
+		- Четверг
+		- Пятница
+		- Суббота
+		- Воскресенье
+	eng:
+		- Monday
+		- Tuesday
+		- Wednesday
+		- Thursday
+		- Friday
+		- Saturday
+		- Sunday
+
+# месяцы
+months:
+	rus:
+		- Нулябрь
+		- Январь
+		- Февраль
+		- Март
+		- Апрель
+		- Май
+		- Июнь
+		- Июль
+		- Август
+		- Сентябрь
+		- Октябрь
+		- Ноябрь
+		- Декабрь
+	eng:
+		- Nullary
+		- January
+		- February
+		- March
+		- April
+		- May
+		- June
+		- July
+		- August
+		- September
+		- October
+		- November
+		- December

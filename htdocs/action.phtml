@@ -1,0 +1,13 @@
+<?php
+	include_once '../lib/mainuser.inc';
+
+	$engine = new PXEngineAction();
+
+	$engine->init();
+
+	$engine->runModules();
+
+	$engine->profilerStop();
+
+	$engine->redirect();
+?>

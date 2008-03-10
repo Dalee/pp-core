@@ -1,0 +1,4 @@
+<?
+class PXAuthNull extends PXAuthInterface {
+}
+?>

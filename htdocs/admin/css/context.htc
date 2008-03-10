@@ -1,0 +1,24 @@
+<component>
+
+	<implements>
+
+		<attach event="onmouseover" onevent="mover()" />
+		<attach event="onmouseout" onevent="mout()" />
+
+	</implements>
+
+	<SCRIPT LANGUAGE="JScript">
+
+		function mover() {
+			element.style.color = '#FFFFFF';
+			element.style.backgroundColor = '#385A94';
+		}
+
+		function mout() {
+			element.style.color = '#000000';
+			element.style.backgroundColor = '#C9CED6';
+		}
+
+	</SCRIPT>
+
+</component>

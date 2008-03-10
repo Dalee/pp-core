@@ -1,0 +1,868 @@
+html, body {
+	height: 100%;
+	margin: 0;
+	padding: 0;
+}
+
+body {
+	font-size: 10px;
+	font-family: verdana;
+}
+
+pre.debug {
+	font-size: 150%;
+}
+
+form {
+	margin: 0;
+	padding: 0;
+	height: 100%;
+}
+
+form.autoheight {
+	height: auto;
+}
+
+table {
+	font-size: 10px;
+	font-family: verdana;
+}
+
+table.objects, table.objects-table {
+	width: 100%;
+	margin: 0;
+	padding: 0;
+	border-collapse: collapse;
+	border-spacing: 0;
+	border: 1px solid #C9CED6;
+	table-layout: fixed;
+}
+
+table.objects th, table.objects-table th {
+	padding: 4px;
+	border: 1px double #385A94;
+	border-left-color: #FFFFFF;
+	border-right-color: #FFFFFF;
+	background-color: #385A94;
+	text-align: left;
+	color: #FFFFFF;
+	font-weight: bold;
+	white-space: nowrap;
+}
+
+table.objects th a, table.objects-table th a {
+	color: #FFFFFF;
+	text-decoration: none;
+	display: block;
+	zoom: 1;
+	background: transparent url() 100% 50% no-repeat;
+	padding: 0;
+}
+table.objects thead th, table.objects-table thead th{
+	border: 1px solid #FFFFFF;
+}
+
+table.objects th a.up, table.objects-table th a.up {
+	background-image: url(../i/icon/order-up.gif);
+	padding: 0 10px 0 0;
+}
+
+table.objects th a.down, table.objects-table th a.down {
+	background-image: url(../i/icon/order-down.gif);
+	padding: 0 10px 0 0;
+}
+
+table.objects td, table.objects-table td {
+	padding: 3px 4px;
+	border: 1px double #C9CED6;
+	border-left: none;
+	border-right: none;
+	vertical-align: middle;
+	background-color: #FFFFFF;
+	color: #000000;
+}
+
+table.objects td img, table.objects-table td img {
+	vertical-align: middle;
+}
+
+table.objects th.c, table.objects-table th.c {
+	width: 34px;
+	text-align: center;
+}
+
+table.objects th.c2, table.objects-table th.c2 {
+	width: 40px;
+}
+
+table.objects th.c3, table.objects-table th.c3 {
+	width: 47px;
+	text-align: center;
+}
+
+table.objects th.c4, table.objects-table th.c4 {
+	width: 60px;
+	text-align: center;
+}
+
+table.objects td.c img, table.objects-table td.c {
+	display: inline;
+	float: left;
+	width: 11px;
+	height: 11px;
+	margin: 0 2px 0 0;
+	vertical-align: middle;
+	border: 0;
+}
+
+table.objects tr.deny td {
+	background-color: #dd3333;
+	color: #ffffff;
+}
+
+table.objects td.null {
+	color: #C9CED6;
+}
+
+table.objects td.not-in-dict {
+	font-style: italic;
+}
+
+table.objects td a.ctrl {
+	padding: 0 2px 0 16px;
+	background: transparent url() 4px 50% no-repeat;
+	text-decoration: none;
+}
+
+table.objects td a.del {
+	background-image: url(../i/icon/del.gif);
+}
+
+table.objects td a.edit {
+	background-image: url(../i/icon/edit.gif);
+}
+
+table.objects td a.ctrl:hover {
+	text-decoration: underline;
+}
+
+table.objects tr.hover td, table.objects-table tr.hover {
+	background-color: #E7E9ED;
+	color: #000000;
+}
+
+table.objects tr.selected td, table.objects tr.selected a, table.objects-table tr.selected td, table.objects-table tr.selected a {
+	background-color: #385A94;
+	color: #FFFFFF;
+}
+
+table.objects tr.selected td, table.objects-table tr.selected td {
+	border-color: #FFFFFF;
+}
+
+table.objects tr, table.objects-table tr {
+	behavior: url(css/tr.hover.htc);
+}
+
+div.empty {
+	padding: 2px 20px;
+	font-weight:bold;
+}
+
+tr.hide td, a strike {
+	text-decoration: none;
+	color: #DDDDDD;
+}
+a strike {
+	text-decoration: underline;
+}
+
+H1	{
+	font-size: 14px;
+	margin-bottom: 0;
+}
+
+H2	{
+	font-size: 13px;
+	margin-bottom: 0;
+	color: #385A94;
+}
+
+H3	{
+	font-size: 12px;
+	margin-bottom: 0;
+}
+
+textarea {
+	border-width: 1px;
+}
+
+DIV.content {
+	height: 100%;
+	padding: 10px;
+	overflow: expression('auto');
+	background-color: #FFFFFF;
+	border: 1px solid #808080;
+	border-right-color: #E7E9ED;
+	border-bottom-color: #E7E9ED;
+}
+
+DIV.context {
+	padding: 1px;
+	background-color: #C9CED6;
+	border: 1px solid #404040;
+	border-left-color: #ECECEC;
+	border-top-color: #ECECEC;
+	position: absolute;
+	display: none;
+	white-space: nowrap;
+}
+
+DIV.context A {
+	display: block;
+	margin: 1px;
+	padding: 4px;
+	text-decoration: none;
+	color: #000000;
+	behavior: url(css/context.htc)
+}
+
+DIV.context STRONG {
+	display: block;
+	margin: 1px;
+	padding: 4px;
+	text-decoration: none;
+	color: #000000;
+	background-color: #FFD966;
+	border: 1px solid #404040;
+	border-bottom-color: #ECECEC;
+	border-right-color: #ECECEC;
+}
+
+TD.tabs A {
+	font: normal normal 10px Verdana, Arial, serif;
+	color: #000000;
+	display: block;
+	padding: 10px;
+	padding-top: 0;
+	padding-bottom: 0;
+}
+
+A.button {
+	text-decoration: none;
+	color: #000000;
+	float: left;
+	border: 1px solid #C9CED6;
+	padding: 5px;
+	margin-right: 8px;
+	behavior: url(css/button.htc)
+}
+
+A.button:hover {
+	border-color: #E7E9ED #808080 #808080 #E7E9ED;
+}
+
+INPUT.boundless, TD.boundless INPUT {
+	border: 0;
+	behavior: url(css/boundless.htc);
+	background: transparent;
+}
+
+DIV.button, INPUT.button {
+	background-color: #C9CED6;
+	text-decoration: none;
+	color: #000000;
+	border: 1px solid #C9CED6;
+
+	font-size: 10px;
+	font-family: verdana;
+
+	padding: 3px;
+	margin-left: 8px;
+	behavior: url(css/button.htc)
+}
+
+DIV.button-light, INPUT.button-light {
+	background-color: #E7E9ED;
+	text-decoration: none;
+	color: #000000;
+	border: 1px solid #E7E9ED;
+
+	font-size: 10px;
+	font-family: verdana;
+
+	padding: 3px;
+	margin-left: 8px;
+	behavior: url(css/button-light.htc)
+}
+
+a.button-exit {
+	text-decoration: none;
+	color: #FFFFFF;
+	display: block;
+	border: 1px solid #385A94;
+	padding: 5px;
+	margin: 8px;
+	behavior: url(css/button-exit.htc)
+}
+
+a.tabs {
+	text-decoration: none;
+}
+
+button.link, button.unlink {
+	background: #E7E9ED url(../i/icon/link.gif) 0 50% no-repeat;
+	padding: 0 0 0 10px;
+}
+
+button.unlink {
+	background: url(../i/icon/unlink.gif) 0 50% no-repeat;
+	float: right;
+}
+
+.white {
+	color: #FFFFFF;
+}
+
+div.perpage {
+	padding: 3px;
+	padding-left: 0px;
+	padding-right: 0px;
+	background-color: #C9CED6;
+	border: 1px solid #C9CED6;
+}
+
+div.perpage a {
+	text-decoration: none;
+	background-color: #C9CED6;
+	padding: 2px 6px 2px 6px;
+	color: #000000;
+	border: 1px solid #C9CED6;
+	display: inline;
+}
+
+div.perpage a.selected {
+	background-color: #E7E9ED;
+	border-top: 1px solid #808080;
+	border-bottom: 1px solid #E7E9ED;
+	border-left: 1px solid #808080;
+	border-right: 1px solid #E7E9ED;
+}
+
+div.tree img {
+	width: 17px;
+	height: 16px;
+	vertical-align: middle;
+	border: 0;
+}
+
+img.cursor {
+	cursor: pointer;
+}
+
+td label, td input, td select {
+	vertical-align: middle;
+}
+
+
+/*      */
+
+img {
+	border: 0;
+}
+
+input, select, button {
+	border-width: 1px;
+	font-size: 10px;
+	vertical-align: middle;
+}
+
+#popupcontrols button, #popupcontrols input {
+	margin: 0 2px;
+}
+
+.error {
+	font-family: Verdana;
+	text-align: center;
+	margin: 20px;
+}
+
+.error, .error a {
+	font-weight: bold !important;
+	color: #990000 !important;
+	font-size: 14px !important;
+}
+
+.error a {
+	text-decoration: underline !important;
+}
+
+table.mainform {
+	width: 100%;
+	border: 1px solid #C9CED6;
+	border-collapse: collapse;
+}
+
+table.mainform th {
+	width: 20%;
+	vertical-align: middle;
+	text-align: right;
+	font-weight: normal;
+}
+
+table.mainform td, table.mainform th {
+	vertical-align: middle;
+	padding: 4px;
+	border: 1px solid #FFFFFF;
+	background-color: #E7E9ED;
+}
+
+table.mainform tr.even td, table.mainform tr.even  th {
+	background-color: #C9CED6;
+}
+
+table.mainform td input, table.mainform td textarea {
+	width: 100%;
+	vertical-align: middle;
+}
+
+div.edit-file-form, div.edit-file-form textarea {
+	width: 100%;
+	height: 100%;
+}
+
+table.mainform td input.checkbox {
+	width: auto;
+}
+
+table.mainform td input:hover, table.mainform td textarea:hover {
+	border-color: #385A94 !important;
+}
+
+table.sysinfo {
+	margin: 5px 0 0;
+}
+
+table.sysinfo td, table.sysinfo th {
+	color: #C9CED6;
+	background-color: #FFFFFF;
+}
+
+div.colorselect div {
+	width: 20px;
+	height: 20px;
+	font-size: 0;
+	border-style: groove;
+	display: inline;
+	vertical-align: middle;
+	overflow: hidden;
+}
+
+div.password input {
+	background: #FFFFFF url() 0 0 no-repeat;
+}
+
+div.password input.good {
+	background-color: #7FFF7F;
+}
+
+div.password input.notbad {
+	background-color: #FFFF7F;
+}
+
+div.password input.bad {
+	background-color: #FF7F7F;
+}
+
+div.password span {
+	color: #FFFFFF;
+	font-size: 85%;
+}
+
+table.mainform td div.password input {
+	width: 8em;
+	margin: 0 4px 0 0;
+}
+table.mainform td div.password input.checkbox {
+	width: auto;
+	background: transparent;
+}
+
+table.mainform td div.colorselect input {
+	text-transform: uppercase;
+	width: 50px;
+	height: 20px;
+	text-align: center;
+	margin: 0 5px;
+}
+
+div.colorselect button {
+	vertical-align: middle;
+	margin: 0;
+	width: 22px;
+	height: 20px;
+	background: transparent url(../i/icon/palette.gif) 50% 50% no-repeat;
+}
+
+div.colorselect iframe {
+	margin: 0;
+	padding: 0;
+	visibility: hidden;
+	z-index: 65535;
+	position: absolute;
+	background-color:  #C9CED6;
+	border: 1px solid  #404040;
+	border-left-color: #ECECEC;
+	border-top-color:  #ECECEC;
+	width: 315px;
+	height: 270px;
+}
+
+table.datagrid {
+	border: 0;
+	width: 100%;
+}
+
+table.datagrid td {
+	border: none;
+	padding: 0;
+}
+
+button.addrow {
+	float: right;
+}
+
+div.imagepreview {
+	clear: both;
+	margin: 10px 0;
+}
+
+div.image-in-cell {
+	clear: none;
+	float: left;
+	margin: 10px;
+}
+
+div.imagepreview div {
+	float: right;
+	width: 100px;
+	height: 100px;
+	background: transparent url(../i/transparent.gif) 0 0 repeat;
+	border: 1px solid #C9CED6;
+	margin: 0 0 0 5px;
+}
+
+div.imagepreview div.small {
+	float: none;
+	width: 50px;
+	height: 50px;
+	border: 1px solid #C9CED6;
+	margin: 2px auto;
+}
+
+table.mainform td div.imagepreview input {
+	width: 75px;
+	text-align: right;
+}
+
+table.mainform td div.imagepreview input.file {
+	width: 435px;
+	text-align: left;
+	margin: 0 0 5px;
+}
+
+table.mainform td div.imagepreview input.checkbox {
+	width: auto;
+	margin: 0;
+}
+
+div.imagepreview span {
+	width: 60px;
+	margin: 0 5px;
+}
+
+div.imagepreview button {
+	margin: 10px 5px 5px 0;
+	width: 150px;
+}
+
+div.imagepreview img {
+	position: relative;
+	vertical-align: middle;
+}
+
+table.mainform td div.ip input {
+	width: 21px;
+	text-align: right;
+}
+table.mainform td div.ip input.middle {
+	border-left: 0;
+	border-right: 0;
+}
+table.mainform td div.ip input.first {
+	border-right: 0;
+}
+table.mainform td div.ip input.last {
+	border-left: 0;
+}
+table.mainform td div.ip input.delim {
+	width: 5px;
+	border-left: 0;
+	border-right: 0;
+	text-align: right;
+}
+
+table.mainform td div.datetime input {
+	width: 60px;
+	margin: 0 10px;
+}
+
+div.datetime span {
+	width: 10px;
+	text-align: center;
+}
+
+div.datetime iframe {
+	margin: 0;
+	padding: 0;
+	visibility: hidden;
+	z-index: 65535;
+	position: absolute;
+	background-color: #C9CED6;
+	border: 1px solid #404040;
+	border-left-color: #ECECEC;
+	border-top-color: #ECECEC;
+	width: 150px;
+	height: 160px;
+}
+
+div.datetime button.calendar {
+	margin: 0;
+	width: 22px;
+	background: transparent url(../i/icon/calendar.gif) 50% 50% no-repeat;
+}
+
+div.truecheck {
+	height: 11px;
+	background: transparent url(../i/icon/true.gif)  50% 50% no-repeat;
+}
+
+div.rgbcolor {
+	text-align: center;
+}
+
+div.rgbcolor div {
+	width: 20px;
+	height: 19px;
+	font-size: 0;
+	border-style: groove;
+}
+
+p.delete * {
+	font-size: 200%;
+	vertical-align: bottom;
+}
+
+table.links tbody {
+	max-height: 250px;
+	overflow: scroll
+}
+
+table.filemanager td.file, a.file {
+	min-height: 24px;
+	line-height: 16px;
+	background: transparent url(/admin/i/files/void.gif) 0 50% no-repeat;
+	padding: 0 0 0 20px;
+	text-align: left !important;
+	vertical-align: middle;
+}
+
+table.filemanager td.file {
+	padding: 2px 0;
+	background-position: 2px 50%;
+}
+
+
+table.filemanager td.file span {
+	margin: 0 0 0 20px;
+}
+
+table.filemanager td.dir em {
+	color: #999999;
+}
+
+table.filemanager td.dir del, table.filemanager td.dir-up span {
+	margin: 0 0 0 20px;
+}
+
+table.filemanager td.bmp,   a.bmp   {background-image: url(/admin/i/files/bmp.gif);}
+table.filemanager td.css,   a.css   {background-image: url(/admin/i/files/css.gif);}
+table.filemanager td.csv,   a.csv   {background-image: url(/admin/i/files/csv.gif);}
+table.filemanager td.dir,   a.dir   {background-image: url(/admin/i/files/folder.gif);}
+table.filemanager td.dir-up,a.dir-up{background-image: url(/admin/i/files/folder-o.gif);}
+table.filemanager td.doc,   a.doc   {background-image: url(/admin/i/files/doc.gif);}
+table.filemanager td.gif,   a.gif   {background-image: url(/admin/i/files/gif.gif);}
+table.filemanager td.htm,   a.htm   {background-image: url(/admin/i/files/htm.gif);}
+table.filemanager td.html,  a.html  {background-image: url(/admin/i/files/html.gif);}
+table.filemanager td.ico,   a.ico   {background-image: url(/admin/i/files/ico.gif);}
+table.filemanager td.ini,   a.ini   {background-image: url(/admin/i/files/ini.gif);}
+table.filemanager td.jpg,   a.jpg   {background-image: url(/admin/i/files/jpg.gif);}
+table.filemanager td.js,    a.js    {background-image: url(/admin/i/files/js.gif);}
+table.filemanager td.mid,   a.mid   {background-image: url(/admin/i/files/mid.gif);}
+table.filemanager td.midi,  a.midi  {background-image: url(/admin/i/files/midi.gif);}
+table.filemanager td.mov,   a.mov   {background-image: url(/admin/i/files/mov.gif);}
+table.filemanager td.mp3,   a.mp3   {background-image: url(/admin/i/files/mp3.gif);}
+table.filemanager td.avi,   a.avi,
+table.filemanager td.mpg,   a.mpg,
+table.filemanager td.mpeg,  a.mpeg  {background-image: url(/admin/i/files/mpeg.gif);}
+table.filemanager td.pdf,   a.pdf   {background-image: url(/admin/i/files/pdf.gif);}
+table.filemanager td.php,   a.php   {background-image: url(/admin/i/files/php.gif);}
+table.filemanager td.phtml, a.phtml {background-image: url(/admin/i/files/phtml.gif);}
+table.filemanager td.png,   a.png   {background-image: url(/admin/i/files/png.gif);}
+table.filemanager td.psd,   a.psd   {background-image: url(/admin/i/files/psd.gif);}
+table.filemanager td.rar,   a.rar   {background-image: url(/admin/i/files/rar.gif);}
+table.filemanager td.rtf,   a.rtf   {background-image: url(/admin/i/files/rtf.gif);}
+table.filemanager td.swf,   a.swf   {background-image: url(/admin/i/files/swf.gif);}
+table.filemanager td.tif,   a.tif   {background-image: url(/admin/i/files/tif.gif);}
+table.filemanager td.txt,   a.txt   {background-image: url(/admin/i/files/txt.gif);}
+table.filemanager td.tmpl,  a.tmpl  {background-image: url(/admin/i/files/txt.gif);}
+table.filemanager td.wav,   a.wav   {background-image: url(/admin/i/files/wav.gif);}
+table.filemanager td.xls,   a.xls   {background-image: url(/admin/i/files/xls.gif);}
+table.filemanager td.xml,   a.xml   {background-image: url(/admin/i/files/xml.gif);}
+table.filemanager td.xsl,   a.xsl   {background-image: url(/admin/i/files/xsl.gif);}
+table.filemanager td.zip,   a.zip   {background-image: url(/admin/i/files/zip.gif);}
+
+div.upload-buttons {
+	text-align: right;
+}
+
+div.upload-buttons input {
+	margin: 5px;
+}
+
+form.uploader {
+	display: none;
+	color: #ffffff;
+}
+
+form.uploader input {
+	vertical-align: middle;
+	margin: 5px;
+}
+
+table.filemanager {
+	border: none;
+	width: 100%;
+	height: 100%;
+	background-color: #C9CED6;
+}
+
+table.filemanager tbody td a, table.filemanager tbody td {
+	text-decoration: none;
+	color: #000000;
+	font: normal normal 10px Verdana;
+	white-space: nowrap;
+}
+
+table.filemanager tbody td {
+	border-top: 1px solid #E7E9ED;
+	width: 50%;
+	height: 100%;
+}
+
+table.filemanager tbody td div.content {
+	padding: 0;
+}
+
+table.filemanager tbody td div.content div.breadcrumds {
+	padding: 2px;
+	color: #ffffff;
+	background-color: #385A94;
+	font-weight: bold;
+	white-space: nowrap;
+}
+
+table.filemanager tbody td div.content div.breadcrumds a {
+	font-weight: bold;
+	color: #ffffff;
+}
+
+table.filemanager thead th {
+	border: 1px solid #E7E9ED;
+	border-right-color: #808080;
+	border-bottom-color: #808080;
+	background-color: #C9CED6;
+	padding: 2px 4px;
+	font-weight: normal;
+	text-align: left;
+	white-space: nowrap;
+}
+
+table.filemanager table {
+	border-spacing: 0;
+	border-collapse: collapse;
+	width: 100%;
+}
+
+table.filemanager img {
+	width: 16px;
+	height: 16px;
+	border: 0;
+	vertical-align: middle;
+	margin: 0 2px;
+}
+
+table.filemanager tbody td div.content td.size-dir {
+	text-align: right;
+	color: #999999;
+}
+
+
+table.filemanager tbody td table col.name {
+	width: 100%;
+}
+
+table.filemanager tbody td table col.size, table.filemanager tbody td table col.rules {
+	text-align: right;
+	font-family: monospace;
+	font-size: 11px;
+	padding-right: 4px;
+}
+/* ContextMenu ******************************/
+div#ContextMenu {
+}
+
+div#ContextMenu div.hr {
+	border: 0;
+	border-top: 1px solid #404040;
+	border-bottom: 1px solid #ECECEC;
+	margin:3px;
+}
+
+div#ContextMenu a, div#ContextMenu span {
+	display: block;
+	padding: 4px 4px 4px 24px;
+	margin: 1px;
+	background-position: 7px 50%;
+	background-repeat: no-repeat;
+	text-decoration: none;
+}
+
+div#ContextMenu span {
+	color: #909090;
+	behavior: url(../css/disable.htc)
+}
+
+div#ContextMenu .add    { background-image: url(../i/icon/add.gif    );}
+div#ContextMenu .alias  { background-image: url(../i/icon/alias.gif  );}
+div#ContextMenu .copy   { background-image: url(../i/icon/copy.gif   );}
+div#ContextMenu .del    { background-image: url(../i/icon/del.gif    );}
+div#ContextMenu .down   { background-image: url(../i/icon/down.gif   );}
+div#ContextMenu .edit   { background-image: url(../i/icon/edit.gif   );}
+div#ContextMenu .memory { background-image: url(../i/icon/memory.gif );}
+div#ContextMenu .move   { background-image: url(../i/icon/move.gif   );}
+div#ContextMenu .off    { background-image: url(../i/icon/off.gif    );}
+div#ContextMenu .on     { background-image: url(../i/icon/on.gif     );}
+div#ContextMenu .rename { background-image: url(../i/icon/rename.gif );}
+div#ContextMenu .unzip  { background-image: url(../i/icon/unzip.gif  );}
+div#ContextMenu .up     { background-image: url(../i/icon/up.gif     );}

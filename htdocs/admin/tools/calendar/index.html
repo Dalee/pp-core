@@ -1,0 +1,415 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+	<HEAD>
+		<TITLE>Календарь</TITLE>
+
+		<SCRIPT type="text/javascript" language="JavaScript">
+			var DaysOfWeek = [
+				'пн',
+				'вт',
+				'ср',
+				'чт',
+				'пт',
+				'сб',
+				'вс'
+				];
+
+			var Months = [
+				'Январь',
+				'Февраль',
+				'Март',
+				'Апрель',
+				'Май',
+				'Июнь',
+				'Июль',
+				'Август',
+				'Сентябрь',
+				'Октябрь',
+				'Ноябрь',
+				'Декабрь'
+			];
+			var Months2    = ['янв','фев','мар','апр','май','июн','июл','авг','сен','окт','ноя','дек'];
+
+			var bgColorHighLight = '#385A94';
+			var colorHighLight   = '#FFFFFF';
+		</SCRIPT>
+
+		<STYLE type="text/css">
+			BODY {
+				margin: 0;
+				padding: 0;
+			}
+
+			#calendar {
+				width: 100%;
+				height: 100%;
+				padding: 0;
+				text-decoration: none;
+				background-color: #FFFFFF;
+				border: 1px solid #404040;
+				border-bottom-color: #ECECEC;
+				border-right-color: #ECECEC;
+			}
+
+			INPUT.button {
+				background-color: #C9CED6;
+
+				background-repeat: no-repeat;
+				background-position: 4px 3px;
+
+				text-decoration: none;
+				color: #000000;
+				border: 1px solid #C9CED6;
+				font-size: 10px;
+				font-family: verdana;
+
+				padding: 0px;
+				margin: 2px;
+				width: 16px;
+				height: 16px;
+				behavior: url(../css/button.htc)
+			}
+
+			.small {
+				font-family: Verdana, Arial;
+				font-size: 9px;
+			}
+
+			.weekday {
+				font-family: Verdana, Arial;
+				font-size: 9px;
+				color: #000000;
+				font-weight: normal;
+				background-color: #C9CED6;
+				text-align: center;
+			}
+
+			.monthday {
+				font-family: Verdana, Arial;
+				font-size: 9px;
+				color: #000000;
+				background-color: #FFFFFF;
+				text-align: center;
+			}
+
+			.todayday {
+				font-family: Verdana, Arial;
+				font-size: 9px;
+				color: #000000;
+				background-color: #FFD966;
+				font-weight: bold;
+				text-align: center;
+				cursor : hand;
+			}
+
+			.activemonthday {
+				font-family: Verdana, Arial;
+				font-size: 9px;
+				color: #000000;
+				background-color: #FFFFFF;
+				text-align: center;
+				cursor : hand;
+			}
+
+			.caption {
+				display: block;
+				margin: 1px;
+				padding: 2px;
+				text-decoration: none;
+				font-size: 9px;
+				font-family: Verdana;
+				font-weight: bold;
+				color: #000000;
+				background-color: #FFD966;
+				border: 1px solid #404040;
+				border-bottom-color: #ECECEC;
+				border-right-color: #ECECEC;
+			}
+		</STYLE>
+
+		<SCRIPT type="text/javascript" language="JavaScript">
+			var ctrl = parent.document.getElementById(self.name);
+		</SCRIPT>
+	</HEAD>
+
+	<BODY onload="ctrl.style.visibility='hidden';">
+		<SCRIPT type="text/javascript" language="JavaScript">
+			eval("parent.ctrlCalendar=parent.frames[self.name];");
+			var DateControl;
+			var DayControl;
+			var MonthControl;
+			var YearControl;
+			var bgColorOld;
+			var colorOld;
+			var ccDay;
+			var ccMonth;
+			var ccYear;
+
+			parent.document.onclick=function(e){
+				var t=!e?parent.event.srcElement.name:e.target.name;
+				if(t != "") {
+					ShowCalendar(false);
+				}
+			}
+
+			function IsVisible() {
+				return ctrl.style.visibility == "visible";
+			}
+
+			function ShowCalendar(v) {
+				if(v) {
+					ctrl.style.visibility = "visible";
+				} else {
+					ctrl.style.visibility = "hidden";
+				}
+			}
+
+			function GetWindowSize(w) {
+				if (parent.innerWidth) {
+					return [w.innerWidth-16,w.innerHeight,w.pageXOffset,w.pageYOffset];
+				} else {
+					with (w.document.body) return [clientWidth,clientHeight,scrollLeft,scrollTop];
+				}
+			}
+
+			function FillGrid(m,y) {
+				var cal=[];
+
+				for(var i=0;6>i;i++)
+					cal[i]=[];
+					var days=[31,31,(y%4==0&&y%100!=0||y%400==0)?29:28,31,30,31,30,31,31,30,31,30,31];
+					var dCalDate=new Date(y,m-1,1);
+					var iDay1=dCalDate.getDay();
+
+					if (0>--iDay1) {
+						iDay1=6;
+					}
+
+					var iLast=days[m-1]-iDay1+1;
+					var iDate=1;
+					var iNext=1;
+
+					for (var d=0;7>d;d++) {
+						cal[0][d]=(iDay1>d)?[m-1,-(iLast+d)]:[m,iDate++];
+					}
+
+					for (var w=1;6>w;w++) {
+						for (var d=0;7>d;d++) {
+							cal[w][d]=(days[m]>=iDate)?[m,iDate++]:[m+1,-(iNext++)];
+						}
+					}
+
+					return cal;
+			}
+
+			function printCal(d2,m,y) {
+				var onClick;
+				var content = "";
+				var title = "";
+				var day = [];
+				var cal = FillGrid(m,y);
+				var holidays = '';
+
+				FillGrid(m,y);
+
+				title = '<DIV class="caption">' + Months[m-1] + ' ' + y + '</DIV>';
+				monthSelect = '<SELECT onChange="ccMonth = this.options[this.selectedIndex].value; printCal(ccDay,this.options[this.selectedIndex].value,ccYear);" style="font: normal normal 9px Verdana;">';
+				for(var i=0; 12>i; i++) {
+					monthSelect += '<OPTION value="'+(i+1)+'"';
+
+					if(i == m -1) {
+						monthSelect += ' selected';
+					}
+
+					monthSelect += '>'+Months2[i]+'</OPTION>';
+				}
+				monthSelect += '</SELECT>';
+
+                                yearSelect = '<SELECT onChange="ccYear = this.options[this.selectedIndex].value; printCal(ccDay, ccMonth, this.options[this.selectedIndex].value);" style="font: normal normal 9px Verdana;">';
+				for(var i=1931; 2010>i; i++) {
+					yearSelect += '<OPTION value="'+i+'"';
+
+					if(i == y) {
+						yearSelect += ' selected';
+					}
+
+					yearSelect += '>'+i+'</OPTION>';
+				}
+				yearSelect += '</SELECT>';
+
+				caption.innerHTML = monthSelect + yearSelect;
+				captionX.innerHTML = title;
+
+				content = '<TABLE name="calendarTable" border="0" cellpadding="2" cellspacing="0" height="100%" width="100%">';
+				content += '<TR>';
+
+				for(var i=0;7>i;i++) {
+					content += '<TD class="weekday">'+DaysOfWeek[i]+'</TD>';
+				}
+
+				content += '</TR>';
+
+				for (var w=0;6>w;w++) {
+					content += '<TR bgcolor="#FFFFFF">';
+
+					for (var d=0;7>d;d++) {
+						day = cal[w][d];
+						if (d>5) {
+							holidays = '';
+						}
+
+						onClick = 'width="14%" onClick="PostResult('+Math.abs(day[1])+','+day[0]+','+y+');" ';
+
+						if(day[1] > 0) {
+							if (day[1]==d2) {
+								content += '<TD ' + onClick +' class="todayday" onMouseOver="colorOld=this.style.color;this.style.color=colorHighLight; bgColorOld=this.style.backgroundColor;this.style.backgroundColor=bgColorHighLight;" onMouseOut="this.style.backgroundColor=bgColorOld;this.style.color=colorOld;">' +day[1] + '</TD>';
+							} else {
+								content += '<TD ' + onClick +' class="activemonthday" onMouseOver="colorOld=this.style.color;this.style.color=colorHighLight; bgColorOld=this.style.backgroundColor;this.style.backgroundColor=bgColorHighLight;" onMouseOut="this.style.backgroundColor=bgColorOld;this.style.color=colorOld;">' +day[1] + '</TD>';
+							}
+						} else {
+							content += '<TD class="monthday">&nbsp;</TD>';
+						}
+					}
+
+					content += '</TR>'+"\n";
+				}
+
+				content += '</TABLE>';
+				calendar.innerHTML = content;
+			}
+
+			function PostResult(d,m,y) {
+				if(m>12) {
+					y++;
+					m=1;
+				} else if (1>m) {
+					y--;
+					m=12;
+				}
+
+				if (10>d) {
+					d = '0' + d;
+				}
+
+				if (10>m) {
+					m = '0' + m;
+				}
+
+				DateControl.value  = d+"."+m+"."+y;
+				DayControl.value   = d;
+				MonthControl.value = m;
+				YearControl.value  = y;
+				ShowCalendar(false);
+			}
+
+			function GetPosition(a) {
+				var p=[0,0], bl, bt;
+				while(a&&a.tagName.toUpperCase()!="BODY") {
+					bl=parseInt(a.style.borderLeftWidth,10);
+					bt=parseInt(a.style.borderTopWidth,10);
+					p[0]+=a.offsetLeft-(a.scrollLeft?a.scrollLeft:0)+(isNaN(bl)?0:bl);
+					p[1]+=a.offsetTop-(a.scrollTop?a.scrollTop:0)+(isNaN(bt)?0:bt);
+					a=a.offsetParent;
+				}
+
+				if (a) {
+					p[0]+=a.offsetLeft;
+					p[1]+=a.offsetTop;
+				}
+
+				return p;
+			}
+
+			function SetNull(datefield, dayfield, monthfield, yearfield) {
+				datefield.value  = '';
+				dayfield.value   = '';
+				monthfield.value = '';
+				yearfield.value  = '';
+				ShowCalendar(false);
+			}
+
+			function DoModal(datefield, dayfield, monthfield, yearfield) {
+				var dt=[0,0,0];
+
+				if(IsVisible()) {
+					ShowCalendar(false);
+				}
+
+				DateControl  = datefield;
+				DayControl   = dayfield;
+				MonthControl = monthfield;
+				YearControl  = yearfield;
+
+				if(datefield.value == "" || datefield.value == "..") {
+					var d = new Date();
+					dt[0] = d.getDate();
+					dt[1] = d.getMonth()+1;
+					dt[2] = d.getYear();
+				} else {
+					dt = datefield.value.split(".");
+				}
+
+				ccDay = parseInt(dt[0],10);
+				ccMonth = parseInt(dt[1],10);
+				ccYear = parseInt(dt[2],10);
+
+				printCal(ccDay,ccMonth,ccYear,datefield,dayfield,monthfield,yearfield);
+				var gob=parseInt(ctrl.style.borderWidth,10);
+				var oh=datefield.offsetHeight;
+				var h=ctrl.offsetHeight+oh+gob;
+				var p = GetPosition(datefield);
+
+				var ws=GetWindowSize(parent);
+				var tmp=ws[0]+ws[2]-ctrl.offsetWidth-gob;
+				p[0]=p[0]<ws[2]?ws[2]+2:p[0]>tmp?tmp:p[0];
+				tmp=ws[1]+ws[3]-h;
+
+				if (p[1]>tmp&&(p[1]-ws[3]+oh>=h)) {
+					p[1]-=oh>0?h+2:h+25;
+				}
+
+//                              ctrl.style.left=p[0]-225+"px";
+//                              ctrl.style.top=p[1]+oh+1-50+"px";
+
+//                              ctrl.style.left=parent.window.event.x+"px";
+//                              ctrl.style.top=parent.window.event.y+"px";
+				ShowCalendar(true);
+			}
+
+			function SelectNextMonth() {
+				ccMonth++;
+
+				if(ccMonth > 12) {
+					ccYear++;
+					ccMonth = 1;
+				}
+
+				printCal(ccDay,ccMonth,ccYear);
+				return false;
+			}
+
+			function SelectPrevMonth() {
+				ccMonth--;
+				if(1>ccMonth) {
+					ccYear--;
+					ccMonth=12;
+				}
+
+				printCal(ccDay,ccMonth,ccYear);
+				return false;
+			}
+
+
+			var prevControl='<INPUT type="button" class="button" title="Предыдущий месяц" onClick="return SelectPrevMonth();" style="background-image: url(left.gif);">';
+			var nextControl='<INPUT type="button" class="button" title="Следующий месяц" onClick="return SelectNextMonth();" style="background-image: url(right.gif);">';
+
+			with(document) {
+				write('<TABLE width="100%" height="100%" border="0" cellspacing="1" cellpadding="0" bgcolor="#C9CED6"><TR><TD>');
+				write('<TABLE width="100%" border="0" cellspacing="0" cellpadding="0">');
+				write('<TR><TD align="center" colspan="3"><DIV id="captionX" name="captionX">&nbsp;</DIV></TD></TR>');
+				write('<TR><TD width="20" align="left">'+prevControl+'</TD><TD align="center"><DIV id="caption" name="caption">&nbsp;</DIV></TD><TD width="20" align="right">'+nextControl+'</TD></TR>');
+				write('</TABLE></TD></TR><TR><TD height="100%"><DIV id="calendar" name="calendar"></DIV></TD></TR></TABLE>');
+			}
+		</SCRIPT>
+	</BODY>
+</HTML>

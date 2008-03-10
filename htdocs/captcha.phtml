@@ -1,0 +1,23 @@
+<?php
+	define('BASEPATH', $_SERVER["DOCUMENT_ROOT"]);
+	require_once BASEPATH.'/libpp/lib/Security/blockingnumbers.class.inc';
+	require_once BASEPATH.'/libpp/lib/Security/captcha.class.inc';
+
+
+	$k = intval(@$_GET['k']);
+
+	if ($k<=0) {
+		$str = '';
+	} else {
+		$bn = new NLBlockingNumbers();
+		$str = $bn->GetValueByKey($k);
+	}
+
+	$fonts = array(
+		BASEPATH.'/local/share/fonts/tahoma.ttf'
+	);
+
+	$colors = array('lite' => 'FBFEFF', 'dark' => '545B5D');
+
+	$captcha = new NLCaptcha($str, 100, 40, $fonts, $colors, false, 23);
+?>

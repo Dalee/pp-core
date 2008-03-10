@@ -1,0 +1,10 @@
+<?
+	include '../../lib/mainadmin.inc';
+	$engine = new PXEngineAdminAction();
+	$engine->init();
+
+	$engine->runModules();
+
+	$engine->profilerStop();
+	$engine->redirect();
+?>

@@ -1,0 +1,25 @@
+<component>
+
+	<implements>
+
+		<attach event="onmouseover" onevent="bover()" />
+		<attach event="onmouseout" onevent="bout()" />
+
+	</implements>
+
+	<SCRIPT LANGUAGE="JScript">
+
+		function bover() {
+			element.style.borderLeftColor   = '#FFFFFF';
+			element.style.borderTopColor    = '#FFFFFF';
+			element.style.borderRightColor  = '#AEAEAE';
+			element.style.borderBottomColor = '#AEAEAE';
+		}
+
+		function bout() {
+			element.style.borderColor   = '#E7E9ED';
+		}
+
+	</SCRIPT>
+
+</component>

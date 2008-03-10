@@ -1,0 +1,19 @@
+<?
+	$file = $_SERVER['HTTP_X_REWRITE_URL'];
+
+	if (preg_match('/\.js$/i', $file)) {
+		header("Content-Type: text/javascript; charset=windows-1251");
+	} else {
+		header("Content-Type: text/html; charset=windows-1251");
+	}
+
+	$s = @file_get_contents("..\\..\\site\\htdocs".$file);
+
+	if ($s === false) {
+		header("HTTP/1.0 404 Not found");
+		exit;
+	} else {
+		echo convert_cyr_string($s, 'k', 'w');
+	}
+
+?>

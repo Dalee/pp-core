@@ -1,0 +1,17 @@
+<component>
+	<implements>
+		<attach event="onmouseover" onevent="bover()" />
+		<attach event="onmouseout" onevent="bout()" />
+	</implements>
+
+	<SCRIPT LANGUAGE="JScript">
+		function bover() {
+			element.oldClassName = element.className;
+			element.className = 'hover';
+		}
+
+		function bout() {
+			element.className = element.oldClassName ? element.oldClassName : '';
+		}
+	</SCRIPT>
+</component>
