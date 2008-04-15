@@ -1,0 +1,60 @@
+/* PROFILER ***************************************************/
+div#profiler {
+	position: absolute;
+	z-index: 1024;
+	width: 35%;
+	top: 10%;
+	left: 50%;
+	background-color: #eeeeee;
+	border: 1px solid #000000;
+	border-top-color: #aaaaaa;
+	border-left-color: #aaaaaa;
+	padding: 10px;
+}
+
+div#profiler dl {
+	margin: 2px 5px;
+	padding: 0;
+	clear: left;
+}
+
+div#profiler dl, div#profiler input {
+	color: #cccccc;
+	font-weight: bold;
+	font-size: 12px;
+	font-family: 'Consolas', monospace;
+	display: inline;
+}
+
+div#profiler dl.long0001, div#profiler dl.long0001 input { color: #aaaaaa; }
+div#profiler dl.long001,  div#profiler dl.long001  input { color: #999999; }
+div#profiler dl.long01,   div#profiler dl.long01   input { color: #000000; }
+div#profiler dl.long1,    div#profiler dl.long1    input { color: #990000; }
+
+div#profiler dl dt {
+	display: block;
+	float: none;
+	clear: none;
+	overflow: hidden;
+}
+
+div#profiler dl dt.lev1 input { padding-left: 10px; }
+div#profiler dl dt.lev2 input { padding-left: 20px; }
+div#profiler dl dt.lev3 input { padding-left: 30px; }
+div#profiler dl dt.lev4 input { padding-left: 40px; }
+div#profiler dl dt.lev5 input { padding-left: 50px; }
+div#profiler dl dt.lev6 input { padding-left: 60px; }
+
+div#profiler dl dd {
+	display: block;
+	float: left;
+	padding: 0 5px 0 0;
+}
+
+div#profiler input {
+	border: 0;
+	display: block;
+	background-color: transparent;
+	vertical-align: bottom;
+	width: 80%;
+}

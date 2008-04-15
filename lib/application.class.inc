@@ -758,7 +758,7 @@ class PXApplication {
 	 *
 	 * @param PXDirectory $directory
 	 */
-	private function LoadXMLDirectory(&$directory, $addDefault = true) {
+	public function LoadXMLDirectory(&$directory, $addDefault = true) {
 		$file          = $directory->sourceDir.$directory->source;
 		$xpathSelector = $directory->location;
 
@@ -770,6 +770,7 @@ class PXApplication {
 		$results = $xml->xpath($xpathSelector);
 		if ($results) {
 			$nodes = $results[0]->children();
+
 			foreach ($nodes as $node) {
 				$directory->values[(string)$node["id"]] = array(
 					'id' => (string)$node["id"],
@@ -781,7 +782,6 @@ class PXApplication {
 					$directory->values[(string)$node["id"]][$name] = utf8_decode((string)$value);
 				}
 			}
-			$directory->SetLoaded();
 		}
 
 		$directory->SetLoaded($addDefault);
@@ -890,7 +890,6 @@ class PXApplication {
 	 * @return Boolean  true если файл существует
 	 */
 	private static function loadFromCache($projectDir) {
-
 		$cacheFile = BASEPATH.DIRECTORY_SEPARATOR.'tmp'.DIRECTORY_SEPARATOR.'cache'.DIRECTORY_SEPARATOR.'config_'.md5($projectDir);
 
 		if (!file_exists($cacheFile)) {
@@ -922,6 +921,8 @@ class PXApplication {
 	 */
 	private function saveToCache($projectDir) {
 		$cacheFile = BASEPATH.DIRECTORY_SEPARATOR.'tmp'.DIRECTORY_SEPARATOR.'cache'.DIRECTORY_SEPARATOR.'config_'.md5($projectDir);
+
+		MakeDirIfnotExists(dirname($cacheFile));
 		WriteStringToFile($cacheFile, serialize($this));
 	}
 }
