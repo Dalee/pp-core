@@ -18,7 +18,6 @@ class PXEngineAdminPopup extends PXEngineAdminIndex {
 
 		if (!$this->user->isAdmin()) {
 			return $this->layout->assignError('OUTER.CONTENT', 'Нет доступа');
-
 		}
 
 		if(!$this->checkArea($this->area)) {

@@ -1,63 +1,73 @@
 <?php
+class PXModuleSearch extends PXEngineAPI {
+	function indexAdmin() {
+		$word = $this->request->getVar('word');
 
-class PXModuleSearch extends PXAbstractModule {
+		$this->layout->setSimpleInnerLayout(array('100%'), array('100%'));
+		$this->layout->setGetVarToSave('word',      $word);
+		$this->layout->setGetVarToSave('charcheck', $this->request->getVar('charcheck'));
 
-	function PXModuleSearch($area, $settings) {
-		$this->PXAbstractModule($area, $settings);
-	}
+		$this->word = trim($word);
 
-	function adminIndex(&$app, &$request, &$user, &$db, &$layout) {
-		$html = '<TABLE width="100%" border="0" cellpadding="3" cellspacing="1" style="border: 1px solid #C9CED6;">';
-		$html .= '<FORM>';
-		$html .= '<INPUT type="hidden" name="area" value="'.$request->GetArea('search').'">';
-		$html .= '<INPUT type="hidden" name="charcheck" value="йцукен">';
-		$html .= '<COLGROUP>
-			<COL width="100%">
-			<COL>
-		</COLGROUP>';
-		$html .= '<TR><TH style="text-align:left; background-color:#385A94; color:#FFFFFF;" colspan="2">Поиск</TH></TR>';
-		$html .= '<TR style="background-color: #E7E9ED;"><TD><INPUT type="text" style="width:100%;" name="word" value="'.$request->GetVar('word').'"></TD>';
-		$html .= '<TD align="right"><INPUT type="submit" value="Найти" class="button-light"></TD></TR>';
-		$html .= '</FORM>';
-		$html .= '</TABLE>';
+		$this->form();
 
-		$layout->Assign('INNER.0.0', $html);
-
-		if ($word = $request->GetVar('word')) {
-			$layout->SetGetVarToSave('word', $request->GetVar('word'));
-			$layout->SetGetVarToSave('charcheck', $request->GetVar('charcheck'));
-
-			$cidType   = NULL;
-			$cidObject = NULL;
-			$onPage    = $app->GetProperty('CHILDREN_ON_PAGE', 5);
-
-			$allCount = 0;
-
-			foreach($app->types as $format=>$type) {
-				$count   = $db->GetObjectsBySearchWord($app->types[$format], NULL, $word, DB_SELECT_COUNT);
-
-				$allCount += $count;
-
-				$currentPage  = $request->GetVar($format.'_page', 1);
-				$currentOrder = $request->GetVar($format.'_order', $app->types[$format]->order);
-				$layout->SetGetVarToSave($format.'_order', $currentOrder);
-
-				$currentPage = $currentPage > ceil($count/$onPage) ? ceil($count/$onPage) : $currentPage;
-
-				if($count) {
-					$objects = $db->GetObjectsBySearchWordLimited($app->types[$format], NULL, $word, $onPage, $onPage*($currentPage-1), DB_SELECT_TABLE, $currentOrder);
-
-					$table = new PXAdminTable($objects, $app->types[$format], $layout->getData);
-					$table->setPager($currentPage, $onPage, $count);
-					$layout->append('INNER.1.0', $table->getTable());
-				}
-			}
-
-			if(!$allCount) {
-				$layout->append('INNER.1.0', '<h2 class="error">Ничего не найдено</h2>');
-			}
+		if (strlen($this->word)) {
+			$this->search();
 		}
 	}
 
+	function search() {
+		$notFound = true;
+
+		foreach($this->app->types as $type) {
+			$count   = $this->db->getObjectsBySearchWord($type, NULL, $this->word, DB_SELECT_COUNT);
+
+			if($count) {
+				$this->searchResult($type, $count);
+				$notFound = false;
+			}
+		}
+
+		if($notFound) {
+			$this->layout->append('INNER.0.0', '<h2 class="error">Ничего не найдено</h2>');
+		}
+	}
+
+	function searchResult($type, $count) {
+		$onPage       = $this->app->getProperty('CHILDREN_ON_PAGE', 5);
+
+		$currentOrder = $this->request->getVar($type->id.'_order', $type->order);
+		$currentPage  = $this->request->getVar($type->id.'_page', 1);
+		$currentPage  = $currentPage > ceil($count/$onPage) ? ceil($count/$onPage) : $currentPage;
+
+
+		$objects = $this->db->getObjectsBySearchWordLimited($type, NULL, $this->word, $onPage, $onPage*($currentPage-1), DB_SELECT_TABLE, $currentOrder);
+
+		$table = new PXAdminTable($objects, $type, $this->layout->getData);
+		$table->setPager($currentPage, $onPage, $count);
+
+		$this->layout->append('INNER.0.0', $table->getTable());
+		$this->layout->setGetVarToSave($type->id.'_order', $currentOrder);
+	}
+
+	function form() {
+		$area = $this->request->getArea('search');
+		$word = $this->word;
+
+		$html = 
+<<<HTML
+	<h2>Поиск</h2>
+
+	<form class="autoheight">
+		<input type="hidden" name="area"      value="$area">
+		<input type="hidden" name="charcheck" value="йцукен">
+
+		<input type="text"   name="word"      value="$word" style="width: 75%;">
+		<input type="submit" value="Найти">
+	</form>
+HTML;
+
+		$this->layout->append('INNER.0.0', $html);
+	}
 }
 ?>

@@ -29,9 +29,6 @@ class PXDatabase extends NLSQLDatabaseAdapter {
 	/** @var PXUser */
 	var $user;
 
-	/** @var boolean */
-	var $adminMode;
-
 	/** @var mixed */
 	var $triggers;
 
@@ -39,16 +36,14 @@ class PXDatabase extends NLSQLDatabaseAdapter {
 	 * Конструктор класса
 	 *
 	 * @param PXApplication $app {@link $app} reference to PXApplication
-	 * @param Boolean $adminMode if set, all requests will be done with admin permissions
 	 */
-	function PXDatabase($app, $adminMode = true) {
+	function PXDatabase($app) {
 		$this->NLSQLDatabaseAdapter($app->dbDescription['database']);
 
 		$this->setUser(new PXUserNull());
 
 		$this->app       = $app;
 		$this->types     = $app->types;
-		$this->adminMode = $adminMode;
 		$this->triggers  = NULL;
 	}
 
@@ -243,21 +238,15 @@ class PXDatabase extends NLSQLDatabaseAdapter {
 
 		if ($mode == DB_SELECT_COUNT) {
 			$selector = 'count('.$format->id.'.id)';
-			$from     = $format->id;
+
 		} else {
 			$selector = $this->_createSelector($format);
-			$from     = $format->id;
-			if ($format->id != DT_USER) {
-				if ($this->adminMode) {
-					$selector .= ', suser.title AS ownerlogin, suser.access AS owneraccess';
-					$from      = $format->id.' LEFT JOIN suser ON ('.$format->id.'.sys_owner = suser.id AND suser.access>='.USERLEVEL_ADMIN.')';
 
-				} else {
-					$selector .= ', '.$format->id.'.sys_owner';
-				}
+			if ($format->id != DT_USER) {
+				$selector .= ', '.$format->id.'.sys_owner';
 			}
 		}
-		$query = 'SELECT '.$selector.' FROM '.$from;
+		$query = 'SELECT '.$selector.' FROM '.$format->id;
 
 		if (!is_null($where))         $query .= ' WHERE '.$where;
 		if ($mode != DB_SELECT_COUNT) {

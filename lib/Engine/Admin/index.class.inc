@@ -2,12 +2,15 @@
 class PXEngineAdminIndex extends PXEngineInterface {
 	var $menu;
 
-	function initLayout() {
-		$this->layout = new PXAdminHTMLLayout('index', $this->app->types);
+	function __construct() {
+		parent::__construct();
+
+		$types = PXEngineObjects::getApp()->types;
+		PXEngineObjects::setLayout(new PXAdminHTMLLayout('index', $types));
 	}
 
 	function initModules() {
-		$this->modules = $this->app->getAvailableModules($this->user->level);
+		$this->modules = PXEngineObjects::getApp()->getAvailableModules(PXEngineObjects::getUser()->level);
 	}
 
 	function initMenu() {
@@ -25,23 +28,23 @@ class PXEngineAdminIndex extends PXEngineInterface {
 
 	function showAuthForm() {
 		$auth = $this->modules['auth']->getModule();
-		$auth->adminIndex($this->app, $this->request, $this->user, $this->db, $this->layout);
+		$auth->adminIndex(PXEngineObjects::getApp(), PXEngineObjects::getRequest(), PXEngineObjects::getUser(), PXEngineObjects::getDb(), PXEngineObjects::getLayout());
 	}
 
 	function fillLayout($area) {
-		$layout = $this->layout;
+		$layout = PXEngineObjects::getLayout();
 
 		$layout->setLogoutForm('?area=exit');
 		$layout->setMenu($this->menu, $area);
 		$layout->setSimpleInnerLayout(array('25%', '75%'), array('100%', ''));
 
 		$layout->setGetVarToSave('area', $area);
-		$layout->setGetVarToSave('sid', $this->request->getSid());
+		$layout->setGetVarToSave('sid', PXEngineObjects::getRequest()->getSid());
 	}
 
 	function checkArea($area) {
 		if (!isset($this->modules[$area])) {
-			$layout = $this->layout;
+			$layout = PXEngineObjects::getLayout();
 
 			$layout->setSimpleInnerLayout(array('100%'), array('100%'));
 			$layout->assignError('INNER.0.0', 'Некорректный параметр <em>area</em> = <em>'.strip_tags($area).'</em>');
@@ -57,11 +60,11 @@ class PXEngineAdminIndex extends PXEngineInterface {
 
 		$this->initMenu();
 
-		if (!$this->user->isAdmin()) {
+		if (!PXEngineObjects::getUser()->isAdmin()) {
 			return $this->showAuthForm();
 		}
 
-		$area = $this->request->getArea(current(array_keys($this->menu)));
+		$area = PXEngineObjects::getRequest()->getArea(current(array_keys($this->menu)));
 		$this->fillLayout($area);
 
 		if($area == 'exit') {
@@ -72,21 +75,17 @@ class PXEngineAdminIndex extends PXEngineInterface {
 			return;
 		}
 
-        $instance = $this->modules[$area]->getModule();
-		$instance->adminIndex($this->app, $this->request, $this->user, $this->db, $this->layout);
+		$instance = $this->modules[$area]->getModule()->indexAdmin();
+		//$instance->adminIndex(PXEngineObjects::getApp(), PXEngineObjects::getRequest(), PXEngineObjects::getUser(), PXEngineObjects::getDb(), PXEngineObjects::getLayout());
 
 		NLProfiler('RUN MODULES', 'END');
 	}
 
-	function profilerStart() {
-	}
-
-	function profilerStop() {
-	}
-
 	function html() {
-		$this->db->close();
-		$this->layout->flush($this->app->GetProperty('OUTPUT_CHARSET', DEFAULT_CHARSET));
+		$charset = PXEngineObjects::getApp()->GetProperty('OUTPUT_CHARSET', DEFAULT_CHARSET);
+
+		PXEngineObjects::getDb()->close();
+		PXEngineObjects::getLayout()->flush($charset);
 	}
 }
 ?>

@@ -1,10 +1,8 @@
 <?
 	include '../../lib/mainadmin.inc';
 	$engine = new PXEngineAdminIndex();
-	$engine->init();
 
 	$engine->runModules();
 
-	$engine->profilerStop();
 	$engine->html();
 ?>

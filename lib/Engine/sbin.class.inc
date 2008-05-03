@@ -14,12 +14,6 @@ class PXEngineSbin extends PXEngineInterface {
 		$this->user = new PXUserCron();
 	}
 
-	function profilerStart() {
-	}
-
-	function profilerStop() {
-	}
-
 	function runModules() {
 	}
 }

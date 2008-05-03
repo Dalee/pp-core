@@ -20,7 +20,7 @@ class PXEngineAdminAction extends PXEngineInterface {
 
 		$module = $this->modules[$this->area];
 
-        $instance = $module->getModule();
+		$instance = $module->getModule();
 		$this->nextLocation = $instance->adminAction($this->app, $this->request, $this->user, $this->db);
 
 		NLProfiler('RUN MODULES', 'END');

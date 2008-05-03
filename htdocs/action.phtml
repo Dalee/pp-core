@@ -3,11 +3,7 @@
 
 	$engine = new PXEngineAction();
 
-	$engine->init();
-
 	$engine->runModules();
-
-	$engine->profilerStop();
 
 	$engine->redirect();
 ?>
