@@ -52,7 +52,7 @@ HTML;
 			return $_;
 		}
 
-		return '<td><button class="link" onclick="LinkFile(\''.$this->name.'\', \''.dirname($f->alias).'\', \''.$f->name.'\', '.$f->size.');">Привязать</button></td>';
+		return '<td><button class="link" onclick="LinkFile(\''.$this->name.'\', \''.dirname($f->alias).'/\', \''.$f->name.'\', '.$f->size.');">Привязать</button></td>';
 	}
 
 	function _listContext($f) {

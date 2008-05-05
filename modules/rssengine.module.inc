@@ -2,6 +2,8 @@
 class PXModuleRSSEngine extends PXAbstractModule {
 	function PXModuleRSSEngine($area, $settings) {
 		$this->PXAbstractModule($area, $settings);
+
+		$this->encoding = 'utf-8';
 	}
 
 	function _GetChannel() {
@@ -17,83 +19,14 @@ class PXModuleRSSEngine extends PXAbstractModule {
 		exit;
 	}
 
-	function GetChannel($channel) {
-		$xml  = "\n\t\t".'<title>'.$channel['title'].'</title>';
-		$xml .= "\n\t\t".'<link>'.$channel['link'].'?from=rss</link>';
-		$xml .= "\n\t\t".'<description>'.$channel['description'].'</description>';
-		$xml .= "\n\t\t".'<language>'.$channel['language'].'</language>';
-		$xml .= "\n\t\t".'<copyright>'.$channel['copyright'].'</copyright>';
-		$xml .= "\n\t\t".'<managingEditor>'.$channel['managingEditor'].'</managingEditor>';
-		$xml .= "\n\t\t".'<webMaster>'.$channel['webMaster'].'</webMaster>';
-
-		$xml .= "\n\t\t".'<generator>'.$channel['generator'].'</generator>';
-		$xml .= "\n\t\t".'<ttl>'.$channel['ttl'].'</ttl>';
-		$xml .= "\n\t\t".'<image>'.
-				"\n\t\t\t".'<url>'.$channel['image'].'?from=rss</url>'.
-				"\n\t\t\t".'<title>'.$channel['title'].'</title>'.
-				"\n\t\t\t".'<link>'.$channel['link'].'?from=rss</link>'.
-			"\n\t\t".'</image>';
-
-		return $xml;
-	}
-
-	function GetItem($i) {
-		$xml  = "\n\t\t\t".'<title>'.$i['title'].'</title>';
-		$xml .= "\n\t\t\t".'<link>'.$i['link'].'?from=rss</link>';
-		$xml .= "\n\t\t\t".'<guid>'.$i['link'].'?from=rss</guid>';
-
-		if (isset($i['category'])) {
-			$xml .= "\n\t\t\t".'<category>'.$i['category'].'</category>';
-		}
-
-		if (isset($i['author'])) {
-			$xml .= "\n\t\t\t".'<author>'.$i['author'].'</author>';
-		}
-
-		$xml .= "\n\t\t\t".'<description><![CDATA['.$i['description'].']]></description>';
-		$xml .= "\n\t\t\t".'<pubDate>'.$this->rssDateFormat($i['pubDate']).'</pubDate>';
-
-		return $xml;
-	}
-
-	function GetXML($channel, $items) {
-		$lastBuildDate = reset($items);
-		$lastBuildDate = $lastBuildDate['pubDate'];
-
-		$xml  = '<?xml version="1.0" encoding="utf-8"?>';
-		$xml .= "\n".'<rss version="2.0">';
-		$xml .= "\n\t".'<channel>';
-
-		$xml .= $this->GetChannel($channel);
-
-		$xml .= "\n\t\t".'<lastBuildDate>'.$this->rssDateFormat($lastBuildDate).'</lastBuildDate>';
-
-		foreach($items as $i) {
-			$xml .= "\n\n\t\t".'<item>';
-			$tmp = $this->GetItem($i);
-
-			$tmp = preg_replace("/<a(.*?)href=\"\//i",  '<a$1href="'.$channel['link'].'/',  $tmp);
-			$tmp = preg_replace("/<img(.*?)src=\"\//i", '<img$1src="'.$channel['link'].'/', $tmp);
-			$xml .= $tmp;
-			$xml .= "\n\t\t".'</item>';
-		}
-
-		$xml .= "\n\t".'</channel>';
-		$xml .= "\n".'</rss>';
-
-		header('Content-Type:text/xml;charset=utf-8');
-
-		$xml = myconv('k', 'u', $xml);
-		$xml = $this->unhtmlentities($xml);
-		echo $xml;
-		exit;
-	}
-
 	function unhtmlentities($string) {
 		$trans_tbl = get_html_translation_table(HTML_ENTITIES);
 		$trans_tbl = array_flip($trans_tbl);
 		$trans_tbl['&mdash;']  = "&#8211;";
 		$trans_tbl['&ndash;']  = "&#8212;";
+		$trans_tbl['&rsquo;']  = "&#8217;";
+		$trans_tbl['&ldquo;']  = "&#8220;";
+		$trans_tbl['&rdquo;']  = "&#8221;";
 		$trans_tbl['&hellip;'] = "&#8230;";
 
 		foreach($trans_tbl as $k=>$v) {
@@ -126,6 +59,129 @@ class PXModuleRSSEngine extends PXAbstractModule {
 
 	function rssDateFormat($string) {
 		return date('d M Y H:i:s O', $this->date2time($string));
+	}
+
+	function GetXML($channel, $items) {
+		$lastBuildDate = reset($items);
+		$channel['lastBuildDate'] = $this->rssDateFormat($lastBuildDate['pubDate']);
+
+		$xml = $this->xml($channel, $items);
+
+		$xml = preg_replace("/<a(.*?)href=\"\//i",  '<a$1href="'.$channel['link'].'/',  $xml);
+		$xml = preg_replace("/<img(.*?)src=\"\//i", '<img$1src="'.$channel['link'].'/', $xml);
+
+		$xml = myconv('k', $this->encoding{0}, $xml);
+		$xml = $this->unhtmlentities($xml);
+
+		header('Content-Type:text/xml;charset='.$this->encoding);
+
+		echo $xml;
+		exit;
+	}
+
+	function xml($channel, $items) {
+		$channelO = new PXRssChannel($channel, $this);
+
+		$_ = array();
+
+		$_[] = '<?xml version="1.0" encoding="'.$this->encoding.'"?>';
+		$_[] = '<rss version="2.0">';
+		$_[] = $channelO->xml($items);
+		$_[] = '</rss>';
+
+		return implode("\n", $_);
+	}
+}
+
+class PXRssXML {
+	function _node($nodeName, $value) {
+		if(is_array($value)) {
+			$value = implode("", $value);
+		}
+
+		return
+<<<XML
+	<$nodeName>$value</$nodeName>
+XML;
+	}
+
+	function nodeSet($nodes) {
+		$_ = array();
+
+		foreach($nodes as $node) {
+			if(method_exists($this, $node)) {
+				$_[] = $this->$node();
+
+			} elseif (isset($this->_data[$node])) {
+				$_[] = $this->_node($node, $this->_data[$node]);
+			}
+		}
+
+		return implode("\n", $_);
+	}
+}
+
+class PXRssChannel extends PXRssXML {
+	function PXRssChannel($channel, &$rssEngine) {
+		$this->_data     =  $channel;
+		$this->rss       =& $rssEngine;
+
+		$this->nodeNames =  array('title', 'link', 'description', 'language', 'copyright', 'managingEditor', 'webMaster', 'generator', 'ttl', 'image', 'lastBuildDate');
+	}
+
+	function link() {
+		return $this->_node('link', $this->_data['link'].'?from=rss');
+	}
+
+	function image() {
+		$_ = array(
+			$this->_node('url',   $this->_data['image']),
+			$this->_node('title', $this->_data['title']),
+			$this->link()
+		);
+
+		return $this->_node('image', $_);
+	}
+
+	function xml($items) {
+		$_ = array(
+			$this->nodeSet($this->nodeNames),
+		);
+
+		foreach($items as $i) {
+			$i['pubDate'] = $this->rss->rssDateFormat($i['pubDate']);
+
+			$itemO = new PXRssItem($i);
+			$_[] = $itemO->xml();
+		}
+
+
+		return $this->_node('channel', $_);
+	}
+}
+
+class PXRssItem extends PXRssXML {
+	function PXRssItem($item) {
+		$this->_data = $item;
+		$this->nodeNames = array('title', 'link', 'guid', 'category', 'author', 'description', 'pubDate');
+	}
+
+	function xml() {
+		$_ = $this->nodeSet($this->nodeNames);
+
+		return $this->_node('item', $_);
+	}
+
+	function link() {
+		return $this->_node('link', $this->_data['link'].'?from=rss');
+	}
+
+	function guid() {
+		return $this->_node('guid', $this->_data['link'].'?from=rss');
+	}
+
+	function description() {
+		return $this->_node('description', '<![CDATA['.$this->_data['description'].']]>');
 	}
 }
 ?>

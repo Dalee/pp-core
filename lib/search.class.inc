@@ -136,7 +136,8 @@ class PXSearch {
 
 		if (!is_null($parents)) {
 			$tmpParents = array();
-			$tmpJoin = array();
+			$tmpJoin    = array();
+
 			foreach ($parents as $k => $v) {
 				foreach($v as $i) {
 					$tmpParents[$i] = $k;
@@ -153,11 +154,17 @@ class PXSearch {
 		$dtypes = array();
 
 		foreach($tmp as $k => $v) {
+			if(!isset($this->app->types[$v['dtype']])) {
+				continue;
+			}
+
 			$key = $v['dtype'].' '.$v['did'];
+
 			if (isset($tmpres[$key])) {
 				$tmpres[$key]['sum']   += $v['weightsum'];
 				$tmpres[$key]['words'] += 1;
 				$tmpres[$key]['diffs'][$v['stem']] = 1;
+
 			} else {
 				$tmpres[$key] = array(
 					'did'   => $v['did'],
@@ -215,6 +222,7 @@ class PXSearch {
 
 			foreach($tmp as $row) {
 				$key =  $k.' '.$row['id'];
+
 				if(!isset($tmpres2[$key])) {
 					continue;
 				}

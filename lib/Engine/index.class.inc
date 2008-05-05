@@ -26,13 +26,13 @@ class PXEngineIndex extends PXEngineInterface {
 	}
 
 	function sendHeaders() {
-		if(!headers_sent()) {
+		if(headers_sent()) {
 			return;
 		}
 
 		if ($this->container['error'] == 404) {
 			if (function_exists('log404')) {
-				log404($request);
+				log404(PXEngineObjects::getRequest());
 			}
 
 			/*

@@ -2,7 +2,7 @@ function LinkFile(name, dir, file, size) {
 	opener.document.getElementById(name+'_filename').value = file;
 	opener.document.getElementById(name+'_dir').value      = dir;
 	opener.document.getElementById(name+'_size').value     = size;
-	opener.document.getElementById(name+'_fullpath').value = dir + '/' + file;
+	opener.document.getElementById(name+'_fullpath').value = dir + file;
 	document.cookie = 'fileManagerDir' + '=' + dir;
 	window.close();
 	return false;

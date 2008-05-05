@@ -325,6 +325,38 @@ class PXDisplayTypeTable extends PXDisplayType {
 
 
 /**
+ * static Таблица
+ *
+ * storageType serialized
+ * displayType TABLESTATIC
+ */
+class PXDisplayTypeTableStatic extends PXDisplayTypeStatic {
+	function buildInput($field, $object, $param=NULL) {
+		$k = $field->name;
+		$value = isset($object[$k]) && is_array($object[$k]) ? $object[$k] : array();
+
+		$_html   = '<table class="static">';
+
+		foreach($value as $row) {
+			$_html .= '<tr>';
+
+			foreach($row as $cell) {
+				$_html .= '<td>';
+				$_html .= is_array($cell) ? print_r($cell, true) : $cell;
+				$_html .= '</td>';
+			}
+
+			$_html .= '</tr>';
+		}
+
+		$_html .= '</table>';
+
+		return NLAbstractHTMLForm::BuildHidden($field->name, $value).$_html;
+	}
+}
+
+
+/**
  * ip адрес
  *
  * storageType integer
@@ -472,8 +504,9 @@ class PXDisplayTypeDropdown extends PXDisplayType {
 	}
 
 	static function buildCell($field, $object, $param=NULL) {
+		$displayField = $field->values->displayField;
 		$value = $object[$field->name];
-		return isset($field->values->values[$value]) && isset($field->values->values[$value]['title']) ? $field->values->values[$value]['title'] : '';
+		return isset($field->values->values[$value]) && isset($field->values->values[$value][$displayField]) ? $field->values->values[$value][$displayField] : '';
 	}
 }
 /**
@@ -775,7 +808,7 @@ class PXDisplayTypeLinktofile extends PXDisplayType {
 
 		$tmp = array(
 			'filename' => $value['filename'],
-			'fullpath' => $value['dir'].'/'.$value['filename'],
+			'fullpath' => $value['dir'].$value['filename'],
 			'size'     => $value['size']
 		);
 

@@ -44,7 +44,7 @@ class NLErrorReporter {
 			E_STRICT          => 'Runtime Notice'
 		);
 
-		if ($errno & error_reporting()) {
+		if ($errno & (NL_FATAL_ERROR | error_reporting())) {
 			$count = NLErrorReporter::GSC('count', 'get');
 			$list  = NLErrorReporter::GSC('list', 'get');
 
@@ -132,7 +132,6 @@ class NLErrorReporter {
 							break;
 
 						case 'string':
-//							$value = strlen($v) > 128 ? "'".substr($v, 0, 128)."' {".strlen($v)."}" : "'$v'";
 							$value = "'$v'";
 							break;
 
@@ -274,7 +273,6 @@ class NLErrorReporter {
 		}
 
 		$toEmail = isset($_SERVER['SERVER_ADMIN']) ? $_SERVER['SERVER_ADMIN'] : 'support@dalee.ru';
-//		$toEmail = 'st@netlogic.ru';
 		$replyTo = 'webmaster@'.$_SERVER['SERVER_NAME'];
 
 		$computer = IS_WIN && isset($_ENV['COMPUTERNAME']) ? strtolower($_ENV['COMPUTERNAME']) : @rtrim(`hostname`);
@@ -366,6 +364,7 @@ class NLErrorReporter {
 	static function FatalError($errorMessage='', $errorType='') {
 		$text = '';
 		$error = array();
+
 		NLErrorReporter::TraceError($error, true);
 
 		$error['type'] = $errorType;

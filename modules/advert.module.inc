@@ -328,7 +328,7 @@ class PXModuleAdvert extends PXAbstractModule {
 					$this->ShowAd($request->GetVar('p'), $toShow);
 				}
 				$toShow['shows'] = (is_numeric($toShow['shows'])) ? $toShow['shows']+1 : 1;
-				$db->currentUser->level = 16384;
+				$db->user->level = 16384;
 				$db->ModifyContentObject($app->types[$this->dtBanner], $toShow);
 			} else {
 				$error = 2; //  ERROR: no banners to show
@@ -437,7 +437,7 @@ class PXModuleAdvert extends PXAbstractModule {
 			$adBanner = $db->GetObjectById($app->types[$this->dtBanner], $bannerId);
 			$retValue = $adBanner['reference'];
 			$adBanner['clicks'] = (is_numeric($adBanner['clicks'])) ? $adBanner['clicks']+1 : 1;
-			$db->currentUser->level = 16384;
+			$db->user->level = 16384;
 			$db->ModifyContentObject($app->types[$this->dtBanner], $adBanner);
 		} else {
 			$retValue = '/';

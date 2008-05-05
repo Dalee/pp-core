@@ -41,12 +41,12 @@ class NLLogger {
 	}
 
 	static function getLogger($name) {
-
 		static $instances;
 
 		if (!isset($instances)) {
 			$instances = array();
 		}
+
 		if (!isset($instances[$name])) {
 			$instances[$name] = new NLLogger($name);
 		}
@@ -133,7 +133,6 @@ class NLLogger {
  *
  */
 class Appender {
-
 	var $name    = '';
 	var $enabled = true;
 	var $format  = '[%t] %1 ';
@@ -202,7 +201,6 @@ class ConsoleAppender extends Appender {
  *
  */
 class FileAppender extends Appender {
-
 	var $writeMode = 'a+';
 	var $fileSize  = '2097152'; //2 Mb default
 	var $fileName;
@@ -228,6 +226,7 @@ class FileAppender extends Appender {
 		if (!isset($openFiles)) {
 			$openFiles = array();
 		}
+
 		if (isset($openFiles[$fileName]) && file_exists($fileName) && filesize($fileName) >= $this->fileSize ) {
 			fclose($openFiles[$fileName]);
 			$rotateFileName = $fileName .'.'. mktime();
@@ -237,9 +236,11 @@ class FileAppender extends Appender {
 			rename($fileName, $rotateFileName);
 			unset($openFiles[$fileName]);
 		}
+
 		if (!isset($openFiles[$fileName])) {
 			$openFiles[$fileName] = @fopen($fileName, $this->writeMode);
 		}
+
 		return $openFiles[$fileName];
 	}
 }
@@ -249,7 +250,6 @@ class FileAppender extends Appender {
  *
  */
 class SQLAppender extends Appender {
-
 	var $db;
 
 	function SQLAppender($name) {
@@ -262,6 +262,7 @@ class SQLAppender extends Appender {
 			$msg = $this->_compileMessage($level, $message);
 			//false -- do not cache query
 			$r = $this->db->ModifyingQuery($msg);
+
 			if ($r < 0) {
 				trigger_error('Logger error - can\'t write to database', E_USER_ERROR);
 			}
@@ -274,7 +275,6 @@ class SQLAppender extends Appender {
  *
  */
 class SyslogAppender extends Appender{
-
 	var $map         = array();
 	var $ident       = 'nllogger';
 	var $facility    = 'LOG_USER';
@@ -286,28 +286,38 @@ class SyslogAppender extends Appender{
 			define_syslog_variables();
 		}
 		$this->format = '%1';
-		$this->map    = array('1'=>LOG_DEBUG, '2'=>LOG_INFO, '3'=>LOG_WARNING,
-		                '4'=>LOG_ERR, '5'=>LOG_CRIT); //mb 5=>'LOG_ERR' ?
+		$this->map    = array(
+			'1' => LOG_DEBUG,
+			'2' => LOG_INFO,
+			'3' => LOG_WARNING,
+			'4' => LOG_ERR,
+			'5' => LOG_CRIT //mb 5=>'LOG_ERR' ?
+		);
 
-		$this->facilitymap = array('LOG_MAIL'=>LOG_MAIL,         'LOG_DAEMON'=>LOG_DAEMON,
-								   'LOG_AUTH'=>LOG_AUTH,         'LOG_SYSLOG'=>LOG_SYSLOG,
-								   'LOG_LPR'=>LOG_LPR,           'LOG_NEWS'=>LOG_NEWS,
-								   'LOG_UUCP'=>LOG_UUCP,         'LOG_CRON'=>LOG_CRON,
-								   'LOG_AUTHPRIV'=>LOG_AUTHPRIV, 'LOG_LOCAL0'=>LOG_LOCAL0,
-								   'LOG_LOCAL1'=>LOG_LOCAL1,     'LOG_LOCAL2'=>LOG_LOCAL2,
-								   'LOG_LOCAL3'=>LOG_LOCAL3,     'LOG_LOCAL4'=>LOG_LOCAL4,
-								   'LOG_LOCAL5'=>LOG_LOCAL5,     'LOG_LOCAL6'=>LOG_LOCAL6,
-								   'LOG_LOCAL7'=>LOG_LOCAL7,     'LOG_USER'=>LOG_USER);
+		$this->facilitymap = array(
+			'LOG_MAIL'     => LOG_MAIL,     'LOG_DAEMON' => LOG_DAEMON,
+			'LOG_AUTH'     => LOG_AUTH,     'LOG_SYSLOG' => LOG_SYSLOG,
+			'LOG_LPR'      => LOG_LPR,      'LOG_NEWS'   => LOG_NEWS,
+			'LOG_UUCP'     => LOG_UUCP,     'LOG_CRON'   => LOG_CRON,
+			'LOG_AUTHPRIV' => LOG_AUTHPRIV, 'LOG_LOCAL0' => LOG_LOCAL0,
+			'LOG_LOCAL1'   => LOG_LOCAL1,   'LOG_LOCAL2' => LOG_LOCAL2,
+			'LOG_LOCAL3'   => LOG_LOCAL3,   'LOG_LOCAL4' => LOG_LOCAL4,
+			'LOG_LOCAL5'   => LOG_LOCAL5,   'LOG_LOCAL6' => LOG_LOCAL6,
+			'LOG_LOCAL7'   => LOG_LOCAL7,   'LOG_USER'   => LOG_USER
+		);
 	}
 
 	function write ($level, $message) {
 		static $facilities;
+
 		if ($facilities === null) {
 			$facilities = array();
 		}
+
 		if ( !isset($facilities[$this->facilitymap[$this->facility]]) ) {
 			$facilities[$this->facilitymap[$this->facility]] = openlog($this->ident, LOG_PID, $this->facilitymap[$this->facility]);
 		}
+
 		syslog($this->map[$level], $this->_compileMessage($level, $message));
 	}
 }

@@ -91,7 +91,13 @@ class PXModuleObjects extends PXAbstractModule {
 		}
 
 		if ($user->isAdmin()) {
-			$form      = new PXAdminObjectForm($requestedType, $object);
+			if(isset($object['sys_owner'])) {
+				$tmp = $db->GetObjectByID($app->types['suser'], $object['sys_owner']);
+				$object['ownerlogin'] = $tmp['title'];
+			}
+
+			$form      = new PXAdminObjectForm($app->types[$request->GetFormat()], $object);
+
 			// $access    = $form->CheckAccess($request->GetAction(), $user->level);
 			$menuItems = $form->GetAllowedForms($user->level);
 			$layout->SetMenu($menuItems, $request->GetAction(), 'action');
@@ -104,12 +110,13 @@ class PXModuleObjects extends PXAbstractModule {
 				case 'main':
 					$id  = getFromArray($object, 'id');
 					$pid = getFromArray($object, 'pid');
-					if (($parentFormat = $requestedType->parent) && 
-                         strstr($requestedType->fields['parent']->displayType, "DROPDOWN")) {
+
+					if (($parentFormat = $requestedType->parent) && strstr($requestedType->fields['parent']->displayType, "DROPDOWN")) {
 						$tree = $db->GetObjects($app->types[$parentFormat], NULL, DB_SELECT_TREE);
 					} else {
 						$tree = new NLTree(array());
 					}
+
 					if ($requestedType->struct == 'tree') {
 						if (isset($requestedType->fields['parent']) && !is_null($object['parent'])) {
 							$selfTree = $db->GetObjectsByParent($requestedType, NULL, $object['parent'], DB_SELECT_TREE);
@@ -302,7 +309,7 @@ class PXModuleObjects extends PXAbstractModule {
 		return $nextLocation;
 	} /*}}}*/
 	
-    private function __sortTypes($a, $b) {
+	private function __sortTypes($a, $b) {
 		return strcoll($a, $b);
 	}
 

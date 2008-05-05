@@ -37,14 +37,16 @@ class PXAuditLogger {
 
 		$this->logger = NLLogger::getLogger('audit');
 		$this->logger->addAppender('sql', 'SQLAppender');
+
 		if ($this->app->dbDescription['database']->dbtype == 'mssql') {
-			$this->logger->setAppenderParam('sql', 'format', 'INSERT INTO log_audit ([ts], [level], [type], '.
-														 ' [source], [user], [ip], [description]) '.
-														 " VALUES ('%t', '%l', '%1', '%2', '%3', '%4', '%5') ");
+			$this->logger->setAppenderParam('sql', 'format', 'SET DATEFORMAT ymd; INSERT INTO log_audit ([ts], [level], [type], '.
+			' [source], [user], [ip], [description]) '.
+			" VALUES ('%t', '%l', '%1', '%2', '%3', '%4', '%5'); SET DATEFORMAT dmy;");
+
 		} else {
 			$this->logger->setAppenderParam('sql', 'format', 'INSERT INTO log_audit ("ts", "level", "type", '.
-														 ' "source", "user", "ip", "description") '.
-														 " VALUES ('%t', '%l', '%1', '%2', '%3', '%4', '%5') ");
+			' "source", "user", "ip", "description") '.
+			" VALUES ('%t', '%l', '%1', '%2', '%3', '%4', '%5') ");
 		}
 		$this->logger->setLevel($this->logger->INFO);
 		$this->logger->setAppenderParamByRef('sql', 'db', $this->db);
@@ -113,7 +115,7 @@ class PXAuditLogger {
 	 * @return Array - массив из 5 элементов для передачи в NLLogger->debug|...|fatal()
 	 */
 	function _createMsg($description, $source, $type) {
-		$user = (isset($this->db->currentUser->login)) ? $this->db->currentUser->login : 'UNKNOWN';
+		$user = (isset($this->db->user->login)) ? $this->db->user->login : 'UNKNOWN';
 		$ip   = (PXRequest::GetRemoteAddr() !== null) ? PXRequest::GetRemoteAddr() : 'UNKNOWN';
 		return array($type, $source, $user, $ip, $description);
 	}

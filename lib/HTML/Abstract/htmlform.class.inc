@@ -342,7 +342,7 @@ class NLAbstractHTMLForm {
 		$html .= '<input type="hidden" name="'.$name.'[filename]" id="'.$name.'_filename" value="'.$value['filename'].'">';
 		$html .= '<input type="hidden" name="'.$name.'[dir]"      id="'.$name.'_dir"      value="'.$value['dir'].'">';
 
-		$html .= '<input id="'.$name.'_fullpath" type="text" value="'.(is_null($value['filename']) ? '' : $value['dir'].'/'.$value['filename']).'" readonly/>';
+		$html .= '<input id="'.$name.'_fullpath" type="text" value="'.(is_null($value['filename']) ? '' : $value['dir'].$value['filename']).'" readonly/>';
 		$html .= '<span>файл</span>';
 
 		$html .= '<input id="'.$name.'_size"     type="text" value="'.(is_null($value['filename']) ? '' : $value['size']).'"                       readonly name="'.$name.'[size]" />';
@@ -352,7 +352,7 @@ class NLAbstractHTMLForm {
 
 		if (!is_null($value['filename'])) {
 			$html .= '<br>';
-			$html .= '<button onclick="javascript: window.open(\'/\'+this.form.'.$name.'_fullpath.value)">просмотр</button>';
+			$html .= '<button onclick="javascript: window.open(this.form.'.$name.'_fullpath.value)">просмотр</button>';
 			$html .= '<button onclick="return UnLinkFile(\''.$name.'\', 1);"                             >отвязать</button>';
 		}
 
