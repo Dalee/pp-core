@@ -1,16 +1,16 @@
 <?php
-class PXEngineAdminIndex extends PXEngineInterface {
+class PXEngineAdminIndex extends PXEngine {
 	var $menu;
 
 	function __construct() {
 		parent::__construct();
 
-		$types = PXEngineObjects::getApp()->types;
-		PXEngineObjects::setLayout(new PXAdminHTMLLayout('index', $types));
+		$types = PXRegistry::getApp()->types;
+		PXRegistry::setLayout(new PXAdminHTMLLayout('index', $types));
 	}
 
 	function initModules() {
-		$this->modules = PXEngineObjects::getApp()->getAvailableModules(PXEngineObjects::getUser()->level);
+		$this->modules = PXRegistry::getApp()->getAvailableModules(PXRegistry::getUser()->level);
 	}
 
 	function initMenu() {
@@ -28,23 +28,23 @@ class PXEngineAdminIndex extends PXEngineInterface {
 
 	function showAuthForm() {
 		$auth = $this->modules['auth']->getModule();
-		$auth->adminIndex(PXEngineObjects::getApp(), PXEngineObjects::getRequest(), PXEngineObjects::getUser(), PXEngineObjects::getDb(), PXEngineObjects::getLayout());
+		$auth->adminIndex();
 	}
 
 	function fillLayout($area) {
-		$layout = PXEngineObjects::getLayout();
+		$layout = PXRegistry::getLayout();
 
 		$layout->setLogoutForm('?area=exit');
 		$layout->setMenu($this->menu, $area);
 		$layout->setSimpleInnerLayout(array('25%', '75%'), array('100%', ''));
 
 		$layout->setGetVarToSave('area', $area);
-		$layout->setGetVarToSave('sid', PXEngineObjects::getRequest()->getSid());
+		$layout->setGetVarToSave('sid', PXRegistry::getRequest()->getSid());
 	}
 
 	function checkArea($area) {
 		if (!isset($this->modules[$area])) {
-			$layout = PXEngineObjects::getLayout();
+			$layout = PXRegistry::getLayout();
 
 			$layout->setSimpleInnerLayout(array('100%'), array('100%'));
 			$layout->assignError('INNER.0.0', 'Некорректный параметр <em>area</em> = <em>'.strip_tags($area).'</em>');
@@ -60,11 +60,11 @@ class PXEngineAdminIndex extends PXEngineInterface {
 
 		$this->initMenu();
 
-		if (!PXEngineObjects::getUser()->isAdmin()) {
+		if (!PXRegistry::getUser()->isAdmin()) {
 			return $this->showAuthForm();
 		}
 
-		$area = PXEngineObjects::getRequest()->getArea(current(array_keys($this->menu)));
+		$area = PXRegistry::getRequest()->getArea(current(array_keys($this->menu)));
 		$this->fillLayout($area);
 
 		if($area == 'exit') {
@@ -75,17 +75,16 @@ class PXEngineAdminIndex extends PXEngineInterface {
 			return;
 		}
 
-		$instance = $this->modules[$area]->getModule()->indexAdmin();
-		//$instance->adminIndex(PXEngineObjects::getApp(), PXEngineObjects::getRequest(), PXEngineObjects::getUser(), PXEngineObjects::getDb(), PXEngineObjects::getLayout());
+		$instance = $this->modules[$area]->getModule()->adminIndex();
 
 		NLProfiler('RUN MODULES', 'END');
 	}
 
 	function html() {
-		$charset = PXEngineObjects::getApp()->GetProperty('OUTPUT_CHARSET', DEFAULT_CHARSET);
+		$charset = PXRegistry::getApp()->GetProperty('OUTPUT_CHARSET', DEFAULT_CHARSET);
 
-		PXEngineObjects::getDb()->close();
-		PXEngineObjects::getLayout()->flush($charset);
+		PXRegistry::getDb()->close();
+		PXRegistry::getLayout()->flush($charset);
 	}
 }
 ?>

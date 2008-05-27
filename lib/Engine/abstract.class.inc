@@ -1,6 +1,4 @@
 <?php
-require_once 'objects.class.inc';
-
 require_once 'index.class.inc';
 require_once 'action.class.inc';
 require_once 'json.class.inc';
@@ -10,21 +8,21 @@ require_once 'Admin/index.class.inc';
 require_once 'Admin/popup.class.inc';
 require_once 'Admin/action.class.inc';
 
-class PXEngineInterface {
+abstract class PXEngine {
 	var $container;
 	var $modules;
 
 	function __construct() {     // Инициализация основных объектов приложения
 		NLProfiler('INIT', 'BEGIN');
 
-		$user = PXEngineObjects::getUser();
+		$user = PXRegistry::getUser();
 
-		$user->setDb(PXEngineObjects::getDb());
-		$user->setApp(PXEngineObjects::getApp());
-		$user->setRequest(PXEngineObjects::getRequest());
+		$user->setDb(PXRegistry::getDb());
+		$user->setApp(PXRegistry::getApp());
+		$user->setRequest(PXRegistry::getRequest());
 		$user->checkAuth();
 
-		PXEngineObjects::getDb()->LoadDirectoriesAutomatic(PXEngineObjects::getApp()->directory);
+		PXRegistry::getDb()->LoadDirectoriesAutomatic(PXRegistry::getApp()->directory);
 
 		$this->initContainer();
 		$this->initModules();

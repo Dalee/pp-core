@@ -1,6 +1,6 @@
 <?
-class PXEngineObjects {
-	private static $app, $db, $user, $request, $layout;
+class PXRegistry {
+	private static $app, $db, $user, $request, $layout, $vars, $types;
 
 	public static function &getApp() {
 		if(!is_object(self::$app) || is_null(self::$app)) {
@@ -36,15 +36,44 @@ class PXEngineObjects {
 
 	public static function &getLayout() {
 		if(!is_object(self::$layout) || is_null(self::$layout)) {
-//			self::$layout = new PXUserHTMLLayout();
 			self::$layout = new PXLayoutNull();
 		}
 
 		return self::$layout;
 	}
 
+	public static function &getTypes($typeName=null) {
+		if(!is_array(self::$types) || is_null(self::$types)) {
+			self::$types =& self::getApp()->types;
+		}
+
+		if(!is_null($typeName)) {
+			if(isset(self::$types[$typeName])) {
+				return self::$types[$typeName];
+
+			} else {
+				$nullType = null;
+				return $nullType;
+			}
+		}
+
+		return self::$types;
+	}
+
 	public static function setLayout(&$layout) {
 		self::$layout =& $layout;
+	}
+
+	public static function setVar($varName, &$varValue) {
+		self::$vars[$varName] =& $varValue;
+	}
+
+	public static function &getVar($varName, $defaultValue=null) {
+		if(isset(self::$vars[$varName])) {
+			return self::$vars[$varName];
+		}
+
+		return $defaultValue;
 	}
 }
 ?>

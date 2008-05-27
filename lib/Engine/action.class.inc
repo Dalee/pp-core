@@ -1,5 +1,6 @@
 <?
-class PXEngineAction extends PXEngineInterface {
+
+class PXEngineAction extends PXEngine {
 	var $nextLocation;
 
 	function initLayout() {

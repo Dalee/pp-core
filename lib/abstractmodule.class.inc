@@ -1,70 +1,19 @@
 <?
-class PXEngineAPI {
-	var $area;
-	var $settings;
-
+class PXAbstractModule {
 	function __construct($area, $settings) {
-		$this->area     = $area;
-		$this->settings = $settings;
+		$this->area       = $area;
+		$this->settings   = $settings;
 
-		$this->app      = PXEngineObjects::getApp();
-		$this->request  = PXEngineObjects::getRequest();
-		$this->user     = PXEngineObjects::getUser();
-		$this->db       = PXEngineObjects::getDb();
-		$this->layout   = PXEngineObjects::getLayout();
-	}
+		$this->app        = PXRegistry::getApp();
+		$this->request    = PXRegistry::getRequest();
+		$this->user       = PXRegistry::getUser();
+		$this->db         = PXRegistry::getDb();
+		$this->layout     = PXRegistry::getLayout();
+		$this->types      = PXRegistry::getTypes();
 
-	function index() {
-	}
-
-	function action() {
-	}
-
-	function json() {
-	}
-
-	function indexAdmin() {
-		$this->layout->assignError('INNER.1.0', 'Функция <em>indexAdmin</em> данного модуля не определена');
-	}
-
-	function actionAdmin() {
-		FatalError("Функция <EM>actionAdmin</EM> данного модуля не определена");
-	}
-
-	function popupAdmin() {
-		$this->layout->assignError('OUTER.CONTENT', 'Функция <em>popupAdmin</em> данного модуля не определена');
-	}
-}
-
-class PXEngineOldAPI extends PXEngineAPI {
-	function index() {
-		$this->userIndex($this->app, $this->request, $this->user, $this->db, $this->layout);
-	}
-
-	function action() {
-		$this->userAction($this->app, $this->request, $this->user, $this->db);
-	}
-
-	function json() {
-		$this->userJson($this->app, $this->request, $this->user, $this->db);
-	}
-
-	function indexAdmin() {
-		$this->adminIndex($this->app, $this->request, $this->user, $this->db, $this->layout);
-	}
-
-	function actionAdmin() {
-		$this->adminAction($this->app, $this->request, $this->user, $this->db);
-	}
-
-	function popupAdmin() {
-		$this->adminPopup($this->app, $this->request, $this->user, $this->db, $this->layout);
-	}
-}
-
-class PXAbstractModule extends PXEngineOldAPI {
-	function PXAbstractModule($area, $settings) {
-		parent::__construct($area, $settings);
+		$this->struct     = PXRegistry::getVar('struct');
+		$this->content    = PXRegistry::getVar('content');
+		$this->subContent = PXRegistry::getVar('subContent');
 	}
 
 	function buildAdminUrl() {
@@ -75,22 +24,25 @@ class PXAbstractModule extends PXEngineOldAPI {
 		return str_replace('action.phtml', '', $_SERVER['SCRIPT_URL']).'?area='.$this->area;
 	}
 
-	function adminIndex(&$app, &$request, &$user, &$db, &$layout) {
+	function adminIndex() {
+		$this->layout->assignError('INNER.1.0', 'Функция <em>adminIndex</em> данного модуля не определена');
 	}
 
-	function adminPopup(&$app, &$request, &$user, &$db, &$layout) {
+	function adminPopup() {
+		$this->layout->assignError('OUTER.CONTENT', 'Функция <em>adminPopup</em> данного модуля не определена');
 	}
 
-	function adminAction(&$app, &$request, &$user, &$db) {
+	function adminAction() {
+		FatalError("Функция <em>adminAction</em> данного модуля не определена");
 	}
 
-	function userIndex(&$app, &$request, &$user, &$db, &$layout, &$tree, &$objects, &$subObjects, &$references, &$heap, $currentSid, $currentCid, $currentCtype, $currentSCid, $currentSCtype, $rootId, $pathId) {
+	function userIndex() {
 	}
 
-	function userAction(&$app, &$request, &$user, &$db) {
+	function userAction() {
 	}
 
-	function userJson(&$app, &$request, &$user, &$db) {
+	function userJson() {
 	}
 }
 

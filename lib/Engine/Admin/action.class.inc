@@ -1,5 +1,5 @@
 <?php
-class PXEngineAdminAction extends PXEngineInterface {
+class PXEngineAdminAction extends PXEngine {
 	var $nextLocation;
 
 	function initLayout() {
@@ -21,7 +21,7 @@ class PXEngineAdminAction extends PXEngineInterface {
 		$module = $this->modules[$this->area];
 
 		$instance = $module->getModule();
-		$this->nextLocation = $instance->adminAction($this->app, $this->request, $this->user, $this->db);
+		$this->nextLocation = $instance->adminAction();
 
 		NLProfiler('RUN MODULES', 'END');
 	}

@@ -1,142 +1,53 @@
-<?
-class PXPage {
-	var $sId;
-	var $cId;
-	var $scId;
-
-	var $sType;
-	var $cType;
-	var $scType;
-
-	var $rootId;
-	var $pathId;
-
-	function PXPage () {
-		$this->sId    = -1;
-		$this->cId    = -1;
-		$this->scId   = -1;
-
-		$this->sType  = -1;
-		$this->cType  = -1;
-		$this->scType = -1;
-
-		$this->pathId = array();
-		$this->rootId = -1;
-	}
-
-	function setPathId($pathId) {
-		if(!is_array($pathId)) {
-			FatalError('pathId должен быть массивом');
-		}
-
-		$this->pathId = $pathId;
-	}
-
-	function setSId($id) {
-		if(!is_numeric($id)) {
-			FatalError('sId должен быть числом');
-		}
-
-		$this->sId = $id;
-	}
-
-	function setRootId($id) {
-		if(!is_numeric($id)) {
-			FatalError('rootId должен быть числом');
-		}
-
-		$this->rootId = $id;
-	}
-
-	function setCId($id) {
-		if(!is_numeric($id)) {
-			FatalError('cId должен быть числом');
-		}
-
-		$this->cId = $id;
-	}
-
-	function setCType($type) {
-		if(!is_string($type)) {
-			FatalError('cType должен быть строкой');
-		}
-
-		$this->cType = $type;
-	}
-
-	function setSType($type) {
-		if(!is_string($type)) {
-			FatalError('sType должен быть строкой');
-		}
-
-		$this->sType = $type;
-	}
-}
-
+<?php
 class PXModuleMain extends PXAbstractModule {
-	var $rootFormatId;
+	private $rootFormatId;
 
-	function PXModuleMain($area, $settings) {
-		$this->PXAbstractModule($area, $settings);
+	function __construct($area, $settings) {
+		parent::__construct($area, $settings);
 		$this->rootFormatId = $settings['rootFormat'];
 	}
 
-	function userIndex($app, $request, $user, $db, $layout, &$tree,
-		&$objects, &$subObjects, &$references, &$heap, &$currentSid, &$currentCid,
-		&$currentCtype, &$currentSCid, &$currentSCtype, &$rootId, &$pathId,
-		&$urlFile, &$error) {
-
-		$page          = new PXPage();
-
-		$this->app     = $app;
-		$this->db      = $db;
-		$this->user    = $user;
-		$this->request = $request;
-		$this->page    = $page;
-
+	function userIndex() {
 		$urlFile = $this->request->GetFile();
 		$urlPart = $this->request->GetPart();
 
+
 		// Loading struct tree
-		NLProfiler("load tree", "BEGIN");
+		NLProfiler('load struct', 'BEGIN');
 		$this->_loadTree();
-		NLProfiler("load tree", "END");
+		NLProfiler('load struct', 'END');
 
-		// Loading objects
-		NLProfiler("load objects", "BEGIN");
-		$objects = $this->_loadObjects($urlFile);
-		NLProfiler("load objects", "END");
 
-		// Loading subobjects
-		NLProfiler("load subobjects", "BEGIN");
-		$subObjects = $this->_loadSubObjects($urlPart, $objects);
-		NLProfiler("load subobjects", "END");
+		// Loading content objects
+		NLProfiler('load content', 'BEGIN');
+		$this->struct->loadChilds($this->content, $urlFile);
+		NLProfiler('load content', 'END');
 
-		// return vars by references
-		$currentSid    = $page->sId;
-		$currentCid    = $page->cId;
-		$currentSCid   = $page->scId;
 
-		$currentCtype  = $page->cType;
-		$currentSCtype = $page->scType;
+		// Loading subcontent objects
+		NLProfiler('load subcontent', 'BEGIN');
+		$this->content->loadChilds($this->subContent, $urlPart);
+		NLProfiler('load subcontent', 'END');
 
-		$pathId        = $page->pathId;
-		$rootId        = $page->rootId;
-		$tree	       = $this->tree;
 
 		// Loading objects references
-		NLProfiler("Loading references", "BEGIN");
-		$this->_loadReferences($this->rootFormatId, $currentSid,  $references, $heap);
-		$this->_loadReferences($this->page->cType,  $currentCid,  $references, $heap);
-		$this->_loadReferences($this->page->scType, $currentSCid, $references, $heap);
-		$this->_loadReferences('suser',             $user->id,    $references, $heap);
-		NLProfiler("Loading references", "END");
+		NLProfiler('Loading references', 'BEGIN');
+		$this->struct->getLinks();
+		$this->content->getLinks();
+		$this->subContent->getLinks();
+		// $this->user->getLinks(); -- what we must do ???
+		NLProfiler('Loading references', 'END');
 
+
+		$this->check404error($urlFile, $urlPart);
+	}
+
+	function check404error($urlFile, $urlPart) {
 		// Определение кода ошибки
 		switch(true) {
-			case ($currentSid == -1):
-			case ($urlFile != 'index.html' && $currentCid  == -1):
-			case ($urlPart != ''           && $currentSCid == -1):
+			case (!$this->struct->hasCurrent()):
+			case ($urlFile != 'index.html' && !$this->content->hasCurrent()):
+			case ($urlPart != ''           && !$this->subContent->hasCurrent()):
 				$error = 404;
 				break;
 
@@ -144,6 +55,7 @@ class PXModuleMain extends PXAbstractModule {
 				$error = 0;
 				break;
 		}
+		PXRegistry::setVar('error', $error);
 	}
 
 	function _initAliases() {
@@ -162,6 +74,7 @@ class PXModuleMain extends PXAbstractModule {
 
 	function _findDomainAlias() {
 		$host =  $this->request->getHttpHost();
+		$tree = $this->struct->tree;
 
 		// находим соответствие между хостом, на который мы зашли
 		// и корнем в дереве, который может быть нам нужен
@@ -177,8 +90,8 @@ class PXModuleMain extends PXAbstractModule {
 
 		// если алиас "не нашли", может быть нужный хост есть среди корней?
 		if($hostAlias == 'default') {
-			foreach($this->tree->levels[1] as $_rootId) {
-				if($this->tree->leafs[$_rootId]->content['pathname'] === $host) {
+			foreach($tree->levels[1] as $_rootId) {
+				if($tree->leafs[$_rootId]->content['pathname'] === $host) {
 					$hostAlias = $host;
 					break;
 				}
@@ -186,9 +99,9 @@ class PXModuleMain extends PXAbstractModule {
 		}
 
 		// находим нужный корень и правим его pathname
-		foreach($this->tree->levels[1] as $_rootId) {
-			if($this->tree->leafs[$_rootId]->content['pathname'] === $hostAlias) {
-				$this->tree->leafs[$_rootId]->content['pathname'] = $host;
+		foreach($tree->levels[1] as $_rootId) {
+			if($tree->leafs[$_rootId]->content['pathname'] === $hostAlias) {
+				$tree->leafs[$_rootId]->content['pathname'] = $host;
 				break;
 			}
 		}
@@ -196,142 +109,34 @@ class PXModuleMain extends PXAbstractModule {
 
 	function _findTreeContext() {
 		// "пустой" проект
-		if(!isset($this->tree->levels[1])) {
+		if(!isset($this->struct->tree->levels[1])) {
 			return;
 		}
-
-		$tree = $this->tree;
 
 		// Guessing context
 		$this->_findDomainAlias();
 		$urlPath = $this->request->getHostAndDir();
-
-		$pathId  = $tree->getIdArrayByPath('pathname', $urlPath);
-
-		$this->page->setPathId($pathId);
-		$this->page->setSId(end($pathId));
-		$this->page->setRootId(reset($pathId));
+		$this->struct->findPath($urlPath);
 	}
 
 	function _loadTree() {
-		$tree = $this->db->getObjects($this->db->types[$this->rootFormatId], true, DB_SELECT_TREE);
-
-		// Dirty hack!!!
-		// Fix tree references
-		foreach ($tree->leafs as $k => $l) {
-			$tree->leafs[$k]->tree = $tree;
-		}
-
-		$this->tree = $tree;
+		$this->struct->format = $this->app->types[$this->rootFormatId];
+		$this->struct->load();
 		$this->_findTreeContext();
 	}
 
-	function _loadChilds($allowed, $childs, &$currentId, &$currentType, $parent, $pathName) {
-		if (!count($allowed)) {
-			return array();
-		}
-
-		foreach ($allowed as $type=>$behaviour) {
-			if(!isset($this->app->types[$type])) {
-				continue;
-			}
-
-			$format = $this->app->types[$type];
-
-			switch ($behaviour) {
-				case PP_CHILDREN_FETCH_ALL:
-					$childs[$type] = $this->db->getObjectsByParent($format, true, $parent);
-
-					foreach ($childs[$type] as $o) {
-						if (isset($format->fields['pathname']) and $o['pathname'] == $pathName) {
-							$currentId  = $o['id'];
-							$currentType = $type;
-							break;
-						}
-					}
-					break;
-
-				case PP_CHILDREN_FETCH_SELECTED:
-					if (isset($format->fields['pathname'])) {
-						$tmp = $this->db->getObjectsByFieldLimited($format, true, array('pathname' => $pathName, 'parent' => $parent), 'IGNORED', 1, 0);
-
-						if (count($tmp)) {
-							$childs[$type] = $tmp;
-
-							$tmpId = current(array_keys($childs[$type]));
-
-							$currentId   = $tmpId;
-							$currentType = $type;
-						}
-					}
-					break;
-
-				case PP_CHILDREN_FETCH_NONE:
-					break;
-			}
-		}
-
-		return $childs;
-	}
-
-	function _loadObjects($pathname) {
-		if(!isset($this->tree->leafs[$this->page->sId])) {
-			return;
-		}
-
-		//check me!
-
-		$current = $this->tree->leafs[$this->page->sId];
-		$allowed = $this->app->getAllowedChilds($this->rootFormatId, $current);
-		$objects = array();
-
-		return $this->_loadChilds($allowed, $objects, $this->page->cId, $this->page->cType, $this->page->sId, $pathname);
-	}
-
-	function _loadSubObjects($pathname, $objects) {
-		$currentCtype = $this->page->cType;
-		$currentCid   = $this->page->cId;
-
-		if(!isset($objects[$currentCtype][$currentCid])) {
-			return;
-		}
-
-		$current =& $objects[$currentCtype][$currentCid];
-
-		$allowed    =  $this->app->getAllowedChilds($this->page->cType, $current);
-		$subObjects = array();
-
-		return $this->_loadChilds($allowed, $subObjects, $this->page->scId, $this->page->scType, $this->page->cId, $pathname);
-	}
-
-	function _loadReferences($type, $id, &$references, &$heap) {
-		$app = $this->app;
-		$db  = $this->db;
-
-		if(!is_numeric($id) || $id === -1) {
-			return;
-		}
-
-		if(!isset($app->types[$type]->references)) {
-			return;
-		}
-
-		foreach ($app->types[$type]->references as $ref) {
-			if($ref->load == 'manual') {
-				continue;
-			}
-
-			$references[$ref->name] = $db->getLinks($ref, $type, $id);
-			$heap[$ref->getOther($type)] = $db->getObjectsByIdArray($app->types[$ref->getOther($type)], true, array_keys($references[$ref->name]));
-		}
-	}
-
-	function adminIndex(&$app, &$request, &$user, &$db, &$layout) {
-		if (!isset($app->types[$this->rootFormatId])) {
+	function adminIndex() {
+		if (!isset($this->app->types[$this->rootFormatId])) {
 			FatalError("Некорректный тип данных");
 		}
+
+		$app     =& $this->app;
+		$db      =& $this->db;
+		$request =& $this->request;
+		$layout  =& $this->layout;
+
 		$rootFormat = &$app->types[$this->rootFormatId];
-		$tree       = $db->GetObjects($rootFormat, null, DB_SELECT_TREE);
+		$tree       = $db->getObjects($rootFormat, null, DB_SELECT_TREE);
 		$rqSid      = $request->GetSid();
 
 		if ($rqSid != null && isset($tree->leafs[$rqSid])) {

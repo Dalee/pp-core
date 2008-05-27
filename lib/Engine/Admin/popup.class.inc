@@ -29,7 +29,7 @@ class PXEngineAdminPopup extends PXEngineAdminIndex {
 		$module = $this->modules[$this->area];
 		$instance = $module->getModule();
 
-		$this->layout->append('OUTER.CONTENT', $instance->adminPopup($this->app, $this->request, $this->user, $this->db, $this->layout));
+		$this->layout->append('OUTER.CONTENT', $instance->adminPopup());
 
 		NLProfiler('RUN MODULES', 'END');
 	}

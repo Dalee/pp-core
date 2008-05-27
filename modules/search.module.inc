@@ -1,6 +1,6 @@
 <?php
-class PXModuleSearch extends PXEngineAPI {
-	function indexAdmin() {
+class PXModuleSearch extends PXAbstractModule {
+	function adminIndex() {
 		$word = $this->request->getVar('word');
 
 		$this->layout->setSimpleInnerLayout(array('100%'), array('100%'));

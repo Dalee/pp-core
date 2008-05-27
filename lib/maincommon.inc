@@ -22,6 +22,7 @@ require_once 'database.class.inc';
 require_once 'request.classes.inc';
 require_once 'user.classes.inc';
 
+require_once 'registry.class.inc';
 require_once 'fieldutil.class.inc';
 require_once 'displaytype.classes.inc';
 require_once 'storagetype.classes.inc';
@@ -36,6 +37,6 @@ require_once 'logger.class.inc';
 require_once 'moduleloader.class.inc';
 require_once 'HTML/interface.class.inc';
 
-require_once 'Engine/interface.class.inc';
+require_once 'Engine/abstract.class.inc';
 
 ?>

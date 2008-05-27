@@ -119,9 +119,9 @@ class PXModuleLoader {
 			}
 
 			$moduleDescription = $app->modules[$m['module']];
-            $module = $moduleDescription->getModule();
-			
-            $debugKey = 'MODULE: '.$moduleDescription->class;
+			$module = $moduleDescription->getModule();
+
+			$debugKey = 'MODULE: '.$moduleDescription->class;
 			NLProfiler($debugKey, 'BEGIN');
 
 			switch($methodType) {

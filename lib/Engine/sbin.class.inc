@@ -1,5 +1,5 @@
 <?
-class PXEngineSbin extends PXEngineInterface {
+class PXEngineSbin extends PXEngine {
 	var $result;
 
 	function initLayout() {
