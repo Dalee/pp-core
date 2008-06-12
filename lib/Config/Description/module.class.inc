@@ -1,7 +1,7 @@
 <?
 /**
- * ëÌÁÓÓ - ÈÒÁÎÉÌÉÝÅ ÉÎÆÏÒÍÁÃÉÉ Ï ÍÏÄÕÌÅ.
- * óÔÏÉÔÓÑ ÐÏ etc/modules.xml /modules/module.
+ * Класс - хранилище информации о модуле.
+ * Стоится по etc/modules.xml /modules/module.
  *
  * @subpackage Application
  */
@@ -15,20 +15,11 @@ class PXModuleDescription {
 	var $hidetab     = NULL;
 	var $trigger     = NULL;
 
-	/**
-	 * ÷ÏÚ×ÒÁÝÁÅÔ ÜËÚÅÍÐÌÑÒ ÏÂßÅËÔÁ ÍÏÄÕÌÑ
-	 *
-	 */
 	public function getModule() {
 		$this->load();
 		return new $this->class($this->name, $this->settings);
 	}
 
-	/**
-	 * ÷ÏÚ×ÒÁÝÁÅÔ ÜËÚÅÍÐÌÑÒ ÏÂßÅËÔÁ ÍÏÄÕÌÑ
-	 *
-	 * @deprecated
-	 */
 	public function getInstance() {
 		throw new DeprecatedException(
 			"PXModuleDescription->getInstance() is deprecated. Use PXModuleDescription->getModule()");
@@ -37,7 +28,7 @@ class PXModuleDescription {
 
 
 	/**
-	 * ðÏÄËÌÀÞÁÅÔ ÆÁÊÌ ÍÏÄÕÌÑ, ÐÒÏ×ÅÒÑÅÔ ÓÎÁÞÁÌÁ local/modules, ÚÁÔÅÍ lib/modules
+	 * Подключает файл модуля, проверяет сначала local/modules, затем lib/modules
 	 */
 	private function load() {
 		$file = substr(strtolower($this->class), 8).".module.inc";
@@ -48,7 +39,7 @@ class PXModuleDescription {
 
 		foreach($path_to_check as $path) {
 			$full_path = BASEPATH . DIRECTORY_SEPARATOR . $path . DIRECTORY_SEPARATOR .
-						 $modules_dirname . DIRECTORY_SEPARATOR . $file;
+			 		$modules_dirname . DIRECTORY_SEPARATOR . $file;
 			
 			if (file_exists($full_path)) {
 				include_once $full_path;

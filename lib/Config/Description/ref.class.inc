@@ -1,11 +1,10 @@
 <?php
 /**
- * Ã«ÃŒÃÃ“Ã“ ÃÃÃ‰Ã“ÃÃŽÃ‰Ã… Ã“Ã“Ã™ÃŒÃÃ‹ ÃÃ…Ã–Ã„Ã• Ã”Ã‰ÃÃÃÃ‰ Ã„ÃÃŽÃŽÃ™Ãˆ.
- * Ã“Ã”ÃÃ‰Ã”Ã“Ã‘ ÃÃ etc/datatype.xml /model/references/reference/
+ * ëÌÁÓÓ ÏÐÉÓÁÎÉÅ ÓÓÙÌÏË ÍÅÖÄÕ ÔÉÐÁÍÉ ÄÁÎÎÙÈ.
+ * ÓÔÏÉÔÓÑ ÐÏ etc/datatype.xml /model/references/reference/
  *
  * @subpackage Application
  */
-
 class PXRefDescription {
 	var $name       = NULL;
 	var $from       = NULL;

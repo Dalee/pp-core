@@ -1,10 +1,13 @@
 <?php
 /**
- * Ã«ÃŒÃÃ“Ã“ - ÃˆÃ’ÃÃŽÃ‰ÃŒÃ‰ÃÃ….
- * Ã³Ã”ÃÃ‰Ã”Ã“Ã‘ ÃÃ etc/datatype.xml /model/datatypes/datatype
+ * ëÌÁÓÓ - ÈÒÁÎÉÌÉÝÅ.
+ * óÔÏÉÔÓÑ ÐÏ etc/datatype.xml /model/datatypes/datatype/attribute
+ *
+ * @see PXTypeDescription
  *
  * @subpackage Application
  */
+
 class PXTypeDescription {
 	var $id            = NULL;
 	var $title         = NULL;
