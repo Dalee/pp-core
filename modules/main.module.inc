@@ -11,12 +11,12 @@ class PXModuleMain extends PXAbstractModule {
 		$urlFile = $this->request->GetFile();
 		$urlPart = $this->request->GetPart();
 
-
 		// Loading struct tree
 		NLProfiler('load struct', 'BEGIN');
 		$this->_loadTree();
 		NLProfiler('load struct', 'END');
 
+		$this->struct->load();
 
 		// Loading content objects
 		NLProfiler('load content', 'BEGIN');
@@ -37,7 +37,6 @@ class PXModuleMain extends PXAbstractModule {
 		$this->subContent->getLinks();
 		// $this->user->getLinks(); -- what we must do ???
 		NLProfiler('Loading references', 'END');
-
 
 		$this->check404error($urlFile, $urlPart);
 	}
@@ -70,6 +69,24 @@ class PXModuleMain extends PXAbstractModule {
 		}
 
 		return $aliases;
+	}
+
+	function _loadTree() {
+		$this->struct->format = $this->app->types[$this->rootFormatId];
+		$this->struct->load();
+		$this->_findTreeContext();
+	}
+
+	function _findTreeContext() {
+		// "пустой" проект
+		if(!isset($this->struct->tree->levels[1])) {
+			return;
+		}
+
+		// Guessing context
+		$this->_findDomainAlias();
+		$urlPath = $this->request->getHostAndDir();
+		$this->struct->findPath($urlPath);
 	}
 
 	function _findDomainAlias() {
@@ -105,24 +122,6 @@ class PXModuleMain extends PXAbstractModule {
 				break;
 			}
 		}
-	}
-
-	function _findTreeContext() {
-		// "пустой" проект
-		if(!isset($this->struct->tree->levels[1])) {
-			return;
-		}
-
-		// Guessing context
-		$this->_findDomainAlias();
-		$urlPath = $this->request->getHostAndDir();
-		$this->struct->findPath($urlPath);
-	}
-
-	function _loadTree() {
-		$this->struct->format = $this->app->types[$this->rootFormatId];
-		$this->struct->load();
-		$this->_findTreeContext();
 	}
 
 	function adminIndex() {

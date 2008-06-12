@@ -1,4 +1,4 @@
-<?
+<?php
 class PXEngineJSON extends PXEngine {
 	var $result;
 

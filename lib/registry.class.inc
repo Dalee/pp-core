@@ -28,7 +28,7 @@ class PXRegistry {
 
 	public static function &getUser() {
 		if(!is_object(self::$user) || is_null(self::$user)) {
-			self::$user = new PXUser();
+			self::$user = new PXUserAuthorized();
 		}
 
 		return self::$user;

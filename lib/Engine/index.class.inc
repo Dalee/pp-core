@@ -1,6 +1,4 @@
-<?
-include_once 'objects.class.inc';
-
+<?php
 class PXEngineIndex extends PXEngine {
 	function __construct() {     // éÎÉÃÉÁÌÉÚÁÃÉÑ ÏÓÎÏ×ÎÙÈ ÏÂßÅËÔÏ× ÐÒÉÌÏÖÅÎÉÑ
 		parent::__construct();

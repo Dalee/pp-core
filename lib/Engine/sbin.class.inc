@@ -1,4 +1,4 @@
-<?
+<?php
 class PXEngineSbin extends PXEngine {
 	var $result;
 

@@ -1,5 +1,4 @@
-<?
-
+<?php
 class PXEngineAction extends PXEngine {
 	var $nextLocation;
 

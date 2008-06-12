@@ -1,4 +1,4 @@
-<?
+<?php
 class PXEngineAdminPopup extends PXEngineAdminIndex {
 	function initLayout() {
 		$this->layout = new PXAdminHTMLLayout('popup', $this->app->types);

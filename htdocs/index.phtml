@@ -1,17 +1,11 @@
 <?php
 	include_once '../lib/mainuser.inc';
-
 	$engine = new PXEngineIndex();
 
 	$engine->profilerStart();
-
 	$engine->runModules();
-
 	$engine->fillLayout();
-
 	$engine->sendHeaders();
-
 	$engine->profilerStop();
-
 	$engine->html();
 ?>
