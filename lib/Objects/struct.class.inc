@@ -25,19 +25,19 @@ class PXStruct extends PXObjects {
 	}
 
 	function _findRoot($host) {
-		// "ÃÃ•Ã“Ã”ÃÃŠ" ÃÃ’ÃÃ…Ã‹Ã”
+		// "ÐÕÓÔÏÊ" ÐÒÏÅËÔ
 		if(!isset($this->tree->levels[1])) {
 			return;
 		}
 
-		// ÃŽÃÃˆÃÃ„Ã‰Ã Ã“ÃÃÃ”Ã—Ã…Ã”Ã“Ã”Ã—Ã‰Ã… ÃÃ…Ã–Ã„Ã• ÃˆÃÃ“Ã”ÃÃ, ÃŽÃ Ã‹ÃÃ”ÃÃ’Ã™ÃŠ ÃÃ™ ÃšÃÃ›ÃŒÃ‰
-		// Ã‰ Ã‹ÃÃ’ÃŽÃ…Ã Ã— Ã„Ã…Ã’Ã…Ã—Ã…, Ã‹ÃÃ”ÃÃ’Ã™ÃŠ ÃÃÃ–Ã…Ã” Ã‚Ã™Ã”Ã˜ ÃŽÃÃ ÃŽÃ•Ã–Ã…ÃŽ
+		// ÎÁÈÏÄÉÍ ÓÏÏÔ×ÅÔÓÔ×ÉÅ ÍÅÖÄÕ ÈÏÓÔÏÍ, ÎÁ ËÏÔÏÒÙÊ ÍÙ ÚÁÛÌÉ
+		// É ËÏÒÎÅÍ × ÄÅÒÅ×Å, ËÏÔÏÒÙÊ ÍÏÖÅÔ ÂÙÔØ ÎÁÍ ÎÕÖÅÎ
 		$hostAlias = 'default';
 		if(isset($this->aliases[$host])) {
 			$hostAlias = $this->aliases[$host];
 		}
 
-		// Ã…Ã“ÃŒÃ‰ ÃÃŒÃ‰ÃÃ“ "ÃŽÃ… ÃŽÃÃ›ÃŒÃ‰", ÃÃÃ–Ã…Ã” Ã‚Ã™Ã”Ã˜ ÃŽÃ•Ã–ÃŽÃ™ÃŠ ÃˆÃÃ“Ã” Ã…Ã“Ã”Ã˜ Ã“Ã’Ã…Ã„Ã‰ Ã‹ÃÃ’ÃŽÃ…ÃŠ?
+		// ÅÓÌÉ ÁÌÉÁÓ "ÎÅ ÎÁÛÌÉ", ÍÏÖÅÔ ÂÙÔØ ÎÕÖÎÙÊ ÈÏÓÔ ÅÓÔØ ÓÒÅÄÉ ËÏÒÎÅÊ?
 		if($hostAlias == 'default') {
 			foreach($this->tree->levels[1] as $_rootId) {
 				if($this->tree->leafs[$_rootId]->content['pathname'] === $host) {
@@ -47,7 +47,7 @@ class PXStruct extends PXObjects {
 			}
 		}
 
-		// ÃŽÃÃˆÃÃ„Ã‰Ã ÃŽÃ•Ã–ÃŽÃ™ÃŠ Ã‹ÃÃ’Ã…ÃŽÃ˜ Ã‰ ÃÃ’ÃÃ—Ã‰Ã Ã…Ã‡Ã pathname
+		// ÎÁÈÏÄÉÍ ÎÕÖÎÙÊ ËÏÒÅÎØ É ÐÒÁ×ÉÍ ÅÇÏ pathname
 		foreach($this->tree->levels[1] as $_rootId) {
 			if($this->tree->leafs[$_rootId]->content['pathname'] === $hostAlias) {
 				$this->tree->leafs[$_rootId]->content['pathname'] = $host;
