@@ -1,12 +1,18 @@
 <?php
 class PXEngineIndex extends PXEngine {
 	function __construct() {     // éÎÉÃÉÁÌÉÚÁÃÉÑ ÏÓÎÏ×ÎÙÈ ÏÂßÅËÔÏ× ÐÒÉÌÏÖÅÎÉÑ
+		NLProfiler('TOTAL', 'BEGIN');
+
 		parent::__construct();
 		PXRegistry::setLayout(new PXUserHTMLLayout());
 
 		PXRegistry::setVar('struct',     new PXStruct());
 		PXRegistry::setVar('content',    new PXContent());
 		PXRegistry::setVar('subContent', new PXSubContent());
+	}
+
+	function initModules() {
+		$this->modules = new PXModuleLoader();
 	}
 
 	function fillLayout() {
@@ -20,17 +26,9 @@ class PXEngineIndex extends PXEngine {
 
 		$layout->assignRequest(PXRegistry::getRequest());
 
-		$container = array(
-		);
-
-		$layout->assignArray($container, true);
-
-		$layout->assign('tree',           PXRegistry::getVar('tree'));
-		$layout->assign('requestHost',    PXRegistry::getRequest()->getHttpHost());
-		$layout->assign('requestReferer', PXRegistry::getRequest()->getHttpReferer());
-
-		$layout->assign('requestUri',     $_SERVER['REQUEST_URI']);
-		$layout->assign('requestPath',    $_SERVER['SCRIPT_NAME']);
+		$layout->assign('struct',         PXRegistry::getVar('struct'));
+		$layout->assign('content',        PXRegistry::getVar('struct'));
+		$layout->assign('subContent',     PXRegistry::getVar('struct'));
 	}
 
 	function sendHeaders() {
@@ -38,17 +36,23 @@ class PXEngineIndex extends PXEngine {
 			return;
 		}
 
-		if ($this->container['error'] == 404) {
+		$error = PXRegistry::getVar('error');
+
+		if ($error == 404) {
 			if (function_exists('log404')) {
 				log404(PXRegistry::getRequest());
 			}
 
-			/*
+			if(IIS) {
+				/*
+				we can't send empty header.
+				for more details see http://forums.iis.net/t/1146547.aspx
+				*/
+				return;
+			}
+
 			header("HTTP/1.1 404");
 
-			we can't send empty header.
-			for more details see http://forums.iis.net/t/1146547.aspx
-			*/
 		}
 
 		if (function_exists('sendheaders')) {
@@ -57,21 +61,28 @@ class PXEngineIndex extends PXEngine {
 	}
 
 	function html() {
-		PXRegistry::getLayout()->display();
-	}
-
-	function profilerStart() {
-		NLProfiler('TOTAL', 'BEGIN');
-	}
-
-	function profilerStop() {
 		NLProfiler('TOTAL', 'END');
 		PXRegistry::getLayout()->assign('NLProfiler', NLProfiler(NULL, 'ALL'));
+		PXRegistry::getLayout()->display();
 	}
 
 	function runModules() {
 		NLProfiler('RUN MODULES', 'BEGIN');
-		$this->modules->activateModules('userindex', PXRegistry::getApp(), PXRegistry::getDb(), PXRegistry::getRequest(), PXRegistry::getUser(), PXRegistry::getLayout(), $this->container);
+
+		foreach(PXRegistry::getApp()->bindingsQueue as $bind) {
+			if(!$bind->isBinding()) {
+				continue;
+			}
+
+			$moduleDescription = $bind->getModuleDescription();
+
+			$debugKey = 'MODULE: '.$moduleDescription->class;
+
+			NLProfiler($debugKey, 'BEGIN');
+			$moduleDescription->getModule()->userIndex();
+			NLProfiler($debugKey, 'END');
+		}
+
 		NLProfiler('RUN MODULES', 'END');
 	}
 }

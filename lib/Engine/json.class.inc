@@ -11,9 +11,7 @@ class PXEngineJSON extends PXEngine {
 	}
 
 	function runModules() {
-		NLProfiler('RUN MODULES', 'BEGIN');
-		$this->result = $this->modules->activateModules('userjson', $this->app, $this->db, $this->request, $this->user, $this->layout, $this->container);
-		NLProfiler('RUN MODULES', 'END');
+		$this->result = $module->userJson();
 	}
 
 	function saveResult() {

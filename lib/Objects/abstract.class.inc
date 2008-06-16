@@ -1,5 +1,5 @@
 <?php 
-abstract class PXObjects {
+abstract class PXObjects implements Iterator {
 	protected $data, $links, $linkedObjs;
 
 	public $currentId, $currentType, $base;
@@ -13,9 +13,37 @@ abstract class PXObjects {
 		$this->linkedObjs  = array();
 	}
 
+
+	/* Iterator methods */
+	public function rewind() {
+		reset($this->data);
+	}
+
+	public function current() {
+		return current($this->data);
+	}
+
+	public function key() {
+		return key($this->data);
+	}
+
+	public function next() {
+		return next($this->data);
+	}
+
+	public function valid() {
+		return $this->current() !== false;
+	}
+
+	/* /Iterator methods */
+
 	abstract function hasCurrent();
 	abstract function getCurrent();
 	abstract function getAllowedChilds();
+
+	function hasType($type) {
+		return array_key_exists($type, $this->data) && sizeof($this->data[$type]);
+	}
 
 	function loadChilds($childs, $pathName) {
 		if(!$this->hasCurrent()) {

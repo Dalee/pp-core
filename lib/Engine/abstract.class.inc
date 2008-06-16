@@ -1,7 +1,7 @@
 <?php
 abstract class PXEngine {
-	var $container;
-	var $modules;
+	protected $modules;
+	protected $area;
 
 	function __construct() {     // Инициализация основных объектов приложения
 		NLProfiler('INIT', 'BEGIN');
@@ -15,39 +15,26 @@ abstract class PXEngine {
 
 		PXRegistry::getDb()->LoadDirectoriesAutomatic(PXRegistry::getApp()->directory);
 
-		$this->initContainer();
 		$this->initModules();
 
 		NLProfiler('INIT', 'END');
 	}
 
-	function initContainer() {   // Инициализация необходимых данных и складывание их
-		$this->container = array (
-			'tree'          => NULL,                // Структура
+	function initModules() {
+		$rArea = $request->getVar('area');
 
-			'pathId'        => array(),             // Хлебные крошки, состоящие из ID
-			'currentSid'    => -1,                  // ID текущего раздела
-			'rootId'        => -1,                  // ID корневого объекта струтуры
+		if(!isset(PXRegistry::getApp()->modules[$rArea])) {
+			Finalize('/');
+		}
 
-
-			'objects'       => array(),             // Объекты текущего раздела
-			'currentCid'    => -1,                  // ID текущего объекта
-			'currentCtype'  => -1,                  // Тип текущего объекта
-
-			'subObjects'    => array(),             // Субобъекты текущего объекта
-			'currentSCid'   => -1,                  // ID текущего субобъекта
-			'currentSCtype' => -1,                  // Тип текущего субобъекта
-
-			'references'    => array(),             // Связи между объектами
-			'heap'          => array(),             // "Куча" объектов, участвующих в связях
-
-			'urlFile'       => '',
-			'error'         => 0                    // Код ошибки
-		);
+		$this->modules = PXRegistry::getApp()->modules;
+		$this->area = $rArea;
 	}
 
-	function initModules() {
-		$this->modules = new PXModuleLoader();
+	abstract function runModules();
+
+	function loadModule() {
+		return $this->modules[$this->area]->getModule();
 	}
 }
 ?>

@@ -1,10 +1,14 @@
 <?php
-require_once 'Description/module.class.inc';
+require_once 'Description/db.class.inc';
+
 require_once 'Description/type.class.inc';
 require_once 'Description/field.class.inc';
+
 require_once 'Description/directory.class.inc';
 require_once 'Description/ref.class.inc';
-require_once 'Description/db.class.inc';
+
+require_once 'Description/module.class.inc';
+require_once 'bindingsQueue.class.inc';
 
 /**
  * PXApplication - главный класс.
@@ -59,7 +63,7 @@ class PXApplication {
 	 * биндинги модулей из etc/modules.xml modules/bindings
 	 * @var Array
 	 */
-	var $modBindings;
+	var $bindingsQueue;
 
 	/**
 	 * Singleton array with caching.
@@ -337,7 +341,7 @@ class PXApplication {
 	 * @return Array		массив наименований разрешенных детей или пустой массив
 	 */
 	public function getAllowedChildsKeys($formatName, &$object) {
-		return array_keys($this->GetAllowedChilds($formatName, $object));
+		return array_keys($this->getAllowedChilds($formatName, $object));
 	}
 
 
@@ -346,9 +350,11 @@ class PXApplication {
 	 */
 	public function InitContentObject($formatName) {
 		$object = array();
+
 		foreach ($this->types[$formatName]->fields as $k=>$v) {
 			$object[$k] = $v->defaultValue;
 		}
+
 		return $object;
 	}
 
@@ -431,7 +437,11 @@ class PXApplication {
 			}
 		}
 		$domReferences = $xml->xpath("/model/references/reference");
-		if (!is_array($domReferences) || count($domReferences) == 0) return;
+
+		if (!is_array($domReferences) || count($domReferences) == 0) {
+			return;
+		}
+
 		foreach ($domReferences as $domReference) {
 			$attrs = $domReference->attributes();
 			$ref = new PXRefDescription();
@@ -559,7 +569,7 @@ class PXApplication {
 		$xml = simplexml_load_file($fileName);
 
 		if (!$xml) {
-			FatalError("Ошибка в файле настроек <EM>$fileName</EM>");
+			FatalError("Ошибка в файле настроек <em>$fileName</em>");
 		}
 
 		$domModules = $xml->xpath("/modules/module");
@@ -588,31 +598,28 @@ class PXApplication {
 					$module->settings[$k] = $v[0];
 				}
 			}
+
 			$this->modules[$module->name] = $module;
-		} // for
+		}
 
-		$this->modBindings = array();
 
-		$domBindings = $xml->xpath("/modules/bindings");
-
-		$pOrder = 0;
+		$domBindings = $xml->xpath('/modules/bindings');
+		$this->bindingsQueue = new PXBindingsQueue();
 
 		foreach($domBindings as $domBinding) {
 			$nodes = $domBinding->children();
+
 			foreach ($nodes as $node) {
 				$domRules = $node->children();
+
 				foreach($domRules as $domRule) {
-					$this->modBindings[] = array(
-						'type'   => $node->getName(),
-						'var'    => (string)$domRule['var'],
-						'value'  => (string)$domRule['value'],
-						'module' => (string)$domRule['module'],
-						'order'  => (int)$domRule['order'],
-						'pOrder' => $pOrder++
-					);
+					$domRule['type'] = $node->getName();
+					$this->bindingsQueue->add($domRule);
 				}
-			}//foreach
-		}//foreach
+			}
+		}
+
+		$this->bindingsQueue->sort();
 	}
 
 	/**

@@ -8,33 +8,34 @@ class PXModuleMain extends PXAbstractModule {
 	}
 
 	function userIndex() {
-		$urlFile = $this->request->GetFile();
-		$urlPart = $this->request->GetPart();
+		// get path
+		$urlPath = $this->request->getHostAndDir();
+		$urlFile = $this->request->getFile();
+		$urlPart = $this->request->getPart();
+
+		$this->struct->setFormat($this->rootFormatId);
+		$this->struct->setAliases($this->_parseAliasesConfig());
 
 		// Loading struct tree
 		NLProfiler('load struct', 'BEGIN');
-		$this->_loadTree();
+		$this->struct->load($urlPath);
+		$this->struct->getLinks();
 		NLProfiler('load struct', 'END');
-
-		$this->struct->load();
 
 		// Loading content objects
 		NLProfiler('load content', 'BEGIN');
 		$this->struct->loadChilds($this->content, $urlFile);
+		$this->content->getLinks();
 		NLProfiler('load content', 'END');
-
 
 		// Loading subcontent objects
 		NLProfiler('load subcontent', 'BEGIN');
 		$this->content->loadChilds($this->subContent, $urlPart);
+		$this->subContent->getLinks();
 		NLProfiler('load subcontent', 'END');
-
 
 		// Loading objects references
 		NLProfiler('Loading references', 'BEGIN');
-		$this->struct->getLinks();
-		$this->content->getLinks();
-		$this->subContent->getLinks();
 		// $this->user->getLinks(); -- what we must do ???
 		NLProfiler('Loading references', 'END');
 
@@ -54,74 +55,28 @@ class PXModuleMain extends PXAbstractModule {
 				$error = 0;
 				break;
 		}
+
 		PXRegistry::setVar('error', $error);
 	}
 
-	function _initAliases() {
+	function _parseAliasesConfig() {
 		if(!isset($this->settings['domainAlias'])) {
 			$this->settings['domainAlias'] = array();
 		}
 
-		$aliases = $this->settings['domainAlias'];
+		$config = $this->settings['domainAlias'];
 
-		if(is_string($aliases)) {
-			$aliases = array($aliases);
+		if(is_string($config)) {
+			$config = array($config);
+		}
+
+		$aliases = array();
+		foreach($config as $k=>$tmp) {
+			list($host, $alias) = preg_split('/\s*=\s*/', trim($tmp));
+			$aliases[$host] = $alias; 
 		}
 
 		return $aliases;
-	}
-
-	function _loadTree() {
-		$this->struct->format = $this->app->types[$this->rootFormatId];
-		$this->struct->load();
-		$this->_findTreeContext();
-	}
-
-	function _findTreeContext() {
-		// "пустой" проект
-		if(!isset($this->struct->tree->levels[1])) {
-			return;
-		}
-
-		// Guessing context
-		$this->_findDomainAlias();
-		$urlPath = $this->request->getHostAndDir();
-		$this->struct->findPath($urlPath);
-	}
-
-	function _findDomainAlias() {
-		$host =  $this->request->getHttpHost();
-		$tree = $this->struct->tree;
-
-		// находим соответствие между хостом, на который мы зашли
-		// и корнем в дереве, который может быть нам нужен
-		$hostAlias = 'default';
-		foreach($this->_initAliases() as $tmp) {
-			$alias = preg_split('/\s*=\s*/', trim($tmp));
-
-			if($alias[0] == $host) {
-				$hostAlias = $alias[1];
-				break;
-			}
-		}
-
-		// если алиас "не нашли", может быть нужный хост есть среди корней?
-		if($hostAlias == 'default') {
-			foreach($tree->levels[1] as $_rootId) {
-				if($tree->leafs[$_rootId]->content['pathname'] === $host) {
-					$hostAlias = $host;
-					break;
-				}
-			}
-		}
-
-		// находим нужный корень и правим его pathname
-		foreach($tree->levels[1] as $_rootId) {
-			if($tree->leafs[$_rootId]->content['pathname'] === $hostAlias) {
-				$tree->leafs[$_rootId]->content['pathname'] = $host;
-				break;
-			}
-		}
 	}
 
 	function adminIndex() {
@@ -257,8 +212,10 @@ class PXModuleMain extends PXAbstractModule {
 				<UL><LI><A href="javascript:EditContent(\''.$this->rootFormatId.'\', \''.$rqSid.'\', \'children\')">Разрешенные форматы раздела</A></LI></UL>
 				');
 			}
+
 		} elseif ($rqSid != null) {
 			$layout->Assign('INNER.1.0', '<H2 class="error">Раздел '.$rqSid.' не найден</H2>');
+
 		} else {
 			$layout->Assign('INNER.1.0', '<H2>Выберите раздел</H2>');
 		}

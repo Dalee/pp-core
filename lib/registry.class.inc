@@ -3,7 +3,7 @@ class PXRegistry {
 	private static $app, $db, $user, $request, $layout, $vars, $types;
 
 	public static function &getApp() {
-		if(!is_object(self::$app) || is_null(self::$app)) {
+		if(!is_object(self::$app)) {
 			self::$app = PXApplication::getInstance(BASEPATH);
 		}
 
@@ -11,7 +11,7 @@ class PXRegistry {
 	}
 
 	public static function &getDb() {
-		if(!is_object(self::$db) || is_null(self::$db)) {
+		if(!is_object(self::$db)) {
 			self::$db = new PXDataBase(self::getApp());
 		}
 
@@ -19,7 +19,7 @@ class PXRegistry {
 	}
 
 	public static function &getRequest() {
-		if(!is_object(self::$request) || is_null(self::$request)) {
+		if(!is_object(self::$request)) {
 			self::$request = new PXRequest();
 		}
 
@@ -27,7 +27,7 @@ class PXRegistry {
 	}
 
 	public static function &getUser() {
-		if(!is_object(self::$user) || is_null(self::$user)) {
+		if(!is_object(self::$user)) {
 			self::$user = new PXUserAuthorized();
 		}
 
@@ -35,7 +35,7 @@ class PXRegistry {
 	}
 
 	public static function &getLayout() {
-		if(!is_object(self::$layout) || is_null(self::$layout)) {
+		if(!is_object(self::$layout)) {
 			self::$layout = new PXLayoutNull();
 		}
 
@@ -43,7 +43,7 @@ class PXRegistry {
 	}
 
 	public static function &getTypes($typeName=null) {
-		if(!is_array(self::$types) || is_null(self::$types)) {
+		if(!is_array(self::$types)) {
 			self::$types =& self::getApp()->types;
 		}
 

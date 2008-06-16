@@ -7,9 +7,7 @@ class PXEngineAction extends PXEngine {
 	}
 
 	function runModules() {
-		NLProfiler('RUN MODULES', 'BEGIN');
-		$this->nextLocation = $this->modules->activateModules('useraction', $this->app, $this->db, $this->request, $this->user, $this->layout, $this->container);
-		NLProfiler('RUN MODULES', 'END');
+		$this->nextLocation = $module->userAction();
 	}
 
 	function redirect() {

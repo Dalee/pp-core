@@ -8,7 +8,6 @@
  * @subpackage Application
  */
 class PXFieldDescription {
-
 	var $name            = NULL;
 	var $description     = NULL;
 	var $storageType     = NULL;
