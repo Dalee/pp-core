@@ -32,9 +32,5 @@ abstract class PXEngine {
 	}
 
 	abstract function runModules();
-
-	function loadModule() {
-		return $this->modules[$this->area]->getModule();
-	}
 }
 ?>

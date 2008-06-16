@@ -12,7 +12,6 @@ class PXEngineIndex extends PXEngine {
 	}
 
 	function initModules() {
-		$this->modules = new PXModuleLoader();
 	}
 
 	function fillLayout() {

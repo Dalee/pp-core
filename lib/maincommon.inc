@@ -26,7 +26,6 @@ require_once 'registry.class.inc';
 include_once 'Objects/classes.inc';
 
 require_once 'logger.class.inc';
-require_once 'moduleloader.class.inc';
 require_once 'HTML/interface.class.inc';
 
 require_once 'Engine/classes.inc';
