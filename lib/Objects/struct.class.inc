@@ -1,4 +1,108 @@
 <?php 
+/* TODO: move this code to NLLeaf */
+class PXStructLeaf implements Iterator {
+	private $data, $struct;
+
+	function __construct($leaf, $struct) {
+		$this->data   = $leaf;
+		$this->struct = $struct;
+	}
+
+	function __get($key) {
+		return $this->data->content[$key];
+	}
+
+	function path() {
+		return $this->data->tree->getFullPathString($this->data->id);
+	}
+
+	function isCurrent() {
+		return $this->data->id == $this->struct->currentId;
+	}
+
+	function isRoot() {
+		return $this->data->id == $this->struct->rootId;
+	}
+
+	function hasChilds() {
+		return sizeof($this->data->children) >  0;
+	}
+
+	/* Iterator methods */
+	public function valid() {
+		return $this->current() !== false;
+	}
+
+	public function rewind() {
+		reset($this->data->children);
+	}
+
+	public function current() {
+		$key = current($this->data->children);
+
+		if($key === false) {
+			return false;
+		}
+
+		return new PXStructLeaf($this->data->tree->leafs[$key], $this->struct);
+	}
+
+	public function key() {
+		return key($this->data->children);
+	}
+
+	public function next() {
+		$key = next($this->data->children);
+		return $key;
+	}
+
+	/* /Iterator methods */
+}
+
+class PXStructLeaf404 extends PXStructLeaf {
+	function __construct() {
+	}
+
+	function __get($key) {
+		return null;
+	}
+
+	function path() {
+		return null;
+	}
+
+	function isCurrent() {
+		return false;
+	}
+
+	function isRoot() {
+		return false;
+	}
+
+	function hasChilds() {
+		return false;
+	}
+
+	public function valid() {
+		return false;
+	}
+
+	public function rewind() {
+	}
+
+	public function current() {
+		return false;
+	}
+
+	public function key() {
+		return false;
+	}
+
+	public function next() {
+		return false;
+	}
+}
+
 class PXStruct extends PXObjects {
 	public $tree;
 	public $format;
@@ -6,6 +110,33 @@ class PXStruct extends PXObjects {
 	public $base   = 'struct';
 	public $pathId = array();
 	public $rootId = -1;
+
+	function __get($key) {
+		switch($key) {
+			case 'root':
+				return new PXStructLeaf($this->tree->leafs[$this->rootId], $this);
+				break;
+
+			case 'current':
+				if($this->hasCurrent()) {
+					return new PXStructLeaf($this->tree->leafs[$this->currentId], $this);
+				} else {
+					return new PXStructLeaf404();
+				}
+				break;
+		}
+
+		return null;
+	}
+
+	function currentType() {
+		if(!$this->hasCurrent()) {
+			return;
+		}
+
+		$current = $this->getCurrent();
+		return $current->content['type'];
+	}
 
 	function hasCurrent() {
 		return isset($this->tree->leafs[$this->currentId]);

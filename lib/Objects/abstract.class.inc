@@ -63,6 +63,8 @@ abstract class PXObjects implements Iterator {
 				continue;
 			}
 
+			$objsArray = array();
+
 			switch ($behaviour) {
 				case PP_CHILDREN_FETCH_NONE:
 					break;

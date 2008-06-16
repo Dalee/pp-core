@@ -31,7 +31,8 @@ class PXModuleForum extends PXAbstractModule {
 	);
 
 	function PXModuleForum($area, $settings) {
-		$this->PXAbstractModule($area, $settings);
+		parent::__construct($area, $settings);
+
 		$this->dtForums    = 'struct';
 		$this->dtTopics    = isset($settings['topics'])     ? $settings['topics']     : 'forumtopic';
 		$this->dtMessages  = isset($settings['messages'])   ? $settings['messages']   : 'forummessage';
@@ -83,11 +84,7 @@ class PXModuleForum extends PXAbstractModule {
 		@session_start();
 	}
 
-	function adminIndex(&$app, &$request, &$user, &$db, &$layout) {
-	}
-
-	function userIndex(&$app, &$request, &$user, &$db, &$layout, &$tree, &$objects, &$subObjects, &$references, &$heap, $currentSid, &$currentCid, &$currentCtype, $currentSCid, $currentSCtype, $rootId, $pathId) {
-
+	function userIndex() {
 		$forumSettings = $this->getUserSettingsFromRequest($request, $user);
 
 		$forumBaseId   = $this->_guessBaseId($tree, $currentSid);

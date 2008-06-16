@@ -66,7 +66,7 @@ class NLTree {
 			$title  = $v[$this->_titleField];
 
 			$parent = (isset($v[$this->_parentField])) ? $v[$this->_parentField] : 0; // For creating trees from plain
-			unset($v[$this->_idField], $v[$this->_titleField], $v[$this->_parentField]);
+//			unset($v[$this->_idField], $v[$this->_titleField], $v[$this->_parentField]);
 			$this->leafs[$id] = new NLLeaf($id, $title, $parent, $v, $this);
 		}
 

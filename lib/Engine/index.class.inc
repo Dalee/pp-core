@@ -26,8 +26,10 @@ class PXEngineIndex extends PXEngine {
 		$layout->assignRequest(PXRegistry::getRequest());
 
 		$layout->assign('struct',         PXRegistry::getVar('struct'));
-		$layout->assign('content',        PXRegistry::getVar('struct'));
-		$layout->assign('subContent',     PXRegistry::getVar('struct'));
+		$layout->assign('content',        PXRegistry::getVar('content'));
+		$layout->assign('subContent',     PXRegistry::getVar('subcontent'));
+
+		$layout->assign('error',          PXRegistry::getVar('error'));
 	}
 
 	function sendHeaders() {
@@ -42,7 +44,7 @@ class PXEngineIndex extends PXEngine {
 				log404(PXRegistry::getRequest());
 			}
 
-			if(IIS) {
+			if(IS_WIN) {
 				/*
 				we can't send empty header.
 				for more details see http://forums.iis.net/t/1146547.aspx
