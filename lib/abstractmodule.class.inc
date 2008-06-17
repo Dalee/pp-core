@@ -46,9 +46,15 @@ class PXAbstractModule {
 	}
 }
 
+
+/**
+ * Marked to remove soon.
+ *
+ * @depricated
+ */
 class RTAbstractModule extends PXAbstractModule {
 	function RTAbstractModule($area, $settings) {
-		$this->PXAbstractModule($area, $settings);
+		parent::_construct($area, $settings);
 	}
 }
 

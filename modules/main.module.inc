@@ -43,18 +43,16 @@ class PXModuleMain extends PXAbstractModule {
 	}
 
 	function check404error($urlFile, $urlPart) {
-		// Определение кода ошибки
-		switch(true) {
-			case (!$this->struct->hasCurrent()):
-			case ($urlFile != 'index.html' && !$this->content->hasCurrent()):
-			case ($urlPart != ''           && !$this->subContent->hasCurrent()):
-				$error = 404;
-				break;
 
-			default:
-				$error = 0;
-				break;
-		}
+        $error = 0;
+
+		// Определение кода ошибки
+        if (!$this->struct->hasCurrent() ||
+            ($urlFile != 'index.html' && !$this->content->hasCurrent())    ||
+            ($urlPart != ''           && !$this->subContent->hasCurrent()))
+
+            $error = 404;
+        }
 
 		PXRegistry::setVar('error', $error);
 	}
