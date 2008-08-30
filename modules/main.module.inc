@@ -49,7 +49,7 @@ class PXModuleMain extends PXAbstractModule {
 		// Определение кода ошибки
         if (!$this->struct->hasCurrent() ||
             ($urlFile != 'index.html' && !$this->content->hasCurrent())    ||
-            ($urlPart != ''           && !$this->subContent->hasCurrent()))
+            ($urlPart != ''           && !$this->subContent->hasCurrent())) {
 
             $error = 404;
         }
