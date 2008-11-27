@@ -28,5 +28,9 @@ class PXAuthInterface {
 
 		return $var;
 	}
+
+	function onAuth(){
+		return true;
+	}
 }
 ?>

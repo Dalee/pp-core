@@ -1,6 +1,6 @@
 <?php 
 abstract class PXObjects implements Iterator {
-	protected $data, $links, $linkedObjs;
+	public $data, $links, $linkedObjs; //FIXME
 
 	public $currentId, $currentType, $base;
 

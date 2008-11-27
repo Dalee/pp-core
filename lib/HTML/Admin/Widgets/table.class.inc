@@ -23,6 +23,7 @@ class PXAdminTable {
 	var $rowsPerPage;
 	var $rowsCount;
 	var $showChildObjects;
+	var $childLink;
 
 	/**
 	 * Конструктор класса PXAdminTable.
@@ -50,6 +51,7 @@ class PXAdminTable {
 		$this->rowsPerPage = 0;
 		$this->rowsCount   = 0;
 		$this->showChildObjects = false;
+		$this->childLink = NULL;
 	}
 
 	function loadDropdownValues(&$db) {
@@ -113,10 +115,17 @@ class PXAdminTable {
 	function setSelected($id) {
 		$this->selectedRow = $id;
 	}
+	/**
+	 * Устанавливает значение переменной для ссылки на дочерние объекты
+	 * @param String $link - строка: 'sid' или 'cid'
+	 */
+	function setChildLink($link){
+		$this->childLink = $link;
+	}
 
 	/**
 	 * Возвращает таблицу.
-	 * @return Strint - html table
+	 * @return String - html table
 	 */
 	function getTable() {
 		$html  = '';
@@ -160,28 +169,17 @@ class PXAdminTable {
 
 			$rowPos = 0;
 			foreach ($this->data as $rowKey=>$row){
-				$html .= '<tr  class="';
-
-				if ($row['status'] == false) {
-					$html .= ' hide';
-				}
-
-				if ($row['id'] == $this->selectedRow) {
-					$html .= ' selected';
-				}
-
-				$html .= '">';
-
-				//TD ==>
-
-				$html .= '<td class="c">';
 
 				$up    = ($rowPos == 0 && $this->currentPage == 1) || !is_numeric(strpos($this->dtype->order, 'sys_order')) ? 0 : 1;
 				$down  = ($rowPos == sizeof($this->data)-1 && $this->rowsCount <= $this->currentPage * $this->rowsPerPage) || !is_numeric(strpos($this->dtype->order, 'sys_order')) ? 0 : 1;
 
-				$menuTitle = (strlen($row[$this->titleKey]) > 10) ? trim(substr($row[$this->titleKey], 0, 10)).'&hellip;' : $row[$this->titleKey];
-				$menuTitle = str_replace('"', '', str_replace("'", '', $menuTitle));
-				$menuTitle = str_replace("\n", '', str_replace("\r", '', $menuTitle));
+				if (isset($row[$this->titleKey])) {
+					$menuTitle = (strlen($row[$this->titleKey]) > 10) ? trim(substr($row[$this->titleKey], 0, 10)).'&hellip;' : $row[$this->titleKey];
+					$menuTitle = str_replace('"', '', str_replace("'", '', $menuTitle));
+					$menuTitle = str_replace("\n", '', str_replace("\r", '', $menuTitle));
+				} else {
+					$menuTitle = '';
+				}
 
 				$alias = isset($row['pathname']) && isset($this->parentPathname) ? $this->parentPathname.$row['pathname'] : '';
 
@@ -208,42 +206,32 @@ class PXAdminTable {
 						'up'     => $up,                        // можно ли вверх ?
 						'down'   => $down);                     // а вниз ?
 
-				$html .= $this->_buildControls($tVars);
-
-				if ($this->dtype->childs && $this->showChildObjects) {
-					 $varName = ($this->dtype->base == 'struct') ? 'sid' : 'cid';
-					 $html .= '<a href="'.$this->_BuildHref($varName, $row['id']).'">';
-					 $html .= '<img src="i/icon/childs.gif" alt=""></a>';
-				}
-
-				//<SPAN>
-				$context = $this->_buildContext('edit', $tVars);
-/*
-				$html .= '<span onContextMenu="'.$context.'" onClick="javascript: ContextHide();" class="';
+				$html .= '<tr oncontextmenu="'.$this->_buildContext('edit', $tVars).'" class="';
 
 				if ($row['status'] == false) {
 					$html .= ' hide';
 				}
 
-
-
 				if ($row['id'] == $this->selectedRow) {
 					$html .= ' selected';
 				}
+
 				$html .= '">';
 
-				$curTitle = strip_tags($row[$this->titleKey]);
-				$html .= strlen($curTitle) > 50 ? substr($curTitle, 0, 50).'&hellip;' : $curTitle;
-				$html .= '</span>';
-				//</SPAN>
+				//TD ==>
 
-				if ($this->dtype->childs)
-					$html .= '</a>';
-*/
+				$html .= '<td class="c">';
+				$html .= $this->_buildControls($tVars);
+
+				if ($this->dtype->childs && $this->showChildObjects && isset($this->childLink)) {
+					 $html .= '<a href="'.$this->_BuildHref($this->childLink, $row['id']).'">';
+					 $html .= '<img src="i/icon/childs.gif" alt=""></a>';
+				}
+
 				$html .= '</td>';
 
-				foreach($this->dtype->fields as $field) {
-					if($field->listed) {
+				foreach ($this->dtype->fields as $field) {
+					if ($field->listed) {
 						$html .= "\n".'<td>'. $this->_buildCell($row, $field) .'</td>';
 					}
 				}
@@ -339,29 +327,29 @@ class PXAdminTable {
 
 		$context = '';
 		switch ($cType) {
-			//javascript:Context('add', parent, (format, title) )
+			//javascript:Context(event, 'add', parent, (format, title) )
 			case 'add':
-				$context = 'Context(\'add\', '.$cVars['parent'];
+				$context = 'Context(event, \'add\', '.$cVars['parent'];
 				foreach ($cVars['items'] as $format=>$title) {
 					$context .= ', \''.$format.'\', \''.$title.'\' ';
 				}
-				$context.= '); window.event.cancelBubble = true; return false;';
+				$context.= '); return false;';
 
 				break;
 
-			//javascript:Context('edit', id, status, format, title, alias, level, up, down)
+			//javascript:Context(event, 'edit', id, status, format, title, alias, level, up, down)
 			case 'edit':
-				$context  =  'Context(\'edit\', '.$cVars['id'].', '.$cVars['status'].', \''. $cVars['format'].'\', '.
+				$context  =  'Context(event, \'edit\', '.$cVars['id'].', '.$cVars['status'].', \''. $cVars['format'].'\', '.
 							 '\''.$cVars['title'].'\', \''.$cVars['alias'].'\','.$cVars['level'].', '.
-							 $cVars['up'].', '.$cVars['down'].'); window.event.cancelBubble = true; return false;';
+							 $cVars['up'].', '.$cVars['down'].'); return false;';
 				break;
 
-			//javascript:Context('file', title, isDir, isRead, isWrite, isDelete, isBinary, dir, href, side, isCopy)
+			//javascript:Context(event, 'file', title, isDir, isRead, isWrite, isDelete, isBinary, dir, href, side, isCopy)
 			case 'file':
-				$context  =  'Context(\'file\', \''.$cVars['title'].'\','.$cVars['isDir']. ','.
+				$context  =  'Context(event, \'file\', \''.$cVars['title'].'\','.$cVars['isDir']. ','.
 							 $cVars['isRead'].','.$cVars['isWrite'].','.$cVars['isDelete'].','.
 							 $cVars['isBinary'].',\''.$cVars['dir'].'\',\''.$cVars['href'].'\','.
-							 '\''.$cVars['side'].'\','.$cvars['isCopy'].'); window.event.cancelBubble = true; return false;';
+							 '\''.$cVars['side'].'\','.$cvars['isCopy'].'); return false;';
 				break;
 
 		}//switch

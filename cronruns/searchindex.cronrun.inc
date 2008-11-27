@@ -177,8 +177,10 @@ class PXCronRunSearchIndex extends PXAbstractCronRun {
 
 		$totalr = 0;
 		$tmp = array();
+		static $dt; //Workaround for PHP 4.4.x bug, memory corruption !
 
-		foreach ($expired as $dt => $v) {
+		foreach ($expired as $corrupted_dt => $v) {
+			$dt = $corrupted_dt;
 			WorkProgress();
 			$totalc = count($v);
 

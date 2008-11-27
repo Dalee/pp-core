@@ -8,14 +8,9 @@
  *
  * @author Andrey Nikolaev <na@index20.ru>
  */
-class PXModuleAuditLog extends PXAbstractModule {
-	function adminIndex(&$app, &$request, &$user, &$db, &$layout) {
-		$layout->setSimpleInnerLayout(array('100%'), array('100%'));
-
-		$this->app     =& $app;
-		$this->db      =& $db;
-		$this->request =& $request;
-		$this->layout  =& $layout;
+class PXModuleAuditLog extends PXModule {
+	function adminIndex() {
+		$this->layout->setSimpleInnerLayout(array('100%'), array('100%'));
 
 		$this->html('<H2>Журнал аудита</H2>');
 

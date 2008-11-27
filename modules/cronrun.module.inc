@@ -1,21 +1,22 @@
-<?
-
-define('TIME_FORMAT',   "d-m-Y H:i:s");
-
+<?php
 class PXModuleCronRun extends PXAbstractModule {
+	var $TIME_FORMAT   = 'd-m-Y H:i:s';
 	var $rules;
 
-	function PXModuleCronRun($area, $settings) {
-		$this->PXAbstractModule($area, $settings);
-
-		$this->results  = BASEPATH.'/site/var/cron.results';
+	function __construct($area, $settings) {
+		parent::__construct($area, $settings);
 
 		$this->rules    = array();
 		$this->job2rule = array();
 		$this->jobs     = array();
 
-		if (!isset($settings['rule']) ||
-			!count($settings['rule'])) return;
+		$this->_parseRules($settings);
+	}
+
+	function _parseRules($settings) {
+		if (!isset($settings['rule']) || !count($settings['rule'])) {
+			return;
+		}
 
 		if (count($settings['rule']) == 1) {
 			$settings['rule'] = array($settings['rule']);
@@ -23,39 +24,47 @@ class PXModuleCronRun extends PXAbstractModule {
 
 		$count = 0;
 		foreach ($settings['rule'] as $s) {
-			if (!preg_match("/^\s*(.+?)\s+(\w+?)\s*$/", $s, $m)) continue;
+			if (!preg_match("/^\s*(.+?)\s+(\w+?)\s*$/", $s, $m)) {
+				continue;
+			}
+
 			$rule     = new PXCronRule($m[1]);
 			$jobname  = $m[2];
-			if (!$rule->valid) continue;
+
+			if (!$rule->valid) {
+				continue;
+			}
+
 			$file = strtolower($jobname).".cronrun.inc";
 
 			if (file_exists(BASEPATH.'/local/cronruns/'.$file)) {
-				require_once BASEPATH.'/local/cronruns/'.$file;
+				include_once BASEPATH.'/local/cronruns/'.$file;
 			} elseif (file_exists(BASEPATH.'/libpp/cronruns/'.$file)) {
-				require_once BASEPATH.'/libpp/cronruns/'.$file;
+				include_once BASEPATH.'/libpp/cronruns/'.$file;
 			} else {
 				continue;
 			}
 
 			$class = 'PXCronRun' . $jobname;
-			$rm = array('rule'    => $rule,
-						'jobhash' => $rule->matchHash.md5($jobname),
-						'jobname' => strtolower($jobname),
-						'job'     => new $class());
+			$rm = array(
+				'rule'    => $rule,
+				'jobhash' => $rule->matchHash.md5($jobname),
+				'jobname' => strtolower($jobname),
+				'job'     => new $class()
+			);
 
 			$this->rules[$count] = $rm;
 			$this->jobs[$jobname] = &$this->rules[$count];
 			$this->job2rule[$rm['jobhash']] = $count;
 			$count++;
 		}
-
 	}
 
 	function RunJob(&$job, &$app, $matchedTime) {
-		$tmpDir = BASEPATH . DIRECTORY_SEPARATOR . 'tmp' . DIRECTORY_SEPARATOR;
+		$tmpDir = IS_WIN ? $_ENV['TEMP'] : '/tmp/';
 
 		// ******* child code ******
-		$fname = $tmpDir.'cron.'.$job['jobname'].'.lock';
+		$fname = $tmpDir.'/cron'.md5($_SERVER["DOCUMENT_ROOT"]).$job['jobname'].'.lock';
 		$fp = @fopen($fname, 'r');
 		if (!$fp) $fp = fopen($fname, 'w');
 		$st = flock($fp, LOCK_EX | LOCK_NB);
@@ -78,10 +87,10 @@ class PXModuleCronRun extends PXAbstractModule {
 
 		$tmStart = time();
 		// !!! run code here !!!
-
-		$db = new PXDatabase($app);
+		$db   = new PXDatabase($app); //add NEW connect to the database from current child
 		$user = new PXUserCron();
 		$user->setDb($db);
+		$db->LoadDirectoriesAutomatic($app->directory); //init directory from here !
 		if (isset($app->types['struct'])) {
 			$tree = new NLTree($db->getObjects($app->types['struct'], true));
 		} else {
@@ -99,9 +108,11 @@ class PXModuleCronRun extends PXAbstractModule {
 		// log  up
 
 		$cronStat = array();
-		$fp = @fopen($this->results, "r+");
+		$fp = @fopen(BASEPATH.'/var/cron.results', "r+");
 		if ($fp) {
-			flock($fp, LOCK_EX);
+			do{
+				//nothing;
+			} while(!flock($fp, LOCK_EX));
 			fseek($fp, 0, SEEK_END);
 			$fsize = ftell($fp);
 			rewind($fp);
@@ -116,8 +127,12 @@ class PXModuleCronRun extends PXAbstractModule {
 				}
 			}
 		} else {
-			$fp = @fopen($this->results, "w");
-			flock($fp, LOCK_EX);
+			$fp = @fopen(BASEPATH.'/var/cron.results', "w");
+			if($fp){
+				do{
+					//nothing;
+				} while(!flock($fp, LOCK_EX));
+			}
 		}
 		$cronStat[$job['jobhash']] = array('start' => $tmStart, 'end' => $tmEnd, 'result' => $res);
 		fwrite($fp, serialize($cronStat));
@@ -126,39 +141,38 @@ class PXModuleCronRun extends PXAbstractModule {
 	}
 
 	function RunTasks(&$app, $matchedTime) {
-		$pids = array();
 		$t = localtime($matchedTime, true);
-		foreach ($this->rules as $k) {
-			$match = $k['rule']->match;
-			if (!(
-				isset($match['min'][$t['tm_min']])   && isset($match['hour'][$t['tm_hour']]) &&
-				isset($match['mday'][$t['tm_mday']]) && isset($match['mon'][$t['tm_mon']+1]) &&
-				isset($match['wday'][$t['tm_wday']])
-				)) continue;
+		$pid = -1;
 
-			if (!IS_WIN && ($pid = pcntl_fork()) > 0) {
-				$pids[] = $pid;
+		foreach ($this->rules as $k) {
+			if ($this->isNotMatchTime($k['rule']->match, $t)) {
 				continue;
 			}
-
-			$this->RunJob($k, $app, $matchedTime);
-
-			if(!IS_WIN) {
-				exit();
+			if (IS_WIN || ($pid = pcntl_fork()) == 0) {
+				$this->RunJob($k, $app, $matchedTime); //child code
+				if(!IS_WIN) exit(); //close child process
 			}
-			// ******* child code ******
 		}
 
-		if(!IS_WIN) {
-			foreach ($pids as $pid) {
-				pcntl_waitpid($pid, $status);
+		if(!IS_WIN && $pid) { //parent code
+			while(pcntl_waitpid(-1, $status) > 0){
+				//wanna some status ?
 			}
-//			while(pcntl_wait($status) != -1) {} // PHP5 only :(
 		}
 	}
+	
+	function isNotMatchTime($match, $t){
+		return !(
+			isset($match['min'][$t['tm_min']])   &&
+			isset($match['hour'][$t['tm_hour']]) &&
+			isset($match['mday'][$t['tm_mday']]) &&
+			isset($match['mon'][$t['tm_mon']+1]) &&
+			isset($match['wday'][$t['tm_wday']])
+		);
+	}
 
-	function adminIndex(&$app, &$request, &$user, &$db, &$layout) {
-		$fp = @fopen($this->results, 'r');
+	function adminIndex() {
+		$fp = @fopen(BASEPATH.'/var/cron.results', 'r');
 		if ($fp) {
 			flock($fp, LOCK_EX);
 
@@ -170,13 +184,13 @@ class PXModuleCronRun extends PXAbstractModule {
 		} else {
 			$cronStat = array();
 		}
-		$layout->SetInnerLayout(
+		$this->layout->SetInnerLayout(
 			array(
 				array(array('100%', '100%')),
 				array(array('100%', NULL))
 			)
 		);
-		$layout->Assign('INNER.0.1', '<DIV style="text-align: center"><A href="?area='.$request->GetArea('cronrun').'&t='.time().'" class="button"><IMG src="i/icon/on.gif" border="0" width="11" height="11" alt="Обновить" align="absmiddle" hspace="3">Обновить</A></DIV>');
+		$this->layout->Assign('INNER.0.1', '<a href="?area='.$this->area.'&t='.time().'" class="reload">Обновить</a>');
 
 		$fields = array(
 			'rule'    => 'Правило',
@@ -203,7 +217,7 @@ class PXModuleCronRun extends PXAbstractModule {
 				$dmin = (int) ($diff / 60);
 				$dsec =  $diff - $dmin*60;
 
-				$_['time'] = date(TIME_FORMAT, $t['start']).'<br>'.date(TIME_FORMAT, $t['end']).' ('.$dmin.' min '.$dsec.' sec)';
+				$_['time'] = date($this->TIME_FORMAT, $t['start']).'<br>'.date($this->TIME_FORMAT, $t['end']).' ('.$dmin.' min '.$dsec.' sec)';
 
 				$_['comment'] = ($t['result']['status'] >= 0) ? '<b>'.$t['result']['note'].'</b>' : '<b class="error">'.$t['result']['note'].'</b>';
 
@@ -218,9 +232,7 @@ class PXModuleCronRun extends PXAbstractModule {
 		$table = new PXAdminTableSimple($fields);
 		$table->setData($result);
 
-		$layout->Assign('INNER.0.0', $table->html());
+		$this->layout->Assign('INNER.0.0', $table->html());
 	}
-
 }
-
 ?>

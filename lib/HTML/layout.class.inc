@@ -90,12 +90,6 @@ class PXUserHTMLLayout extends PXLayoutInterface  {
 		}
 
 		return $this->html('misc/pager/pages.tmpl');
-
-/*
-		d2($param, false);
-
-		d2($smarty->_tpl_vars, false);
-*/
 	}
 
 	function getLangVar($path) {

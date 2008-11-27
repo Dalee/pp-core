@@ -13,6 +13,7 @@ class NLMailMessage {
 	var $boundary;
 	var $log;
 	var $addHeaders;
+	var $charset;
 
 	var $_errorMessage;
 
@@ -29,7 +30,12 @@ class NLMailMessage {
 		$this->format        = 'text';
 		$this->boundary      = strtoupper(uniqid(time()));
 		$this->_errorMessage = NULL;
-		$this->log = $logFile;
+		$this->log           = $logFile;
+		$this->charset       = 'koi8-r';
+	}
+
+	function setCharset($charset) {
+		$this->charset = $charset;
 	}
 
 	function setFrom($name, $email) {
@@ -136,13 +142,13 @@ class NLMailMessage {
 			}
 			$this->body .= "--".$this->boundary."--"."\n";
 		} else {
-			$this->addHeaders .= "Content-Type: ".$contentType."; charset=koi8-r\n";
+			$this->addHeaders .= "Content-Type: ".$contentType."; charset=".$this->charset."\n";
 			$this->addHeaders .= "Content-Transfer-Encoding: 8bit";
 		}
 
 		if (strlen($this->subject)) {
 			if (preg_match("/[À-ÿ]/", $this->subject)) {
-				$_subject = "=?koi8-r?B?".base64_encode($this->subject)."?=";
+				$_subject = "=?".$this->charset."?B?".base64_encode($this->subject)."?=";
 			} else {
 				$_subject = $this->subject;
 			}
@@ -214,7 +220,7 @@ class NLMailMessage {
 
 	function _attachText($text, $contentType='text/plain') {
 		$out  = "--".$this->boundary."\n";
-		$out .= "Content-Type: ".$contentType."; charset=\"koi8-r\"\n\n";
+		$out .= "Content-Type: ".$contentType."; charset=\"".$this->charset."\"\n\n";
 		$out .= $text."\n";
 		return $out;
 	}
@@ -251,7 +257,7 @@ class NLMailMessage {
 		}
 
 		if (isset($this->fromName)) {
-			$addHeaders .= "From: =?koi8-r?B?".base64_encode($this->fromName)."?= <{$this->fromEmail}>\n";
+			$addHeaders .= "From: =?".$this->charset."?B?".base64_encode($this->fromName)."?= <{$this->fromEmail}>\n";
 			$addHeaders .= "Reply-To: {$this->replyEmail}\n";
 		} else {
 			$addHeaders .= "From: {$this->fromEmail}\n";

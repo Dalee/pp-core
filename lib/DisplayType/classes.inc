@@ -2,6 +2,8 @@
 require_once 'abstract.class.inc';
 
 require_once 'hidden.class.inc';
+require_once 'checkbox.class.inc';
+require_once 'color.class.inc';
 require_once 'static.class.inc';
 require_once 'text.class.inc';
 require_once 'password.class.inc';
@@ -14,8 +16,7 @@ require_once 'Time/timestamp.class.inc';
 require_once 'Time/time.class.inc';
 require_once 'Time/date.class.inc';
 
-require_once 'checkbox.class.inc';
-require_once 'color.class.inc';
+require_once 'delimiter.class.inc';
 
 require_once 'Dropdown/dropdown.class.inc';
 require_once 'Dropdown/parentDropdown.class.inc';

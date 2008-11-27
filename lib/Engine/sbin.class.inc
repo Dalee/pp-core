@@ -14,6 +14,9 @@ class PXEngineSbin extends PXEngine {
 		$this->user = new PXUserCron();
 	}
 
+	function initDirectories() {
+	}
+
 	function runModules() {
 	}
 }

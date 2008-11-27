@@ -1,12 +1,13 @@
 <?php
+
 /**
- * Ã«ÃŒÃÃ“Ã“ - ÃˆÃ’ÃÃŽÃ‰ÃŒÃ‰ÃÃ….
- * Ã³Ã”ÃÃ‰Ã”Ã“Ã‘ ÃÃ etc/datatype.xml /model/datatypes/datatype/attribute
- *
- * @see PXTypeDescription
- *
- * @subpackage Application
- */
+* ëÌÁÓÓ - ÈÒÁÎÉÌÉÝÅ.
+* óÔÏÉÔÓÑ ÐÏ etc/datatype.xml /model/datatypes/datatype/attribute
+*
+* @see PXTypeDescription
+*
+* @subpackage Application
+*/
 class PXFieldDescription {
 	var $name            = NULL;
 	var $description     = NULL;
@@ -18,6 +19,7 @@ class PXFieldDescription {
 	var $source          = NULL;
 	var $defaultValue    = NULL;
 	var $listed          = NULL;
+	var $noindex         = NULL;
 
 	public function __construct($nodeattrs, &$app) {
 		foreach ($nodeattrs as $name => $value) {
@@ -57,6 +59,10 @@ class PXFieldDescription {
 					$this->source = (string)$value;
 					break;
 
+				case 'noindex': 
+					$noindex = strtoupper($value); 
+					$this->noindex = $noindex == 'TRUE' ? true : false;
+
 				default:
 					d2("Unknown attr name: " . $name .' line: '. __LINE__);
 					break;
@@ -68,7 +74,7 @@ class PXFieldDescription {
 		}
 
 		if(is_null($this->displayType)) {
-			$this->setDisplayType('TEXT|0|0');
+			$this->setDisplayType('TEXT');
 		}
 	}
 

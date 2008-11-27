@@ -1,10 +1,10 @@
 <?
-class PXModuleAcl extends PXAbstractModule {
+class PXModuleAcl extends PXModule {
 	var $what;
 	var $access;
 
-	function PXModuleAcl($area, $settings) {
-		$this->PXAbstractModule($area, $settings);
+	function __construct($area, $settings) {
+		parent::__construct($area, $settings);
 
 		$this->what   = array();
 		$this->access = array();
@@ -29,10 +29,7 @@ class PXModuleAcl extends PXAbstractModule {
 		}
 	}
 
-	function adminIndex(&$app, &$request, &$user, &$db, &$layout) {
-		$this->db      =& $db;
-		$this->request =& $request;
-
+	function adminIndex() {
 		$rules  = $this->_getRules();
 		$fields = $this->_getFields();
 		$dicts  = $this->_getDicts();
@@ -55,14 +52,14 @@ class PXModuleAcl extends PXAbstractModule {
 
 		$html = $table->html();
 
-		$layout->SetInnerLayout(
+		$this->layout->SetInnerLayout(
 			array(
 				array(array('100%', '100%')),
 				array('', '')
 			)
 		);
 
-		$layout->Assign("INNER.0.0", $html);
+		$this->layout->Assign("INNER.0.0", $html);
 
 		$_  = NULL;
 		$_ .= '<a href="/admin/popup.phtml?area=acl" onclick="Popup(this.href); return false;" class="button">';
@@ -70,12 +67,13 @@ class PXModuleAcl extends PXAbstractModule {
 		$_ .= 'Правило доступа';
 		$_ .= '</a>';
 
-		$layout->assign('INNER.0.1', $_);
+		$this->layout->assign('INNER.0.1', $_);
 	}
 
-	function adminPopup(&$app, &$request, &$user, &$db, &$layout) {
-		$this->db      =& $db;
-		$this->request =& $request;
+	function adminPopup() {
+		$layout = $this->layout;
+		$request = $this->request;
+		$app = $this->app;
 
 		$rules  = $this->_getRules();
 		$fields = $this->_getFields();
@@ -126,7 +124,7 @@ class PXModuleAcl extends PXAbstractModule {
 					$tmpVals[] = array('id' => $id, 'title' => $val);
 				}
 
-				$directory = new PXDirectory($col);
+				$directory = new PXDirectoryDescription($col);
 				$directory->values = $tmpVals;
 				$directory->displayField = 'title';
 
@@ -212,14 +210,14 @@ class PXModuleAcl extends PXAbstractModule {
 		if (sizeof($nearObject)) {
 			$nearObject = current($nearObject);
 
-			$db->modifyingQuery($db->transactionString(true));
+			$db->transactionBegin();
 			$db->modifyingQuery('UPDATE '.$this->sqlTable.' SET sys_order = '.$objectInDB['sys_order'].' WHERE id = '.$nearObject['id']);
 			$db->modifyingQuery('UPDATE '.$this->sqlTable.' SET sys_order = '.$nearObject['sys_order'].' WHERE id = '.$objectInDB['id']);
-			$db->modifyingQuery($db->transactionString(false));
+			$db->transactionCommit();
 		}
 	}
 
-	function adminAction(&$app, &$request, &$user, &$db) {
+	function adminAction() {
 		$rId = (int)$request->getVar('id');
 		$redir = '/admin/?area='.$this->area;
 

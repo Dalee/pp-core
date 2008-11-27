@@ -1,6 +1,5 @@
 <?php
 require_once 'common.defines.inc';
-require_once 'common.functions.inc';
 
 require_once 'Common/functions.inc';
 require_once 'Filesys/dir.class.inc';
@@ -13,6 +12,7 @@ require_once 'Config/application.class.inc';
 require_once 'Database/database.class.inc';
 require_once 'Request/classes.inc';
 require_once 'User/classes.inc';
+require_once 'Debug/functions.inc';
 
 require_once 'fieldutil.class.inc';
 require_once 'DisplayType/classes.inc';
@@ -23,11 +23,10 @@ require_once 'abstracttrigger.class.inc';
 require_once 'abstractcronrun.class.inc';
 
 require_once 'registry.class.inc';
-include_once 'Objects/classes.inc';
+require_once 'Objects/classes.inc';
 
 require_once 'logger.class.inc';
 require_once 'HTML/interface.class.inc';
 
 require_once 'Engine/classes.inc';
-
 ?>

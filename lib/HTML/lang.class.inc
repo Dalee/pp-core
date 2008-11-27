@@ -1,5 +1,4 @@
 <?php
-
 class PXUserHTMLLang {
 	function PXUserHTMLLang() {
 		$this->setLang('rus');

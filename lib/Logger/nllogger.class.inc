@@ -260,6 +260,7 @@ class SQLAppender extends Appender {
 	function write($level, $message) {
 		if ($this->db !== null){
 			$msg = $this->_compileMessage($level, $message);
+
 			//false -- do not cache query
 			$r = $this->db->ModifyingQuery($msg);
 

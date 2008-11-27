@@ -1,5 +1,5 @@
 <?
-require_once('abstract.class.inc');
+require_once 'abstract.class.inc';
 
 class NLMYSQLDatabase extends NLAbstractSQLDatabase {
 	var $connectArray;
@@ -8,15 +8,16 @@ class NLMYSQLDatabase extends NLAbstractSQLDatabase {
 	var $connected;
 
 	function NLMYSQLDatabase($dbDescription) {
+		$this->setCache($dbDescription->cache);
+
 		$this->connectArray   = $dbDescription->GetMysqlConnectArray();
-		$this->cache          = $dbDescription->cache;
 		$this->connected      = false;
 		$this->dbids          = $dbDescription->dbids;
 	}
 
 	function Connect() {
 		if (!$this->connected) {
-			$this->connection = @mysql_connect($this->connectArray['host'].':'.$this->connectArray['port'], $this->connectArray['user'], $this->connectArray['passwd']);
+			$this->connection = @mysql_connect($this->connectArray['host'].':'.$this->connectArray['port'], $this->connectArray['user'], $this->connectArray['passwd'], true);
 
 			if ($this->connection) {
 				if (@mysql_select_db($this->connectArray['dbname'], $this->connection)) {
@@ -34,27 +35,35 @@ class NLMYSQLDatabase extends NLAbstractSQLDatabase {
 	}
 
 	function ModifyingQuery($query, $table=NULL, $retField=NULL, $flushCache = true) {
-		if (!$this->connected) $this->Connect();
+		if (!$this->connected) {
+			$this->Connect();
+		}
+
 		if ($this->connected) {
 			if (($res = mysql_query($query, $this->connection)) == false) {
 				return ERROR_DB_BADQUERY;
 			}
-			if ($this->cache == true && $flushCache == true) {
-				$d = new NLDir(BASEPATH . DIRECTORY_SEPARATOR . 'tmp/cache/db');
-				$d->Emptyfy();
+
+			if ($flushCache == true) {
+				$this->cache->clear();
 			}
+
 			if ($table && $retField) {
 				return mysql_insert_id($this->connection);
 			} else {
 				return $res;
 			}
+
 		} else {
 			return ERROR_DB_CANNOTCONNECT;
 		}
 	}
 
 	function ModifyingCopy($tableName, $cols, $data) {
-		if (!$this->connected) $this->Connect();
+		if (!$this->connected) {
+			$this->Connect();
+		}
+
 		if ($this->connected) {
 			foreach ($data as $k=>$row) {
 				$this->InsertObject($tableName, $cols, $row);
@@ -65,39 +74,42 @@ class NLMYSQLDatabase extends NLAbstractSQLDatabase {
 	}
 
 	function Query($query, $donotusecache = false) {
-		$profileIden = "SQL: ".$query;
-		NLProfiler($profileIden, "BEGIN");
-        
-        $full_filename = BASEPATH . DIRECTORY_SEPARATOR . 'tmp/cache/db/' . md5($query);
+		PXProfiler::begin('SQL: '.$query);
 
-		if ($this->cache == true && !$donotusecache && file_exists($full_filename)) {
-			$table = unserialize(ReadFileToString($full_filename));
-			NLProfiler($profileIden, "END");
-			return $table;
+		if (!$donotusecache) {
+			$table = $this->cache->load($query);
+
+			if ($table !== null) { 
+				PXProfiler::end();
+				return $table; 
+			}
 		}
 
-		if (!$this->connected) $this->Connect();
+		if (!$this->connected) {
+			$this->Connect();
+		}
 
 		if ($this->connected) {
 			if (($res = @mysql_query($query, $this->connection)) == false) {
-				NLProfiler($profileIden, "END");
+				PXProfiler::end();
 				return ERROR_DB_BADQUERY;
 			}
+
 			$table = array();
 			while (($row = mysql_fetch_array($res, MYSQL_ASSOC))) {
 				$table[] = $row;
 			}
 			mysql_free_result($res);
 
-			if ($this->cache == true && !$donotusecache) {
-				WriteStringToFile($full_filename, serialize($table));
+			if (!$donotusecache) {
+				$this->cache->save($query, $table);
 			}
 		} else {
-			NLProfiler($profileIden, "END");
+			PXProfiler::end();
 			return ERROR_DB_CANNOTCONNECT;
 		}
 
-		NLProfiler($profileIden, "END");
+		PXProfiler::end();
 		return $table;
 	}
 
@@ -157,8 +169,23 @@ class NLMYSQLDatabase extends NLAbstractSQLDatabase {
 		return NULL;
 	}
 
-	function TransactionString($begin=TRUE) {
-		return $begin ? 'START TRANSACTION' : 'COMMIT';
+	/*
+	 * Transaction related functions
+	 * 
+	 */
+	function transactionBegin() {
+		//TODO Check for storage engine is really transaction-safe?
+		$this->Query('START TRANSACTION');
+	}
+
+	function transactionCommit() {
+		//TODO Check for storage engine is really transaction-safe?
+		$this->Query('COMMIT');
+	}
+
+	function transactionRollback() {
+		//TODO Check for storage engine is really transaction-safe?
+		$this->Query('ROLLBACK');
 	}
 
 	function DateTimeString($value) {

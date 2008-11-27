@@ -1,11 +1,10 @@
-<?
-
-class PXModuleCsvImport extends PXAbstractModule {
+<?php
+class PXModuleCsvImport extends PXModule {
 	var $htmlEsc;
 	var $settings;
 
-	function PXModuleCsvImport($area, $settings) {
-		$this->PXAbstractModule($area, $settings);
+	function __construct($area, $settings) {
+		parent::__construct($area, $settings);
 
 		$this->settings = $settings;
 
@@ -24,7 +23,10 @@ class PXModuleCsvImport extends PXAbstractModule {
 		);
 	}
 
-	function adminIndex(&$app, &$request, &$user, &$db, &$layout) {
+	function adminIndex() {
+		$layout = $this->layout;
+		$request = $this->request;
+
 		$layout->SetInnerLayout(array(array(array('100%', '100%'))));
 		$html = '';
 
@@ -66,8 +68,13 @@ class PXModuleCsvImport extends PXAbstractModule {
 		return $html;
 	}
 
-	function adminAction(&$app, &$request, &$user, &$db) {
+	function adminAction() {
+		$request = $this->request;
+		$app     = $this->app;
+		$db      = $this->db;
+
 		$redir_to = $this->buildAdminIndexUrl();
+
 		if (($filename = $this->UploadFile($request->GetUploadFile('file')))) {
 			$quantity = $this->ImportToDb($this->_GetCsvSource($filename), $app, $db, $request);
 			if(is_numeric($quantity)) {
@@ -78,6 +85,7 @@ class PXModuleCsvImport extends PXAbstractModule {
 		} else {
 			$redir_to .= '&status=error&error=notupload';
 		}
+
 		return $redir_to;
 	}
 
@@ -113,41 +121,47 @@ class PXModuleCsvImport extends PXAbstractModule {
 
 			$object = array();
 
-			foreach($fields as $fk=>$fv) {
-				if($fk === 'parent') {
-					$object[$fk] = $fv;
-				} elseif(is_numeric($fv)) {
-					$object[$fk] = $line[$fv];
-				} else {
-					$object[$fk] = $fv;
-				}
-			}
+			$this->constructObject($object, $fields, $line);
+
 			$objects[] = $object;
 		}
 
-		$db->ModifyingQuery('BEGIN');
+		$db->transactionBegin();
+
+		$this->deleteOldObjects($db, $format, $parent);
+
+		$db->addContentObjects($format, $objects);
+		$db->transactionCommit();
+
+		return count($objects);
+	}
+	
+	function constructObject(&$object, $fields, $row){
+		foreach($fields as $fk=>$fv) {
+			if($fk === 'parent') {
+				$object[$fk] = $fv;
+			} elseif(is_numeric($fv)) {
+				$object[$fk] = $row[$fv];
+			} elseif(($fv === 'true' && $fv = true) || ($fv === 'false' && $fv = false)){
+				$object[$fk] = $fv;
+			} else {
+				$object[$fk] = $fv;
+			}
+		}
+	}
+	
+	function deleteOldObjects(&$db, &$format, $parent = null){
 		if(!is_null($parent)) {
 			$sql = 'DELETE FROM '.$format->id.' WHERE parent = '.$parent.';';
 		} else {
 			$sql = 'DELETE FROM '.$format->id;
 		}
-
+		
 		if ($db->ModifyingQuery($sql) == ERROR_DB_BADQUERY) {
 			FatalError("Ошибка в запросе". $sql);
 		}
-
-		$db->AddContentObjects($format, $objects);
-		$db->ModifyingQuery('COMMIT');
-
-		if(!is_null($parent)) {
-			$quantity = $db->GetObjectsByParent($format, NULL, $parent, DB_SELECT_COUNT);
-		} else {
-			$quantity = $db->GetObjects($format, NULL, DB_SELECT_COUNT);
-		}
-
-		return $quantity;
 	}
-
+	
 	function UploadFile($file, $uploadDir = NULL) {
 		$uploadDir = !is_null($uploadDir) ? $uploadDir : BASEPATH.'/var/csvimport';
 

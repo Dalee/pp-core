@@ -1,20 +1,25 @@
-<?
-
-class PXModuleAdvert extends PXAbstractModule {
+<?php
+class PXModuleAdvert extends PXModule {
 	var $dtPlace;
 	var $dtCampaign;
 	var $dtBanner;
 	var $engine;
 
-	function PXModuleAdvert($area, $settings) {
-		$this->PXAbstractModule($area, $settings);
+	function __construct($area, $settings) {
+		parent::__construct($area, $settings);
 		$this->dtPlace    = $settings['place'];
 		$this->dtCampaign = $settings['campaign'];
 		$this->dtBanner   = $settings['banner'];
 		$this->engine     = $settings['engine'];
 	}
 
-	function adminIndex($app, $request, $user, $db, $layout) {
+	function adminIndex() {
+		$layout  = $this->layout;
+		$app     = $this->app;
+		$db      = $this->db;
+		$request = $this->request;
+		$user    = $this->user;
+
 		$layout->SetInnerLayout(
 			array(
 				array(array('25%', '85%', NULL, NULL), array('75%', '15%', NULL, 2)),
@@ -23,19 +28,17 @@ class PXModuleAdvert extends PXAbstractModule {
 			)
 		);
 		$tree = $db->GetObjects($app->types[$this->dtCampaign], NULL, DB_SELECT_TREE);
+		$app->types[$this->dtCampaign]->makeTreeWithSid = true;
 		$layout->AssignTree('INNER.0.0', $app->types[$this->dtCampaign], $tree, $request->GetSid(), $request->GetLeafStatus());
-		if ($user->level >= $app->types[$this->dtCampaign]->nullrole) {
-			$layout->AssignControls('INNER.0.2', $request->GetSid(), array($this->dtCampaign));
+
+		if ($user->can('write', $app->types[$this->dtCampaign], array())) {
+			$layout->AssignControls('INNER.0.2', $request->getSid(), array($this->dtCampaign));
 			$layout->AssignContextMenu('INNER.0.0.CONTEXT', 0, array($this->dtCampaign));
 		}
 
 		$addMenu = array(
 			'adplace' => 'Баннерные позиции'
 		);
-
-		if ($this->engine == 'external') {
-			$addMenu['adinterchange'] = 'Обновить данные';
-		}
 
 		$layout->AssignKeyValueList('INNER.0.1', $addMenu, $request->GetSid());
 		$onPage = $app->GetProperty('CHILDREN_ON_PAGE', 5);
@@ -45,13 +48,18 @@ class PXModuleAdvert extends PXAbstractModule {
 			if ($parentObject) {
 				$layout->SetGetVarToSave($this->dtBanner.'_page', $request->GetVar($this->dtBanner.'_page', 1));
 				$currentPage = $request->GetVar($this->dtBanner.'_page', 1);
-				$objects = $db->GetObjectsByParentLimited($app->types[$this->dtBanner], NULL, $request->GetSid(), $onPage, $onPage*($currentPage-1));
+
+				$currentOrder = $request->GetVar($this->dtBanner.'_order', $app->types[$this->dtBanner]->order);
+				$layout->SetGetVarToSave($this->dtBanner.'_order', $currentOrder);
+
+				$objects = $db->GetObjectsByParentLimited($app->types[$this->dtBanner], NULL, $request->GetSid(), $onPage, $onPage*($currentPage-1), DB_SELECT_TABLE, $currentOrder);
 				$count   = $db->GetObjectsByParent($app->types[$this->dtBanner], NULL, $request->GetSid(), DB_SELECT_COUNT);
 
 				$table = new PXAdminTable($objects, $app->types[$this->dtBanner], $layout->getData);
 				$stats = '<a href="javascript:AdminPopup(\''.$this->area.'\',\'{{format}}\',{{id}}, \'monthly\',990,600);"><img border="0" src="i/icon/stat.gif" align="middle" hspace="3" alt="{{title}}"></a>';
 				$table->appendControl('stats', $stats);
 				$table->setPager($currentPage, $onPage, $count);
+				$table->loadDropdownValues($db);
 				$layout->append('INNER.1.0', $table->getTable());
 
 				$allowedChilds = $app->GetAllowedChildsKeys($this->dtCampaign, $parentObject);
@@ -72,17 +80,9 @@ class PXModuleAdvert extends PXAbstractModule {
 					$objects = $db->GetObjectsLimited($app->types[$this->dtPlace], NULL, $onPage, $onPage*($currentPage-1));
 					$count   = $db->GetObjects($app->types[$this->dtPlace], NULL, DB_SELECT_COUNT);
 					$layout->AppendTable('INNER.1.0', $this->dtPlace, $objects, $request->GetCid(), NULL, $currentPage, $onPage, $count);
-					if ($user->level >= $app->types[$this->dtPlace]->nullrole) {
+					if ($user->can('write', $app->types[$this->dtPlace], array())) {
 						$layout->AssignControls('INNER.1.2', 0, array($this->dtPlace));
 						$layout->AssignContextMenu('INNER.1.0.CONTEXT', 0, array($this->dtPlace));
-					}
-					break;
-				case 'adinterchange':
-					if ($this->engine == 'external') {
-						$this->adInterchange($app, $db);
-						$layout->AssignError('INNER.1.0', "Данные обновлены");
-					} else {
-						$layout->AssignError('INNER.1.0', "Некорректный параметр <EM>sid</EM>");
 					}
 					break;
 				default:
@@ -95,7 +95,7 @@ class PXModuleAdvert extends PXAbstractModule {
 	}
 
 
-	function adminPopup(&$app, &$request, &$user, &$db, &$layout) {
+	function adminPopup() {
 		$months = array(0 => '', 1=>'Январь', 2=>'Февраль', 3=>'Март', 4=>'Апрель', 5=>'Май', 6=>'Июнь',
 								 7=>'Июль', 8=>'Август', 9=>'Сентябрь', 10=>'Октябрь', 11=>'Ноябрь', 12=>'Декабрь');
 
@@ -165,7 +165,7 @@ class PXModuleAdvert extends PXAbstractModule {
 					else
 						$xTitleOverall = 'Средний CTR: '. number_format(100*$sumClicks/$sumShows,2);
 
-                    DEFINE("TTF_DIR", BASEPATH . "/local/share/fonts/");
+					DEFINE("TTF_DIR", BASEPATH . "/local/share/fonts/");
 					require_once 'Jpgraph/jpgraph.php';
 					require_once 'Jpgraph/jpgraph_bar.php';
 
@@ -287,8 +287,7 @@ class PXModuleAdvert extends PXAbstractModule {
 
 	}//function
 
-	function adminAction(&$app, &$request, &$user, &$db) {
-
+	function adminAction() {
 		//$action = $request->getVar("action");
 		$stat   = $request->getVar('stat');
 
@@ -302,7 +301,7 @@ class PXModuleAdvert extends PXAbstractModule {
 		return 'popup.phtml?area=advert&format=adbanner&mode='.$mode.'&id='.$id.'&year='.$year.'&month='.$month;
 	}
 
-	function userIndex(&$app, &$request, &$user, &$db, &$layout, &$tree, &$objects, &$subObjects, &$references, &$heap, $currentSid, $currentCid, $currentCtype, $currentSCid, $currentSCtype, $rootId, $pathId) {
+	function userIndex() {
 		$error = 0;
 		$refName = $this->dtBanner.'2'.$this->dtPlace;
 		if ($rqPlaceId = $request->GetVar('p')) {
@@ -425,7 +424,7 @@ class PXModuleAdvert extends PXAbstractModule {
 	}
 
 
-	function userAction(&$app, &$request, &$user, &$db) {
+	function userAction() {
 		if ($request->GetVar('b')) {
 			$bannerId = $request->GetVar('b');
 		} else {

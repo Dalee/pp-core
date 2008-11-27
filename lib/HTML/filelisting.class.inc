@@ -186,7 +186,7 @@ HTML;
 
 	function _listContext($f) {
 		$tmp = array(
-			"Context('file'",
+			"Context(event, 'file'",
 			"'".addslashes($f->name)."'", // title
 			$f->isDir,                    // isDir
 			"'".$f->alias."'",            // isRead / alias
@@ -196,7 +196,7 @@ HTML;
 			"'".$this->catalog."'",       // dir
 			"'".$this->href."'",          // href
 			"'".$this->side."'",          // side
-			$f->copyable."); window.event.cancelBubble = true; return false;"
+			$f->copyable."); return false;"
 		);
 
 		$context = ' onContextMenu="'.str_replace('\\', '/', implode(', ', $tmp)).'"';

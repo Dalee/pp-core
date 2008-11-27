@@ -50,9 +50,7 @@ function Finalize($url) {
 			break;
 	}
 
-//	header('HTTP/1.0 301 Moved Permanetly');
-//	header('HTTP/1.0 302 Found');
-//	header('HTTP/1.0 303 See Other');
+	header('HTTP/1.0 301 Moved Permanetly'); // Рекомендация Ашманова и Co
 	header('Location: '.$url);
 	exit();
 }

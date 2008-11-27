@@ -1,5 +1,5 @@
 <?php
-class PXModuleMain extends PXAbstractModule {
+class PXModuleMain extends PXModule {
 	private $rootFormatId;
 
 	function __construct($area, $settings) {
@@ -12,47 +12,46 @@ class PXModuleMain extends PXAbstractModule {
 		$urlPath = $this->request->getHostAndDir();
 		$urlFile = $this->request->getFile();
 		$urlPart = $this->request->getPart();
-
 		$this->struct->setFormat($this->rootFormatId);
 		$this->struct->setAliases($this->_parseAliasesConfig());
 
 		// Loading struct tree
-		NLProfiler('load struct', 'BEGIN');
+		PXProfiler::begin('load struct');
 		$this->struct->load($urlPath);
 		$this->struct->getLinks();
-		NLProfiler('load struct', 'END');
+		PXProfiler::end();
 
 		// Loading content objects
-		NLProfiler('load content', 'BEGIN');
+		PXProfiler::begin('load content');
 		$this->struct->loadChilds($this->content, $urlFile);
 		$this->content->getLinks();
-		NLProfiler('load content', 'END');
+		PXProfiler::end();
 
 		// Loading subcontent objects
-		NLProfiler('load subcontent', 'BEGIN');
+		PXProfiler::begin('load subcontent');
 		$this->content->loadChilds($this->subContent, $urlPart);
 		$this->subContent->getLinks();
-		NLProfiler('load subcontent', 'END');
+		PXProfiler::end();
 
 		// Loading objects references
-		NLProfiler('Loading references', 'BEGIN');
+		PXProfiler::begin('Loading references');
 		// $this->user->getLinks(); -- what we must do ???
-		NLProfiler('Loading references', 'END');
+		PXProfiler::end();
 
 		$this->check404error($urlFile, $urlPart);
 	}
 
 	function check404error($urlFile, $urlPart) {
-
-        $error = 0;
+		$error = 0;
 
 		// Определение кода ошибки
-        if (!$this->struct->hasCurrent() ||
-            ($urlFile != 'index.html' && !$this->content->hasCurrent())    ||
-            ($urlPart != ''           && !$this->subContent->hasCurrent())) {
-
-            $error = 404;
-        }
+		if (
+			!$this->struct->hasCurrent() ||
+			($urlFile != 'index.html' && !$this->content->hasCurrent())    ||
+			($urlPart != ''           && !$this->subContent->hasCurrent())
+		) {
+			$error = 404;
+		}
 
 		PXRegistry::setVar('error', $error);
 	}
@@ -77,6 +76,10 @@ class PXModuleMain extends PXAbstractModule {
 		return $aliases;
 	}
 
+	function _loadAdminTree() {
+		return $this->db->GetObjects($this->rootFormat, null, DB_SELECT_TREE);
+	}
+
 	function adminIndex() {
 		if (!isset($this->app->types[$this->rootFormatId])) {
 			FatalError("Некорректный тип данных");
@@ -87,25 +90,26 @@ class PXModuleMain extends PXAbstractModule {
 		$request =& $this->request;
 		$layout  =& $this->layout;
 
-		$rootFormat = &$app->types[$this->rootFormatId];
-		$tree       = $db->getObjects($rootFormat, null, DB_SELECT_TREE);
+		$rootFormat = $this->rootFormat = &$app->types[$this->rootFormatId];
+		$this->tree = $this->_loadAdminTree();
 		$rqSid      = $request->GetSid();
 
-		if ($rqSid != null && isset($tree->leafs[$rqSid])) {
-			$parentObjectPath = $tree->getFullPathString($rqSid);
+		if ($rqSid != null && isset($this->tree->leafs[$rqSid])) {
+			$parentObjectPath = $this->tree->getFullPathString($rqSid);
 		}
 
-		$db->filterByAccess('admin', $rootFormat, $tree);
-		$layout->AssignTree('INNER.0.0', $rootFormat, $tree, $request->GetSid(), $request->GetLeafStatus());
-		$layout->AssignControls('INNER.0.1', $request->GetSid(), array($this->rootFormatId));
-		$layout->AssignContextMenu('INNER.0.0.CONTEXT', 0, array($this->rootFormatId));
+		$db->filterByAccess('admin', $this->rootFormat, $this->tree);
+		$this->rootFormat->makeTreeWithSid = true;
+		$this->_assignAdminTree();
+		unset($this->rootFormat->makeTreeWithSid);
 
-		if ($rqSid != null && isset($tree->leafs[$rqSid])) {
+		if ($rqSid != null && isset($this->tree->leafs[$rqSid])) {
 			$parentObject = $db->GetObjectByID($rootFormat, $rqSid);
 
 			$layout->AssignTitle('раздел &laquo;'.$parentObject['title'].'&raquo;');
 
-			$allowedChilds = $app->GetAllowedChildsKeys($rootFormat->id, $parentObject);
+			$allowedChilds = $app->getAllowedChildsKeys($this->rootFormat->id, $parentObject);
+
 			$layout->AssignControls('INNER.1.1', $rqSid, $allowedChilds);
 			$layout->AssignContextMenu('INNER.1.0.CONTEXT', $rqSid, $allowedChilds);
 
@@ -125,18 +129,18 @@ class PXModuleMain extends PXAbstractModule {
 					}
 
 					if ($app->types[$childFormat]->struct == 'tree' && $request->GetVar($childFormat.'_view') != 'plain') {
-						$objects = $db->GetObjectsByParent($app->types[$childFormat], null, $rqSid, DB_SELECT_TREE);
+						$objects = $this->_loadContent($app->types[$childFormat], NULL, 'parent', $rqSid, DB_SELECT_TREE);
 						$layout->AppendTableAsTree('INNER.1.0', $childFormat, $objects, $rqSid, $request->GetLeafStatus());
 
 					} else {
-						$count   = $db->GetObjectsByParent($app->types[$childFormat], null, $rqSid, DB_SELECT_COUNT);
+						$count   = $this->_loadContent($app->types[$childFormat], NULL, 'parent', $rqSid, DB_SELECT_COUNT);
 						$currentPage  = $request->GetVar($childFormat.'_page', 1);
 						$currentOrder = $request->GetVar($childFormat.'_order', $app->types[$childFormat]->order);
 						$layout->SetGetVarToSave($childFormat.'_order', $currentOrder);
 
 						$currentPage = $currentPage > ceil($count/$onPage) ? ceil($count/$onPage) : $currentPage;
 
-						$objects = $db->GetObjectsByParentLimited($app->types[$childFormat], null, $rqSid, $onPage, $onPage*($currentPage-1), DB_SELECT_TABLE, $currentOrder);
+						$objects = $this->_loadContentLimited($app->types[$childFormat], NULL, 'parent', $rqSid, $onPage, $onPage*($currentPage-1), DB_SELECT_TABLE, $currentOrder);
 
 						$table = new PXAdminTable($objects, $app->types[$childFormat], $layout->getData);
 						$table->loadDropdownValues($db);
@@ -144,6 +148,8 @@ class PXModuleMain extends PXAbstractModule {
 						$table->setSelected($request->GetCid());
 						$table->setParentPathName($parentObjectPath);
 						$table->setShowChildObjects(true);
+						$table->setChildLink('cid');
+
 						$layout->append('INNER.1.0', $table->getTable());
 					}
 
@@ -170,19 +176,17 @@ class PXModuleMain extends PXAbstractModule {
 
 						foreach ($allowedChilds as $childFormat) {
 							if ($app->types[$childFormat]->struct == 'tree' && $request->GetVar($childFormat.'_view') != 'plain') {
-								$objects = $db->GetObjectsByParent($app->types[$childFormat], null, $request->GetCid(), DB_SELECT_TREE);
+								$objects = $this->_loadContent($app->types[$childFormat], NULL, 'parent', $request->GetCid(), DB_SELECT_TREE);
 								$layout->AppendTableAsTree('INNER.2.0', $childFormat, $objects, $request->GetCid(), $request->GetLeafStatus());
-
 							} else {
-
-								$count   = $db->GetObjectsByParent($app->types[$childFormat], null, $request->GetCid(), DB_SELECT_COUNT);
+								$count   = $this->_loadContent($app->types[$childFormat], NULL, 'parent', $request->GetCid(), DB_SELECT_COUNT);
 								$currentPage  = $request->GetVar($childFormat.'_page', 1);
 								$currentOrder = $request->GetVar($childFormat.'_order', $app->types[$childFormat]->order);
 								$layout->SetGetVarToSave($childFormat.'_order', $currentOrder);
 
 								$currentPage = $currentPage > ceil($count/$onPage) ? ceil($count/$onPage) : $currentPage;
 
-								$objects = $db->GetObjectsByParentLimited($app->types[$childFormat], null, $request->GetCid(), $onPage, $onPage*($currentPage-1), DB_SELECT_TABLE, $currentOrder);
+								$objects = $this->_loadContentLimited($app->types[$childFormat], NULL, 'parent', $request->GetCid(), $onPage, $onPage*($currentPage-1), DB_SELECT_TABLE, $currentOrder);
 
 								$table = new PXAdminTable($objects, $app->types[$childFormat], $layout->getData);
 								$table->loadDropdownValues($db);
@@ -219,6 +223,18 @@ class PXModuleMain extends PXAbstractModule {
 		}
 	}
 
-}
+	function _assignAdminTree(){
+		$this->layout->AssignTree('INNER.0.0', $this->rootFormat, $this->tree, $this->request->GetSid(), $this->request->GetLeafStatus());
+		$this->layout->AssignControls('INNER.0.1', $this->request->GetSid(), array($this->rootFormatId));
+		$this->layout->AssignContextMenu('INNER.0.0.CONTEXT', 0, array($this->rootFormatId));
+	}
 
+	function _loadContent(&$format, $status, $param, $value, $flag = DB_SELECT_TABLE, $order = NULL){
+		return $this->db->GetObjectsByField($format, $status, $param, $value, $flag, $order);
+	}
+
+	function _loadContentLimited(&$format, $status, $param, $value, $limit, $offset, $flag = DB_SELECT_TABLE, $order = NULL){
+		return $this->db->GetObjectsByFieldLimited($format, $status, $param, $value, $limit, $offset, $flag, $order);
+	}
+}
 ?>

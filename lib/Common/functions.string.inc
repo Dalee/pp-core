@@ -146,7 +146,7 @@ function utfEncode($string, $direction = 'encode') {
 
 function _StrToLower($text) {
 	$text  = strtolower($text);
-	$trans = array('À' => 'à', 'Á' => 'á', 'Â' => 'â', 'Ã' => 'ã', 'Ä' => 'ä', 'Å' => 'å', '³' => '£', 'Æ' => 'æ', 'Ç' => 'ç', 'È' => 'è', 'É' => 'é', 'Ê' => 'ê', 'Ë' => 'ë', 'Ì' => 'ì', 'Í' => 'í', 'Î' => 'î', 'Ï' => 'ï', 'Ð' => 'ð', 'Ñ' => 'ñ', 'Ò' => 'ò', 'Ó' => 'ó', 'Ô' => 'ô', 'Õ' => 'õ', 'Ö' => 'ö', '×' => '÷', 'Ø' => 'ø', 'Ù' => 'ù', 'Ú' => 'ú', 'Û' => 'û', 'Ü' => 'ü', 'Ý' => 'ý', 'Þ' => 'þ', 'ß' => 'ÿ');
+	$trans = array('À' => 'à', 'Á' => 'á', 'Â' => 'â', 'Ã' => 'ã', 'Ä' => 'ä', 'Å' => 'å', '£' => '³', 'Æ' => 'æ', 'Ç' => 'ç', 'È' => 'è', 'É' => 'é', 'Ê' => 'ê', 'Ë' => 'ë', 'Ì' => 'ì', 'Í' => 'í', 'Î' => 'î', 'Ï' => 'ï', 'Ð' => 'ð', 'Ñ' => 'ñ', 'Ò' => 'ò', 'Ó' => 'ó', 'Ô' => 'ô', 'Õ' => 'õ', 'Ö' => 'ö', '×' => '÷', 'Ø' => 'ø', 'Ù' => 'ù', 'Ú' => 'ú', 'Û' => 'û', 'Ü' => 'ü', 'Ý' => 'ý', 'Þ' => 'þ', 'ß' => 'ÿ');
 	$trans = array_flip($trans);
 	$text  = strtr($text, $trans);
 	return $text;
@@ -338,6 +338,7 @@ function Strip1251($s) {
 		'&plusmn;' => '+-',
 		'&#8470;' => 'N',
 		'&raquo;' => '"',
+		'&nbsp;'  => ' '
 	);
 	return strtr($s, $ent);
 }
@@ -451,13 +452,18 @@ function isUtfString($Str) {
 }
 
 function isAsciiString($AStr) {
-	$ptrASCII = '[\x00-\x7F]';
-	return preg_match("/^($ptrASCII)*$/s", $AStr);
+	static $ptrASCII = '[\x00-\x7F]';
+	return preg_match("/^{$ptrASCII}*$/s", $AStr);
 }
 
 function myconv($from, $to, $string, $be_quiet = false) {
 	if(!function_exists('iconv')) {
 		FatalError('Can\'t find ICONV');
+	}
+
+	// FIXME: it hack
+	if (is_string($string) && !isAsciiString($string) && isUtfString($string)) {
+		$from = 'u';
 	}
 
 	static $entities = array(/*{{{*/
@@ -767,7 +773,7 @@ function myconv($from, $to, $string, $be_quiet = false) {
 	$key = $onebyte ? "$from~$to": $to;
 
 	if (!array_key_exists($key, $tables)) {
-		$fname = (defined('BASEPATH') ? BASEPATH . '/tmp' : ini_get('upload_tmp_dir')) . '/recode-table-' . $key;
+		$fname = (defined('BASEPATH') ? BASEPATH . 'var' : ini_get('upload_tmp_dir')) . '/recode-table-' . $key;
 		$tables[$key] = array();
 
 		if (is_file($fname)) {

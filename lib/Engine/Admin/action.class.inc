@@ -1,4 +1,5 @@
 <?php
+set_time_limit(0);
 class PXEngineAdminAction extends PXEngine {
 	var $nextLocation;
 
@@ -7,12 +8,12 @@ class PXEngineAdminAction extends PXEngine {
 	}
 
 	function initModules() {
-		$this->modules = $this->app->getAvailableModules($this->user->level);
-		$this->area    = $this->request->getArea(current(array_keys($this->modules)));
+		$this->modules = PXRegistry::getApp()->getAvailableModules(PXRegistry::getUser()->level);
+		$this->area    = PXRegistry::getRequest()->getArea(current(array_keys($this->modules)));
 	}
 
 	function runModules() {
-		NLProfiler('RUN MODULES', 'BEGIN');
+		PXProfiler::begin('RUN MODULES');
 
 		if (!isset($this->modules[$this->area])) {
 			FatalError('Некорректный параметр area = <em>'.strip_tags($this->area).'</em>');
@@ -23,11 +24,11 @@ class PXEngineAdminAction extends PXEngine {
 		$instance = $module->getModule();
 		$this->nextLocation = $instance->adminAction();
 
-		NLProfiler('RUN MODULES', 'END');
+		PXProfiler::end();
 	}
 
 	function redirect() {
-		switch ($this->request->getAfterActionDeal()) {
+		switch (PXRegistry::getRequest()->getAfterActionDeal()) {
 			case 'close':
 				closeAndRefresh();
 				break;

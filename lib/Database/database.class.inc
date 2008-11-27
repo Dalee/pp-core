@@ -1,6 +1,4 @@
 <?php
-require_once 'sqladapter.class.inc';
-
 /**Вернуть данные и таблицы в виде массива*/
 define('DB_SELECT_TABLE', 0);
 
@@ -17,6 +15,7 @@ define('DB_SELECT_LIST',  3);
  * Класс работы с БД
  */
 
+require_once 'sqladapter.class.inc';
 class PXDatabase extends NLSQLDatabaseAdapter {
 	/**
 	 * PXApplication reference
@@ -38,14 +37,20 @@ class PXDatabase extends NLSQLDatabaseAdapter {
 	 *
 	 * @param PXApplication $app {@link $app} reference to PXApplication
 	 */
-	function PXDatabase($app) {
-		parent::__construct($app->dbDescription['database']);
+	function PXDatabase($app, $dbDescriptionName='database') {
+		parent::__construct($app->dbDescription[$dbDescriptionName]);
 
 		$this->setUser(new PXUserNull());
+		$this->setCache($app->dbDescription[$dbDescriptionName]->cache);
 
-		$this->app       = $app;
-		$this->types     = $app->types;
-		$this->triggers  = NULL;
+		$this->app      = $app;
+		$this->types    = $app->types;
+		$this->triggers = NULL;
+	}
+
+	function setCache($isCacheOn) {
+		$cacheClass = $isCacheOn ? 'ObjectCache' : 'NullCache';
+		$this->cache = new $cacheClass('database/level2');
 	}
 
 	function setUser($user) {
@@ -209,16 +214,16 @@ class PXDatabase extends NLSQLDatabaseAdapter {
 		$location = $this->ParseWhereTemplate($location, $object, $format);
 		$format = $this->types[$directory->source];
         
-        /*
-         * fixme: check this code please
-         * looks like it's totally wrong!
+	        /*
+	         * fixme: check this code please
+	         * looks like it's totally wrong!
+	        */
 
 		foreach($format->fields as $field) {
 			if(!$field->listed && $field->name !== 'id') {
 				unset($format->fields[$field->name]);
 			}
 		}
-        */
 
 		$directory->values = $this->_GetData($format, DB_SELECT_TABLE, $location);
 		$directory->SetLoaded($addDefault);
@@ -237,8 +242,7 @@ class PXDatabase extends NLSQLDatabaseAdapter {
 	 * @return Array|NULL           results of {@link NLSQLDatabaseAdapter::Query()}
 	 */
 	function _GetData($format, $mode, $where=NULL, $limit=NULL, $order=NULL) {
-		$debugKey = 'GET DATA: '.$format->id.' ['.$where.']-['.(is_array($limit)?implode('.', $limit):'').']-['.$order.']';
-		NLProfiler($debugKey, 'BEGIN');
+		PXProfiler::begin('GET DATA: '.$format->id.' ['.$where.']-['.(is_array($limit)?implode('.', $limit):'').']-['.$order.']');
 
 		if ($mode == DB_SELECT_COUNT) {
 			$selector = 'count('.$format->id.'.id)';
@@ -261,42 +265,38 @@ class PXDatabase extends NLSQLDatabaseAdapter {
 			}
 		}
 
-		if ($this->cache) {
-			$queryIden = $query . '.' . $mode;
-			if (is_array($limit)) {
-				$queryIden .= ';limit:'.implode('.', $limit);
-			}
-
-			if(isset($this->user->groups)) {
-				$queryIden .= ';groups:'.implode('.', $this->user->groups);
-			}
-
-			$cachedFile = BASEPATH.'/tmp/cache/db/l2.'.md5($queryIden);
-			$fp = @fopen($cachedFile, 'rb');
-
-			if ($fp !== false && flock($fp, LOCK_SH)) {
-				if (($fsize = @filesize($cachedFile)) > 0) {
-					$str = fread($fp, $fsize);
-					if ($str !== '') {
-						if (($data = @unserialize($str)) !== false) {
-							fclose($fp);
-							NLProfiler($debugKey, 'END');
-							return $data;
-						}
-					}
-				}
-				fclose($fp);
-			}
+		$usergroups = '';
+		if(isset($this->user->groups)) {
+			$usergroups = ';groups:'.implode('.', $this->user->groups);
 		}
 
-		$data = $this->_PrepareResult($this->Query($query, false, $limit), $format, $mode);
-
-		if ($this->cache) {
-			WriteStringToFile($cachedFile, serialize($data));
+		$queryIden = $this->_getCacheIden($query, $mode, $limit, $usergroups, $this->user->aclType());
+		$data = $this->cache->load($queryIden);
+		if ($data !== null) {
+			PXProfiler::end();
+			return $data; 
 		}
 
-		NLProfiler($debugKey, 'END');
+		$sqlRes = $this->Query($query, false, $limit);
+		$data = $this->_PrepareResult($sqlRes, $format, $mode);
+
+		$this->cache->save($queryIden, $data);
+
+		PXProfiler::end();
 		return $data;
+	}
+
+	function _getCacheIden($query, $mode, $limit, $userGroups, $aclType) {
+		$queryIden = $query . ';mode:' . $mode;
+
+		if (is_array($limit)) {
+			$queryIden .= ';limit:'.implode('.', $limit);
+		}
+
+		$queryIden .= ';groups:'.$userGroups;
+		$queryIden .= ';acl:'.$aclType;
+
+		return $queryIden;
 	}
 
 	function _createSelector(&$format) {
@@ -414,6 +414,8 @@ class PXDatabase extends NLSQLDatabaseAdapter {
 			$whereClause = $format->id.'.parent = '.$parent;
 		} elseif (is_null($parent)) {
 			$whereClause = $format->id.'.parent IS NULL';
+		} elseif (is_array($parent)) {
+			$whereClause = $format->id.'.parent IN ('.implode(',', $parent).')';
 		} else {
 			FatalError('Попытка SQL-Injection!');
 		}
@@ -623,10 +625,13 @@ class PXDatabase extends NLSQLDatabaseAdapter {
 		return $this->_GetData($format, $mode, $whereClause, array($limit, $offset), $order);
 	}
 
+
 	/**
 	 * Добавляет объект в БД.
 	 * Перед добавлением объект преобразуется к необходимому storage type.
-	 * После успешного добавления объекта вызываются триггеры.
+	 * Перед добавлением объекта вызываются триггеры. Если хотя бы один OnBeforeAddObject
+	 * триггер вернёт false, добавление не произойдёт.
+	 * После успешного добавления объекта вызываются триггеры OnAddObject.
 	 * Метод использует {@link PXDatabase::InsertObject} для добавления объектов.
 	 *
 	 * @see InsertObject
@@ -686,23 +691,35 @@ class PXDatabase extends NLSQLDatabaseAdapter {
 			$dbValues[] = serialize($_children);
 		}
 
-		$newId = $this->InsertObject($format->id, $dbFields, $dbValues);
-		if ($newId < 0) {
-			$errString = $this->GetError();
-			$audit->error($errString, $format->id .'/'.getFromArray($object, 'parent'));
-			FatalError($errString);
-		}
-		$this->ModifyingQuery('UPDATE '.$format->id.' SET sys_order = id WHERE id = '.$newId);
-		foreach ($format->fields as $k=>$v) {
-			PXStorageType::callMethod('proceedFile', $v, $object, array('id'=>$newId, 'format'=>$format->id));
-		}
-
 		$this->LoadTriggers();
-		if (count($this->triggers))
-			foreach ($this->triggers as $t)
-				$t->OnAddObject($this, $newId, $format, $object, $dbFields, $dbValues);
+		$permitAdd = true;
+		$newId = 0;
+		if(count($this->triggers)){
+			foreach ($this->triggers as $t){
+				$permitAdd = $t->OnBeforeAddObject($this, $newId, $format, $object, $dbFields, $dbValues);
+				if(!$permitAdd) break;
+			}
+		}
 
-		$audit->info('Объект добавлен', $format->id .'/'. $newId);
+		if($permitAdd){
+			$newId = $this->InsertObject($format->id, $dbFields, $dbValues);
+			if ($newId < 0) {
+				$errString = $this->GetError();
+				$audit->error($errString, $format->id .'/'.getFromArray($object, 'parent'));
+				FatalError($errString);
+			}
+			$this->ModifyingQuery('UPDATE '.$format->id.' SET sys_order = id WHERE id = '.$newId);
+			foreach ($format->fields as $k=>$v) {
+				PXStorageType::callMethod('proceedFile', $v, $object, array('id'=>$newId, 'format'=>$format->id));
+			}
+
+			if (count($this->triggers))
+				foreach ($this->triggers as $t)
+					$t->OnAddObject($this, $newId, $format, $object, $dbFields, $dbValues);
+
+			$audit->info('Объект добавлен', $format->id .'/'. $newId);
+		}
+
 		return $newId;
 	}
 
@@ -865,34 +882,44 @@ class PXDatabase extends NLSQLDatabaseAdapter {
 			}
 		}
 
-		$dbFields[] = 'sys_modified';
-		$dbValues[] = '##now##';
-		$result = $this->UpdateObjectByID($format->id, $object['id'], $dbFields, $dbValues);
-		if ($result <  0) {
-			$audit->error($this->GetError(), $format->id .'/'. $object['id']);
-			FatalError($this->GetError());
-		}
-		if ($format->struct == 'tree' && isset($objectInDB['parent']) && $objectInDB['parent'] != $object['parent']) {
-			$childs        = $this->GetObjectsByParent($format, NULL, $objectInDB['parent'], DB_SELECT_TREE);
-			$objectsToMove = $childs->GetDescendants($object['id']);
-			$query = 'UPDATE '.$format->id.' SET parent='.(is_null($object['parent']) ? 'NULL' : $object['parent']).' WHERE id IN ('.implode(', ', $objectsToMove).')';
-			$this->ModifyingQuery($query);
-
-			if($format->base !== 'struct') {
-				$query = 'UPDATE '.$format->id.' SET pid=NULL WHERE id='.$object['id'];
-				$this->ModifyingQuery($query);
-			}
-
-		}
-		foreach ($format->fields as $k=>$v) {
-			PXStorageType::callMethod('proceedFile', $v, $object, array('id'=>$object['id'], 'format'=>$format->id));
-		}
 		$this->LoadTriggers();
-		if (count($this->triggers))
-			foreach ($this->triggers as $t)
-				$t->OnModifyObject($this, $object['id'], $format, $object, $dbFields, $dbValues, $objectInDB);
+		$permitModify = true;
+		if (count($this->triggers)){
+			foreach ($this->triggers as $t){
+				$permitModify = $t->OnBeforeModifyObject($this, $object['id'], $format, $object, $dbFields, $dbValues, $objectInDB);
+				if(!$permitModify) break;
+			}
+		}
+		if($permitModify){
+			$dbFields[] = 'sys_modified';
+			$dbValues[] = '##now##';
+			$result = $this->UpdateObjectByID($format->id, $object['id'], $dbFields, $dbValues);
+			if ($result <  0) {
+				$audit->error($this->GetError(), $format->id .'/'. $object['id']);
+				FatalError($this->GetError());
+			}
+			if ($format->struct == 'tree' && isset($objectInDB['parent']) && $objectInDB['parent'] != $object['parent']) {
+				$childs        = $this->GetObjectsByParent($format, NULL, $objectInDB['parent'], DB_SELECT_TREE);
+				$objectsToMove = $childs->GetDescendants($object['id']);
+				$query = 'UPDATE '.$format->id.' SET parent='.(is_null($object['parent']) ? 'NULL' : $object['parent']).' WHERE id IN ('.implode(', ', $objectsToMove).')';
+				$this->ModifyingQuery($query);
 
-		$audit->info('Объект изменен', $format->id .'/'. $object['id']);
+				if(isset($format->pid)) {
+					$query = 'UPDATE '.$format->id.' SET pid=NULL WHERE id='.$object['id'];
+					$this->ModifyingQuery($query);
+				}
+
+			}
+			foreach ($format->fields as $k=>$v) {
+				PXStorageType::callMethod('proceedFile', $v, $object, array('id'=>$object['id'], 'format'=>$format->id));
+			}
+			$this->LoadTriggers();
+			if (count($this->triggers))
+				foreach ($this->triggers as $t)
+					$t->OnModifyObject($this, $object['id'], $format, $object, $dbFields, $dbValues, $objectInDB);
+
+			$audit->info('Объект изменен', $format->id .'/'. $object['id']);
+		}
 		return NULL;
 	}
 
@@ -933,7 +960,8 @@ class PXDatabase extends NLSQLDatabaseAdapter {
 	/**
 	 * Удаляет объект (и его childrens) из БД.
 	 * Использует {@link PXDatabase::ModifyingQuery} для удаления.
-	 * После удаления вызываются триггеры.
+	 * Перед и после удаления вызываются триггеры. Если хотя бы один OnBeforeDeleteObject
+	 * триггер вернёт false, удаление не произойдёт.
 	 *
 	 * @see LoadTriggers
 	 *
@@ -950,22 +978,33 @@ class PXDatabase extends NLSQLDatabaseAdapter {
 			FatalError($errString);
 		}
 
-		if ($format->struct == 'tree' && $format->base != 'struct' && isset($this->types[$format->parent])) {
+		if ($format->struct == 'tree' && isset($format->fields['pid']) && isset($this->types[$format->parent])) {
 			$children        = $this->GetObjectsByParent($format, NULL, $objectInDB['parent'], DB_SELECT_TREE);
 			$objectsToDelete = $children->GetDescendants($objectId);
 		} else {
 			$objectsToDelete = array($objectId);
 		}
-		$query  = 'DELETE FROM '.$format->id.' WHERE id IN ('.implode(', ', $objectsToDelete).')';
-		$this->ModifyingQuery($query);
-
-		$d = new NLDir(BASEPATH.'/site/htdocs/ai/'.$format->id.'/'.$objectId.'/');
-		$d->Delete();
 		$this->LoadTriggers();
-		if (count($this->triggers))
-			foreach ($this->triggers as $t)
-				$t->OnDeleteObject($this, $objectId, $format, $objectInDB);
-		$audit->info('Объект удален', $format->id .'/'. $objectId);
+		$permitDelete = true;
+		if (count($this->triggers)) {
+			foreach ($this->triggers as $t) {
+				$permitDelete = $t->OnBeforeDeleteObject($this, $objectId, $format, $objectInDB);
+				if(!$permitDelete) break;
+			}
+		}
+
+		if($permitDelete) {
+			$query  = 'DELETE FROM '.$format->id.' WHERE id IN ('.implode(', ', $objectsToDelete).')';
+			$this->ModifyingQuery($query);
+
+			$d = new NLDir(BASEPATH.'/site/htdocs/ai/'.$format->id.'/'.$objectId.'/');
+			$d->Delete();
+			if (count($this->triggers))
+				foreach ($this->triggers as $t)
+					$t->OnDeleteObject($this, $objectId, $format, $objectInDB);
+
+			$audit->info('Объект удален', $format->id .'/'. $objectId);
+		}
 	}
 
 	/**
@@ -1036,30 +1075,51 @@ class PXDatabase extends NLSQLDatabaseAdapter {
 			FatalError($errString);
 		}
 
-		$where = $format->id.'.sys_order '.($direction == 'down' ? '>' : '<').' '.$objectInDB['sys_order'];
+		$swap = (preg_match('#sys_order\s+DESC#i', $format->order));
+		$down = $direction == 'down';
+		if($swap) {
+			$down = !$down;
+		}
+		$where = $format->id.'.sys_order '.($down ? '>' : '<').' '.$objectInDB['sys_order'];
 
 		if (!empty($format->parent)) {
 			$where .= ' AND '.$format->id.'.parent = '.$objectInDB['parent'];
 		}
 
-		if ($format->struct == 'tree' && $format->base != 'struct') {
+		if ($format->struct == 'tree' && isset($format->fields['pid'])) {
 			$where .= ' AND '.$format->id.'.pid';
 
 			$pid = $objectInDB['pid'];
 			$where .= (is_null($pid) || !is_numeric($pid)) ? ' IS NULL' : ' = '.$pid;
 		}
 
-		$nearObject = $this->GetObjectsByWhereLimited($format, NULL, $where, 1, 0, DB_SELECT_TABLE, 'sys_order '.($direction == 'down'? '' : 'DESC'));
+		$nearObject = $this->GetObjectsByWhereLimited($format, NULL, $where, 1, 0, DB_SELECT_TABLE, 'sys_order '.($down ? '' : 'DESC'));
 
-		if (sizeof($nearObject)) {
-			$nearObject = current($nearObject);
-
-			$this->ModifyingQuery($this->TransactionString(true));
-			$this->ModifyingQuery('UPDATE '.$format->id.' SET sys_order='.$objectInDB['sys_order'].' WHERE id='.$nearObject['id']);
-			$this->ModifyingQuery('UPDATE '.$format->id.' SET sys_order='.$nearObject['sys_order'].' WHERE id='.$objectInDB['id']);
-			$this->ModifyingQuery($this->TransactionString(false));
+		$this->LoadTriggers();
+		$permitMove = true;
+		if (count($this->triggers)){
+			foreach ($this->triggers as $t){
+				$permitMove = $t->OnBeforeMoveObject($this, $objectId, $format, $objectInDB);
+				if(!$permitMove) break;
+			}
 		}
-		$audit->info('Объект перемещен в списке', $format->id .'/'. $objectId);
+
+		if($permitMove) {
+			if (sizeof($nearObject)) {
+				$nearObject = current($nearObject);
+
+				$this->transactionBegin();
+				$this->ModifyingQuery('UPDATE '.$format->id.' SET sys_order='.$objectInDB['sys_order'].' WHERE id='.$nearObject['id']);
+				$this->ModifyingQuery('UPDATE '.$format->id.' SET sys_order='.$nearObject['sys_order'].' WHERE id='.$objectInDB['id']);
+				$this->transactionCommit();
+
+				if (count($this->triggers))
+					foreach ($this->triggers as $t)
+						$t->OnMoveObject($this, $objectId, $format, $objectInDB);
+
+				$audit->info('Объект перемещен в списке', $format->id .'/'. $objectId);
+			}
+		}
 	}
 
 
@@ -1114,7 +1174,7 @@ class PXDatabase extends NLSQLDatabaseAdapter {
 		}
 
 		// part 3: validating extention
-		if ($format->base == 'content' || $format->base == 'subcontent') {
+		if ($format->id !== 'struct') {
 			$allowed = array_flip(unserialize(ENUM_ALLOWED_PATHNAMES));
 			$dotpos = strrpos($url, '.');
 
@@ -1166,6 +1226,17 @@ class PXDatabase extends NLSQLDatabaseAdapter {
 		return $url;
 	}
 
+	function getAllLinks($reference) {
+		$query = <<<SQL
+			SELECT
+				{$reference->name}.*
+
+			FROM
+				{$reference->name}
+SQL;
+
+		return $this->query($query);
+	}
 
 	/**
 	 *
@@ -1177,19 +1248,45 @@ class PXDatabase extends NLSQLDatabaseAdapter {
 	 * @param PXTypeDescription $format
 	 * @param Mixed             $id         Unknown
 	 */
-	 function GetLinksLimited($reference, $format, $id, $limit, $offset) {
+	 function getLinksLimited($reference, $format, $id, $limit, $offset) {
 		$linkedFormat = $reference->getOther($format);
 		$query = '';
+
 		if ($linkedFormat === $format) {
 			$format .= '_';
-            $query = "SELECT {$linkedFormat}.title AS {$linkedFormat}title, {$reference->name}.* " .
-                     " FROM {$reference->name}, {$linkedFormat} " .
-                     " WHERE {$reference->name}.{$format}id = {$linkedFormat}.id AND {$reference->name}.{$linkedFormat}id = {$id} " .
-                     " UNION ";
+			$query = <<<SQL
+				SELECT
+					{$linkedFormat}.title as {$linkedFormat}title,
+					{$reference->name}.*
+
+				FROM
+					{$reference->name},
+					{$linkedFormat}
+
+				WHERE
+					{$reference->name}.{$format}id = {$linkedFormat}.id
+						AND
+					{$reference->name}.{$linkedFormat}id = {$id}
+
+				UNION
+
+SQL;
 		}
-        $query .= "SELECT {$linkedFormat}.title as {$linkedFormat}title, {$reference->name}.* " .
-                  " FROM {$reference->name}, {$linkedFormat} " .
-                  " WHERE {$reference->name}.{$linkedFormat}id = {$linkedFormat}.id AND {$reference->name}.{$format}id = {$id} ";
+
+		$query .= <<<SQL
+				SELECT
+					{$linkedFormat}.title as {$linkedFormat}title,
+					{$reference->name}.*
+
+				FROM
+					{$reference->name},
+					{$linkedFormat}
+
+				WHERE
+					{$reference->name}.{$linkedFormat}id = {$linkedFormat}.id
+						AND
+					{$reference->name}.{$format}id = {$id}
+SQL;
 
 		$limit = is_numeric($limit) && is_numeric($offset) ? array($limit, $offset) : NULL;
 
@@ -1235,6 +1332,51 @@ class PXDatabase extends NLSQLDatabaseAdapter {
 	 * @param Mixed             $reference  Unknown
 	 * @param PXTypeDescription $format
 	 * @param Mixed             $id         Unknown
+	 */
+	function GetLinksCount($reference, $format, $id) {
+		$linkedFormat = $reference->getOther($format);
+		$query = '';
+
+
+		if ($linkedFormat === $format) {
+			$format .= '_';
+			$query = <<<SQL
+				SELECT
+					COUNT({$reference->name}.*)
+				FROM
+					{$reference->name}
+				WHERE
+					{$reference->name}.{$linkedFormat}id = {$id}
+				UNION
+
+SQL;
+		}
+
+
+		$query .= <<<SQL
+			SELECT
+				count({$reference->name}.*)
+			FROM
+				{$reference->name}
+			WHERE
+				{$reference->name}.{$format}id = {$id}
+
+SQL;
+
+		$resTable = $this->query($query);
+
+		return $resTable[0]['count'];
+	}
+
+	/**
+	 *
+	 * Использует {@link PXDatabase::Query}
+	 *
+	 * @todo docme (check params documentation)
+	 *
+	 * @param Mixed             $reference  Unknown
+	 * @param PXTypeDescription $format
+	 * @param Mixed             $id         Unknown
 	 * @param Mixed             $links      Unknown
 	 */
 	function ModifyLinks($reference, $format, $id, $links, $deleteAll=true) {
@@ -1246,7 +1388,7 @@ class PXDatabase extends NLSQLDatabaseAdapter {
 
 		if (!$this->user->can('write', $this->types[$format], $objectInDB)) {
 			$errString = 'Отказано в доступе при попытке модифицировать объект типа <em>'.$format.'</em>';
-			$audit->error($errString, $format->id .'/'. $objectInDB['id']);
+			$audit->error($errString, $format .'/'. $objectInDB['id']);
 			FatalError($errString);
 		}
 		$tmp = array();
@@ -1257,71 +1399,92 @@ class PXDatabase extends NLSQLDatabaseAdapter {
 		foreach ($objectsToLink as $objectToLink) {
 			if (!$this->user->can('write', $this->types[$linkedFormat], $objectToLink) && !$this->user->can('linkto', $this->types[$linkedFormat], $objectToLink)) {
 				$errString = 'Отказано в доступе при попытке привязать объект типа <em>'.$linkedFormat.'</em> к объекту типа <em>'.$format.'</em>';
-				$audit->error($errString, $objectToLink->id .'/'. $objectToLink['id']);
+				$audit->error($errString, $linkedFormat .'/'. $objectToLink['id']);
 				FatalError($errString);
 			}
 		}
+		$this->LoadTriggers();
+		$permitModifyLinks = true;
+		if (count($this->triggers)){
+			foreach ($this->triggers as $t){
+				$permitModifyLinks = $t->OnBeforeModifyLinks($this, $id, $format, $links);
+				if(!$permitModifyLinks) break;
+			}
+		}
 
-		$this->ModifyingQuery($this->TransactionString(true));
+		if($permitModifyLinks){
+			$this->transactionBegin();
 
-		$query = null;
+			$query = '';
+			$keys = implode(', ', array_keys($links));
+			if ($linkedFormat === $format) {
+				$format .= '_';
 
-		$keys = implode(', ', array_keys($links));
-		if ($linkedFormat === $format) {
-			$format .= '_';
+				if(!$deleteAll) {
+					if (sizeof($links)) {
+						$query .= <<<SQL
+DELETE FROM {$reference->name}
+WHERE {$linkedFormat}id = {$id} AND {$format}id IN ({$keys});
+SQL;
+					}
+				} else {
+					$query .= <<<SQL
+DELETE FROM {$reference->name}
+WHERE {$linkedFormat}id = {$id};
+SQL;
+				}
+			}
 
 			if(!$deleteAll) {
-				if (sizeof($links)) {
-                    $query = "DELETE FROM {$reference->name} WHERE {$linkedFormat}id = {$id} AND {$format}id IN ({$keys})";
+				if(sizeof($links)) {
+					$query .= <<<SQL
+DELETE FROM {$reference->name}
+WHERE {$format}id = {$id} AND {$linkedFormat}id IN ({$keys});
+SQL;
 				}
 			} else {
-                $query = "DELETE FROM {$reference->name} WHERE {$linkedFormat}id = {$id}";
-			}
-		}
-
-		if(!$deleteAll) {
-			if(sizeof($links)) {
-                $query = "DELETE FROM {$reference->name} WHERE {$format}id = {$id} AND {$linkedFormat}id IN ({$keys})";
-			}
-		} else {
-            $query = "DELETE FROM {$reference->name} WHERE {$format}id = {$id}";
-		}
-
-		if($query) {
-			$this->ModifyingQuery($query);
-		}
-
-		$data = array();
-		foreach ($links as $k=>$v) {
-			if (!isset($v['on'])) continue;
-			$tmp = array();
-			if ($linkedFormat . '_' === $format) {
-				if ($k == $id) continue;
-				$tmp[$linkedFormat.'id'] = min($id, $k);
-				$tmp[$format.'id']       = max($id, $k);
-			} else {
-				$tmp[$linkedFormat.'id'] = $k;
-				$tmp[$format.'id']       = $id;
+				$query .= <<<SQL
+DELETE FROM {$reference->name}
+WHERE {$format}id = {$id};
+SQL;
 			}
 
-			foreach (array_keys($reference->fields) as $field) {
-				$nullObj = NULL;
-				if(isset($v['fields'][$field])) {
-					$tmp[$field] = $this->_NormalizeObjectAttribute($field, $v['fields'], $reference->fields[$field], $nullObj, $nullObj);
+			if(strlen($query)) {
+				$this->ModifyingQuery($query);
+			}
+
+			$data = array();
+			foreach ($links as $k=>$v) {
+				if (!isset($v['on'])) continue;
+				$tmp = array();
+				if ($linkedFormat . '_' === $format) {
+					if ($k == $id) continue;
+					$tmp[$linkedFormat.'id'] = min($id, $k);
+					$tmp[$format.'id']       = max($id, $k);
 				} else {
-					$tmp[$field] = NULL;
+					$tmp[$linkedFormat.'id'] = $k;
+					$tmp[$format.'id']       = $id;
 				}
+
+				foreach (array_keys($reference->fields) as $field) {
+					$nullObj = NULL;
+					if(isset($v['fields'][$field])) {
+						$tmp[$field] = $this->_NormalizeObjectAttribute($field, $v['fields'], $reference->fields[$field], $nullObj, $nullObj);
+					} else {
+						$tmp[$field] = NULL;
+					}
+				}
+				$data[] = $tmp;
 			}
-			$data[] = $tmp;
+			if (count($data)) {
+				$this->ModifyingCopy($reference->name, array_keys(reset($data)), $data);
+			}
+			$this->transactionCommit();
+
+			if (count($this->triggers))
+				foreach ($this->triggers as $t)
+					$t->OnModifyLinks($this, $id, $format, $links);
 		}
-		if (count($data)) {
-			$this->ModifyingCopy($reference->name, array_keys(reset($data)), $data);
-		}
-		$this->ModifyingQuery($this->TransactionString(false));
-		$this->LoadTriggers();
-		if (count($this->triggers))
-			foreach ($this->triggers as $t)
-				$t->OnModifyLinks($this, $id, $format);
 	}
 
 	/**
@@ -1369,8 +1532,7 @@ class PXDatabase extends NLSQLDatabaseAdapter {
 	function _PrepareResult($resTable, $format, $mode) {
 		switch ($mode) {
 			case DB_SELECT_TABLE:
-				$debugKey = 'PREPARE: '.$format->id.' ['.sizeof($resTable).'x'.sizeof($format->fields).']';
-				NLProfiler($debugKey, 'BEGIN');
+				PXProfiler::begin('PREPARE: '.$format->id.' ['.sizeof($resTable).'x'.sizeof($format->fields).']');
 
 				$this->_NormalizeTable($resTable, $format);
 				$newTable = array();
@@ -1381,14 +1543,13 @@ class PXDatabase extends NLSQLDatabaseAdapter {
 					unset($resTable[$k]);
 				}
 
-				NLProfiler($debugKey, 'END');
+				PXProfiler::end();
 
 				return $newTable;
 				break;
 
 			case DB_SELECT_TREE:
-				$debugKey = 'PREPARE: '.$format->id.' ['.sizeof($resTable).'x'.sizeof($format->fields).']';
-				NLProfiler($debugKey, 'BEGIN');
+				PXProfiler::begin('PREPARE: '.$format->id.' ['.sizeof($resTable).'x'.sizeof($format->fields).']');
 
 				$this->_NormalizeTable($resTable, $format);
 				$newTable = array();
@@ -1398,15 +1559,15 @@ class PXDatabase extends NLSQLDatabaseAdapter {
 					}
 					unset($resTable[$k]);
 				}
-				NLProfiler($debugKey, 'END');
+				PXProfiler::end();
 
-				$debugKey = 'TREE: '.$format->id.' ['.sizeof($newTable).']';
-				NLProfiler($debugKey, 'BEGIN');
 
-				$parentRefName = $format->base == 'struct' ? 'parent' : 'pid';
+				PXProfiler::begin('TREE: '.$format->id.' ['.sizeof($newTable).']');
+
+				$parentRefName = !isset($format->fields['pid']) ? 'parent' : 'pid';
 				$newTree = new NLTree($newTable, 'id', $parentRefName, 'title');
 
-				NLProfiler($debugKey, 'END');
+				PXProfiler::end();
 
 				return $newTree;
 				break;

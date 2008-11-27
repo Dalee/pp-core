@@ -6,8 +6,8 @@
 База становится хорошей при ModifyingQuery если удалось законнектиться.
 При этом файлик удаляется.
 */
-require_once('pgsql.class.inc');
-require_once('abstract.class.inc');
+require_once 'pgsql.class.inc';
+require_once 'abstract.class.inc';
 
 class NLPGSQLClusterDatabase extends NLPGSQLDatabase {
 	var $statusDir;

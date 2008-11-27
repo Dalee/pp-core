@@ -1,5 +1,5 @@
 <?php
-require_once('abstract.class.inc');
+require_once 'abstract.class.inc';
 
 class NLMSSQLDatabase extends NLAbstractSQLDatabase {
 	var $connectArray;
@@ -9,8 +9,9 @@ class NLMSSQLDatabase extends NLAbstractSQLDatabase {
 	var $tservercoding;
 
 	function NLMSSQLDatabase($dbDescription) {
+		$this->setCache($dbDescription->cache);
+
 		$this->connectArray    = $dbDescription->GetMssqlConnectArray();
-		$this->cache           = $dbDescription->cache;
 		$this->connected       = false;
 		$this->servercoding    = (isset($_SERVER['SERVER_PORT']) ? 'w' : 'd');
 	}
@@ -23,6 +24,7 @@ class NLMSSQLDatabase extends NLAbstractSQLDatabase {
 				$this->connectArray['password'],
 				true
 			);
+
 			if ($this->connection) {
 				mssql_query("USE {$this->connectArray['dbname']}; SET DATEFORMAT dmy; SET NOCOUNT OFF", $this->connection);
 				$this->connected  = true;
@@ -40,46 +42,39 @@ class NLMSSQLDatabase extends NLAbstractSQLDatabase {
 	function Query($query, $donotusecache = false, $limitpair = NULL, $xxxx=false) {
 		$query = convert_cyr_string($query, 'k', $this->servercoding);
 
-		$profileIden = "SQL: ".$query;
-		NLProfiler($profileIden, "BEGIN");
+		PXProfiler::begin('SQL: '.$query);
 
 		$md = (is_array($limitpair)) ? "-{$limitpair[0]}-{$limitpair[1]}" : "";
 
-		$filename = BASEPATH.DIRECTORY_SEPARATOR.'tmp/cache/db/'.md5($query.$md);
-		if ($this->cache == true && !$donotusecache && file_exists($filename)) {
-			$fp = @fopen($filename, 'rb');
-
-			if ($fp !== false && flock($fp, LOCK_SH)) {
-				if (($fsize = filesize($filename)) > 0) {
-					$str = fread($fp, $fsize);
-					if ($str !== '') {
-						if (($ret = @unserialize($str)) !== false) {
-							NLProfiler($profileIden, "END");
-							return $ret;
-						}
-					}
-				}
-
-				flock($fp, LOCK_UN);
-				fclose($fp);
+		if (!$donotusecache) {
+			$table = $this->cache->load($query.$md);
+			if ($table !== null) { 
+				PXProfiler::end();
+				return $table; 
 			}
 		}
 
-		if (!$this->connected) $this->Connect();
+		if (!$this->connected) {
+			$this->Connect();
+		}
+
 		if ($this->connected) {
 			if (is_array($limitpair)) {
 				$bquery = "declare @handle int; exec sp_cursoropen @handle OUT, '".$this->__quote($query)."', 1, 1; exec sp_cursorfetch @handle, 16, ".($limitpair[1] + 1).", {$limitpair[0]}; exec sp_cursorclose @handle";
+
 				if (($res = mssql_query($bquery, $this->connection)) === false) {
-					NLProfiler($profileIden, "END");
+					PXProfiler::end();
 					return ERROR_DB_BADQUERY;
 				}
+
 				if (mssql_next_result($res) === false) {
-					NLProfiler($profileIden, "END");
+					PXProfiler::end();
 					return ERROR_DB_BADQUERY;
 				}
+
 			} else {
 				if (($res = mssql_query($query, $this->connection)) === false) {
-					NLProfiler($profileIden, "END");
+					PXProfiler::end();
 					return ERROR_DB_BADQUERY;
 				}
 			}
@@ -96,65 +91,71 @@ class NLMSSQLDatabase extends NLAbstractSQLDatabase {
 							$tmp[$k] = convert_cyr_string($v, $this->servercoding, 'k');
 						}
 					}
+
 					$table[$count++] = $tmp;
 				}
 			}
 
-			if ($this->cache == true && !$donotusecache) {
-				
-                $d = new NLDir(BASEPATH. DIRECTORY_SEPARATOR . 'tmp/cache/db');
-			    if (!$d->exist()) { 
-                    $d->create();
-                }
-
-				WriteStringToFile(BASEPATH.DIRECTORY_SEPARATOR.'tmp/cache/db/'.md5($query.$md), serialize($table));
+			if (!$donotusecache) {
+				$this->cache->save($query, $table);
 			}
 		} else {
-			NLProfiler($profileIden, "END");
+			PXProfiler::end();
 			return ERROR_DB_CANNOTCONNECT;
 		}
 
-		NLProfiler($profileIden, "END");
+		PXProfiler::end();
 
 		return $table;
 	}
 
 
 	function ModifyingQuery($query, $table=NULL, $retField=NULL, $flushCache = true) {
-		if (!$this->connected) $this->Connect();
+		if (!$this->connected) {
+			$this->Connect();
+		}
+
 		if ($this->connected) {
 			$query = convert_cyr_string($query, 'k', $this->servercoding);
 			ini_set('track_errors', 1);
 
 			if (($res = mssql_query($query, $this->connection)) === false) {
 				FatalError($query);
-//				return ERROR_DB_BADQUERY;
 			}
 
 			if(isset($php_errormsg)) {
 				d2($query);
 			}
 
-			if ($this->cache == true && $flushCache == true) {
-				$d = new NLDir(BASEPATH.DIRECTORY_SEPARATOR.'tmp/cache/db/');
-				$d->Emptyfy();
+			if ($flushCache == true) {
+				$this->cache->clear();
 			}
+
 			if ($table && $retField) {
-				return ERROR_DB_BADQUERY;
-			} else {
-				return $res;
+				$tmp = mssql_fetch_array($res);
+
+				if (count($tmp) && !empty($tmp[0])) {
+					$table = $this->Query("SELECT {$retField} FROM {$table} WHERE id = ".$tmp[0], true);
+
+					if (is_array($table) && count($table)) {
+						return $table[0][$retField];
+					} else {
+						return NULL;
+					}
+				} 
 			}
+
+			return $res;
+
 		} else {
 			return ERROR_DB_CANNOTCONNECT;
 		}
 	}
 
 	function InsertObject($table, $fields, $values) {
-		$query = "INSERT INTO {$table} (".implode(", ", array_map(array(&$this, '__mapFields'), $fields)).") VALUES (".
-				implode(', ', array_map(array(&$this, '__mapInsertData'), $values)).")";
-		$this->ModifyingQuery($query);
-		$res = $this->Query("select SCOPE_IDENTITY() AS s", true);
-		return $res[0]['s'];
+		$query = "INSERT INTO {$table} (".implode(", ", array_map(array(&$this, '__mapFields'), $fields)).") VALUES (".implode(', ', array_map(array(&$this, '__mapInsertData'), $values))."); SELECT SCOPE_IDENTITY() AS s";
+		$res = $this->ModifyingQuery($query, $table, 'id', true);
+		return $res;
 	}
 
 	function __mapInsertData($value) {
@@ -179,10 +180,13 @@ class NLMSSQLDatabase extends NLAbstractSQLDatabase {
 	}
 
 	function __mapFields($field) {
-		if ($field == 'index') {
-			return "[".$field."]";
-		} else {
-			return $field;
+		switch($field) {
+			case 'index':
+			case 'count':
+				return "[".$field."]";
+
+			default:
+				return $field;
 		}
 	}
 
@@ -230,8 +234,20 @@ class NLMSSQLDatabase extends NLAbstractSQLDatabase {
 		return (int)(current(current($this->query($query, TRUE))));
 	}
 
-	function TransactionString($begin=TRUE) {
-		return $begin ? 'BEGIN TRANSACTION' : 'COMMIT TRANSACTION';
+	/*
+	 * Transaction related functions
+	 *
+	 */
+	function transactionBegin() {
+		$this->Query('BEGIN TRANSACTION');
+	}
+
+	function transactionCommit() {
+		$this->Query('COMMIT TRANSACTION');
+	}
+
+	function transactionRollback() {
+		$this->Query('ROLLBACK TRANSACTION');
 	}
 
 	function importDateTime($string) {
@@ -275,15 +291,12 @@ class NLMSSQLDatabase extends NLAbstractSQLDatabase {
 
 	function tableExists($tableName) {
 		$a = $this->query("SELECT OBJECTPROPERTY(OBJECT_ID(N'{$tableName}'),N'IsUserTable')");
+
 		if (count($a) && current(current($a)) == 1) {
 			return true;
 		}
+
 		return false;
 	}
-
-	function TrueStatusString($status='TRUE') {
-		return ($status == 'TRUE' || $status == 1) ? "'1'" : "'0'";
-	}
 }
-
 ?>

@@ -1,7 +1,7 @@
 <?
 class PXModuleAuth extends PXAbstractModule {
-	function adminIndex(&$app, &$request, &$user, &$db, &$layout) {
-		$layout->setLoginForm(
+	function adminIndex() {
+		$this->layout->setLoginForm(
 			'action.phtml',
 			'POST',
 
@@ -13,28 +13,28 @@ class PXModuleAuth extends PXAbstractModule {
 			),
 
 			array(
-				'login'   => $user->login,
+				'login'   => $this->user->login,
 				'passwd'  => NULL,
-				'referer' => $request->GetReferer(),
+				'referer' => $this->request->getReferer(),
 				'area'    => 'auth'
 			)
 		);
 
-		if ($user->IsAuthed()) {
-			$layout->assign('LOGIN.ERROR', '<strong class="error">Нет доступа.</strong>');
-			$user->unAuth();
+		if ($this->user->IsAuthed()) {
+			$this->layout->assign('LOGIN.ERROR', '<strong class="error">Нет доступа.</strong>');
+			$this->user->unAuth();
 
-		} else if ($request->GetAction() == 'error') {
-			$layout->assign('LOGIN.ERROR', '<strong class="error">Введенная комбинация логина/пароля неверна.</strong> ');
+		} else if ($this->request->GetAction() == 'error') {
+			$this->layout->assign('LOGIN.ERROR', '<strong class="error">Введенная комбинация логина/пароля неверна.</strong> ');
 		}
 	}
 
-	function adminAction(&$app, &$request, &$user, &$db) {
-		if ($this->_auth($app, $request, $user, $db) == 0) {
-			$nextLocation = $request->GetReferer();
+	function adminAction() {
+		if ($this->_auth() == 0) {
+			$nextLocation = $this->request->GetReferer();
 
 		} else {
-			$nextLocation = $request->GetReferer();
+			$nextLocation = $this->request->GetReferer();
 			if(strpos($nextLocation, '?') !== FALSE) {
 				if(strpos($nextLocation, 'action') !== FALSE) {
 					$nextLocation = preg_replace("/action=.*?\&?(.*)?$/", "action=error", $nextLocation);
@@ -45,34 +45,35 @@ class PXModuleAuth extends PXAbstractModule {
 				$nextLocation .= '?action=error';
 			}
 		}
+
 		return $nextLocation;
 	}
 
-	function userAction(&$app, &$request, &$user, &$db) {
-		if ($this->_auth($app, $request, $user, $db) == 0) {
-			$nextLocation = ($request->GetVar('onsuccess')) ? $request->GetVar('onsuccess') : $request->GetReferer();
+	function userAction() {
+		if ($this->_auth() == 0) {
+			$nextLocation = ($this->request->GetVar('onsuccess')) ? $this->request->GetVar('onsuccess') : $this->request->GetReferer();
 			$nextLocation = removeParamFromUrl($nextLocation, 'login');
 		} else {
-			$nextLocation = ($request->GetVar('onerror')) ? $request->GetVar('onerror') : $request->GetReferer();
+			$nextLocation = ($this->request->GetVar('onerror')) ? $this->request->GetVar('onerror') : $this->request->GetReferer();
 			$nextLocation = appendParamToUrl($nextLocation, 'login', 'bad');
 		}
 		return $nextLocation;
 	}
 
-	function _auth($app, $request, &$user, $db) {
-		$audit = PXAuditLogger::getLogger($app, $db);
+	function _auth() {
+		$audit = PXAuditLogger::getLogger($this->app, $this->db);
 
-		switch ($request->GetVar('action')) {
+		switch ($this->request->getVar('action')) {
 			case 'exit':
-				$audit->info('Выход из системы', 'suser'.'/'. $user->id);
-				$user->UnAuth();
+				$audit->info('Выход из системы', 'suser'.'/'. $this->user->id);
+				$this->user->UnAuth();
 				return 0;
 				break;
 
 			default:
-				if ($user->IsAuthed()) {
-					$audit->info('Вход в систему', 'suser'.'/'. $user->id);
-					$user->Auth();
+				if ($this->user->IsAuthed()) {
+					$audit->info('Вход в систему', 'suser'.'/'. $this->user->id);
+					$this->user->Auth();
 					return 0;
 
 				} else {

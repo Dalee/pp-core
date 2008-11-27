@@ -1,4 +1,4 @@
-<?
+<?php
 define('USERLEVEL_UNAUTHED', 0);
 define('USERLEVEL_USER',     1024);
 define('USERLEVEL_ADMIN',    8192);
@@ -9,7 +9,7 @@ define('DT_USER',         'suser');
 define('DT_GROUP',        'sgroup');
 define('LINK_GROUP2USER', 'sgroup2suser');
 
-require_once 'Auth/classes.inc';
+require_once 'User/Auth/classes.inc';
 require_once('acl.class.inc');
 
 abstract class PXUser {
@@ -30,24 +30,18 @@ abstract class PXUser {
 		$this->auth   = new PXAuthNull();
 	}
 
-	function setDb(&$db) {
-		$this->db     =& $db;
-		$db->setUser($this);
-
-		$this->acl    = new PXObjectsACL($db, $this);
+	function setAcl() {
+		PXRegistry::getDb()->setUser($this);
+		$this->acl    = new PXObjectsACL(PXRegistry::getDb(), $this);
 	}
 
-	function setApp(&$app) {
-		$this->app =& $app;
-	}
-
-	function setRequest(&$request) {
-		$this->request =& $request;
-	}
-
+	// FIXME
 	function auth() {
-		$this->checkAuth();
-		return $this->auth->auth();
+		if(strtolower(get_class($this->auth)) != 'pxauthnull' || $this->checkAuth()){
+			return $this->auth->auth();
+		}
+
+		return false;
 	}
 
 	function unAuth() {

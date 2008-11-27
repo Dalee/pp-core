@@ -1,17 +1,16 @@
 <?php
-require_once 'Config/Description/db.class.inc';
+require_once 'Cache/classes.inc';
 
 class NLSQLDatabaseAdapter {
 	private   $dbDriver;
 	protected $cache;
 
-	function NLSQLDatabaseAdapter($dbDescription) {
+	function NLSQLDatabaseAdapter(&$dbDescription) {
 		$this->init($dbDescription);
 	}
 
 	function init($dbDescription) {
 		$this->dbDriver = $dbDescription->getDriver();
-		$this->cache    = $dbDescription->cache;
 	}
 
 	function switchDatabase($dbDescription) {

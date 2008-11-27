@@ -9,6 +9,24 @@ body {
 	font-family: verdana;
 }
 
+ul.list {
+	padding: 0;
+	margin: 0;
+	list-style-type: none;
+}
+	
+li  {
+	padding: 2px;
+}
+	
+li.selected {
+	background-color: #385A94;
+}
+
+li.selected a {
+	color: #FFFFFF;
+	}
+
 pre.debug {
 	font-size: 150%;
 }
@@ -45,6 +63,7 @@ table.objects, table.objects-table {
 	border-spacing: 0;
 	border: 1px solid #C9CED6;
 	table-layout: fixed;
+	empty-cells: show;
 }
 
 table.objects th, table.objects-table th {
@@ -129,6 +148,12 @@ table.objects tr.deny td {
 	color: #ffffff;
 }
 
+table.objects tfoot td {
+	font-weight: bold;
+	background-color: #E7E9ED;
+	border-top: 2px solid #000000;
+}
+
 table.objects td.null {
 	color: #C9CED6;
 }
@@ -186,9 +211,11 @@ a strike {
 	text-decoration: underline;
 }
 
-H1	{
+H1, caption	{
 	font-size: 14px;
-	margin-bottom: 0;
+	font-weight: bold;
+	margin: 1em 0 0.2em;
+	text-align: left;
 }
 
 H2	{
@@ -426,6 +453,7 @@ table.mainform td, table.mainform th {
 	background-color: #E7E9ED;
 }
 
+table.objects tr.even td, table.objects tr.even  th,
 table.mainform tr.even td, table.mainform tr.even  th {
 	background-color: #C9CED6;
 }
@@ -448,13 +476,24 @@ table.mainform td input:hover, table.mainform td textarea:hover {
 	border-color: #385A94 !important;
 }
 
-table.sysinfo {
+dl.sysinfo {
 	margin: 5px 0 0;
+	padding: 0;
 }
 
-table.sysinfo td, table.sysinfo th {
+dl.sysinfo dt {
+	width: 20%;
+	vertical-align: middle;
+	text-align: right;
+	float: left;
+}
+
+dl.sysinfo dt, dl.sysinfo dd {
 	color: #C9CED6;
 	background-color: #FFFFFF;
+	line-height: 1.4;
+	padding: 0 5px 0 0;
+	margin: 0;
 }
 
 div.colorselect div {
@@ -624,6 +663,33 @@ table.mainform td div.ip input.delim {
 table.mainform td div.datetime input {
 	width: 60px;
 	margin: 0 10px;
+}
+
+table.mainform td optgroup.disabled {
+	color:#BBB;
+	font-style:normal;
+	font-weight:normal;
+	padding-left:3px;
+}
+table.mainform td.delim div {
+	overflow: hidden;
+}
+table.mainform td.delim div div{
+	width: auto;
+	float: left;
+}
+table.mainform td.delim div hr {
+	color: #000;
+}
+
+table.mainform td.delim div.lhr {
+	width: 30%;
+	border: none;
+}
+table.mainform td.delim div.rhr {
+	width: auto;
+	border: none;
+	float: none;
 }
 
 div.datetime span {
@@ -837,6 +903,33 @@ table.filemanager tbody td table col.size, table.filemanager tbody td table col.
 	font-size: 11px;
 	padding-right: 4px;
 }
+
+dl.allowed, dl.allowed dt, dl.allowed dd {
+	list-style-type: none;
+	padding: 0;
+	margin: 0;
+}
+
+dl.allowed dt, dl.allowed dd {
+	float: left;
+	width: 30%;
+
+	padding: 0.5em 0;
+}
+
+dl.allowed dt {
+	clear: both;
+	width: 40%;
+}
+
+dl.allowed dd {
+	m2argin: 0 1em 0 0;
+}
+
+ul.allowed input, ul.allowed label, ul.allowed select {
+	vertical-align: middle;
+}
+
 /* ContextMenu ******************************/
 div#ContextMenu {
 }

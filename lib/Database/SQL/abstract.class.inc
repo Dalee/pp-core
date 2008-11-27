@@ -5,56 +5,54 @@ abstract class NLAbstractSQLDatabase {
 	function __construct($dbDescription) {
 	}
 
-	function Connect() {
+	function connect() {
 	}
 
-	function Close() {
+	function close() {
 	}
 
-	function ModifyingQuery($query, $table=NULL, $retField=NULL, $flushCache = true) {
+	function setCache($isCacheOn) {
+		$cacheClass = $isCacheOn ? 'ObjectCache' : 'NullCache';
+		$this->cache = new $cacheClass('database');
 	}
 
-	function ModifyingCopy($tableName, $cols, $data) {
+	function modifyingQuery($query, $table=NULL, $retField=NULL, $flushCache = true) {
 	}
 
-	function Query($query, $donotusecache = false) {
+	function modifyingCopy($tableName, $cols, $data) {
 	}
 
-	function InsertObject($table, $fields, $values) {
+	function query($query, $donotusecache = false) {
 	}
 
-	function LimitOffsetString($limit, $offset) {
+	function insertObject($table, $fields, $values) {
 	}
 
-	function TrueStatusString($status='TRUE') {
+	function limitOffsetString($limit, $offset) {
+	}
+
+	function trueStatusString($status='TRUE') {
 		return ($status == 'TRUE' || $status == 1) ? 'TRUE' : 'FALSE';
 	}
 
-	function UpdateObjectById($table, $objectId, $fields, $values) {
+	function updateObjectById($table, $objectId, $fields, $values) {
 	}
 
-	function DateTimeString($string) {
+	function dateTimeString($string) {
 	}
 
-	function IsUniqueColsCombination($tables, $colValues, $exception) {
+	function isUniqueColsCombination($tables, $colValues, $exception) {
 	}
 
-	function ClearCache() {
-		if ($this->cache == true) {
-			$d = new NLDir(BASEPATH.'/tmp/cache/db');
-			$d->Emptyfy();
-		}
-	}
-
-	function GetTableInfo($tableName) {
+	function getTableInfo($tableName) {
 		return array();
 	}
 
-	function GetError() {
+	function getError() {
 		return "Error!";
 	}
 
-	function EscapeString($string) {
+	function escapeString($string) {
 		return addslashes($string);
 	}
 
@@ -74,6 +72,13 @@ abstract class NLAbstractSQLDatabase {
 		return true;
 	}
 
-}
+	function transactionBegin() {
+	}
 
+	function transactionCommit() {
+	}
+
+	function transactionRollback() {
+	}
+}
 ?>

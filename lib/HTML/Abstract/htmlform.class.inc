@@ -12,7 +12,8 @@ class NLAbstractHTMLForm {
 	}
 
 	function _DisabledStatus() {
-		return isset($this->disable) && $this->disable ? ' disabled' : '';
+		// isset($this) -- for PHP5
+		return (isset($this) && isset($this->disable) && $this->disable) ? ' disabled' : '';
 	}
 
 	static function BuildFormBegin($action='action.phtml', $method='POST', $enctype='multipart/form-data') {
@@ -51,7 +52,7 @@ class NLAbstractHTMLForm {
 	}
 
 	static function BuildClose($value) {
-		return '<button onclick="window.close()">'.$value.'</button>';
+		return '<button onclick="window.close();return false">'.$value.'</button>';
 	}
 
 	static function BuildHref($key, $value) {
@@ -305,7 +306,7 @@ class NLAbstractHTMLForm {
 
 			$html .= '<input type="text" readonly value="'.$value['type'].'" >';
 			$html .= '<span>тип</span>';
-
+			
 			$value['path']   = $value['fullpath'];
 			$value['width']  = 0;
 			$value['height'] = 0;
@@ -321,7 +322,7 @@ class NLAbstractHTMLForm {
 		if (!is_null($value['path'])) {
 			$html .= '<br>';
 
-			$html .= '<button onclick="window.open(\''.$value['path'].'\'); return false;">просмотр</button>';
+			$html .= '<a href="'.$value['path'].'">просмотр</a> ';
 			$html .= '<button onclick="return ToClipboardMulti(\''.$value['path'].'\', '.(int)$value['width'].', '.(int)$value['height'].', \''.$type.'\')">HTML в буфер</button>';
 
 			$html .= '<br>';
@@ -386,7 +387,21 @@ class NLAbstractHTMLForm {
 
 		return $html;
 	}
+	
+	function BuildParentDropDown($name, $value, $values) {
+		$html = '<select name="'.$name.'"'.NLAbstractHTMLForm::_DisabledStatus().'>';
+		foreach ($values as $k=>$v) {
+			if(isset($v['disabled'])){
+				$html .= '<optgroup class="disabled" label="'.$v['title'].'"></optgroup>';
+			} else {
+				$html .= '<option value="'.$k.'"'.($k == $value ? ' selected' : '').'>'.$v['title'].'</option>';
+			}
+		}
 
+		$html .= '</select>';
+
+		return $html;
+	}
 
 	static function BuildTable($name, $value, $cols, $height) {
 		$colsWidth = array();

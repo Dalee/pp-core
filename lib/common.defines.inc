@@ -101,13 +101,21 @@ $includePath = array(
 ini_set('include_path', implode(PATH_SEPARATOR, $includePath));
 
 // Чтение локальных настроек php
+$profiler = false;
 if (file_exists(BASEPATH.'/site/etc/php.ini')) {
 	$ini_params = parse_ini_file(BASEPATH.'/site/etc/php.ini');
+
 	foreach ($ini_params as $key=>$param) {
 		ini_set($key, $param);
 	}
+	
+	// Включаем профайлер
+	if(array_key_exists('profiler', $ini_params) && $ini_params['profiler']) {
+		$profiler = true;
+	}
 }
-
+// Активируем константу для работы профайлера
+define('PROFILER', $profiler);
 
 // Влючаем дебаг
 error_reporting(E_ALL);

@@ -20,7 +20,7 @@ class PXAdminHTMLLayout extends NLAbstractLayout {
 	}
 
 	function AssignError($label, $errorText) {
-		$this->Assign($label, '<DIV style="color:#990000;text-align:center;font-size:13px;font-weight:bold;">'.$errorText.'</DIV>');
+		$this->Assign($label, '<p class="error">'.$errorText.'</p>');
 	}
 
 	function AssignTree($label, $objectFormat, $tree, $selectedSid, $leafsToOpen) {
@@ -56,7 +56,9 @@ class PXAdminHTMLLayout extends NLAbstractLayout {
 			$up   = current($leafs) == $first || !$haveSysOrder ? 0 : 1;
 			$down = current($leafs) == $last  || !$haveSysOrder ? 0 : 1;
 
-			$html .= '<DIV parent="leafParent'.$parent.'" id="leafId'.$parent.'" style="';
+			$menuTitle = str_replace('"', '', str_replace("'", '', strip_tags($tree->leafs[$leaf]->title)));
+			$context = 'Context(event, \'edit\', '.$leaf.', '.(int)($tree->leafs[$leaf]->content['status']).', \''.$objectFormat->id.'\',  \''.$menuTitle.'\', \''.implode('/', $leafAlias).'/'.'\', '.$level.', '.$up.', '.$down.'); return false;';
+			$html .= '<DIV oncontextmenu="'.$context.'" id="leafId'.$leaf.'" style="';
 
 			if ($leaf == $selectedSid) {
 				$html .= 'background-color:#385A94;';
@@ -66,7 +68,7 @@ class PXAdminHTMLLayout extends NLAbstractLayout {
 
 			if (!in_array($parent, $leafsToOpen) && $level > 1) $html .= ' display: none;';
 
-			$html .= '"><NOBR>';
+			$html .= '">';
 
 			if ($level) {
 				foreach ($leafImgs as $i) {
@@ -96,7 +98,7 @@ class PXAdminHTMLLayout extends NLAbstractLayout {
 				$leafImgs[$leaf] = $leafI;
 				$leafAlias[$leaf] = (isset($objectFormat->fields['pathname'])) ? $tree->leafs[$leaf]->content['pathname'] : NULL;
 
-				if (!is_numeric(strpos($cLeafImg, 'void'))) $html .= '<A href="javascript:HideShowLeaf(\'leafId'.$leaf.'\', \'leafImg'.$leaf.'\');">';
+				if (!is_numeric(strpos($cLeafImg, 'void'))) $html .= '<A href="javascript:hideShowLeaf(\''.$leaf.'\');">';
 				$html .= '<IMG src="i/tree/'.$cLeafImg.'.gif" id="leafImg'.$leaf.'">';
 				if (!is_numeric(strpos($cLeafImg, 'void'))) $html .= '</A>';
 			}
@@ -108,24 +110,17 @@ class PXAdminHTMLLayout extends NLAbstractLayout {
 				$leafImg .= (!sizeof($tree->leafs[$leaf]->children)) ? '-l' : '';
 			}
 
-			$menuTitle = str_replace('"', '', str_replace("'", '', strip_tags($tree->leafs[$leaf]->title)));
-			$context = 'Context(\'edit\', '.$leaf.', '.(int)($tree->leafs[$leaf]->content['status']).', \''.$objectFormat->id.'\',  \''.$menuTitle.'\', \''.implode('/', $leafAlias).'/'.'\', '.$level.', '.$up.', '.$down.'); window.event.cancelBubble = true; return false;';
-			// echo $context."<br>";
-			// $context = '';
-
-			$html .= '<IMG onContextMenu="'.$context.'" onClick="'.$context.'"';
-			$html .= ' class="cursor" src="i/tree/'.$leafImg.'.gif" alt="Изменить раздел &laquo;'.$menuTitle.'&raquo;">';
-
-			$html .= '<A onContextMenu="'.$context.'" href="javascript:EditContent(\''.$objectFormat->id.'\', \''.$leaf.'\')"><IMG src="i/tree/edit.gif" alt="Изменить раздел &laquo;'.$menuTitle.'&raquo;"></A>';
+			$html .= '<IMG onClick="'.$context.'" class="cursor" src="i/tree/'.$leafImg.'.gif" alt="Изменить раздел &laquo;'.$menuTitle.'&raquo;">';
+			$html .= '<A href="javascript:EditContent(\''.$objectFormat->id.'\', \''.$leaf.'\')"><IMG src="i/tree/edit.gif" alt="Изменить раздел &laquo;'.$menuTitle.'&raquo;"></A>';
 
 			if ($objectFormat->childs) {
-				$varName = ($objectFormat->base == 'struct') ? 'sid' : 'cid';
+				$varName = (isset($objectFormat->makeTreeWithSid)) ? 'sid' : 'cid'; //hack for main module
 				$html .= '<A href="'.$this->_BuildHref($varName, $leaf).'">';
 			}
 			if ($tree->leafs[$leaf]->content['status'] == false) $html .= '<STRIKE>';
-			$html .= '<SPAN onContextMenu="'.$context.'" onClick="ContextHide();"';
+			$html .= '<SPAN onClick="ContextHide();"';
 			if ($leaf == $selectedSid) $html .= ' style="color:#FFFFFF;"';
-			if (isset($objectFormat->fields['pathname'])) $html .= 'title="'.$tree->leafs[$leaf]->content['pathname'].'"';
+			if (isset($objectFormat->fields['pathname'])) $html .= ' title="'.$tree->leafs[$leaf]->content['pathname'].'"';
 			$html .= '>';
 			$html .= strip_tags($tree->leafs[$leaf]->title);
 			$html .= '</SPAN>';
@@ -136,7 +131,7 @@ class PXAdminHTMLLayout extends NLAbstractLayout {
 
 			next($leafs);
 
-			$html .= '</NOBR>'.$this->_MakeTreePart($tree, $objectFormat, $leaf, $leafsToOpen, $selectedSid, $level+1, $leaf, $leafImgs, $leafAlias);
+			$html .= $this->_MakeTreePart($tree, $objectFormat, $leaf, $leafsToOpen, $selectedSid, $level+1, $leaf, $leafImgs, $leafAlias);
 			$html .= '</DIV>';
 			unset($leafImgs[$leaf]);
 			unset($leafAlias[$leaf]);
@@ -162,7 +157,7 @@ class PXAdminHTMLLayout extends NLAbstractLayout {
 	function AssignContextMenu($label, $selectedSid, $allowedFormats) {
 		$html = NULL;
 		if (sizeof($allowedFormats)) {
-			$html .=' onContextMenu="window.event.cancelBubble = true; Context(\'add\', '.$selectedSid;
+			$html .=' onContextMenu="Context(event, \'add\', '.$selectedSid;
 			foreach ($this->types as $k=>$v) {
 				if (in_array($k, $allowedFormats)) {
 					$html .= ' , \''.$k.'\', \''.$v->title.'\'';

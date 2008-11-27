@@ -3,6 +3,7 @@ class PXCronRunNull extends PXAbstractCronRun {
 	var $name;
 
 	function PXCronRunNull() {
+		$this->PXAbstractCronRun();
 		$this->name = 'Пустая задача';
 	}
 

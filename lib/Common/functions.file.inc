@@ -70,13 +70,7 @@ function unlinkDir($source) {
 }
 
 function smarty_file_exists($filename) {
-	foreach(array('local', 'libpp') as $roots) {
-		if(file_exists(BASEPATH.DIRECTORY_SEPARATOR.$roots.'/templates/'.$filename)) {
-			return true;
-		}
-	}
-
-	return false;
+	return file_exists(BASEPATH.'/templates/'.$filename);
 }
 
 function is_binary($link) {

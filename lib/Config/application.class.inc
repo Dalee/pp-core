@@ -77,7 +77,7 @@ class PXApplication {
 		}
 
 		/* try to get config from cache */
-		$instance[$projectDir] = self::loadFromCache($projectDir);
+//		$instance[$projectDir] = self::loadFromCache($projectDir);
 
 		/* create new instance, if not cached */
 		if (!isset($instance[$projectDir])) {
@@ -221,6 +221,7 @@ class PXApplication {
 		$tmp = tempnam(BASEPATH . DIRECTORY_SEPARATOR . 'var', 'lang');
 		WriteStringToFile($tmp, $source);
 
+		// Spyc'у не нравятся мои конфиги, поэтому их стоит немного переделать
 		include_once 'spyc/spyc.php';
 		$spyc = new Spyc();
 		$this->langTree = $spyc->load($tmp);
@@ -249,51 +250,8 @@ class PXApplication {
 	 * @param String $k ключ
 	 * @param String $defaultValue - возвращаемое значение по умолчанию
 	 */
-	public function GetProperty($k, $defaultValue=NULL) {
+	public function getProperty($k, $defaultValue=NULL) {
 		return (isset($this->properties[$k])) ? $this->properties[$k] : $defaultValue;
-	}
-
-	/**
-	 * Возвращает next base.
-	 * Например, для 'content' next base будет 'subcontent'.
-	 *
-	 * @param String $base название текущего раздела
-	 */
-	public function GetNextBase($base) {
-		$map = array(
-			'struct'     => 'content',
-			'content'    => 'subcontent',
-			'subcontent' => '',
-			'user'       => 'subcontent'
-		);
-		return $map[$base];
-	}
-
-	/**
-	 * Возвращает массив типов разрешенных потомков для next base.
-	 *
-	 * @uses GetNextBase()
-	 * @param String $base	название раздела
-	 * @return Array		массив потомков, или пустой массив
-	 */
-	public function GetNextBaseChildTypes($base) {
-		$nextBase = $this->GetNextBase($base);
-		return array_filter($this->types, create_function('$type', "\$type->base == $nextBase;"));
-	}
-
-	/**
-	 * Возвращает массив типов потомков для указанного base.
-	 *
-	 * @param String	название текущего раздела
-	 */
-	public function filterTypesByBase($base) {
-		$array = array();
-		foreach ($this->types as $k=>$v) {
-			if ($v->base == $base) {
-				$array[$k] = $this->types[$k];
-			}
-		}
-		return $array;
 	}
 
 	/**
@@ -314,21 +272,11 @@ class PXApplication {
 	 * @return Array				массив разрешенных детей или пустой массив
 	 */
 	public function getAllowedChilds($formatName, &$object) {
-		$ac = array();
-
-		if (is_object($object)) {
-			$ac = isset($object->content[OBJ_FIELD_CHILDREN]) ? $object->content[OBJ_FIELD_CHILDREN] : array();
-		} else if (is_array($object)) {
-			$ac = isset($object[OBJ_FIELD_CHILDREN]) ? $object[OBJ_FIELD_CHILDREN] : array();
+		if(!isset($this->types[$formatName])) {
+			return array();
 		}
 
-		foreach ($ac as $k=>$v) {
-			if (!isset($this->types[$k])) {
-				unset($ac[$k]);
-			}
-		}
-
-		return $ac;
+		return $this->types[$formatName]->allowedChilds($object);
 	}
 
 	/**
@@ -348,7 +296,7 @@ class PXApplication {
 	/*
 	 * todo: two methods do the same?
 	 */
-	public function InitContentObject($formatName) {
+	public function initContentObject($formatName) {
 		$object = array();
 
 		foreach ($this->types[$formatName]->fields as $k=>$v) {
@@ -394,9 +342,7 @@ class PXApplication {
 				switch ($name) {
 					case 'name':          $type->id            = (string)$value; break;
 					case 'description':   $type->title         = utf8_decode((string)$value); break;
-					case 'base':          $type->base          = (string)$value; break;
 					case 'orderby':       $type->order         = (string)$value; break;
-					case 'nullrole':      $type->nullrole      = (string)$value; break;
 					case 'parent':        $type->parent        = (string)$value; break;
 					case 'bydefault':     $type->byDefault     = self::_mapByDefaults((string)$value); break;
 					case 'struct':        $type->struct        = (string)$value; break;
@@ -405,7 +351,9 @@ class PXApplication {
 				}
 			}
 
-			if (!isset($type->order)) $type->order = 'sys_order';
+			if (!isset($type->order)) {
+				$type->order = 'sys_order';
+			}
 
 			$nodes = $domDatatype->children();
 			foreach ($nodes as $node) {
@@ -425,8 +373,11 @@ class PXApplication {
 						break;
 				}
 			}
+
+			$type->allTypes =& $this->types;
 			$this->types[$type->id] = $type;
 		}
+
 		foreach ($this->types as $k=>$v) {
 			if (!empty($v->parent)) {
 				if (isset($this->types[$v->parent])) {
@@ -436,6 +387,7 @@ class PXApplication {
 				}
 			}
 		}
+
 		$domReferences = $xml->xpath("/model/references/reference");
 
 		if (!is_array($domReferences) || count($domReferences) == 0) {
@@ -550,6 +502,7 @@ class PXApplication {
 					$directory->values[(string)$node["id"]][$name] = utf8_decode((string)$value);
 				}
 			}
+			$directory->SetLoaded();
 		}
 
 		$directory->SetLoaded($addDefault);
@@ -572,7 +525,7 @@ class PXApplication {
 			FatalError("Ошибка в файле настроек <em>$fileName</em>");
 		}
 
-		$domModules = $xml->xpath("/modules/module");
+		$domModules = $xml->xpath("/modules//module");
 
 		if (!$domModules || empty($domModules)) {
 			FatalError("Не определены модули проекта");
@@ -580,26 +533,21 @@ class PXApplication {
 
 		foreach($domModules as $domModule) {
 			$module = new PXModuleDescription();
-			$attrs  = $domModule->attributes();
-
-			$module->name        = (string)$domModule['name'];
-			$module->description = utf8_decode((string)$domModule['description']);
-			$module->class       = (string)$domModule['class'];
-			$module->access      = (string)$domModule['access'];
-			$module->hidetab     = (string)$domModule['hidetab'];
-			$module->trigger     = (string)($domModule['trigger'] == 'on' ? true : false);
+			$module->setAttrs($domModule->attributes());
+			$module->lookPackage($xml);
 
 			$nodes = $domModule->children();
 			foreach ($nodes as $name => $value) {
 				$module->settings[$name][] = utf8_decode($value);
 			}
+
 			foreach ($module->settings as $k=>$v) {
 				if (count($v) == 1) {
 					$module->settings[$k] = $v[0];
 				}
 			}
 
-			$this->modules[$module->name] = $module;
+			$this->setModules($module);
 		}
 
 
@@ -620,6 +568,10 @@ class PXApplication {
 		}
 
 		$this->bindingsQueue->sort();
+	}
+
+	function setModules($module) {
+		$this->modules[$module->getName()] = $module; 
 	}
 
 	/**

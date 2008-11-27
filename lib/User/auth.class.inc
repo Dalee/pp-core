@@ -1,13 +1,21 @@
 <?php
 class PXUserAuthorized extends PXUser {
 	function can($what, $format, $object) {
+		if($format === NULL){
+			$format = & new PXTypeDescription;
+		}
+
+		if($object === NULL){
+			$object = array('id'=>NULL,'parent'=>NULL);
+		}
+
 		return $this->acl->check($what, $format, $object);
 	}
 
 	function checkAuth() {
-		$app     =& $this->app;
-		$db      =& $this->db;
-		$request =& $this->request;
+		$app     = PXRegistry::getApp();
+		$db      = PXRegistry::getDb();
+		$request = PXRegistry::getRequest();
 		$user    =& $this;
 
 		foreach ($app->authrules as $rule => $params) {
@@ -35,6 +43,11 @@ class PXUserAuthorized extends PXUser {
 		}
 
 		$this->acl->reload();
+		return $this->auth->onAuth();
+	}
+
+	function aclType() {
+		return (sizeof($this->groups) > 1) ? 'bygroup' : 'basic';
 	}
 }
 ?>

@@ -4,20 +4,18 @@ abstract class PXEngine {
 	protected $area;
 
 	function __construct() {     // Инициализация основных объектов приложения
-		NLProfiler('INIT', 'BEGIN');
+		PXProfiler::begin('INIT');
 
 		$user = PXRegistry::getUser();
 
-		$user->setDb(PXRegistry::getDb());
-		$user->setApp(PXRegistry::getApp());
-		$user->setRequest(PXRegistry::getRequest());
+		$user->setAcl();
 		$user->checkAuth();
 
 		PXRegistry::getDb()->LoadDirectoriesAutomatic(PXRegistry::getApp()->directory);
 
 		$this->initModules();
 
-		NLProfiler('INIT', 'END');
+		PXProfiler::end();
 	}
 
 	function initModules() {

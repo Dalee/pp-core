@@ -6,7 +6,6 @@
  * @subpackage Application
  */
 class PXDirectoryDescription {
-
 	var $name;
 	var $load;
 	var $loaded;

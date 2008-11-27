@@ -112,11 +112,12 @@ class NLDir {
 			if (!file_exists($path)) {
 				if ($permissions != NULL) {
 					if (!@mkdir($path, $permissions)) {
-						FatalError();
+						FatalError('Can\'t make dir '.$path);
 					}
+
 				} else {
 					if (!@mkdir($path)) {
-						FatalError();
+						FatalError('Can\'t make dir '.$path);
 					}
 				}
 			} elseif (!is_dir($path)) {
@@ -133,13 +134,26 @@ class NLDir {
 	 * @return string
 	 */
 	function Read() {
-		if ($this->_block) return -1;
-		if (!$this->Exist()) return -1;
-		if (!is_object($this->_dirObject)) $this->_dirObject = dir($this->name);
+		if ($this->_block) {
+			return -1;
+		}
+
+		if (!$this->Exist()) {
+			return -1;
+		}
+
+		if (!is_object($this->_dirObject)) {
+			$this->_dirObject = dir($this->name);
+		}
+
 		while (true) {
 			$entry = $this->_dirObject->read();
-			if ($entry{0} != '.') break;
+
+			if ($entry{0} != '.') {
+				break;
+			}
 		}
+
 		return $entry;
 	}
 
@@ -155,7 +169,7 @@ class NLDir {
 			return FALSE;
 		}
 
-		return ($entry) ? $this->name.DIRECTORY_SEPARATOR.$entry : NULL;
+		return ($entry !== false) ? $this->name.DIRECTORY_SEPARATOR.$entry : NULL;
 	}
 
 	/**
@@ -176,15 +190,18 @@ class NLDir {
 	 *
 	 * @return void
 	 */
-	function Delete() {
+	function delete($deleteSelf=true) {
 		if ($this->_block) {
 			return -1;
 		}
 
 		if($this->Exist()) {
-			$this->Emptyfy();
+			$this->Emptyfy($deleteSelf);
 			$this->getFiles(); // делается из за странного бага на windows - каталог не удалялся, без перечитывания списка его файлов
-			rmdir($this->name);
+
+			if($deleteSelf) {
+				rmdir($this->name);
+			}
 		}
 	}
 
@@ -193,7 +210,7 @@ class NLDir {
 	 *
 	 * @return void
 	 */
-	function Emptyfy() {
+	function Emptyfy($deleteSelf=true) {
 		if ($this->_block) {
 			return -1;
 		}
@@ -202,19 +219,19 @@ class NLDir {
 			$this->_dirObject = NULL;
 		}
 
-		while ($entry = $this->ReadFull()) {
+		while ($entry = $this->readFull()) {
 			if(file_exists($entry)) {
 				if (is_dir($entry)) {
 					$d = new NLDir($entry);
-					$d->Delete();
+					$d->delete($deleteSelf);
 				} else {
-					$this->Unlink($entry);
+					$this->unlink($entry);
 				}
 			}
 		}
 	}
 
-	function Unlink($entry) {
+	function unlink($entry) {
 		ini_set('track_errors', 1);
 		$oldError = error_reporting(0);
 

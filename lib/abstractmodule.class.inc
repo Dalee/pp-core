@@ -1,5 +1,14 @@
-<?
-class PXAbstractModule {
+<?php
+interface PXModuleIF {
+	function adminIndex();
+	function adminAction();
+	function adminPopup();
+	function userIndex();
+	function userAction();
+	function userJson();
+}
+
+abstract class PXModule implements PXModuleIF {
 	function __construct($area, $settings) {
 		$this->area       = $area;
 		$this->settings   = $settings;
@@ -10,10 +19,16 @@ class PXAbstractModule {
 		$this->db         = PXRegistry::getDb();
 		$this->layout     = PXRegistry::getLayout();
 		$this->types      = PXRegistry::getTypes();
-
+/*
+TODO FIXME
 		$this->struct     = PXRegistry::getVar('struct');
 		$this->content    = PXRegistry::getVar('content');
 		$this->subContent = PXRegistry::getVar('subContent');
+
+		$this->tree       = $this->struct->tree;
+		$this->objects    = $this->content->data;
+		$this->subObjects = $this->subContent->data;
+*/
 	}
 
 	function buildAdminUrl() {
@@ -46,16 +61,9 @@ class PXAbstractModule {
 	}
 }
 
-
-/**
- * Marked to remove soon.
- *
- * @depricated
- */
-class RTAbstractModule extends PXAbstractModule {
-	function RTAbstractModule($area, $settings) {
-		parent::_construct($area, $settings);
+abstract class PXAbstractModule extends PXModule implements PXModuleIF {
+	function __call($method, $args) {
+		throw new DeprecatedException("PXAbstractModule is deprecated. Use PXModule");
 	}
 }
-
 ?>

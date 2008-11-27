@@ -15,13 +15,15 @@ class PXAdminObjectForm extends NLAbstractHTMLForm {
 		$this->object = $object;
 	}
 
-	function MainForm($parentsArray, $selfParentsArray = NULL) {
+	function MainForm($tree, $selfTree, $datatype) {
 		$html  = $this->BaseInputs('main');
 
 		$param = array(
-			'parents'     => $parentsArray,
-			'selfParents' => $selfParentsArray,
-			'even'        => false
+			'parents'     => $tree->getPlainTree(getFromArray($this->object, 'id')),
+			'selfParents' => $selfTree->getPlainTree(getFromArray($this->object, 'id')),
+			'even'        => false,
+			'tree'        => $tree,
+			'datatype'    => $datatype
 		);
 
 		$html .= '<table class="mainform">';
@@ -39,11 +41,11 @@ class PXAdminObjectForm extends NLAbstractHTMLForm {
 		$html .= '</table>';
 
 		if (isset($this->object['sys_created']) || isset($this->object['sys_modified']) || isset($this->object['ownerlogin'])) {
-			$html .= '<table class="mainform sysinfo">';
-			$html .= isset($this->object['sys_created'])  ? '<tr><th>Создан:  </th><td>'.substr($this->object['sys_created'],  0, 19).'</td></tr>' : '';
-			$html .= isset($this->object['sys_modified']) ? '<tr><th>Изменен: </th><td>'.substr($this->object['sys_modified'], 0, 19).'</td></tr>' : '';
-			$html .= isset($this->object['ownerlogin'])   ? '<tr><th>Владелец:</th><td>'.$this->object['ownerlogin'].'</td></tr>'                  : '';
-			$html .= '</table>';
+			$html .= '<dl class="sysinfo">';
+			$html .= isset($this->object['sys_created'])  ? '<dt>Создан:  </dt><dd>'.substr($this->object['sys_created'],  0, 19).'</dd>' : '';
+			$html .= isset($this->object['sys_modified']) ? '<dt>Изменен: </dt><dd>'.substr($this->object['sys_modified'], 0, 19).'</dd>' : '';
+			$html .= isset($this->object['ownerlogin'])   ? '<dt>Владелец:</dt><dd>'.$this->object['ownerlogin'].'</dd>'                  : '';
+			$html .= '</dl>';
 		}
 
 		return $html;
@@ -64,8 +66,8 @@ class PXAdminObjectForm extends NLAbstractHTMLForm {
 			$this->BuildHidden('format', $this->format->id);
 	}
 
-    function LinksForm($reference, $formatTo, $links, $pLinks, 
-                       $objectsOnPage = 0, $page = 1, $count = 0, &$layout, $onlyExistingLinks = false) {
+	function LinksForm($reference, $formatTo, $links, $pLinks, 
+		$objectsOnPage = 0, $page = 1, $count = 0, &$layout, $onlyExistingLinks = false) {
 		$displayFields = array();
 		foreach ($formatTo->fields as $k => $f) {
 			if ($f->listed) {
@@ -85,15 +87,15 @@ class PXAdminObjectForm extends NLAbstractHTMLForm {
 			$html .= '<th>'.$v->description.'</th>';
 		}
 		$html .= '</tr></thead><tbody>';
-		
-        foreach ($pLinks as $k=>$v) {
+
+		foreach ($pLinks as $k=>$v) {
 			$html .= '<tr'.($v['status'] == false ? ' class="hide"' : '').'>';
 			$html .= '<td class="c3">';
 			$html .= $this->BuildHidden($reference->name.'['.$v['id'].'][id]', $v['id']);
 			$html .= $this->BuildCheckBox($reference->name.'['.$v['id'].'][on]', isset($links[$v['id']]), NULL, $reference->name.$v['id']);
 
 			$menuTitle = (strlen($v['title']) > 10) ? trim(substr($v['title'], 0, 10)).'&hellip;' : $v['title'];
-			$context = 'Context(\'edit\', '.$v['id'].', '.(int)($v['status']).', \''.$formatTo->id.'\',  \''.$menuTitle.'\', \'\', 1, 0, 0); window.event.cancelBubble = true; return false;';
+			$context = 'Context(event, \'edit\', '.$v['id'].', '.(int)($v['status']).', \''.$formatTo->id.'\',  \''.$menuTitle.'\', \'\', 1, 0, 0); window.event.cancelBubble = true; return false;';
 			$html .= '<a oncontextMenu="'.$context.'" href="javascript:EditContent(\''.$formatTo->id.'\', \''.$v['id'].'\')">';
 			$html .= '<img src="i/icon/edit.gif" alt="Изменить &laquo;'.$v['id'].'&raquo;"></a>';
 			$html .= '</td>';
@@ -175,54 +177,61 @@ class PXAdminObjectForm extends NLAbstractHTMLForm {
 		return $this->BaseInputs('links').$html;
 	}
 
-	function ChildrenForm($types, $counts = NULL) {
+	function childrenForm($types, $counts = NULL) {
 		$values = array(
 			PP_CHILDREN_FETCH_ALL      => 'Все',
 			PP_CHILDREN_FETCH_SELECTED => 'Текущий',
 			PP_CHILDREN_FETCH_NONE     => 'Никакие'
 		);
-		$html = '<SCRIPT type="text/javascript">
+
+		$name = OBJ_FIELD_CHILDREN;
+		$html = <<<HTML
+		<script type="text/javascript">
 			function changeChildrenDropDown(form, id, checked) {
 				for (var i=0; i<form.elements.length; i++) {
-					if (form.elements[i].name == \''.OBJ_FIELD_CHILDREN.'[\' + id + \']\') {
-						if (checked) {
-							form.elements[i].disabled = false;
-						} else {
-							form.elements[i].disabled = true;
-						}
+					if (form.elements[i].name == '{$name}[' + id + ']') {
+						form.elements[i].disabled = !checked;
 					}
 				}
 			}
-		</SCRIPT>';
-		$html .= '<TABLE border="0" cellpadding="2" cellspacing="0" width="96%">';
+		</script>
+HTML;
+		$html .= '<dl class="allowed">'."\n";
+
 		foreach ($types as $k=>$v) {
 			$quantity = (isset($counts[$k])) ? $counts[$k] : 0;
-			if (!in_array($k, $this->format->childs)) continue;
-			$html .= "\n<TR>" . '<TD width="1%">';
-			$html .= '<INPUT type="checkbox" onclick="changeChildrenDropDown(this.form, \''.$k.'\', this.checked);"';
-			if (isset($this->object[OBJ_FIELD_CHILDREN][$k])) $html .= ' checked';
-			if ($quantity > 0) $html .= ' disabled';
-			$html .= '>';
-			if (!isset($this->object[OBJ_FIELD_CHILDREN][$k])) $this->disable = true;
 
-            /*
-             *  FIXME: PXApplication::_mapByDefault - is private!!!!!!!!!!!!!!!!     
-             * 
-             */
-			$value = (isset($this->object[OBJ_FIELD_CHILDREN][$k])) ? $this->object[OBJ_FIELD_CHILDREN][$k] : PXApplication::_mapByDefaults('all');
+			if (!in_array($k, $this->format->childs)) {
+				continue;
+			}
 
-            /*
-             * :-X
-             */
-			$html .= self::BuildDropDown(OBJ_FIELD_CHILDREN.'['.$k.']', $value, $values, $this->disable);
+			$checked  = isset($this->object[OBJ_FIELD_CHILDREN][$k]) ? ' checked'  : '';
+			$disabled = $quantity > 0                                ? ' disabled' : '';
+			$onClick  = ' onclick="changeChildrenDropDown(this.form, \''.$k.'\', this.checked);"';
+
+			$html .= '<dt>';
+			$html .= '<input type="checkbox"'.$onClick.$checked.$disabled.' id="'.OBJ_FIELD_CHILDREN.'['.$k.']">';
+			$html .= '<label for="'.OBJ_FIELD_CHILDREN.'['.$k.']">'.$v->title.'</label>';
+			$html .= '</dt>';
+
+			$value = ($checked) ? $this->object[OBJ_FIELD_CHILDREN][$k] : PXApplication::_mapByDefaults('all');
+			$this->disable = !strlen($checked);
+
+			$html .= '<dd>'.$this->BuildDropDown(OBJ_FIELD_CHILDREN.'['.$k.']', $value, $values, 0, 0).'</dd>';
+			$html .= '<dd>'.$quantity.' '.NumericEndingsRussian('объект', $quantity, array('ов', '', 'а', 'а', 'а', 'ов', 'ов', 'ов', 'ов', 'ов'));
+
 			$this->disable = false;
-			$html .= '</TD><TD width="25%"><LABEL for="'.OBJ_FIELD_CHILDREN.'['.$k.']">'.$v->title.'</LABEL></TD>';
-            $html .= '<TD>' . $quantity . ' ' . NumericEndingsRussian('объект', $quantity, array('ов', '', 'а', 'а', 'а', 'ов', 'ов', 'ов', 'ов', 'ов'));
-			if ($quantity > 0) $html .= ' &#151; отвязка невозможна';
-			$html .= '</TR>';
+
+			if ($quantity > 0) {
+				$html .= ' &#151; отвязка невозможна';
+			}
+
+			$html .= '</dd>'."\n";
 		}
-		$html .= '</TABLE>';
-		return $this->BaseInputs('children').$html;
+
+		$html .= '</dl>';
+
+		return $this->baseInputs('children').$html;
 	}
 
 	function AccessForm($accessList) {
@@ -241,26 +250,37 @@ class PXAdminObjectForm extends NLAbstractHTMLForm {
 			$this->BuildText('filesource', htmlspecialchars(ReadFileToString($dir.'/'.$file)), '100%');
 	}
 
-	function RemoveForm() {
-		$html  = '<h2>Вы уверены, что хотите удалить объект &laquo;<STRONG>'.$this->object['title'].'</STRONG>&raquo;</h2>';
-		$html .= '<p class="delete"><INPUT name="ack" id="ack" type="checkbox"> <label for="ack">Да! Я хочу удалить именно этот объект!</label></p>';
+	function removeForm() {
+		$title = $this->object['title'];
 
-		return $this->BaseInputs('remove').$html;
+		return $this->BaseInputs('remove').<<<HTML
+			<h2>
+				Вы уверены, что хотите удалить объект &laquo;<strong>{$title}</strong>&raquo;
+			</h2>
+
+			<p class="delete">
+				<input name="ack" id="ack" type="checkbox">
+				<label for="ack">Да! Я хочу удалить именно этот объект!</label>
+			</p>
+HTML;
 	}
 
-	function GetAllowedForms($userLevel) {
+	function getAllowedForms($userLevel) {
 		$forms = array();
 		$forms['main'] = 'Основная информация';
+
 		if (isset($this->object['id']) && $this->object['id'] != 0) {
 			if (count($this->format->childs)) {
 				$forms['children'] = 'Разрешенные дети';
 			}
+
 			if (!empty($this->format->references)) {
 				$forms['links'] = 'Связи';
 			}
-			// $forms['access']   = 'Права доступа';
+
 			$forms['remove']   = 'Удаление';
 		}
+
 		return $forms;
 	}
 }

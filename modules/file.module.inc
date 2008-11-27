@@ -1,12 +1,13 @@
-<?
+<?php
 require_once 'Filesys/listing.class.inc';
 require_once 'HTML/filelisting.class.inc';
 
-class PXModuleFile extends PXAbstractModule {
+class PXModuleFile extends PXModule {
 	var $settings;
 	var $area;
 
-	function PXModuleFile($area, $settings) {
+	function __construct($area, $settings) {
+		parent::__construct($area, $settings);
 		$this->area     = $area;
 		$this->settings = array();
 
@@ -38,14 +39,12 @@ class PXModuleFile extends PXAbstractModule {
 			return false;
 		}
 
-		$layout->setSimpleInnerLayout(array('100%'), array('100%', ''));
-		$layout->assign('INNER.0.0', '<div class="error">Нет ни одного каталога <strong>доступного</strong> для просмотра!!!</div>');
+		$this->layout->setSimpleInnerLayout(array('100%'), array('100%', ''));
+		$this->layout->assign('INNER.0.0', '<div class="error">Нет ни одного каталога <strong>доступного</strong> для просмотра!!!</div>');
 		return true;
 	}
 
-	function adminIndex(&$app, &$request, &$user, &$db, &$layout) {
-		$this->layout =& $layout;
-
+	function adminIndex() {
 		if($this->error()) {
 			return;
 		}
@@ -68,8 +67,8 @@ class PXModuleFile extends PXAbstractModule {
 			)
 		);
 
-		$lDir = $request->getVar('ldir');
-		$rDir = $request->getVar('rdir');
+		$lDir = $this->request->getVar('ldir');
+		$rDir = $this->request->getVar('rdir');
 
 		foreach($tabs as $tab) {
 			$curDir = $tab['side'] == 'l' ? $lDir : $rDir;
@@ -84,10 +83,10 @@ class PXModuleFile extends PXAbstractModule {
 			$listing->getList($curDir);
 			$listing->setDecorator(new PXHTMLFileListing($href, $tab['side']));
 
-			$layout->assign('INNER.'.$tab['cell'].'.0', $listing->html());
+			$this->layout->assign('INNER.'.$tab['cell'].'.0', $listing->html());
 
 			if ($listing->writable()) {
-				$layout->assign('INNER.'.$tab['cell'].'.1', $this->_uploadForm($this->area, $lDir, $rDir, $tab['side'], FALSE, 'file'));
+				$this->layout->assign('INNER.'.$tab['cell'].'.1', $this->_uploadForm($this->area, $lDir, $rDir, $tab['side'], FALSE, 'file'));
 			}
 
 			unset($listing);
@@ -179,13 +178,10 @@ HTML;
 		$this->layout->assign('OUTER.MAINAREA', $_html);
 	}
 
-	function adminPopup(&$app, &$request, &$user, &$db, &$layout) {
+	function adminPopup() {
 		$layout->setGetVarToSave('id',     $request->GetId());
 		$layout->setGetVarToSave('format', $request->GetFormat());
 		$layout->setGetVarToSave('action', $request->GetAction());
-
-		$this->request =& $request;
-		$this->layout  =& $layout;
 
 		$this->_initRequestVars();
 
@@ -257,9 +253,7 @@ HTML;
 		$this->mFile       = $request->getVar('mfile');
 	}
 
-	function adminAction(&$app, &$request, &$user, &$db) {
-		$this->request =& $request;
-
+	function adminAction() {
 		$this->_initRequestVars();
 
 		switch($request->getVar('action')) {
@@ -327,10 +321,18 @@ HTML;
 			$this->_aDelete();
 		}
 	}
-
+	
+	function _escapeFileName($name) {
+		if (substr($this->catalog.$name, 0, 2) != '\\') {
+			$name = _TranslitFilename($name);
+		}
+		return $name;
+	}
+	
 	function _aCreateDir() {
 		$newDir = $this->request->GetVar('ndir');
-
+		$newDir = $this->_escapeFileName($newDir);
+		
 		if(is_dir($this->catalog) && is_writable($this->catalog) && !is_dir($this->catalog.$newDir)) {
 			MakeDirIfNotExists($this->catalog.$newDir);
 		}
@@ -339,7 +341,8 @@ HTML;
 	function _aRename() {
 		$oldFile = $this->mFile;
 		$newFile = $this->request->getVar('nfile');
-
+		$newFile = $this->_escapeFileName($newFile);
+		
 		if((is_file($this->catalog.$oldFile) || is_dir($this->catalog.$oldFile)) && is_writable($this->catalog) && (!is_file($this->catalog.$newFile) && !is_dir($this->catalog.$newFile))) {
 			rename($this->catalog.$oldFile, $this->catalog.$newFile);
 		}

@@ -103,11 +103,9 @@ class PXFileListing {
 	function getList($catalog) {
 		$catalog = $this->_prepare($catalog);
 		$this->_catalog = $catalog;
-
 		if(!$this->_isValid($catalog)) {
 			return null;
 		}
-
 		return $this->_ls($catalog);
 	}
 
@@ -116,7 +114,7 @@ class PXFileListing {
 
 		$catalog = $this->_prepare($this->_fullPath($catalog));
 		$_dir = new NLDir($catalog);
-
+		
 		foreach($_dir->getDirs(true) as $path) {
 			$this->_files[$path] = new PXFileListingItemCatalog($path, $this);
 		}
@@ -127,14 +125,18 @@ class PXFileListing {
 
 		return $this->_files;
 	}
+	
+	function _getRealPath($catalog) {
+		return realpath($this->_fullPath($catalog));
+	}
 
 	function _isValid($catalog) {
 		if(!is_dir($this->_fullPath($catalog))) {
 			return false;
 		}
-
+		
 		foreach($this->_roots as $root) {
-			if(strpos($catalog, $root) === 0 && strlen($root) <= strlen($catalog)) {
+			if(strpos($this->_getRealPath($catalog), $this->_getRealPath($root)) === 0 && strlen($root) <= strlen($catalog)) {
 				return true;
 			}
 		}

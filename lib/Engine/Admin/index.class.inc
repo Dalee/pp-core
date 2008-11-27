@@ -56,7 +56,7 @@ class PXEngineAdminIndex extends PXEngine {
 	}
 
 	function runModules() {
-		NLProfiler('RUN MODULES', 'BEGIN');
+		PXProfiler::begin('RUN MODULES');
 
 		$this->initMenu();
 
@@ -77,7 +77,7 @@ class PXEngineAdminIndex extends PXEngine {
 
 		$instance = $this->modules[$area]->getModule()->adminIndex();
 
-		NLProfiler('RUN MODULES', 'END');
+		PXProfiler::end();
 	}
 
 	function html() {

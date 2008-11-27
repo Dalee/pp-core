@@ -409,17 +409,11 @@ class NLAbstractLayout {
 	}
 
 	function AssignKeyValueList($label, $list, $varName, $selected) {
-		$html = NULL;
-		foreach ($list as $k=>$v) {
-			$html .= '<DIV style="padding:2px;';
-			if ($k == $selected) $html .= 'background-color: #385A94;';
-			$html .= '"><A href="'.$this->_BuildHref($varName, $k).'"';
-			if ($k == $selected) $html .= ' style="color: #FFFFFF;"';
-			$html .= '>';
-			$html .= $v;
-			$html .= '</A></DIV>';
-		}
-		$this->Assign($label, $html);
+		$list = new PxAdminList($list);
+		$list->setVarName($varName);
+		$list->setSelected($selected);
+		$list->setGetData($this->getData);
+		$this->Assign($label, $list->html());
 	}
 
 	function Flush($charset = NULL) {

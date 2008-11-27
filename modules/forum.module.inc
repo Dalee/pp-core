@@ -425,7 +425,8 @@ class PXModuleForum extends PXAbstractModule {
 						$error = 'badparent';
 						break;
 					}
-					if (!in_array($this->dtTopics, $app->GetAllowedChildsKeys($app->types[$this->dtForums], $fObject))) {
+					$fAllowed = $app->types[$this->dtForums]->allowedChilds($fObject);
+					if (!isset($fAllowed[$this->dtTopics])) {
 						$error = 'noallowed';
 						break;
 					}

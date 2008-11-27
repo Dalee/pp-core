@@ -1,10 +1,17 @@
 <?
-define('BACKTRACE', function_exists('debug_backtrace'));
 define('NL_FATAL_ERROR', 16384);
 
-class NLErrorReporter {
+function FatalError($errorMessage='', $errorType = 'FatalError') {
+	NLErrorReporter::FatalError($errorMessage, $errorType);
+	exit;
+}
 
-	static function GSC($varName, $action, $value=NULL) {
+// TODO: refactoring
+class NLErrorReporter {
+	function NLErrorReporter() {
+	}
+
+	function GSC($varName, $action, $value=NULL) {
 		static $count = 0;
 		static $list = array();
 
@@ -22,7 +29,7 @@ class NLErrorReporter {
 		}
 	}
 
-	static function CatchError($errno=0, $errstr='', $errfile='', $errline=0, $errobj=NULL, $stripSecond=false) {
+	function ErrorHandler($errno=0, $errstr='', $errfile='', $errline=0, $errobj=NULL, $stripSecond=false) {
 		static $errorTypes = array(
 			E_ERROR           => 'Error',
 			E_WARNING         => 'Warning',
@@ -40,8 +47,6 @@ class NLErrorReporter {
 			E_USER_NOTICE     => 'User Notice',
 
 			NL_FATAL_ERROR    => 'Fatal Error',
-
-			E_STRICT          => 'Runtime Notice'
 		);
 
 		if ($errno & (NL_FATAL_ERROR | error_reporting())) {
@@ -54,16 +59,16 @@ class NLErrorReporter {
 
 			NLErrorReporter::TraceError($error,  $stripSecond);
 
-			$error['text'] = "\n<br />\n* <b>" . $error['type'] . ":</b> $errstr in <b>$errfile</b> on line <b>$errline</b>\n<br />\n";
+			$error['text'] = "\n<br />\n* <b>"._StrToUpper($error['type']).":</b> $errstr in <b>$errfile</b> on line <b>$errline</b>\n<br />\n";
 
-			if(!isset($_SERVER['REQUEST_METHOD'])) {
+			if(CLI) {
 				$error['text'] = strip_tags($error['text']);
 			}
 
 			if(ini_get('display_errors')) {
 				$id = mt_rand();
 
-				if(isset($_SERVER['REQUEST_METHOD'])) {
+				if(NOT_CLI) {
 					echo '<div class="error-debug">'.$error['text'];
 					echo '<a href="" onclick="document.getElementById(\'error'.$id.'\').style.display=\'block\'; this.style.display = \'none\'; return false;">&darr;</a> ';
 					echo '<a href="" onclick="this.parentNode.style.display = \'none\';return false;">x</a>';
@@ -80,85 +85,13 @@ class NLErrorReporter {
 
 			NLErrorReporter::GSC('count', 'set', $count);
 			NLErrorReporter::GSC('list',  'set', $list);
-			return true;
 		}
 
-		# Since PHP 5.2.0 we have to return false to populate $php_errormsg
-		# This variable used in myiconv and some other functions
-		return false;
-
+		return $errno;
 	}
 
-	static function TraceProcess() {
-		if (!BACKTRACE) {
-			return false;
-		}
-
-		$stack = debug_backtrace();
-		array_shift($stack);
-
-		$trace = array();
-
-		foreach ($stack as $i => $call) {
-			$e = array();
-
-			$e['file'] = isset($call['file']) ? str_replace(BASEPATH, '', $call['file']) : NULL;
-			$e['line'] = isset($call['file']) ? $call['line'] : NULL;
-
-			$e['function'] = isset($call['class']) ? $call['class'].$call['type'] : '';
-			$e['function'] .= $call['function'];
-
-			$e['args'] = array();
-
-			if(isset($call['args'])) {
-				foreach ($call['args'] as $k=>$v) {
-					$type = gettype($v);
-
-					switch($type) {
-						case 'resource':
-							$value = get_resource_type($v);
-							break;
-
-						case 'array':
-							$value = '['.sizeof($v).']';
-							break;
-
-						case 'object':
-							$value = get_class($v);
-							break;
-
-						case 'boolean':
-							$value = $v ? 'true' : 'false';
-							break;
-
-						case 'string':
-							$value = "'$v'";
-							break;
-
-						case 'NULL':
-							$value = 'NULL';
-							break;
-
-						default:
-							$value = (string)$v;
-							break;
-					}
-
-					$e['args'][$k] = array('type'=>$type, 'value'=>$value);
-				}
-
-			}
-
-			$trace[] = $e;
-
-		}
-
-		return $trace;
-
-	}
-
-	static function TraceError(&$error, $stripSecond=false) {
-		$stack = NLErrorReporter::TraceProcess();
+	function TraceError(&$error, $stripSecond=false) {
+		$stack = PXTrace();
 
 		if(!is_array($stack)) {
 			return false;
@@ -179,11 +112,11 @@ class NLErrorReporter {
 		return true;
 	}
 
-	static function ErrorCount() {
+	function ErrorCount() {
 		return NLErrorReporter::GSC('count', 'get');
 	}
 
-	static function ShutDown() {
+	function ShutDown() {
 		$count = NLErrorReporter::GSC('count', 'get');
 		$list  = NLErrorReporter::GSC('list', 'get');
 
@@ -194,7 +127,7 @@ class NLErrorReporter {
 		exit();
 	}
 
-	static function SendMail() {
+	function SendMail() {
 		$count = NLErrorReporter::GSC('count', 'get');
 		$list  = NLErrorReporter::GSC('list', 'get');
 
@@ -202,7 +135,7 @@ class NLErrorReporter {
 
 		$r  = "\n";
 
-		if(isset($_SERVER['REQUEST_METHOD'])) {
+		if(NOT_CLI) {
 			$r .= "\n".str_pad('RequestUri:',  $th, ' ').'http://'.NLRequest::GetHttpHost().NLRequest::GetRequestUri();
 			$r .= "\n".str_pad('RemoteAddr:',  $th, ' ').NLRequest::GetRemoteAddr();
 			$r .= "\n".str_pad('HttpReferer:', $th, ' ').NLRequest::GetHttpReferer();
@@ -291,7 +224,7 @@ class NLErrorReporter {
 		return @mail($toEmail, $subject, $r, 'From: '.$from['name'].' <'.$from['email'].">\r\n".'Reply-To: '.$replyTo."\r\n");
 	}
 
-	static function TraceTable($error, $type='table') {
+	function TraceTable($error, $type='table') {
 		$text = '';
 
 		switch($type) {
@@ -361,7 +294,7 @@ class NLErrorReporter {
 		return $text;
 	}
 
-	static function FatalError($errorMessage='', $errorType='') {
+	function FatalError($errorMessage='', $errorType='') {
 		$text = '';
 		$error = array();
 
@@ -373,7 +306,7 @@ class NLErrorReporter {
 		$email = isset($_SERVER['SERVER_ADMIN']) ? $_SERVER['SERVER_ADMIN'] : 'support@netlogic.ru';
 
 		if(!ini_get('display_errors')) {
-			if(isset($_SERVER['REQUEST_METHOD'])) {
+			if(NOT_CLI) {
 				$text .= '<html><head><title>Error</title></head><body>';
 				$text .= '<h1>Error</h1>';
 				$text .= '<p>Sorry, but '._StrToLower($errorType).' occured and your request can not be contented</p>';
@@ -389,10 +322,10 @@ class NLErrorReporter {
 				}
 			}
 
-			NLErrorReporter::CatchError(NL_FATAL_ERROR, $error['text'], $error['file'], $error['line'], NULL, true);
+			NLErrorReporter::ErrorHandler(NL_FATAL_ERROR, $error['text'], $error['file'], $error['line'], NULL, true);
 
 		} else {
-			if(isset($_SERVER['REQUEST_METHOD'])) {
+			if(NOT_CLI) {
 				$text .= "<html><head><title>".$error['text']." &#8212; Fatal Error</title>
 					<style>
 						body {
@@ -472,7 +405,6 @@ class NLErrorReporter {
 	}
 }
 
-set_error_handler(array('NLErrorReporter', 'CatchError'));
+set_error_handler(array('NLErrorReporter', 'ErrorHandler'));
 register_shutdown_function(array('NLErrorReporter', 'ShutDown'));
-
 ?>

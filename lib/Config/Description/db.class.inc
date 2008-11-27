@@ -10,7 +10,7 @@ class NLDBDescription {
 	private $password;
 
 	private $dbname;
-	private $dbtype;
+	public $dbtype; // FIXME
 	private $dbids;
 
 	private $options;

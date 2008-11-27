@@ -30,12 +30,15 @@ class PXSearch {
 		$this->db  = &$db;
 		$this->withIndexField = $withIndexField;
 
-		$this->loadStopwords('а без более бы был была были было быть в вам вас весь во вот все всего мочь можно
-								всех всей вы где да даже для до его ее если есть еще же за здесь и из или им их к как который
-								которую которая которых ко когда кто ли либо мне может мы на надо наш наша наше не него нее нет ни них но ну о
-								об однако он она они оно от очень по под при с со так также такой такая там те тем то
-								того тоже той только том ты у уже хотя чего чей чем что чтобы чье чья эта эти это я
-								через любой любая этого ru другой другая');
+		$this->loadStopwords(
+			'а без более бы был была были было быть в вам вас весь во вот все всего мочь можно
+			всех всей вы где да даже для до его ее если есть еще же за здесь и из или им их к как который
+			которую которая которых	ко когда кто ли либо мне может мы на надо наш наша наше не него нее нет ни них но ну о
+			об однако он она они оно от очень по под при с со так также такой такая там те тем то
+			того тоже той только том ты у уже хотя чего чей чем что чтобы чье чья эта эти это я
+			через любой любая этого http www ru другой другая'
+		);
+
 		$this->loadConfig();
 		$this->word2stem = array();
 		$this->stem2id = array();
@@ -64,14 +67,23 @@ class PXSearch {
 	function loadConfig() {
 		$this->config = array();
 		foreach($this->app->types as $k => $v) {
-			if ($this->withIndexField && !isset($v->fields['index'])) continue;
+			if ($this->withIndexField && !isset($v->fields['index'])) {
+				continue;
+			}
+
 			$this->config[$k] = array();
+
 			foreach ($v->fields as $type) {
 				if ($type->storageType != 'string') continue;
-				if ($type->name == 'pathname') continue;
+				if ($type->name == 'pathname'     ) continue;
+				if ($type->noindex                ) continue;
+
 				$this->config[$k][$type->name] = ($type->name == 'title' ? 5 : 1);
 			}
-			if (count($this->config[$k]) == 0) unset($this->config[$k]);
+
+			if (count($this->config[$k]) == 0) {
+				unset($this->config[$k]);
+			}
 		}
 	}
 
@@ -126,6 +138,10 @@ class PXSearch {
 		return $s;
 	}
 
+	function escapeString($word) {
+		return "'".$this->db->escapeString($word)."'";
+	}
+
 	function doSearch($query, $parents = NULL, $allowTypes=NULL) {
 		preg_match_all("/\w+/s", _StrToLower(_yo2ye($query)), $tmp);
 		$stemsArray = array_unique($this->getStemsByArray(array_unique($tmp[0])));
@@ -148,7 +164,7 @@ class PXSearch {
 
 		$totalwords = count($stemsArray);
 
-		$tmp = $this->db->Query("SELECT did, dtype, weightsum, stem FROM sitesearch WHERE stem IN (".join(',', array_map("DbQuoteString", $stemsArray)).")");
+		$tmp = $this->db->Query("SELECT did, dtype, weightsum, stem FROM sitesearch WHERE stem IN (".join(',', array_map(array($this, 'escapeString'), $stemsArray)).")");
 
 		$tmpres = array();
 		$dtypes = array();

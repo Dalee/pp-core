@@ -1,7 +1,7 @@
 <?php
 class PXEngineIndex extends PXEngine {
 	function __construct() {     // éÎÉÃÉÁÌÉÚÁÃÉÑ ÏÓÎÏ×ÎÙÈ ÏÂßÅËÔÏ× ÐÒÉÌÏÖÅÎÉÑ
-		NLProfiler('TOTAL', 'BEGIN');
+		PXProfiler::begin('TOTAL');
 
 		parent::__construct();
 		PXRegistry::setLayout(new PXUserHTMLLayout());
@@ -25,9 +25,23 @@ class PXEngineIndex extends PXEngine {
 
 		$layout->assignRequest(PXRegistry::getRequest());
 
-		$layout->assign('struct',         PXRegistry::getVar('struct'));
-		$layout->assign('content',        PXRegistry::getVar('content'));
-		$layout->assign('subContent',     PXRegistry::getVar('subcontent'));
+		$layout->assign('references',     PXRegistry::getVar('references'));
+		$layout->assign('heap',           PXRegistry::getVar('heap'));
+
+		$layout->assign('tree',           PXRegistry::getVar('struct')->tree);
+		$layout->assign('currentSid',     PXRegistry::getVar('struct')->currentId);
+
+		$layout->assign('objects',        PXRegistry::getVar('content')->data);
+		$layout->assign('currentCid',     PXRegistry::getVar('content')->currentId);
+		$layout->assign('currentCtype',   PXRegistry::getVar('content')->currentType);
+
+		$layout->assign('subObjects',     PXRegistry::getVar('subContent')->data);
+		$layout->assign('currentSCid',    PXRegistry::getVar('subContent')->currentId);
+		$layout->assign('currentSCtype',  PXRegistry::getVar('subContent')->currentType);
+
+		$layout->assign('rootId',         PXRegistry::getVar('rootId'));
+		$layout->assign('pathId',         PXRegistry::getVar('pathId'));
+		$layout->assign('urlFile',        PXRegistry::getVar('urlFile'));
 
 		$layout->assign('error',          PXRegistry::getVar('error'));
 	}
@@ -62,13 +76,13 @@ class PXEngineIndex extends PXEngine {
 	}
 
 	function html() {
-		NLProfiler('TOTAL', 'END');
-		PXRegistry::getLayout()->assign('NLProfiler', NLProfiler(NULL, 'ALL'));
+		PXProfiler::end();
+		PXRegistry::getLayout()->assign('PXProfilerResult', PXProfiler::finalize());
 		PXRegistry::getLayout()->display();
 	}
 
 	function runModules() {
-		NLProfiler('RUN MODULES', 'BEGIN');
+		PXProfiler::begin('RUN MODULES');
 
 		foreach(PXRegistry::getApp()->bindingsQueue as $bind) {
 			if(!$bind->isBinding()) {
@@ -79,12 +93,12 @@ class PXEngineIndex extends PXEngine {
 
 			$debugKey = 'MODULE: '.$moduleDescription->class;
 
-			NLProfiler($debugKey, 'BEGIN');
+			PXProfiler::begin($debugKey);
 			$moduleDescription->getModule()->userIndex();
-			NLProfiler($debugKey, 'END');
+			PXProfiler::end($debugKey);
 		}
 
-		NLProfiler('RUN MODULES', 'END');
+		PXProfiler::end();
 	}
 }
 ?>

@@ -96,7 +96,7 @@ class PXDisplayType {
 	 * @return String
 	 */
 	static function buildArray($field, $object, $param=NULL) {
-    }
+	}
 
 	/**
 	 * Возвращает html для строки с полем объекта в

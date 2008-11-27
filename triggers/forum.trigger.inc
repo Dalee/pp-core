@@ -16,7 +16,7 @@ class PXTriggerForum extends PXAbstractTrigger {
 		}
 
 		// Начинаем транзакцию
-		$this->db->query($this->db->transactionString(true), true);
+		$this->db->transactionBegin();
 	}
 
 	function _tranzactionStop($transaction) {
@@ -25,7 +25,7 @@ class PXTriggerForum extends PXAbstractTrigger {
 		}
 
 		// Прекращаем транзакцию
-		$this->db->query($this->db->transactionString(false), true);
+		$this->db->transactionCommit();
 	}
 
 	function _updateLastTopic($id) {

@@ -14,32 +14,26 @@ function GDInDrawPicture($src_im, &$dst_im) {
 	}
 }
 
-function FindNconvert() {
+function FindMagicTools($component){
 	$pathArray = explode(':', $_SERVER['PATH']);
 	if (!in_array('/usr/X11R6/bin/', $pathArray) && !in_array('/usr/X11R6/bin', $pathArray)) {
 		$pathArray[] = '/usr/X11R6/bin/';
 	}
 	foreach ($pathArray as $path) {
-		if (is_executable($path.'/nconvert')) {
-			return $path.'/nconvert';
+		if (is_executable($path.'/'.$component)) {
+			return $path.'/'.$component;
 		}
 	}
 
-	FatalError('Cant find NConvert tools');
+	FatalError('Cant find ImageMagick '.strtoupper($component).' tools');
+}
+
+function FindNconvert() {
+	return FindMagicTools('nconvert');
 }
 
 function FindConvert() {
-	$pathArray = explode(':', $_SERVER['PATH']);
-	if (!in_array('/usr/X11R6/bin/', $pathArray) && !in_array('/usr/X11R6/bin', $pathArray)) {
-		$pathArray[] = '/usr/X11R6/bin/';
-	}
-	foreach ($pathArray as $path) {
-		if (is_executable($path.'/convert')) {
-			return $path.'/convert';
-		}
-	}
-
-	FatalError('Cant find Convert tools');
+	return FindMagicTools('convert');
 }
 
 function NConvertInDrawPicture($src_filename, $dst_filename) {
@@ -123,9 +117,9 @@ function GDImageResize($src, $dest, $width, $height, $rgb=0xFFFFFF, $quality=100
 	$isrc = $icfunc($src);
 	$idest = imagecreatetruecolor($width, $height);
 
-	$r = hexdec(substr($rgb, -6, 2));
-	$g = hexdec(substr($rgb, -4, 2));
-	$b = hexdec(substr($rgb, -4, 2));
+	$r = $rgb>>16;
+	$g = $rgb>>8&0xFF;
+	$b = $rgb&0xFF;
 
 	imagefill($idest, 0, 0, imagecolorallocate($idest, $r, $g, $b));
 

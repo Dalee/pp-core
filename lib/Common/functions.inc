@@ -1,7 +1,7 @@
 <?php
 /**
  * Project:     Dalee PHP-classes library
- * File:        common.functions.inc
+ * File:        functions.inc
  *
  * @copyright   Dalee, 2003-2007
  * @author      Michael Beloshapka <mb@netlogic.ru>
@@ -15,12 +15,12 @@ if (!defined('IS_WIN')) {
 }
 
 require_once('functions.file.inc');
-require_once('functions.debug.inc');
 require_once('functions.string.inc');
 require_once('functions.array.inc');
 require_once('functions.execution.inc');
 require_once('functions.date.inc');
 require_once('functions.validate.inc');
 require_once('functions.imageswork.inc');
+require_once('functions.etc.inc');
 
 ?>

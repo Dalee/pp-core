@@ -1,5 +1,5 @@
 <?php
-require_once('abstract.class.inc');
+require_once 'abstract.class.inc';
 
 class NLPGSQLDatabase extends NLAbstractSQLDatabase {
 
@@ -10,17 +10,19 @@ class NLPGSQLDatabase extends NLAbstractSQLDatabase {
 	var $connected;
 
 	function NLPGSQLDatabase($dbDescription) {
+		$this->setCache($dbDescription->cache);
+
 		$this->connectString   = $dbDescription->GetPgsqlConnectString();
-		$this->cache           = $dbDescription->cache;
 		$this->encoding        = $dbDescription->encoding;
 		$this->connected       = false;
 	}
 
 	function Connect() {
 		if (!$this->connected) {
-			$this->connection = pg_connect($this->connectString);
+			$this->connection = pg_connect($this->connectString, PGSQL_CONNECT_FORCE_NEW);
 			if ($this->connection) {
 				pg_exec($this->connection, "SET DATESTYLE='German'");
+
 				if ($this->encoding) {
 					pg_set_client_encoding($this->connection, $this->encoding);
 				}
@@ -38,34 +40,45 @@ class NLPGSQLDatabase extends NLAbstractSQLDatabase {
 	}
 
 	function ModifyingQuery($query, $table=NULL, $retField=NULL, $flushCache = true) {
-		if (!$this->connected) $this->Connect();
+		if (!$this->connected) {
+			$this->Connect();
+		}
+
 		if ($this->connected) {
 			if (($res = pg_query($this->connection, $query)) == false) {
 				return ERROR_DB_BADQUERY;
 			}
-			if ($this->cache == true && $flushCache == true) {
-				$d = new NLDir(BASEPATH. DIRECTORY_SEPARATOR . 'tmp/cache/db');
-				$d->Emptyfy();
+
+			if ($flushCache == true) {
+				$this->cache->clear();
 			}
+
 			if ($table && $retField) {
 				$table = $this->Query("SELECT {$retField} FROM {$table} WHERE oid = ".pg_last_oid($res), true);
+
 				if (is_array($table) && count($table)) {
 					return $table[0][$retField];
 				} else {
 					return NULL;
 				}
+
 			} else {
 				return $res;
 			}
+
 		} else {
 			return ERROR_DB_CANNOTCONNECT;
 		}
 	}
 
 	function ModifyingCopy($tableName, $cols, &$data) {
-		if (!$this->connected) $this->Connect();
+		if (!$this->connected) {
+			$this->Connect();
+		}
+
 		if ($this->connected) {
 			$query = "COPY {$tableName} (\"".implode('", "', $cols)."\") FROM stdin";
+
 			if (pg_query($this->connection, $query) == false) {
 				return ERROR_DB_BADQUERY;
 			}
@@ -78,17 +91,22 @@ class NLPGSQLDatabase extends NLAbstractSQLDatabase {
 				$line = str_replace("\t", "\\t", $line);
 				$line = str_replace("----qweeqwe----", "\t", $line);
 				while (strstr($line, "\t\t")) $line = str_replace("\t\t", "\t\\N\t", $line);
+
 				if ($line{strlen($line)-1} == "\t") $line .= "\\N";
+
 				if (pg_put_line($this->connection, $line."\n") == false) {
 					return ERROR_DB_BADQUERY;
 				}
 			}
+
 			if (pg_put_line($this->connection, "\\.\n") == false) {
 				return ERROR_DB_BADQUERY;
 			}
+
 			if (pg_end_copy($this->connection) == false) {
 				return ERROR_DB_BADQUERY;
 			}
+
 		} else {
 			return ERROR_DB_CANNOTCONNECT;
 		}
@@ -102,59 +120,54 @@ class NLPGSQLDatabase extends NLAbstractSQLDatabase {
 		} else {
 			$limitstring = "";
 		}
+
 		$query .= $limitstring;
 
-		$profileIden = "SQL: ".$query;
-		NLProfiler($profileIden, "BEGIN");
+		PXProfiler::begin('SQL: '.$query);
 
-		if ($this->cache == true && !$donotusecache) {
-			$filename = BASEPATH . DIRECTORY_SEPARATOR . 'tmp/cache/db/'.md5($query);
-			$fp = @fopen($filename, 'rb');
-			if ($fp !== false && flock($fp, LOCK_SH)) {
-				if (($fsize = filesize($filename)) > 0) {
-					$str = fread($fp, $fsize);
-					if ($str !== '') {
-						if (($ret = @unserialize($str)) !== false) {
-							NLProfiler($profileIden, "END");
-							return $ret;
-						}
-					}
-				}
-				flock($fp, LOCK_UN);
-				fclose($fp);
+		if (!$donotusecache) {
+			$table = $this->cache->load($query);
+
+			if ($table !== null) { 
+				PXProfiler::end();
+				return $table; 
 			}
 		}
-		if (!$this->connected) $this->Connect();
+
+		if (!$this->connected) {
+			$this->Connect();
+		}
+
 		if ($this->connected) {
 			if (($res = pg_query($this->connection, $query)) === false) {
-				NLProfiler($profileIden, "END");
+				PXProfiler::end();
 				return ERROR_DB_BADQUERY;
 			}
+
 			$table = array();
 			$total = pg_num_rows($res);
+
 			for ($i=0; $i<$total; $i++) {
 				$table[] = pg_fetch_assoc($res, $i);
 			}
-			if ($this->cache == true && !$donotusecache) {
-				$d = new NLDir(BASEPATH. DIRECTORY_SEPARATOR . 'tmp/cache/db');
-			    if (!$d->exist()) { 
-                    $d->create();
-                }
-                WriteStringToFile(BASEPATH.DIRECTORY_SEPARATOR.'tmp/cache/db/'.md5($query), serialize($table));
+
+			if (!$donotusecache) {
+				$this->cache->save($query, $table);
 			}
+
 		} else {
-			NLProfiler($profileIden, "END");
+			PXProfiler::end();
 			return ERROR_DB_CANNOTCONNECT;
 		}
-		NLProfiler($profileIden, "END");
+
+		PXProfiler::end();
 		return $table;
 	}
 
 
 	function InsertObject($table, $fields, $values) {
-		$query = "INSERT INTO {$table} (\"".implode('", "', $fields)."\") VALUES (".
-				implode(', ', array_map(array(&$this, '__mapInsertData'), $values)).")";
-		$id    = $this->ModifyingQuery($query, $table, 'id');
+		$query = "INSERT INTO {$table} (\"".implode('", "', $fields)."\") VALUES (".implode(', ', array_map(array(&$this, '__mapInsertData'), $values)).")";
+		$id    = $this->modifyingQuery($query, $table, 'id');
 		return $id;
 	}
 
@@ -178,14 +191,25 @@ class NLPGSQLDatabase extends NLAbstractSQLDatabase {
 	}
 
 	function UpdateObjectById($table, $objectId, $fields, $values) {
-		$query = "UPDATE {$table} SET ".implode(', ', array_map(array(&$this, '__mapUpdateData'), $fields, $values)).
-				" WHERE id={$objectId}";
+		$query = "UPDATE {$table} SET ".implode(', ', array_map(array(&$this, '__mapUpdateData'), $fields, $values))." WHERE id={$objectId}";
 		return $this->ModifyingQuery($query);
 		return NULL;
 	}
 
-	function TransactionString($begin=TRUE) {
-		return $begin ? 'BEGIN' : 'END';
+	/*
+	 * Transaction related functions
+	 * 
+	 */
+	function transactionBegin() {
+		$this->Query('BEGIN');
+	}
+
+	function transactionCommit() {
+		$this->Query('END');
+	}
+
+	function transactionRollback() {
+		$this->Query('ROLLBACK');
 	}
 
 	function importDateTime($string) {
@@ -237,7 +261,9 @@ class NLPGSQLDatabase extends NLAbstractSQLDatabase {
 		if (!$this->connected) {
 			$this->Connect();
 		}
+
 		$res = pg_meta_data($this->connection, $tableName);
+
 		if (!is_array($res)) {
 			return ERROR_DB_BADQUERY;
 		} else {
@@ -254,5 +280,4 @@ class NLPGSQLDatabase extends NLAbstractSQLDatabase {
 	}
 
 }
-
 ?>
