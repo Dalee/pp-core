@@ -77,7 +77,7 @@ class PXApplication {
 		}
 
 		/* try to get config from cache */
-//		$instance[$projectDir] = self::loadFromCache($projectDir);
+		$instance[$projectDir] = self::loadFromCache($projectDir);
 
 		/* create new instance, if not cached */
 		if (!isset($instance[$projectDir])) {
