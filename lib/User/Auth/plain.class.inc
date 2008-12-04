@@ -1,8 +1,8 @@
-<?
+<?php
 class PXAuthPlain extends PXAuthInterface {
 	function PXAuthPlain(&$app, &$request, &$user, &$db) {
-		$login  = $request->GetVar('login');
-		$passwd = $request->GetVar('passwd');
+		$login  = $this->login($request);
+		$passwd = $this->passwd($request);
 
 		if(is_null($login) || is_null($passwd)) {
 			$login  = $request->GetCookieVar('login');
@@ -11,6 +11,10 @@ class PXAuthPlain extends PXAuthInterface {
 
 		$login   = $this->__parseVar($login);
 		$passwd  = $this->__parseVar($passwd);
+
+		if(strlen($login) > 32) {
+			$login = substr($login, 0, 32);
+		}
 
 		$this->login  = $user->login = $login;
 		$this->passwd = $passwd;

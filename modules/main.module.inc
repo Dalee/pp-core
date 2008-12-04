@@ -173,7 +173,7 @@ class PXModuleMain extends PXModule {
 							$layout->SetGetVarToSave($childFormat.'_page', $request->GetVar($childFormat.'_page', 1));
 							$layout->SetGetVarToSave($childFormat.'_view', $request->GetVar($childFormat.'_view', 'plain'));
 						}
-
+						
 						foreach ($allowedChilds as $childFormat) {
 							if ($app->types[$childFormat]->struct == 'tree' && $request->GetVar($childFormat.'_view') != 'plain') {
 								$objects = $this->_loadContent($app->types[$childFormat], NULL, 'parent', $request->GetCid(), DB_SELECT_TREE);

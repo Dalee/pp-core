@@ -13,9 +13,12 @@ class PXUserHTMLLang {
 	}
 
 	function lang($param, &$smarty) {
-		$replaces = array();
+		if (empty($param)) {
+			echo $this->lang;
+			return;
+		}
 
-		$lang = $this->lang;
+		$replaces = array();
 
 		$path   = null;
 		$action = null;
@@ -55,22 +58,7 @@ class PXUserHTMLLang {
 			return;
 		}
 
-		$path = explode('.', $path);
-
-		$tmp = $this->tree;
-		foreach($path as $p) {
-			if(!isset($tmp[$p])) {
-				return false;
-			}
-
-			$tmp = $tmp[$p];
-		}
-
-		if(!isset($tmp[$lang])) {
-			return false;
-		}
-
-		$value = $tmp[$lang];
+		$value = $this->_get($path);
 
 		switch($action) {
 			case 'return':
@@ -82,16 +70,11 @@ class PXUserHTMLLang {
 				break;
 
 			case 'date':
-				$time = $this->parseDateToTime($date);
-				echo smarty_modifier_date_format($time, $value);
+				echo $this->_date($date, $value);
 				break;
 
 			case 'replace':
-				foreach($replaces as $m=>$r) {
-					$value = str_replace($m, $r, $value);
-				}
-
-				echo $value;
+				echo $this->_replace($replaces, $value);
 				break;
 
 			case 'get':
@@ -99,6 +82,83 @@ class PXUserHTMLLang {
 				echo $value;
 				break;
 		}
+	}
+
+	function _get($path) {
+		$path = explode('.', $path);
+
+		$leaf = $this->tree;
+
+		foreach($path as $p) {
+			if(!isset($leaf[$p])) {
+				return false;
+			}
+
+			$leaf = $leaf[$p];
+		}
+
+		if(!isset($leaf[$this->lang])) {
+			return false;
+		}
+
+		return $leaf[$this->lang];
+	}
+
+	function _date($date, $format) {
+		$time = $this->parseDateToTime($date);
+
+		$replaces = array_merge(
+			$this->_dateWeekdaysReplaces($time),
+			$this->_dateMonthsReplaces($time),
+			$this->_dateDayReplaces($time)
+		);
+
+		$format = str_replace(array_keys($replaces), $replaces, $format);
+
+		return strftime($format, $time);
+	}
+
+	function _dateDayReplaces($time) {
+		$day = strftime('%d', $time);
+
+		return array(
+			'%e' => (
+				$day > 9 ? $day : $day{1}
+			)
+		);
+	}
+
+	function _dateWeekdaysReplaces($time) {
+		$weekDay = strftime('%w', $time);
+
+		$short = $this->_get('weekdays.short'); 
+		$full  = $this->_get('weekdays'); 
+
+		return array(
+			'%a' => $short[$weekDay],
+			'%A' => $full[$weekDay]
+		);
+	}
+
+	function _dateMonthsReplaces($time) {
+		$monthNumber = (int)strftime('%m', $time);
+
+		$months      = $this->_get('months'); 
+		$monthsShort = $this->_get('months.short'); 
+		$months2     = $this->_get('months.genitive');       // Родительный падеж
+		$months3     = $this->_get('months.prepositional');  // Предложный падеж
+
+		return array(
+			'%b'  => $monthsShort[$monthNumber],
+			'%B3' => $months3[$monthNumber],
+			'%B2' => $months2[$monthNumber],
+			'%B'  => $months[$monthNumber],
+			'%h'  => $monthsShort[$monthNumber]
+		);
+	}
+
+	function _replace($replaces, $value) {
+		return str_replace(array_keys($replaces), $replaces, $value);
 	}
 
 	function parseDateToTime($string) {
@@ -111,5 +171,4 @@ class PXUserHTMLLang {
 		}
 	}
 }
-
 ?>

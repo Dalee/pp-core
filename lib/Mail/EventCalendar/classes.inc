@@ -1,0 +1,11 @@
+<?php
+require_once('vevent.class.inc');
+require_once('request.class.inc');
+require_once('reply.class.inc');
+require_once('refresh.class.inc');
+require_once('publish.class.inc');
+require_once('add.class.inc');
+require_once('cancel.class.inc');
+require_once('counter.class.inc');
+require_once('declinecounter.class.inc');
+?>

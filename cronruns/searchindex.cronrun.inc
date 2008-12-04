@@ -219,14 +219,10 @@ class PXCronRunSearchIndex extends PXAbstractCronRun {
 			if (!$quietFlag) Label("copy rec (". count($tmp).")");
 
 			if ($dbtype == 'pgsql') {
-				$db->Query('COPY sitesearch (stem, did, dtype, weightsum) FROM stdin', true);
-
-				foreach ($tmp as $v) {
-					pg_put_line($db->connection, join("\t", $v)."\n");
+				if($db->ModifyingCopy('sitesearch', array('stem', 'did', 'dtype', 'weightsum'), $tmp) !== true){
+				    if(!$quietFlag) Label('Error while saving index !');
 				}
-
-				pg_put_line($db->connection, "\\.\n");
-				pg_end_copy($db->connection);
+												    
 
 			} elseif ($dbtype == 'mssql') {
 				$k = 0;

@@ -5,6 +5,7 @@ require_once 'Common/functions.inc';
 require_once 'Filesys/dir.class.inc';
 require_once 'Datastruct/tree.classes.inc';
 require_once 'Mail/message.class.inc';
+require_once 'Mail/EventCalendar/classes.inc';
 require_once 'Logger/nllogger.class.inc';
 require_once 'Exception/deprecated.class.inc';
 

@@ -96,6 +96,7 @@ class NLMYSQLDatabase extends NLAbstractSQLDatabase {
 			}
 
 			$table = array();
+
 			while (($row = mysql_fetch_array($res, MYSQL_ASSOC))) {
 				$table[] = $row;
 			}

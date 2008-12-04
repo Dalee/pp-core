@@ -9,6 +9,10 @@ body {
 	font-family: verdana;
 }
 
+a.img-preview {
+	margin-right: 50px;
+}
+
 ul.list {
 	padding: 0;
 	margin: 0;

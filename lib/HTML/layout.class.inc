@@ -63,7 +63,11 @@ class PXUserHTMLLayout extends PXLayoutInterface  {
 		/* Нужна ли постраничка? */
 		$p = strtoupper($param['format']).'_PER_PAGE';
 
-		$a_per_page = $app->GetProperty($p, $total);
+		if (isset($_COOKIE['NEWS_PAGES'])) {
+			$a_per_page = $_COOKIE['NEWS_PAGES'];
+		} else {
+			$a_per_page = $app->GetProperty($p, $total);
+		}
 
 		$smarty->assign('a_per_page', $a_per_page);
 

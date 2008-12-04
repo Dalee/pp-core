@@ -33,8 +33,8 @@ class PXModuleCsvImport extends PXModule {
 		switch ($request->GetVar('status')) {
 			case 'error':
 				$html .= $this->_UploadTable();
-				$html .= '<H1 style="color: #990000;">Ошибка</H1>';
-				$html .= '<DIV style="padding: 10px; border: 1px solid #990000;">Импорт данных не состоялся.<BR>';
+				$html .= '<h1 class="error">Ошибка</h1>';
+				$html .= '<p class="error">Импорт данных не состоялся.<BR>';
 
 				switch($request->GetVar('error')) {
 					case 'notupload':
@@ -47,7 +47,7 @@ class PXModuleCsvImport extends PXModule {
 						break;
 				}
 
-				$html .= '</DIV>';
+				$html .= '</p>';
 				break;
 
 			case 'success':
@@ -63,8 +63,8 @@ class PXModuleCsvImport extends PXModule {
 	}
 
 	function _Success(&$request, &$app, &$db) {
-		$html  = '<H2>Импорт данных &laquo;'.$app->types[$this->settings['datatype']]->title.'&raquo; успешно произведен</H2>';
-		$html .= '<P>В базу внесено <STRONG>'.$request->GetVar('quantity').'</STRONG> объектов.</P>';
+		$html  = '<h2>Импорт данных &laquo;'.$app->types[$this->settings['datatype']]->title.'&raquo; успешно произведен</h2>';
+		$html .= '<p>В базу внесено <strong>'.$request->GetVar('quantity').'</strong> объектов.</p>';
 		return $html;
 	}
 
@@ -77,11 +77,13 @@ class PXModuleCsvImport extends PXModule {
 
 		if (($filename = $this->UploadFile($request->GetUploadFile('file')))) {
 			$quantity = $this->ImportToDb($this->_GetCsvSource($filename), $app, $db, $request);
+
 			if(is_numeric($quantity)) {
 				$redir_to .= '&status=success&quantity='.$quantity;
 			} else {
 				$redir_to .= '&status=error&error='.$quantity;
 			}
+
 		} else {
 			$redir_to .= '&status=error&error=notupload';
 		}
@@ -161,7 +163,7 @@ class PXModuleCsvImport extends PXModule {
 			FatalError("Ошибка в запросе". $sql);
 		}
 	}
-	
+
 	function UploadFile($file, $uploadDir = NULL) {
 		$uploadDir = !is_null($uploadDir) ? $uploadDir : BASEPATH.'/var/csvimport';
 
@@ -173,10 +175,13 @@ class PXModuleCsvImport extends PXModule {
 	}
 
 	function UploadFileFromUser($file, $dir) {
+		PXProfiler::begin('Upload user file '.number_format($file['size']).' byte');
+
 		$dirO = new NLDir($dir);
 		$dir = $dirO->name;
+
+		MakeDirIfNotExists($dir);
 		if ($file && $file != 'none' && $file['name'] && is_writable($dir)) {
-			MakeDirIfNotExists($dir);
 			$newFileName = $dir.'/'._TranslitFilename($file['name']);
 
 			if (!@copy($file['tmp_name'], $newFileName)) {
@@ -186,37 +191,36 @@ class PXModuleCsvImport extends PXModule {
 			if (!@chmod($newFileName, 0664)) {
 				FatalError('ERROR_IO_BADPERMISSIONS', $dir);
 			}
+			PXProfiler::end();
 
 			return $newFileName;
 
 		} else {
+			PXProfiler::end();
 			return false;
 		}
 	}
 
 	function _UploadTable() {
-		$html  = '';
-		$html .= '<H2>Импорт данных из CSV файла</H2><BR>';
+		return <<<HTML
+			<h2>Импорт данных из CSV файла</h2>
 
-		$html .= '<TABLE width="100%" border="0" cellpadding="4" cellspacing="1" style="background-color: #FFFFFF; border: 1px solid '.TABLECOLOR2.';">';
-		$html .= '<FORM action="action.phtml" method="POST" enctype="multipart/form-data">';
-		$html .= '<INPUT type="hidden" name="area" value="csv">';
-		$html .= '<TR style="background-color: '.TABLECOLOR1.';" valign="top">';
-		$html .= '<TD><INPUT type="file" name="file" style="width: 100%;"></TD></TR>';
-
-		$html .= '</TR>';
-		$html .= '<TR style="background-color: '.TABLECOLOR2.';">';
-		$html .= '<TD align="right"><INPUT type="submit" class="button" value="Импортировать данные"></TD>';
-		$html .= '</TR>';
-		$html .= '</FORM>';
-		$html .= '</TABLE>';
-		return $html;
+			<form action="action.phtml" method="POST" enctype="multipart/form-data">
+				<input type="hidden" name="area" value="csv">
+				<input type="file" name="file">
+				<input type="submit" class="button" value="Импортировать данные">
+			</form>
+HTML;
 	}
 
 	function _GetCsvSource($filename, $length=NULL) {
+		PXProfiler::begin('GetCsvSource()');
+
 		if (!is_file($filename) || !is_readable($filename)) {
+			PXProfiler::end();
 			return FALSE;
 		}
+
 		$row = 1;
 		$maxLen = 0;
 		$handle = fopen($filename, "r");
@@ -230,12 +234,17 @@ class PXModuleCsvImport extends PXModule {
 			$maxLen = max($maxLen, $num);
 			$row++;
 		}
+
 		fclose($handle);
+
 		foreach ($result as $k=>$v) {
 			if (count($v) < $maxLen) {
 				$result[$k] = array_pad($result[$k], $maxLen, NULL);
 			}
 		}
+
+		PXProfiler::end();
+
 		return $result;
 	}
 

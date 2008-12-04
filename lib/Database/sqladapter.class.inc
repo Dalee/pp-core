@@ -35,5 +35,4 @@ class NLSQLDatabaseAdapter {
 		return $this->dbDriver->query($query, $donotusecache, $limitpair);
 	}
 }
-
 ?>

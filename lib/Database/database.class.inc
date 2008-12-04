@@ -738,17 +738,27 @@ class PXDatabase extends NLSQLDatabaseAdapter {
 	 */
 	function AddContentObjects($format, $objectsArray) {
 		$audit = PXAuditLogger::getLogger($this->app, $this);
+
 		if (count($objectsArray) == 0) {
 			return;
 		}
+
+		PXProfiler::begin('Add '.sizeof($objectsArray).' '.$format->id.' objects');
+
 		if (isset($format->fields['parent'])) {
 			$parentIds = array_unique(GetColFromTable($objectsArray, 'parent'));
+
 			foreach ($parentIds as $parentId) {
 				$objectInDB = $this->GetObjectById($this->types[$format->parent], $parentId);
-				if (!count($objectInDB)) FatalError('Попытка добавить объект в несуществующий раздел');
+
+				if (!count($objectInDB)) {
+					FatalError('Попытка добавить объект в несуществующий раздел');
+				}
+
 				if ($format->id != $format->parent && !in_array($format->id, $this->app->GetAllowedChildsKeys($format->parent, $objectInDB))) {
 					FatalError('Объект данного типа не может быть добавлен в данный раздел');
 				}
+
 				if (!$this->user->can('write', $format, array('id' => 0, 'parent' => $parentId))) {
 					$errString = 'Отказано в доступе при попытке создать объект типа <em>'.$format->id.'</em>';
 					$audit->error($errString, $format->id .'/0');
@@ -765,8 +775,11 @@ class PXDatabase extends NLSQLDatabaseAdapter {
 		$pathnames = array();
 		$nullObj = null;
 
+		PXProfiler::begin('normaize/prepare foreach '.sizeof($format->fields).'x'.sizeof($objectsArray));
+
 		foreach ($objectsArray as $object) {
 			$copyTable[$idx] = array();
+
 			foreach ($format->fields as $k=>$v) {
 				if ($k === 'pathname') {
 					$object[$k] = $this->_NormalizeObjectPathName($format, $object, $pathnames);
@@ -779,7 +792,10 @@ class PXDatabase extends NLSQLDatabaseAdapter {
 				}
 			}
 
-			if ($idx == 0) $copyCols[] = 'sys_order';
+			if ($idx == 0) {
+				$copyCols[] = 'sys_order';
+			}
+
 			$copyTable[$idx][] = ++$lastOrder;
 
 			// sys fields
@@ -795,6 +811,7 @@ class PXDatabase extends NLSQLDatabaseAdapter {
 				if($idx == 0) {
 					$copyCols[] = 'sys_owner';
 				}
+
 				$copyTable[$idx][] = $this->user->id;
 			}
 
@@ -815,8 +832,13 @@ class PXDatabase extends NLSQLDatabaseAdapter {
 
 			$idx++;
 		}
+		PXProfiler::end();
+
 		$res = $this->ModifyingCopy($format->id, $copyCols, $copyTable);
 		$audit->info('Добавлено '.$idx.' объектов', $format->id);
+
+		PXProfiler::end();
+
 		return $res;
 		// TRIGGER ?
 	}

@@ -121,16 +121,10 @@ class NLMailMessage {
 
 	function createSmtpMail() {
 		if (!$this->replyEmail) $this->replyEmail = $this->fromEmail;
-
-		if ($this->format != 'html' and function_exists('strip1251')) {
-			$this->fromName = strip1251($this->fromName);
-			$this->toName   = strip1251($this->toName);
-			$this->subject  = strip1251($this->subject);
-			$this->body     = strip1251($this->body);
-		}
+		$this->_strip();
 
 		$this->addHeaders = $this->_writeSmtpHeaders();
-
+		
 		$contentType = $this->format == 'html' ? 'text/html' : 'text/plain';
 
 		if (sizeof($this->files)) {
@@ -146,6 +140,13 @@ class NLMailMessage {
 			$this->addHeaders .= "Content-Transfer-Encoding: 8bit";
 		}
 
+		$_subject = $this->_getSubject();
+
+		return $_subject;
+	}
+	
+	function _getSubject() {
+		
 		if (strlen($this->subject)) {
 			if (preg_match("/[À-ÿ]/", $this->subject)) {
 				$_subject = "=?".$this->charset."?B?".base64_encode($this->subject)."?=";
@@ -155,8 +156,17 @@ class NLMailMessage {
 		} else {
 			$_subject = NULL;
 		}
-
+		
 		return $_subject;
+	}
+	
+	function _strip() {
+		if ($this->format != 'html' and function_exists('strip1251')) {
+			$this->fromName = strip1251($this->fromName);
+			$this->toName   = strip1251($this->toName);
+			$this->subject  = strip1251($this->subject);
+			$this->body     = strip1251($this->body);
+		}
 	}
 
 	function createFullSmtpMail() {

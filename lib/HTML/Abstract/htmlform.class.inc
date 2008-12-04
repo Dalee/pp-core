@@ -322,7 +322,7 @@ class NLAbstractHTMLForm {
 		if (!is_null($value['path'])) {
 			$html .= '<br>';
 
-			$html .= '<a href="'.$value['path'].'">просмотр</a> ';
+			$html .= '<a href="'.$value['path'].'" target="_blank" class="img-preview">просмотр</a> ';
 			$html .= '<button onclick="return ToClipboardMulti(\''.$value['path'].'\', '.(int)$value['width'].', '.(int)$value['height'].', \''.$type.'\')">HTML в буфер</button>';
 
 			$html .= '<br>';

@@ -1,6 +1,7 @@
 #!/usr/local/bin/php -q
 <?
 set_time_limit(0);
+ini_set('memory_limit','256M'); //for greedy scripts
 require_once dirname(__FILE__).'/../lib/maincommon.inc';
 
 $engine = new PXEngineSbin();

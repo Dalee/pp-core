@@ -62,6 +62,19 @@ class PXProfiler {
 		return $collection;
 	}
 
+	function toString() {
+		$collection = PXProfiler::finalize();
+		array_walk($collection, create_function('&$item', '$item = $item->toString();'));
+
+		$result = implode("\n", $collection);
+
+		if(!CLI) {
+			$result = '<pre>'.$result.'</pre>';
+		}
+
+		return $result;
+	}
+
 	function append($item){
 		$this->_collection[$item->index] = $item;
 	}
@@ -93,6 +106,14 @@ class PXProfilerStruct {
 	function finalize() {
 		$this->end   = getMicroTime();
 		$this->delta = $this->end - $this->start;
+	}
+
+	function toString() {
+		$delta = str_pad(number_format($this->delta, 4), 8, ' ', STR_PAD_LEFT);
+		$level = str_repeat("\t", $this->level + 1);
+		$text  = preg_replace('/[\n\t]/', ' ', $this->eventName);
+
+		return $delta.$level.$text;
 	}
 
 }

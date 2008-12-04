@@ -1,9 +1,4 @@
 <?
-include_once 'null.class.inc';
-include_once 'plain.class.inc';
-include_once 'secure.class.inc';
-include_once 'domain.class.inc';
-
 class PXAuthInterface {
 	function PXAuth(&$app, &$request, &$user, &$db, $authParams) {
 	}
@@ -16,21 +11,32 @@ class PXAuthInterface {
 		return true;
 	}
 
+	/**
+	 * Метод-триггер, вызывается в PXUser::checkAuth() после загрузки правил acl, 
+	 * позволяет выполнить дополнительные проверки.
+	 *
+	 * @return bool
+	 */
+	function onAuth(){
+		return true;
+	}
+
 	function encodePasswd($passwd) {
 		return $passwd;
 	}
 
 	function __parseVar($var) {
-		$var = str_replace(' ', '', $var);
-		$var = str_replace('/', '', $var);
-		$var = str_replace('"', '', $var);
-		$var = str_replace("'", '', $var);
+		$var = preg_replace('/[^\w\.\@\,]/', '', $var);
 
 		return $var;
 	}
-
-	function onAuth(){
-		return true;
+	
+	function login(&$getFromRequest){
+		return $getFromRequest->GetVar('login');
+	}
+	
+	function passwd(&$getFromRequest){
+		return $getFromRequest->GetVar('passwd');
 	}
 }
 ?>

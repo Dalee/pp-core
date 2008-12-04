@@ -40,13 +40,13 @@ class PXAdminHTMLLayout extends NLAbstractLayout {
 			$tmpId = $tree->leafs[$tmpId]->parent;
 			$leafsToOpen[] = $tmpId;
 		}
+
 		// Рекурсивно генерируем дерево
-		$html = '<DIV class="tree">'.$this->_MakeTreePart($tree, $objectFormat, 0, $leafsToOpen, $selectedSid).'</DIV>';
-		return $html;
+		return '<div class="tree">'.$this->_MakeTreePart($tree, $objectFormat, 0, $leafsToOpen, $selectedSid).'</div>';
 	}
 
 	function _MakeTreePart(&$tree, &$objectFormat, $id, $leafsToOpen, $selectedSid, $level=0, $parent=0, $leafImgs=array(), $leafAlias=array()) {
-		$html  = NULL;
+		$html  = '';
 		$leafs = $tree->leafs[$id]->children;
 		$first = reset($leafs);
 		$last  = end($leafs);
@@ -56,9 +56,13 @@ class PXAdminHTMLLayout extends NLAbstractLayout {
 			$up   = current($leafs) == $first || !$haveSysOrder ? 0 : 1;
 			$down = current($leafs) == $last  || !$haveSysOrder ? 0 : 1;
 
+			if ($level) {
+				$leafAlias[$leaf] = (isset($objectFormat->fields['pathname'])) ? $tree->leafs[$leaf]->content['pathname'] : NULL;
+			}
+
 			$menuTitle = str_replace('"', '', str_replace("'", '', strip_tags($tree->leafs[$leaf]->title)));
 			$context = 'Context(event, \'edit\', '.$leaf.', '.(int)($tree->leafs[$leaf]->content['status']).', \''.$objectFormat->id.'\',  \''.$menuTitle.'\', \''.implode('/', $leafAlias).'/'.'\', '.$level.', '.$up.', '.$down.'); return false;';
-			$html .= '<DIV oncontextmenu="'.$context.'" id="leafId'.$leaf.'" style="';
+			$html .= '<div oncontextmenu="'.$context.'" id="leafId'.$leaf.'" style="';
 
 			if ($leaf == $selectedSid) {
 				$html .= 'background-color:#385A94;';
@@ -66,13 +70,15 @@ class PXAdminHTMLLayout extends NLAbstractLayout {
 				$html .= 'background-color:#FFFFFF;';
 			}
 
-			if (!in_array($parent, $leafsToOpen) && $level > 1) $html .= ' display: none;';
+			if (!in_array($parent, $leafsToOpen) && $level > 1) {
+				$html .= ' display: none;';
+			}
 
 			$html .= '">';
 
 			if ($level) {
 				foreach ($leafImgs as $i) {
-					$html .= '<IMG src="i/tree/'.$i.'.gif">';
+					$html .= '<img src="i/tree/'.$i.'.gif">';
 				}
 
 				if (sizeof($tree->leafs[$leaf]->children)) {
@@ -96,11 +102,10 @@ class PXAdminHTMLLayout extends NLAbstractLayout {
 				}
 
 				$leafImgs[$leaf] = $leafI;
-				$leafAlias[$leaf] = (isset($objectFormat->fields['pathname'])) ? $tree->leafs[$leaf]->content['pathname'] : NULL;
 
-				if (!is_numeric(strpos($cLeafImg, 'void'))) $html .= '<A href="javascript:hideShowLeaf(\''.$leaf.'\');">';
-				$html .= '<IMG src="i/tree/'.$cLeafImg.'.gif" id="leafImg'.$leaf.'">';
-				if (!is_numeric(strpos($cLeafImg, 'void'))) $html .= '</A>';
+				if (!is_numeric(strpos($cLeafImg, 'void'))) $html .= '<a href="javascript:hideShowLeaf(\''.$leaf.'\');">';
+				$html .= '<img src="i/tree/'.$cLeafImg.'.gif" id="leafImg'.$leaf.'">';
+				if (!is_numeric(strpos($cLeafImg, 'void'))) $html .= '</a>';
 			}
 
 			$leafImg = 'leaf';
@@ -110,29 +115,29 @@ class PXAdminHTMLLayout extends NLAbstractLayout {
 				$leafImg .= (!sizeof($tree->leafs[$leaf]->children)) ? '-l' : '';
 			}
 
-			$html .= '<IMG onClick="'.$context.'" class="cursor" src="i/tree/'.$leafImg.'.gif" alt="Изменить раздел &laquo;'.$menuTitle.'&raquo;">';
-			$html .= '<A href="javascript:EditContent(\''.$objectFormat->id.'\', \''.$leaf.'\')"><IMG src="i/tree/edit.gif" alt="Изменить раздел &laquo;'.$menuTitle.'&raquo;"></A>';
+			$html .= '<img onClick="'.$context.'" class="cursor" src="i/tree/'.$leafImg.'.gif" alt="Изменить раздел &laquo;'.$menuTitle.'&raquo;">';
+			$html .= '<a href="javascript:EditContent(\''.$objectFormat->id.'\', \''.$leaf.'\')"><img src="i/tree/edit.gif" alt="Изменить раздел &laquo;'.$menuTitle.'&raquo;"></a>';
 
 			if ($objectFormat->childs) {
 				$varName = (isset($objectFormat->makeTreeWithSid)) ? 'sid' : 'cid'; //hack for main module
-				$html .= '<A href="'.$this->_BuildHref($varName, $leaf).'">';
+				$html .= '<a href="'.$this->_BuildHref($varName, $leaf).'">';
 			}
-			if ($tree->leafs[$leaf]->content['status'] == false) $html .= '<STRIKE>';
-			$html .= '<SPAN onClick="ContextHide();"';
+			if ($tree->leafs[$leaf]->content['status'] == false) $html .= '<strike>';
+			$html .= '<span onClick="ContextHide();"';
 			if ($leaf == $selectedSid) $html .= ' style="color:#FFFFFF;"';
 			if (isset($objectFormat->fields['pathname'])) $html .= ' title="'.$tree->leafs[$leaf]->content['pathname'].'"';
 			$html .= '>';
 			$html .= strip_tags($tree->leafs[$leaf]->title);
-			$html .= '</SPAN>';
-			if ($tree->leafs[$leaf]->content['status'] == false) $html .= '</STRIKE>';
+			$html .= '</span>';
+			if ($tree->leafs[$leaf]->content['status'] == false) $html .= '</strike>';
 			if ($objectFormat->childs) {
-				$html .= '</A>';
+				$html .= '</a>';
 			}
 
 			next($leafs);
 
 			$html .= $this->_MakeTreePart($tree, $objectFormat, $leaf, $leafsToOpen, $selectedSid, $level+1, $leaf, $leafImgs, $leafAlias);
-			$html .= '</DIV>';
+			$html .= '</div>';
 			unset($leafImgs[$leaf]);
 			unset($leafAlias[$leaf]);
 		}

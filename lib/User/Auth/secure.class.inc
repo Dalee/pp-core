@@ -1,8 +1,8 @@
-<?
+<?php
 class PXAuthSecure extends PXAuthInterface {
 	function PXAuthSecure(&$app, &$request, &$user, &$db) {
-		$login   = $request->GetVar('login');
-		$passwd  = $request->GetVar('passwd');
+		$login   = $this->login($request);
+		$passwd  = $this->passwd($request);
 
 		$cPasswd = null;
 
@@ -14,6 +14,10 @@ class PXAuthSecure extends PXAuthInterface {
 
 		$login   = $this->__parseVar($login);
 		$passwd  = $this->__parseVar($passwd);
+
+		if(strlen($login) > 32) {
+			$login = substr($login, 0, 32);
+		}
 
 		$this->login  = $user->login = $login;
 

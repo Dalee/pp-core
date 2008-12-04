@@ -12,7 +12,7 @@ require_once 'serialized.class.inc';
 require_once 'File/file.class.inc';
 require_once 'File/image.class.inc';
 require_once 'File/flash.class.inc';
-require_once 'File/filesaray.class.inc';
+require_once 'File/filesarray.class.inc';
 require_once 'File/imagesarray.class.inc';
 require_once 'File/flashsarray.class.inc';
 
