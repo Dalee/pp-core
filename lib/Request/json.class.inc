@@ -14,10 +14,9 @@ class PXRequestUserJson extends PXRequestUser {
 		$this->PXRequest();
 
 		if(isset($_REQUEST['get-js-code'])) {
-			header("X-Accel-Expires: 3600");
-
+			$response =& PXResponse::getInstance();
 			ob_end_clean();
-			echo myconv('w', 'k', $this->ajax->getJsCode());
+			$response->send(myconv('w', 'k', $this->ajax->getJsCode()));
 			exit;
 		}
 	}

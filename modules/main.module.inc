@@ -135,7 +135,8 @@ class PXModuleMain extends PXModule {
 					} else {
 						$count   = $this->_loadContent($app->types[$childFormat], NULL, 'parent', $rqSid, DB_SELECT_COUNT);
 						$currentPage  = $request->GetVar($childFormat.'_page', 1);
-						$currentOrder = $request->GetVar($childFormat.'_order', $app->types[$childFormat]->order);
+						$currentOrder = $request->GetOrderVar($childFormat, $app->types[$childFormat]->order, $app->types[$childFormat]->fields);
+						
 						$layout->SetGetVarToSave($childFormat.'_order', $currentOrder);
 
 						$currentPage = $currentPage > ceil($count/$onPage) ? ceil($count/$onPage) : $currentPage;
@@ -181,7 +182,8 @@ class PXModuleMain extends PXModule {
 							} else {
 								$count   = $this->_loadContent($app->types[$childFormat], NULL, 'parent', $request->GetCid(), DB_SELECT_COUNT);
 								$currentPage  = $request->GetVar($childFormat.'_page', 1);
-								$currentOrder = $request->GetVar($childFormat.'_order', $app->types[$childFormat]->order);
+								$currentOrder = $request->GetOrderVar($childFormat, $app->types[$childFormat]->order, $app->types[$childFormat]->fields);
+								
 								$layout->SetGetVarToSave($childFormat.'_order', $currentOrder);
 
 								$currentPage = $currentPage > ceil($count/$onPage) ? ceil($count/$onPage) : $currentPage;

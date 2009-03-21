@@ -62,13 +62,15 @@ class PXRequestUser extends PXRequestBase {
 	// POST
 	function getContentObject($format) {
 		$object = array();
+		$p = array('request' => $this);
+
 		foreach ($format->fields as $k=>$v) {
-			$object[$k] = PXDisplayType::callMethod('getFromRequest', $v, $object, array('request' => $this));
+			$object[$k] = $v->displayType->getFromRequest($v, $object, $p);
 		}
 
 		foreach ($format->fields as $k=>$v) {
 			if (!empty($v->handler)) {
-				$file = strtolower($v->handler).".inputhandler.inc";
+				$file = strtolower($v->handler).'.inputhandler.inc';
 
 				if (file_exists(BASEPATH.'/local/lib/handlers/'.$file)) {
 					include_once BASEPATH.'/local/lib/handlers/'.$file;
@@ -86,7 +88,7 @@ class PXRequestUser extends PXRequestBase {
 		}
 
 		foreach ($format->fields as $k=>$v) {
-			$object[$k] = PXStorageType::callMethod('getFromRequest', $v, $object, array('request' => $this));
+			$object[$k] = $v->storageType->getFromRequest($v, $object, $p);
 		}
 		return $object;
 	}
@@ -136,8 +138,23 @@ class PXRequestUser extends PXRequestBase {
 	}
 
 	function getPart() {
-		return $this->_getGetPostVar('part');
+		$part = $this->_getGetPostVar('part');
+		return is_null($part) ? 'index.html' : $part;
 	}
 
+	// clean the fields for admin system
+	function getOrderVar($format, $default_sort, $fields){
+		$currentOrder = $this->GetVar($format.'_order');
+		if(!$currentOrder) {
+			return $default_sort;
+		}
+
+		$order = explode(" ", $currentOrder, 2);
+
+		if(isset($order[1]) && strtoupper($order[1]) != 'DESC') unset($order[1]);
+		if(!in_array($order[0], array_keys($fields))) $order[0] = null;
+
+		return is_null($order[0]) || !$fields[$order[0]]->listed ? $default_sort : trim(implode(" ", $order));
+	}
 }
 ?>

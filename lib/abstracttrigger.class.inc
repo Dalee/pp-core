@@ -27,11 +27,11 @@ class PXAbstractTrigger {
 	function OnDeleteObject(&$db, &$objId, &$format, &$objectInDB) {
 	}
 	
-	function OnBeforeModifyLinks(&$db, &$objId, &$formatId, &$arLinks) {
+	function OnBeforeModifyLinks(&$db, &$objId, &$formatId, &$arLinks, $linkedFormat) {
 		return true;
 	}
 	
-	function OnModifyLinks(&$db, &$objId, &$formatId, &$arLinks) { // simple
+	function OnModifyLinks(&$db, &$objId, $formatId, &$arLinks, $linkedFormat) { // simple
 	}
 	
 	function OnBeforeMoveObject(&$db, &$objectId, &$format, &$objectInDB){

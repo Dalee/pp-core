@@ -71,7 +71,7 @@ class PXModuleObjects extends PXModule {
 		$this->layout->setGetVarToSave($format.'_page', $currentPage);
 
 		$currentPage  = $this->request->getVar($format.'_page', 1);
-		$currentOrder = $this->request->getVar($format.'_order', $this->datatype->order);
+		$currentOrder = $this->request->GetOrderVar($format, $this->app->types[$format]->order, $this->app->types[$format]->fields);
 		$this->layout->setGetVarToSave($format.'_order', $currentOrder);
 
 		$currentPage = $currentPage > ceil($count/$onPage) ? ceil($count/$onPage) : $currentPage;
@@ -245,6 +245,9 @@ class PXModuleObjects extends PXModule {
 		$refFilters    = (array)$request->GetVar('filters', array());
 
 		foreach ($datatype->references as $k=>$reference) {
+			if($reference->hidden){
+				continue;
+			}
 			$refDatatype   = $app->types[$k];
 			
 			$existingLinks = $db->getLinks($reference, $datatype->id, $object['id']);
@@ -489,6 +492,9 @@ class PXModuleObjects extends PXModule {
 	function actionModifyLinks() {
 		$id = $this->request->getId();
 		foreach ($this->datatype->references as $reference) {
+			if($reference->hidden){
+				continue;
+			}
 			$ll = $this->_makeLinkedListFrom($reference);
 			$this->db->ModifyLinks($reference, $this->datatype->id, $id, $ll, false);
 		}

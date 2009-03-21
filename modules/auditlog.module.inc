@@ -12,8 +12,6 @@ class PXModuleAuditLog extends PXModule {
 	function adminIndex() {
 		$this->layout->setSimpleInnerLayout(array('100%'), array('100%'));
 
-		$this->html('<H2>Журнал аудита</H2>');
-
 		$this->page    = $this->request->GetVar('_page', 1);
 		$this->onPage  = $this->app->GetProperty('CHILDREN_ON_PAGE', 15);
 		$this->count = 0;
@@ -26,27 +24,33 @@ class PXModuleAuditLog extends PXModule {
 
 	function filterForm() {
 		$color = TABLECOLOR1;
-		$sql = "SELECT type FROM log_audit GROUP BY type";
+		$sql = 'SELECT type FROM log_audit GROUP BY type';
 		$tmp = getColFromtable($this->db->query($sql), 'type');
-		$option = "";
-		$level = array("ALL" => null, "DEBUG" => 1, "INFO" => 2, "WARN" => 3, "ERROR" => 4, "FATAL" => 5, "NONE" => 6);
-		$oLevel = "";
+		$option = '';
+
+		$level = array(
+			'ALL'   => null,
+			'DEBUG' => 1,
+			'INFO'  => 2, 
+			'WARN'  => 3,
+			'ERROR' => 4,
+			'FATAL' => 5,
+			'NONE'  => 6
+		);
+
+		$oLevel = '';
+
 		foreach($level as $k => $v) {
-			if($k == $this->request->getVar("level")) {
-				$oLevel .= '<option value="' . $v . '" selected >'. $k . '</option>';
-			} else {
-				$oLevel .= '<option value="' . $v . '">' . $k . '</option>';
-			}
+			$selected = ($k == $this->request->getVar('level')) ? ' selected' : '';
+
+			$oLevel .= '<option value="' . $v . '"'. $selected .'>'. $k . '</option>';
 		}
 
 		foreach($tmp as $v) {
-			if($v == $this->request->getVar("type")) {
-				$option .= '<option value="' . $v . '" selected >'. $v . '</option>';
-			} else {
-				$option .= '<option value="' . $v . '">' . $v . '</option>';
-			}
-
+			$selected = ($k == $this->request->getVar('type')) ? ' selected' : '';
+			$option .= '<option value="' . $v . '"'. $selected .'>'. $k . '</option>';
 		}
+
 		$login = $this->request->getVar("user");
 		$description = $this->request->getVar("description");
 		$ip = $this->request->getVar("ip");
@@ -56,6 +60,7 @@ class PXModuleAuditLog extends PXModule {
 		if(isset($ds) && !in_array(null, $ds)) {
 			$ts = getFromArray($ds, 'day'). '-' . getFromArray($ds, 'month') . '-' . getFromArray($ds, 'year') . ' 00:00:00';
 		}
+
 		$date =  '<label>Дата</label>' . NLAbstractHTMLForm::BuildDateTime("date", $ts, false, true, true);
 
 		$html = 
@@ -139,19 +144,22 @@ HTML;
 			$this->layout->setGetVarToSave($field, $var);
 
 			switch($field) {
-			case 'description':
-			case 'ip':
+				case 'description':
+				case 'ip':
 					$filter[] = $this->db->mapFields($field) . " ILIKE '%" . $var . "%'";
 					break;
+
 				case 'date':
 				case 'ts':
 					if(is_array($var) && !in_array(null, $var)) {
 						$var = getFromArray($var, 'day'). '-' . getFromArray($var, 'month') . '-' . getFromArray($var, 'year') . ' 00:00:00';
 					}
+
 					if(!is_array($var)) {
 						$filter[] = "date_trunc('day', ts) = " . $this->db->mapData($var);
 					}
 					break;	
+
 				default:
 					$filter[] = $this->db->mapFields($field) . "=" .  $this->db->mapData($var);
 					break;
@@ -159,7 +167,7 @@ HTML;
 		}
 
 		if (sizeof($filter)) {
-			return 'WHERE '.implode(' AND ', $filter);
+			return ' WHERE '.implode(' AND ', $filter);
 		}
 
 		return '';
@@ -168,15 +176,15 @@ HTML;
 	function getData() {
 		$offset  = ($this->page-1) * $this->onPage;
 
-		$sql  = 'SELECT "ts", "date", "level", "type", "source", "user", "ip", "description" FROM log_audit_view ';
+		$selectSQL  = 'SELECT "ts", "date", "level", "type", "source", "user", "ip", "description" FROM log_audit_view'.$this->filter().' ORDER BY id DESC';
+		$countSQL   = 'SELECT count(*) FROM log_audit_view'.$this->filter();
 
-		$sql .= $this->filter();
-		$sql .= 'ORDER BY id DESC';
+		$data = $this->db->query($selectSQL, false, array($this->onPage, $offset));
 
-		$tmp = $this->db->query($sql);
-		$this->count = sizeof($tmp);
+		$count = $this->db->query($countSQL);
+		$this->count = $count[0]['count'];
 
-		return array_slice($tmp, $offset, $this->onPage);
+		return $data;
 	}
 
 	function error($level) {
@@ -200,7 +208,10 @@ HTML;
 		$table = new PXAdminTableSimple(array("ts" => "Дата/Время", "level" => "Уровень", "type" => "Тип", "source" => "Тип/объект", "user" => "Логин", "ip" =>"IP адрес", "description" => "Сообщение"));
 		$data = $this->getData();
 		$table->setData($data);
+		$table->setCaption('Журнал аудита, '.$this->count.' '.NumericEndingsRussian($this->count, 'запись', 'записи', 'записей'));
+
 		$param = $this->request->GetAllGetData();
+
 		if(isset($param['date']) && isset($param['date']['year'])) {
 			$param['ts'] = getFromArray($param['date'], 'day'). '-' . getFromArray($param['date'], 'month') . '-' . getFromArray($param['date'], 'year') . ' 00:00:00';
 		}
@@ -209,6 +220,7 @@ HTML;
 		foreach($param as $k => $v) {
 			$param[$k] = iconv("koi8-r", "utf-8", $param[$k]); 
 		}
+
 		$pager = new PxAdminPager($this->page, $this->onPage, $this->count, '',  $param);
 		$this->html($table->html() . $pager->html());
 	}

@@ -52,7 +52,7 @@ class PXModuleAdvert extends PXModule {
 				$layout->SetGetVarToSave($this->dtBanner.'_page', $request->GetVar($this->dtBanner.'_page', 1));
 				$currentPage = $request->GetVar($this->dtBanner.'_page', 1);
 
-				$currentOrder = $request->GetVar($this->dtBanner.'_order', $app->types[$this->dtBanner]->order);
+				$currentOrder = $request->GetOrderVar($this->dtBanner, $app->types[$this->dtBanner]->order, $app->types[$this->dtBanner]->fields);
 				$layout->SetGetVarToSave($this->dtBanner.'_order', $currentOrder);
 
 				$objects = $db->GetObjectsByParentLimited($app->types[$this->dtBanner], NULL, $request->GetSid(), $onPage, $onPage*($currentPage-1), DB_SELECT_TABLE, $currentOrder);
@@ -79,7 +79,7 @@ class PXModuleAdvert extends PXModule {
 			switch ($request->GetSid()) {
 				case 'adplace':
 					if($user->can('admin', $app->types[$this->dtPlace])) {
-						$currentOrder = $request->GetVar($this->dtPlace.'_order', $app->types[$this->dtPlace]->order);
+						$currentOrder = $request->GetOrderVar($this->dtPlace, $app->types[$this->dtPlace]->order, $app->types[$this->dtPlace]->fields);
 						$layout->SetGetVarToSave($this->dtPlace.'_order', $currentOrder);
 
 						$layout->SetGetVarToSave($this->dtPlace.'_page', $request->GetVar($this->dtPlace.'_page', 1));

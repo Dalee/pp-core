@@ -41,6 +41,9 @@ class PXModuleSearch extends PXAbstractModule {
 		$currentPage  = $currentPage > ceil($count/$onPage) ? ceil($count/$onPage) : $currentPage;
 
 
+		$currentOrder = $this->request->getOrderVar($type->id, $type->order, $type->fields);
+		$layout->SetGetVarToSave($format.'_order', $currentOrder);
+
 		$objects = $this->db->getObjectsBySearchWordLimited($type, NULL, $this->word, $onPage, $onPage*($currentPage-1), DB_SELECT_TABLE, $currentOrder);
 
 		$table = new PXAdminTable($objects, $type, $this->layout->getData);

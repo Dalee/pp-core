@@ -1459,7 +1459,7 @@ SQL;
 		$permitModifyLinks = true;
 		if (count($this->triggers)){
 			foreach ($this->triggers as $t){
-				$permitModifyLinks = $t->OnBeforeModifyLinks($this, $id, $format, $links);
+				$permitModifyLinks = $t->OnBeforeModifyLinks($this, $id, $format, $links, $linkedFormat);
 				if(!$permitModifyLinks) break;
 			}
 		}
@@ -1537,7 +1537,7 @@ SQL;
 
 			if (count($this->triggers))
 				foreach ($this->triggers as $t)
-					$t->OnModifyLinks($this, $id, $format, $links);
+					$t->OnModifyLinks($this, $id, $format, $links, $linkedFormat);
 		}
 	}
 

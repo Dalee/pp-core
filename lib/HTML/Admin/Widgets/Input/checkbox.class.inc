@@ -10,7 +10,7 @@ class PXInputCheckbox extends PXAdminWidget {
 	}
 
 	function setOn($on) {
-		 $this->on = 'checked';
+		 $this->on = $on ? 'checked' : '';
 	}
 
 	function setId($id) {

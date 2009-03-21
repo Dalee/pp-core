@@ -96,6 +96,10 @@ class NLLogger {
 	function setLevel($level){
 		$this->level = $level;
 	}
+	
+	function getLevel(){
+		return $this->level;
+	}
 
 	function log($level, $message) {
 		if ($level >= $this->level) {

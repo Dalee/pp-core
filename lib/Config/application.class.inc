@@ -77,7 +77,7 @@ class PXApplication {
 		}
 
 		/* try to get config from cache */
-	//	$instance[$engineClass] = self::loadFromCache($engineClass);
+		$instance[$engineClass] = self::loadFromCache($engineClass);
 
 		/* create new instance, if not cached */
 		if (!isset($instance[$engineClass])) {
@@ -418,6 +418,7 @@ class PXApplication {
 					case 'load':              $ref->load             = $attr->value; break;
 					case 'multiple':          $ref->multiple         = true;         break;
 					case 'bydefault':         $ref->byDefault        = $this->_mapRefByDefaults($attr->value); break; //all or linked
+					case 'hidden':            $ref->hidden           = true;         break;
 				}
 			}
 

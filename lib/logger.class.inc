@@ -21,6 +21,8 @@ class PXAuditLogger {
 	 * @var NLLogger
 	 */
 	var $logger;
+	
+	var $logLevel;
 
 	/**
 	 * Конструктор класса.
@@ -48,7 +50,8 @@ class PXAuditLogger {
 			' "source", "user", "ip", "description") '.
 			" VALUES ('%t', '%l', '%1', '%2', '%3', '%4', '%5') ");
 		}
-		$this->logger->setLevel($this->logger->INFO);
+		$this->logLevel = $this->logger->INFO;
+		$this->logger->setLevel($this->logLevel);
 		$this->logger->setAppenderParamByRef('sql', 'db', $this->db);
 	}
 
@@ -59,11 +62,16 @@ class PXAuditLogger {
 	 * @param PXDatabase $db ссылка на PXDatabase {@link $db}
 	 * @return PXAuditLogger - single instance of PXauditLogger.
 	 */
-	static function getLogger(&$app, &$db) {
+
+	static function &getLogger() {
 		static $instance;
+
 		if ($instance === null) {
+			$app = & PXRegistry::getApp();
+			$db  = & PXRegistry::getDb();
 			$instance = new PXAuditLogger($app, $db);
 		}
+
 		return $instance;
 	}
 
@@ -119,5 +127,31 @@ class PXAuditLogger {
 		$ip   = (PXRequest::GetRemoteAddr() !== null) ? PXRequest::GetRemoteAddr() : 'UNKNOWN';
 		return array($type, $source, $user, $ip, $description);
 	}
+	
+	/**
+	 * Static метод, включение логгера
+	 */
+	 function on(){
+	 	if(PXAuditLogger::disabled()){
+	 		$self = & PXAuditLogger::getLogger();
+	 		$self->logger->setLevel($self->logLevel);
+	 	}
+	 }
+	
+	/**
+	 * Static метод, отключение логгера
+	 */
+	 function off(){
+	 	$self = & PXAuditLogger::getLogger();
+	 	$self->logger->setLevel($self->logger->NONE);
+	 }
+	 
+	 /**
+	 * Static метод, возвращает true если лог не ведётся
+	 */
+	 function disabled(){
+	 	$self = & PXAuditLogger::getLogger();
+	 	return $self->logger->NONE == $self->logger->getLevel();
+	 }
 }
 ?>

@@ -33,7 +33,7 @@ class PXDisplayTypeDropdown extends PXDisplayType {
 	
 	function getParentTree(&$object,$parentFormat) {
 		global $engine;
-		return $engine->db->getObjects($engine->app->types[$parentFormat], NULL, DB_SELECT_TREE); 
+		return $engine->db->getObjects($engine->app->types[$parentFormat], NULL, DB_SELECT_FULL_TREE); 
 	}
 	
 	function getSelfParentTree(&$object,&$param) {
