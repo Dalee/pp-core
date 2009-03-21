@@ -6,8 +6,8 @@
  * displayType DELIMITER
  */
 class PXDisplayTypeDelimiter extends PXDisplayType {
-	static function buildRow($field, $object, $param=NULL) {
-		$even = PXDisplayType::__even($param['inputClass']);
+	function buildRow($field, $object, $param=NULL) {
+		$even = $this->getRow(false);
 
 		$html = "\n";
 		$html .= '<tr'.(!$even ? ' class="even"' : '' ).'>';

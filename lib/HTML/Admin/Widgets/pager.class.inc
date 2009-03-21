@@ -1,5 +1,5 @@
 <?
-class PXAdminPager {
+class PXAdminPager extends PXAdminWidget {
 	var $_currentPage;
 	var $_rowsPerPage;
 	var $_rowsCount;

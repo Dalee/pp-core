@@ -7,7 +7,7 @@
  *             width и height не используются
  */
 class PXDisplayTypeImage extends PXDisplayType {
-	static function buildInput($field, $object, $param=NULL) {
+	function buildInput($field, $object, $param=NULL) {
 		$k = $field->name;
 		$value = (isset($object[$k]) && is_array($object[$k]) && isset($object[$k]['path']) && !is_null($object[$k]['path']))
 			? $object[$k]
@@ -17,11 +17,11 @@ class PXDisplayTypeImage extends PXDisplayType {
 	}
 
 
-	static function buildCell($field, $object, $param=NULL) {
-		return PXDisplayTypeImage::buildCellHtml($object[$field->name]);
+	function buildCell($field, $object, $param=NULL) {
+		return $this->buildCellHtml($object[$field->name]);
 	}
 
-	static function buildCellHtml($value) {
+	function buildCellHtml($value) {
 		$html  = '<div class="imagepreview image-in-cell"><div class="small">';
 
 		if(!is_null($value['path'])) {
@@ -45,7 +45,7 @@ class PXDisplayTypeImage extends PXDisplayType {
 		return $html ;
 	}
 
-	static function getFromRequest($field, $object, $param=NULL) {
+	function getFromRequest($field, $object, $param=NULL) {
 		return $param['request']->postData->_GetImageVar($field->name);
 	}
 }

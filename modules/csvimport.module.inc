@@ -58,7 +58,6 @@ class PXModuleCsvImport extends PXModule {
 				$html .= $this->_UploadTable();
 				break;
 		}
-
 		$layout->Assign("INNER.0.0", $html);
 	}
 
@@ -165,13 +164,17 @@ class PXModuleCsvImport extends PXModule {
 	}
 
 	function UploadFile($file, $uploadDir = NULL) {
-		$uploadDir = !is_null($uploadDir) ? $uploadDir : BASEPATH.'/var/csvimport';
+		$uploadDir = !is_null($uploadDir) ? $uploadDir : BASEPATH.'/tmp/csvimport';
 
-		if(sizeof($file) && isset($file['name']) && (substr($file['name'], strrpos($file['name'], '.')) == '.csv' || substr($file['name'], strrpos($file['name'], '.')) == '.txt')) {
-			return $this->UploadFileFromUser($file, $uploadDir);
-		} else {
+		if(!isset($file['name'])) {
 			return false;
 		}
+
+		if(!preg_match('/\.(csv|txt)$/i', $file['name'])) {
+			return false;
+		}
+
+		return $this->UploadFileFromUser($file, $uploadDir);
 	}
 
 	function UploadFileFromUser($file, $dir) {
@@ -205,7 +208,7 @@ class PXModuleCsvImport extends PXModule {
 		return <<<HTML
 			<h2>Импорт данных из CSV файла</h2>
 
-			<form action="action.phtml" method="POST" enctype="multipart/form-data">
+			<form action="action.phtml" method="POST" enctype="multipart/form-data" class="autoheight">
 				<input type="hidden" name="area" value="csv">
 				<input type="file" name="file">
 				<input type="submit" class="button" value="Импортировать данные">

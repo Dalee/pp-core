@@ -7,7 +7,7 @@
  *             width и height не используются
  */
 class PXDisplayTypeFlash extends PXDisplayType {
-	static function buildInput($field, $object, $param=NULL) {
+	function buildInput($field, $object, $param=NULL) {
 		$k = $field->name;
 		$value = (isset($object[$k]) && is_array($object[$k]) && isset($object[$k]['path']) && !is_null($object[$k]['path']))
 			? $object[$k]
@@ -17,11 +17,11 @@ class PXDisplayTypeFlash extends PXDisplayType {
 	}
 
 
-	static function buildCell($field, $object, $param=NULL) {
-		return PXDisplayTypeFlash::buildCellHtml($object[$field->name], $field->name.$object['id']);
+	function buildCell($field, $object, $param=NULL) {
+		return $this->buildCellHtml($object[$field->name], $field->name.$object['id']);
 	}
 
-	static function buildCellHtml($value, $id) {
+	function buildCellHtml($value, $id) {
 		if(!isset($value['path']) ) {
 			return '';
 		}
@@ -33,7 +33,7 @@ class PXDisplayTypeFlash extends PXDisplayType {
 		return $html;
 	}
 
-	static function getFromRequest($field, $object, $param=NULL) {
+	function getFromRequest($field, $object, $param=NULL) {
 		return $param['request']->postData->_GetFileVar($field->name);
 	}
 }

@@ -6,7 +6,7 @@
  * displayType FILE
  */
 class PXDisplayTypeFile extends PXDisplayType {
-	static function buildInput($field, $object, $param=NULL) {
+	function buildInput($field, $object, $param=NULL) {
 		$k = $field->name;
 		$value = (isset($object[$k]) && is_array($object[$k]) && isset($object[$k]['filename']) && !is_null($object[$k]['filename']))
 			? $object[$k]
@@ -15,15 +15,15 @@ class PXDisplayTypeFile extends PXDisplayType {
 		return NLAbstractHTMLForm::BuildFile($k, $value);
 	}
 
-	static function getFromRequest($field, $object, $param=NULL) {
+	function getFromRequest($field, $object, $param=NULL) {
 		return $param['request']->postData->_GetFileVar($field->name);
 	}
 
-	static function buildCell($field, $object, $param=NULL) {
-		return PXDisplayTypeFile::buildCellHtml($object[$field->name]);
+	function buildCell($field, $object, $param=NULL) {
+		return $this->buildCellHtml($object[$field->name]);
 	}
 
-	static function buildCellHtml($fileArray) {
+	function buildCellHtml($fileArray) {
 		if(!isset($fileArray['fullpath'])) {
 			return '';
 		}

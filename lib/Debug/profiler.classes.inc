@@ -1,20 +1,35 @@
 <?php
 class PXProfiler {
-	var $_stack = array();
+	var $_stack      = array();
 	var $_collection = array();
+	var $_isMemoryProfile;
+	var $_enabled;
 
 	function &getInstance() {
 		static $object;
 
 		if (!isset($object)) {
 			$object = new PXProfiler();
+			$object->_isMemoryProfile = function_exists('memory_get_usage');
+			$object->_enabled = defined("PROFILER") ? PROFILER : false;
 		}
 
 		return $object;
 	}
 
+	function on(){
+		$_ = & PXProfiler::getInstance();
+		$_->_enabled = true;
+	}
+	
+	function off(){
+		$_ = & PXProfiler::getInstance();
+		$_->_enabled = false;
+	}
+
 	function Disabled() {
-		return !PROFILER;
+		$_ = & PXProfiler::getInstance();
+		return !$_->_enabled;
 	}
 
 	function begin($label) {
@@ -24,7 +39,10 @@ class PXProfiler {
 
 		static $call_counter = 0;
 		$self = & PXProfiler::getInstance();
-		$self->enq(new PXProfilerStruct($label, $self->stackSize(), $call_counter++));
+
+		$cls = $self->_isMemoryProfile ? 'PXProfilerStructWithMemory' : 'PXProfilerStruct';
+
+		$self->enq(new $cls($label, $self->stackSize(), $call_counter++));
 	}
 
 	function end() {
@@ -33,7 +51,9 @@ class PXProfiler {
 		}
 
 		$self = & PXProfiler::getInstance();
-		if($self->stackSize() == 0) return;
+		if($self->stackSize() == 0) {
+			return;
+		}
 
 		$item = $self->deq();
 		$item->finalize();
@@ -64,9 +84,19 @@ class PXProfiler {
 
 	function toString() {
 		$collection = PXProfiler::finalize();
+		
 		array_walk($collection, create_function('&$item', '$item = $item->toString();'));
 
-		$result = implode("\n", $collection);
+		$self = & PXProfiler::getInstance();
+		if($self->_isMemoryProfile) {
+			$result  = str_pad('MemoryStart(Kb)', 16, ' ', STR_PAD_LEFT);
+			$result .= str_pad('MemoryDelta(Kb)', 16, ' ', STR_PAD_LEFT);
+		}
+
+		$result .= str_pad('Time', 8, ' ', STR_PAD_LEFT);
+		$result .= "\tProcess\n\n";
+
+		$result .= implode("\n", $collection);
 
 		if(!CLI) {
 			$result = '<pre>'.$result.'</pre>';
@@ -89,33 +119,54 @@ class PXProfiler {
 }
 
 class PXProfilerStruct {
-	var $start;
-	var $end;
-	var $delta;
+	var $time;
 	var $level;
 	var $eventName;
 	var $index;
 
 	function PXProfilerStruct($name, $level, $index) {
-		$this->index     = $index;
-		$this->eventName = $name;
-		$this->level     = $level;
-		$this->start     = getMicroTime();
+		$this->index           = $index;
+		$this->eventName       = $name;
+		$this->level           = $level;
+		$this->time['start']   = getMicroTime();
 	}
 
 	function finalize() {
-		$this->end   = getMicroTime();
-		$this->delta = $this->end - $this->start;
+		$this->time['end']     = getMicroTime();
+		$this->time['delta']   = $this->time['end']   - $this->time['start'];
 	}
 
 	function toString() {
-		$delta = str_pad(number_format($this->delta, 4), 8, ' ', STR_PAD_LEFT);
-		$level = str_repeat("\t", $this->level + 1);
-		$text  = preg_replace('/[\n\t]/', ' ', $this->eventName);
+		$time    = str_pad(number_format($this->time['delta'], 4            ),  8, ' ', STR_PAD_LEFT);
 
-		return $delta.$level.$text;
+		$level   = str_repeat("\t", $this->level + 1);
+		$text    = preg_replace('/[\n\t]/', ' ', $this->eventName);
+
+		return $time.$level.$text;
+	}
+}
+
+class PXProfilerStructWithMemory extends PXProfilerStruct {
+	var $memory;
+
+	function PXProfilerStructWithMemory($name, $level, $index) {
+		$this->PXProfilerStruct($name, $level, $index);
+		$this->memory['start'] = memory_get_usage()/1024;
 	}
 
+	function finalize() {
+		parent::finalize();
+
+		$this->memory['end']   = memory_get_usage()/1024;
+		$this->memory['delta'] = $this->memory['end'] - $this->memory['start'];
+	}
+
+	function toString() {
+		$memory  = str_pad(number_format($this->memory['start'], 2, '.', ' '), 16, ' ', STR_PAD_LEFT);
+		$memory .= str_pad(number_format($this->memory['delta'], 2, '.', ' '), 16, ' ', STR_PAD_LEFT);
+
+		return $memory.parent::toString();
+	}
 }
 
 ?>

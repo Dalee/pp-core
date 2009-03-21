@@ -93,14 +93,15 @@ class NLPGSQLDatabase extends NLAbstractSQLDatabase {
 			}
 
 			foreach ($data as $k=>$row) {
-				$line = implode("----qweeqwe----", $row);
+				$line = implode(chr(1), $row);
 				$line = str_replace("\\", "\\\\", $line);
 				$line = str_replace("\r", "\\r", $line);
 				$line = str_replace("\n", "\\n", $line);
 				$line = str_replace("\t", "\\t", $line);
-				$line = str_replace("----qweeqwe----", "\t", $line);
+				$line = str_replace(chr(1), "\t", $line);
 				while (strstr($line, "\t\t")) $line = str_replace("\t\t", "\t\\N\t", $line);
 
+				if ($line{0} == "\t") $line = "\\N\t" . substr($line, 1);
 				if ($line{strlen($line)-1} == "\t") $line .= "\\N";
 
 				if (pg_put_line($this->connection, $line."\n") == false) {
@@ -190,6 +191,10 @@ class NLPGSQLDatabase extends NLAbstractSQLDatabase {
 		else if ($value === "##now##")        return "now()";
 		else if ($value === "now()")          return "now()";
 		else return "'".$this->EscapeString($value)."'";
+	}
+	
+	function mapFields($field) {
+		return '"'.$this->EscapeString($field).'"';
 	}
 
 	function __mapInsertData($value) {
@@ -291,6 +296,10 @@ class NLPGSQLDatabase extends NLAbstractSQLDatabase {
 
 	function tableExists($tableName) {
 		return count($this->query("SELECT relname FROM pg_class WHERE relname='{$tableName}'"));
+	}
+	
+	function LIKE($condition, $percs){
+		return $this->_searchMethod("ILIKE", $condition, $percs);
 	}
 
 }

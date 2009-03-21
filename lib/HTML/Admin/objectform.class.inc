@@ -15,14 +15,12 @@ class PXAdminObjectForm extends NLAbstractHTMLForm {
 		$this->object = $object;
 	}
 
-	function MainForm($tree, $selfTree, $datatype) {
+	function MainForm($datatype) {
 		$html  = $this->BaseInputs('main');
+		
 
 		$param = array(
-			'parents'     => $tree->getPlainTree(getFromArray($this->object, 'id')),
-			'selfParents' => $selfTree->getPlainTree(getFromArray($this->object, 'id')),
 			'even'        => false,
-			'tree'        => $tree,
 			'datatype'    => $datatype
 		);
 
@@ -36,7 +34,7 @@ class PXAdminObjectForm extends NLAbstractHTMLForm {
 				$this->object[$k] = htmlspecialchars($v->defaultValue);
 			}
 
-			$html .= PXDisplayType::callMethod('buildRow', $v, $this->object, $param);
+			$html .= $v->displayType->buildRow($v, $this->object, $param);
 		}
 		$html .= '</table>';
 
@@ -66,8 +64,7 @@ class PXAdminObjectForm extends NLAbstractHTMLForm {
 			$this->BuildHidden('format', $this->format->id);
 	}
 
-	function LinksForm($reference, $formatTo, $links, $pLinks, 
-		$objectsOnPage = 0, $page = 1, $count = 0, &$layout, $onlyExistingLinks = false) {
+	function LinksForm($reference, $formatTo, $links, $pLinks, $objectsOnPage = 0, $page = 1, $count = 0, $fullCount = 0, &$layout, $onlyExistingLinks = false, $filters) {
 		$displayFields = array();
 		foreach ($formatTo->fields as $k => $f) {
 			if ($f->listed) {
@@ -75,12 +72,22 @@ class PXAdminObjectForm extends NLAbstractHTMLForm {
 			}
 		}
 
-		$html  = '<h2>Связи с объектами формата &laquo;'.$formatTo->title.'&raquo; ['.sizeof($links).' из '.$count.']</h2>';
+		$html  = '<h2>Связи с объектами формата &laquo;'.$formatTo->title.'&raquo; ['.sizeof($links).' из '.$fullCount.']</h2>';
+		if($reference->multiple){
+			$html  .= '<!--%%OBJECT2JS%%-->';
+		}
 		$html .= '<table class="objects links">';
-		$html .= '<thead><tr><th class="c3"></th>';
+		$html .= '<thead><tr><th class="c3"><br/></th>';
 
 		foreach ($displayFields as $f) {
-			$html .= '<th>'.$f->description.'</th>';
+			if($f->storageType->filterable()){
+				$filterOn = isset($filters[$formatTo->id][$f->name]);
+				$html .= '<th class="ref-filter-'.( $filterOn ? 'show' : 'hide').'" ondblclick="ShowHideFilter(this)" title="Двойной клик, чтобы скрыть/показать фильтр по этому полю"><span>'.$f->description.'</span>';
+				$html .= '<input type="text" name="filters['.$formatTo->id.']['.$f->name.']" value="'.($filterOn ? $filters[$formatTo->id][$f->name]: null).'" />';
+				$html .= '</th>';
+			} else {
+				$html .= '<th>'.$f->description.'</th>';
+			}
 		}
 
 		foreach ($reference->fields as $k=>$v) {
@@ -89,46 +96,69 @@ class PXAdminObjectForm extends NLAbstractHTMLForm {
 		$html .= '</tr></thead><tbody>';
 
 		foreach ($pLinks as $k=>$v) {
-			$html .= '<tr'.($v['status'] == false ? ' class="hide"' : '').'>';
-			$html .= '<td class="c3">';
-			$html .= $this->BuildHidden($reference->name.'['.$v['id'].'][id]', $v['id']);
-			$html .= $this->BuildCheckBox($reference->name.'['.$v['id'].'][on]', isset($links[$v['id']]), NULL, $reference->name.$v['id']);
+			$iteration = 0;
+			$linksIsset = isset($links[$v['id']]);
+			do {
+				$shown = false;
+				$html .= '<tr'.($v['status'] == false ? ' class="hide"' : '').'>';
+				$html .= '<td class="c3">';
+				$html .= $this->BuildHidden($reference->name.'['.$iteration.']['.$v['id'].'][id]', $v['id']);
+				$html .= $this->BuildCheckBox($reference->name.'['.$iteration.']['.$v['id'].'][on]', $linksIsset, NULL, $reference->name.'-'.$iteration.'-'.$v['id']);
 
-			$menuTitle = (strlen($v['title']) > 10) ? trim(substr($v['title'], 0, 10)).'&hellip;' : $v['title'];
-			$context = 'Context(event, \'edit\', '.$v['id'].', '.(int)($v['status']).', \''.$formatTo->id.'\',  \''.$menuTitle.'\', \'\', 1, 0, 0); window.event.cancelBubble = true; return false;';
-			$html .= '<a oncontextMenu="'.$context.'" href="javascript:EditContent(\''.$formatTo->id.'\', \''.$v['id'].'\')">';
-			$html .= '<img src="i/icon/edit.gif" alt="Изменить &laquo;'.$v['id'].'&raquo;"></a>';
-			$html .= '</td>';
-
-			foreach ($displayFields as $k => $f) {
-				$html .= '<td>';
-				$html .= '<label checkbox="'.$reference->name.$v['id'].'" for="'.$reference->name.$v['id'].'" style="width: 100%; '.(isset($links[$v['id']]) ? 'font-weight: bold;' : '').'">';
-				$html .= PXDisplayType::callMethod('buildCell', $f, $v);
-				$html .= '</label>';
-
+				$menuTitle = (strlen($v['title']) > 10) ? trim(substr($v['title'], 0, 10)).'&hellip;' : $v['title'];
+				$context = 'Context(event, \'edit\', '.$v['id'].', '.(int)($v['status']).', \''.$formatTo->id.'\',  \''.$menuTitle.'\', \'\', 1, 0, 0); return false;';
+				$html .= '<a oncontextMenu="'.$context.'" href="javascript:EditContent(\''.$formatTo->id.'\', \''.$v['id'].'\')">';
+				$html .= '<img src="i/icon/edit.gif" alt="Изменить &laquo;'.$v['id'].'&raquo;"></a>';
 				$html .= '</td>';
-			}
-			foreach ($reference->fields as $sk=>$sv) {
-				$value = (isset($links[$v['id']])) ? $links[$v['id']]['fields'][$sk] : NULL;
+				
+				foreach ($displayFields as $k => $f) {
+					$html .= '<td>';
+					$html .= '<label checkbox="'.$reference->name.'-'.$iteration.'-'.$v['id'].'" for="'.$reference->name.'-'.$iteration.'-'.$v['id'].'" class="'.($linksIsset ? 'ref-linked' : 'ref-unlinked').'">';
+					$html .= $f->displayType->buildCell($f, $v);
+					$html .= '</label>';
+					if($reference->multiple && $linksIsset && !$shown) {
+						$html .= '<span title="Нажмите, чтобы добавить ещё одну ссылку для этого объекта" class="ref-plus-tr" onclick="appendLinksRow(this)">[ + ]</span>';
+						$object2JS[$v['id']] = $iteration;
+						$shown = true;
+					}
+					$html .= '</td>';
+				}
 
-				$k = $reference->name.'['.$v['id'].'][fields]['.$sk.']';
+				foreach ($reference->fields as $sk=>$sv) {
+					$value = ($linksIsset) ? $links[$v['id']]['fields'][$sk] : NULL;
 
-				$sv->name = $k;
+					$k = $reference->name.'['.$iteration.']['.$v['id'].'][fields]['.$sk.']';
 
-				$html .= "\n".'<td>'.PXDisplayType::callMethod('buildInput', $sv, array($k=>$value)).'</td>';
-			}
-			$html .= '</tr>';
+					$sv->name = $k;
+
+					$html .= '<td>'.$sv->displayType->buildInput($sv, array($k=>$value)).'</td>';
+				}
+				$html .= '</tr>';
+				$iteration++;
+			} while(!is_null($links[$v['id']] = & $links[$v['id']]['next'])); //Если есть связанные ссылки, продолжаем выполнение, пока не закончится linked list
 		}
+		
+		if(isset($object2JS)){
+			$js = '<script type="text/javascript">';
+			$js .= "possibleNewRows['{$reference->name}'] = {";
+			foreach($object2JS as $k => $v){
+				$objs[] = "'{$k}':{$v}";
+			}
+			$js .= join(',', $objs);
+			$js .= '}';
+			$js .= '</script>';
+			$html = str_replace('<!--%%OBJECT2JS%%-->', $js, $html);
+		}
+		
 		$html .= '</tbody></table>';
 
-		if($onlyExistingLinks) {
-			$count = sizeof($links);
-		}
-
 		$html .= '<div class="perpage" style="zoom: 1;">';
-			$html .= '<a style="float: right;" href="'.$layout->_BuildHref($formatTo->id.'_exist', 1).'" '.( $onlyExistingLinks ? 'class="selected"': '').'>привязанные</a>';
-			$html .= '<a style="float: right;" href="'.$layout->_BuildHref($formatTo->id.'_exist', 0).'" '.(!$onlyExistingLinks ? 'class="selected"': '').'>все</a>';
+		$html .= '<a style="float: right;" href="'.$layout->_BuildHref($formatTo->id.'_exist', 1).'" '.( $onlyExistingLinks ? 'class="selected"': '').'>привязанные</a>';
+		$html .= '<a style="float: right;" href="'.$layout->_BuildHref($formatTo->id.'_exist', 0).'" '.(!$onlyExistingLinks ? 'class="selected"': '').'>все</a>';
 
+		if(!is_bool($onlyExistingLinks)){
+			$html .= $this->BuildHidden($formatTo->id.'_exist', $onlyExistingLinks ? 1 : 0);
+		}
 
 		if ($count > $objectsOnPage && $objectsOnPage > 0) {
 			$allPages = ceil($count/$objectsOnPage)+1;
@@ -218,7 +248,7 @@ HTML;
 			$this->disable = !strlen($checked);
 
 			$html .= '<dd>'.$this->BuildDropDown(OBJ_FIELD_CHILDREN.'['.$k.']', $value, $values, 0, 0).'</dd>';
-			$html .= '<dd>'.$quantity.' '.NumericEndingsRussian('объект', $quantity, array('ов', '', 'а', 'а', 'а', 'ов', 'ов', 'ов', 'ов', 'ов'));
+			$html .= '<dd>'.$quantity.' '.NumericEndingsRussian($quantity, 'объект', 'объекта', 'объектов');
 
 			$this->disable = false;
 

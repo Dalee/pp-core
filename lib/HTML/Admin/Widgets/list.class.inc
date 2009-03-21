@@ -1,5 +1,5 @@
 <?php
-class PXAdminList {
+class PXAdminList extends PXAdminWidget {
 	var	$_list ;
 	var	$_varName;
 	var	$_selected;

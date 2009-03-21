@@ -34,5 +34,17 @@ class NLSQLDatabaseAdapter {
 	function query($query, $donotusecache = false, $limitpair=NULL) {
 		return $this->dbDriver->query($query, $donotusecache, $limitpair);
 	}
+
+	function TrueStatusString($status='TRUE') {
+		return ($status == 'TRUE' || $status == 1) ? "'1'" : "'0'";
+	}
+
+	function ClearCache($force=false) {
+		return $this->db->cache->clear();
+	}
+	
+	function LIKE($condition, $percs = NULL ){
+		return $this->db->LIKE($condition, is_null($percs) ? P_LEFT|P_RIGHT : $percs);
+	}
 }
 ?>

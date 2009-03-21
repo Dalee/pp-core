@@ -68,7 +68,8 @@ class PXEngineAdminIndex extends PXEngine {
 		$this->fillLayout($area);
 
 		if($area == 'exit') {
-			Finalize('action.phtml?area=auth&action=exit');
+			$response =& PXResponse::getInstance();
+			$response->redirect('action.phtml?area=auth&action=exit');
 		}
 
 		if(!$this->checkArea($area)) {
@@ -81,6 +82,9 @@ class PXEngineAdminIndex extends PXEngine {
 	}
 
 	function html() {
+		$response =& PXResponse::getInstance();
+		$response->dontCache();
+
 		$charset = PXRegistry::getApp()->GetProperty('OUTPUT_CHARSET', DEFAULT_CHARSET);
 
 		PXRegistry::getDb()->close();

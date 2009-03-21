@@ -1,58 +1,58 @@
-<?
+<?php
 function Close() {
-	if (class_exists('NLErrorReporter') && NLErrorReporter::ErrorCount()) {
+	if (PXErrorReporter::hasErrors()) {
 		exit();
 	}
 
-	print '<HTML>
-		<HEAD>
-			<SCRIPT language="JavaScript" type="text/javascript">
-			function doIt() {
-				window.close();
-			}
-			</SCRIPT>
-		</HEAD>
-		<BODY onLoad="doIt()">
-			<BUTTON onClick="doIt()">Close</BUTTON>
-		</BODY>
-		</HTML>';
+	print <<<HTML
+	<html>
+		<head>
+			<script type="text/javascript">
+				function closePage() {
+					window.close();
+				}
+			</script>
+		</head>
+
+		<body onLoad="closePage()">
+			<button onclick="closePage()">Close</button>
+		</body>
+	</html>
+HTML;
+
 	exit();
 }
 
 function CloseAndRefresh() {
-	if (class_exists('NLErrorReporter') && NLErrorReporter::ErrorCount()) {
+	if (PXErrorReporter::hasErrors()) {
 		exit();
 	}
 
-	print '<HTML>
-		<HEAD>
-			<SCRIPT language="JavaScript" type="text/javascript">
-			function doIt() {
-				window.close();
-				opener.location.href = opener.location.href;
-			}
-			</SCRIPT>
-		</HEAD>
-		<BODY onLoad="doIt()">
-			<BUTTON onClick="doIt()">Close</BUTTON>
-		</BODY>
-		</HTML>';
+	print <<<HTML
+	<html>
+		<head>
+			<script type="text/javascript">
+				function closePage() {
+					window.close();
+					opener.location.href = opener.location.href;
+				}
+			</script>
+		</head>
+
+		<body onLoad="closePage()">
+			<button onclick="closePage()">Close</button>
+		</body>
+	</html>
+HTML;
+
 	exit();
 }
 
 function Finalize($url) {
-	switch (ini_get('display_errors')) {
-		case 'on':
-		case '1':
-			if (class_exists('NLErrorReporter') && NLErrorReporter::ErrorCount()) {
-				exit();
-			}
-			break;
-	}
+	require_once 'libpp/lib/response.class.inc';
 
-	header('HTTP/1.0 301 Moved Permanetly'); // Рекомендация Ашманова и Co
-	header('Location: '.$url);
-	exit();
+	$response =& PXResponse::getInstance();
+	$response->redirect($url);
 }
 
 function ListenInput($length = 255) {

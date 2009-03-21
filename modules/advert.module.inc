@@ -28,6 +28,7 @@ class PXModuleAdvert extends PXModule {
 			)
 		);
 		$tree = $db->GetObjects($app->types[$this->dtCampaign], NULL, DB_SELECT_TREE);
+		$db->filterByAccess('admin', $app->types[$this->dtCampaign], $tree);
 		$app->types[$this->dtCampaign]->makeTreeWithSid = true;
 		$layout->AssignTree('INNER.0.0', $app->types[$this->dtCampaign], $tree, $request->GetSid(), $request->GetLeafStatus());
 
@@ -36,14 +37,16 @@ class PXModuleAdvert extends PXModule {
 			$layout->AssignContextMenu('INNER.0.0.CONTEXT', 0, array($this->dtCampaign));
 		}
 
-		$addMenu = array(
-			'adplace' => 'Баннерные позиции'
-		);
+		if($user->can('admin', $app->types[$this->dtPlace])) {
+			$addMenu = array(
+				'adplace' => 'Баннерные позиции'
+			);
 
-		$layout->AssignKeyValueList('INNER.0.1', $addMenu, $request->GetSid());
+			$layout->AssignKeyValueList('INNER.0.1', $addMenu, $request->GetSid());
+		}
 		$onPage = $app->GetProperty('CHILDREN_ON_PAGE', 5);
 
-		if (is_numeric($request->GetSid())) {
+		if (is_numeric($request->GetSid()) && isset($tree->leafs[$request->GetSid()])) {
 			$parentObject = $db->GetObjectByID($app->types[$this->dtCampaign], $request->GetSid());
 			if ($parentObject) {
 				$layout->SetGetVarToSave($this->dtBanner.'_page', $request->GetVar($this->dtBanner.'_page', 1));
@@ -75,14 +78,21 @@ class PXModuleAdvert extends PXModule {
 		} elseif ($request->GetSid()) {
 			switch ($request->GetSid()) {
 				case 'adplace':
-					$layout->SetGetVarToSave($this->dtPlace.'_page', $request->GetVar($this->dtPlace.'_page', 1));
-					$currentPage = $request->GetVar($this->dtPlace.'_page', 1);
-					$objects = $db->GetObjectsLimited($app->types[$this->dtPlace], NULL, $onPage, $onPage*($currentPage-1));
-					$count   = $db->GetObjects($app->types[$this->dtPlace], NULL, DB_SELECT_COUNT);
-					$layout->AppendTable('INNER.1.0', $this->dtPlace, $objects, $request->GetCid(), NULL, $currentPage, $onPage, $count);
-					if ($user->can('write', $app->types[$this->dtPlace], array())) {
-						$layout->AssignControls('INNER.1.2', 0, array($this->dtPlace));
-						$layout->AssignContextMenu('INNER.1.0.CONTEXT', 0, array($this->dtPlace));
+					if($user->can('admin', $app->types[$this->dtPlace])) {
+						$currentOrder = $request->GetVar($this->dtPlace.'_order', $app->types[$this->dtPlace]->order);
+						$layout->SetGetVarToSave($this->dtPlace.'_order', $currentOrder);
+
+						$layout->SetGetVarToSave($this->dtPlace.'_page', $request->GetVar($this->dtPlace.'_page', 1));
+						$currentPage = $request->GetVar($this->dtPlace.'_page', 1);
+						$objects = $db->GetObjectsLimited($app->types[$this->dtPlace], NULL, $onPage, $onPage*($currentPage-1), DB_SELECT_TABLE, $currentOrder);
+						$db->filterByAccess('admin', $app->types[$this->dtPlace], $objects);
+
+						$count   = $db->GetObjects($app->types[$this->dtPlace], NULL, DB_SELECT_COUNT);
+						$layout->AppendTable('INNER.1.0', $this->dtPlace, $objects, $request->GetCid(), NULL, $currentPage, $onPage, $count);
+						if ($user->can('write', $app->types[$this->dtPlace], array())) {
+							$layout->AssignControls('INNER.1.2', 0, array($this->dtPlace));
+							$layout->AssignContextMenu('INNER.1.0.CONTEXT', 0, array($this->dtPlace));
+						}
 					}
 					break;
 				default:
@@ -94,10 +104,22 @@ class PXModuleAdvert extends PXModule {
 		}
 	}
 
-
 	function adminPopup() {
-		$months = array(0 => '', 1=>'Январь', 2=>'Февраль', 3=>'Март', 4=>'Апрель', 5=>'Май', 6=>'Июнь',
-								 7=>'Июль', 8=>'Август', 9=>'Сентябрь', 10=>'Октябрь', 11=>'Ноябрь', 12=>'Декабрь');
+		$months = array(
+			0  => '',
+			1  => 'Январь',
+			2  => 'Февраль',
+			3  => 'Март',
+			4  => 'Апрель',
+			5  => 'Май',
+			6  => 'Июнь',
+			7  => 'Июль',
+			8  => 'Август',
+			9  => 'Сентябрь',
+			10 => 'Октябрь',
+			11 => 'Ноябрь',
+			12 => 'Декабрь'
+		);
 
 		$format = $request->GetVar('format');
 
@@ -114,15 +136,13 @@ class PXModuleAdvert extends PXModule {
 		}
 
 		switch($request->getAction()) {
-
 			//show image and exit
 			case 'image':
-
-				Header("Content-type: image/png");
-				header('Content-Disposition: inline; filename="stat_'.$id.'_'.$year.'_'.$month.'.png"');
+				$response =& PXResponse::getInstance();
+				$response->downloadFile('stat_'.$id.'_'.$year.'_'.$month.'.png', 'image/png', 'inline');
+				$response->send();
 
 				if ($id !== 0) {
-
 					$lastDayOfMonth = 27;
 					while (checkdate($month, ++$lastDayOfMonth + 1, $year));
 					//jpGraph не понимает массивы начинающиеся не с нулевого эл-та, не стоит его расстраивать
@@ -203,6 +223,7 @@ class PXModuleAdvert extends PXModule {
 					$graph->title->Set($bannerTitle);
 
 					$graph->Stroke();
+					
 
 					exit; /*<====EXIT !!!*/
 				}//if
@@ -216,19 +237,36 @@ class PXModuleAdvert extends PXModule {
 
 			//отдаем csv файл
 			case 'csv':
-				header('Content-type: application/csv');
-				header('Content-Disposition: attachment; filename="stat_'.$id.'_'.$year.'_'.$month.'.csv"');
+				$response =& PXResponse::getInstance();
+				$response->downloadFile('stat_'.$id.'_'.$year.'_'.$month.'.csv', 'image/png');
+				$response->send();
 
-				$sql = 'SELECT TO_DATE(ts, \'DD-MM-YYYY\') AS date, SUM(show) as shows, SUM(click) AS clicks
-						FROM adstat WHERE adbanner=\''.$id.'\'
-						AND EXTRACT(MONTH FROM ts) = '.$month.' AND EXTRACT(YEAR FROM ts) = '.$year.'
-						GROUP BY TO_DATE(ts, \'DD-MM-YYYY\') ORDER BY date';
+				$sql = <<<SQL
+					SELECT
+						EXTRACT(DAY FROM ts) AS day,
+						SUM(show) as shows,
+						SUM(click) AS clicks
+
+					FROM
+						adstat
+
+					WHERE
+						adbanner = '{$id}' AND
+						EXTRACT(MONTH FROM ts) = {$month} AND
+						EXTRACT(YEAR  FROM ts) = {$year}
+
+					GROUP BY
+						EXTRACT(DAY FROM ts)
+
+					ORDER BY day
+SQL;
 
 				$res = $db->Query($sql);
 
 				echo '"date";"shows";"clicks";"ctr"'. "\r\n";
 				foreach ($res as $row) {
-					echo '"'.$row['date'].'";"'.$row['shows']. '";"' .$row['clicks']. '";"' .number_format(100*($row['clicks']/$row['shows']),4,',','') .'"'. "\r\n";
+					$ctr = $row['shows'] > 0 ? $row['clicks']/$row['shows'] : 0;
+					echo '"'.$year.'-'.$month.'-'.$row['day'].'";"'.$row['shows']. '";"' .$row['clicks']. '";"' .number_format(100 * ($ctr), 4, ',', '') .'"'. "\r\n";
 				}
 				exit; /*<====EXIT !!!*/
 				break;
@@ -322,7 +360,10 @@ class PXModuleAdvert extends PXModule {
 				$toShow = $banners[$distrib[array_rand($distrib)]];
 				if ($request->GetVar('d') == 'gif') {
 					setcookie('place'.$request->GetVar('p'), $toShow['id']);
-					header('Location: '.$toShow['image']['path']);
+
+					$response =& PXResponse::getInstance();
+					$response->redirect($toShow['image']['path']);
+
 				} else {
 					$this->ShowAd($request->GetVar('p'), $toShow);
 				}

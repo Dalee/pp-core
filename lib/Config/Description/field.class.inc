@@ -20,43 +20,47 @@ class PXFieldDescription {
 	var $defaultValue    = NULL;
 	var $listed          = NULL;
 	var $noindex         = NULL;
+	var $typeDescription;
 
-	public function __construct($nodeattrs, &$app) {
-		foreach ($nodeattrs as $name => $value) {
+	public function __construct($nodeattrs, &$app, $type) {
+		foreach ($nodeattrs as $node) {
+			$name  = $node->name;
+			$value = $node->value;
+
 			switch ($name) {
 				case 'name':
-					$this->name = (string)$value;
+					$this->name = $value;
 					break;
 
 				case 'description':
-					$this->description = utf8_decode((string)$value);
+					$this->description = utf8_decode($value);
 					break;
 
 				case 'storagetype':
-					$this->storageType = (string)$value;
+					$this->setStorageType($value);
 					break;
 
 				case 'displaytype':
-					$this->setDisplayType((string)$value);
+					$this->setDisplayType($value);
 					break;
 
 				case 'handler':
-					$this->handler = (string)$value;
+					$this->handler = $value;
 					break;
 
 				case 'listed':
-					$listed = strtoupper((string)$value);
+					$listed = strtoupper($value);
 					$this->listed = $listed == 'TRUE' ? true : false;
 					break;
 
 				case 'defaultvalue':
-					$this->defaultValue = utf8_decode((string)$value);
+					$this->defaultValue = utf8_decode($value);
 					break;
 
 				case 'source':
-					$app->directory[(string)$value] = new PXDirectoryDescription((string)$value);
-					$this->values = $app->directory[(string)$value];
-					$this->source = (string)$value;
+					$app->directory[$value] = new PXDirectoryDescription($value);
+					$this->values = $app->directory[$value];
+					$this->source = $value;
 					break;
 
 				case 'noindex': 
@@ -70,7 +74,7 @@ class PXFieldDescription {
 		}
 
 		if(is_null($this->storageType)) {
-			$this->storageType = 'string';
+			$this->setStorageType('string');
 		}
 
 		if(is_null($this->displayType)) {
@@ -80,8 +84,21 @@ class PXFieldDescription {
 
 	public function setDisplayType($string) {
 		$this->displayTypeArgs = explode("|", $string);
-		$this->displayType = $this->displayTypeArgs[0];
+		
+		$displayType = $this->_getType($this->displayTypeArgs[0], 'PXDisplayType');
+		$this->displayType = new $displayType($this, $this->displayTypeArgs[0]);
+
 		array_shift($this->displayTypeArgs);
+	}
+	
+	function setStorageType($fieldType) {
+		$storageType = $this->_getType($fieldType, 'PXStorageType');
+		$this->storageType = new $storageType($this, $fieldType);
+	}
+	
+	function _getType($type, $baseClass) {
+		$inputClass  = $baseClass.ucfirst(strtolower($type));
+		return class_exists($inputClass) ? $inputClass : $baseClass;
 	}
 }
 ?>

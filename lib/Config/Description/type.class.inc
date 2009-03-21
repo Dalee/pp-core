@@ -19,8 +19,6 @@ class PXTypeDescription {
 	var $byDefault     = NULL;
 	var $outputHandler = NULL;
 
-	var $allTypes      = array();
-
 	public function addField($field) {
 		$this->fields[$field->name] = $field;
 	}
@@ -28,16 +26,13 @@ class PXTypeDescription {
 	/**
 	 * Возвращает массив типов потомков для переданного формата
 	 */
+	
 	function childTypes() {
 		$cTypes = array();
 
 		if(count($this->childs) > 0){
 			foreach ($this->childs as $v) {
-				if(!isset($this->allTypes[$v])) {
-					continue;
-				}
-
-				if (!is_object($this->allTypes[$v])){
+				if(!$this->issetType($v)) {
 					continue;
 				}
 
@@ -45,7 +40,7 @@ class PXTypeDescription {
 					continue;
 				}
 
-				$cTypes[$v] =& $this->allTypes[$v];
+				$cTypes[$v] =& $this->getType($v);
 			}
 		}
 
@@ -65,7 +60,7 @@ class PXTypeDescription {
 		}
 
 		foreach ($ac as $k=>$v) {
-			if (!isset($this->allTypes[$k])) {
+			if (!$this->issetType($k)) {
 				unset($ac[$k]);
 			}
 		}
@@ -77,10 +72,20 @@ class PXTypeDescription {
 		$allowed = $this->allowedChilds($object);
 
 		foreach($allowed as $format=>$v) {
-			$allowed[$format] = $this->allTypes[$format];
+			$allowed[$format] = $this->getType($format);
 		}
 
 		return $allowed;
+	}
+
+	function issetType($typeName) {
+		$allTypes =& PXRegistry::getTypes();
+		return isset($allTypes[$typeName]) && is_object($allTypes[$typeName]);
+	}
+
+	function &getType($typeName) {
+		$allTypes =& PXRegistry::getTypes();
+		return $allTypes[$typeName];
 	}
 }
 

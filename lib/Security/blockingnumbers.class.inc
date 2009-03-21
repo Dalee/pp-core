@@ -66,10 +66,7 @@ class NLBlockingNumbers {
 	}
 
 	function RemoveKey($key) {
-		$key = (int)$key;
-		if(file_exists($this->path . '/' . $key)) {
-			unlink($this->path . '/' . $key);
-		}
+		@unlink($this->path . '/' . (int)$key);
 	}
 }
 ?>

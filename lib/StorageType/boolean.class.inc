@@ -7,15 +7,15 @@
  * storageType boolean
  */
 class PXStorageTypeBoolean extends PXStorageType {
-	static function getFromRequest($field, $object, &$param) {
+	function getFromRequest($field, $object, &$param) {
 		return (bool)$object[$field->name];
 	}
 
-	static function objectsSortOrder($field, $object, &$param) {
-		return PXStorageTypeString::objectsSortOrder($field, $object, $param);
+	function objectsSortOrder($field, $object, &$param) {
+		return $this->objectsSortOrderString($field, $object, $param);
 	}
 
-	static function normalizeObjectAttribute($field, $object, &$param) {
+	function normalizeObjectAttribute($field, $object, &$param) {
 		$k = $field->name;
 		$v = (bool)$object[$k] ? '1' : '0';
 
@@ -30,7 +30,7 @@ class PXStorageTypeBoolean extends PXStorageType {
 		return array($v, $param['dbFields'], $param['dbValues']);
 	}
 
-	static function normalize($field, $object, &$param) {
+	function normalize($field, $object, &$param) {
 		return $param['db']->importBoolean($object[$field->name]);
 	}
 }

@@ -6,6 +6,7 @@ abstract class PXEngine {
 	function __construct() {     // Инициализация основных объектов приложения
 		PXProfiler::begin('INIT');
 
+		$this->initApplication();
 		$user = PXRegistry::getUser();
 
 		$user->setAcl();
@@ -16,6 +17,11 @@ abstract class PXEngine {
 		$this->initModules();
 
 		PXProfiler::end();
+	}
+
+	function initApplication() { 
+		$this->app =PXApplication::getInstance(get_class($this)); 
+		PXRegistry::setApp($this->app); 
 	}
 
 	function initModules() {

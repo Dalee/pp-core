@@ -10,12 +10,12 @@
  * storageType imagesarray
  */
 class PXStorageTypeImagesarray extends PXStorageTypeFilesarray {
-	static function proceedFile($field, $object, &$param, $allowed=ENUM_ALLOWED_IMAGETYPES) {
+	function proceedFile($field, $object, &$param, $allowed=ENUM_ALLOWED_IMAGETYPES) {
 		$param['allowed'] = unserialize($allowed);
-		return PXStorageTypeFilesarray::proceedFile($field, $object, $param);
+		return parent::proceedFile($field, $object, $param);
 	}
 
-	static function normalize($field, $object, &$param) {
+	function normalize($field, $object, &$param) {
 		$imagesArray = array();
 		$basedir = '/ai/'.$param['format'].'/'.$object['id'].'/'.$field->name.'/';
 

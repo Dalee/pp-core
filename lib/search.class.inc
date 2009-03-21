@@ -74,7 +74,7 @@ class PXSearch {
 			$this->config[$k] = array();
 
 			foreach ($v->fields as $type) {
-				if ($type->storageType != 'string') continue;
+				if ($type->storageType->name != 'string') continue;
 				if ($type->name == 'pathname'     ) continue;
 				if ($type->noindex                ) continue;
 

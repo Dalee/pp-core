@@ -8,12 +8,12 @@
  */
 
 class PXStorageTypeSerialized extends PXStorageType {
-	static function getFromRequest($field, $object, &$param) {
+	function getFromRequest($field, $object, &$param) {
 		$k = $field->name;
 		return (is_array($object[$k])) ? $object[$k] : array();
 	}
 
-	static function normalizeObjectAttribute($field, $object, &$param) {
+	function normalizeObjectAttribute($field, $object, &$param) {
 		$k = $field->name;
 
 		$v = serialize((is_array($object[$k]) ? $object[$k] : array()));
@@ -30,7 +30,7 @@ class PXStorageTypeSerialized extends PXStorageType {
 	}
 
 
-	static function normalize($field, $object, &$param) {
+	function normalize($field, $object, &$param) {
 		return ($object[$field->name]) ? unserialize($object[$field->name]) : $object[$field->name];
 	}
 }

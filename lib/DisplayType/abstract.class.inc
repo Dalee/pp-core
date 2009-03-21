@@ -2,11 +2,8 @@
 
 /**
  * Базовый класс описывающий ввод, вывод
- * (и что-то еще) полей объекта с определеннм
+ * (и что-то еще) полей объекта с определенным
  * displayType
- *
- * Типичный способ обращения к статическим методам класса:
- * PXDisplayType::callMethod($method, $field, $object, $param);
  *
  * Описывается displayType обычно в таком формате ИМЯ|ПАРАМЕТР1|ПАРАМЕТР2
  * В ПАРАМЕТР1 обычно указывается ширина контрола,
@@ -14,18 +11,12 @@
  * совместимости для
  */
 class PXDisplayType {
-	/**
-	 * Вызывает нужный метод нужного класса
-	 *
-	 * @param String             $method
-	 * @param PXFieldDescription $field
-	 * @param Array              $object
-	 * @param Array|NULL         $param
-	 *
-	 * @return Mixed
-	 */
-	static function callMethod($method, $field, $object, $param=NULL) {
-		return PXFieldUtil::callMethod($method, $field, $object, $param, __CLASS__, 'displayType');
+	var $display;
+	var $name;
+
+	function PXDisplayType(&$display, $name) {
+		$this->display = &$display;
+		$this->name = $name;
 	}
 
 	/**
@@ -39,7 +30,7 @@ class PXDisplayType {
 	 *
 	 * @return Mixed
 	 */
-	static function getFromRequest($field, $object, $param=NULL) {
+	function getFromRequest($field, $object, $param=NULL) {
 		return $param['request']->getVar($field->name);
 	}
 
@@ -55,7 +46,7 @@ class PXDisplayType {
 	 *
 	 * @return Boolean
 	 */
-	static function preModifyObject($field, $object, $param=NULL) {
+	function preModifyObject($field, $object, $param=NULL) {
 		return false;
 	}
 
@@ -69,8 +60,8 @@ class PXDisplayType {
 	 *
 	 * @return String
 	 */
-	static function buildRow($field, $object, $param=NULL) {
-		$even = PXDisplayType::__even($param['inputClass']);
+	function buildRow($field, $object, $param=NULL) {
+		$even = PXDisplayType::getRow();
 
 		$html = "\n";
 		$html .= '<tr'.(!$even ? ' class="even"' : '' ).'>';
@@ -78,7 +69,7 @@ class PXDisplayType {
 		$html .= '<th>'.$field->description.': </th>';
 		$html .= '<td>';
 
-		$html .= PXDisplayType::callMethod('buildInput', $field, $object, $param);
+		$html .= $this->buildInput($field, $object, $param);
 
 		$html .= '</td>';
 		$html .= '</tr>';
@@ -95,7 +86,7 @@ class PXDisplayType {
 	 *
 	 * @return String
 	 */
-	static function buildArray($field, $object, $param=NULL) {
+	function buildArray($field, $object, $param=NULL) {
 	}
 
 	/**
@@ -107,21 +98,7 @@ class PXDisplayType {
 	 *
 	 * @return String
 	 */
-	static function buildArrayItem($name, $value) {
-	}
-
-	static function __even($className) {
-		static $even = false;
-
-		$even = call_user_func(
-			array(
-				$className,
-				'getRow'
-			),
-			$even
-		);
-
-		return $even;
+	function buildArrayItem($name, $value) {
 	}
 
 	/**
@@ -132,8 +109,11 @@ class PXDisplayType {
 	 *
 	 * @return Boolean
 	 */
-	static function getRow($even) {
-		return !$even;
+	function getRow() {
+		static $even = false;
+
+		$even = !$even;
+		return $even;
 	}
 
 	/**
@@ -146,8 +126,8 @@ class PXDisplayType {
 	 *
 	 * @return String
 	 */
-	static function buildInput($field, $object, $param=NULL) {
-		return '<span class="error">Вывод поля типа '.$field->displayType.' еще не описан</span>';
+	function buildInput($field, $object, $param=NULL) {
+		return '<span class="error">Вывод поля типа '.$field->displayType->name.' еще не описан</span>';
 	}
 
 	/**
@@ -160,9 +140,9 @@ class PXDisplayType {
 	 *
 	 * @return String
 	 */
-	static function buildCell($field, $object, $param=NULL) {
+	function buildCell($field, $object, $param=NULL) {
 		$value = is_string($object[$field->name]) ? strip_tags($object[$field->name]) : $object[$field->name];
-		return $field->displayType.' - '.$value;
+		return $field->displayType->name.' - '.$value;
 	}
 }
 ?>

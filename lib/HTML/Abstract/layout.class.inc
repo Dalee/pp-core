@@ -6,8 +6,8 @@ define('TABLECOLOR1',       '#E7E9ED');
 define('TABLECOLOR2',       '#C9CED6');
 define('TABLECOLOR3',       '#385A94');
 
-define('OUTER_INDEX',
-'<!-- DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd" -->
+define('OUTER_INDEX', <<<HTML
+<!-- DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd" -->
 <HTML>
 
 	<HEAD>
@@ -68,10 +68,11 @@ define('OUTER_INDEX',
 		</TABLE>
 	</BODY>
 </HTML>
-');
+HTML
+);
 
-define('OUTER_POPUP',
-'<!-- DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd" -->
+define('OUTER_POPUP', <<<HTML
+<!-- DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd" -->
 <HTML>
 
 	<HEAD>
@@ -126,11 +127,12 @@ define('OUTER_POPUP',
 		</TABLE>
 	</BODY>
 </HTML>
-');
+HTML
+);
 
 
-define('OUTER_SIMPLE_POPUP',
-'<!-- DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd" -->
+define('OUTER_SIMPLE_POPUP', <<<HTML
+<!-- DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd" -->
 <HTML>
 
 	<HEAD>
@@ -172,9 +174,10 @@ define('OUTER_SIMPLE_POPUP',
 		</TABLE>
 	</BODY>
 </HTML>
-');
+HTML
+);
 
-define('FORM_LOGIN', '
+define('FORM_LOGIN', <<<HTML
 <TABLE border="0" cellpadding="3" cellspacing="0" align="center" style="height: 100%;">
 	<TR>
 		<TD valign="middle">
@@ -242,13 +245,15 @@ define('FORM_LOGIN', '
 		</TD>
 	</TR>
 </TABLE>
-');
+HTML
+);
 
-define('FORM_LOGOUT', '
+define('FORM_LOGOUT', <<<HTML
 <A href="{LOGOUT.HREF}" class="button-exit">
 	<IMG src="i/icon/exit.gif" border="0" width="11" height="11" alt="Выйти" align="absmiddle">&nbsp;Выйти
 </A>
-');
+HTML
+);
 
 class NLAbstractLayout {
 	var $root;
@@ -257,7 +262,7 @@ class NLAbstractLayout {
 	var $disableForms;
 
 	function NLAbstractLayout() {
-		$this->root         = '<HTML></HTML>';
+		$this->root         = '<html></html>';
 		$this->objects      = array();
 		$this->getData      = array();
 		$this->disableForms = false;
@@ -418,17 +423,19 @@ class NLAbstractLayout {
 
 	function Flush($charset = NULL) {
 		$result = $this->_DeleteLabels($this->_Proceed($this->root, $this->objects));
-		if ($charset && defined('DEFAULT_CHARSET') && $charset != DEFAULT_CHARSET) {
-			if(!headers_sent()) {
-				header("Content-Type: text/html; charset={$charset}");
+
+		if($charset) {
+			if(defined('DEFAULT_CHARSET') && $charset != DEFAULT_CHARSET) {
+				$result = myconv(DEFAULT_CHARSET, $charset, $result);
+
+			} else {
+				$charset = null;
 			}
-			echo myconv(DEFAULT_CHARSET, $charset, $result);
-		} else {
-			if(!headers_sent()) {
-				header("Content-Type: text/html");
-			}
-			echo $result;
 		}
+
+		$response =& PXResponse::getInstance();
+		$response->setCharset($charset);
+		$response->send($result);
 	}
 
 	function _Proceed($template, $items) {

@@ -12,49 +12,46 @@ div#profiler {
 	padding: 10px;
 }
 
-div#profiler dl {
-	margin: 2px 5px;
-	padding: 0;
-	clear: left;
+div#profiler table {
+	width: 100%;
+	table-layout: fixed;
 }
 
-div#profiler dl, div#profiler input {
+div#profiler th, td {
+	color: #cccccc;
+	padding: 5px 2px;
+	text-align: right;
+	vertical-align: top;
+}
+
+div#profiler th.label {
+	text-align: left;
+	width: 60%;
+}
+
+div#profiler td.label {
 	color: #cccccc;
 	font-weight: bold;
 	font-size: 12px;
 	font-family: 'Consolas', monospace;
-	display: inline;
-}
-
-div#profiler dl.long0001, div#profiler dl.long0001 input { color: #aaaaaa; }
-div#profiler dl.long001,  div#profiler dl.long001  input { color: #999999; }
-div#profiler dl.long01,   div#profiler dl.long01   input { color: #000000; }
-div#profiler dl.long1,    div#profiler dl.long1    input { color: #990000; }
-
-div#profiler dl dt {
-	display: block;
-	float: none;
-	clear: none;
-	overflow: hidden;
-}
-
-div#profiler dl dt.lev1 input { padding-left: 10px; }
-div#profiler dl dt.lev2 input { padding-left: 20px; }
-div#profiler dl dt.lev3 input { padding-left: 30px; }
-div#profiler dl dt.lev4 input { padding-left: 40px; }
-div#profiler dl dt.lev5 input { padding-left: 50px; }
-div#profiler dl dt.lev6 input { padding-left: 60px; }
-
-div#profiler dl dd {
-	display: block;
-	float: left;
-	padding: 0 5px 0 0;
-}
-
-div#profiler input {
 	border: 0;
 	display: block;
 	background-color: transparent;
 	vertical-align: bottom;
 	width: 80%;
+	text-align: left;
+	height: 1em;
+	overflow: hidden;
 }
+
+div#profiler tr.long0001 td { color: #aaaaaa; }
+div#profiler tr.long001  td { color: #999999; }
+div#profiler tr.long01   td { color: #000000; }
+div#profiler tr.long1    td { color: #990000; }
+
+div#profiler td.lev1 { padding-left: 10px; }
+div#profiler td.lev2 { padding-left: 20px; }
+div#profiler td.lev3 { padding-left: 30px; }
+div#profiler td.lev4 { padding-left: 40px; }
+div#profiler td.lev5 { padding-left: 50px; }
+div#profiler td.lev6 { padding-left: 60px; }

@@ -69,45 +69,45 @@ class PXApplication {
 	 * Singleton array with caching.
 	 *
 	 */
-	public static function getInstance($projectDir) {
+	public static function getInstance($engineClass) {
 		static $instance = array();
 
-		if (isset($instance[$projectDir])) {
-			return $instance[$projectDir];
+		if (isset($instance[$engineClass])) {
+			return $instance[$engineClass];
 		}
 
 		/* try to get config from cache */
-		$instance[$projectDir] = self::loadFromCache($projectDir);
+	//	$instance[$engineClass] = self::loadFromCache($engineClass);
 
 		/* create new instance, if not cached */
-		if (!isset($instance[$projectDir])) {
-			$instance[$projectDir] = new PXApplication($projectDir);
+		if (!isset($instance[$engineClass])) {
+			$instance[$engineClass] = new PXApplication($engineClass);
 		}
 
-		return $instance[$projectDir];
+		return $instance[$engineClass];
 	}
 
 	/**
 	 * Конструктор класса
 	 *
-	 * @param String $projectDir - каталог с конфигурацией (относительно {@link BASEPATH})
+	 * @param String $engineClass - имя класса Engine, используется в имени файла кэша
 	 */
-	private function __construct($projectDir) {
+	private function __construct($engineClass) {
 		$this->types = array();
 		$this->directory = array();
 
-		$this->FillDBDescription(self::parseIniFile($this->findConfigFile('database.ini', $projectDir)));
-		$this->FillModules($this->findConfigFile('modules.xml', $projectDir));
-		$this->FillDataTypes($this->findConfigFile('datatypes.xml', $projectDir));
-		$this->FillDirectories($this->findConfigFile('datatypes.xml', $projectDir));
+		$this->FillDBDescription(self::parseIniFile($this->findConfigFile('database.ini')));
+		$this->FillModules($this->findConfigFile('modules.xml'));
+		$this->FillDataTypes($this->findConfigFile('datatypes.xml'));
+		$this->FillDirectories($this->findConfigFile('datatypes.xml'));
 
-		$this->properties = self::parseIniFiles($this->findConfigFiles('properties.ini', $projectDir));
-		$this->authrules  = self::parseIniFiles($this->findConfigFiles('auth.ini', $projectDir));
+		$this->properties = self::parseIniFiles($this->findConfigFiles('properties.ini'));
+		$this->authrules  = self::parseIniFiles($this->findConfigFiles('auth.ini'));
 
 		//todo: one file or many lang files?
-		$this->fillLang($this->findConfigFile('lang.yaml', $projectDir));
+		$this->fillLang($this->findConfigFile('lang.yaml'));
 
-		$this->saveToCache($projectDir);
+		$this->saveToCache($engineClass);
 	}
 
 	private static function parseIniFile($file) {
@@ -122,6 +122,7 @@ class PXApplication {
 
 		while(count($files)) {
 			$tmp = self::parseIniFile(array_pop($files));
+
 			foreach($tmp as $k => $v) {
 				if (is_array($v) and isset($result[$k]) and is_array($result[$k])) {
 					$result[$k] = array_merge($result[$k], $v);
@@ -136,13 +137,15 @@ class PXApplication {
 	/**
 	 *  Searches for the first file in order - site, local, libpp
 	 */
-	private static function findConfigFile($filename, $projectDir = BASEPATH) {
+	private static function findConfigFile($filename) {
+		$files = self::findFilesUnless(
+			$filename,
+			create_function('$files', 'return count($files) > 0;')
+		);
 
-		$files = self::findFilesUnless($filename, $projectDir,
-		                               create_function('$files', 'return count($files) > 0;'));
-
-		if ($files)
+		if ($files) {
 			return $files[0];
+		}
 
 		FatalError('Отсутствует файл настроек ' . $filename);
 	}
@@ -150,38 +153,41 @@ class PXApplication {
 	/**
 	 *  Searches for all files at site, local, libpp dirs.
 	 */
-	private static function findConfigFiles($filename, $projectDir) {
-		if ($files = self::findFilesUnless($filename, $projectDir)) {
+	private static function findConfigFiles($filename) {
+		if ($files = self::findFilesUnless($filename)) {
 			return $files;
 		}
 
-		FatalError('Отсутствует файл настроек ' . $filename);
+		FatalError('Отсутствует файл настроек '.$filename);
 	}
 
 	/*
 	 * function is_enought($files_array) { <return TRUE when enought files collected> }
 	 */
-	private static function findFilesUnless($filename, $projectDir = BASEPATH, $is_enough = NULL) {
+	private static function findFilesUnless($filename, $is_enough = NULL) {
 		$files = array();
 
-		foreach(self::configDirs($projectDir) as $configDir) {
+		foreach(self::configDirs() as $configDir) {
+			$path = $configDir.$filename;
 
-			$path = $configDir . DIRECTORY_SEPARATOR . $filename;
-
-			if (file_exists($path))
+			if (file_exists($path)) {
 				$files[] = $path;
+			}
 
-			if ($is_enough && $is_enough($files))
+			if ($is_enough && $is_enough($files)) {
 				return $files;
+			}
 		}
 
 		return $files;
 	}
 
-	private static function configDirs($projectDir = BASEPATH) {
-		return array($projectDir . DIRECTORY_SEPARATOR . 'site'  . DIRECTORY_SEPARATOR . 'etc',
-					 $projectDir . DIRECTORY_SEPARATOR . 'local' . DIRECTORY_SEPARATOR . 'etc',
-					 $projectDir . DIRECTORY_SEPARATOR . 'libpp' . DIRECTORY_SEPARATOR . 'etc');
+	private static function configDirs() {
+		return array(
+			BASEPATH.'/site/etc/',
+			BASEPATH.'/local/etc/',
+			BASEPATH.'/libpp/etc/'
+		);
 	}
 
 	//TODO:FIXME: REWRITE ME!
@@ -192,8 +198,8 @@ class PXApplication {
 			if(file_exists($fileName)) {
 				$tmp = @file($fileName);
 
-			} elseif(file_exists(BASEPATH . DIRECTORY_SEPARATOR . $fileName)) {
-				$tmp = @file(BASEPATH . DIRECTORY_SEPARATOR . $fileName);
+			} elseif(file_exists(BASEPATH.$fileName)) {
+				$tmp = @file(BASEPATH.$fileName);
 
 			} else {
 				FatalError('Не могу найти '.$fileName);
@@ -218,7 +224,7 @@ class PXApplication {
 		$source = preg_replace('/\t/',          ' ' ,         $source);   // я люблю табы для читабельности
 		$source = preg_replace('/(\r?\n){2,}/', "\n",         $source);   // и лишние переводы строк
 
-		$tmp = tempnam(BASEPATH . DIRECTORY_SEPARATOR . 'var', 'lang');
+		$tmp = tempnam(BASEPATH.'tmp/lang/', 'lang');
 		WriteStringToFile($tmp, $source);
 
 		// Spyc'у не нравятся мои конфиги, поэтому их стоит немного переделать
@@ -257,8 +263,8 @@ class PXApplication {
 	/**
 	 * Возвращает ассоциативный массив доступных модулей.
 	 *
-	 * @param Integer $level	название текущего раздела
-	 * @return Array			массив из элементов 'module_name' => $module
+	 * @param Integer $leve  название текущего раздела
+	 * @return Array         массив из элементов 'module_name' => $module
 	 */
 	public function getAvailableModules($level) {
 		return array_filter($this->modules, create_function('$module', "return \$module->access <= $level;"));
@@ -267,9 +273,9 @@ class PXApplication {
 	/**
 	 * Возвращает ассоциативный массив разрешенных детей.
 	 *
-	 * @param NULL $formatName		не используется
-	 * @param Object|Array $object	объект для которого искать детей
-	 * @return Array				массив разрешенных детей или пустой массив
+	 * @param NULL $formatName      не используется
+	 * @param Object|Array $object  объект для которого искать детей
+	 * @return Array                массив разрешенных детей или пустой массив
 	 */
 	public function getAllowedChilds($formatName, &$object) {
 		if(!isset($this->types[$formatName])) {
@@ -326,28 +332,32 @@ class PXApplication {
 	 * @param String $fileName	имя файла
 	 */
 	private function FillDataTypes($fileName) {
-		$xml = simplexml_load_file($fileName);
-		if (!$xml) {
+		$dom = PXML::load($fileName);
+		if (!$dom) {
 			FatalError("Ошибка в файле настроек <EM>$fileName</EM>");
 		}
-		$domDatatypes = $xml->xpath("/model/datatypes/datatype");
+		$domDatatypes = $dom->xpath("/model/datatypes/datatype");
 		if (!is_array($domDatatypes) || count($domDatatypes) == 0) {
 			FatalError("Не определена объектная модель проекта");
 		}
 
 		foreach ($domDatatypes as $domDatatype) {
 			$type = new PXTypeDescription();
+
 			$attrs = $domDatatype->attributes();
-			foreach ($attrs as $name => $value) {
-				switch ($name) {
-					case 'name':          $type->id            = (string)$value; break;
-					case 'description':   $type->title         = utf8_decode((string)$value); break;
-					case 'orderby':       $type->order         = (string)$value; break;
-					case 'parent':        $type->parent        = (string)$value; break;
-					case 'bydefault':     $type->byDefault     = self::_mapByDefaults((string)$value); break;
-					case 'struct':        $type->struct        = (string)$value; break;
-					case 'outputhandler': $type->outputHandler = (string)$value; break;
-					default:            d2("Unknown attr name: " . $name . __LINE__); break;
+			$nodes = $domDatatype->childNodes();
+
+			foreach ($attrs as $attr) {
+				switch ($attr->name) {
+					case 'name':          $type->id            = $attr->value;                       break;
+					case 'description':   $type->title         = utf8_decode($attr->value);          break;
+					case 'orderby':       $type->order         = $attr->value;                       break;
+					case 'parent':        $type->parent        = $attr->value;                       break;
+					case 'bydefault':     $type->byDefault     = self::_mapByDefaults($attr->value); break;
+					case 'struct':        $type->struct        = $attr->value;                       break;
+					case 'outputhandler': $type->outputHandler = $attr->value;                       break;
+
+					default:              d2("Unknown attr name: " . $attr->name . __LINE__);        break;
 				}
 			}
 
@@ -355,12 +365,11 @@ class PXApplication {
 				$type->order = 'sys_order';
 			}
 
-			$nodes = $domDatatype->children();
 			foreach ($nodes as $node) {
-				switch ($node->getName()) {
+				switch ($node->nodeName()) {
 					case 'attribute':
 						$nodeattrs = $node->attributes();
-						$field = new PXFieldDescription($nodeattrs, $this);
+						$field = new PXFieldDescription($nodeattrs, $this, $type);
 
 						if(is_null($field->listed)) {
 							$field->listed = (bool) ($field->name === 'title');
@@ -369,12 +378,11 @@ class PXApplication {
 						$type->addField($field);
 						break;
 					default:
-						d2("Unknown node name: " . $node->getName());
+						d2("Unknown node name: " . $node->nodeName());
 						break;
 				}
 			}
 
-			$type->allTypes =& $this->types;
 			$this->types[$type->id] = $type;
 		}
 
@@ -388,7 +396,7 @@ class PXApplication {
 			}
 		}
 
-		$domReferences = $xml->xpath("/model/references/reference");
+		$domReferences = $dom->xpath("/model/references/reference");
 
 		if (!is_array($domReferences) || count($domReferences) == 0) {
 			return;
@@ -397,29 +405,33 @@ class PXApplication {
 		foreach ($domReferences as $domReference) {
 			$attrs = $domReference->attributes();
 			$ref = new PXRefDescription();
-			$nodes = $domReference->children();
-			foreach ($attrs as $name => $value) {
-				switch (trim($name)) {
-					case 'name':              $ref->name             = (string)$value; break;
-					case 'from':              $ref->from             = (string)$value; break;
-					case 'to':                $ref->to               = (string)$value; break;
-					case 'restrictby':        $ref->restrictBy       = (string)$value; break;
-					case 'filter-to':         $ref->filterTo         = (string)$value; break;
-					case 'filter-from':       $ref->filterFrom       = (string)$value; break;
-					case 'load':              $ref->load             = (string)$value; break;
+			$nodes = $domReference->childNodes();
+
+			foreach ($attrs as $attr) {
+				switch (trim($attr->name)) {
+					case 'name':              $ref->name             = $attr->value; break;
+					case 'from':              $ref->from             = $attr->value; break;
+					case 'to':                $ref->to               = $attr->value; break;
+					case 'restrictby':        $ref->restrictBy       = $attr->value; break;
+					case 'filter-to':         $ref->filterTo         = $attr->value; break;
+					case 'filter-from':       $ref->filterFrom       = $attr->value; break;
+					case 'load':              $ref->load             = $attr->value; break;
+					case 'multiple':          $ref->multiple         = true;         break;
+					case 'bydefault':         $ref->byDefault        = $this->_mapRefByDefaults($attr->value); break; //all or linked
 				}
 			}
 
 			foreach ($nodes as $node) {
-				switch ($node->getName()) {
+				switch ($node->nodeName()) {
 					case 'attribute':
 						$nodeattrs = $node->attributes();
+						d($nodeattrs);
 						$field = new PXFieldDescription($nodeattrs, $this);
 
 						$ref->addField($field);
 						break;
 					default:
-						d2("Unknown node name in reference: ".$node->getName());
+						d2("Unknown node name in reference: ".$node->nodeName());
 						break;
 				}
 			}
@@ -443,27 +455,29 @@ class PXApplication {
 	 * @param String $fileName	имя файла
 	 */
 	private function FillDirectories($fileName) {
-		$xml = simplexml_load_file($fileName);
+		$dom = PXML::load($fileName);
 
-		if (!$xml) {
+		if (!$dom) {
 			FatalError("Ошибка в файле настроек <EM>$fileName</EM>");
 		}
-		$domDirectories = $xml->xpath("/model/directories/directory");
+		$domDirectories = $dom->xpath("/model/directories/directory");
 		foreach ($domDirectories as $domDirectory) {
-			$name = (string)$domDirectory['name'];
+			$name = $domDirectory->getAttribute('name');
+
 			if (!isset($this->directory[$name])) {
 				$this->directory[$name] = new PXDirectoryDescription($name);
 			}
+
 			$curDir = &$this->directory[$name];
-			$curDir->load         = (string)$domDirectory['load'];
-			$curDir->schema       = (string)$domDirectory['schema'];
-			$curDir->source       = (string)$domDirectory['source'];
+			$curDir->load         = $domDirectory->getAttribute('load');
+			$curDir->schema       = $domDirectory->getAttribute('schema');
+			$curDir->source       = $domDirectory->getAttribute('source');
 			$curDir->sourceDir    = dirname($fileName).DIRECTORY_SEPARATOR;
 
-			$displayfield = trim((string)$domDirectory['displayfield']);
+			$displayfield = trim($domDirectory->getAttribute('displayfield'));
 			$curDir->displayField = strlen($displayfield) ? $displayfield : 'title';
 
-			$location = (string)$domDirectory['location'];
+			$location = $domDirectory->getAttribute('location');
 			$curDir->location = ($location != '') ? $location : NULL;
 
 			if ($curDir->load == 'automatic' && $curDir->schema == 'xml') {
@@ -482,24 +496,30 @@ class PXApplication {
 		$file          = $directory->sourceDir.$directory->source;
 		$xpathSelector = $directory->location;
 
-		$xml = simplexml_load_file($file);
+		$dom2 = PXML::load($file);
 
-		if (!$xml){
+		if (!$dom2){
 			FatalError("Ошибка в файле справочника <EM>$file</EM>");
 		}
-		$results = $xml->xpath($xpathSelector);
+		$results = $dom2->xpath($xpathSelector);
 		if ($results) {
-			$nodes = $results[0]->children();
+			$nodes = $results[0]->childNodes();
 
 			foreach ($nodes as $node) {
-				$directory->values[(string)$node["id"]] = array(
-					'id' => (string)$node["id"],
-					'title' => utf8_decode((string)$node)
+				$id = $node->getAttribute('id');
+
+				$directory->values[] = array(
+					'id'    => $id,
+					'title' => utf8_decode($node->nodeValue())
 				);
+
 				$attrs = $node->attributes();
 				foreach ($attrs as $name => $value) {
-					if ($name == 'id') continue;
-					$directory->values[(string)$node["id"]][$name] = utf8_decode((string)$value);
+					if ($name == 'id') {
+						continue;
+					}
+
+					$directory->values[$id][$name] = utf8_decode($value->value);
 				}
 			}
 			$directory->SetLoaded();
@@ -519,13 +539,13 @@ class PXApplication {
 	 * @param String $fileName имя файла
 	 */
 	private function FillModules($fileName) {
-		$xml = simplexml_load_file($fileName);
+		$dom = PXML::load($fileName);
 
-		if (!$xml) {
+		if (!$dom) {
 			FatalError("Ошибка в файле настроек <em>$fileName</em>");
 		}
 
-		$domModules = $xml->xpath("/modules//module");
+		$domModules = $dom->xpath("/modules//module");
 
 		if (!$domModules || empty($domModules)) {
 			FatalError("Не определены модули проекта");
@@ -534,11 +554,11 @@ class PXApplication {
 		foreach($domModules as $domModule) {
 			$module = new PXModuleDescription();
 			$module->setAttrs($domModule->attributes());
-			$module->lookPackage($xml);
+			$module->lookPackage($dom);
 
-			$nodes = $domModule->children();
-			foreach ($nodes as $name => $value) {
-				$module->settings[$name][] = utf8_decode($value);
+			$nodes = $domModule->childNodes();
+			foreach ($nodes as $node) {
+				$module->settings[$node->nodeName()][] = utf8_decode($node->nodeValue());
 			}
 
 			foreach ($module->settings as $k=>$v) {
@@ -551,18 +571,17 @@ class PXApplication {
 		}
 
 
-		$domBindings = $xml->xpath('/modules/bindings');
+		$domBindings = $dom->xpath('/modules/bindings');
 		$this->bindingsQueue = new PXBindingsQueue();
 
 		foreach($domBindings as $domBinding) {
-			$nodes = $domBinding->children();
+			$nodes = $domBinding->childNodes();
 
 			foreach ($nodes as $node) {
-				$domRules = $node->children();
+				$domRules = $node->childNodes();
 
 				foreach($domRules as $domRule) {
-					$domRule['type'] = $node->getName();
-					$this->bindingsQueue->add($domRule);
+					$this->bindingsQueue->add($domRule, $node->nodeName());
 				}
 			}
 		}
@@ -597,32 +616,42 @@ class PXApplication {
 		return NULL;
 	}
 
+	function _mapRefByDefaults($string){
+		switch($string){
+			default:
+			case 'all':
+				return false;
+			case 'linked':
+				return true;
+		}
+	}
+
 	/**
 	 * Проверяет наличие кешированного файла настроек и загружает его.
 	 *
 	 * Если существует актуальный tmp/cache/config файл то он десериализуется в this.
 	 * Актуальность проверяется по времени последнего изменения каталога с конфиг файлами.
 	 *
-	 * @param  String   $projectDir каталог с файлами
+	 * @param  String   $engineClass каталог с файлами
 	 * @return Boolean  true если файл существует
 	 */
-	private static function loadFromCache($projectDir) {
-		$cacheFile = BASEPATH.DIRECTORY_SEPARATOR.'tmp'.DIRECTORY_SEPARATOR.'cache'.DIRECTORY_SEPARATOR.'config_'.md5($projectDir);
+	private static function loadFromCache($engineClass) {
+		$cacheFile = self::_cacheFilename($engineClass);
 
 		if (!file_exists($cacheFile)) {
 			return null;
 		}
 
 		$tmp = stat($cacheFile);
-		$cacheMtime = $tmp[9];
+		$cacheMtime = $tmp['mtime'];
 
-		foreach(self::configDirs($projectDir) as $configDir) {
+		foreach(self::configDirs() as $configDir) {
 			$d = new NLDir($configDir);
 
 			while ($entry = $d->ReadFull()) {
 				$tmp = stat($entry);
 
-				if ($tmp[9] >= $cacheMtime) {
+				if ($tmp['mtime'] >= $cacheMtime) {
 					return null;
 				}
 			}
@@ -636,11 +665,15 @@ class PXApplication {
 	 *
 	 * Весь PXApplication сериализуется в tmp/cache/config файл.
 	 */
-	private function saveToCache($projectDir) {
-		$cacheFile = BASEPATH.DIRECTORY_SEPARATOR.'tmp'.DIRECTORY_SEPARATOR.'cache'.DIRECTORY_SEPARATOR.'config_'.md5($projectDir);
+	private function saveToCache($engineClass) {
+		$cacheFile = self::_cacheFilename($engineClass);
 
 		MakeDirIfnotExists(dirname($cacheFile));
 		WriteStringToFile($cacheFile, serialize($this));
+	}
+
+	private static function _cacheFilename($name){
+		return BASEPATH.'/tmp/cache/config/'.strtolower($name);
 	}
 }
 

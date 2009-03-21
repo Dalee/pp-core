@@ -26,8 +26,8 @@ class PXModuleDescription {
 
 	function setAttrs($attrs) {
 		foreach($attrs as $item) {
-			$name = $item->getName();
-			$this->$name = utf8_decode((string)$item);
+			$name = $item->name;
+			$this->$name = utf8_decode($item->value);
 		}
 	}
 
@@ -66,14 +66,14 @@ class PXModuleDescription {
 		}
 	}
 
-	function lookPackage($xml) {
-		$package = $xml->xpath("/modules//module[@name='".$this->getName()."']/ancestor::package/@folder");
+	function lookPackage($dom) {
+		$path    = null;
+		$package = $dom->xpath("/modules//module[@name='".$this->getName()."']/ancestor::package/@folder");
 
 		if($package) {
-			$path = '';
-
-			foreach($package  as $pack) {
-				$path .= '/'.(string)$pack;
+			$tmp = $package;
+			foreach($tmp  as $pack) {
+				$path .= '/'.$pack->nodeValue();
 			}
 
 			$this->setToPackage($path);

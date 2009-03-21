@@ -9,12 +9,12 @@
  *             если height > 0, то в каждой ячейке таблицы будет использоваться <textarea> и height это ее высота в пикселях
  */
 class PXDisplayTypeTable extends PXDisplayType {
-	static function buildInput($field, $object, $param=NULL) {
+	function buildInput($field, $object, $param=NULL) {
 		$value = isset($object[$field->name]) ? htmlspecialcharsArray($object[$field->name]) : array();
 		return NLAbstractHTMLForm::BuildTableByCols($field->name, $value, explode("-", $field->displayTypeArgs[0]), $field->displayTypeArgs[1]);
 	}
 
-	static function getFromRequest($field, $object, $param=NULL) {
+	function getFromRequest($field, $object, $param=NULL) {
 		return $param['request']->postData->_GetArrayVar($field->name);
 	}
 }

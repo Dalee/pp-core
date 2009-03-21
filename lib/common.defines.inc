@@ -5,9 +5,8 @@ date_default_timezone_set('Europe/Moscow');
 
 // Определение не на винде ли мы запущены
 if(!defined('IS_WIN')) {
-	define('IS_WIN', (bool)(substr(PHP_OS, 0, 3) == 'WIN'));
+	define('IS_WIN', (substr(PHP_OS, 0, 3) == 'WIN'));
 }
-
 
 // Определение корня сайта в случае запуска скрипта из консоли (CLI)
 if(!isset($_SERVER['REQUEST_METHOD'])) {
@@ -16,7 +15,7 @@ if(!isset($_SERVER['REQUEST_METHOD'])) {
 	} else {
 		$tmp = $_SERVER['SCRIPT_NAME'];
 		if ($tmp{0} !== '/') $tmp = $_SERVER['PWD'] . '/' . $tmp;
-
+		
 		$path = array();
 		foreach (explode('/', $tmp) as $token) {
 			switch ($token) {
@@ -53,19 +52,10 @@ if(!isset($_SERVER['REQUEST_METHOD'])) {
 		var_dump($_SERVER['DOCUMENT_ROOT']);
 		var_dump($nobody);die();
 
-		switch (posix_getuid()) {
-			case $nobody['uid']:
-				// nobody
-				break;
-			case 0:
-				// root
-				posix_setgid($nobody['gid']);
-				posix_setuid($nobody['uid']);
-				break;
-			default:
-				die("You must be root or nobody to run this script\n");
-		}
-	}
+		$path = realpath($path);
+
+		$_SERVER['DOCUMENT_ROOT'] = $path;
+	} //if IS_WIN
 }
 
 
@@ -100,22 +90,37 @@ $includePath = array(
 );
 ini_set('include_path', implode(PATH_SEPARATOR, $includePath));
 
-// Чтение локальных настроек php
-$profiler = false;
+
+/*
+ * Parse and load BASEPATH . /etc/php.ini
+ * Some custom variables (not php ones) are:
+ * 
+ * profiler = true | false    # false by default
+ * user = someuser            # 'nobody' by default
+ * 
+ */
+$profiler    = false;
+$system_user = 'nobody';
+
 if (file_exists(BASEPATH.'/site/etc/php.ini')) {
 	$ini_params = parse_ini_file(BASEPATH.'/site/etc/php.ini');
 
 	foreach ($ini_params as $key=>$param) {
 		ini_set($key, $param);
 	}
-	
+
 	// Включаем профайлер
-	if(array_key_exists('profiler', $ini_params) && $ini_params['profiler']) {
+	if(isset($ini_params['profiler']) && $ini_params['profiler']) {
 		$profiler = true;
 	}
+
+	if (isset($ini_params['user'])) {
+		$system_user = $ini_params['user'];
+	}
 }
-// Активируем константу для работы профайлера
+
 define('PROFILER', $profiler);
+define('SYSTEM_USER', $system_user);
 
 // Влючаем дебаг
 error_reporting(E_ALL);
@@ -132,8 +137,6 @@ unset($tmp);
 
 // версия PP
 define('PP_VERSION', '1.4');
-Header('X-Powered-By: Proxima Portal '.PP_VERSION);
-
 
 // разрешенные форматы изображений
 define('ENUM_ALLOWED_IMAGETYPES', serialize(array(
@@ -167,5 +170,27 @@ define('PP_CHILDREN_FETCH_NONE',     3);
 
 define('DEFAULT_CHARSET',            'koi8-r');
 
+define('P_LEFT',  1);
+define('P_RIGHT', 2);
 
+
+if (!IS_WIN) {
+	$system_user = posix_getpwnam(SYSTEM_USER);
+
+	switch (posix_getuid()) {
+
+		case $system_user['uid']:
+			// all ok we have target user 
+			break;
+
+		case 0:
+			// root
+			posix_setuid($system_user['uid']);
+			posix_setgid($system_user['gid']);
+			break;
+
+		default:
+			die("This script must be runned as " . SYSTEM_USER . " or root. \n");
+	}
+}
 ?>

@@ -2,217 +2,513 @@
 class PXModuleRegister extends PXAbstractModule {
 	var $systemName;
 	var $systemEmail;
+	var $registerPath;
+	var $userActivation;
+	var $contactEmailField;
+	var $captchaField;
 	var $defaultAccess;
+	
 	var $fields;
-	var $successUrl;
-	var $errorUrl;
 
 	function PXModuleRegister($area, $settings) {
 		$this->PXAbstractModule($area, $settings);
-		$this->systemName    = $settings['systemname'];
-		$this->systemEmail   = $settings['systememail'];
-		$this->defaultAccess = $settings['defaultaccess'];
-		$this->fields        = array();
-		if (is_array($settings['fields'])) {
-			foreach ($settings['fields'] as $f) {
+		$this->systemName        = GetFromArray($settings,'systemname','PX Site');
+		$this->systemEmail       = GetFromArray($settings,'systememail', 'noreply@www');
+		$this->registerPath      = GetFromArray($settings,'registerpath', '/registration/');
+		$this->userActivation    = GetFromArray($settings,'activation');
+		$this->contactEmailField = GetFromArray($settings,'useremail');
+		$this->captchaField      = GetFromArray($settings,'captcha');
+		$this->defaultAccess     = GetFromArray($settings,'defaultaccess', 1024);
+		
+		$this->fields           = array();
+		
+		if (is_array($settings['field'])) {
+			foreach ($settings['field'] as $f) {
 				$this->fields[] = $this->_parseField($f);
 			}
 		} else {
-			$this->fields[] = $this->_parseField($settings['fields']);
+			$this->fields[] = $this->_parseField($settings['field']);
 		}
 	}
-
-	function _parseField($string) {
-		$tmp = explode('-', $string);
-		$ret = array();
-		if (isset($tmp[2])) $ret['max'] = $tmp[2];
-		if (isset($tmp[1])) $ret['min'] = $tmp[1];
-		$ret['title'] = $tmp[0];
-		return $ret;
+	
+	function __ctor(&$app, &$db, &$user, &$request){
+		$this->app  = & $app;
+		$this->db   = & $db;
+		$this->user = $user;
+		$this->req  = & $request;
+	}
+	
+	function _parseField($formatString) {
+		@list($title, $min, $max, $validators) = explode('|', $formatString);
+		$validators = !empty($validators) ? explode(',', str_replace(' ', '',$validators)) : array();
+		return compact('title', 'min', 'max', 'validators');
 	}
 
-	function userAction(&$app, &$request, &$user, &$db) {
-		$tmp = $request->GetVar('onsuccess', $request->GetReferer());
-		$tmp = removeParamFromUrl(removeParamFromUrl($tmp, 'result'),'error');
-		$this->successUrl = str_replace("http://".$request->GetHttpHost(), '', $tmp);
+	function userIndex(&$app, &$request, &$user, &$db, &$layout, &$tree, &$objects, &$subObjects, &$references, &$heap, &$currentSid, &$currentCid, &$currentCtype, &$currentSCid, &$currentSCtype, &$rootId, &$pathId, &$urlFile, &$error) {
+		$this->__ctor($app, $db, $user, $request);
+		
+		$errors = & $this->loadModel('session', 'errors');
+		$input  = & $this->loadModel('session', 'data');
+		$layout->assign('__view', $request->GetVar('view'));
 
-		$tmp = $request->GetVar('onerror', $request->GetReferer());
-		$tmp = removeParamFromUrl(removeParamFromUrl($tmp, 'result'),'error');
-		$this->errorUrl = str_replace("http://".$request->GetHttpHost(), '', $tmp);
-
-		$errors = array();
-		$action = $request->GetVar('action','badaction');
-		session_start();
-		unset($_SESSION[$this->area . 'Data']);
-		unset($_SESSION[$this->area . 'Errors']);
-		switch ($action) {
-			case 'create':
-				$errors = $this->_createUser($app, $request, $user, $db);
-				break;
-
-			case 'confirm':
-				$errors = $this->_confirmCreateUser($app, $request, $user, $db);
-				break;
-
-			case 'modify':
-				$errors = $this->_modifyUser($app, $request, $user, $db);
-				break;
-
-			case 'auth':
-			case 'exit':
-				FatalError("Using of obsoleted function");
-				break;
-
+		switch($request->GetVar('view')){
 			default:
-				$errors['badaction'] = true;
-				break;
+				if(!$user->isAuthed()){
+					$layout->assign('showRegForm', true);
+					if($this->captchaField){
+						$layout->assign($this->captchaField, $this->loadModel('captcha'));
+					}
+				}
+			break;
+			case 'modify':
+				$errors = null;
+			case 'modifysuccess':
+			case 'modifyerror':
+				if($user->isAuthed()){
+				    $layout->assign('showRegForm', true);
+				    $layout->assign('regErrors', $errors);
+				    $layout->assign('getInput', $input);
+				    @$layout->assign('regInput', reset($this->loadModel('suser', array('id' => $user->id))));
+				}
+			break;
+			case 'success':
+			case 'activation':
+			case 'activationsuccess':
+			case 'remindsuccess':
+			break;
+			case 'error':
+				if(!$user->isAuthed()){
+					$layout->assign('showRegForm', true);
+					if($this->captchaField){
+						$layout->assign($this->captchaField, $this->loadModel('captcha'));
+					}
+					$layout->assign('regErrors', $errors);
+					$layout->assign('regInput', $input);
+				}
+			break;
+			case 'remind':
+				$errors = null;
+			case 'reminderror':
+				if(!$user->isAuthed()){
+					$layout->assign('showRemindForm', true);
+					$layout->assign('regErrors', $errors);
+					if($this->captchaField){
+						$layout->assign($this->captchaField, $this->loadModel('captcha'));
+					}
+				}
+			break;
+			case 'activationerror':
+				if(!$user->isAuthed()){
+					$layout->assign('regErrors', $errors);
+				}
+			break;
 		}
-
-		if (count($errors)) {
-			$nextLocation = appendParamToUrl($this->errorUrl, 'result', "error_$action");
-			$_SESSION[$this->area . 'Errors'] = $errors;
-		} else {
-			$nextLocation = appendParamToUrl($this->successUrl, 'result', "ok_$action");
+		
+		$input = $errors = null;
+		$this->_saveModel('session');
+	}
+	
+	function userAction(&$app, &$request, &$user, &$db) {
+		$this->__ctor($app, $db, $user, $request);
+	
+		$this->assignController();
+		
+		return call_user_func($this->_controller);
+	}
+	
+	function _modifyController(){
+		if(!$this->user->isAuthed()) return;
+		
+		$userData =& $this->loadModel('suser', array('id' => $this->user->id, 'passwd' => $this->req->GetPostVar('currentpassword')));
+		if(!count($userData)){
+			return $this->buildRoute('modifyerror', array('currentpassword' => 'wrong'));
 		}
-
-		return $nextLocation;
+		
+		$userData = reset($userData);
+		
+		$errors   =& $this->loadModel('session', 'errors');
+		$input    =& $this->loadModel('session', 'data');
+		
+		$errors = $input = null;
+		
+		$modifyingFields = $this->_parseFields($input, $errors);
+		foreach($userData as $field => $data){
+			if(!isset($errors[$field]) && isset($modifyingFields[$field])){
+				$userData[$field] = $modifyingFields[$field];
+			}
+		}
+		
+		$userData['title'] = $this->user->data['title']; //protect login from modification
+		
+		$this->_saveModel('session');
+		$this->_saveModel('suser', $userData);
+		
+		return $this->buildRoute('modifysuccess');
 	}
 
-	function _modifyUser(&$app, &$request, &$user, &$db) {
-		$errors = array();
-		// FIXME!!!!
-		if ($request->GetVar('passwd') != $user->data['passwd']) {
-			$errors['badpasswd'] = true;
+	function _remindController(){
+		if($this->user->isAuthed()) return;
+		
+		$errors =& $this->loadModel('session', 'errors');
+		$errors = null;
+		
+		$key    = $this->req->GetVar('code');
+		
+		switch(isset($key)){
+			case false:
+				//Send remind key to the account owner
+				if(!count($userToRemember = & $this->loadModel('suser', array('title' => $this->req->GetVar('login'), 'status' => true)))){
+					$errors['login']['usernotexists'] = true;
+				}
+				
+				if(!empty($this->captchaField)){
+					$this->_captchaFieldValidator($this->captchaField, $this->req->GetVar($this->captchaField), $errors);
+				}
+				
+				if(!count($errors)){
+					$userToRemember = reset($userToRemember);
+					
+					if($this->_sendMail($userToRemember, array('route' => 'remind'))){
+						$stages = array('mail' => 'sent');
+					} else {
+						$stages = array('mail' => 'errorsent');
+					}
+					$this->_saveModel('session');
+					$this->_saveModel('suser', $userToRemember);
+					return $this->buildRoute('remindsuccess', $stages);
+				}
+				
+				return $this->buildRoute('reminderror');
+			
+			case true:
+				if(!count($existingUser = & $this->loadModel('suser', array('title' => $this->req->GetPostVar('login'), 'remindcode' => $key)))){
+					$errors['login']['badloginorkey'] = true;
+				}
+				$existingUser = max(array(), reset($existingUser));
+				$this->_passwordFieldValidator('newpassword', $this->req->GetPostVar('newpassword'), $errors, $existingUser);
+				
+				if(!count($errors)){
+					$existingUser['remindcode'] = '';
+					$this->_saveModel('session');
+					$this->_saveModel('suser', $existingUser);
+					return $this->buildRoute('remindsuccess', array('password' => 'changed'));
+				}
+				
+				$this->_saveModel('session');
+				return $this->buildRoute('reminderror', array('login' => $this->req->GetPostVar('login'), 'code' => $key));
+		}
+	}
+	
+	function _activationController() {
+		if(!$this->userActivation || $this->user->isAuthed()){
+			return;
+		}
+		
+		$errors =& $this->loadModel('session', 'errors');
+		$errors = null;
+		
+		if(!count($inactiveUser =& $this->loadModel('suser', array('title' => $this->req->GetVar('login'), 'activationcode' => $this->req->GetVar('code'))))) {
+			$errors['badconfirmcode'] = true;
+			$this->_saveModel('session');
+			return $this->buildRoute('activationerror');
 		} else {
-			if (!count($tmp = $db->GetObjectsByField($app->types['suser'], NULL, 'title', $user->login))) {
-				$errors['baduser'] = true;
-			} else {
-				$newUser = current($tmp);
-				$rqNewPasswd  = $request->GetVar('newpasswd');
-				$rqNewPasswd2 = $request->GetVar('newpasswd2');
-				$rqEmail      = $request->GetVar('email');
-				if (!empty($rqNewPasswd)) {
-					if (!isValidPasswd($rqNewPasswd, 3, 16)) {
-						$errors['badnewpasswd'] = true;
-					}
-					if ($rqNewPasswd != $rqNewPasswd2) {
-						$errors['notequalpasswd'] = true;
-					}
+			$activateUser = reset($inactiveUser);
+			$activateUser['activationcode'] = '';
+			$activateUser['status'] = 1;
+			$this->_saveModel('suser', $activateUser);
+			$this->_saveModel('session');
+			return $this->buildRoute('activationsuccess');
+		}
+	}
+	
+	function _parseFields(&$input, &$errors){
+		$uData = array();
+		foreach ($this->fields as $k => $f) {
+			$input[$f['title']] = $uData[$f['title']] = $this->req->GetPostVar($f['title']);
+
+			// check basic fields allowed length (only strings)
+			if(!empty($f['min']) || !empty($f['max'])){
+				if(!@isValidString($uData[$f['title']], (int)$f['min'], (int)$f['max'])) {
+					$errors[$f['title']]['size'] = true;
 				}
-				if (!isValidEmail($rqEmail)) {
-					$errors['bademail'] = true;
-				}
-				$_SESSION[$this->area . 'Data']['email'] = $rqEmail;
-				$rq = array();
-				foreach ($this->fields as $f) {
-					$rq[$f['title']] = $request->GetVar($f['title']);
-					if (!isValidString($rq[$f['title']], $f['min'], $f['max'])) {
-						$errors['bad'.$f['title']] = true;
-					}
-					$_SESSION[$this->area . 'Data'][$f['title']] = $rq[$f['title']];
-				}
-				if (!count($errors)) {
-					if (!empty($rqNewPasswd)) {
-						$newUser['passwd'] = $rqNewPasswd;
-					}
-					$newUser['email'] = $rqEmail;
-					foreach ($rq as $k=>$v) {
-						$newUser[$k] = $v;
-					}
-					$db->ModifyContentObject($app->types['suser'], $newUser);
-					// FIXME!!!
-					// $user = new PXUser($newUser);
-					// $user->id    = $newUser['id'];
-					// $user->level = $newUser['access'];
-					// $user->Auth();
+			}
+			
+			// apply validators
+			foreach($f['validators'] as $modifier){
+				if(method_exists($this, $validator = '_' . $modifier . 'FieldValidator')){
+					$this->$validator($f['title'], $uData[$f['title']], $errors, $uData);
 				}
 			}
 		}
-		return $errors;
+		return $uData;
 	}
-
-	function _confirmCreateUser(&$app, &$request, &$user, &$db) {
-		$errors = array();
-		$rqLogin       = $request->GetVar('login');
-		$rqConfirmCode = $request->GetVar('confirmcode');
-		if (!count($tmp = $db->GetObjectsByField($app->types['suser'], NULL, 'title', $rqLogin))) {
-			$errors['badconfimcode'] = true;
-		} else {
-			$newUser = current($tmp);
-			$tmp = @unserialize($newUser['passwd']);
-			if (!isset($tmp[1]) || $rqConfirmCode != $tmp[1]) {
-				$errors['badconfimcode'] = true;
-			} else {
-				$newUser['passwd'] = md5($tmp[0]);
-				$newUser['status'] = 1;
-				$db->ModifyContentObject($app->types['suser'], $newUser);
-				$user = new PXUser();
-				$user->setDb($db);
-				$user->setApp($app);
-				$user->setRequest($request);
-				$user->checkAuth();
-			}
-		}
-
-		return $errors;
-	}
-
-	function _createUser(&$app, &$request, &$user, &$db) {
-		$errors = array();
-		$rqLogin    = $request->GetVar('login');
-		$rqPasswd   = $request->GetVar('passwd');
-		$rqPasswd2  = $request->GetVar('passwd2');
-		$rqEmail    = $request->GetVar('email');
-		$_SESSION[$this->area . 'Data']['login'] = $rqLogin;
-		$_SESSION[$this->area . 'Data']['email'] = $rqEmail;
-		if (!isValidLogin($rqLogin, 2, 16)) {
-			$errors['badlogin'] = true;
-		}
-		if (!isValidPasswd($rqPasswd, 3, 16)) {
-			$errors['badpasswd'] = true;
-		}
-		if ($rqPasswd != $rqPasswd2) {
-			$errors['notequalpasswd'] = true;
-		}
-		if (!isValidEmail($rqEmail)) {
-			$errors['bademail'] = true;
-		}
-		if (count($db->GetObjectsByField($app->types['suser'], NULL, 'title', $rqLogin))) {
-			$errors['loginexists'] = true;
-		}
-		$rq = array();
-		foreach ($this->fields as $f) {
-			$rq[$f['title']] = $request->GetVar($f['title']);
-			if (!isValidString($rq[$f['title']], $f['min'], $f['max'])) {
-				$errors['bad'.$f['title']] = true;
-			}
-			$_SESSION[$this->area . 'Data'][$f['title']] = $rq[$f['title']];
-		}
+	
+	function _registerController() {
+		if($this->user->isAuthed()) return;
+		
+		$errors =& $this->loadModel('session', 'errors');
+		$input  =& $this->loadModel('session', 'data');
+		$errors = $input = null; // clear previous errors and data
+		
+		// parse fields
+		$rq = $this->_parseFields($input, $errors);
+			
 		if (!count($errors)) {
-			$confirmCode = generateRandomString(16);
-			$newUser = $app->InitContentObject('suser');
-			$newUser['title']  = $rqLogin;
-			$newUser['passwd'] = serialize(array($rqPasswd, $confirmCode));
-			$newUser['email']  = $rqEmail;
-			$newUser['access'] = 1024;
+			$newUser['access'] = $this->defaultAccess;
+			
 			foreach ($rq as $k=>$v) {
 				$newUser[$k] = $v;
 			}
-			$db->AddContentObject($app->types['suser'], $newUser);
-			$m = new NLMailMessage();
-			$m->SetFrom($this->systemName, $this->systemEmail);
-			$m->SetTo(NULL, $rqEmail);
-			$m->SetSubject("Регистрация на сайте");
-			$message  = "Здравствуйте!\n\n";
-			$message .= "Для подтверждения вашей регистрации продите по ссылке:\n";
-			$message .= "http://".$request->GetHttpHost()."/action.phtml?area=register&action=confirm&login=".$rqLogin."&confirmcode=".$confirmCode."&onsuccess=".$this->successUrl."&onerror=".$this->errorUrl;
-			$m->SetBody($message);
-			$m->Send();
+			
+			$stages = array();
+			if($this->userActivation){
+				if($this->_sendMail($newUser, array('route' => 'activation'))){
+					$stages = array('mail' => 'sent');
+				} else {
+					$stages = array('mail' => 'errorsent');
+				}
+				$newUser['status'] = false;
+			} else {
+				$stages = array('account' => 'created');
+				$newUser['status'] = true;
+			}
+			
+			$this->_saveModel('suser', $newUser);
+			$this->_saveModel('session');
+			return $this->buildRoute('success', $stages);
 		}
-
-		return $errors;
+		
+		$this->_saveModel('session');
+		return $this->buildRoute('error');
 	}
-
+	
+	function _badactionController() {
+		return false;
+	}
+	
+	function assignController(){
+		$action = $this->req->GetVar('action');
+		if(method_exists($this, '_' . $action . 'Controller')){
+			$this->_controller = array(&$this, '_' . $action . 'Controller');
+		} else {
+			$this->_controller = array(&$this, '_badaction' . 'Controller');
+		}
+	}
+	
+	function buildRoute($destination, $stages = array()){
+		$returnTo = $this->registerPath;
+		// common modification of the stages into uri
+		$_stages = array();
+		foreach($stages as $k => $v){
+			$_stages[] = $k.'='.$v;
+		}
+		$stages = join('&', $_stages);
+		
+		switch($destination){
+			default:
+				return $returnTo;
+			
+			case 'error':
+			case 'modify':
+			case 'modifysuccess':
+			case 'activationerror':
+			case 'activationsuccess':
+				$returnTo .= '?view=' . $destination;
+			break;
+			case 'success':
+			case 'reminderror':
+			case 'remindsuccess':
+			case 'modifyerror':
+				$returnTo .= '?view=' . $destination . '&';
+			break;
+			case 'activation':
+				$returnTo = 'http://' . $this->req->GetHttpHost() . '/action.phtml?area=register&action='.$destination.'&';
+			break;
+			case 'remind':
+				$returnTo = 'http://' . $this->req->GetHttpHost() . $this->registerPath . '?view='.$destination.'&';
+			break;
+		}
+		return $returnTo . $stages;
+	}
+	
+	function _saveModel($store, $object = array()){
+		switch($store){
+			case 'session':
+				session_commit();
+			break;
+			case 'suser':
+				// Security
+				foreach($this->fields as $field){
+					if(isset($object[$field['title']]) && is_string($object[$field['title']])){
+						$object[$field['title']] = $this->db->EscapeString($object[$field['title']]);
+					}
+				}
+				$object += $this->app->InitContentObject('suser'); //merge with prototype
+				
+				if($object['id'] > 0){ // modify
+					$this->db->ModifyContentObject($this->app->types['suser'], $object);
+				} else { //create
+					$this->db->AddContentObject($this->app->types['suser'], $object);
+				}
+			break;
+			case 'captcha':
+				if(is_a($object, 'NLBlockingNumbers')){
+					$object->CreateNew(4, "2345678qweyupasdfkzxcvbnm2345678");
+					return $object->key;
+				}
+			break;
+		}
+	}
+	
+	function &loadModel($store, $filter = null){
+		$model = null;
+		switch($store){
+			case 'session':
+				static $firstOpen = 0;
+				if(!$firstOpen++){
+					MakeDirIfNotExists(BASEPATH."var/sessions/");
+					session_save_path(BASEPATH."var/sessions/");
+					ini_set('session.use_cookies',      1);
+					ini_set('session.use_only_cookies', 1);
+					ini_set('session.use_trans_sid',    0);
+					session_set_cookie_params(0);
+					
+					if(isset($_SESSION)){
+						if(session_name() != 'registration'){
+							session_commit();
+							session_name('registration');
+							session_start();
+						}
+					} else {
+						session_name('registration');
+						session_start();
+					}
+				}
+				$model =& $_SESSION['registration'][$filter];
+				
+			break;
+			case 'suser':
+				$model = $this->db->GetObjectsByFieldLimited($this->app->types['suser'], null, $filter, null, 1, 0);
+			break;
+			case 'captcha':
+				$bn = new NLBlockingNumbers(BASEPATH.'/var/blocking_nums');
+				if(isset($filter)){
+					$model = $bn->CheckValueByKey(key($filter), current($filter));
+				} else {
+					$model = $this->_saveModel($store, $bn);
+				}
+			break;
+		}
+		
+		return $model;
+	}
+	
+	//{{{ Validators block
+	function _loginFieldValidator($field, $value, &$errors, &$userData){
+		if (!isValidLogin($value, 2, 16)) {
+			$errors[$field]['badlogin'] = true;
+		}
+		$userData['title'] = $value;
+		unset($userData[$field]);
+	}
+	
+	function _passwordFieldValidator($field, $value, &$errors, &$userData){
+		if (!isset($value[0]) || !isValidPasswd($value[0], 3, 16)) {
+			$errors[$field]['badpassword']    = true;
+		}
+		if (!isset($value[0]) || !isset($value[1]) || $value[0] !== $value[1]) {
+			$errors[$field]['notequalpasswd'] = true;
+		}
+		
+		if(!isset($errors[$field])){
+    		    $userData['passwd'] = $value[0];
+		}
+		
+		unset($userData[$field]);
+	}
+	
+	function _emailFieldValidator($field, $value, &$errors, &$userData){
+		if(!empty($value) && !isValidEmail($value)){
+			$errors[$field]['email'] = true;
+		}
+	}
+	
+	function _uniqueFieldValidator($field, $value, &$errors, &$userData){
+		if(!empty($value)){
+			$suser =& $this->loadModel('suser', array($field => $value));
+			if(!count($suser)){
+				return;
+			}
+			$errors[$field]['exists'] = true;
+		}
+	}
+	
+	function _reqFieldValidator($field, $value, &$errors, &$userData){
+		if(is_array($value)){
+		    foreach($value as $everyField){
+			if(!strlen($everyField)){
+			    $errors[$field]['req'] = true;
+    			    break;
+			}
+		    }
+		    return;
+		}
+		
+		if(!strlen($value)){
+		    $errors[$field]['req'] = true;
+		}
+	}
+	
+	function _dateFieldValidator($field, $value, &$errors, &$userData){
+		extract($value, EXTR_SKIP);
+		if(empty($day) && empty($month) && empty($year)){
+			$userData[$field] = null;
+		} elseif(checkdate((int)$month, (int)$day, (int)$year)){
+			$userData[$field] = $year.'-'.$month.'-'.$day;
+		} else {
+			$errors[$field]['wrongdate'] = true;
+		}
+	}
+	
+	function _fileFieldValidator($field, $value, &$errors, &$userData){
+		$file = $this->req->GetUploadFile($field);
+		if(!empty($file)){
+			$userData[$field] = $file;
+		}
+	}
+	
+	function _captchaFieldValidator($field, $value, &$errors){
+		if(!empty($this->captchaField) && 
+		    empty($value['key'])       or 
+		    empty($value['value'])     or 
+		    !$this->loadModel('captcha', array($value['key'] => $value['value']))
+		){
+			$errors[$field]['badcaptcha']  = true;
+		}
+	}
+	
+	// }}} Validators block
+	
+	function _sendMail(&$user, $params){
+		if(!isset($user[$this->contactEmailField]) || empty($user[$this->contactEmailField])){
+			return false;
+		}
+		$user[$params['route'] . 'code'] = generateRandomString(16);
+		$m = new NLMailMessage();
+		$m->SetFrom($this->systemName, $this->systemEmail);
+		$m->SetTo(NULL, $user[$this->contactEmailField]);
+		
+		//Apply mail template
+		$m->SetTemplate(
+			BASEPATH.'local/mail_templates/registration/'.$params['route'].'.tmpl',
+			TRUE,
+			array(
+				'href' => $this->buildRoute($params['route'], array('code' => $user[$params['route'] . 'code'], 'login' => $user['title']))
+			)
+		);
+		
+		return $m->Send();
+	}
 }
 
 ?>

@@ -73,9 +73,9 @@ class PXModuleRSSEngine extends PXAbstractModule {
 		$xml = myconv('k', $this->encoding{0}, $xml);
 		$xml = $this->unhtmlentities($xml);
 
-		header('Content-Type:text/xml;charset='.$this->encoding);
-
-		echo $xml;
+		$response =& PXResponse::getInstance();
+		$response->setCharset('text/xml', $this->encoding);
+		$response->send($xml);
 		exit;
 	}
 

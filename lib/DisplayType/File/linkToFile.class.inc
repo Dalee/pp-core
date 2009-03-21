@@ -6,8 +6,8 @@
  * storageType serialized
  * displayType LINKTOFILE
  */
-class PXDisplayTypeLinktofile extends PXDisplayType {
-	static function buildInput($field, $object, $param=NULL) {
+class PXDisplayTypeLinktofile extends PXDisplayTypeFile {
+	function buildInput($field, $object, $param=NULL) {
 		$k = $field->name;
 
 		$value = (isset($object[$k]) && is_array($object[$k]) && isset($object[$k]['filename']) && !is_null($object[$k]['filename']))
@@ -17,11 +17,11 @@ class PXDisplayTypeLinktofile extends PXDisplayType {
 		return NLAbstractHTMLForm::BuildLinkToFile($k, $value);
 	}
 
-	static function getFromRequest($field, $object, $param=NULL) {
+	function getFromRequest($field, $object, $param=NULL) {
 		return $param['request']->postData->_GetArrayVar($field->name);
 	}
 
-	static function buildCell($field, $object, $param=NULL) {
+	function buildCell($field, $object, $param=NULL) {
 		$value = $object[$field->name];
 		if(!isset($value['filename'])) {
 			return '';
@@ -33,7 +33,7 @@ class PXDisplayTypeLinktofile extends PXDisplayType {
 			'size'     => $value['size']
 		);
 
-		return PXDisplayTypeFile::buildCellHtml($tmp);
+		return $this->buildCellHtml($tmp);
 	}
 }
 ?>

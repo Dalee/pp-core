@@ -2,7 +2,7 @@
 class ObjectCache  implements CacheIF {
 	var $cache_dir;
 	var $expire     = 3600; // default = 1 hour
-	var $orderLevel = 2;
+	var $orderLevel = 0;
 
 	function ObjectCache($cacheDomain = null) {
 		$this->cache_dir = BASEPATH.'/tmp/cache/';
@@ -10,6 +10,8 @@ class ObjectCache  implements CacheIF {
 		if ($cacheDomain !== null) {
 			$this->cache_dir .= $cacheDomain .'/';
 		}
+
+		$this->_createCacheDir();
 	}
 
 	function setOrderLevel($level=0) {
@@ -34,7 +36,7 @@ class ObjectCache  implements CacheIF {
 
 	function load($objectId) {
 		$unserialized = null;
-		$fileName = $this->_getFilename($objectId);	
+		$fileName = $this->_getFilename($objectId);
 
 		if (($serialized = $this->_doLoad($fileName)) !== null) {
 			//avoiding error on: unserialize(serialize(false))
@@ -51,12 +53,25 @@ class ObjectCache  implements CacheIF {
 	}
 
 	function clear() {
-		$dir = new NLDir($this->cache_dir);
-		$dir->emptyfy(false); // false means non remove dirs, only files
+		$this->_cleanDir($this->cache_dir.'/');
 	}
-	
-	/* 
-	   private: 
+
+	function _cleanDir($dirName) {
+		if ($handle = opendir($dirName)) {
+			while (false !== ($file = readdir($handle))) {
+				if($file == '.' || $file == '..') {
+					continue;
+				}
+
+				@unlink($dirName.$file);
+			}
+
+			closedir($handle);
+		}
+	}
+
+	/*
+	   private:
 	*/
 	function _getFilename($str) {
 		$md5 = md5($str);
@@ -78,7 +93,7 @@ class ObjectCache  implements CacheIF {
 	}
 
 	function _doSave($fileName, $serialized) {
-		$fp = @fopen($fileName, 'wb');
+		$fp = fopen($fileName, 'wb');
 
 		if ($fp !== false) {
 			if (flock($fp, LOCK_EX)) {
@@ -97,7 +112,7 @@ class ObjectCache  implements CacheIF {
 		$serialized = null;
 		$fp = @fopen($fileName, 'rb');
 
-		if ($fp !== false) { 
+		if ($fp !== false) {
 			if (flock($fp, LOCK_SH)) {
 				$stat = fstat($fp);
 				$now  = mktime();

@@ -5,7 +5,7 @@
  * @package ProximaPortal
  * @subpackage HTML
  */
-class PXAdminTable {
+class PXAdminTable extends PXAdminWidget {
 	var $data;
 	var $dtype;
 	var $getData;
@@ -13,6 +13,7 @@ class PXAdminTable {
 	var $titleKey;
 
 	var $parentPathname;
+	var $tree;
 
 	var $controls;                  //custom controls array
 	var $showDefaultControls;       //show default main and edit controls
@@ -151,7 +152,7 @@ class PXAdminTable {
 
 			foreach ($this->dtype->fields as $field) {
 				if ($field->listed) {
-					$html .= '<th'.($field->name === $this->titleKey ? ' class="maincol"' : '').'>';
+					$html .= '<th'.($field->name === $this->titleKey ? ' class="maincol"' : ' class="c-'.strtolower($field->displayType->name).'"').'>';
 
 					$param = array(
 						'order' => $this->currentOrder,
@@ -159,7 +160,7 @@ class PXAdminTable {
 						'table' => $this
 					);
 
-					$html .= PXStorageType::callMethod('objectsSortOrder', $field, NULL, $param);
+					$html .= $field->storageType->objectsSortOrder($field, NULL, $param);
 
 					$html .= '</th>';
 				}
@@ -181,7 +182,7 @@ class PXAdminTable {
 					$menuTitle = '';
 				}
 
-				$alias = isset($row['pathname']) && isset($this->parentPathname) ? $this->parentPathname.$row['pathname'] : '';
+				$alias = isset($row['pathname']) && strlen($row['pathname']) ? $this->_buildShowOnSiteLink($row) : '';
 
 				if ($this->showDefaultControls) {
 
@@ -420,7 +421,7 @@ class PXAdminTable {
 	 * @param String $field - поле по которому проверяется display type
 	 */
 	function _buildCell($object, $field) {
-		return PXDisplayType::callMethod('buildCell', $field, $object);
+		return $field->displayType->buildCell($field, $object);
 	}
 
 	/**
@@ -453,5 +454,20 @@ class PXAdminTable {
 		$href = substr($href, 0, -1);
 		return $href;
 	}
+	function setSiteTree($tree){
+		$this->tree = $tree;
+	}
+	
+	function _buildShowOnSiteLink($row){
+		switch(true){
+			case isset($this->parentPathname):
+				 return $this->parentPathname.$row['pathname'];
+			case isset($this->tree) && isset($row['parent']) && $row['parent'] > 0:
+				return $this->tree->getFullPathString($row['parent']) . $row['pathname'];
+			default:
+				return '';
+		}
+	}
+	
 }//class
 ?>

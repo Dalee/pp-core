@@ -10,7 +10,7 @@
  * storageType filesarray
  */
 class PXStorageTypeFilesarray extends PXStorageType {
-	static function proceedFile($field, $object, &$param) {
+	function proceedFile($field, $object, &$param) {
 		$varName   = $field->name;
 		$basedir   = BASEPATH.'/htdocs/ai/'.$param['format'].'/'.$param['id'].'/'.$varName;
 		$fileArray = $object[$varName];
@@ -60,7 +60,7 @@ class PXStorageTypeFilesarray extends PXStorageType {
 	}
 
 
-	static function normalize($field, $object, &$param) {
+	function normalize($field, $object, &$param) {
 		$filesArray = array();
 		$basedir = '/ai/'.$param['format'].'/'.$object['id'].'/'.$field->name.'/';
 		$d = new NLDir(BASEPATH.'htdocs'.$basedir);
@@ -86,7 +86,7 @@ class PXStorageTypeFilesarray extends PXStorageType {
 		return $filesArray;
 	}
 
-	static function notInDb($field, $object, $param=NULL) {
+	function notInDb($field, $object, $param=NULL) {
 		return true;
 	}
 }

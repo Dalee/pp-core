@@ -1,25 +1,15 @@
 <?php
 /**
  * Базовый класс описывающий сохранение, получение из запроса
- * (и что-то еще) полей объекта с определеннм storageType
- *
- * Типичный способ обращения к статическим методам класса:
- * PXStorageType::callMethod($method, $field, $object, $param);
- *
+ * (и что-то еще) полей объекта с определенным storageType
  */
 class PXStorageType {
-	/**
-	 * Вызывает нужный метод нужного класса
-	 *
-	 * @param String             $method
-	 * @param PXFieldDescription $field
-	 * @param Array              $object
-	 * @param Array|NULL         $param
-	 *
-	 * @return Mixed
-	 */
-	static function callMethod($method, $field, $object, $param=NULL) {
-		return PXFieldUtil::callMethod($method, $field, $object, $param, __CLASS__, 'storageType');
+	var $field;
+	var $name;
+
+	function PXStorageType(&$field, $name) {
+		$this->field = &$field;
+		$this->name = $name;
 	}
 
 	/**
@@ -33,8 +23,36 @@ class PXStorageType {
 	 *
 	 * @return String
 	 */
-	static function objectsSortOrder($field, $object, $param=NULL) {
+	function objectsSortOrder($field, $object, $param=NULL) {
 		return $field->description;
+	}
+
+	function objectsSortOrderString($field, $object, &$param) {
+		$html = '<a ';
+
+		switch($param['order']) {
+			case ($field->name.' DESC') :
+				$html .= ' class="down"';
+				$order =  $field->name;
+				$title = '';
+				break;
+
+			case $field->name :
+				$html .= ' class="up"';
+				$order = $field->name.' DESC';
+				$title = ' в обратном порядке';
+				break;
+
+			default:
+				$order =  $field->name;
+				$title = '';
+				break;
+		}
+
+		$html .= ' href="'.$param['table']->_BuildHref($param['dtype'].'_order', $order).'"';
+		$html .= ' title="Сортировать по полю &bdquo;'.$field->description.'&ldquo;'.$title.'">'.$field->description.'</a>';
+
+		return $html;
 	}
 
 	/**
@@ -46,7 +64,7 @@ class PXStorageType {
 	 *
 	 * @return Mixed
 	 */
-	static function getFromRequest($field, $object, &$param) {
+	function getFromRequest($field, $object, &$param) {
 		return $object[$field->name];
 	}
 
@@ -60,8 +78,23 @@ class PXStorageType {
 	 *
 	 * @return Array
 	 */
-	static function normalizeObjectAttribute($field, $object, &$param) {
+	function normalizeObjectAttribute($field, $object, &$param) {
 		return array(NULL, $param['dbFields'], $param['dbValues']);
+	}
+
+	function normalizeObjectAttributeString($field, $object, &$param) {
+		$k = $field->name;
+		$v = $object[$k];
+
+		if(is_array($param['dbFields'])) {
+			$param['dbFields'][] = $k;
+		}
+
+		if(is_array($param['dbValues'])) {
+			$param['dbValues'][] = $v;
+		}
+
+		return array($v, $param['dbFields'], $param['dbValues']);
 	}
 
 	/**
@@ -74,7 +107,7 @@ class PXStorageType {
 	 *
 	 * @return String
 	 */
-	static function searchLikeQuery($field, $object, &$param) {
+	function searchLikeQuery($field, $object, &$param) {
 		return '';
 	}
 
@@ -87,7 +120,7 @@ class PXStorageType {
 	 *
 	 * @return String
 	 */
-	static function proceedFile($field, $object, &$param) {
+	function proceedFile($field, $object, &$param) {
 		return null;
 	}
 
@@ -101,7 +134,7 @@ class PXStorageType {
 	 *
 	 * @return Mixed
 	 */
-	static function normalize($field, $object, &$param) {
+	function normalize($field, $object, &$param) {
 		return isset($object[$field->name]) ? $object[$field->name] : NULL;
 	}
 
@@ -114,7 +147,7 @@ class PXStorageType {
 	 *
 	 * @return String
 	 */
-	static function createPathname($field, $object, &$param) {
+	function createPathname($field, $object, &$param) {
 		return '';
 	}
 
@@ -129,7 +162,14 @@ class PXStorageType {
 	 *
 	 * @return Boolean
 	 */
-	static function notInDb($field, $object, $param=NULL) {
+	function notInDb($field, $object, $param=NULL) {
+		return false;
+	}
+
+	/**
+	 * Определяет возможность фильтрации вывода текущего StorageType в PXAdminObjectForm::LinksForm
+	 */
+	function filterable(){
 		return false;
 	}
 }

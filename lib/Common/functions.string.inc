@@ -280,9 +280,21 @@ function _TranslitModern($text) {
 	return $text;
 }
 
+function NumericEndingsRussian($count, $oneItem, $severalItiems, $manyItems) {
+	$lastLetter       = substr($count, -1);
+	$secondLastLetter = strlen($count) > 1 ? substr($count, -2, 1) : '0';
 
-function NumericEndingsRussian($stam, $number, $endingsArray) {
-	return $stam.$endingsArray[$number % 10];
+	if($secondLastLetter != 1) {
+		if($lastLetter == '1') {
+			return $oneItem;
+		}
+
+		if(in_array($lastLetter, array('2', '3', '4'))) {
+			return $severalItiems;
+		}
+	}
+
+	return $manyItems;
 }
 
 function htmlspecialcharsArray($array) {
@@ -338,9 +350,70 @@ function Strip1251($s) {
 		'&plusmn;' => '+-',
 		'&#8470;' => 'N',
 		'&raquo;' => '"',
-		'&nbsp;'  => ' '
+		'&nbsp;'  => ' ',
+		'&#8217;' => "'",
+		'&#8211;' => '-',
+		'&#8212;' => '-'
 	);
 	return strtr($s, $ent);
+}
+
+ /**
+  * Qute and sometimes very helpful function from Ruby language
+  * How it works - Input: "aabbbbbzzzzzzz   111", Output: "abz 1"
+  *
+  * @param  String  $inputString    String which need to squeeze
+  * @param  String  $onlyTheseChars Simple regexp pattern, defines, which symbols need to squeeze, by default all. Example: "abc123", "a-z", "0-9a-f\n", etc.
+  * @param  Boolean $caseMatters    Use caseless comparsion or not. By default, case is matter.
+  * @return String
+  */
+function squeeze($inputString, $onlyTheseChars = null, $caseMatters = true){
+	if(strlen($inputString) > 1){
+		$pattern  = $onlyTheseChars ? '['.preg_quote($onlyTheseChars, '#').']' : '.';
+		$caseFlag = $caseMatters    ? '' : 'i';
+		$inputString = preg_replace("#({$pattern})(?=\\1)#{$caseFlag}",'',$inputString);
+	}
+	return $inputString;
+}
+ /**
+  * Replace limited count of occurrences of the search string with the replacement string
+  * @see _strReplaceLimited()
+  */
+function str_lreplace($search, $replacement, $subject, $limit = 1){
+	return _strReplaceLimited($search, $replacement, $subject, $limit, true);
+}
+
+ /**
+  * Case-insensitive version of str_lreplace()
+  * @see _strReplaceLimited()
+  */
+function str_lireplace($search, $replacement, $subject, $limit = 1){
+	return _strReplaceLimited($search, $replacement, $subject, $limit, false);
+}
+ /**
+  * Realization of str_lreplace() and str_lireplace()
+  * Unlike of str_[i]replace, first three args cannot be an arrays
+  *
+  * @param  String  $search      What  will be replaced
+  * @param  String  $replacement That  we use for replacement
+  * @param  String  $subject     Where we do search
+  * @param  Integer $limit       The maximum possible replacements, by default 1
+  * @param  Boolean $caseMatters Use caseless comparsion or not. By default, case is matter.
+  * @return String
+  */
+  
+function _strReplaceLimited($search, $replacement, $subject, $limit = 1, $caseMatters = true){
+	$replaced = 0; $limit = (int)$limit; $len = strlen($search);
+	if($caseMatters){
+		$strp = 'strpos';
+	} else {
+		$strp = 'stripos';
+	}
+	
+	while($replaced++ < $limit && ($pos = $strp($subject, $search)) !== false){
+		$subject = substr_replace($subject, $replacement, $pos, $len);
+	}
+	return $subject;
 }
 
 function appendParamToUrl($url, $k, $v, $fragment = false) {

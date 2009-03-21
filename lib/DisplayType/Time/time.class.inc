@@ -7,14 +7,14 @@
  * displayType TIME
  */
 class PXDisplayTypeTime extends PXDisplayTypeTimestamp {
-	static function buildInput($field, $object, $param=NULL) {
+	function buildInput($field, $object, $param=NULL) {
 		$k = $field->name;
 		$value = (isset($object[$k]) && $object[$k] !== 'null') ? $object[$k] : ($field->defaultValue == 'null' ? NULL : date('j-n-Y G:i:s'));
 
-		return NLAbstractHTMLForm::BuildDateTime($k, $value, true, false, true);
+		return NLAbstractHTMLForm::BuildDateTime($k, $value, true, false, false);
 	}
 
-	static function buildCell($field, $object, $param=NULL) {
+	function buildCell($field, $object, $param=NULL) {
 		return substr($object[$field->name], 11);
 	}
 }

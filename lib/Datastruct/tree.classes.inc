@@ -75,7 +75,7 @@ class NLTree {
 			if (!is_null($v->parent) && isset($this->leafs[$v->parent])) {
 				$this->leafs[$v->parent]->children[] = $k;
 
-			} else if ($v->id != 0 && $this->saveOrphans) {
+			} elseif ($v->id != 0 && $this->saveOrphans) {
 				$this->leafs[0]->children[] = $k;
 			}
 		}
@@ -94,6 +94,9 @@ class NLTree {
 		if (!isset($this->leafs[$id])) return array();
 		$ret = array($id);
 		while ($id != 0) {
+			if (!isset($this->leafs[$id])){
+				return array();
+			}
 			$id = $this->leafs[$id]->parent;
 			if ($id != 0) $ret[] = $id;
 		}
@@ -141,14 +144,22 @@ class NLTree {
 
 	function GetPlainTree($restrictedId, $id = 0, $parent = NULL, $current = NULL, $level = 1, $prefix = '') {
 		$t = array();
+
 		foreach ($this->leafs[$id]->children as $child) {
-			if ($child == $restrictedId) continue;
+			if ($child == $restrictedId) {
+				continue;
+			}
+
 			if ($child != $current) {
 				$t[$child] = $prefix.' '.$this->leafs[$child]->title;
 				$t = $t + $this->GetPlainTree($restrictedId, $child, $parent, $current, $level+1, $prefix.'===');
 			}
 		}
-		if ($id == 0) $t[NULL] = "Корень";
+
+		if ($id == 0) {
+			$t[NULL] = "Корень";
+		}
+
 		return $t;
 	}
 

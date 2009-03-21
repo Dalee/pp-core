@@ -14,18 +14,50 @@ class PXModuleAuditLog extends PXModule {
 
 		$this->html('<H2>Журнал аудита</H2>');
 
-		$this->page    = $this->request->GetVar('page', 1);
+		$this->page    = $this->request->GetVar('_page', 1);
 		$this->onPage  = $this->app->GetProperty('CHILDREN_ON_PAGE', 15);
+		$this->count = 0;
 
 
 		$this->table();
-		$this->pager();
 
-		//$this->filterForm();
+		$this->filterForm();
 	}
 
 	function filterForm() {
 		$color = TABLECOLOR1;
+		$sql = "SELECT type FROM log_audit GROUP BY type";
+		$tmp = getColFromtable($this->db->query($sql), 'type');
+		$option = "";
+		$level = array("ALL" => null, "DEBUG" => 1, "INFO" => 2, "WARN" => 3, "ERROR" => 4, "FATAL" => 5, "NONE" => 6);
+		$oLevel = "";
+		foreach($level as $k => $v) {
+			if($k == $this->request->getVar("level")) {
+				$oLevel .= '<option value="' . $v . '" selected >'. $k . '</option>';
+			} else {
+				$oLevel .= '<option value="' . $v . '">' . $k . '</option>';
+			}
+		}
+
+		foreach($tmp as $v) {
+			if($v == $this->request->getVar("type")) {
+				$option .= '<option value="' . $v . '" selected >'. $v . '</option>';
+			} else {
+				$option .= '<option value="' . $v . '">' . $v . '</option>';
+			}
+
+		}
+		$login = $this->request->getVar("user");
+		$description = $this->request->getVar("description");
+		$ip = $this->request->getVar("ip");
+
+		$ts = $this->request->getVar('ts') ? $this->request->getVar('ts') : null;
+		$ds = $this->request->getVar('date');
+		if(isset($ds) && !in_array(null, $ds)) {
+			$ts = getFromArray($ds, 'day'). '-' . getFromArray($ds, 'month') . '-' . getFromArray($ds, 'year') . ' 00:00:00';
+		}
+		$date =  '<label>Дата</label>' . NLAbstractHTMLForm::BuildDateTime("date", $ts, false, true, true);
+
 		$html = 
 <<<HTML
 	<H2>Filter</H2>
@@ -46,6 +78,7 @@ class PXModuleAuditLog extends PXModule {
 
 		label {
 			text-align: right;
+			clear: left;
 		}
 
 		select, form input {
@@ -55,6 +88,13 @@ class PXModuleAuditLog extends PXModule {
 		table {
 			clear: left;
 		}
+		form .datetime {
+			float: left;
+			margin: 1em;
+		}
+		form .datetime input {
+			margin: 0;
+		}
 	</style>
 
 	<form method="get" class="autoheight">
@@ -62,26 +102,18 @@ class PXModuleAuditLog extends PXModule {
 
 		<label for="level">Уровень</label>
 		<select name="level" id="level">
-			<option value="0">ALL</option>
-			<option value="1">DEBUG</option>
-			<option value="2">INFO</option>
-			<option value="3">WARN</option>
-			<option value="4">ERROR</option>
-			<option value="5">FATAL</option>
-			<option value="6">NONE</option>
+			$oLevel;
 		</select>
 
 		<label for="type">Тип</label>
 		<select name="type" id="type">
 			<option value="">- Any -</option>
+			$option
 		</select>
-
-		<select name="sourcetype">
-			<option value="">- Any -</option>
-		</select>
-		<input type="text" name="sourceid">
-		<input type="text" name="login">
-		<input type="text" name="ip">
+$date
+		<label>Логин</label><input type="text" name="user" value="$login">
+		<label>Сообщение</label><input type="text" name="description" value="$description">
+		<label>IP</label><input type="text" name="ip" value="$ip">
 
 		<input type="submit">
 	</form>
@@ -93,22 +125,37 @@ HTML;
 		$selected = $this->request->getVar($name);
 
 		$_ = '<select name="'.$name.'">';
-		
 	}
 
 	function filter() {
 		$filter = array();
 
-		foreach(array('date', 'level', 'type', 'source', 'login', 'ip') as $field) {
+		foreach(array('ts', 'date', 'level', 'type', 'source', 'user', 'description', 'ip') as $field) {
 			$var = $this->request->getVar($field,   null);
 
 			if(is_null($var)) {
 				continue;
 			}
-
 			$this->layout->setGetVarToSave($field, $var);
 
-			$filter[] = "\"{$field}\" = '{$var}'";
+			switch($field) {
+			case 'description':
+			case 'ip':
+					$filter[] = $this->db->mapFields($field) . " ILIKE '%" . $var . "%'";
+					break;
+				case 'date':
+				case 'ts':
+					if(is_array($var) && !in_array(null, $var)) {
+						$var = getFromArray($var, 'day'). '-' . getFromArray($var, 'month') . '-' . getFromArray($var, 'year') . ' 00:00:00';
+					}
+					if(!is_array($var)) {
+						$filter[] = "date_trunc('day', ts) = " . $this->db->mapData($var);
+					}
+					break;	
+				default:
+					$filter[] = $this->db->mapFields($field) . "=" .  $this->db->mapData($var);
+					break;
+			}
 		}
 
 		if (sizeof($filter)) {
@@ -121,11 +168,15 @@ HTML;
 	function getData() {
 		$offset  = ($this->page-1) * $this->onPage;
 
-		$sql  = 'SELECT "ts", "date", "level", "type", "source", "user", "ip", description FROM log_audit_view ';
+		$sql  = 'SELECT "ts", "date", "level", "type", "source", "user", "ip", "description" FROM log_audit_view ';
+
 		$sql .= $this->filter();
 		$sql .= 'ORDER BY id DESC';
 
-		return $this->db->query($sql, false, array($this->onPage, $offset));
+		$tmp = $this->db->query($sql);
+		$this->count = sizeof($tmp);
+
+		return array_slice($tmp, $offset, $this->onPage);
 	}
 
 	function error($level) {
@@ -146,122 +197,24 @@ HTML;
 	}
 
 	function table() {
-		$html = '';
-
-		foreach ($this->getData() as $row) {
-			$row['level']  = $this->error($row['level']); 
-			$row['source'] = $this->source($row['source']); 
-			extract($row);
-
-			$html .= 
-<<<HTML
-	<tr class="filemanager">
-		<td>$ts</td>
-		<td>$level</td>
-		<td>$type</td>
-		<td>$source</td>
-		<td>$user</td>
-		<td>$ip</td>
-		<td>$description</td>
-	</tr>
-HTML;
+		$table = new PXAdminTableSimple(array("ts" => "Дата/Время", "level" => "Уровень", "type" => "Тип", "source" => "Тип/объект", "user" => "Логин", "ip" =>"IP адрес", "description" => "Сообщение"));
+		$data = $this->getData();
+		$table->setData($data);
+		$param = $this->request->GetAllGetData();
+		if(isset($param['date']) && isset($param['date']['year'])) {
+			$param['ts'] = getFromArray($param['date'], 'day'). '-' . getFromArray($param['date'], 'month') . '-' . getFromArray($param['date'], 'year') . ' 00:00:00';
 		}
-
-
-		$html = 
-<<<HTML
-	<table class="objects">
-		<colgroup>
-			<col width="15%">
-			<col width="10%">
-			<col width="10%">
-			<col width="15%">
-			<col width="10%">
-			<col width="10%">
-			<col>
-		</colgroup>
-
-		<tr>
-			<th>Дата/Время</th>
-			<th>Уровень</th>
-			<th>Тип</th>
-			<th>Тип/Объект</th>
-			<th>Логин</th>
-			<th>IP адрес</th>
-			<th>Сообщение</th>
-		</tr>
-
-		$html
-	</table>
-HTML;
-
-		$this->html($html);
-	}
-
-	function pager() {
-		$where = $this->filter();
-		$count = $this->db->query('SELECT COUNT(*) FROM log_audit_view '.$where, false);
-		$count = (int)$count[0]['count'];
-
-		$page = $this->page;
-
-		//постраничный вывод:
-		$pageCount = ceil($count/$this->onPage)+1;
-		$start = (ceil($page/10)-1)*10+1;
-		$max = ($start+10 <= $pageCount) ? $start+10 : $pageCount;
-
-		if ($page > 10) {
-			$prev = (ceil($start/10)-1)*10 - 9;
+	
+		unset($param['date']);
+		foreach($param as $k => $v) {
+			$param[$k] = iconv("koi8-r", "utf-8", $param[$k]); 
 		}
-
-		$last = $pageCount - $start - 10;
-
-		if ($last > 0) {
-			$next = (ceil($start/10)-1)*10 + 11;
-		}
-
-		$html ='<div class="perpage">';
-
-		if (isset($prev)) {
-			$html .= '<a href="' .$this->_bh($prev). '">';
-			$html .= '<img src="i/icon/left.gif" width="4" height="7" border="0" hspace="4" alt="Страница '.$prev.'">';
-			$html .= '</a>';
-		}
-
-		for ($i=$start; $i<$max; $i++) {
-			$html .= '<a';
-			if ($i == $page)
-				$html .= ' class="selected"';
-
-			$html .= ' href="'.$this->_bh($i).'">'.$i.'</a>';
-		}
-
-		if (isset($next)) {
-			$html .= '<a href="' .$this->_bh($next). '">';
-			$html .= '<img src="i/icon/right.gif" width="4" height="7" border="0" hspace="4" alt="Страница '.$next.'">';
-			$html .= '</a>';
-		}
-		$html .='</div>';
-
-		$this->html($html);
+		$pager = new PxAdminPager($this->page, $this->onPage, $this->count, '',  $param);
+		$this->html($table->html() . $pager->html());
 	}
 
 	function html($html) {
 		$this->layout->append('INNER.0.0', $html);
 	}
-
-	//_buildHref
-	function _bh($val) {
-		$html = '?page='.$val;
-
-		foreach ($this->layout->getData as $k=>$v) {
-			if (!empty($v)) {
-				$html .= '&'.$k.'='.urlencode($v);
-			}
-		}
-
-		return $html;
-	}
-
 }
 ?>

@@ -28,6 +28,9 @@ class PXEngineAdminAction extends PXEngine {
 	}
 
 	function redirect() {
+		$response =& PXResponse::getInstance();
+		$response->dontCache();
+
 		switch (PXRegistry::getRequest()->getAfterActionDeal()) {
 			case 'close':
 				closeAndRefresh();
@@ -37,7 +40,7 @@ class PXEngineAdminAction extends PXEngine {
 				$nextLocation = $this->nextLocation;
 				$nextLocation = !is_null($nextLocation) ? $nextLocation : $this->request->getReferer();
 
-				Finalize($nextLocation);
+				$response->redirect($nextLocation);
 				break;
 
 			default:

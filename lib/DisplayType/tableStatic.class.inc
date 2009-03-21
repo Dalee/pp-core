@@ -6,7 +6,7 @@
  * displayType TABLESTATIC
  */
 class PXDisplayTypeTableStatic extends PXDisplayTypeStatic {
-	static function buildInput($field, $object, $param=NULL) {
+	function buildInput($field, $object, $param=NULL) {
 		$k = $field->name;
 		$value = isset($object[$k]) && is_array($object[$k]) ? $object[$k] : array();
 

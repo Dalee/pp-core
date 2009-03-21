@@ -7,9 +7,12 @@
  *             width не используется
  */
 class PXDisplayTypeSelfparentdropdown extends PXDisplayTypeParentdropdown {
-	static function buildInput($field, $object, $param=NULL) {
-		$value = isset($object[$field->name]) ? htmlspecialchars($object[$field->name]) : NULL;
-		return NLAbstractHTMLForm::BuildDropDown($field->name, $value, $param['selfParents']);
+	function buildInput($field, $object, $param=NULL) {
+		$value    = isset($object[$field->name]) ? htmlspecialchars($object[$field->name]) : NULL;
+		$selfTree = parent::getSelfParentTree($object,$param);
+		$selfTree = $selfTree->getPlainTree(getFromArray($object, 'id'));
+		
+		return NLAbstractHTMLForm::BuildDropDown($field->name, $value, $selfTree);
 	}
 }
 ?>

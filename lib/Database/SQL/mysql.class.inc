@@ -1,4 +1,4 @@
-<?
+<?php
 require_once 'abstract.class.inc';
 
 class NLMYSQLDatabase extends NLAbstractSQLDatabase {
@@ -237,5 +237,4 @@ class NLMYSQLDatabase extends NLAbstractSQLDatabase {
 		return $reiteration;
 	}
 }
-
 ?>

@@ -169,6 +169,11 @@ class PXModuleObjects extends PXModule {
 
 		} else {
 			$object = $this->db->getObjectById($this->datatype, $rId);
+
+			if(!$this->user->can('admin', $this->datatype, $object)) {
+				$object = array();
+				$rId = 0;
+			}
 		}
 
 		if(isset($object['sys_owner'])) {
@@ -211,32 +216,7 @@ class PXModuleObjects extends PXModule {
 	}
 
 	function popupMain() {
-		$tree     = & $this->popupLoadTree();
-		$selfTree = & $this->popupLoadSelfTree();
-
-		$this->layout->append('OUTER.CONTENT', $this->form->MainForm($tree, $selfTree, $this->datatype));
-	}
-
-	function &popupLoadTree(){
-		if (($parentFormat = $this->datatype->parent) && strstr($this->datatype->fields['parent']->displayType, "DROPDOWN")) {
-			$tree = $this->db->getObjects($this->app->types[$parentFormat], NULL, DB_SELECT_TREE);
-		} else {
-			$tree = new NLTree(array());
-		}
-		return $tree;
-	}
-
-	function &popupLoadSelfTree(){
-		if ($this->datatype->struct == 'tree') {
-			if (isset($this->datatype->fields['parent']) && !is_null($this->object['parent'])) {
-				$selfTree = $this->db->getObjectsByParent($this->datatype, NULL, $this->object['parent'], DB_SELECT_TREE);
-			} else {
-				$selfTree = $this->db->getObjects($this->datatype, NULL, DB_SELECT_TREE);
-			}
-		} else {
-			$selfTree = new NLTree(array());
-		}
-		return $selfTree;
+		$this->layout->append('OUTER.CONTENT', $this->form->MainForm($this->datatype));
 	}
 
 	function popupAllowedChildren() {
@@ -261,65 +241,63 @@ class PXModuleObjects extends PXModule {
 		$request  =& $this->request;
 		$layout   =& $this->layout;
 		$object   =& $this->object;
+		
+		$refFilters    = (array)$request->GetVar('filters', array());
 
 		foreach ($datatype->references as $k=>$reference) {
 			$refDatatype   = $app->types[$k];
-
+			
 			$existingLinks = $db->getLinks($reference, $datatype->id, $object['id']);
-			$fullList      = true;
 
 			$onPage        = $app->getProperty('LINKS_ON_PAGE', 10);
 			$currentPage   = $request->getVar($k.'_page', 1);
 			$layout->setGetVarToSave($k.'_page', $currentPage);
 
-			$onlyExistingLinks = (int)$request->GetVar($k.'_exist', false);
+			$onlyExistingLinks = $request->GetVar($k.'_exist', $reference->byDefault);
 			$layout->setGetVarToSave($k.'_exist', $onlyExistingLinks);
 
-			$where = NULL;
-
-			if(!empty($reference->filterFrom) && $reference->from == $k) {
-				$where = $db->parseWhereTemplate($reference->filterFrom, $object, $datatype);
-			}
-
-			if(!empty($reference->filterTo) && $reference->to == $k) {
-				$where = $db->parseWhereTemplate($reference->filterTo, $object, $datatype);
-
-			}
-
-			if (!empty($reference->restrictBy)) {
-				if(strlen($where)) {
-					$where .= ' AND ';
-				}
-
-				$where .= $k . '.' . $reference->restrictBy." = '".$db->escapeString($object[$reference->restrictBy])."'";
-			}
-
+			$filteredWhere = $this->applyFiltersToWhere($refFilters, $refDatatype);
+			$trueCond      = $db->TrueStatusString() . '=' . $db->TrueStatusString();
+			$falseCond     = $db->TrueStatusString() . '=' . $db->TrueStatusString(false);
+			
 			if($onlyExistingLinks) {
-				$count = 0;
-				$possibleLinksKeys = array();
+				if(count($existingLinks)){
+					$existingLinksWhere = $k . '.id IN ( ' .join(',',array_keys($existingLinks)). ' ) ' ;
+				} else {
+					$existingLinksWhere = $falseCond;
+				}
+				list($possibleLinks, $pagerCount, $overallCount) = $this->_getLinksData($refDatatype, $existingLinksWhere . $filteredWhere, $trueCond, $onPage, $currentPage);
+			} else {
+				$mainWhere = $trueCond; //No stupid NULL
 
-				foreach($existingLinks as $kk=>$vv) {
-					if($count >= $onPage*($currentPage-1) && $count <$onPage*$currentPage) {
-						$possibleLinksKeys[$kk] = $kk;
-					}
-
-					$count++;
+				if(!empty($reference->filterFrom) && $reference->from == $k) {
+					$mainWhere = '(' . $db->parseWhereTemplate($reference->filterFrom, $object, $datatype) . ')';
 				}
 
-				$possibleLinks = $db->getObjectsByIdArray($refDatatype, NULL, $possibleLinksKeys);
-				$count         = $db->getObjectsByWhere($refDatatype, NULL, $where, DB_SELECT_COUNT);
+				if(!empty($reference->filterTo) && $reference->to == $k) {
+					$mainWhere = '(' . $db->parseWhereTemplate($reference->filterTo, $object, $datatype) . ')';
+				}
 
-			} else {
-				$possibleLinks = $db->getObjectsByWhereLimited($refDatatype, NULL, $where, $onPage, $onPage*($currentPage-1));
-				$count         = $db->getObjectsByWhere($refDatatype, NULL, $where, DB_SELECT_COUNT);
-
+				if (!empty($reference->restrictBy)) {
+					$mainWhere .= ' AND ';
+					$mainWhere .= $k . '.' . $reference->restrictBy." = '".$db->escapeString($object[$reference->restrictBy])."'";
+					$mainWhere  = '(' . $mainWhere . ')';
+				}
+				list($possibleLinks, $pagerCount, $overallCount) = $this->_getLinksData($refDatatype, $mainWhere . $filteredWhere, $mainWhere, $onPage, $currentPage);
 				if ($datatype->id == $k) {
 					unset($possibleLinks[$object['id']]);
 				}
 			}
-
-			$layout->append('OUTER.CONTENT', $this->form->linksForm($reference, $refDatatype, $existingLinks, $possibleLinks, $onPage, $currentPage, $count, $layout, $onlyExistingLinks));
+			$layout->append('OUTER.CONTENT', $this->form->linksForm($reference, $refDatatype, $existingLinks, $possibleLinks, $onPage, $currentPage, $pagerCount, $overallCount, $layout, $onlyExistingLinks, $refFilters));
 		}
+	}
+	
+	function _getLinksData($dType, $where, $whereAllCount, $onPage, $cPage){
+		$pLinks = $this->db->getObjectsByWhereLimited($dType, NULL, $where, $onPage, $onPage*($cPage-1));
+		$pCount = $this->db->getObjectsByWhere($dType, NULL, $where, DB_SELECT_COUNT);
+		$oCount = $this->db->getObjectsByWhere($dType, NULL, $whereAllCount,  DB_SELECT_COUNT);
+		
+		return array($pLinks, $pCount, $oCount);
 	}
 
 	function adminAction() {
@@ -415,7 +393,68 @@ class PXModuleObjects extends PXModule {
 		$this->db->deleteContentObject($this->datatype, $this->request->getId());
 		$this->returnToReferer();
 	}
-
+	
+	function applyFiltersToUri($filters){
+		foreach($filters as $dt => $fields){
+			if(is_array($fields) && count($fields) > 0){
+				foreach($fields as $field => $filter){
+					if(empty($filter)) continue;
+					$this->nextLocation .= '&filters['.$dt.']'.'['.$field.']='.rawurlencode($filter);
+				}
+			}
+		}
+	}
+	
+	function applyFiltersToWhere($refFilters, $refDatatype){
+		$filterOnWhere = NULL;
+		if(isset($refFilters[$refDatatype->id])    &&
+		   is_array($refFilters[$refDatatype->id]) && 
+		   count($refFilters[$refDatatype->id]) > 0
+		  ){
+			$applied = 0;
+			$filterOnWhere = ' AND (';
+			foreach($refFilters[$refDatatype->id] as $field => $filter){
+				if(empty($filter)) continue;
+				$applied++;
+				$this->layout->setGetVarToSave('filters['.$refDatatype->id.']['.$field.']', $filter);
+				//apply simple filter logic, ex. : ^search string$
+				$modifiers = P_LEFT|P_RIGHT;
+				if(substr($filter, 0, 1) == '^'){
+					$modifiers &= P_RIGHT;
+					$filter = substr($filter, 1);
+				}
+				if(substr($filter, -1) == '$'){
+					$modifiers &= P_LEFT;
+					$filter  = substr($filter, 0, -1);
+				}
+				
+				// build where 
+				$filterOnWhere .= $refDatatype->id . '.' .$this->db->escapeString($field).$this->db->LIKE($filter, $modifiers)." AND ";
+			}
+			
+			if(!$applied){
+				$filterOnWhere = NULL;
+			} else {
+				$filterOnWhere  = substr($filterOnWhere, 0, -4); //remove last AND or OR
+				$filterOnWhere .= ')';
+				$this->layout->SetGetVarToSave('charcheck', $this->request->GetVar('charcheck'));
+			}
+		}
+		return $filterOnWhere;
+	}
+	
+	function appendCharCheck(){
+		$this->nextLocation .= '&charcheck='.urlencode('йцукен');
+	}
+	
+	function appendLinksExistFlag(){
+		foreach($this->request->GetAllPostData() as $k => $v){
+			if(is_string($k) && strstr($k, '_exist') == '_exist'){
+				$this->nextLocation .= "&{$k}={$v}";
+			}
+		}
+	}
+	
 	function returnToId($id) {
 		$this->nextLocation .= '&id='.$id;
 	}
@@ -449,12 +488,32 @@ class PXModuleObjects extends PXModule {
 
 	function actionModifyLinks() {
 		$id = $this->request->getId();
-
 		foreach ($this->datatype->references as $reference) {
-			$this->db->ModifyLinks($reference, $this->datatype->id, $id, $this->request->getLinks($reference), false);
+			$ll = $this->_makeLinkedListFrom($reference);
+			$this->db->ModifyLinks($reference, $this->datatype->id, $id, $ll, false);
 		}
-
+		
+		if(count($filters = (array)$this->request->GetVar('filters', array()))){
+			$this->applyFiltersToUri($filters);
+			$this->appendCharCheck();
+		}
+		$this->appendLinksExistFlag();
 		$this->returnToId($id);
+	}
+	
+	function _makeLinkedListFrom($ref){
+		$linkedList = array();
+		foreach($this->request->getLinks($ref) as $values){
+			foreach($values as $id => $data){
+				$node = & $linkedList[$id];
+				if(isset($linkedList[$id])){
+					while(!is_null($node = & $node['next']));
+				}
+				$node         = $data;
+				$node['next'] = NULL;
+			}
+		}
+		return $linkedList;
 	}
 
 	function __sortTypes($a, $b) {

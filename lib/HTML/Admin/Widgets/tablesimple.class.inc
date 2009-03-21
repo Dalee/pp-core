@@ -1,5 +1,5 @@
 <?
-class PXAdminTableSimple {
+class PXAdminTableSimple extends PXAdminWidget {
 	function PXAdminTableSimple($cols) {
 		$this->cols   = $cols;
 		$this->widths = array();

@@ -28,7 +28,8 @@ class PXUserHTMLLayout extends PXLayoutInterface  {
 			'plugins', # Smarty default
 		);
 
-		$this->smarty->compile_dir   = BASEPATH . DIRECTORY_SEPARATOR . 'tmp'. DIRECTORY_SEPARATOR . 'smarty_templates_c';
+		$this->smarty->compile_dir   = BASEPATH . '/tmp/cache/smarty_templates_c';
+
 		MakeDirIfNotExists($this->smarty->compile_dir);
 
 		$this->smarty->config_dir    = NULL;
@@ -46,8 +47,10 @@ class PXUserHTMLLayout extends PXLayoutInterface  {
 	
 	private function _initLang() {
 		include_once 'HTML/lang.class.inc';
+
 		$this->lang = new PXUserHTMLLang();
-		$this->addTemplateFunction('lang', array(&$this->lang, 'lang'));
+		$this->addTemplateFunction('lang',  array(&$this->lang, 'lang'));
+		$this->addTemplateFunction('pager', array(&$this,       'pager'));
 	}
 	
 	function setLang($lang='rus') {
@@ -63,11 +66,7 @@ class PXUserHTMLLayout extends PXLayoutInterface  {
 		/* Нужна ли постраничка? */
 		$p = strtoupper($param['format']).'_PER_PAGE';
 
-		if (isset($_COOKIE['NEWS_PAGES'])) {
-			$a_per_page = $_COOKIE['NEWS_PAGES'];
-		} else {
-			$a_per_page = $app->GetProperty($p, $total);
-		}
+		$a_per_page = $app->GetProperty($p, $total);
 
 		$smarty->assign('a_per_page', $a_per_page);
 
@@ -133,7 +132,7 @@ class PXUserHTMLLayout extends PXLayoutInterface  {
 		return $this->smarty->fetch($template);
 	}
 
-	function Display() {
+	function display() {
 		$html = $this->html($this->indexTemplate);
 
 		foreach($this->_filters as $filter=>$filterArgs) {
@@ -143,7 +142,7 @@ class PXUserHTMLLayout extends PXLayoutInterface  {
 			}
 		}
 
-		echo $html;
+		return $html;
 	}
 
 	function addFilter($functionName) {
@@ -161,5 +160,4 @@ class PXUserHTMLLayout extends PXLayoutInterface  {
 		unset($this->_filters[$functionName]);
 	}
 }
-
 ?>

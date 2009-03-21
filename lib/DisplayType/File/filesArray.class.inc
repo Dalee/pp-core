@@ -6,7 +6,7 @@
  * displayType FILESARRAY
  */
 class PXDisplayTypeFilesarray extends PXDisplayTypeImagesarray {
-	static function buildArrayItem($name, $value) {
+	function buildArrayItem($name, $value) {
 		if(!strlen($value['entry'])) {
 			$value = array(
 				'filename' => null,
@@ -20,7 +20,7 @@ class PXDisplayTypeFilesarray extends PXDisplayTypeImagesarray {
 		return NLAbstractHTMLForm::BuildMultimedia($name, $value, 'file', $value['entry']);
 	}
 
-	static function buildCell($field, $object, $param=NULL) {
+	function buildCell($field, $object, $param=NULL) {
 		$html = '';
 
 		foreach($object[$field->name] as $item) {

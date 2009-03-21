@@ -182,10 +182,12 @@ class NLCaptcha {
 	}
 
 	function showImage() {
-		Header("Cache-Control: no-cache, must-revalidate");
-		Header("X-Accel-Expires: 0");
-		Header("Content-type: image/jpeg");
+		require_once 'libpp/lib/response.class.inc';
+		$response =& PXResponse::getInstance();
+		$response->dontCache();
+		$response->setContentType('image/jpeg');
 
+		$response->send();
 		ImageJpeg($this->im, '', mt_rand(60,90));
 		ImageDestroy($this->im);
 	}

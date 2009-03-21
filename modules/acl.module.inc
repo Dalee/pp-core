@@ -112,12 +112,13 @@ class PXModuleAcl extends PXModule {
 
 		$_ .= '<table class="mainform">';
 		foreach($fields as $col=>$title) {
-			$fieldType = new PXFieldDescription(array(), $app);
+			$p = array();
+			$fieldType = new PXFieldDescription(array(), $app, $p);
 			$fieldType->name = $col;
 			$fieldType->description = $title;
 
 			if(isset($dicts[$col])) {
-				$fieldType->displayType = 'DROPDOWN';
+				$fieldType->setDisplayType('DROPDOWN');
 
 				$tmpVals = array();
 				foreach($dicts[$col] as $id=>$val) {
@@ -131,10 +132,10 @@ class PXModuleAcl extends PXModule {
 				$fieldType->values = $directory;
 
 			} else {
-				$fieldType->displayType = 'TEXT';
+				$fieldType->setDisplayType('TEXT');
 			}
-
-			$_ .= PXDisplayType::callMethod('buildRow', $fieldType, $object, $param);
+			
+			$_ .= $fieldType->displayType->buildRow($fieldType, $object, $param);
 		}
 		$_ .= '</table>';
 

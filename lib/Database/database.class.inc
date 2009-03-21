@@ -5,11 +5,14 @@ define('DB_SELECT_TABLE', 0);
 /**Вернуть количество строк COUNT()*/
 define('DB_SELECT_COUNT', 1);
 
-/**Вернуть данные и таблицы в виде дерева*/
+/**Вернуть данные и таблицы в виде дерева, исключая orphaned ветки */
 define('DB_SELECT_TREE',  2);
 
 /**Вернуть данные и таблицы в виде LIST*/
 define('DB_SELECT_LIST',  3);
+
+/**Вернуть данные и таблицы в виде дерева, включая orphaned ветки в корневой раздел*/
+define('DB_SELECT_FULL_TREE',  4);
 
 /**
  * Класс работы с БД
@@ -50,7 +53,7 @@ class PXDatabase extends NLSQLDatabaseAdapter {
 
 	function setCache($isCacheOn) {
 		$cacheClass = $isCacheOn ? 'ObjectCache' : 'NullCache';
-		$this->cache = new $cacheClass('database/level2');
+		$this->cache = new $cacheClass('database', 'level2');
 	}
 
 	function setUser($user) {
@@ -220,7 +223,10 @@ class PXDatabase extends NLSQLDatabaseAdapter {
 	        */
 
 		foreach($format->fields as $field) {
-			if(!$field->listed && $field->name !== 'id') {
+			if (in_array($field->name,array('pid','parent'))) {
+				$directory->parentField = !isset($format->fields['pid']) ? 'parent' : 'pid';
+			}
+			if(!$field->listed && !in_array($field->name,array('id',$directory->parentField))) {
 				unset($format->fields[$field->name]);
 			}
 		}
@@ -242,7 +248,11 @@ class PXDatabase extends NLSQLDatabaseAdapter {
 	 * @return Array|NULL           results of {@link NLSQLDatabaseAdapter::Query()}
 	 */
 	function _GetData($format, $mode, $where=NULL, $limit=NULL, $order=NULL) {
-		PXProfiler::begin('GET DATA: '.$format->id.' ['.$where.']-['.(is_array($limit)?implode('.', $limit):'').']-['.$order.']');
+
+		PXProfiler::begin('GET DATA: ' . $format->id . '[' . $where . ']-[' . 
+		                  (is_array($limit) ? implode('.', $limit) : '') . ']-[' . $order . ']');
+
+		$order_by = null;
 
 		if ($mode == DB_SELECT_COUNT) {
 			$selector = 'count('.$format->id.'.id)';
@@ -253,34 +263,28 @@ class PXDatabase extends NLSQLDatabaseAdapter {
 			if ($format->id != DT_USER) {
 				$selector .= ', '.$format->id.'.sys_owner';
 			}
-		}
-		$query = 'SELECT '.$selector.' FROM '.$format->id;
 
-		if (!is_null($where))         $query .= ' WHERE '.$where;
-		if ($mode != DB_SELECT_COUNT) {
-			if(!is_null($order)) {
-				$query .= ' ORDER BY '.$format->id.'.'.$order;
-			} else {
-				$query .= ' ORDER BY '.$format->id.'.'.$format->order;
-			}
+			$order_by = ' ORDER BY ' . $format->id . '.' . (is_null($order) ? $format->order : $order);
 		}
+
+		$query = 'SELECT ' . $selector . ' FROM ' . $format->id;
+
+		if (!is_null($where))    $query .= ' WHERE ' . $where;
+		if (!is_null($order_by)) $query .= $order_by;
 
 		$usergroups = '';
 		if(isset($this->user->groups)) {
-			$usergroups = ';groups:'.implode('.', $this->user->groups);
+			$usergroups = ';groups:' . implode('.', $this->user->groups);
 		}
 
 		$queryIden = $this->_getCacheIden($query, $mode, $limit, $usergroups, $this->user->aclType());
 		$data = $this->cache->load($queryIden);
-		if ($data !== null) {
-			PXProfiler::end();
-			return $data; 
+
+		if ($data === null) {
+			$sqlRes = $this->Query($query, false, $limit);
+			$data = $this->_PrepareResult($sqlRes, $format, $mode);
+			$this->cache->save($queryIden, $data);
 		}
-
-		$sqlRes = $this->Query($query, false, $limit);
-		$data = $this->_PrepareResult($sqlRes, $format, $mode);
-
-		$this->cache->save($queryIden, $data);
 
 		PXProfiler::end();
 		return $data;
@@ -299,10 +303,12 @@ class PXDatabase extends NLSQLDatabaseAdapter {
 		return $queryIden;
 	}
 
+
 	function _createSelector(&$format) {
 		$selector = NULL;
 		foreach ($format->fields as $k=>$v) {
-			if(PXStorageType::callMethod('notInDb', $v, null, array())) {
+			$p = array();
+			if($v->storageType->notInDb($v, null, $p)) {
 				continue;
 			}
 
@@ -542,8 +548,7 @@ class PXDatabase extends NLSQLDatabaseAdapter {
 	/** @see GetObjectsByField */
 	function GetObjectsByFieldLike($format, $status, $field, $value, $mode=DB_SELECT_TABLE, $order=NULL) {
 		$field = $this->EscapeString($field);
-		$value = $this->EscapeString($value);
-		$whereClause = $format->id.'.'.$field.' ILIKE '."'%".$value."%'";
+		$whereClause = $format->id.'.'.$field.$this->LIKE($value);
 		if (!is_null($status)) $whereClause .= ' AND '.$format->id.'.status='.$this->TrueStatusString($status);
 		return $this->_GetData($format, $mode, $whereClause, null, $order);
 	}
@@ -551,8 +556,7 @@ class PXDatabase extends NLSQLDatabaseAdapter {
 	/** @see GetObjectsByFieldLimited */
 	function GetObjectsByFieldLikeLimited($format, $status, $field, $value, $limit, $offset, $mode=DB_SELECT_TABLE, $order=NULL) {
 		$field = $this->EscapeString($field);
-		$value = $this->EscapeString($value);
-		$whereClause = $format->id.'.'.$field.' ILIKE '."'%".$value."%'";
+		$whereClause = $format->id.'.'.$field.$this->LIKE($value);
 		if (!is_null($status)) $whereClause .= ' AND '.$format->id.'.status='.$this->TrueStatusString($status);
 		return $this->_GetData($format, $mode, $whereClause, array($limit, $offset), $order);
 	}
@@ -566,7 +570,7 @@ class PXDatabase extends NLSQLDatabaseAdapter {
 	}
 
 	/** @see GetObjectsByFieldLimited */
-	function GetObjectsByFieldNotEmptyLimited($format, $status, $field, $limit, $offset, $mode=DB_SELECT_TABLE, $order) {
+	function GetObjectsByFieldNotEmptyLimited($format, $status, $field, $limit, $offset, $mode=DB_SELECT_TABLE, $order=NULL) {
 		$field = $this->EscapeString($field);
 		$whereClause = 'char_length('.$format->id.'.'.$field.') > 0';
 		if (!is_null($status)) $whereClause .= ' AND '.$format->id.'.status='.$this->TrueStatusString($status);
@@ -588,7 +592,8 @@ class PXDatabase extends NLSQLDatabaseAdapter {
 		$word = $this->EscapeString($word);
 		$whereClause = '';
 		foreach ($format->fields as $k=>$v) {
-			$whereClause .= PXStorageType::callMethod('searchLikeQuery', $v, array(), array('formatId'=>$format->id, 'word'=>$word));
+			$p = array('formatId'=>$format->id, 'word'=>$word);
+			$whereClause .= $v->storageType->searchLikeQuery($v, array(), $p);
 		}
 		$whereClause = substr($whereClause, 0, -4);
 		if(!strlen($whereClause)) {
@@ -615,7 +620,8 @@ class PXDatabase extends NLSQLDatabaseAdapter {
 		$word = $this->EscapeString($word);
 		$whereClause = '';
 		foreach ($format->fields as $k=>$v) {
-			$whereClause .= PXStorageType::callMethod('searchLikeQuery', $v, array(), array('formatId'=>$format->id, 'word'=>$word));
+			$p = array('formatId'=>$format->id, 'word'=>$word);
+			$whereClause .= $v->storageType->searchLikeQuery($v, array(), $p);
 		}
 		$whereClause = substr($whereClause, 0, -4);
 		if(!strlen($whereClause)) {
@@ -710,7 +716,8 @@ class PXDatabase extends NLSQLDatabaseAdapter {
 			}
 			$this->ModifyingQuery('UPDATE '.$format->id.' SET sys_order = id WHERE id = '.$newId);
 			foreach ($format->fields as $k=>$v) {
-				PXStorageType::callMethod('proceedFile', $v, $object, array('id'=>$newId, 'format'=>$format->id));
+				$p = array('id'=>$newId, 'format'=>$format->id);
+				$v->storageType->proceedFile($v, $object, $p);
 			}
 
 			if (count($this->triggers))
@@ -852,7 +859,7 @@ class PXDatabase extends NLSQLDatabaseAdapter {
 	 * @param PXTypeDescription $format
 	 * @param Array $object
 	 */
-	function ModifyContentObject($format, $object, $preserveHidden = false) {
+	function ModifyContentObject($format, $object, $skipHidden = false) {
 		$audit = PXAuditLogger::getLogger($this->app, $this);
 		if (!$this->user->can('write', $format, $object)) {
 			$errString = 'Отказано в доступе при попытке модифицировать объект типа <em>'.$format->id.'</em>';
@@ -884,15 +891,18 @@ class PXDatabase extends NLSQLDatabaseAdapter {
 				FatalError($errString);
 			}
 		}
+
 		$dbFields = array();
 		$dbValues = array();
+
 		foreach ($format->fields as $k=>$v) {
 			if ($k === 'pathname') {
 				$nullObject = NULL;
 				$object[$k] = $this->_NormalizeObjectPathName($format, $object, $nullObject);
 			}
 
-			$isContinue = PXDisplayType::callMethod('preModifyObject', $v, $object, array('preserveHidden' => $preserveHidden, 'objectInDB' => $objectInDB));
+			$p = array('skipHidden' => $skipHidden, 'objectInDB' => $objectInDB);
+			$isContinue = $v->displayType->preModifyObject($v, $object, $p);
 
 			if ($isContinue) {
 				continue;
@@ -912,6 +922,7 @@ class PXDatabase extends NLSQLDatabaseAdapter {
 				if(!$permitModify) break;
 			}
 		}
+
 		if($permitModify){
 			$dbFields[] = 'sys_modified';
 			$dbValues[] = '##now##';
@@ -933,7 +944,8 @@ class PXDatabase extends NLSQLDatabaseAdapter {
 
 			}
 			foreach ($format->fields as $k=>$v) {
-				PXStorageType::callMethod('proceedFile', $v, $object, array('id'=>$object['id'], 'format'=>$format->id));
+				$p = array('id'=>$object['id'], 'format'=>$format->id);
+				$v->storageType->proceedFile($v, $object, $p);
 			}
 			$this->LoadTriggers();
 			if (count($this->triggers))
@@ -1155,7 +1167,13 @@ class PXDatabase extends NLSQLDatabaseAdapter {
 	 * @param Array             $dbValues
 	 */
 	function _NormalizeObjectAttribute($k, $object, $field, &$dbFields, &$dbValues) {
-		list($v, $dbFields, $dbValues) = PXStorageType::callMethod('normalizeObjectAttribute', $field, $object, array('dbFields' => $dbFields, 'dbValues' => $dbValues, 'db'=>$this));
+		$p = array(
+			'dbFields' =>& $dbFields,
+			'dbValues' =>& $dbValues,
+			'db'       =>& $this
+		);
+
+		list($v, $dbFields, $dbValues) = $field->storageType->normalizeObjectAttribute($field, $object, $p);
 
 		return $v;
 	}
@@ -1174,7 +1192,8 @@ class PXDatabase extends NLSQLDatabaseAdapter {
 		// part 1: make url if doesn't set
 		if (!$url) {
 			foreach ($format->fields as $field) {
-				$url = PXStorageType::callMethod('createPathname', $field, $object, array());
+				$p = array();
+				$url = $field->storageType->createPathname($field, $object, $p);
 
 				if($url) {
 					break;
@@ -1323,9 +1342,16 @@ SQL;
 			unset($element[$linkedFormat.'title']);
 			unset($element[$linkedFormat.'id']);
 			unset($element[$format.'id']);
-			$retTable[$lid] = array(
-				'title' => $title,
-				'fields' => $element
+			$table = & $retTable[$lid];
+			if(isset($retTable[$lid])){
+				while(!is_null($table = & $table['next'])){
+					//search first empty node in our linked list
+				}
+			}
+			$table = array(
+				'title'  => $title,
+				'fields' => $element,
+				'next'   => NULL
 			);
 		}
 		return $retTable;
@@ -1402,7 +1428,11 @@ SQL;
 	 * @param Mixed             $links      Unknown
 	 */
 	function ModifyLinks($reference, $format, $id, $links, $deleteAll=true) {
+		if(!is_array($links) || !sizeof($links)){
+			return;
+		}
 		$audit = PXAuditLogger::getLogger($this->app, $this);
+
 		$linkedFormat = $reference->getOther($format);
 
 		$objectInDB = $this->GetObjectById($this->types[$format], $id);
@@ -1477,26 +1507,28 @@ SQL;
 
 			$data = array();
 			foreach ($links as $k=>$v) {
-				if (!isset($v['on'])) continue;
-				$tmp = array();
-				if ($linkedFormat . '_' === $format) {
-					if ($k == $id) continue;
-					$tmp[$linkedFormat.'id'] = min($id, $k);
-					$tmp[$format.'id']       = max($id, $k);
-				} else {
-					$tmp[$linkedFormat.'id'] = $k;
-					$tmp[$format.'id']       = $id;
-				}
-
-				foreach (array_keys($reference->fields) as $field) {
-					$nullObj = NULL;
-					if(isset($v['fields'][$field])) {
-						$tmp[$field] = $this->_NormalizeObjectAttribute($field, $v['fields'], $reference->fields[$field], $nullObj, $nullObj);
+				do {
+					if (!isset($v['on'])) continue;
+					$tmp = array();
+					if ($linkedFormat . '_' === $format) {
+						if ($k == $id) continue;
+						$tmp[$linkedFormat.'id'] = min($id, $k);
+						$tmp[$format.'id']       = max($id, $k);
 					} else {
-						$tmp[$field] = NULL;
+						$tmp[$linkedFormat.'id'] = $k;
+						$tmp[$format.'id']       = $id;
 					}
-				}
-				$data[] = $tmp;
+
+					foreach (array_keys($reference->fields) as $field) {
+						$nullObj = NULL;
+						if(isset($v['fields'][$field])) {
+							$tmp[$field] = $this->_NormalizeObjectAttribute($field, $v['fields'], $reference->fields[$field], $nullObj, $nullObj);
+						} else {
+							$tmp[$field] = NULL;
+						}
+					}
+					$data[] = $tmp;
+				} while(!is_null($v = & $v['next']));
 			}
 			if (count($data)) {
 				$this->ModifyingCopy($reference->name, array_keys(reset($data)), $data);
@@ -1518,7 +1550,8 @@ SQL;
 	function _NormalizeTable(&$table, $format) {
 		foreach ($table as $k=>$v) {
 			foreach ($format->fields as $fk=>$fv) {
-				$table[$k][$fk] = PXStorageType::callMethod('normalize', $fv, $table[$k], array('db'=>&$this, 'format'=>$format->id));
+				$p = array('db'=>&$this, 'format'=>$format->id);
+				$table[$k][$fk] = $fv->storageType->normalize($fv, $table[$k], $p);
 			}
 
 			$table[$k]['sys_created']  = $this->importDateTime($table[$k]['sys_created']);
@@ -1569,8 +1602,9 @@ SQL;
 
 				return $newTable;
 				break;
-
+				
 			case DB_SELECT_TREE:
+			case DB_SELECT_FULL_TREE:
 				PXProfiler::begin('PREPARE: '.$format->id.' ['.sizeof($resTable).'x'.sizeof($format->fields).']');
 
 				$this->_NormalizeTable($resTable, $format);
@@ -1587,7 +1621,7 @@ SQL;
 				PXProfiler::begin('TREE: '.$format->id.' ['.sizeof($newTable).']');
 
 				$parentRefName = !isset($format->fields['pid']) ? 'parent' : 'pid';
-				$newTree = new NLTree($newTable, 'id', $parentRefName, 'title');
+				$newTree = new NLTree($newTable, 'id', $parentRefName, 'title', $mode == DB_SELECT_FULL_TREE);
 
 				PXProfiler::end();
 
@@ -1618,7 +1652,7 @@ SQL;
 				}
 			}
 
-			$table = new NLTree($plainTable, $table->_idField, $table->_parentField, $table->_titleField, true);
+			$table = new NLTree($plainTable, $table->_idField, $table->_parentField, $table->_titleField, $table->saveOrphans);
 		}
 	}
 

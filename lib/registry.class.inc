@@ -1,79 +1,151 @@
-<?
+<?php
 class PXRegistry {
-	private static $app, $db, $user, $request, $layout, $vars, $types;
+	// private
+	var $app;
+	var $db;
+	var $request;
+	var $response;
+	var $user;
+	var $layout;
+	
+	//constructor
+	private function __construct(){
+	}
 
-	public static function &getApp() {
-		if(!is_object(self::$app)) {
-			self::$app = PXApplication::getInstance(BASEPATH);
+	private static function &instance() {
+		static $registry;
+
+		if(!is_object($registry)) {
+			$registry = new PXRegistry();
 		}
 
-		return self::$app;
+		return $registry;
+	}
+
+	private static function canSaveIt($varName){
+		$registry =& self::instance();
+		return array_key_exists($varName, get_object_vars($registry));
+	}
+
+	private static function &_get($varName) {
+		$registry =& self::instance();
+
+		if(!is_object($registry->$varName)) {
+			switch($varName) {
+				case 'app':
+					$registry->_varIsNotSetException($varName);
+					break;
+
+				case 'db':
+					$registry->$varName = & new PXDataBase(self::getApp());
+					break;
+
+				case 'user':
+					$registry->$varName = & new PXUserAuthorized();
+					break;
+
+				case 'layout':
+					$registry->$varName = & new PXLayoutNull();
+					break;
+
+				case 'request':
+					$registry->$varName = & new PXRequest();
+					break;
+
+				case 'response':
+					$registry->$varName = & PXResponse::getInstance();
+					break;
+
+				default:
+					$registry->_unknownVarException($varName);
+					break;
+			}
+			
+		}
+
+		return $registry->$varName;
+	}
+
+	public static function &getApp() {
+		return self::_get('app');
 	}
 
 	public static function &getDb() {
-		if(!is_object(self::$db)) {
-			self::$db = new PXDataBase(self::getApp());
-		}
-
-		return self::$db;
+		return self::_get('db');
 	}
 
 	public static function &getRequest() {
-		if(!is_object(self::$request)) {
-			self::$request = new PXRequest();
-		}
-
-		return self::$request;
+		return self::_get('request');
 	}
 
 	public static function &getUser() {
-		if(!is_object(self::$user)) {
-			self::$user = new PXUserAuthorized();
-		}
-
-		return self::$user;
+		return self::_get('user');
 	}
 
 	public static function &getLayout() {
-		if(!is_object(self::$layout)) {
-			self::$layout = new PXLayoutNull();
-		}
-
-		return self::$layout;
+		return self::_get('layout');
 	}
 
-	public static function &getTypes($typeName=null) {
-		if(!is_array(self::$types)) {
-			self::$types =& self::getApp()->types;
+	public static function &getTypes() {
+		$app =& self::getApp();
+
+		return $app->types;
+	}
+
+	/*function &getTypes($typeName=null) {
+		if(!is_array($types)) {
+			$app =  self::getApp();
+			$types = $app->types;
 		}
 
 		if(!is_null($typeName)) {
-			if(isset(self::$types[$typeName])) {
-				return self::$types[$typeName];
+			if(isset($types[$typeName])) {
+				return $types[$typeName];
 
 			} else {
 				$nullType = null;
 				return $nullType;
 			}
 		}
+		return $types;
+	}
+	*/
 
-		return self::$types;
+	private static function _set($varName, &$variable) {
+		$registry =& self::instance();
+		if(!self::canSaveIt($varName)) {
+			$registry->_unknownVarException($varName);
+		}
+
+		$registry->$varName = & $variable;
+	}
+
+	public static function setApp(&$app) {
+		self::_set('app', $app);
+	}
+
+	public static function setDB(&$db) {
+		self::_set('db', $db);
+	}
+
+	public static function setRequest(&$request) {
+		self::_set('request', $request);
+	}
+
+	public static function setUser(&$user) {
+		self::_set('user', $user);
 	}
 
 	public static function setLayout(&$layout) {
-		self::$layout =& $layout;
+		self::_set('layout', $layout);
 	}
 
-	public static function setVar($varName, &$varValue) {
-		self::$vars[$varName] =& $varValue;
+	function _unknownVarException($e){
+		FatalError("Registry - not heap. Store your {$e} some where else!");
 	}
 
-	public static function &getVar($varName, $defaultValue=null) {
-		if(isset(self::$vars[$varName])) {
-			return self::$vars[$varName];
-		}
-
-		return $defaultValue;
+	function _varIsNotSetException($e){
+		FatalError("{$e} wasn't set yet.");
 	}
 }
 ?>

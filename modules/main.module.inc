@@ -48,7 +48,7 @@ class PXModuleMain extends PXModule {
 		if (
 			!$this->struct->hasCurrent() ||
 			($urlFile != 'index.html' && !$this->content->hasCurrent())    ||
-			($urlPart != ''           && !$this->subContent->hasCurrent())
+			($urlPart != 'index.html' && !$this->subContent->hasCurrent())
 		) {
 			$error = 404;
 		}

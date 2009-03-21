@@ -5,10 +5,11 @@ class PXEngineIndex extends PXEngine {
 
 		parent::__construct();
 		PXRegistry::setLayout(new PXUserHTMLLayout());
-
+/*
 		PXRegistry::setVar('struct',     new PXStruct());
 		PXRegistry::setVar('content',    new PXContent());
 		PXRegistry::setVar('subContent', new PXSubContent());
+*/
 	}
 
 	function initModules() {
@@ -18,6 +19,7 @@ class PXEngineIndex extends PXEngine {
 		$layout = PXRegistry::getLayout();
 		$layout->setApp(PXRegistry::getApp());
 
+/*
 		// ðÅÒÅÄÁÞÁ ÄÁÎÎÙÈ × ÛÁÂÌÏÎÉÚÁÔÏÒ
 		$layout->assign('app',            PXRegistry::getApp(),     true);
 		$layout->assign('user',           PXRegistry::getUser(),    true);
@@ -44,41 +46,32 @@ class PXEngineIndex extends PXEngine {
 		$layout->assign('urlFile',        PXRegistry::getVar('urlFile'));
 
 		$layout->assign('error',          PXRegistry::getVar('error'));
+*/
 	}
 
 	function sendHeaders() {
-		if(headers_sent()) {
-			return;
-		}
+		$error = 0;
 
+/*
 		$error = PXRegistry::getVar('error');
+*/
+
+		$response =& PXResponse::getInstance();
 
 		if ($error == 404) {
+			$response->notFound();
+
 			if (function_exists('log404')) {
 				log404(PXRegistry::getRequest());
 			}
-
-			if(IS_WIN) {
-				/*
-				we can't send empty header.
-				for more details see http://forums.iis.net/t/1146547.aspx
-				*/
-				return;
-			}
-
-			header("HTTP/1.1 404");
-
-		}
-
-		if (function_exists('sendheaders')) {
-			sendheaders();
 		}
 	}
 
 	function html() {
-		PXProfiler::end();
-		PXRegistry::getLayout()->assign('PXProfilerResult', PXProfiler::finalize());
-		PXRegistry::getLayout()->display();
+		$html = PXRegistry::getLayout()->display();
+
+		$response =& PXResponse::getInstance();
+		$response->send($html);
 	}
 
 	function runModules() {

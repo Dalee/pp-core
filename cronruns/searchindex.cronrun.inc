@@ -71,9 +71,7 @@ class PXCronRunSearchIndex extends PXAbstractCronRun {
 		} else {
 			$fname = BASEPATH.'/site/var/search.idx';
 			if (!file_exists($fname)) {
-				$search->finish();
-				Label('No changes');
-				return;
+				WriteStringToFile($fname, '');
 			}
 
 			$f = fopen($fname, "r+");

@@ -8,12 +8,12 @@
  * storageType image
  */
 class PXStorageTypeImage extends PXStorageTypeFile {
-	static function proceedFile($field, $object, &$param, $allowed=ENUM_ALLOWED_IMAGETYPES) {
+	function proceedFile($field, $object, &$param, $allowed=ENUM_ALLOWED_IMAGETYPES) {
 		$param['allowed'] = unserialize($allowed);
-		return PXStorageTypeFile::proceedFile($field, $object, $param);
+		return parent::proceedFile($field, $object, $param);
 	}
 
-	static function normalize($field, $object, &$param, $allowed=ENUM_ALLOWED_IMAGETYPES) {
+	function normalize($field, $object, &$param, $allowed=ENUM_ALLOWED_IMAGETYPES) {
 		$allowedImageTypes = array_unique(unserialize($allowed));
 
 		$tmp = glob(BASEPATH.'/site/htdocs/ai/'.$param['format'].'/'.$object['id'].'/'.$field->name.'/*');

@@ -1,21 +1,21 @@
-<?
-require_once 'errorReporter.class.inc';
+<?php
+define('NOT_CLI', isset($_SERVER['REQUEST_METHOD']));
+define('CLI',    !isset($_SERVER['REQUEST_METHOD']));
+
+require_once 'ErrorReporter/abstract.class.inc';
 require_once 'profiler.classes.inc';
 require_once 'sbin.inc';
 require_once 'trace.inc';
-
-define('NOT_CLI', isset($_SERVER['REQUEST_METHOD']));
-define('CLI',    !isset($_SERVER['REQUEST_METHOD']));
 
 function getMicroTime() {
 	list($usec, $sec) = explode(" ", microtime());
 	return ((float)$usec + (float)$sec);
 }
 
-function D($variable, $mode='H') { // H - HTML, T - text version
+function D($variable) { // H - HTML, T - text version
 	echo "\n";
 
-	if ($mode == 'H') {
+	if (NOT_CLI) {
 		echo '<pre class="debug">';
 	}
 
@@ -38,7 +38,7 @@ function D($variable, $mode='H') { // H - HTML, T - text version
 			break;
 	}
 
-	if ($mode == 'H') {
+	if (NOT_CLI) {
 		echo '</pre>';
 	}
 
@@ -151,5 +151,4 @@ function D3($variable, $full=true) {
 
 	return $dump;
 }
-
 ?>
