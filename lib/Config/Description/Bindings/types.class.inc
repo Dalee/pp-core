@@ -1,7 +1,7 @@
 <?php
 class PXBindingDescriptionTypes extends PXBindingDescription {
-	function isBinding() {
-		if(!parent::isBinding()) {
+	function isBinding($content) {
+		if(!parent::isBinding($content)) {
 			return false;
 		}
 
@@ -9,18 +9,15 @@ class PXBindingDescriptionTypes extends PXBindingDescription {
 			return false;
 		}
 
-		$struct = PXRegistry::getVar('struct');
-		if($struct->hasType($this->value)) {
+		if($content->tree->hasType($this->value)) {
 			return true;
 		}
 
-		$content = PXRegistry::getVar('content');
-		if($content->hasType($this->value)) {
+		if($content->objects->hasType($this->value)) {
 			return true;
 		}
 
-		$subContent = PXRegistry::getVar('subContent');
-		if($subContent->hasType($this->value)) {
+		if($content->subObjects->hasType($this->value)) {
 			return true;
 		}
 

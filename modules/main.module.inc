@@ -12,25 +12,26 @@ class PXModuleMain extends PXModule {
 		$urlPath = $this->request->getHostAndDir();
 		$urlFile = $this->request->getFile();
 		$urlPart = $this->request->getPart();
-		$this->struct->setFormat($this->rootFormatId);
-		$this->struct->setAliases($this->_parseAliasesConfig());
+
+		$this->tree->setFormat($this->rootFormatId);
+		$this->tree->setAliases($this->_parseAliasesConfig());
 
 		// Loading struct tree
-		PXProfiler::begin('load struct');
-		$this->struct->load($urlPath);
-		$this->struct->getLinks();
+		PXProfiler::begin('load tree');
+		$this->tree->load($urlPath);
+		$this->tree->getLinks();
 		PXProfiler::end();
 
 		// Loading content objects
-		PXProfiler::begin('load content');
-		$this->struct->loadChilds($this->content, $urlFile);
-		$this->content->getLinks();
+		PXProfiler::begin('load objects');
+		$this->tree->loadChilds($this->objects, $urlFile);
+		$this->objects->getLinks();
 		PXProfiler::end();
 
 		// Loading subcontent objects
-		PXProfiler::begin('load subcontent');
-		$this->content->loadChilds($this->subContent, $urlPart);
-		$this->subContent->getLinks();
+		PXProfiler::begin('load subObjects');
+		$this->objects->loadChilds($this->subObjects, $urlPart);
+		$this->subObjects->getLinks();
 		PXProfiler::end();
 
 		// Loading objects references
@@ -42,18 +43,19 @@ class PXModuleMain extends PXModule {
 	}
 
 	function check404error($urlFile, $urlPart) {
+		$response = PXResponse::getInstance();
 		$error = 0;
 
 		// Определение кода ошибки
 		if (
-			!$this->struct->hasCurrent() ||
-			($urlFile != 'index.html' && !$this->content->hasCurrent())    ||
-			($urlPart != 'index.html' && !$this->subContent->hasCurrent())
+			!$this->tree->hasCurrent() ||
+			($urlFile != 'index.html' && !$this->objects->hasCurrent())    ||
+			($urlPart != 'index.html' && !$this->subObjects->hasCurrent())
 		) {
-			$error = 404;
+			$response->notFound();
+		} else {
+			$response->setOk();
 		}
-
-		PXRegistry::setVar('error', $error);
 	}
 
 	function _parseAliasesConfig() {

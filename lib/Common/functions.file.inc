@@ -70,7 +70,13 @@ function unlinkDir($source) {
 }
 
 function smarty_file_exists($filename) {
-	return file_exists(BASEPATH.'/templates/'.$filename);
+	foreach(array('site', 'local', 'libpp') as $level) {
+		if(file_exists(BASEPATH.'/'.$level.'/templates/'.$filename)) {
+			return true;
+		}
+	}
+
+	return false;
 }
 
 function is_binary($link) {

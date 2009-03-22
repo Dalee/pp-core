@@ -11,7 +11,7 @@ class PXBindingDescription {
 		$this->pOrder = (int) $pOrder;
 	}
 
-	public function isBinding() {
+	public function isBinding($content) {
 		if(!isset(PXRegistry::getApp()->modules[$this->module])) {
 			return false;
 		}

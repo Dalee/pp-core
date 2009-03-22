@@ -103,7 +103,7 @@ class PXStructLeaf404 extends PXStructLeaf {
 	}
 }
 
-class PXStruct extends PXContent {
+class PXTreeObjects extends PXContentObjects {
 	public $format;
 
 	public $pathId = array();

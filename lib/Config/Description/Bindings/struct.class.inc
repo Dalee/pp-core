@@ -1,17 +1,15 @@
 <?php
 class PXBindingDescriptionStruct extends PXBindingDescription {
-	function isBinding() {
-		if(!parent::isBinding()) {
+	function isBinding($content) {
+		if(!parent::isBinding($content)) {
 			return false;
 		}
 
-		$struct = PXRegistry::getVar('struct');
-
-		if(!$struct->hasCurrent()) {
+		if(!$content->tree->hasCurrent()) {
 			return false;
 		}
 
-		$current = $struct->getCurrent();
+		$current = $content->tree->getCurrent();
 
 		return isset($current->content[$this->var]) && $current->content[$this->var] == $this->value;
 	}

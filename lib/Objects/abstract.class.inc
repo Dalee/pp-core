@@ -1,8 +1,7 @@
 <?php
-abstract class PXContent implements Iterator {
-	public $data, $links, $linkedObjs; //FIXME
-
-	public $currentId, $currentType, $base;
+abstract class PXContentObjects implements ArrayAccess, IteratorAggregate  {
+	protected $data, $links, $linkedObjs; //FIXME
+	protected $currentId, $currentType;
 
 	function __construct() {
 		$this->currentId   = -1;
@@ -13,29 +12,31 @@ abstract class PXContent implements Iterator {
 		$this->linkedObjs  = array();
 	}
 
-
-	/* Iterator methods */
-	public function rewind() {
-		reset($this->data);
+	function sizeof() {
+		return sizeof($this->data);
 	}
 
-	public function current() {
-		return current($this->data);
+	// ArrayAccess if
+	public function offsetGet($id) {
+		return $this->data[$id];
 	}
 
-	public function key() {
-		return key($this->data);
+	public function offsetSet($id, $object) {
+		$this->data[$id] = $object;
 	}
 
-	public function next() {
-		return next($this->data);
+	public function offsetExists ($id) {
+		return isset($this->data[$id]);
 	}
 
-	public function valid() {
-		return $this->current() !== false;
+	public function offsetUnset($id) {
+		unset($this->data[$id]);
 	}
 
-	/* /Iterator methods */
+	// IteratorAggregate if
+	public function getIterator() {
+		return new ArrayIterator($this->data);
+	}
 
 	abstract function hasCurrent();
 	abstract function getCurrent();

@@ -86,13 +86,9 @@ class PXRegistry {
 		return self::_get('layout');
 	}
 
-	public static function &getTypes() {
-		$app =& self::getApp();
+	public static function &getTypes($typeName=null) {
+		static $types;
 
-		return $app->types;
-	}
-
-	/*function &getTypes($typeName=null) {
 		if(!is_array($types)) {
 			$app =  self::getApp();
 			$types = $app->types;
@@ -109,10 +105,10 @@ class PXRegistry {
 		}
 		return $types;
 	}
-	*/
 
 	private static function _set($varName, &$variable) {
 		$registry =& self::instance();
+
 		if(!self::canSaveIt($varName)) {
 			$registry->_unknownVarException($varName);
 		}

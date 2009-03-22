@@ -1,16 +1,15 @@
 <?php
 class PXBindingDescriptionContent extends PXBindingDescription {
-	function isBinding() {
-		if(!parent::isBinding()) {
+	function isBinding($content) {
+		if(!parent::isBinding($content)) {
 			return false;
 		}
 
-		$content = PXRegistry::getVar('content');
-		if(!$content->hasCurrent()) {
+		if(!$content->objects->hasCurrent()) {
 			return false;
 		}
 
-		$current = $content->getCurrent();
+		$current = $content->objects->getCurrent();
 		return isset($current[$this->var]) && $current[$this->var] == $this->value;
 	}
 }

@@ -68,6 +68,10 @@ class PXResponse {
 		$this->status = $this->STATUS_NOT_IMPLEMENTED;
 	}
 
+	function isError() {
+		return !($this->status == $this->STATUS_OK);
+	}
+
 	function dontCache() {
 		$this->addHeader('X-Accel-Expires',  0);
 		$this->addHeader('Cache-Control', 'no-cache, must-revalidate');

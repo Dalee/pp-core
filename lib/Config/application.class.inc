@@ -77,7 +77,7 @@ class PXApplication {
 		}
 
 		/* try to get config from cache */
-		$instance[$engineClass] = self::loadFromCache($engineClass);
+		//$instance[$engineClass] = self::loadFromCache($engineClass);
 
 		/* create new instance, if not cached */
 		if (!isset($instance[$engineClass])) {
