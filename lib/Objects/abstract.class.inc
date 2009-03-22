@@ -1,5 +1,5 @@
-<?php 
-abstract class PXObjects implements Iterator {
+<?php
+abstract class PXContent implements Iterator {
 	public $data, $links, $linkedObjs; //FIXME
 
 	public $currentId, $currentType, $base;

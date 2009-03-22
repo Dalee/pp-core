@@ -103,11 +103,9 @@ class PXStructLeaf404 extends PXStructLeaf {
 	}
 }
 
-class PXStruct extends PXObjects {
-	public $tree;
+class PXStruct extends PXContent {
 	public $format;
 
-	public $base   = 'struct';
 	public $pathId = array();
 	public $rootId = -1;
 
@@ -225,7 +223,6 @@ class PXStruct extends PXObjects {
 	public function next() {
 		return next($this->tree->leafs);
 	}
-
 	/* /Iterator methods */
 }
 ?>

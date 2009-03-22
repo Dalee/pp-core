@@ -1,7 +1,5 @@
-<?php 
-class PXContent extends PXObjects {
-	public $base = 'content';
-
+<?php
+class PXObjects extends PXContent {
 	function hasCurrent() {
 		return isset($this->data[$this->currentType][$this->currentId]);
 	}
