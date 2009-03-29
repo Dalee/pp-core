@@ -103,7 +103,7 @@ class PXStructLeaf404 extends PXStructLeaf {
 	}
 }
 
-class PXTreeObjects extends PXContentObjects {
+class PXTreeObjects extends PXContentObjects implements ArrayAccess, IteratorAggregate {
 	public $format;
 
 	public $pathId = array();
@@ -207,22 +207,27 @@ class PXTreeObjects extends PXContentObjects {
 		return $type === $this->format->id && sizeof($this->tree->leafs);
 	}
 
-	/* Iterator methods */
-	public function rewind() {
-		reset($this->tree->leafs);
+	// ArrayAccess if
+	public function offsetGet($id) {
+		return $this->tree->leafs[$id];
 	}
 
-	public function current() {
-		return current($this->tree->leafs);
+	public function offsetSet($id, $object) {
+		$this->tree->leafs[$id] = $object;
 	}
 
-	public function key() {
-		return key($this->tree->leafs);
+	public function offsetExists ($id) {
+		return isset($this->tree->leafs[$id]);
 	}
 
-	public function next() {
-		return next($this->tree->leafs);
+	public function offsetUnset($id) {
+		unset($this->tree->leafs[$id]);
 	}
-	/* /Iterator methods */
+
+	/* IteratorAggregate */
+	public function getIterator() {
+		return new ArrayIterator($this->tree->leafs);
+	}
+	/* /IteratorAggregate */
 }
 ?>

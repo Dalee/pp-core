@@ -1,5 +1,5 @@
 <?php
-abstract class PXContentObjects implements ArrayAccess, IteratorAggregate  {
+abstract class PXContentObjects {
 	protected $data, $links, $linkedObjs; //FIXME
 	protected $currentId, $currentType;
 
@@ -14,28 +14,6 @@ abstract class PXContentObjects implements ArrayAccess, IteratorAggregate  {
 
 	function sizeof() {
 		return sizeof($this->data);
-	}
-
-	// ArrayAccess if
-	public function offsetGet($id) {
-		return $this->data[$id];
-	}
-
-	public function offsetSet($id, $object) {
-		$this->data[$id] = $object;
-	}
-
-	public function offsetExists ($id) {
-		return isset($this->data[$id]);
-	}
-
-	public function offsetUnset($id) {
-		unset($this->data[$id]);
-	}
-
-	// IteratorAggregate if
-	public function getIterator() {
-		return new ArrayIterator($this->data);
 	}
 
 	abstract function hasCurrent();

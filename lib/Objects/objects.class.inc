@@ -1,5 +1,5 @@
 <?php
-class PXObjects extends PXContentObjects {
+class PXObjects extends PXContentObjects implements ArrayAccess, IteratorAggregate {
 	function hasCurrent() {
 		return isset($this->data[$this->currentType][$this->currentId]);
 	}
@@ -30,5 +30,28 @@ class PXObjects extends PXContentObjects {
 			}
 		}
 	}
+
+	// ArrayAccess if
+	public function offsetGet($id) {
+		return $this->data[$id];
+	}
+
+	public function offsetSet($id, $object) {
+		$this->data[$id] = $object;
+	}
+
+	public function offsetExists ($id) {
+		return isset($this->data[$id]);
+	}
+
+	public function offsetUnset($id) {
+		unset($this->data[$id]);
+	}
+
+	/* IteratorAggregate */
+	public function getIterator() {
+		return new ArrayIterator($this->data);
+	}
+	/* /IteratorAggregate */
 }
 ?>
