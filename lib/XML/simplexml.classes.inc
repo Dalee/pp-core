@@ -1,7 +1,8 @@
 <?php
-class PXmlSimplexml extends PXmlInterface {
-	function PXmlSimplexml($pathToXMLFile){
-		$this->xmlObject = @simplexml_load_file($pathToXMLFile);
+
+class PXmlSimplexml extends PXmlAbstract implements PXmlInterface {
+	function PXmlSimplexml($xmlEntity){
+		$this->xmlObject = $this->identEntity($xmlEntity, 'SimpleXMLElement', 'simplexml_load_file', 'simplexml_load_string');
 	}
 
 	function xpath($query){
@@ -12,7 +13,7 @@ class PXmlSimplexml extends PXmlInterface {
 
 			if($nodes){
 				foreach($nodes as $node){
-					$nodesContainer[] = & new PXmlSimplexmlNode($node);
+					$nodesContainer[] = new PXmlSimplexmlNode($node);
 				}
 			}
 		}
@@ -22,6 +23,7 @@ class PXmlSimplexml extends PXmlInterface {
 }
 
 class PXmlSimplexmlNode extends PXmlAbstractNode {
+
 	function PXmlSimplexmlNode($node){
 		parent::PXmlAbstractNode($node);
 		$this->_nodeType = 1;
@@ -70,10 +72,8 @@ class PXmlSimplexmlNode extends PXmlAbstractNode {
 	}
 
 	function &getChildObjects(){
-		$domxmlChilds = $this->_node->children();
-
-		return $domxmlChilds;
+		$xmlChilds = $this->_node->children();
+		return $xmlChilds;
 	}
 }
-
 ?>

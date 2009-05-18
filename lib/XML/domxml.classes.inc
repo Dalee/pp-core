@@ -1,7 +1,8 @@
 <?php
-class PXmlDomxml extends PXmlInterface {
-	function PXmlDomxml($pathToXMLFile){
-		$this->xmlObject = @domxml_open_file($pathToXMLFile);
+
+class PXmlDomxml extends PXmlAbstract implements PXmlInterface {
+	function PXmlDomxml($xmlEntity){
+		$this->xmlObject = $this->identEntity($xmlEntity, 'domelement', 'domxml_open_file', 'domxml_open_mem');
 	}
 
 	function xpath($query){
@@ -15,7 +16,7 @@ class PXmlDomxml extends PXmlInterface {
 				$nodes = $res->nodeset;
 
 				foreach($nodes as $node){
-					$nodesContainer[] = & new PXmlDomxmlNode($node);
+					$nodesContainer[] = new PXmlDomxmlNode($node);
 				}
 			}
 		}
@@ -25,6 +26,7 @@ class PXmlDomxml extends PXmlInterface {
 }
 
 class PXmlDomxmlNode extends PXmlAbstractNode {
+
 	function PXmlDomxmlNode($node){
 		parent::PXmlAbstractNode($node);
 	}
@@ -53,6 +55,7 @@ class PXmlDomxmlNode extends PXmlAbstractNode {
 		if(isset($this->_nodeType)){
 			return $this->_nodeType;
 		}
+
 		$this->_nodeType = $this->_node->node_type();
 		return $this->_nodeType;
 	}
@@ -66,6 +69,7 @@ class PXmlDomxmlNode extends PXmlAbstractNode {
 
 		if(is_object($this->_node)){
 			$attrs = $this->_node->attributes();
+
 			if($attrs){
 				foreach($attrs as $k=>$v){
 					$this->_attributes[trim($v->name)] = $v;
@@ -77,18 +81,8 @@ class PXmlDomxmlNode extends PXmlAbstractNode {
 	}
 
 	function &getChildObjects(){
-		$domxmlChilds = $this->_node->child_nodes();
-
-		foreach($domxmlChilds as $k=>$node) {
-			if ($node->type == 1 || ($node->type == 3 && trim($node->content) != '')) { // return only XML_ELEMENT_NODE and non-empty XML_TEXT_NODE
-				continue;
-			}
-
-			unset($domxmlChilds[$k]);
-		}
-
-		return $domxmlChilds;
+		$xmlChilds = $this->_node->child_nodes();
+		return $xmlChilds;
 	}
 }
-
 ?>
