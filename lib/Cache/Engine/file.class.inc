@@ -1,8 +1,8 @@
 <?php
-class PXCacheFile  /* implements IPXCache */ {
-	var $cache_dir;
-	var $expire;
-	var $orderLevel = 0;
+class PXCacheFile implements IPXCache {
+	protected $cache_dir;
+	protected $expire;
+	protected $orderLevel = 0;
 
 	function PXCacheFile($cacheDomain = null, $defaultExpire = 3600) {
 		$this->cache_dir = BASEPATH.'/tmp/cache/';
@@ -62,8 +62,12 @@ class PXCacheFile  /* implements IPXCache */ {
 	function clear() {
 		$this->_cleanDir($this->cache_dir.'/');
 	}
-
-	function _cleanDir($dirName) {
+	
+	/*
+	   protected:
+	*/
+	
+	protected function _cleanDir($dirName) {
 		if ($handle = opendir($dirName)) {
 			while (false !== ($file = readdir($handle))) {
 				if($file == '.' || $file == '..') {
@@ -77,10 +81,7 @@ class PXCacheFile  /* implements IPXCache */ {
 		}
 	}
 
-	/*
-	   protected:
-	*/
-	function _getFilename($str) {
+	protected function _getFilename($str) {
 		$md5 = md5($str);
 
 		if($this->orderLevel) {
@@ -99,7 +100,7 @@ class PXCacheFile  /* implements IPXCache */ {
 		return $this->cache_dir . $md5;
 	}
 
-	function _doSave($fileName, $serialized, $expTime = null) {
+	protected function _doSave($fileName, $serialized, $expTime = null) {
 		$fp = fopen($fileName, 'wb');
 
 		if ($fp !== false) {
@@ -113,7 +114,7 @@ class PXCacheFile  /* implements IPXCache */ {
 	}
 
 	/** @return String - serialized data */
-	function _doLoad($fileName) {
+	protected function _doLoad($fileName) {
 		$serialized = null;
 		$fp = @fopen($fileName, 'rb');
 
@@ -130,7 +131,7 @@ class PXCacheFile  /* implements IPXCache */ {
 		return $serialized;
 	}
 
-	function _createCacheDir() {
+	protected function _createCacheDir() {
 		MakeDirIfNotExists($this->cache_dir);
 	}
 }

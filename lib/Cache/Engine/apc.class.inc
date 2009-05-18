@@ -1,12 +1,15 @@
 <?php
-class PXCacheApc /* implements IPXCache */ {
+class PXCacheApc implements IPXCache {
+	private $cacheDomain;
+	private $expirationTime;
+	
 	function PXCacheApc($cacheDomain = null, $defaultExpire = 3600){
 		extension_loaded("apc") && ini_get("apc.enabled") or FatalError(get_class($this) . " error: APC extension disabled or doesn't installed");
 		$this->expirationTime = (int)$defaultExpire;
 		$this->cacheDomain    = BASEPATH . $cacheDomain;
 	}
 	
-	function key($key){
+	private function key($key){
 		return md5($this->cacheDomain.$key);
 	}
 	

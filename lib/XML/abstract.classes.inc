@@ -1,9 +1,20 @@
 <?php
-interface PXmlInterface {
-	public function xpath($query);
+interface IPXml {
+	function xpath($query);
 }
 
-abstract class PXmlAbstract implements PXmlInterface {
+interface IPXmlNode {
+	function nodeName();
+	function nodeValue();
+	function nodeType();
+	function attributes();
+	function getAttribute($attrName);
+	function childNodes();
+	function xpath($query);
+	function getChildObjects();
+}
+
+abstract class PXmlAbstract implements IPXml {
 	public $xmlObject;
 	
 	function PXmlAbstract($xmlEntity){
@@ -26,7 +37,7 @@ abstract class PXmlAbstract implements PXmlInterface {
 	function xpath($query){}
 }
 
-abstract class PXmlAbstractNode {
+abstract class PXmlAbstractNode implements IPXmlNode {
 	protected $_xml;
 	protected $_node;
 
@@ -67,7 +78,7 @@ abstract class PXmlAbstractNode {
 
 		if(is_object($this->_node)){
 			$self   = get_class($this);
-			$childs = & $this->getChildObjects();
+			$childs = $this->getChildObjects();
 			
 			foreach($childs as $node){
 				$this->_childNodes[] = new $self($node);
@@ -77,7 +88,9 @@ abstract class PXmlAbstractNode {
 		return $this->_childNodes;
 	}
 
-	function &getChildObjects(){}
+	function getChildObjects(){
+		return array();
+	}
 
 	function getAttribute($attrName){
 		$this->attributes();

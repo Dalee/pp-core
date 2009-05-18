@@ -1,7 +1,10 @@
 <?php
-class PXCacheMemcache /* implements IPXCache */ {
-	var $_mcHandler;
-	var $_validator = 4;
+class PXCacheMemcache implements IPXCache {
+	private $_mcHandler;
+	private $expirationTime;
+	private $cacheNamespace;
+	
+	const VALIDATOR = 4;
 	
 	function PXCacheMemcache($cacheDomain = null, $defaultExpire = 3600){
 		extension_loaded("memcache") or FatalError(get_class($this) . " error: memcache extension doesn't loaded or installed");
@@ -13,8 +16,7 @@ class PXCacheMemcache /* implements IPXCache */ {
 		$this->_mcHandler     = & $this->connect(serialize(array($host,$port)));
 	}
 	
-		
-	function &connect($connectionString){
+	private function &connect($connectionString){
 		$mcObject          =& new Memcache;
 		list($host, $port) = unserialize($connectionString);
 		$mcObject->connect($host) or FatalError(get_class($this) . " error: failed connect to the Memcached server!");
@@ -22,7 +24,7 @@ class PXCacheMemcache /* implements IPXCache */ {
 		return $mcObject;
 	}
 	
-	function key($key){
+	private function key($key){
 		if(($validator = $this->_mcHandler->get($this->cacheNamespace)) === false) {
 			$this->_mcHandler->set($this->cacheNamespace, $validator = microtime());
 		}
@@ -34,13 +36,13 @@ class PXCacheMemcache /* implements IPXCache */ {
 	}
 	
 	function save($key, $data, $expTime = null){
-		$this->_mcHandler->set($this->key($key), $data, $this->_validator, ((int)$expTime ? (int)$expTime : $this->expirationTime));
+		$this->_mcHandler->set($this->key($key), $data, self::VALIDATOR, ((int)$expTime ? (int)$expTime : $this->expirationTime));
 	}
 	
 	function load($key){
 		$flags = null;
 		$res   = $this->_mcHandler->get($this->key($key), $flags);
-		return ($flags & $this->_validator) ? $res : null;
+		return ($flags & self::VALIDATOR) ? $res : null;
 	}
 	
 	function delete($key){

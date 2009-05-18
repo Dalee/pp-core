@@ -1,6 +1,6 @@
 <?php
 
-class PXmlSimplexml extends PXmlAbstract implements PXmlInterface {
+class PXmlSimplexml extends PXmlAbstract implements IPXml {
 	function PXmlSimplexml($xmlEntity){
 		$this->xmlObject = $this->identEntity($xmlEntity, 'SimpleXMLElement', 'simplexml_load_file', 'simplexml_load_string');
 	}
@@ -22,7 +22,7 @@ class PXmlSimplexml extends PXmlAbstract implements PXmlInterface {
 	}
 }
 
-class PXmlSimplexmlNode extends PXmlAbstractNode {
+class PXmlSimplexmlNode extends PXmlAbstractNode implements IPXmlNode {
 
 	function PXmlSimplexmlNode($node){
 		parent::PXmlAbstractNode($node);
@@ -71,7 +71,7 @@ class PXmlSimplexmlNode extends PXmlAbstractNode {
 		return array_values($this->_attributes);
 	}
 
-	function &getChildObjects(){
+	function getChildObjects(){
 		$xmlChilds = $this->_node->children();
 		return $xmlChilds;
 	}

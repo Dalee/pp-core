@@ -1,5 +1,5 @@
 <?php
-/*
+
 interface IPXCache {
 	function exists($objectKey);
 	function save($objectKey, $dataForSave, $expirationTime = null);
@@ -7,5 +7,5 @@ interface IPXCache {
 	function delete($objectKey);
 	function clear();
 }
-*/
+
 ?>
