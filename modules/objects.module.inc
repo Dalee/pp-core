@@ -306,7 +306,7 @@ class PXModuleObjects extends PXModule {
 	function adminAction() {
 		$this->datatype =& $this->getDatatype();
 
-		$rAction = $request->getAction();
+		$rAction = $this->request->getAction();
 
 		$this->nextLocation = 'popup.phtml?area=objects&format='.$this->datatype->id.'&action='.$rAction;
 

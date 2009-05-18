@@ -25,24 +25,25 @@ class PXDisplayTypeDropdown extends PXDisplayType {
 		$format = '';
 		$parentFormat = '';
 		if (count($param) && isset($param['datatype']) && is_object($param['datatype'])) {
-				$format        = $param['datatype']->id;
-				$parentFormat  = $param['datatype']->parent;
+			$format        = $param['datatype']->id;
+			$parentFormat  = $param['datatype']->parent;
 		}
 		return array($format,$parentFormat);
 	}
 	
 	function getParentTree(&$object,$parentFormat) {
-		global $engine;
-		return $engine->db->getObjects($engine->app->types[$parentFormat], NULL, DB_SELECT_FULL_TREE); 
+		$db  = PXRegistry::getDb();
+		$app = PXRegistry::getApp();
+		return $db->getObjects($app->types[$parentFormat], NULL, DB_SELECT_FULL_TREE); 
 	}
 	
 	function getSelfParentTree(&$object,&$param) {
-		global $engine;
+		$db  = PXRegistry::getDb();
 		
 		if (isset($param['datatype']->fields['parent']) && !is_null($object['parent'])) {
-			return $engine->db->getObjectsByParent($param['datatype'], NULL, $object['parent'], DB_SELECT_TREE);
+			return $db->getObjectsByParent($param['datatype'], NULL, $object['parent'], DB_SELECT_TREE);
 		} else {
-			return $engine->db->getObjects($param['datatype'], NULL, DB_SELECT_TREE);
+			return $db->getObjects($param['datatype'], NULL, DB_SELECT_TREE);
 		}
 	}
 }

@@ -192,7 +192,7 @@ class PXModuleAcl extends PXModule {
 	}
 
 	function _moveRule($rId, $direction) {
-		$db =& $this->db;
+		$db = $this->db;
 
 		$objectInDB = $db->query('SELECT sys_order, id FROM '.$this->sqlTable.' WHERE id = '.$rId);
 
@@ -219,12 +219,10 @@ class PXModuleAcl extends PXModule {
 	}
 
 	function adminAction() {
-		$rId = (int)$request->getVar('id');
+		$rId = (int)$this->request->getVar('id');
 		$redir = '/admin/?area='.$this->area;
 
-		$this->db =& $db;
-
-		switch($request->getVar('action')) {
+		switch($this->request->getVar('action')) {
 			case 'up':
 				$this->_moveRule($rId, 'up');
 				break;
@@ -238,11 +236,11 @@ class PXModuleAcl extends PXModule {
 				$values = array();
 
 				foreach($fields as $field) {
-					$values[$field] = $request->getVar($field);
+					$values[$field] = $this->request->getVar($field);
 				}
 
-				$rId = $db->InsertObject($this->sqlTable, $fields, $values);
-				$db->ModifyingQuery('UPDATE '.$this->sqlTable.' SET sys_order = id WHERE id = '.$rId);
+				$rId = $this->db->InsertObject($this->sqlTable, $fields, $values);
+				$this->db->ModifyingQuery('UPDATE '.$this->sqlTable.' SET sys_order = id WHERE id = '.$rId);
 
 				$redir = '/admin/popup.phtml?area='.$this->area.'&id='.$rId;
 				break;
@@ -252,16 +250,16 @@ class PXModuleAcl extends PXModule {
 				$values = array();
 
 				foreach($fields as $field) {
-					$values[$field] = $request->getVar($field);
+					$values[$field] = $this->request->getVar($field);
 				}
 
-				$db->UpdateObjectById($this->sqlTable, $rId, $fields, $values);
+				$this->db->UpdateObjectById($this->sqlTable, $rId, $fields, $values);
 
 				$redir = '/admin/popup.phtml?area='.$this->area.'&id='.$rId;
 				break;
 
 			case 'delete':
-				$rule = $db->query('SELECT count(id) as count FROM '.$this->sqlTable.' WHERE id = '.$rId);
+				$rule = $this->db->query('SELECT count(id) as count FROM '.$this->sqlTable.' WHERE id = '.$rId);
 
 				if(!isset($rule[0]['count'])) {
 					FatalError('Какой то косяк с таблицей '.$this->sqlTable);
@@ -271,7 +269,7 @@ class PXModuleAcl extends PXModule {
 					FatalError('Правило с id = '.$rId.' в таблице '.$this->sqlTable.' не найдено');
 				}
 
-				$db->modifyingQuery('DELETE FROM '.$this->sqlTable.' WHERE id = '.$rId);
+				$this->db->modifyingQuery('DELETE FROM '.$this->sqlTable.' WHERE id = '.$rId);
 				break;
 		}
 

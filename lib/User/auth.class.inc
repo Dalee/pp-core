@@ -1,6 +1,6 @@
 <?php
 class PXUserAuthorized extends PXUser {
-	function can($what, $format, $object) {
+	function can($what, $format = NULL, $object = NULL) {
 		if($format === NULL){
 			$format = & new PXTypeDescription;
 		}
