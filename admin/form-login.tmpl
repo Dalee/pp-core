@@ -1,0 +1,67 @@
+<TABLE border="0" cellpadding="3" cellspacing="0" align="center" style="height: 100%;">
+	<TR>
+		<TD valign="middle">
+			<DIV style="border: 1px solid #D2D2D2; border-bottom-color: #404040; border-right-color: #404040;">
+				<DIV style="border: 1px solid #ECECEC; border-bottom-color: #919191; border-right-color: #919191;">
+					<TABLE border="0" cellpadding="3" cellspacing="1" align="center" bgcolor="#C9CED6">
+						<TR>
+							<TD bgcolor="#385A94">
+								<STRONG style="color: #FFFFFF;">Авторизация</STRONG>
+							</TD>
+						</TR>
+
+						<TR>
+							<TD>
+								<TABLE border="0" cellpadding="0" cellspacing="10" width="325">
+									<COLGROUP>
+										<COL width="20%"/>
+										<COL width="20%"/>
+										<COL width="60%"/>
+									</COLGROUP>
+
+									<TR>
+										<TD rowspan="3" valign="top">
+											<IMG src="i/auth.gif" width="30" height="32" alt="Пожалуйста введите свой логин и пароль" hspace="10"><!--
+										--></TD>
+
+										<TD colspan="2">
+											{LOGIN.ERROR}
+											Пожалуйста, введите свой логин и пароль
+										</TD>
+									</TR>
+
+									<FORM action="{LOGIN.FORMACTION}" method="{LOGIN.FORMMETHOD}">
+										<INPUT type="hidden" name="{LOGIN.REFERERNAME}" value="{LOGIN.REFERERVALUE}">
+										<INPUT type="hidden" name="{LOGIN.AREANAME}"    value="{LOGIN.AREAVALUE}">
+
+										<TR>
+											<TD>логин</TD>
+
+											<TD width="100%">
+												<INPUT type="text" name="{LOGIN.LOGINNAME}" value="{LOGIN.LOGINVALUE}" style="width:100%;">
+											</TD>
+										</TR>
+
+										<TR>
+											<TD>пароль</TD>
+
+											<TD>
+												<INPUT type="password" name="{LOGIN.PASSWDNAME}" style="width:100%;">
+											</TD>
+										</TR>
+
+										<TR>
+											<TD align="right" colspan="3">
+												<INPUT type="submit" value="войти" class="button">
+											</TD>
+										</TR>
+									</FORM>
+								</TABLE>
+							</TD>
+						</TR>
+					</TABLE>
+				</DIV>
+			</DIV>
+		</TD>
+	</TR>
+</TABLE>

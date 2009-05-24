@@ -1,0 +1,59 @@
+<!-- DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd" -->
+<HTML>
+	<HEAD>
+		<TITLE>{OUTER.TITLE}</TITLE>
+		<LINK href="css/default.css" rel="stylesheet">
+		<SCRIPT type="text/javascript" src="js/default.js"></SCRIPT>
+		<SCRIPT type="text/javascript" src="js/filemanager.js"></SCRIPT>
+	</HEAD>
+
+	<BODY bgcolor="#FFFFFF" text="#000000" link="#385A94" alink="#385A94" vlink="#385A94" onClick="javascript: ContextHide();">
+		<TABLE width="100%" border="0" cellpadding="0" cellspacing="0" style="height: 100%;">
+			<TR>
+				<TD style="height: 45px;" valign="top">
+					<TABLE border="0" width="100%" cellpadding="0" cellspacing="0" style="background-color:#385A94; background-image: url(i/head-bg.gif); background-repeat: repeat-x; height: 45px;">
+						<TR>
+							<TD>{OUTER.LOGO}</TD>
+							<TD align="right" valign="bottom">{OUTER.MENU}</TD>
+							<TD width="1%" nowrap>{OUTER.EXIT}</TD>
+						</TR>
+					</TABLE>
+					<DIV class="context" id="ContextMenu" onClick="javascript: ContextHide();"></DIV>
+				</TD>
+			</TR>
+
+			<TR>
+				<TD style="height: 100%;" valign="top" height="100%">
+					{OUTER.FORMBEGIN}
+					{OUTER.MAINAREA}
+					{OUTER.FORMEND}
+				</TD>
+			</TR>
+
+			<TR>
+				<TD style="height: 40px;" valign="bottom">
+					<TABLE border="0" width="100%" cellpadding="0" cellspacing="0" style="background-color:#385A94; background-image: url(i/bottom-bg.gif); background-repeat: repeat-x;">
+						<TR>
+							<TD align="left">
+								<DIV style="margin: 8px;color: #FFFFFF;">
+								</DIV>
+							</TD>
+
+							<TD align="right">
+								<TABLE border="0" cellpadding="0" cellspacing="0">
+									<TR>
+										<TD>
+											<A href="/" target="_blank" class="button-exit">
+												<IMG src="i/icon/alias.gif" border="0" width="11" height="11" alt="Перейти на сайт" align="absmiddle">&nbsp;Перейти на сайт
+											</A>
+										</TD>
+									</TR>
+								</TABLE>
+							</TD>
+						</TR>
+					</TABLE>
+				</TD>
+			</TR>
+		</TABLE>
+	</BODY>
+</HTML>

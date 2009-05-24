@@ -50,6 +50,18 @@ table {
 	font-family: verdana;
 }
 
+
+table.inner-layout {
+	width: 100%;
+	border-spacing: 7px;
+	background-color: #C9CED6;
+	height: 100%;
+}
+
+table.inner-layout td {
+	p1adding: 8px;
+}
+
 table.static {
 	width: 100%;
 	border-collapse: collapse;
@@ -441,6 +453,7 @@ table.mainform {
 	width: 100%;
 	border: 1px solid #C9CED6;
 	border-collapse: collapse;
+	margin: 0 0 1em;
 }
 
 table.mainform th {
@@ -820,8 +833,11 @@ div.upload-buttons input {
 }
 
 form.uploader {
-	display: none;
 	color: #ffffff;
+}
+
+table.filemanager form.hide {
+	display: none;
 }
 
 form.uploader input {
@@ -959,7 +975,15 @@ div#ContextMenu span {
 	behavior: url(../css/disable.htc)
 }
 
-div#ContextMenu .add    { background-image: url(../i/icon/add.gif    );}
+button.add {
+	background-color: transparent;
+	background-position: 7px 50%;
+	background-repeat: no-repeat; 
+	padding: 0 0 0 20px;
+	margin: 0 5px 0 0;
+}
+
+div#ContextMenu .add, button.add    { background-image: url(../i/icon/add.gif    );}
 div#ContextMenu .alias  { background-image: url(../i/icon/alias.gif  );}
 div#ContextMenu .copy   { background-image: url(../i/icon/copy.gif   );}
 div#ContextMenu .del    { background-image: url(../i/icon/del.gif    );}

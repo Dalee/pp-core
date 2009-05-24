@@ -33,7 +33,7 @@ function UnLinkFile(name, selfChange) {
 
 function ShowUploadForm(id) {
 	t = document.getElementById(id);
-	t.style.display = (t.currentStyle.display == 'none') ? 'block' : 'none';
+	t.className = t.className.indexOf('hide') > 0 ? t.className.replace('hide', '') : t.className + ' hide';
 }
 
 function CreateDir(dir, href, side) {

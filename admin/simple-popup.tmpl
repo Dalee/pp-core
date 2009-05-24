@@ -1,0 +1,41 @@
+<!-- DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd" -->
+<HTML>
+	<HEAD>
+		<TITLE>{OUTER.TITLE}</TITLE>
+		<LINK href="css/default.css" rel="stylesheet">
+		<SCRIPT type="text/javascript" src="js/default.js"></SCRIPT>
+		<SCRIPT type="text/javascript" src="js/preview.js"></SCRIPT>
+		<SCRIPT type="text/javascript" src="js/filemanager.js"></SCRIPT>
+	</HEAD>
+
+	<BODY bgcolor="#C9CED6" text="#000000" link="#385A94" alink="#385A94" vlink="#385A94" onClick="javascript: ContextHide();">
+		<TABLE border="0" width="100%" cellpadding="0" cellspacing="8" style="height: 100%;">
+			<TR>
+				<TD style="height: 100%;" colspan="2">
+					<DIV class="context" id="ContextMenu" onClick="javascript: ContextHide();"></DIV>
+					{OUTER.FORMBEGIN}
+					<TABLE border="0" width="100%" cellpadding="0" cellspacing="0" style="height: 100%;">
+						<TR>
+							<TD align="left" colspan="2" style="height: 100%;">
+								<DIV class="content">
+									<TABLE width="100%" border="0" cellpadding="0" cellspacing="0" style="height: 100%;">
+										<TR>
+											<TD valign="top">
+											{OUTER.CONTENT}
+											</TD>
+										</TR>
+									</TABLE>
+								</DIV>
+							</TD>
+						</TR>
+						<TR id="popupcontrols">
+							<TD align="left">{OUTER.LEFTCONTROLS}</TD>
+							<TD align="right">{OUTER.RIGHTCONTROLS}</TD></TD>
+						</TR>
+					</TABLE>
+					{OUTER.FORMEND}
+				</TD>
+			</TR>
+		</TABLE>
+	</BODY>
+</HTML>

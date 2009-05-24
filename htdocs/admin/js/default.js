@@ -157,6 +157,11 @@ function AddContent(format, parent) {
 	Popup('popup.phtml?area=objects&format='+format+'&id=0&action=main&parent='+parent);
 }
 
+function CloneContent(format, donor) {
+	Popup('action.phtml?area=objects&format='+format+'&id='+donor+'&action=clone');
+}
+
+
 function MoveContent(format, id) {
 	try {
 		var shift = window.prompt('Укажите сдвиг позиции (отрицательные вниз, положительные вверх)', -1);
@@ -297,6 +302,7 @@ function ContextEdit(id, status, format, title, alias, level, up, down) {
 
 	ret  = '<strong>'+title+'</strong>';
 	ret += '<a class="edit" href="javascript: EditContent(\''+format+'\', '+id+')">Изменить</a>';
+	ret += '<a class="copy" href="javascript: CloneContent(\''+format+'\', '+id+')">Клонировать</a>';
 
 	if(level) {
 		ret += '<a class="del" href="action.phtml?id='+id+'&area=objects&action=directremove&format='+format+'" onclick="return window.confirm(\'Вы дейтвительно хотите удалить '+title+'?\');">Удалить</a>';
