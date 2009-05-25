@@ -46,14 +46,10 @@ class NLMSSQLDatabase extends NLAbstractSQLDatabase {
 
 		$md = (is_array($limitpair)) ? "-{$limitpair[0]}-{$limitpair[1]}" : "";
 
-		if (!$donotusecache) {
-			$table = $this->cache->load($query.$md);
-			if ($table !== null) { 
-				PXProfiler::end();
-				return $table; 
-			}
+		if (!is_null($table = $this->_loadFromCache($query.$md, $donotusecache))) {
+		        return $table;
 		}
-
+		
 		if (!$this->connected) {
 			$this->Connect();
 		}
@@ -96,9 +92,7 @@ class NLMSSQLDatabase extends NLAbstractSQLDatabase {
 				}
 			}
 
-			if (!$donotusecache) {
-				$this->cache->save($query, $table);
-			}
+			$this->_saveToCache($query.$md, $table, $donotusecache);
 		} else {
 			PXProfiler::end();
 			return ERROR_DB_CANNOTCONNECT;

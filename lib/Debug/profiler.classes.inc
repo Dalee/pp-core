@@ -84,18 +84,17 @@ class PXProfiler {
 
 	function toString() {
 		$collection = PXProfiler::finalize();
-		
 		array_walk($collection, create_function('&$item', '$item = $item->toString();'));
-
-		$self = & PXProfiler::getInstance();
+		
+		$result = '';
+		$self   = & PXProfiler::getInstance();
+		
 		if($self->_isMemoryProfile) {
-			$result  = str_pad('MemoryStart(Kb)', 16, ' ', STR_PAD_LEFT);
-			$result .= str_pad('MemoryDelta(Kb)', 16, ' ', STR_PAD_LEFT);
+			$result .= sprintf('%16s%16s', 'MemoryStart(Kb)', 'MemoryDelta(Kb)');
 		}
 
-		$result .= str_pad('Time', 8, ' ', STR_PAD_LEFT);
+		$result .= sprintf('%8s','Time');
 		$result .= "\tProcess\n\n";
-
 		$result .= implode("\n", $collection);
 
 		if(!CLI) {
@@ -137,12 +136,11 @@ class PXProfilerStruct {
 	}
 
 	function toString() {
-		$time    = str_pad(number_format($this->time['delta'], 4            ),  8, ' ', STR_PAD_LEFT);
-
+		$time    = sprintf('%8.4f', $this->time['delta']);
 		$level   = str_repeat("\t", $this->level + 1);
 		$text    = preg_replace('/[\n\t]/', ' ', $this->eventName);
-
-		return $time.$level.$text;
+		
+		return $time . $level . $text;
 	}
 }
 
@@ -162,10 +160,7 @@ class PXProfilerStructWithMemory extends PXProfilerStruct {
 	}
 
 	function toString() {
-		$memory  = str_pad(number_format($this->memory['start'], 2, '.', ' '), 16, ' ', STR_PAD_LEFT);
-		$memory .= str_pad(number_format($this->memory['delta'], 2, '.', ' '), 16, ' ', STR_PAD_LEFT);
-
-		return $memory.parent::toString();
+		return sprintf('%16.2f%16.2f', $this->memory['start'], $this->memory['delta']) . parent::toString();
 	}
 }
 

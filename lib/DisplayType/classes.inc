@@ -6,6 +6,7 @@ require_once 'checkbox.class.inc';
 require_once 'color.class.inc';
 
 require_once 'static.class.inc';
+require_once 'staticordrop.class.inc';
 require_once 'text.class.inc';
 
 require_once 'password.class.inc';
@@ -27,6 +28,7 @@ require_once 'Dropdown/treeDropdown.class.inc';
 
 require_once 'File/file.class.inc';
 require_once 'File/image.class.inc';
+require_once 'File/imageStatic.class.inc';
 require_once 'File/flash.class.inc';
 
 require_once 'File/imagesArray.class.inc';

@@ -70,11 +70,16 @@ class PXDisplayType {
 		$html .= '<td>';
 
 		$html .= $this->buildInput($field, $object, $param);
+		$html .= $this->comments($field, $object, $param);
 
 		$html .= '</td>';
 		$html .= '</tr>';
 
 		return $html;
+	}
+
+	function comments($field, $object, $param=NULL) {
+		return $field->comments;
 	}
 
 	/**

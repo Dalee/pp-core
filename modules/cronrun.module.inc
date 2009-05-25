@@ -61,10 +61,11 @@ class PXModuleCronRun extends PXAbstractModule {
 	}
 
 	function RunJob(&$job, &$app, $matchedTime) {
-		$tmpDir = IS_WIN ? $_ENV['TEMP'] : '/tmp/';
+		$tmpDir = IS_WIN ? $_ENV['TEMP'] : BASEPATH.'tmp/lock/cronrun';
+		MakeDirIfNotExists($tmpDir);
 
 		// ******* child code ******
-		$fname = $tmpDir.'/cron'.md5($_SERVER["DOCUMENT_ROOT"]).$job['jobname'].'.lock';
+		$fname = $tmpDir.'/'.$job['jobname'].'.lock';
 		$fp = @fopen($fname, 'r');
 		if (!$fp) $fp = fopen($fname, 'w');
 		$st = flock($fp, LOCK_EX | LOCK_NB);
@@ -90,6 +91,10 @@ class PXModuleCronRun extends PXAbstractModule {
 		$db   = new PXDatabase($app); //add NEW connect to the database from current child
 		$user = new PXUserCron();
 		$user->setDb($db);
+		
+		PXRegistry::setDb($db);
+		PXRegistry::setUser($user);
+		
 		$db->LoadDirectoriesAutomatic($app->directory); //init directory from here !
 		if (isset($app->types['struct'])) {
 			$tree = new NLTree($db->getObjects($app->types['struct'], true));
@@ -184,13 +189,9 @@ class PXModuleCronRun extends PXAbstractModule {
 		} else {
 			$cronStat = array();
 		}
-		$this->layout->SetInnerLayout(
-			array(
-				array(array('100%', '100%')),
-				array(array('100%', NULL))
-			)
-		);
-		$this->layout->Assign('INNER.0.1', '<a href="?area='.$this->area.'&t='.time().'" class="reload">Обновить</a>');
+
+		$this->layout->setOneColumn();
+		$this->layout->assign('INNER.0.1', '<a href="?area='.$this->area.'&t='.time().'" class="reload">Обновить</a>');
 
 		$fields = array(
 			'rule'    => 'Правило',

@@ -16,7 +16,7 @@ interface IPXmlNode {
 
 abstract class PXmlAbstract implements IPXml {
 	public $xmlObject;
-	
+
 	function PXmlAbstract($xmlEntity){
 		FatalError('Abstract XML object cannot be created!');
 	}
@@ -79,6 +79,7 @@ abstract class PXmlAbstractNode implements IPXmlNode {
 		if(is_object($this->_node)){
 			$self   = get_class($this);
 			$childs = $this->getChildObjects();
+			
 			
 			foreach($childs as $node){
 				$this->_childNodes[] = new $self($node);

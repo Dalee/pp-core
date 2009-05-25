@@ -13,10 +13,10 @@ class PXUserAuthorized extends PXUser {
 	}
 
 	function checkAuth() {
-		$app     = PXRegistry::getApp();
-		$db      = PXRegistry::getDb();
-		$request = PXRegistry::getRequest();
-		$user    =& $this;
+		$app        = PXRegistry::getApp();
+		$db         = PXRegistry::getDb();
+		$request    = PXRegistry::getRequest();
+		$user       =& $this;
 
 		foreach ($app->authrules as $rule => $params) {
 			if (!$params['enabled']) {
@@ -35,7 +35,7 @@ class PXUserAuthorized extends PXUser {
 
 			$this->auth =& $tmpAuth;
 
-			if (isset($app->types[DT_GROUP])) {
+			if (isset($app->types[DT_GROUP])) { 
 				$groups = $db->getLinks($app->references[LINK_GROUP2USER], DT_USER, $this->id);
 				$this->groups = array_unique(array_merge(array(0, (int)$this->data['parent']), array_keys($groups)));
 			}
@@ -45,7 +45,7 @@ class PXUserAuthorized extends PXUser {
 		$this->acl->reload();
 		return $this->auth->onAuth();
 	}
-
+	
 	function aclType() {
 		return (sizeof($this->groups) > 1) ? 'bygroup' : 'basic';
 	}

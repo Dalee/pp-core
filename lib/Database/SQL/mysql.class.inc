@@ -76,13 +76,8 @@ class NLMYSQLDatabase extends NLAbstractSQLDatabase {
 	function Query($query, $donotusecache = false) {
 		PXProfiler::begin('SQL: '.$query);
 
-		if (!$donotusecache) {
-			$table = $this->cache->load($query);
-
-			if ($table !== null) { 
-				PXProfiler::end();
-				return $table; 
-			}
+		if (!is_null($table = $this->_loadFromCache($query, $donotusecache))) {
+		        return $table;
 		}
 
 		if (!$this->connected) {
@@ -102,9 +97,8 @@ class NLMYSQLDatabase extends NLAbstractSQLDatabase {
 			}
 			mysql_free_result($res);
 
-			if (!$donotusecache) {
-				$this->cache->save($query, $table);
-			}
+			$this->_saveToCache($query, $table, $donotusecache);
+
 		} else {
 			PXProfiler::end();
 			return ERROR_DB_CANNOTCONNECT;

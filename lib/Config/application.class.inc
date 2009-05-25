@@ -77,6 +77,7 @@ class PXApplication {
 		}
 
 		/* try to get config from cache */
+		// FIXME !!!!!!!!!!!
 		//$instance[$engineClass] = self::loadFromCache($engineClass);
 
 		/* create new instance, if not cached */
@@ -93,15 +94,18 @@ class PXApplication {
 	 * @param String $engineClass - имя класса Engine, используется в имени файла кэша
 	 */
 	private function __construct($engineClass) {
+		$this->engineClass = $engineClass;
+
 		$this->types = array();
 		$this->directory = array();
 
 		$this->FillDBDescription(self::parseIniFile($this->findConfigFile('database.ini')));
+
 		$this->FillModules($this->findConfigFile('modules.xml'));
 		$this->FillDataTypes($this->findConfigFile('datatypes.xml'));
 		$this->FillDirectories($this->findConfigFile('datatypes.xml'));
 
-		$this->properties = self::parseIniFiles($this->findConfigFiles('properties.ini'));
+		$this->properties = $this->parseProperties();
 		$this->authrules  = self::parseIniFiles($this->findConfigFiles('auth.ini'));
 
 		//todo: one file or many lang files?
@@ -135,9 +139,37 @@ class PXApplication {
 	}
 
 	/**
+	 * @return Array
+	 */
+	function parseProperties() {
+		list($override, $default) = array(array(), array());
+
+		$default_file_exists = file_exists($default_file  = self::findConfigFile('default/properties.ini', false));
+		$user_file_exists    = file_exists($override_file = self::findConfigFile('properties.ini'));
+
+		//пропарсит дефолтный файл если он существует
+		if($default_file_exists) {
+			$default = self::ParseIniFile($default_file);
+		}
+
+		//если есть дефолтный файл но нет юзерского то возращает значение из
+		if(!$user_file_exists && $default_file_exists) {
+			return $default;
+		}
+
+		// парсинг юзерского файла
+		// возбуждение ошибки в случае если нет файла
+		$override = self::ParseIniFile($override_file);
+
+		//возращает склеяный результат
+		return $override + $default;
+	}
+
+
+	/**
 	 *  Searches for the first file in order - site, local, libpp
 	 */
-	private static function findConfigFile($filename) {
+	private static function findConfigFile($filename, $required=true) {
 		$files = self::findFilesUnless(
 			$filename,
 			create_function('$files', 'return count($files) > 0;')
@@ -147,7 +179,12 @@ class PXApplication {
 			return $files[0];
 		}
 
-		FatalError('Отсутствует файл настроек ' . $filename);
+		if($required) {
+			FatalError('Отсутствует файл настроек ' . $filename);
+
+		} else {
+			return false;
+		}
 	}
 
 	/**
@@ -336,113 +373,9 @@ class PXApplication {
 		if (!$dom) {
 			FatalError("Ошибка в файле настроек <EM>$fileName</EM>");
 		}
-		$domDatatypes = $dom->xpath("/model/datatypes/datatype");
-		if (!is_array($domDatatypes) || count($domDatatypes) == 0) {
-			FatalError("Не определена объектная модель проекта");
-		}
 
-		foreach ($domDatatypes as $domDatatype) {
-			$type = new PXTypeDescription();
-
-			$attrs = $domDatatype->attributes();
-			$nodes = $domDatatype->childNodes();
-
-			foreach ($attrs as $attr) {
-				switch ($attr->name) {
-					case 'name':          $type->id            = $attr->value;                       break;
-					case 'description':   $type->title         = utf8_decode($attr->value);          break;
-					case 'orderby':       $type->order         = $attr->value;                       break;
-					case 'parent':        $type->parent        = $attr->value;                       break;
-					case 'bydefault':     $type->byDefault     = self::_mapByDefaults($attr->value); break;
-					case 'struct':        $type->struct        = $attr->value;                       break;
-					case 'outputhandler': $type->outputHandler = $attr->value;                       break;
-
-					default:              d2("Unknown attr name: " . $attr->name . __LINE__);        break;
-				}
-			}
-
-			if (!isset($type->order)) {
-				$type->order = 'sys_order';
-			}
-
-			foreach ($nodes as $node) {
-				switch ($node->nodeName()) {
-					case 'attribute':
-						$nodeattrs = $node->attributes();
-						$field = new PXFieldDescription($nodeattrs, $this, $type);
-
-						if(is_null($field->listed)) {
-							$field->listed = (bool) ($field->name === 'title');
-						}
-
-						$type->addField($field);
-						break;
-					default:
-						d2("Unknown node name: " . $node->nodeName());
-						break;
-				}
-			}
-
-			$this->types[$type->id] = $type;
-		}
-
-		foreach ($this->types as $k=>$v) {
-			if (!empty($v->parent)) {
-				if (isset($this->types[$v->parent])) {
-					$this->types[$v->parent]->childs[] = $k;
-				} else {
-					FatalError("ОШИБКА МОДЕЛИ: {$v->id} не может быть дочерним по отношению к {$v->parent}, описание {$v->parent} отсутствует");
-				}
-			}
-		}
-
-		$domReferences = $dom->xpath("/model/references/reference");
-
-		if (!is_array($domReferences) || count($domReferences) == 0) {
-			return;
-		}
-
-		foreach ($domReferences as $domReference) {
-			$attrs = $domReference->attributes();
-			$ref = new PXRefDescription();
-			$nodes = $domReference->childNodes();
-
-			foreach ($attrs as $attr) {
-				switch (trim($attr->name)) {
-					case 'name':              $ref->name             = $attr->value; break;
-					case 'from':              $ref->from             = $attr->value; break;
-					case 'to':                $ref->to               = $attr->value; break;
-					case 'restrictby':        $ref->restrictBy       = $attr->value; break;
-					case 'filter-to':         $ref->filterTo         = $attr->value; break;
-					case 'filter-from':       $ref->filterFrom       = $attr->value; break;
-					case 'load':              $ref->load             = $attr->value; break;
-					case 'multiple':          $ref->multiple         = true;         break;
-					case 'bydefault':         $ref->byDefault        = $this->_mapRefByDefaults($attr->value); break; //all or linked
-					case 'hidden':            $ref->hidden           = true;         break;
-				}
-			}
-
-			foreach ($nodes as $node) {
-				switch ($node->nodeName()) {
-					case 'attribute':
-						$nodeattrs = $node->attributes();
-						d($nodeattrs);
-						$field = new PXFieldDescription($nodeattrs, $this);
-
-						$ref->addField($field);
-						break;
-					default:
-						d2("Unknown node name in reference: ".$node->nodeName());
-						break;
-				}
-			}
-			$this->references[$ref->name] = $ref;
-			if (!isset($this->types[$ref->from]) || !isset($this->types[$ref->to])) {
-				FatalError("ОШИБКА МОДЕЛИ: Связь <em>{$ref->name}</em> невозможна, отсутствует один из типов");
-			}
-			$this->types[$ref->from]->references[$ref->to] = &$this->references[$ref->name];
-			$this->types[$ref->to]->references[$ref->from] = &$this->references[$ref->name];
-		}
+		PXTypeDescription::fillAppTypes($dom, $this);
+		PXRefDescription::fillReferences($dom, $this);
 	}
 
 	/**
@@ -469,7 +402,8 @@ class PXApplication {
 				$this->directory[$name] = new PXDirectoryDescription($name);
 			}
 
-			$curDir = &$this->directory[$name];
+			$curDir =& $this->directory[$name];
+
 			$curDir->load         = $domDirectory->getAttribute('load');
 			$curDir->schema       = $domDirectory->getAttribute('schema');
 			$curDir->source       = $domDirectory->getAttribute('source');
@@ -503,6 +437,7 @@ class PXApplication {
 			FatalError("Ошибка в файле справочника <EM>$file</EM>");
 		}
 		$results = $dom2->xpath($xpathSelector);
+
 		if ($results) {
 			$nodes = $results[0]->childNodes();
 
@@ -592,39 +527,6 @@ class PXApplication {
 
 	function setModules($module) {
 		$this->modules[$module->getName()] = $module; 
-	}
-
-	/**
-	 * Преобразует 'all', 'selected', 'none' в числовые значения.
-	 *
-	 * @see PP_CHILDREN_FETCH_ALL, PP_CHILDREN_FETCH_SELECTED, PP_CHILDREN_FETCH_NONE
-	 * @access protected
-	 * @param String $string
-	 * @return Integer
-	 */
-
-	/* FIXME - this is private, check external usage!!! i.e. objectform.class.inc:266 */
-	public static function _mapByDefaults($string) {
-		if ($string == 'all') {
-			return PP_CHILDREN_FETCH_ALL;
-		}
-		if ($string == 'selected') {
-			return PP_CHILDREN_FETCH_SELECTED;
-		}
-		if ($string == 'none') {
-			return PP_CHILDREN_FETCH_NONE;
-		}
-		return NULL;
-	}
-
-	function _mapRefByDefaults($string){
-		switch($string){
-			default:
-			case 'all':
-				return false;
-			case 'linked':
-				return true;
-		}
 	}
 
 	/**

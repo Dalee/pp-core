@@ -37,4 +37,5 @@ require_once 'XML/abstract.classes.inc';
 require_once 'XML/domxml.classes.inc';
 require_once 'XML/simplexml.classes.inc';
 require_once 'XML/xml.class.inc';
+require_once 'XML/XSLT/classes.inc';
 ?>

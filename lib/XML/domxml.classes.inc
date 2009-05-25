@@ -1,5 +1,4 @@
 <?php
-
 class PXmlDomxml extends PXmlAbstract implements IPXml {
 	function PXmlDomxml($xmlEntity){
 		$this->xmlObject = $this->identEntity($xmlEntity, 'domelement', 'domxml_open_file', 'domxml_open_mem');
@@ -26,7 +25,6 @@ class PXmlDomxml extends PXmlAbstract implements IPXml {
 }
 
 class PXmlDomxmlNode extends PXmlAbstractNode implements IPXmlNode {
-
 	function PXmlDomxmlNode($node){
 		parent::PXmlAbstractNode($node);
 	}

@@ -27,7 +27,7 @@ abstract class PXUser {
 		$this->level  = USERLEVEL_UNAUTHED;
 		$this->data   = array();
 
-		$this->auth   = new PXAuthNull();
+		$this->auth = new PXAuthNull();
 	}
 
 	function setAcl() {
@@ -57,6 +57,29 @@ abstract class PXUser {
 	}
 
 	function checkAuth() {
+	}
+	
+	function getAuthMethods($req_auth_method = null) {
+		$authmethods = null;
+
+		foreach($this->app->authrules as $rule => $param){
+			if(!is_null($req_auth_method) && $rule == $req_auth_method){ //use required auth method
+				$authmethods[0] = $rule; //single element
+				break;
+			}
+				
+			if($param['enabled']) {
+				$authmethods[] = $rule;
+			}
+		}
+		
+		if(is_null($authmethods)) $authmethods[] = 'null';
+		
+		return $authmethods;
+	}
+	
+	function getPrimaryAuthMethod($type = null){
+		return 'PXAuth' . ucfirst(reset($this->getAuthMethods($type)));
 	}
 }
 ?>

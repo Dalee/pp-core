@@ -1,75 +1,115 @@
 <?php
-class PXModuleSearch extends PXAbstractModule {
+class PXModuleSearch extends PXModule {
+	var $word;
+
 	function adminIndex() {
-		$word = $this->request->getVar('word');
-
-		$this->layout->setSimpleInnerLayout(array('100%'), array('100%'));
-		$this->layout->setGetVarToSave('word',      $word);
-		$this->layout->setGetVarToSave('charcheck', $this->request->getVar('charcheck'));
-
-		$this->word = trim($word);
-
-		$this->form();
+		$this->word = trim($this->request->GetVar('word'));
+		$this->searchForm();
 
 		if (strlen($this->word)) {
-			$this->search();
-		}
-	}
+			$allCount = 0;
 
-	function search() {
-		$notFound = true;
+			$checkedTypes = $this->request->getVar('d', array());
 
-		foreach($this->app->types as $type) {
-			$count   = $this->db->getObjectsBySearchWord($type, NULL, $this->word, DB_SELECT_COUNT);
+			foreach($this->app->types as $datatype) {
+				if(!isset($checkedTypes[$datatype->id])) {
+					continue;
+				}
 
-			if($count) {
-				$this->searchResult($type, $count);
-				$notFound = false;
+				$allCount += $this->find($datatype);
+			}
+
+			if(!$allCount) {
+				$this->layout->append('INNER.1.0', '<h2 class="error">Ничего не найдено</h2>');
 			}
 		}
+	}
 
-		if($notFound) {
-			$this->layout->append('INNER.0.0', '<h2 class="error">Ничего не найдено</h2>');
+	function __sortTypes($a, $b) {
+		return strcoll($a->title, $b->title);
+	}
+
+	function searchForm() {
+		$datatypesHTML = '<ul>';
+
+		$types = $this->app->types;
+		uasort($types, array($this, '__sortTypes'));
+
+		$checkedTypes = $this->request->getVar('d', array());
+
+		foreach($types as $datatype) {
+			$checked = !sizeof($checkedTypes) || isset($checkedTypes[$datatype->id]) ? 'checked' : '';
+			$datatypesHTML .= <<<HTML
+
+			<li>
+				<input type="checkbox" name="d[{$datatype->id}]" id="d_{$datatype->id}" {$checked}>
+				<label for="d_{$datatype->id}">{$datatype->title}</label>
+			</li>
+HTML;
 		}
-	}
 
-	function searchResult($type, $count) {
-		$onPage       = $this->app->getProperty('CHILDREN_ON_PAGE', 5);
+		$datatypesHTML .= '</ul>';
 
-		$currentOrder = $this->request->getVar($type->id.'_order', $type->order);
-		$currentPage  = $this->request->getVar($type->id.'_page', 1);
-		$currentPage  = $currentPage > ceil($count/$onPage) ? ceil($count/$onPage) : $currentPage;
 
-		$currentOrder = $this->request->getOrderVar($type->id, $type->order, $type->fields);
-		$this->layout->SetGetVarToSave($type->id.'_order', $currentOrder);
+		$html = <<<HTML
+		<style type="text/css">
+			fieldset li, fieldset ul {
+				padding: 0;
+				margin: 0;
+				list-style: none;
+			}
+			
+			fieldset {
+				margin: 1em 0;
+			}
+		</style>
 
-		$objects = $this->db->getObjectsBySearchWordLimited($type, NULL, $this->word, $onPage, $onPage*($currentPage-1), DB_SELECT_TABLE, $currentOrder);
+		<form>
+			<h2>Поиск</h2>
 
-		$table = new PXAdminTable($objects, $type, $this->layout->getData);
-		$table->setPager($currentPage, $onPage, $count);
+			<input type="hidden" name="area"      value="{$this->area}">
+			<input type="hidden" name="charcheck" value="йцукен">
 
-		$this->layout->append('INNER.0.0', $table->getTable());
-		$this->layout->setGetVarToSave($type->id.'_order', $currentOrder);
-	}
+			<input type="text" style="width:80%;" name="word" value="{$this->word}">
 
-	function form() {
-		$area = $this->request->getArea('search');
-		$word = $this->word;
+			<input type="submit" value="Найти">
 
-		$html = 
-<<<HTML
-	<h2>Поиск</h2>
+			<fieldset>
+				<legend>искать по типам данных</legend>
+				{$datatypesHTML}
 
-	<form class="autoheight">
-		<input type="hidden" name="area"      value="$area">
-		<input type="hidden" name="charcheck" value="йцукен">
-
-		<input type="text"   name="word"      value="$word" style="width: 75%;">
-		<input type="submit" value="Найти">
-	</form>
+				<button onclick="var inps = document.getElementsByTagName('fieldset')[0].getElementsByTagName('input'); for(i in inps) { inps[i].checked = !inps[i].checked; }; return false;">поменять выделение</button>
+			</fieldset>
+		</form>
 HTML;
 
-		$this->layout->append('INNER.0.0', $html);
+		$this->layout->assign('INNER.0.0', $html);
+		$this->layout->setGetVarToSave('word', $this->word);
+		$this->layout->setGetVarToSave('charcheck', $this->request->getVar('charcheck'));
+	}
+
+	function find(&$datatype) {
+		$count   = $this->db->getObjectsBySearchWord($datatype, NULL, $this->word, DB_SELECT_COUNT);
+
+		if($count) {
+			$onPage    = $this->app->getProperty('CHILDREN_ON_PAGE', 5);
+
+			$currentPage  = $this->request->getVar($datatype->id.'_page', 1);
+			$currentOrder = $this->request->getOrderVar($datatype->id, $datatype->order, $datatype->fields);
+			$this->layout->setGetVarToSave($datatype->id.'_order', $currentOrder);
+
+			$currentPage = $currentPage > ceil($count/$onPage) ? ceil($count/$onPage) : $currentPage;
+
+			$objects = $this->db->getObjectsBySearchWordLimited($datatype, NULL, $this->word, $onPage, $onPage*($currentPage-1), DB_SELECT_TABLE, $currentOrder);
+
+			$table = new PXAdminTable($objects, $datatype, $this->layout->getData);
+			$table->addToParent('INNER.1.0');
+
+			$table->setPager($currentPage, $onPage, $count);
+		}
+
+		return $count;
+
 	}
 }
 ?>

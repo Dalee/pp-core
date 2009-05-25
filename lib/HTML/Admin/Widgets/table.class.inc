@@ -37,7 +37,7 @@ class PXAdminTable extends PXAdminWidget {
 	function PXAdminTable($data, &$dtype, &$getData, $titleKey = NULL) {
 		$this->data     = $data;
 		$this->dtype    = $dtype;
-		$this->getData  = !empty($getData) ? $getData : null ;
+		$this->getData  = !empty($getData) ? $getData : array();
 
 		$this->currentOrder = isset($getData[$this->dtype->id.'_order']) ? $getData[$this->dtype->id.'_order'] : $this->dtype->order;
 
@@ -122,6 +122,10 @@ class PXAdminTable extends PXAdminWidget {
 	 */
 	function setChildLink($link){
 		$this->childLink = $link;
+	}
+
+	function html() {
+		return $this->getTable();
 	}
 
 	/**

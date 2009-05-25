@@ -140,13 +140,8 @@ class NLPGSQLDatabase extends NLAbstractSQLDatabase {
 
 		PXProfiler::begin('SQL: '.$query);
 
-		if (!$donotusecache) {
-			$table = $this->cache->load($query);
-
-			if ($table !== null) { 
-				PXProfiler::end();
-				return $table; 
-			}
+		if (!is_null($table = $this->_loadFromCache($query, $donotusecache))) { 
+			return $table; 
 		}
 
 		if (!$this->connected) {
@@ -166,10 +161,7 @@ class NLPGSQLDatabase extends NLAbstractSQLDatabase {
 				$table[] = pg_fetch_assoc($res, $i);
 			}
 
-			if (!$donotusecache) {
-				$this->cache->save($query, $table);
-			}
-
+			$this->_saveToCache($query, $table, $donotusecache);
 		} else {
 			PXProfiler::end();
 			return ERROR_DB_CANNOTCONNECT;
@@ -220,15 +212,15 @@ class NLPGSQLDatabase extends NLAbstractSQLDatabase {
 	 * 
 	 */
 	function transactionBegin() {
-		$this->Query('BEGIN');
+		$this->Query('BEGIN',true);
 	}
 
 	function transactionCommit() {
-		$this->Query('END');
+		$this->Query('END',true);
 	}
 
 	function transactionRollback() {
-		$this->Query('ROLLBACK');
+		$this->Query('ROLLBACK',true);
 	}
 
 	function importDateTime($string) {

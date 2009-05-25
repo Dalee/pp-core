@@ -106,14 +106,15 @@ class PXModuleObjects extends PXModule {
 
 		$this->datatype =& $this->getDatatype();
 
+		$action = $request->getAction();
+
 		$layout->setGetVarToSave('id',     $request->getId());
 		$layout->setGetVarToSave('format', $this->datatype->id);
-		$layout->setGetVarToSave('action', $request->getAction());
+		$layout->setGetVarToSave('action', $action);
 
 		$layout->setOuterForm('action.phtml', 'POST', 'multipart/form-data');
 
 		$this->object = $this->popupGetObject();
-
 		$this->form = new PXAdminObjectForm($this->datatype, $this->object);
 
 		$this->popupSetMenu();
@@ -123,7 +124,7 @@ class PXModuleObjects extends PXModule {
 		$layout->assign('OUTER.RIGHTCONTROLS', $this->form->rightControls());
 		$db->LoadDirectoriesByType($this->datatype, $this->object);
 
-		switch ($request->getAction()) {
+		switch ($action) {
 			case 'main':
 				$this->popupMain();
 				break;
@@ -138,6 +139,10 @@ class PXModuleObjects extends PXModule {
 
 			case 'links':
 				$this->popupLinks();
+				break;
+
+			case 'auditlog':
+				$this->popupAuditLog();
 				break;
 		}
 
@@ -166,7 +171,6 @@ class PXModuleObjects extends PXModule {
 					$object[$k] = $v;
 				}
 			}
-
 		} else {
 			$object = $this->db->getObjectById($this->datatype, $rId);
 
@@ -184,9 +188,29 @@ class PXModuleObjects extends PXModule {
 		return $object;
 	}
 
+	// protected
+	function popupGetMenuItems() {
+		$menuItems = array();
+		$menuItems['main'] = 'Основная информация';
+
+		if (isset($this->object['id']) && $this->object['id'] != 0) {
+			if (count($this->datatype->childs)) {
+				$menuItems['children'] = 'Разрешенные дети';
+			}
+
+			if (!empty($this->datatype->references)) {
+				$menuItems['links'] = 'Связи';
+			}
+
+			$menuItems['auditlog'] = 'Журнал';
+			$menuItems['remove']   = 'Удаление';
+		}
+
+		return $menuItems;
+	}
+
 	function popupSetMenu() {
-		$menuItems  = $this->form->getAllowedForms($this->user->level);
-		$this->layout->setMenu($menuItems, $this->request->getAction(), 'action');
+		$this->layout->setMenu($this->popupGetMenuItems(), $this->request->getAction(), 'action');
 	}
 
 	function popupCheckAccess(){
@@ -232,6 +256,43 @@ class PXModuleObjects extends PXModule {
 
 	function popupRemove() {
 		$this->layout->append('OUTER.CONTENT', $this->form->removeForm());
+	}
+
+	function popupAuditLog() {
+		$filters = array(
+			'format' => $this->datatype->id,
+			'id'     => $this->object['id']
+		);
+
+		require_once 'libpp/modules/auditlog.module.inc';
+		$this->viewer = new PXAuditViewer($filters);
+
+		$page    = $this->request->getVar('_page', 1);
+		$onPage  = $this->app->getProperty('CHILDREN_ON_PAGE', 15);
+
+		$count = $this->viewer->getCount();
+		$data  = $this->viewer->getData($page, $onPage);
+
+		if($count) {
+			$caption  = '<a href="./?area=auditlog&format='.$this->datatype->id.'&id='.$this->object['id'].'" target="_blank">Журнал аудита</a>, ';
+			$caption .= $count.' '.NumericEndingsRussian($count, 'запись', 'записи', 'записей');
+			$caption .= ' для текущего объекта';
+
+			$table = new PXAdminAuditTable();
+			$table->setDict('level', $this->viewer->getErrorLevels());
+			$table->setData($data);
+			$table->setCaption($caption);
+
+			$this->layout->append('OUTER.CONTENT', $table->html());
+
+			if($count > $onPage) {
+				$param = $this->request->getAllGetData();
+
+				$pager = new PxAdminPager($page, $onPage, $count, '',  $param);
+				$this->layout->append('OUTER.CONTENT', $pager->html());
+			}
+		}
+
 	}
 
 	function popupLinks() {
@@ -343,6 +404,10 @@ class PXModuleObjects extends PXModule {
 				$this->actionChangeStatus();
 				break;
 
+			case 'clone':
+				$this->actionCloneContentObject();
+				break;
+
 			case 'links':
 				$this->actionModifyLinks();
 				break;
@@ -366,6 +431,17 @@ class PXModuleObjects extends PXModule {
 			$id = $this->db->addContentObject($this->datatype, $object);
 			$this->returnToId($id);
 		}
+	}
+
+	function actionCloneContentObject() {
+		$donor = $this->request->getContentObject($this->datatype);
+
+		if(!is_numeric($donor['id']) || !$donor['id']) {
+			FatalError('Клонировать можно только существующие объекты');
+		}
+
+		$cloneId = $this->db->cloneContentObject($this->datatype, $donor['id']);
+		$this->returnToId($cloneId, 'main');
 	}
 
 	function actionChildren() {
@@ -458,8 +534,12 @@ class PXModuleObjects extends PXModule {
 		}
 	}
 	
-	function returnToId($id) {
+	function returnToId($id, $action = null) {
 		$this->nextLocation .= '&id='.$id;
+
+		if(is_string($action)) {
+			$this->nextLocation .= '&action='.$action;
+		}
 	}
 
 	function returnToReferer() {

@@ -61,7 +61,7 @@ if(!isset($_SERVER['REQUEST_METHOD'])) {
 
 // Определение BASEPATH - это полный путь к корню сайта
 if(!defined('BASEPATH')) {
-    define('BASEPATH', $_SERVER["DOCUMENT_ROOT"]);
+    define('BASEPATH', $_SERVER['DOCUMENT_ROOT'].'/');
 }
 
 

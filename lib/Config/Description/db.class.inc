@@ -3,20 +3,21 @@ define('ERROR_DB_CANNOTCONNECT', -1);
 define('ERROR_DB_BADQUERY',      -2);
 
 class NLDBDescription {
-	private $host;
-	private $port;
-
 	private $user;
 	private $password;
 
 	private $dbname;
-	public $dbtype; // FIXME
+	public  $dbtype; // FIXME
 	private $dbids;
+
+	private $host;
+	private $port;
 
 	private $options;
 	private $tty;
 
 	public  $cache;
+	public  $aicache; // private or public? I don't know
 	public  $encoding;
 
 	function __construct($config) {
@@ -30,6 +31,7 @@ class NLDBDescription {
 		if (isset($config['options']))  $this->options  = $config['options'];
 		if (isset($config['tty']))      $this->tty      = $config['tty'];
 		if (isset($config['cache']))    $this->cache    = $config['cache'];
+		if (isset($config['aicache']))  $this->aicache  = $config['aicache'];
 		if (isset($config['encoding'])) $this->encoding = $config['encoding'];
 	}
 
@@ -62,6 +64,7 @@ class NLDBDescription {
 
 	function GetPgsqlConnectString() {
 		$connectString = '';
+
 		if ($this->host)     $connectString .= ' host =   '.$this->host;
 		if ($this->port)     $connectString .= ' port =   '.$this->port;
 		if ($this->user)     $connectString .= ' user =   '.$this->user;

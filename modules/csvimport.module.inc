@@ -27,7 +27,7 @@ class PXModuleCsvImport extends PXModule {
 		$layout = $this->layout;
 		$request = $this->request;
 
-		$layout->SetInnerLayout(array(array(array('100%', '100%'))));
+		$layout->setOneColumn();
 		$html = '';
 
 		switch ($request->GetVar('status')) {

@@ -10,9 +10,10 @@ class PXDisplayTypeLinktofile extends PXDisplayTypeFile {
 	function buildInput($field, $object, $param=NULL) {
 		$k = $field->name;
 
-		$value = (isset($object[$k]) && is_array($object[$k]) && isset($object[$k]['filename']) && !is_null($object[$k]['filename']))
+		$value = (isset($object[$k]) && is_array($object[$k]) && isset($object[$k]['filename'])
 			? $object[$k]
-			: array('filename'=>null, 'dir'=>null, 'size'=>null);
+			: array()
+		) + array('filename'=>null, 'dir'=>null, 'size'=>null);
 
 		return NLAbstractHTMLForm::BuildLinkToFile($k, $value);
 	}

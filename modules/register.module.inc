@@ -19,8 +19,9 @@ class PXModuleRegister extends PXAbstractModule {
 		$this->contactEmailField = GetFromArray($settings,'useremail');
 		$this->captchaField      = GetFromArray($settings,'captcha');
 		$this->defaultAccess     = GetFromArray($settings,'defaultaccess', 1024);
+		$this->defaultAuth       = GetFromArray($settings,'authtype', null);
 		
-		$this->fields           = array();
+		$this->fields            = array();
 		
 		if (is_array($settings['field'])) {
 			foreach ($settings['field'] as $f) {
@@ -46,7 +47,7 @@ class PXModuleRegister extends PXAbstractModule {
 
 	function userIndex(&$app, &$request, &$user, &$db, &$layout, &$tree, &$objects, &$subObjects, &$references, &$heap, &$currentSid, &$currentCid, &$currentCtype, &$currentSCid, &$currentSCtype, &$rootId, &$pathId, &$urlFile, &$error) {
 		$this->__ctor($app, $db, $user, $request);
-		
+
 		$errors = & $this->loadModel('session', 'errors');
 		$input  = & $this->loadModel('session', 'data');
 		$layout->assign('__view', $request->GetVar('view'));
@@ -252,7 +253,7 @@ class PXModuleRegister extends PXAbstractModule {
 		
 		// parse fields
 		$rq = $this->_parseFields($input, $errors);
-			
+
 		if (!count($errors)) {
 			$newUser['access'] = $this->defaultAccess;
 			
@@ -338,6 +339,7 @@ class PXModuleRegister extends PXAbstractModule {
 			break;
 			case 'suser':
 				// Security
+				
 				foreach($this->fields as $field){
 					if(isset($object[$field['title']]) && is_string($object[$field['title']])){
 						$object[$field['title']] = $this->db->EscapeString($object[$field['title']]);
@@ -345,11 +347,18 @@ class PXModuleRegister extends PXAbstractModule {
 				}
 				$object += $this->app->InitContentObject('suser'); //merge with prototype
 				
+				if(isset($object['passwd'])) {
+					$authmethodname = $this->user->getPrimaryAuthMethod($this->defaultAuth);
+
+					$object['passwd'] = call_user_func(array($authmethodname, 'passwdToDB'), $object['passwd']);
+				}
+
 				if($object['id'] > 0){ // modify
 					$this->db->ModifyContentObject($this->app->types['suser'], $object);
-				} else { //create
+				} else { //create 
 					$this->db->AddContentObject($this->app->types['suser'], $object);
 				}
+				
 			break;
 			case 'captcha':
 				if(is_a($object, 'NLBlockingNumbers')){
@@ -421,7 +430,7 @@ class PXModuleRegister extends PXAbstractModule {
 		}
 		
 		if(!isset($errors[$field])){
-    		    $userData['passwd'] = $value[0];
+			$userData['passwd'] = $value[0];
 		}
 		
 		unset($userData[$field]);
@@ -434,9 +443,9 @@ class PXModuleRegister extends PXAbstractModule {
 	}
 	
 	function _uniqueFieldValidator($field, $value, &$errors, &$userData){
-		if(!empty($value)){
-			$suser =& $this->loadModel('suser', array($field => $value));
-			if(!count($suser)){
+		if(strlen(trim($value))){
+			$suser =& $this->loadModel('suser', array($field => trim($value)));
+			if(!count($suser) or $this->user->id > 0 && key($suser) == $this->user->id){
 				return;
 			}
 			$errors[$field]['exists'] = true;
@@ -445,17 +454,17 @@ class PXModuleRegister extends PXAbstractModule {
 	
 	function _reqFieldValidator($field, $value, &$errors, &$userData){
 		if(is_array($value)){
-		    foreach($value as $everyField){
-			if(!strlen($everyField)){
-			    $errors[$field]['req'] = true;
-    			    break;
+			foreach($value as $everyField){
+				if(!strlen(trim($everyField))){
+					$errors[$field]['req'] = true;
+					break;
+				}
 			}
-		    }
-		    return;
+			return;
 		}
 		
-		if(!strlen($value)){
-		    $errors[$field]['req'] = true;
+		if(!strlen(trim($value))){
+			$errors[$field]['req'] = true;
 		}
 	}
 	

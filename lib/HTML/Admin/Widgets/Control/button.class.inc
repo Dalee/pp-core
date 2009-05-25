@@ -1,7 +1,8 @@
 <?php
 class PXControlButton extends PXAdminWidget {
 	var $value;
-	var $onClickCode;
+	var $onClickCode = '';
+	var $cssClass    = '';
 
 	function PXControlButton($value) {
 		$this->value = $value;
@@ -11,8 +12,15 @@ class PXControlButton extends PXAdminWidget {
 		$this->onClickCode = $onClickCode;
 	}
 
+	function setClass($cssClass) {
+		$this->cssClass = $cssClass;
+	}
+
 	function html() {
-		return '<button '.($this->onClickCode ? 'onclick="'.$this->onClickCode.'"' : '').''.$this->disable.'>'.$this->value.'</button>';
+		$cssClass = strlen($this->cssClass)    ? ' class="'.$this->cssClass.'"'      : '';
+		$onClick  = strlen($this->onClickCode) ? ' onclick="'.$this->onClickCode.'"' : '';
+
+		return '<button'.$cssClass.$onClick.$this->disable.'>'.$this->value.'</button>';
 	}
 }
 ?>

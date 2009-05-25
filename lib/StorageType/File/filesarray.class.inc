@@ -9,12 +9,35 @@
  * displayType FILESARRAY
  * storageType filesarray
  */
-class PXStorageTypeFilesarray extends PXStorageType {
+class PXStorageTypeFilesarray extends PXStorageTypeAbstractFile {
+	function cloneFile($field, $object, &$param) {
+		$donor = $param['donor'];
+
+		$fileArray       = $donor[$field->name];
+		$ai              = $this->ai($param['format'], $object['id'], $field->name);
+		$basedir         = BASEPATH.'/htdocs'.$ai;
+
+		if (is_array($fileArray)) {
+			MakeDirIfNotExists($basedir);
+
+			foreach($fileArray as $k=>$f) {
+				$object[$field->name][$k]['path'] = $ai.$f['entry'];
+
+				copy(
+					BASEPATH.'/htdocs'.$donor[$field->name][$k]['path'],
+					BASEPATH.'/htdocs'.$object[$field->name][$k]['path']
+				);
+			}
+		}
+	}
+
 	function proceedFile($field, $object, &$param) {
-		$varName   = $field->name;
-		$basedir   = BASEPATH.'/htdocs/ai/'.$param['format'].'/'.$param['id'].'/'.$varName;
-		$fileArray = $object[$varName];
-		$allowed   = isset($param['allowed']) ? $param['allowed'] : NULL;
+		$varName         = $field->name;
+		$ai              = parent::ai($param['format'],$param['id'],$field->name);
+		$basedir         = BASEPATH.'/htdocs'.$ai;
+		$fileArray       = $object[$varName];
+		$allowed         = isset($param['allowed']) ? $param['allowed'] : NULL;
+		$invalidateCache = false;
 
 		if (is_array($fileArray) && !empty($fileArray['name'][0])) {
 			$filename = NULL;
@@ -38,6 +61,7 @@ class PXStorageTypeFilesarray extends PXStorageType {
 
 			if(!is_null($filename)) {
 				copy($fileArray['tmp_name'][0], $filename);
+				$invalidateCache = true;
 			}
 		}
 
@@ -45,6 +69,7 @@ class PXStorageTypeFilesarray extends PXStorageType {
 			foreach ($fileArray['remove'] as $fileName) {
 				if (file_exists($basedir.'/'.$fileName)) {
 					unlink($basedir.'/'.$fileName);
+					$invalidateCache = true;
 				}
 			}
 		}
@@ -54,16 +79,19 @@ class PXStorageTypeFilesarray extends PXStorageType {
 				if (file_exists($basedir.'/'.$k) && isset($v) && strlen($v)) {
 					unlink($basedir.'/'.$k);
 					copy($_FILES[$varName.'_edit']['tmp_name'][$k], $basedir.'/'._TranslitFilename($v));
+					$invalidateCache = true;
 				}
 			}
 		}
+		if($invalidateCache){
+			parent::removeFromCache($ai);
+		}
 	}
 
-
-	function normalize($field, $object, &$param) {
+	function __normalize($field, $object, &$param) {
 		$filesArray = array();
-		$basedir = '/ai/'.$param['format'].'/'.$object['id'].'/'.$field->name.'/';
-		$d = new NLDir(BASEPATH.'htdocs'.$basedir);
+		$basedir    = parent::ai($param['format'],$object['id'],$field->name);
+		$d          = new NLDir(BASEPATH.'htdocs'.$basedir);
 
 		if ($d->Exist()) {
 			foreach ($d->getFileNames() as $entry) {
@@ -84,10 +112,6 @@ class PXStorageTypeFilesarray extends PXStorageType {
 		}
 
 		return $filesArray;
-	}
-
-	function notInDb($field, $object, $param=NULL) {
-		return true;
 	}
 }
 ?>

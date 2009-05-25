@@ -4,6 +4,7 @@ class PXEngineIndex extends PXEngine {
 		PXProfiler::begin('TOTAL');
 
 		parent::__construct();
+
 		PXRegistry::setLayout(new PXUserHTMLLayout());
 
 		$this->content             = new StdClass; // FIXME

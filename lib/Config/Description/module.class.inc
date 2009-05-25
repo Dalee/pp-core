@@ -50,19 +50,22 @@ class PXModuleDescription {
 		}
 	}
 
-	function getPathToClass() {
-		$file = strtolower(substr($this->class, 8)).".module.inc";
+	function getPathToClass($type = 'module') {
+		$file = strtolower(substr($this->class, 8)).".{$type}.inc";
 
 		if(strlen($this->package) > 0) {
 			$package = str_replace(".","/",$this->package);
-			$packageLenghtWithOutSlashes = strlen(str_replace("/","",$package));
-			$file = $package."/".strtolower(substr($file,$packageLenghtWithOutSlashes));
+			$packageLengthWithoutSlashes = strlen(str_replace("/","",$package));
+			$file = $package."/".strtolower(substr($file,$packageLengthWithoutSlashes));
 		}
 
-		if (file_exists(BASEPATH.'/local/modules/'.$file)) {
-			return BASEPATH.'/local/modules/'.$file;
-		} elseif (file_exists(BASEPATH.'/libpp/modules/'.$file)) {
-			return BASEPATH.'/libpp/modules/'.$file;
+		$file = $type.'s/'.$file;
+
+		if (file_exists(BASEPATH.'/local/'.$file)) {
+			return BASEPATH.'/local/'.$file;
+
+		} elseif (file_exists(BASEPATH.'/libpp/'.$file)) {
+			return BASEPATH.'/libpp/'.$file;
 		}
 	}
 

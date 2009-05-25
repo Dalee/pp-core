@@ -39,7 +39,7 @@ class NLCaptcha {
 		$this->height = $height;
 
 		$this->init();                                // первые шаги
-		$this->addNoise();                            // добавить шум
+		//$this->addNoise();                            // добавить шум
 		$this->addText($text, $fonts, $fontSize);     // вывести надпись
 
 		if($withLines) {

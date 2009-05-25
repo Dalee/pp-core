@@ -13,10 +13,10 @@ class PXStorageTypeImage extends PXStorageTypeFile {
 		return parent::proceedFile($field, $object, $param);
 	}
 
-	function normalize($field, $object, &$param, $allowed=ENUM_ALLOWED_IMAGETYPES) {
-		$allowedImageTypes = array_unique(unserialize($allowed));
-
-		$tmp = glob(BASEPATH.'/site/htdocs/ai/'.$param['format'].'/'.$object['id'].'/'.$field->name.'/*');
+	function __normalize($field, $object, &$param, $allowed) {
+		$allowedImageTypes = array_unique(unserialize(is_null($allowed) ? ENUM_ALLOWED_IMAGETYPES : $allowed));
+		$basedir           = parent::ai($param['format'],$object['id'],$field->name);
+		$tmp               = glob(BASEPATH.'/site/htdocs' . $basedir . '/*');
 
 		if (!count($tmp)) {
 			return;
@@ -30,8 +30,9 @@ class PXStorageTypeImage extends PXStorageTypeFile {
 		$httpPath = str_replace(BASEPATH.'/site/htdocs', '', $diskPath);
 		$httpPath = urlencode($httpPath);
 		$httpPath = str_replace('%2F', '/', $httpPath);
+		$httpPath = str_replace('//', '/', $httpPath);
 		$httpPath = str_replace('+', '%20', $httpPath);
-
+		
 		list($width, $height, ) = getimagesize($diskPath);
 
 		return array(

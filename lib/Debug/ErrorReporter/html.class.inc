@@ -159,7 +159,6 @@ HTML;
 HTML;
 
 		$this->addEnvironments();
-		$this->addXSLT();
 
 		$mail->setBody(myconv('k', 'u', $body));
 		$mail->send();
@@ -188,8 +187,14 @@ HTML;
 HTML;
 	}
 
-	function addXSLT() {
-		$this->mail->addFile(dirname(__FILE__).'/style.xsl', 'error_reporter.xsl', 'text/xsl');
+	function applyXSLT($xml) {
+		static $xslt;
+
+		if(is_null($xslt)) {
+			$xslt = new PXLibXSLT(dirname(__FILE__).'/style.xsl');
+		}
+
+		return $xslt->transform($xml, false);
 	}
 
 	function addEnvironments() {
@@ -216,11 +221,17 @@ HTML;
 
 		$xml[] = '</environments>';
 
-		$this->mail->addFile(null, 'environments.debug_xml', 'text/xml', implode("\n", $xml));
+		$html = $this->applyXSLT(myconv('k', 'u', implode("\n", $xml)));
+
+		$this->mail->addFile(null, 'environments.debug_html', 'text/html', $html);
 	}
 
 	function attachError($error, $errPos) {
-		$this->mail->addFile(null, 'error_'.($errPos + 1).'.debug_xml', 'text/xml', myconv('k', 'u', $this->errorToXML($error)));
+		if($errPos < 15) {
+			$xml  = $this->errorToXML($error);
+			$html = $this->applyXSLT(myconv('k', 'u', $xml));
+			$this->mail->addFile(null, 'error_'.($errPos + 1).'.debug_html', 'text/html', $html);
+		}
 	}
 
 	function errorToXML($error) {

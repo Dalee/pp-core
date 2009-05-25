@@ -15,9 +15,9 @@ class PXStorageTypeImagesarray extends PXStorageTypeFilesarray {
 		return parent::proceedFile($field, $object, $param);
 	}
 
-	function normalize($field, $object, &$param) {
+	function __normalize($field, $object, &$param) {
 		$imagesArray = array();
-		$basedir = '/ai/'.$param['format'].'/'.$object['id'].'/'.$field->name.'/';
+		$basedir     = parent::ai($param['format'],$object['id'],$field->name);
 
 		$d = new NLDir(BASEPATH.'/site/htdocs'.$basedir);
 

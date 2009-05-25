@@ -124,6 +124,11 @@ class PXStorageType {
 		return null;
 	}
 
+
+	function cloneFile($field, $object, &$param) {
+		return null;
+	}
+
 	/**
 	 * Возвращает нормированное значение
 	 * поля после выборки объекта из базы

@@ -13,7 +13,9 @@ class PXDisplayTypeText extends PXDisplayType {
 	function buildInput($field, $object, $param=NULL) {
 		$value = isset($object[$field->name]) ? htmlspecialchars($object[$field->name]) : NULL;
 		$width = isset($field->displayTypeArgs[1]) ? (int)$field->displayTypeArgs[1] : 0;
-		return NLAbstractHTMLForm::BuildText($field->name, $value, $width);
+		$maxlength = isset($field->displayTypeArgs[2]) ? (int) $field->displayTypeArgs[2] : NULL;
+
+		return NLAbstractHTMLForm::BuildText($field->name, $value, $width, $maxlength);
 	}
 
 	function buildCell($field, $object, $param=NULL) {

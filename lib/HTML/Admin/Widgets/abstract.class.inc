@@ -8,11 +8,43 @@ interface PXAdminWidgetIF {
 /*abstract*/
 class PXAdminWidget /*implements PXAdminWidgetIF */{
 	var $disable;
+	var $parentWidget = null;
 
 	function PXAdminWidget() {
 	}
 
 	function html() {
+	}
+
+	function setParent(&$widget) {
+		$this->parentWidget =& $widget;
+	}
+
+	function &getParentWidget() {
+		if(is_null($this->parentWidget)) {
+			$layout =& PXRegistry::getLayout();
+			$this->setParent($layout);
+		}
+
+		return $this->parentWidget;
+	}
+
+	function addToParent($label) {
+		$parent =& $this->getParentWidget();
+		$this->addTo($label, $parent);
+	}
+
+	function setToParent($label) {
+		$parent =& $this->getParentWidget();
+		$this->setTo($label, $parent);
+	}
+
+	function addTo($label, &$widget) {
+		$widget->add($label, $this);
+	}
+
+	function setTo($label, &$widget) {
+		$widget->set($label, $this);
 	}
 
 	function setDisabled($disable) {

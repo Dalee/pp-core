@@ -43,22 +43,12 @@ class PXUserHTMLLang {
 			$action = 'assign';
 		}
 
-		foreach($param as $k=>$p) {
-			if(strpos($k, '_') !== 0) {
-				continue;
-			}
-
-			$k{0} = '%';
-			$replaces[$k.'%'] = $p;
-
-			$action = 'replace';
-		}
-
 		if(is_null($path)) {
 			return;
 		}
 
 		$value = $this->_get($path);
+		$value = $this->_replace($value, $param);
 
 		switch($action) {
 			case 'return':
@@ -71,10 +61,6 @@ class PXUserHTMLLang {
 
 			case 'date':
 				echo $this->_date($date, $value);
-				break;
-
-			case 'replace':
-				echo $this->_replace($replaces, $value);
 				break;
 
 			case 'get':
@@ -157,8 +143,23 @@ class PXUserHTMLLang {
 		);
 	}
 
-	function _replace($replaces, $value) {
-		return str_replace(array_keys($replaces), $replaces, $value);
+	function _replace($value, $param) {
+		$replaces = array();
+
+		foreach($param as $k=>$p) {
+			if(strpos($k, '_') !== 0) {
+				continue;
+			}
+
+			$k{0} = '%';
+			$replaces[$k.'%'] = $p;
+		}
+
+		if(sizeof($replaces)) {
+			$value = str_replace(array_keys($replaces), $replaces, $value);
+		}
+
+		return $value;
 	}
 
 	function parseDateToTime($string) {

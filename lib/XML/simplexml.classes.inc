@@ -1,5 +1,4 @@
 <?php
-
 class PXmlSimplexml extends PXmlAbstract implements IPXml {
 	function PXmlSimplexml($xmlEntity){
 		$this->xmlObject = $this->identEntity($xmlEntity, 'SimpleXMLElement', 'simplexml_load_file', 'simplexml_load_string');
@@ -23,7 +22,6 @@ class PXmlSimplexml extends PXmlAbstract implements IPXml {
 }
 
 class PXmlSimplexmlNode extends PXmlAbstractNode implements IPXmlNode {
-
 	function PXmlSimplexmlNode($node){
 		parent::PXmlAbstractNode($node);
 		$this->_nodeType = 1;

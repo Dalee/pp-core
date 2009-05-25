@@ -7,16 +7,27 @@ abstract class PXEngine {
 		PXProfiler::begin('INIT');
 
 		$this->initApplication();
+
 		$user = PXRegistry::getUser();
 
 		$user->setAcl();
 		$user->checkAuth();
+
+		$this->saveToRegistry();
 
 		PXRegistry::getDb()->LoadDirectoriesAutomatic(PXRegistry::getApp()->directory);
 
 		$this->initModules();
 
 		PXProfiler::end();
+	}
+
+	function saveToRegistry() {
+		foreach(array_keys(get_object_vars($this)) as $var){
+			if(isset($this->$var) && PXRegistry::canSaveIt($var)){
+				call_user_func_array(array("PXRegistry", 'set'.ucfirst($var)), array(&$this->$var));
+			}
+		}
 	}
 
 	function initApplication() { 

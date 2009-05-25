@@ -12,6 +12,7 @@ class PXUserHTMLLayout extends PXLayoutInterface  {
 		$this->_filters  = array();
 		$this->indexTemplate = 'index.tmpl';
 		$this->addTemplateFunction('pager', array(&$this, 'pager'));
+		$this->AddTemplateBlock('dev', 'smarty_block_dev'); //FIXME: see functions.etc.inc
 		$this->_initLang();
 	}
 
@@ -47,10 +48,9 @@ class PXUserHTMLLayout extends PXLayoutInterface  {
 	
 	private function _initLang() {
 		include_once 'HTML/lang.class.inc';
-
+	
 		$this->lang = new PXUserHTMLLang();
 		$this->addTemplateFunction('lang',  array(&$this->lang, 'lang'));
-		$this->addTemplateFunction('pager', array(&$this,       'pager'));
 	}
 	
 	function setLang($lang='rus') {
@@ -94,7 +94,7 @@ class PXUserHTMLLayout extends PXLayoutInterface  {
 
 		return $this->html('misc/pager/pages.tmpl');
 	}
-
+	
 	function getLangVar($path) {
 		$param = array('get' => $path, 'return' => true);
 		return $this->lang->lang($param, $this->smarty);
@@ -154,6 +154,10 @@ class PXUserHTMLLayout extends PXLayoutInterface  {
 
 	function addTemplateFunction($templateBlock, $functionName) {
 		$this->smarty->register_function($templateBlock, $functionName);
+	}
+	
+	function addTemplateBlock($templateBlock, $functionName, $cacheable = true) {
+		$this->smarty->register_block($templateBlock, $functionName, $cacheable);
 	}
 
 	function removeFilter($functionName) {

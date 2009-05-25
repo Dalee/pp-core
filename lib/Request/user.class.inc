@@ -70,19 +70,20 @@ class PXRequestUser extends PXRequestBase {
 
 		foreach ($format->fields as $k=>$v) {
 			if (!empty($v->handler)) {
-				$file = strtolower($v->handler).'.inputhandler.inc';
+				$extraArgs = explode('|', $v->handler);
+				$handler   = array_shift($extraArgs);
+				$file      = strtolower($handler).".inputhandler.inc";
 
-				if (file_exists(BASEPATH.'/local/lib/handlers/'.$file)) {
-					include_once BASEPATH.'/local/lib/handlers/'.$file;
-
-				} elseif (file_exists(BASEPATH.'/libpp/lib/handlers/'.$file)) {
-					include_once BASEPATH.'/libpp/lib/handlers/'.$file;
+				if (file_exists(BASEPATH.'/local/handlers/'.$file)) {
+					include_once BASEPATH.'/local/handlers/'.$file;
+				} elseif (file_exists(BASEPATH.'/libpp/handlers/'.$file)) {
+					include_once BASEPATH.'/libpp/handlers/'.$file;
 				}
 
-				$function = 'PXInputHandler'.$v->handler;
+				$function = 'PXInputHandler'.$handler;
 
 				if (function_exists($function)) {
-					$object[$k] = $function($v, $object[$k]);
+					$object[$k] = $function($v, $object[$k], $extraArgs);
 				}
 			}
 		}

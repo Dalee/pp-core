@@ -115,7 +115,12 @@ class NLMailMessage {
 
 	function addFile($file, $name, $type='application/octet-stream', $source='') {
 		$id = uniqid(rand(), true);
-		$this->files[] = array('file'=>$file, 'name'=>$name, 'id'=>$id, 'type'=>$type, 'source'=>$source);
+
+		if(isset($this->files[$name])) {
+			return $this->files[$name]['id'];
+		}
+
+		$this->files[$name] = array('file'=>$file, 'name'=>$name, 'id'=>$id, 'type'=>$type, 'source'=>$source);
 		return 'cid:'.$id;
 	}
 

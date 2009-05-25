@@ -7,11 +7,13 @@
  * displayType FILE
  * storageType file
  */
-class PXStorageTypeFile extends PXStorageType {
+class PXStorageTypeFile extends PXStorageTypeAbstractFile {
 	function proceedFile($field, $object, &$param) {
-		$fileArray = $object[$field->name];
-		$basedir = BASEPATH.'/site/htdocs/ai/'.$param['format'].'/'.$param['id'].'/'.$field->name.'/';
-		$filename = null;
+		$fileArray       = $object[$field->name];
+		$ai              = parent::ai($param['format'],$param['id'],$field->name);
+		$basedir         = BASEPATH.'/site/htdocs'.$ai;
+		$filename        = null;
+		$invalidateCache = false;
 
 		if (is_array($fileArray)) {
 			if (!empty($fileArray['name'])) {
@@ -39,8 +41,8 @@ class PXStorageTypeFile extends PXStorageType {
 							unlink($basedir.$entry);
 						}
 					}
-
 					copy($fileArray['tmp_name'], $basedir.$filename);
+					$invalidateCache = true;
 				}
 			}
 
@@ -48,16 +50,20 @@ class PXStorageTypeFile extends PXStorageType {
 				foreach ($fileArray['remove'] as $fileName) {
 					if (file_exists($basedir.$fileName)) {
 						unlink($basedir.$fileName);
+						$invalidateCache = true;
 					}
 				}
 			}
 		}
+		if($invalidateCache){
+			parent::removeFromCache($ai);
+		}
 	}
 
-	function normalize($field, $object, &$param) {
+	function __normalize($field, $object, &$param) {
 		$fileName = NULL;
-		$basedir = 'ai/'.$param['format'].'/'.$object['id'].'/'.$field->name;
-		$d = new NLDir(BASEPATH.'/site/htdocs/'.$basedir);
+		$basedir  = parent::ai($param['format'],$object['id'],$field->name);
+		$d        = new NLDir(BASEPATH.'/site/htdocs/'.$basedir);
 
 		if ($d->Exist()) {
 			while ($entry = $d->Read()) {
@@ -66,16 +72,11 @@ class PXStorageTypeFile extends PXStorageType {
 		}
 
 		return array(
-			'filename' => isset($fileName) ? $fileName                  : NULL,
-			'fullpath' => isset($fileName) ? '/'.$basedir.'/'.$fileName : NULL,
-
+			'filename' => isset($fileName) ? $fileName              : NULL,
+			'fullpath' => isset($fileName) ? $basedir.'/'.$fileName : NULL,
 			'type'     => (isset($fileName) && is_file($d->name.'/'.$fileName)) ? mime_content_type($d->name.'/'.$fileName) : NULL,
 			'size'     => (isset($fileName) && is_file($d->name.'/'.$fileName)) ? filesize($d->name.'/'.$fileName)          : 0
 		);
-	}
-
-	function notInDb($field, $object, $param=NULL) {
-		return true;
 	}
 }
 ?>

@@ -28,4 +28,10 @@ function parseFloat($s) {
 	return floatval($s);
 }
 
+//FIXME: PXUserHTMLLayout::devBlock - it's right place for it. It is placed here because we using REALLY old version of Smarty, the valid block callback can be a global function only.
+function smarty_block_dev($params, $content, &$smarty) {
+	$app = & PXRegistry::getApp();
+	return $app->getProperty('DEVELOPMENT_FACILITY', false) ? $content : '';
+}
+
 ?>

@@ -19,6 +19,7 @@ require_once('HTML/Admin/Widgets/Input/Datetime/timehidden.class.inc');
 
 require_once('HTML/Admin/Widgets/Input/file.class.inc');
 require_once('HTML/Admin/Widgets/Input/image.class.inc');
+require_once('HTML/Admin/Widgets/Input/imageStatic.class.inc');
 require_once('HTML/Admin/Widgets/Input/flash.class.inc');
 require_once('HTML/Admin/Widgets/Input/link.class.inc');
 
@@ -37,5 +38,7 @@ require_once('HTML/Admin/Widgets/Control/reset.class.inc');
 require_once('HTML/Admin/Widgets/pager.class.inc');
 require_once('HTML/Admin/Widgets/table.class.inc');
 require_once('HTML/Admin/Widgets/list.class.inc');
-include_once 'HTML/Admin/Widgets/tablesimple.class.inc';
+require_once 'HTML/Admin/Widgets/tablesimple.class.inc';
+
+require_once 'HTML/Admin/Widgets/menuTabbed.class.inc';
 ?>

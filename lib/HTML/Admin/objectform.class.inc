@@ -17,26 +17,34 @@ class PXAdminObjectForm extends NLAbstractHTMLForm {
 
 	function MainForm($datatype) {
 		$html  = $this->BaseInputs('main');
-		
 
 		$param = array(
 			'even'        => false,
 			'datatype'    => $datatype
 		);
 
-		$html .= '<table class="mainform">';
-		foreach ($this->format->fields as $k=>$v) {
-			if($k === 'id') {
-				continue;
+		foreach($datatype->fieldGroups as $groupName => $fields) {
+			$html .= '<table class="mainform">';
+
+			if(strlen($groupName)) {
+				$html .= '<caption>' . $groupName . '</caption>';
 			}
 
-			if(!isset($this->object[$k]) && isset($v->defaultValue)) {
-				$this->object[$k] = htmlspecialchars($v->defaultValue);
+
+			foreach ($fields as $k=>$v) {
+				if($k === 'id') {
+					continue;
+				}
+
+				if(!isset($this->object[$k]) && isset($v->defaultValue)) {
+					$this->object[$k] = htmlspecialchars($v->defaultValue);
+				}
+
+				$html .= $v->displayType->buildRow($v, $this->object, $param);
 			}
 
-			$html .= $v->displayType->buildRow($v, $this->object, $param);
+			$html .= '</table>';
 		}
-		$html .= '</table>';
 
 		if (isset($this->object['sys_created']) || isset($this->object['sys_modified']) || isset($this->object['ownerlogin'])) {
 			$html .= '<dl class="sysinfo">';
@@ -244,7 +252,7 @@ HTML;
 			$html .= '<label for="'.OBJ_FIELD_CHILDREN.'['.$k.']">'.$v->title.'</label>';
 			$html .= '</dt>';
 
-			$value = ($checked) ? $this->object[OBJ_FIELD_CHILDREN][$k] : PXApplication::_mapByDefaults('all');
+			$value = ($checked) ? $this->object[OBJ_FIELD_CHILDREN][$k] : PXTypeDescription::_mapByDefaults('all');
 			$this->disable = !strlen($checked);
 
 			$html .= '<dd>'.$this->BuildDropDown(OBJ_FIELD_CHILDREN.'['.$k.']', $value, $values, 0, 0).'</dd>';
@@ -293,25 +301,6 @@ HTML;
 				<label for="ack">Да! Я хочу удалить именно этот объект!</label>
 			</p>
 HTML;
-	}
-
-	function getAllowedForms($userLevel) {
-		$forms = array();
-		$forms['main'] = 'Основная информация';
-
-		if (isset($this->object['id']) && $this->object['id'] != 0) {
-			if (count($this->format->childs)) {
-				$forms['children'] = 'Разрешенные дети';
-			}
-
-			if (!empty($this->format->references)) {
-				$forms['links'] = 'Связи';
-			}
-
-			$forms['remove']   = 'Удаление';
-		}
-
-		return $forms;
 	}
 }
 

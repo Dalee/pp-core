@@ -20,87 +20,86 @@ class PXModuleAdvert extends PXModule {
 		$request = $this->request;
 		$user    = $this->user;
 
-		$layout->SetInnerLayout(
-			array(
-				array(array('25%', '85%', NULL, NULL), array('75%', '15%', NULL, 2)),
-				array(array('25%', '100%', NULL, NULL)),
-				array(array('25%', NULL, NULL, NULL), array('75%', NULL, NULL, NULL))
-			)
-		);
-		$tree = $db->GetObjects($app->types[$this->dtCampaign], NULL, DB_SELECT_TREE);
-		$db->filterByAccess('admin', $app->types[$this->dtCampaign], $tree);
-		$app->types[$this->dtCampaign]->makeTreeWithSid = true;
-		$layout->AssignTree('INNER.0.0', $app->types[$this->dtCampaign], $tree, $request->GetSid(), $request->GetLeafStatus());
+		$this->onPage = $this->app->getProperty('CHILDREN_ON_PAGE', 5);
+		$sid = $this->request->getVar('sid');
 
-		if ($user->can('write', $app->types[$this->dtCampaign], array())) {
-			$layout->AssignControls('INNER.0.2', $request->getSid(), array($this->dtCampaign));
-			$layout->AssignContextMenu('INNER.0.0.CONTEXT', 0, array($this->dtCampaign));
+		$this->controls = array();
+
+		$campaigns = $this->adminCampaigns($sid);
+
+		if (is_numeric($sid) && isset($campaigns->leafs[$sid])) {
+			$this->adminBanners($sid);
 		}
 
-		if($user->can('admin', $app->types[$this->dtPlace])) {
-			$addMenu = array(
-				'adplace' => 'Баннерные позиции'
-			);
+		$this->adminPlaces();
 
-			$layout->AssignKeyValueList('INNER.0.1', $addMenu, $request->GetSid());
+		foreach($this->controls as $dt=>$parents) {
+			$this->layout->appendControls('INNER.'.$parents[2].'.1', $parents[0], array($dt));
+//			$this->layout->appendContextMenu('INNER.0.0.CONTEXT', $parents[1], array($dt));
 		}
-		$onPage = $app->GetProperty('CHILDREN_ON_PAGE', 5);
+	}
 
-		if (is_numeric($request->GetSid()) && isset($tree->leafs[$request->GetSid()])) {
-			$parentObject = $db->GetObjectByID($app->types[$this->dtCampaign], $request->GetSid());
-			if ($parentObject) {
-				$layout->SetGetVarToSave($this->dtBanner.'_page', $request->GetVar($this->dtBanner.'_page', 1));
-				$currentPage = $request->GetVar($this->dtBanner.'_page', 1);
+	function adminCampaigns($sid) {
+		$dtCampaign =& $this->app->types[$this->dtCampaign];
 
-				$currentOrder = $request->GetOrderVar($this->dtBanner, $app->types[$this->dtBanner]->order, $app->types[$this->dtBanner]->fields);
-				$layout->SetGetVarToSave($this->dtBanner.'_order', $currentOrder);
+		$tree = $this->db->getObjects($dtCampaign, NULL, DB_SELECT_TREE);
+		$this->db->filterByAccess('admin', $dtCampaign, $tree);
 
-				$objects = $db->GetObjectsByParentLimited($app->types[$this->dtBanner], NULL, $request->GetSid(), $onPage, $onPage*($currentPage-1), DB_SELECT_TABLE, $currentOrder);
-				$count   = $db->GetObjectsByParent($app->types[$this->dtBanner], NULL, $request->GetSid(), DB_SELECT_COUNT);
+		$dtCampaign->makeTreeWithSid = true;
 
-				$table = new PXAdminTable($objects, $app->types[$this->dtBanner], $layout->getData);
-				$stats = '<a href="javascript:AdminPopup(\''.$this->area.'\',\'{{format}}\',{{id}}, \'monthly\',990,600);"><img border="0" src="i/icon/stat.gif" align="middle" hspace="3" alt="{{title}}"></a>';
-				$table->appendControl('stats', $stats);
-				$table->setPager($currentPage, $onPage, $count);
-				$table->loadDropdownValues($db);
-				$layout->append('INNER.1.0', $table->getTable());
+		$this->layout->append('INNER.0.0', '<h2>'.$dtCampaign->title.' ('.sizeof($tree->leafs).')</h2>');
+		$this->layout->appendTree('INNER.0.0', $dtCampaign, $tree, $sid, $this->request->getLeafStatus());
 
-				$allowedChilds = $app->GetAllowedChildsKeys($this->dtCampaign, $parentObject);
-	 			if ($user->can('write', $app->types[$this->dtBanner], array('id' => 0, 'parent' => $parentObject['id']))) {
-					$layout->AssignControls('INNER.1.2', $request->GetSid(), $allowedChilds);
-					$layout->AssignContextMenu('INNER.1.0.CONTEXT', $request->GetSid(), $allowedChilds);
-				}
+		if ($this->user->can('write', $dtCampaign, array())) {
+			$this->controls[$this->dtCampaign] = array($sid, 0, 0);
+		}
 
-			} else {
-				$layout->AssignError('INNER.1.0', "Некорректный параметр <EM>sid</EM>");
+		return $tree;
+	}
+
+	function adminBanners($sid) {
+		$dtBanner =&  $this->app->types[$this->dtBanner];
+
+		$this->layout->setGetVarToSave($dtBanner->id.'_page', $this->request->getVar($dtBanner->id.'_page', 1));
+		$currentPage = $this->request->getVar($dtBanner->id.'_page', 1);
+
+		$currentOrder = $this->request->getOrderVar($dtBanner->id, $dtBanner->order, $dtBanner->fields);
+		$this->layout->setGetVarToSave($dtBanner->id.'_order', $currentOrder);
+
+		$objects = $this->db->getObjectsByParentLimited($dtBanner, NULL, $sid, $this->onPage, $this->onPage*($currentPage-1), DB_SELECT_TABLE, $currentOrder);
+		$count   = $this->db->getObjectsByParent($dtBanner, NULL, $sid, DB_SELECT_COUNT);
+
+		$table = new PXAdminTable($objects, $dtBanner, $this->layout->getData);
+		$stats = '<a href="javascript:AdminPopup(\''.$this->area.'\',\'{{format}}\',{{id}}, \'monthly\',990,600);"><img border="0" src="i/icon/stat.gif" align="middle" hspace="3" alt="{{title}}"></a>';
+		$table->appendControl('stats', $stats);
+		$table->setPager($currentPage, $this->onPage, $count);
+		$table->loadDropdownValues($this->db);
+
+		$table->addToParent('INNER.1.0');
+
+		if ($this->user->can('write', $dtBanner, array('id' => 0, 'parent' => $sid))) {
+			$this->controls[$this->dtBanner] = array($sid, $sid, 1);
+		}
+	}
+
+	function adminPlaces() {
+		$dtPlace = $this->app->types[$this->dtPlace];
+
+		if($this->user->can('admin', $dtPlace)) {
+			$currentOrder = $this->request->GetOrderVar($dtPlace->id, $dtPlace->order, $dtPlace->fields);
+			$this->layout->setGetVarToSave($dtPlace->id.'_order', $currentOrder);
+			$this->layout->setGetVarToSave($dtPlace->id.'_page', $this->request->getVar($dtPlace->id.'_page', 1));
+			$currentPage = $this->request->getVar($dtPlace->id.'_page', 1);
+
+			$objects = $this->db->getObjectsLimited($dtPlace, NULL, $this->onPage, $this->onPage*($currentPage-1), DB_SELECT_TABLE, $currentOrder);
+			$this->db->filterByAccess('admin', $dtPlace, $objects);
+
+			$count   = $this->db->getObjects($dtPlace, NULL, DB_SELECT_COUNT);
+			$this->layout->appendTable('INNER.0.0', $dtPlace->id, $objects, null, null, $currentPage, $this->onPage, $count);
+
+			if ($this->user->can('write', $dtPlace, array())) {
+				$this->controls[$this->dtPlace] = array(0, 0, 0);
 			}
-
-		} elseif ($request->GetSid()) {
-			switch ($request->GetSid()) {
-				case 'adplace':
-					if($user->can('admin', $app->types[$this->dtPlace])) {
-						$currentOrder = $request->GetOrderVar($this->dtPlace, $app->types[$this->dtPlace]->order, $app->types[$this->dtPlace]->fields);
-						$layout->SetGetVarToSave($this->dtPlace.'_order', $currentOrder);
-
-						$layout->SetGetVarToSave($this->dtPlace.'_page', $request->GetVar($this->dtPlace.'_page', 1));
-						$currentPage = $request->GetVar($this->dtPlace.'_page', 1);
-						$objects = $db->GetObjectsLimited($app->types[$this->dtPlace], NULL, $onPage, $onPage*($currentPage-1), DB_SELECT_TABLE, $currentOrder);
-						$db->filterByAccess('admin', $app->types[$this->dtPlace], $objects);
-
-						$count   = $db->GetObjects($app->types[$this->dtPlace], NULL, DB_SELECT_COUNT);
-						$layout->AppendTable('INNER.1.0', $this->dtPlace, $objects, $request->GetCid(), NULL, $currentPage, $onPage, $count);
-						if ($user->can('write', $app->types[$this->dtPlace], array())) {
-							$layout->AssignControls('INNER.1.2', 0, array($this->dtPlace));
-							$layout->AssignContextMenu('INNER.1.0.CONTEXT', 0, array($this->dtPlace));
-						}
-					}
-					break;
-				default:
-					$layout->AssignError('INNER.1.0', "Некорректный параметр <EM>sid</EM>");
-			}
-
-		} else {
-			$layout->Assign('INNER.1.0', "<H2>Выберите кампанию</H2>");
 		}
 	}
 
@@ -273,7 +272,6 @@ SQL;
 
 			//show textual content
 			default:
-
 				$object = $db->GetObjectByID($app->types[$request->GetFormat()], $request->GetId());
 				$title = isset($object['title']) ? substr(strip_tags($object['title']), 0, 32):'баннер не найден';
 

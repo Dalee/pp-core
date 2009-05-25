@@ -1,6 +1,6 @@
 <?php
 class ObjectCache extends PXCacheFile { //FIXME ! Remove 'extends' ! It is only for back compatibility !
-	
+
 	// Factory
 	public static function get($cache, $cacheDomain = null, $defaultExpire = 3600){
 		$klass    = 'PXCache' . ucfirst($cache);

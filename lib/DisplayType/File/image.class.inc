@@ -24,7 +24,7 @@ class PXDisplayTypeImage extends PXDisplayType {
 	function buildCellHtml($value) {
 		$html  = '<div class="imagepreview image-in-cell"><div class="small">';
 
-		if(!is_null($value['path'])) {
+		if(isset($value['path'])) {
 			$size = 50;
 
 			$w = isset($value['width'])  ? $value['width']  : $size;
@@ -41,7 +41,7 @@ class PXDisplayTypeImage extends PXDisplayType {
 			$html .= '<a href="'.$value['path'].'" target="_blank"><img src="'.$value['path'].'" width="'.$width.'" height="'.$height.'"/></a>';
 		}
 
-		$html .= '</div>'.($value['path'] ? $value['width'].'x'.$value['height'] : '').'</div>';
+		$html .= '</div>'.(isset($value['path']) ? $value['width'].'x'.$value['height'] : '').'</div>';
 		return $html ;
 	}
 

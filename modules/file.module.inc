@@ -39,7 +39,7 @@ class PXModuleFile extends PXModule {
 			return false;
 		}
 
-		$this->layout->setSimpleInnerLayout(array('100%'), array('100%', ''));
+		$this->layout->setOneColumn();
 		$this->layout->assign('INNER.0.0', '<div class="error">Нет ни одного каталога <strong>доступного</strong> для просмотра!!!</div>');
 		return true;
 	}
@@ -101,7 +101,7 @@ class PXModuleFile extends PXModule {
 	<input type="button" value="Новый файл" onclick="ShowUploadForm('%SIDE%UploadForm');">
 </div>
 
-<form action="action.phtml" method="POST" enctype="multipart/form-data" id="%SIDE%UploadForm" class="uploader">
+<form action="action.phtml" method="POST" enctype="multipart/form-data" id="%SIDE%UploadForm" class="uploader hide">
 	<input type="hidden" name="action"  value="upload"   >
 	<input type="hidden" name="area"    value="%AREA%"   >
 	<input type="hidden" name="outside" value="%OUTSIDE%">
@@ -141,6 +141,22 @@ HTML;
 		$_html  =
 <<<HTML
 <table class="filemanager">
+	<thead>
+		<tr>
+			<td>
+				<div {INNER.0.1.CONTEXT}>
+					{INNER.0.1}
+				</div>
+			</td>
+
+			<td>
+				<div {INNER.1.1.CONTEXT}>
+					{INNER.1.1}
+				</div>
+			</td>
+		</tr>
+	</thead>
+
 	<tbody>
 		<tr>
 			<td>
@@ -156,25 +172,8 @@ HTML;
 			</td>
 		</tr>
 	</tbody>
-
-	<tfoot>
-		<tr>
-			<td>
-				<div {INNER.0.1.CONTEXT}>
-					{INNER.0.1}
-				</div>
-			</td>
-
-			<td>
-				<div {INNER.1.1.CONTEXT}>
-					{INNER.1.1}
-				</div>
-			</td>
-		</tr>
-	</tfoot>
 </table>
 HTML;
-
 		$this->layout->assign('OUTER.MAINAREA', $_html);
 	}
 

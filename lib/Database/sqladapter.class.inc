@@ -3,14 +3,16 @@ require_once 'Cache/classes.inc';
 
 class NLSQLDatabaseAdapter {
 	private   $dbDriver;
-	protected $cache;
+
+	protected $selfDescription; // ?
 
 	function NLSQLDatabaseAdapter(&$dbDescription) {
 		$this->init($dbDescription);
 	}
 
 	function init($dbDescription) {
-		$this->dbDriver = $dbDescription->getDriver();
+		$this->dbDriver        = $dbDescription->getDriver();
+		$this->selfDescription = $dbDescription;
 	}
 
 	function switchDatabase($dbDescription) {
@@ -23,6 +25,10 @@ class NLSQLDatabaseAdapter {
 			case 'db':
 			case 'connection':
 				FatalError('You cant use deprecated $'.$property.' property');
+				break;
+
+			case 'cache':
+				return $this->dbDriver->cache;
 				break;
 		}
 	}
@@ -42,7 +48,15 @@ class NLSQLDatabaseAdapter {
 	function ClearCache($force=false) {
 		return $this->db->cache->clear();
 	}
-	
+
+	function cacheOn(){
+		$this->dbDriver->setCache($this->selfDescription->cache);
+	}
+
+	function cacheOff(){
+		$this->dbDriver->setCache(false);
+	}
+
 	function LIKE($condition, $percs = NULL ){
 		return $this->db->LIKE($condition, is_null($percs) ? P_LEFT|P_RIGHT : $percs);
 	}

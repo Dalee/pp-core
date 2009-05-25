@@ -7,7 +7,7 @@ class PXRegistry {
 	var $response;
 	var $user;
 	var $layout;
-	
+
 	//constructor
 	private function __construct(){
 	}
@@ -22,7 +22,7 @@ class PXRegistry {
 		return $registry;
 	}
 
-	private static function canSaveIt($varName){
+	public static function canSaveIt($varName){
 		$registry =& self::instance();
 		return array_key_exists($varName, get_object_vars($registry));
 	}
@@ -81,13 +81,19 @@ class PXRegistry {
 	public static function &getUser() {
 		return self::_get('user');
 	}
-
+	
 	public static function &getLayout() {
 		return self::_get('layout');
 	}
 
+	public static function &getResponse() {
+		return PXRegistry::_get('response');
+	}
+
 	public static function &getTypes($typeName=null) {
 		static $types;
+
+		$app =& PXRegistry::getApp();
 
 		if(!is_array($types)) {
 			$app =  self::getApp();
@@ -103,7 +109,21 @@ class PXRegistry {
 				return $nullType;
 			}
 		}
+
 		return $types;
+	}
+
+	public static function assignToObject(&$object) {
+		$registry_fields = array_keys(get_class_vars(__CLASS__));
+		$object_fields   = array_keys(get_object_vars($object));
+		$fields          = array_intersect($registry_fields, $object_fields);
+
+		if(empty($fields)) return;
+
+		foreach($fields as $field) {
+			$registry_method = "get".ucfirst($field);
+			$object->$field =& PXRegistry::$registry_method();
+		}
 	}
 
 	private static function _set($varName, &$variable) {

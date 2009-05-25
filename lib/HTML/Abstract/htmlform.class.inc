@@ -82,11 +82,11 @@ class NLAbstractHTMLForm {
 		return $hidden->html();
 	}
 
-	static function BuildText($name, $value, $height) {
+	static function BuildText($name, $value, $height, $maxlength=null) {
 		if ($height > 0) {
-			$input = new PXInputTextarea($name, $value, $height);
+			$input = new PXInputTextarea($name, $value, $height, $maxlength);
 		} else {
-			$input = new PXInputInput($name, $value);
+			$input = new PXInputInput($name, $value, $maxlength);
 		}
 
 		$input->setDisabled(NLAbstractHTMLForm::_DisabledStatus());

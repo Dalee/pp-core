@@ -2,6 +2,7 @@
 class NLHTTPClient {
 	var $connection;
 	var $timeout;
+	var $connectionTimeout;
 	var $redirects;
 	var $headers;
 	var $status;
@@ -15,7 +16,7 @@ class NLHTTPClient {
 
 	var $proxy;
 
-	function NLHTTPClient($proxy=NULL, $timeout=10) {
+	function NLHTTPClient($proxy=NULL, $timeout=10, $connectionTimeout = array(10, 0)) {
 		if(is_null($proxy)) {
 			$this->proxy = NULL;
 
@@ -28,11 +29,12 @@ class NLHTTPClient {
 			$this->proxy['pass'] = isset($tmp['pass']) && strlen($tmp['pass']) ? $tmp['pass'] : '';
 		}
 
-		$this->timeout    = $timeout;
-		$this->connection = false;
-		$this->headers    = array();
-		$this->redirects  = 0;
-		$this->status     = 0;
+		$this->timeout           = $timeout;
+		$this->connectionTimeout = is_array($connectionTimeout) ? $connectionTimeout : array((int)$connectionTimeout, 0);
+		$this->connection        = false;
+		$this->headers           = array();
+		$this->redirects         = 0;
+		$this->status            = 0;
 	}
 
 	function _connect($host='', $port='80') {
@@ -61,7 +63,7 @@ class NLHTTPClient {
 				$this->connection = false;
 				FatalError($errstr);
 			}
-
+			
 			$this->connection = $fp;
 		}
 
@@ -102,13 +104,15 @@ class NLHTTPClient {
 
 		if($this->connection) {
 			fwrite($this->connection, implode("\r\n", $this->headers)."\r\n\r\n");
-
+			stream_set_timeout($this->connection, $this->connectionTimeout[0], $this->connectionTimeout[1]);
+			
 			$tmp = '';
-			while (!feof($this->connection)) {
+			while (!getFromArray(stream_get_meta_data($this->connection), 'timed_out') && !feof($this->connection)) {
 				$tmp .= fread($this->connection, 4096);
 			}
+			
 			$this->CloseConnect();
-
+			
 			$this->reply        = $tmp;
 			$this->replyHeaders = explode("\r\n", substr($this->reply, 0, strpos($this->reply,"\r\n\r\n")));
 			$this->replyBody    = substr($this->reply, strpos($this->reply,"\r\n\r\n")+4);

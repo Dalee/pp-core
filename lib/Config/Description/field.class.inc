@@ -1,5 +1,4 @@
 <?php
-
 /**
 * Класс - хранилище.
 * Стоится по etc/datatype.xml /model/datatypes/datatype/attribute
@@ -21,8 +20,12 @@ class PXFieldDescription {
 	var $listed          = NULL;
 	var $noindex         = NULL;
 	var $typeDescription;
+	var $comments        = '';
+	var $groupName       = NULL;
 
-	public function __construct($nodeattrs, &$app, $type) {
+	public function __construct($nodeattrs, &$app, &$type) {
+		$this->typeDescription = & $type;
+
 		foreach ($nodeattrs as $node) {
 			$name  = $node->name;
 			$value = $node->value;
@@ -59,8 +62,8 @@ class PXFieldDescription {
 
 				case 'source':
 					$app->directory[$value] = new PXDirectoryDescription($value);
-					$this->values = $app->directory[$value];
-					$this->source = $value;
+					$this->values =& $app->directory[$value];
+					$this->source =  $value;
 					break;
 
 				case 'noindex': 
@@ -72,17 +75,51 @@ class PXFieldDescription {
 					break;
 			}
 		}
+	}
 
-		if(is_null($this->storageType)) {
-			$this->setStorageType('string');
-		}
+	function getGroupName(&$node, &$dom) {
+		/*
 
-		if(is_null($this->displayType)) {
-			$this->setDisplayType('TEXT');
+		FIXME:
+			right xpath query $node->xpath('/parent::group');
+			$dom->xpath("//datatype[@name='{$this->typeDescription->id}']/group[attribute/@name='{$this->name}']") used for some projects on php 4.3.11,
+			that do not understand right xpath
+
+		*/
+
+		$groups = @$dom->xpath("//datatype[@name='{$this->typeDescription->id}']/group[attribute/@name='{$this->name}']");
+
+		if(sizeof($groups) > 0) {
+			$groupName = $groups[0]->attributes();
+			$this->groupName = utf8_decode($groupName[0]->value);
 		}
 	}
 
-	public function setDisplayType($string) {
+	function getComments(&$node, &$dom) {
+		$commentsNode = @$dom->xpath("//datatype[@name='{$this->typeDescription->id}']//attribute[@name='{$this->name}']/comment");
+
+		if(sizeof($commentsNode) > 0) {
+			foreach($commentsNode as $comment) {
+				$this->comments .= utf8_decode($comment->nodeValue());
+			}
+		}
+	}
+
+	function getDefaultValueNode(&$node, &$dom) {
+		$defaultValueNode = @$dom->xpath("//datatype[@name='{$this->typeDescription->id}']//attribute[@name='{$this->name}']/defaultvalue");
+
+		if(sizeof($defaultValueNode) > 0) {
+			foreach($defaultValueNode as $value) {
+				$value = $value->nodeValue();
+				$value = utf8_decode($value);
+				$value = trim($value);
+
+				$this->defaultValue .= preg_replace('/^\t+/m', '', $value);
+			}
+		}
+	}
+
+	function setDisplayType($string) {
 		$this->displayTypeArgs = explode("|", $string);
 		
 		$displayType = $this->_getType($this->displayTypeArgs[0], 'PXDisplayType');

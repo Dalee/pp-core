@@ -44,20 +44,19 @@ class PXDatabase extends NLSQLDatabaseAdapter {
 		parent::__construct($app->dbDescription[$dbDescriptionName]);
 
 		$this->setUser(new PXUserNull());
-		$this->setCache($app->dbDescription[$dbDescriptionName]->cache);
 
 		$this->app      = $app;
 		$this->types    = $app->types;
 		$this->triggers = NULL;
 	}
 
-	function setCache($isCacheOn) {
-		$cacheClass = $isCacheOn ? 'ObjectCache' : 'NullCache';
-		$this->cache = new $cacheClass('database', 'level2');
-	}
-
 	function setUser($user) {
 		$this->user = $user;
+	}
+
+	//Obsoleted method, for back compatibility
+	function setCache($on) {
+		return $on ? $this->cacheOn() : $this->cacheOff();
 	}
 
 	/**
@@ -89,21 +88,22 @@ class PXDatabase extends NLSQLDatabaseAdapter {
 	 * @todo docme please !
 	 */
 	function LoadTriggers() {
-		if (!is_null($this->triggers)) return;
+		if (!is_null($this->triggers)) {
+			return;
+		}
+
 		$this->triggers = array();
+
 		foreach ($this->app->modules as $name => $module) {
-			if (!$module->trigger) continue;
+			if (!$module->trigger) {
+				continue;
+			}
 
-			$file = substr(strtolower($module->class), 8).'.trigger.inc';
-
-			if (file_exists(BASEPATH.'/local/triggers/'.$file)) {
-				include_once BASEPATH.'/local/triggers/'.$file;
-
-			} elseif (file_exists(BASEPATH.'/libpp/triggers/'.$file)) {
-				include_once BASEPATH.'/libpp/triggers/'.$file;
+			if($file = $module->getPathToClass('trigger')){
+				include_once $file;
 
 			} else {
-				FatalError('Отсутствует привязанный триггер '.$file.' для модуля '.$name);
+				FatalError('Отсутствует привязанный триггер '.substr(strtolower($module->class), 8).'.trigger.inc для модуля '.$name);
 			}
 
 			$triggername = 'PXTrigger'.substr($module->class, 8);
@@ -654,6 +654,7 @@ class PXDatabase extends NLSQLDatabaseAdapter {
 			$audit->error($errString, $format->id .'/0');
 			FatalError($errString);
 		}
+
 		if (isset($format->fields['parent']) && $object['parent']) {
 			$parent = $this->GetObjectById($this->types[$format->parent], $object['parent']);
 			if (!count($parent)) {
@@ -848,6 +849,28 @@ class PXDatabase extends NLSQLDatabaseAdapter {
 
 		return $res;
 		// TRIGGER ?
+	}
+
+
+	function cloneContentObject(&$format, $donorId) {
+		$audit =& PXAuditLogger::getLogger($this->app, $this);
+
+		$donorObject = $this->getObjectById($format, $donorId);
+
+		$object = $donorObject;
+		unset($object['id']);
+		$object['status'] = false;
+
+		$object['id'] = $this->addContentObject($format, $object);
+
+		foreach ($format->fields as $k=>$v) {
+			$p = array('donor'=>$donorObject, 'format'=>$format->id);
+			$v->storageType->cloneFile($v, $object, $p);
+		}
+
+		$audit->info('Объект клонирован', $format->id .'/'. $donorObject['id']);
+
+		return $object['id'];
 	}
 
 	/**
@@ -1117,7 +1140,7 @@ class PXDatabase extends NLSQLDatabaseAdapter {
 		$where = $format->id.'.sys_order '.($down ? '>' : '<').' '.$objectInDB['sys_order'];
 
 		if (!empty($format->parent)) {
-			$where .= ' AND '.$format->id.'.parent = '.$objectInDB['parent'];
+			$where .= ' AND '.$format->id.'.parent '. (is_null($objectInDB['parent']) ? 'IS NULL' : '= '.$objectInDB['parent']);
 		}
 
 		if ($format->struct == 'tree' && isset($format->fields['pid'])) {

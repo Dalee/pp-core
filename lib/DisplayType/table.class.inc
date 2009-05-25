@@ -12,8 +12,9 @@ class PXDisplayTypeTable extends PXDisplayType {
 	function buildInput($field, $object, $param=NULL) {
 		$value  = isset($object[$field->name]) ? htmlspecialcharsArray($object[$field->name]) : array();
 		$height = isset($field->displayTypeArgs[1]) ? $field->displayTypeArgs[1] : 0;
+		$cols   = isset($field->displayTypeArgs[0]) ? $field->displayTypeArgs[0] : '1';
 
-		return NLAbstractHTMLForm::BuildTableByCols($field->name, $value, explode("-", $field->displayTypeArgs[0]), $height);
+		return NLAbstractHTMLForm::BuildTableByCols($field->name, $value, explode("-", $cols), $height);
 	}
 
 	function getFromRequest($field, $object, $param=NULL) {

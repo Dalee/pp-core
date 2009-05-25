@@ -1,4 +1,4 @@
-<?
+<?php
 class PXModuleAcl extends PXModule {
 	var $what;
 	var $access;
@@ -49,19 +49,13 @@ class PXModuleAcl extends PXModule {
 
 		$table->setControls('/admin/action.phtml?area=acl&action=up&id=',     'поднять  это правило', 'up' ,  false, false);
 		$table->setControls('/admin/action.phtml?area=acl&action=down&id=',   'опустить это правило', 'down', false, false);
+		$table->showEven();
 
-		$html = $table->html();
+		$table->addToParent('INNER.0.0');
 
-		$this->layout->SetInnerLayout(
-			array(
-				array(array('100%', '100%')),
-				array('', '')
-			)
-		);
+		$this->layout->setOneColumn();
 
-		$this->layout->Assign("INNER.0.0", $html);
-
-		$_  = NULL;
+		$_  = '';
 		$_ .= '<a href="/admin/popup.phtml?area=acl" onclick="Popup(this.href); return false;" class="button">';
 		$_ .= '<img src="i/icon/add.gif" alt="Добавить правило">';
 		$_ .= 'Правило доступа';

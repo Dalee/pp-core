@@ -35,8 +35,10 @@ class PXEngineAdminIndex extends PXEngine {
 		$layout = PXRegistry::getLayout();
 
 		$layout->setLogoutForm('?area=exit');
-		$layout->setMenu($this->menu, $area);
-		$layout->setSimpleInnerLayout(array('25%', '75%'), array('100%', ''));
+
+		$layout->setMenu($this->menu, $area, 'area', false);
+
+		$layout->setTwoColumns();
 
 		$layout->setGetVarToSave('area', $area);
 		$layout->setGetVarToSave('sid', PXRegistry::getRequest()->getSid());
@@ -46,7 +48,7 @@ class PXEngineAdminIndex extends PXEngine {
 		if (!isset($this->modules[$area])) {
 			$layout = PXRegistry::getLayout();
 
-			$layout->setSimpleInnerLayout(array('100%'), array('100%'));
+			$layout->setOneColumn();
 			$layout->assignError('INNER.0.0', 'Некорректный параметр <em>area</em> = <em>'.strip_tags($area).'</em>');
 			$layout->assignTitle('Некорректный параметр area');
 			return false;

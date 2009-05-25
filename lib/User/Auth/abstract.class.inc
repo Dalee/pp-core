@@ -24,11 +24,17 @@ class PXAuthInterface {
 	function encodePasswd($passwd) {
 		return $passwd;
 	}
+	
+	function passwdToDB($passwd) {
+		return $passwd;
+	}
 
-	function __parseVar($var) {
-		$var = preg_replace('/[^\w\.\@\,]/', '', $var);
-
-		return $var;
+	function parseLogin($login){
+		return preg_replace('/[^\w\.\@\-]/', '', substr($login, 0, 255));
+	}
+	
+	function parsePasswd($password){
+		return preg_replace('/[^\w\.\@\,\-]/', '', substr($password, 0, 255));
 	}
 	
 	function login(&$getFromRequest){

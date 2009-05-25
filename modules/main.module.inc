@@ -169,7 +169,7 @@ class PXModuleMain extends PXModule {
 				if ($request->GetCid() && !empty($cidType)) {
 					$layout->SetGetVarToSave('cid', $request->GetCid());
 					$allowedChilds = $app->GetAllowedChildsKeys($cidType, $cidObject);
-					$layout->SetSimpleInnerLayout(array('25%', '40%', '35%'), array('100%', ''));
+					$layout->setThreeColumns();
 
 					if (count($allowedChilds)) {
 						foreach ($allowedChilds as $childFormat) {

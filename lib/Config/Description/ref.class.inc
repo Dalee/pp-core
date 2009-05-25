@@ -25,7 +25,7 @@ class PXRefDescription {
 	var $multiple   = false;
 	/** 
 		@var bool По-умолчанию отображать в форме редактирования ссылок все объекты или только привязанные ?
-		@see PXApplication::_mapRefByDefaults()
+		@see PXRefDescription::_mapRefByDefaults()
 	*/
 	var $byDefault  = false;
 	/** 
@@ -41,6 +41,69 @@ class PXRefDescription {
 	//fixme: find better name
 	public function getOther($formatName) {
 		return (($this->from == $formatName) ? $this->to : $this->from);
+	}
+	
+	function fillReferences(&$dom, &$app){
+		$domReferences = $dom->xpath("/model/references/reference");
+		if (!is_array($domReferences) || count($domReferences) == 0) {
+			return;
+		}
+
+		foreach ($domReferences as $domReference) {
+			$attrs = $domReference->attributes();
+			$ref   = new PXRefDescription();
+			$nodes = $domReference->childNodes();
+			foreach ($attrs as $attr) {
+				switch (trim($attr->name)) {
+					case 'name':              $ref->name             = $attr->value; break;
+					case 'from':              $ref->from             = $attr->value; break;
+					case 'to':                $ref->to               = $attr->value; break;
+					case 'restrictby':        $ref->restrictBy       = $attr->value; break;
+					case 'filter-to':         $ref->filterTo         = $attr->value; break;
+					case 'filter-from':       $ref->filterFrom       = $attr->value; break;
+					case 'load':              $ref->load             = $attr->value; break;
+					case 'multiple':          $ref->multiple         = true;         break;
+					case 'bydefault':         $ref->byDefault        = $ref->_mapRefByDefaults($attr->value); break; //all or linked
+					case 'hidden':            $ref->hidden           = true;         break;
+				}
+			}
+
+			foreach ($nodes as $node) {
+				switch ($node->nodeName()) {
+					case 'attribute':
+						$field     = new PXFieldDescription($node->attributes(), $app, $ref);
+						if(is_null($field->storageType)) {
+							$field->setStorageType('string');
+						}
+
+						if(is_null($field->displayType)) {
+							$field->setDisplayType('TEXT');
+						}
+
+						$ref->addField($field);
+						break;
+					default:
+						d2("Unknown node name in reference: ".$node->nodeName());
+						break;
+				}
+			}
+			$app->references[$ref->name] = $ref;
+			if (!isset($app->types[$ref->from]) || !isset($app->types[$ref->to])) {
+				FatalError("ОШИБКА МОДЕЛИ: Связь <em>{$ref->name}</em> невозможна, отсутствует один из типов");
+			}
+			$app->types[$ref->from]->references[$ref->to] = &$app->references[$ref->name];
+			$app->types[$ref->to]->references[$ref->from] = &$app->references[$ref->name];
+		}
+	}
+	
+	function _mapRefByDefaults($string){
+		switch($string){
+			default:
+			case 'all':
+				return false;
+			case 'linked':
+				return true;
+		}
 	}
 }
 ?>

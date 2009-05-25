@@ -9,6 +9,15 @@ interface PXModuleIF {
 }
 
 abstract class PXModule implements PXModuleIF {
+	var $area;
+	var $settings;
+
+	var $app;
+	var $db;
+	var $request;
+	var $user;
+	var $layout;
+
 	function __construct($area, $settings) {
 		$this->area       = $area;
 		$this->settings   = $settings;
@@ -29,6 +38,8 @@ TODO FIXME
 		$this->objects    = $this->content->data;
 		$this->subObjects = $this->subContent->data;
 */
+	
+		PXRegistry::assignToObject($this);
 	}
 
 	function buildAdminUrl() {

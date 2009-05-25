@@ -11,9 +11,18 @@ abstract class NLAbstractSQLDatabase {
 	function close() {
 	}
 
-	function setCache($isCacheOn) {
-		$cacheClass = $isCacheOn ? 'ObjectCache' : 'NullCache';
-		$this->cache = new $cacheClass('database');
+	function setCache($cacheType) {
+		
+		switch(true){
+			case $cacheType === "1":
+				$cacheType = 'file';
+				break;
+			case !$cacheType:
+				$cacheType = 'null';
+				break;
+		}
+		
+		$this->cache = ObjectCache::get($cacheType, 'database');
 	}
 
 	function modifyingQuery($query, $table=NULL, $retField=NULL, $flushCache = true) {
@@ -79,6 +88,24 @@ abstract class NLAbstractSQLDatabase {
 	}
 
 	function transactionRollback() {
+	}
+	
+	function _loadFromCache($query, $customCacheExpiration){
+		if (!$customCacheExpiration || (is_int($customCacheExpiration) && $customCacheExpiration > 0)) {
+			$data = $this->cache->load($query);
+			if ($data !== null) {
+				PXProfiler::end();
+				return $data;
+			}
+		}
+	}
+	
+	function _saveToCache($query, $data, $customCacheExpiration){
+		if (!$customCacheExpiration){
+			$this->cache->save($query, $data);
+		} elseif (is_int($customCacheExpiration) && $customCacheExpiration > 0) {
+		        $this->cache->save($query, $data, $customCacheExpiration);
+                }	
 	}
 }
 ?>

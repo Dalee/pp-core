@@ -104,11 +104,11 @@ abstract class NLHTTPVarsData {
 			if (is_array($v)) {
 				$idx = 0;
 				foreach ($v as $sk=>$sv) {
-					if (empty($sv) && $killEmptyRows) $idx++;
+					if (strval($sv) == "" && $killEmptyRows) $idx++;
 				}
 				if ($idx == count($v) && $killEmptyRows) unset($temp[$k]);
 			} else {
-				if (empty($v) && $killEmptyRows) unset($temp[$k]);
+				if (strval($v) == "" && $killEmptyRows) unset($temp[$k]);
 			}
 		}
 		return $temp;

@@ -24,6 +24,18 @@ class PXAuthRambler extends PXAuthInterface {
 	// static
 	function getRamblerDataBySession() {
 		$checkUrl = 'id.rambler.ru/script/auth.cgi?mode=check&sid='.$_COOKIE['rsid'];
+		return PXAuthRambler::_getRamblerData($checkUrl);
+	}
+
+	function getRamblerAnswer($params) {
+		$url = 'id.rambler.ru/script/auth.cgi?';
+		foreach($params as $k=>$v) {
+			$url .= $k.'='.$v.'&';
+		}
+		return PXAuthRambler::_getRamblerData($url);
+	}
+	
+	function _getRamblerData($checkUrl) {
 		$data = @file_get_contents('http://'.$checkUrl);
 
 		if (!strlen($data)) {
@@ -37,7 +49,7 @@ class PXAuthRambler extends PXAuthInterface {
 		$data = PXAuthRambler::_parseRamblerResponse($data);
 		return $data;
 	}
-
+	
 	// static
 	function _parseRamblerResponse($data) {
 		$res = array();
