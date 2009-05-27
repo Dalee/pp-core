@@ -33,7 +33,7 @@ class PXEngineIndex extends PXEngine {
 		$layout->assign('references',     PXRegistry::getVar('references'));                 // delete
 		$layout->assign('heap',           PXRegistry::getVar('heap'));                       // delete
 */
-		$layout->assign('tree',           $this->content->tree);
+		$layout->assign('tree',           $this->content->tree->tree);
 //		$layout->assign('currentSid',     PXRegistry::getVar('struct')->currentId);          // move to tree
 
 		$layout->assign('objects',        $this->content->objects);
@@ -49,6 +49,32 @@ class PXEngineIndex extends PXEngine {
 //		$layout->assign('urlFile',        PXRegistry::getVar('urlFile'));                    // move to request
 
 //		$layout->assign('error',          PXRegistry::getVar('error'));
+
+		// Deprecated features
+		$currentSid  = $this->content->tree->hasCurrent()       ? $this->content->tree->getCurrent()->id       : -1;
+		if($this->content->objects->hasCurrent()){
+			$objs = $this->content->objects->getCurrent();
+		    $currentCid  = $objs['id'];
+		} else {
+			$currentCid  = -1;
+		}
+
+		if($this->content->subObjects->hasCurrent()){
+			$objs = $this->content->subObjects->getCurrent();
+		    $currentSCid  = $objs['id'];
+		} else {
+			$currentSCid  = -1;
+		}
+
+		$layout->assign('currentSid',  $currentSid);
+		$layout->assign('currentCid',  $currentCid);
+		$layout->assign('currentSCid', $currentSCid);
+
+		$layout->assign('pathId', $this->content->tree->pathId);
+		$layout->assign('rootId', $this->content->tree->rootId);
+		//d2(PXRegistry::getRequest()->getFile(), 0);
+		$layout->assign('urlFile', PXRegistry::getRequest()->getFile());
+
 
 	}
 

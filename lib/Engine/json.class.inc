@@ -2,12 +2,17 @@
 class PXEngineJSON extends PXEngine {
 	var $result;
 
+	function __construct(){
+		$this->initRequest();
+		parent::__construct();
+	}
+
 	function initLayout() {
 		$this->layout = new PXLayoutNull();
 	}
 
 	function initRequest() {
-		$this->request = new PXUserJsonRequest();
+		$this->request = new PXRequestUserJson();
 	}
 
 	function runModules() {

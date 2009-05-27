@@ -36,7 +36,7 @@ abstract class PXEngine {
 	}
 
 	function initModules() {
-		$rArea = $request->getVar('area');
+		$rArea = $this->request->getVar('area');
 
 		if(!isset(PXRegistry::getApp()->modules[$rArea])) {
 			Finalize('/');

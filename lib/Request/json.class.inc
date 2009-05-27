@@ -2,16 +2,17 @@
 class PXRequestUserJson extends PXRequestUser {
 	var $ajax;
 
-	function PXUserJsonRequest() {
+	function __construct() {
 		include_once 'Subsys_JsHttpRequest/lib/Subsys/JsHttpRequest/Php.php';
 		$this->ajax =  new Subsys_JsHttpRequest_Php(DEFAULT_CHARSET);
 		$this->ajax->RESULT = array();
-
+ppl(serialize($this->ajax));
 		if (!isset($_GET['charcheck'])) {
 			$_GET['charcheck'] = myconv('k', DEFAULT_CHARSET, 'ÊÃÕËÅÎ');
 		}
 
-		$this->PXRequest();
+		//$this->PXRequest(); # So strange...
+		parent::__construct();
 
 		if(isset($_REQUEST['get-js-code'])) {
 			$response =& PXResponse::getInstance();
