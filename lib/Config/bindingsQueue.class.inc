@@ -20,6 +20,7 @@ class PXBindingsQueue implements Iterator {
 		return array(
 			'type'   => $type,
 			'rule'   => $node->getAttribute('rule'),
+			'var'    => $node->getAttribute('var'),
 			'value'  => $node->getAttribute('value'),
 			'order'  => $node->getAttribute('order'),
 			'module' => $node->getAttribute('module')

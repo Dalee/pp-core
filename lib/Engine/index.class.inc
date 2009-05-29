@@ -87,8 +87,9 @@ class PXEngineIndex extends PXEngine {
 
 	function runModules() {
 		PXProfiler::begin('RUN MODULES');
-
+//d2(PXRegistry::getApp()->modules['root'], 0);
 		foreach(PXRegistry::getApp()->bindingsQueue as $bind) {
+			
 			if(!$bind->isBinding($this->content)) {
 				continue;
 			}
