@@ -70,6 +70,8 @@ class PXEngineIndex extends PXEngine {
 		$layout->assign('currentCid',  $currentCid);
 		$layout->assign('currentSCid', $currentSCid);
 
+		$layout->assign('currentCtype', $this->content->objects->getCurrentType());
+
 		$layout->assign('pathId', $this->content->tree->pathId);
 		$layout->assign('rootId', $this->content->tree->rootId);
 		//d2(PXRegistry::getRequest()->getFile(), 0);
@@ -87,7 +89,7 @@ class PXEngineIndex extends PXEngine {
 
 	function runModules() {
 		PXProfiler::begin('RUN MODULES');
-//d2(PXRegistry::getApp()->modules['root'], 0);
+
 		foreach(PXRegistry::getApp()->bindingsQueue as $bind) {
 			
 			if(!$bind->isBinding($this->content)) {

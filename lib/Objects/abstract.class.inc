@@ -24,6 +24,10 @@ abstract class PXContentObjects {
 		return array_key_exists($type, $this->data) && sizeof($this->data[$type]);
 	}
 
+	function getCurrentType(){
+		return $this->currentType;
+	}
+
 	function loadChilds($childs, $pathName) {
 		if(!$this->hasCurrent()) {
 			return;
