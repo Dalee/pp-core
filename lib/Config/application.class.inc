@@ -444,18 +444,22 @@ class PXApplication {
 			foreach ($nodes as $node) {
 				$id = $node->getAttribute('id');
 
-				$directory->values[] = array(
+				$directory->values[$id] = array(
 					'id'    => $id,
-					'title' => utf8_decode($node->nodeValue())
+					'title' => utf8_decode($node->nodeValue()) 
 				);
 
 				$attrs = $node->attributes();
-				foreach ($attrs as $name => $value) {
-					if ($name == 'id') {
-						continue;
-					}
 
-					$directory->values[$id][$name] = utf8_decode($value->value);
+				// Structure attributes fix
+				foreach($attrs as $attr_val){
+					//foreach ($attr_val as $name => $value) {
+						if ($attr_val->name == 'id') {
+							continue;
+						}
+
+						$directory->values[$id][$attr_val->name] = utf8_decode($attr_val->value);
+					//}
 				}
 			}
 			$directory->SetLoaded();
