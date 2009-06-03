@@ -338,15 +338,16 @@ SQL;
 	}
 
 	function userIndex() {
+		die('ADVERT');
 		$error = 0;
 		$refName = $this->dtBanner.'2'.$this->dtPlace;
-		if ($rqPlaceId = $request->GetVar('p')) {
-			$adPlace = $db->GetObjectById($app->types[$this->dtPlace], $rqPlaceId);
-			$attached = $db->GetLinks($app->references[$refName], $this->dtPlace, $rqPlaceId);
+		if ($rqPlaceId = $this->request->GetVar('p')) {
+			$adPlace = $this->db->GetObjectById($this->app->types[$this->dtPlace], $rqPlaceId);
+			$attached = $this->db->GetLinks($this->app->references[$refName], $this->dtPlace, $rqPlaceId);
 			if (count($attached)) {
-				$banners = $db->GetObjectsByIdArray($app->types[$this->dtBanner], "TRUE", array_keys($attached));
+				$banners = $this->db->GetObjectsByIdArray($this->app->types[$this->dtBanner], "TRUE", array_keys($attached));
 			} else {
-				$banners = $db->_GetData($app->types[$this->dtBanner], DB_SELECT_TABLE, "{$this->dtBanner}.type='{$adPlace['type']}' AND {$this->dtBanner}.dynamic = TRUE AND {$this->dtBanner}.status = TRUE");
+				$banners = $this->db->_GetData($this->app->types[$this->dtBanner], DB_SELECT_TABLE, "{$this->dtBanner}.type='{$adPlace['type']}' AND {$this->dtBanner}.dynamic = TRUE AND {$this->dtBanner}.status = TRUE");
 			}
 			if (count($banners)) {
 				$distrib = array();
@@ -356,18 +357,18 @@ SQL;
 					}
 				}
 				$toShow = $banners[$distrib[array_rand($distrib)]];
-				if ($request->GetVar('d') == 'gif') {
+				if ($this->request->GetVar('d') == 'gif') {
 					setcookie('place'.$request->GetVar('p'), $toShow['id']);
 
 					$response =& PXResponse::getInstance();
 					$response->redirect($toShow['image']['path']);
 
 				} else {
-					$this->ShowAd($request->GetVar('p'), $toShow);
+					$this->ShowAd($this->request->GetVar('p'), $toShow);
 				}
 				$toShow['shows'] = (is_numeric($toShow['shows'])) ? $toShow['shows']+1 : 1;
-				$db->user->level = 16384;
-				$db->ModifyContentObject($app->types[$this->dtBanner], $toShow);
+				$this->db->user->level = 16384;
+				$this->db->ModifyContentObject($this->app->types[$this->dtBanner], $toShow);
 			} else {
 				$error = 2; //  ERROR: no banners to show
 			}
