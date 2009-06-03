@@ -31,8 +31,8 @@ abstract class PXEngine {
 	}
 
 	function initApplication() { 
-		$this->app =PXApplication::getInstance(get_class($this)); 
-		PXRegistry::setApp($this->app); 
+		$this->app =PXApplication::getInstance(get_class($this));
+		PXRegistry::setApp($this->app);
 	}
 
 	function initModules() {

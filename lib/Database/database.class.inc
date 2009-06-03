@@ -215,7 +215,7 @@ class PXDatabase extends NLSQLDatabaseAdapter {
 		$location = $directory->location;
 
 		$location = $this->ParseWhereTemplate($location, $object, $format);
-		$format = $this->types[$directory->source];
+		$format = clone $this->types[$directory->source];
         
 	        /*
 	         * fixme: check this code please

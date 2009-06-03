@@ -96,6 +96,7 @@ class PXTypeDescription {
 		foreach ($domDatatypes as $domDatatype) {
 			$type  =& new PXTypeDescription();
 
+
 			$type->parseTypeAttributes($domDatatype->attributes());
 
 			/*
@@ -108,6 +109,7 @@ class PXTypeDescription {
 			*/
 
 			$fieldsNodes = $dom->xpath("//datatype[@name='{$type->id}']//attribute");
+
 			foreach ($fieldsNodes as $fieldNode) {
 				if ($fieldNode->nodeType() != 1) {
 					continue;
@@ -141,6 +143,7 @@ class PXTypeDescription {
 		}
 
 		PXTypeDescription::findParents($app->types);
+		
 	}
 
 	// static
