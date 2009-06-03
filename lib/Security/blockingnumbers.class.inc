@@ -11,7 +11,7 @@ class NLBlockingNumbers {
 	var $isblocking;
 
 	function NLBlockingNumbers($path = null) {
-		if (is_null($path)) $path = BASEPATH.'/tmp/blocking_nums';
+		if (is_null($path)) $path = BASEPATH.'/var/blocking_nums';
 		$this->path       = preg_replace('|//+|','/',rtrim(trim($path),'/'));
 		$this->isblocking = true;
 		$this->key        = -1;
