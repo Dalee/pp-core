@@ -453,13 +453,11 @@ class PXApplication {
 
 				// Structure attributes fix
 				foreach($attrs as $attr_val){
-					//foreach ($attr_val as $name => $value) {
-						if ($attr_val->name == 'id') {
-							continue;
-						}
+					if ($attr_val->name == 'id') {
+						continue;
+					}
 
-						$directory->values[$id][$attr_val->name] = utf8_decode($attr_val->value);
-					//}
+					$directory->values[$id][$attr_val->name] = utf8_decode($attr_val->value);
 				}
 			}
 			$directory->SetLoaded();
