@@ -338,7 +338,6 @@ SQL;
 	}
 
 	function userIndex() {
-		die('ADVERT');
 		$error = 0;
 		$refName = $this->dtBanner.'2'.$this->dtPlace;
 		if ($rqPlaceId = $this->request->GetVar('p')) {
