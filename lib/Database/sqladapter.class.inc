@@ -46,7 +46,7 @@ class NLSQLDatabaseAdapter {
 	}
 
 	function ClearCache($force=false) {
-		return $this->db->cache->clear();
+		return $this->dbDriver->cache->clear();
 	}
 
 	function cacheOn(){
@@ -58,7 +58,7 @@ class NLSQLDatabaseAdapter {
 	}
 
 	function LIKE($condition, $percs = NULL ){
-		return $this->db->LIKE($condition, is_null($percs) ? P_LEFT|P_RIGHT : $percs);
+		return $this->dbDriver->LIKE($condition, is_null($percs) ? P_LEFT|P_RIGHT : $percs);
 	}
 }
 ?>

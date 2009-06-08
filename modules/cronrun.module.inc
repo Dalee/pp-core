@@ -90,10 +90,11 @@ class PXModuleCronRun extends PXAbstractModule {
 		// !!! run code here !!!
 		$db   = new PXDatabase($app); //add NEW connect to the database from current child
 		$user = new PXUserCron();
-		$user->setDb($db);
-		
+		//$user->setDb($db);
+
 		PXRegistry::setDb($db);
 		PXRegistry::setUser($user);
+		$db->setUser($user);
 		
 		$db->LoadDirectoriesAutomatic($app->directory); //init directory from here !
 		if (isset($app->types['struct'])) {

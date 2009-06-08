@@ -19,7 +19,7 @@ class PXCronRunSearchIndex extends PXAbstractCronRun {
 
 		$dbtype = $app->dbDescription['database']->dbtype;
 
-		$search  = new PXSearch($app, $db, $withIndexField);
+		$search  = new PXSearch($withIndexField);
 
 		if ($dbtype == 'pgsql') {
 
