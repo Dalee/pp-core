@@ -22,6 +22,9 @@ class PXEngineSbin extends PXEngine {
 	function initDirectories() {
 	}
 
+	function initModules() {
+	}
+
 	function runModules() {
 	}
 }
