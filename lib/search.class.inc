@@ -25,9 +25,9 @@ class PXSearch {
 
 	var $withIndexField;
 
-	function PXSearch(&$app, &$db, $withIndexField = true) {
-		$this->app = &$app;
-		$this->db  = &$db;
+	function PXSearch($withIndexField = true) {
+		$this->app = PXRegistry::getApp();
+		$this->db  = PXRegistry::getDB();
 		$this->withIndexField = $withIndexField;
 
 		$this->loadStopwords(

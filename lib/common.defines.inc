@@ -13,12 +13,15 @@ if(!isset($_SERVER['REQUEST_METHOD'])) {
 	if(IS_WIN) {
 		$_SERVER['DOCUMENT_ROOT'] = realpath(dirname($_SERVER['argv'][0]).'/../../').'\\'; // ' (escaped for MC)
 	} else {
-		$tmp = $_SERVER['SCRIPT_NAME'];
-		if ($tmp{0} !== '/') $tmp = $_SERVER['PWD'] . '/' . $tmp;
-		
+		$tmp = realpath($_SERVER['SCRIPT_NAME']);
+
+		// if ($tmp{0} !== '/') $tmp = $_SERVER['PWD'] . '/' . $tmp;
+
+
 		$path = array();
 		foreach (explode('/', $tmp) as $token) {
 			switch ($token) {
+
 			case '':
 			case '.':
 				// skip
@@ -40,6 +43,9 @@ if(!isset($_SERVER['REQUEST_METHOD'])) {
 			}
 		}
 
+
+
+
 		if ($path) {
 			$_SERVER['DOCUMENT_ROOT'] = $path;
 		} else {
@@ -49,8 +55,8 @@ if(!isset($_SERVER['REQUEST_METHOD'])) {
 		@$nobody = trim(file_get_contents($_SERVER['DOCUMENT_ROOT'].'/site/etc/boot.ini'));
 		if (!$nobody) $nobody = 'nobody';
 		$nobody = posix_getpwnam($nobody);
-		var_dump($_SERVER['DOCUMENT_ROOT']);
-		var_dump($nobody);die();
+		//var_dump($_SERVER['DOCUMENT_ROOT']);
+		//var_dump($nobody);die();
 
 		$path = realpath($path);
 
