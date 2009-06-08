@@ -7,15 +7,18 @@ class PXCronRunSearchIndex extends PXAbstractCronRun {
 	}
 
 	function Run(&$app, &$db, &$tree, $matchedTime, $matchedRule) {
-		$r = $this->_reindex($app, $db);
+		$r = $this->_reindex();
 		return array("status" => 0, "note" => "Успешно! obj/words: {$r[0]}/{$r[1]}");
 	}
 
-	function _reindex(&$app, &$db, $reloadFlag = false, $quietFlag = false, $withIndexField = true) {
+	function _reindex($reloadFlag = false, $quietFlag = false, $withIndexField = true) {
 		ini_set('display_errors', 0);
 		if(isset($_SERVER['argv'][2]) && _StrToLower($_SERVER['argv'][2]) === 'full') {
 			$reloadFlag = true;
 		}
+
+		$app = PXRegistry::getApp();
+		$db  = PXRegistry::getDb();
 
 		$dbtype = $app->dbDescription['database']->dbtype;
 
