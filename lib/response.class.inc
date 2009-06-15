@@ -32,7 +32,20 @@ class PXResponse {
 		if (ini_get('display_errors') && PXErrorReporter::hasErrors(true)) {
 			exit();
 		}
-
+		
+		// sanitize url
+		$url = strtr($url, array(
+				' '   => '%20',
+				"\r"  => '',
+				"\n"  => '',
+				"\t"  => '%20',
+				'%0D' => '',
+				'%0A' => '',
+				'%09' => '%20',
+				'%00' => ''
+			)
+		);
+		
 		$this->status = $this->STATUS_MOVED;
 
 		$this->addHeader('Location', $url);

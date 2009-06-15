@@ -34,17 +34,17 @@ class PXStorageTypeAbstractFile extends PXStorageType {
 	}
 
 	function getFromCache($key){
-		$cache = & $this->_getCache();
+		$cache = & PXStorageTypeAbstractFile::_getCache();
 		return $cache->load($key);
 	}
 	
 	function removeFromCache($key){
-		$cache = & $this->_getCache();
+		$cache = & PXStorageTypeAbstractFile::_getCache();
 		$cache->delete($key);
 	}
 	
 	function saveToCache($key, $data){
-		$cache = & $this->_getCache();
+		$cache = & PXStorageTypeAbstractFile::_getCache();
 		$cache->save($key, array($data));
 		return $data;
 	}

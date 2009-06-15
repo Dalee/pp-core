@@ -78,7 +78,8 @@ class PXModuleForum extends PXAbstractModule {
 			'bbTagsJS' => $bbTagsJS,
 			'bbTags' => $bbTags,
 		);
-		foreach(array_map(create_function('$a','return explode("|", $a);'),$settings['views']) as $v) {
+
+		foreach(array_map(create_function('$a','return explode("|", $a);'),(array)$settings['views']) as $v) {
 			$this->forumSettings['views'][$v[0]] = $v[1];
 		}
 		@session_start();

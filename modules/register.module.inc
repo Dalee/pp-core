@@ -1,25 +1,33 @@
 <?php
 class PXModuleRegister extends PXAbstractModule {
+	//config vars
 	var $systemName;
 	var $systemEmail;
 	var $registerPath;
 	var $userActivation;
+	var $userNotify;
 	var $contactEmailField;
 	var $captchaField;
 	var $defaultAccess;
+	var $defaultAuth;
 	
 	var $fields;
+	
+	// need for automatic assign using PXRegistry
+	var $response;
 
 	function PXModuleRegister($area, $settings) {
 		$this->PXAbstractModule($area, $settings);
-		$this->systemName        = GetFromArray($settings,'systemname','PX Site');
-		$this->systemEmail       = GetFromArray($settings,'systememail', 'noreply@www');
-		$this->registerPath      = GetFromArray($settings,'registerpath', '/registration/');
-		$this->userActivation    = GetFromArray($settings,'activation');
-		$this->contactEmailField = GetFromArray($settings,'useremail');
-		$this->captchaField      = GetFromArray($settings,'captcha');
-		$this->defaultAccess     = GetFromArray($settings,'defaultaccess', 1024);
-		$this->defaultAuth       = GetFromArray($settings,'authtype', null);
+		
+		$this->systemName        = GetFromArray($settings,'systemname','PX Site');           //mail From (name)    in the robot emails
+		$this->systemEmail       = GetFromArray($settings,'systememail', 'noreply@www');     //mail From (address) in the robot emails
+		$this->registerPath      = GetFromArray($settings,'registerpath', '/registration/'); //path to registration page
+		$this->userActivation    = GetFromArray($settings,'activation');                     //enable activation mail for registration
+		$this->userNotify        = GetFromArray($settings,'notify');                         //notify users about successful registration
+		$this->contactEmailField = GetFromArray($settings,'useremail');                      //form field used for user contact email
+		$this->captchaField      = GetFromArray($settings,'captcha');                        //form field used for the captcha
+		$this->defaultAccess     = GetFromArray($settings,'defaultaccess', 1024);            //default user access after registration
+		$this->defaultAuth       = GetFromArray($settings,'authtype', null);                 //auth engine used on this site, for password encryption purposes
 		
 		$this->fields            = array();
 		
@@ -32,22 +40,17 @@ class PXModuleRegister extends PXAbstractModule {
 		}
 	}
 	
-	function __ctor(&$app, &$db, &$user, &$request){
-		$this->app  = & $app;
-		$this->db   = & $db;
-		$this->user = $user;
-		$this->req  = & $request;
-	}
-	
 	function _parseField($formatString) {
 		@list($title, $min, $max, $validators) = explode('|', $formatString);
 		$validators = !empty($validators) ? explode(',', str_replace(' ', '',$validators)) : array();
 		return compact('title', 'min', 'max', 'validators');
 	}
-
+	
+	//TODO: Need reFUCKtoring ?
 	function userIndex(&$app, &$request, &$user, &$db, &$layout, &$tree, &$objects, &$subObjects, &$references, &$heap, &$currentSid, &$currentCid, &$currentCtype, &$currentSCid, &$currentSCtype, &$rootId, &$pathId, &$urlFile, &$error) {
-		$this->__ctor($app, $db, $user, $request);
-
+		
+		$this->response->dontCache();
+		
 		$errors = & $this->loadModel('session', 'errors');
 		$input  = & $this->loadModel('session', 'data');
 		$layout->assign('__view', $request->GetVar('view'));
@@ -110,19 +113,37 @@ class PXModuleRegister extends PXAbstractModule {
 	}
 	
 	function userAction(&$app, &$request, &$user, &$db) {
-		$this->__ctor($app, $db, $user, $request);
-	
+		$this->response->dontCache();
+		
 		$this->assignController();
 		
 		return call_user_func($this->_controller);
 	}
 	
+	function assignController(){
+		$action = $this->request->GetVar('action');
+		if(method_exists($this, $controller = '_' . $action . 'Controller')){
+			$this->_controller = array(&$this, $controller);
+		} else {
+			$this->_controller = array(&$this, '_badactionController');
+		}
+	}
+	
+	################################# Controllers #################################
+	
+	// {{{ Bad Action Controller
+	function _badactionController() {
+		return false;
+	}
+	// }}} Bad Action Controller
+	
+	// {{{ Modify Controller
 	function _modifyController(){
 		if(!$this->user->isAuthed()) return;
 		
-		$userData =& $this->loadModel('suser', array('id' => $this->user->id, 'passwd' => $this->req->GetPostVar('currentpassword')));
-		if(!count($userData)){
-			return $this->buildRoute('modifyerror', array('currentpassword' => 'wrong'));
+		$userData = array();
+		if(!is_null($route = $this->_modifyControllerLoadDataHandler($userData))){
+			return $route;
 		}
 		
 		$userData = reset($userData);
@@ -146,33 +167,42 @@ class PXModuleRegister extends PXAbstractModule {
 		
 		return $this->buildRoute('modifysuccess');
 	}
-
+	
+	// TODO: For the future inheritance purposes same handlers may be written for other controllers
+	function _modifyControllerLoadDataHandler(&$userData){
+		if(!count($userData = $this->loadModel('suser', array('id' => $this->user->id, 'passwd' => $this->request->GetPostVar('currentpassword'))))){
+			return $this->buildRoute('modifyerror', array('currentpassword' => 'wrong'));
+		}
+	}
+	// }}} Modify Controller
+	
+	// {{{ Remind Controller
 	function _remindController(){
 		if($this->user->isAuthed()) return;
 		
 		$errors =& $this->loadModel('session', 'errors');
 		$errors = null;
 		
-		$key    = $this->req->GetVar('code');
+		$key    = $this->request->GetVar('code');
 		
 		switch(isset($key)){
 			case false:
 				//Send remind key to the account owner
-				if(!count($userToRemember = & $this->loadModel('suser', array('title' => $this->req->GetVar('login'), 'status' => true)))){
+				if(!count($userToRemember = & $this->loadModel('suser', array('title' => $this->request->GetVar('login'), 'status' => true)))){
 					$errors['login']['usernotexists'] = true;
 				}
 				
 				if(!empty($this->captchaField)){
-					$this->_captchaFieldValidator($this->captchaField, $this->req->GetVar($this->captchaField), $errors);
+					$this->_captchaFieldValidator($this->captchaField, $this->request->GetVar($this->captchaField), $errors);
 				}
 				
 				if(!count($errors)){
 					$userToRemember = reset($userToRemember);
 					
 					if($this->_sendMail($userToRemember, array('route' => 'remind'))){
-						$stages = array('mail' => 'sent');
+						$stages = array('mail' => 'remindsent');
 					} else {
-						$stages = array('mail' => 'errorsent');
+						$stages = array('mail' => 'reminderrorsent');
 					}
 					$this->_saveModel('session');
 					$this->_saveModel('suser', $userToRemember);
@@ -182,11 +212,11 @@ class PXModuleRegister extends PXAbstractModule {
 				return $this->buildRoute('reminderror');
 			
 			case true:
-				if(!count($existingUser = & $this->loadModel('suser', array('title' => $this->req->GetPostVar('login'), 'remindcode' => $key)))){
+				if(!count($existingUser = & $this->loadModel('suser', array('title' => $this->request->GetPostVar('login'), 'remindcode' => $key)))){
 					$errors['login']['badloginorkey'] = true;
 				}
 				$existingUser = max(array(), reset($existingUser));
-				$this->_passwordFieldValidator('newpassword', $this->req->GetPostVar('newpassword'), $errors, $existingUser);
+				$this->_passwordFieldValidator('newpassword', $this->request->GetPostVar('newpassword'), $errors, $existingUser);
 				
 				if(!count($errors)){
 					$existingUser['remindcode'] = '';
@@ -196,10 +226,12 @@ class PXModuleRegister extends PXAbstractModule {
 				}
 				
 				$this->_saveModel('session');
-				return $this->buildRoute('reminderror', array('login' => $this->req->GetPostVar('login'), 'code' => $key));
+				return $this->buildRoute('reminderror', array('login' => $this->request->GetPostVar('login'), 'code' => $key));
 		}
 	}
+	// }}} Remind Controller
 	
+	// {{{ Activation Controller
 	function _activationController() {
 		if(!$this->userActivation || $this->user->isAuthed()){
 			return;
@@ -207,8 +239,9 @@ class PXModuleRegister extends PXAbstractModule {
 		
 		$errors =& $this->loadModel('session', 'errors');
 		$errors = null;
+		$stages = array();
 		
-		if(!count($inactiveUser =& $this->loadModel('suser', array('title' => $this->req->GetVar('login'), 'activationcode' => $this->req->GetVar('code'))))) {
+		if(!count($inactiveUser =& $this->loadModel('suser', array('title' => $this->request->GetVar('login'), 'activationcode' => $this->request->GetVar('code'))))) {
 			$errors['badconfirmcode'] = true;
 			$this->_saveModel('session');
 			return $this->buildRoute('activationerror');
@@ -216,34 +249,22 @@ class PXModuleRegister extends PXAbstractModule {
 			$activateUser = reset($inactiveUser);
 			$activateUser['activationcode'] = '';
 			$activateUser['status'] = 1;
+			if($this->userNotify){
+				if($this->_sendMail($activateUser, array('route' => 'notify'))){
+					$stages = array('mail' => 'notifysent');
+				} else {
+					$stages = array('mail' => 'notifyerrorsent');
+				}
+				$activateUser['__plain_passwd__'] = '';
+			}
 			$this->_saveModel('suser', $activateUser);
 			$this->_saveModel('session');
-			return $this->buildRoute('activationsuccess');
+			return $this->buildRoute('activationsuccess', $stages);
 		}
 	}
+	// }}} Activation Controller
 	
-	function _parseFields(&$input, &$errors){
-		$uData = array();
-		foreach ($this->fields as $k => $f) {
-			$input[$f['title']] = $uData[$f['title']] = $this->req->GetPostVar($f['title']);
-
-			// check basic fields allowed length (only strings)
-			if(!empty($f['min']) || !empty($f['max'])){
-				if(!@isValidString($uData[$f['title']], (int)$f['min'], (int)$f['max'])) {
-					$errors[$f['title']]['size'] = true;
-				}
-			}
-			
-			// apply validators
-			foreach($f['validators'] as $modifier){
-				if(method_exists($this, $validator = '_' . $modifier . 'FieldValidator')){
-					$this->$validator($f['title'], $uData[$f['title']], $errors, $uData);
-				}
-			}
-		}
-		return $uData;
-	}
-	
+	// {{{ Register Controller
 	function _registerController() {
 		if($this->user->isAuthed()) return;
 		
@@ -263,73 +284,86 @@ class PXModuleRegister extends PXAbstractModule {
 			
 			$stages = array();
 			if($this->userActivation){
-				if($this->_sendMail($newUser, array('route' => 'activation'))){
-					$stages = array('mail' => 'sent');
-				} else {
-					$stages = array('mail' => 'errorsent');
-				}
+				$mail              = array('route' => 'activation');
 				$newUser['status'] = false;
 			} else {
-				$stages = array('account' => 'created');
+				if($this->userNotify){
+					$mail = array('route' => 'notify');
+				}
+				$stages            = array('account' => 'created');
 				$newUser['status'] = true;
+			}
+			
+			if(isset($mail)){
+				if($this->_sendMail($newUser, $mail)){
+					$stages['mail'] = $mail['route'] . 'sent';
+				} else {
+					$stages['mail'] = $mail['route'] . 'errorsent';
+				}
 			}
 			
 			$this->_saveModel('suser', $newUser);
 			$this->_saveModel('session');
+			
 			return $this->buildRoute('success', $stages);
 		}
 		
 		$this->_saveModel('session');
 		return $this->buildRoute('error');
 	}
+	// }}} Register Controller
 	
-	function _badactionController() {
-		return false;
-	}
+	################################# END Controllers #################################
 	
-	function assignController(){
-		$action = $this->req->GetVar('action');
-		if(method_exists($this, '_' . $action . 'Controller')){
-			$this->_controller = array(&$this, '_' . $action . 'Controller');
-		} else {
-			$this->_controller = array(&$this, '_badaction' . 'Controller');
+	function _parseFields(&$input, &$errors){
+		$uData = array();
+		foreach ($this->fields as $k => $f) {
+			$input[$f['title']] = $uData[$f['title']] = $this->request->GetPostVar($f['title']);
+
+			// check basic fields allowed length (only strings)
+			if(!empty($f['min']) || !empty($f['max'])){
+				if(!@isValidString($uData[$f['title']], (int)$f['min'], (int)$f['max'])) {
+					$errors[$f['title']]['size'] = true;
+				}
+			}
+			
+			// apply validators
+			foreach($f['validators'] as $modifier){
+				if(method_exists($this, $validator = '_' . $modifier . 'FieldValidator')){
+					$this->$validator($f['title'], $uData[$f['title']], $errors, $uData);
+				}
+			}
 		}
+		return $uData;
 	}
 	
 	function buildRoute($destination, $stages = array()){
-		$returnTo = $this->registerPath;
-		// common modification of the stages into uri
 		$_stages = array();
 		foreach($stages as $k => $v){
 			$_stages[] = $k.'='.$v;
 		}
 		$stages = join('&', $_stages);
 		
-		switch($destination){
-			default:
-				return $returnTo;
-			
-			case 'error':
-			case 'modify':
-			case 'modifysuccess':
-			case 'activationerror':
-			case 'activationsuccess':
-				$returnTo .= '?view=' . $destination;
-			break;
-			case 'success':
-			case 'reminderror':
-			case 'remindsuccess':
-			case 'modifyerror':
-				$returnTo .= '?view=' . $destination . '&';
-			break;
-			case 'activation':
-				$returnTo = 'http://' . $this->req->GetHttpHost() . '/action.phtml?area=register&action='.$destination.'&';
-			break;
-			case 'remind':
-				$returnTo = 'http://' . $this->req->GetHttpHost() . $this->registerPath . '?view='.$destination.'&';
-			break;
+		return method_exists($this, $route = '_' . $destination . 'Route') ? $this->$route($stages) : $this->registerPath;
+	}
+	
+	function _sendMail(&$user, $params){
+		if(!isset($user[$this->contactEmailField]) || empty($user[$this->contactEmailField])){
+			return false;
 		}
-		return $returnTo . $stages;
+		
+		$m = new NLMailMessage();
+		$m->SetFrom($this->systemName, $this->systemEmail);
+		$m->SetTo(NULL, $user[$this->contactEmailField]);
+		
+		//Apply mail template
+		$m->SetTemplate(
+			BASEPATH.'local/mail_templates/registration/'.$params['route'].'.tmpl',
+			TRUE,
+			method_exists($this, $mailto = '_'.$params['route'].'MailData') ? $this->$mailto($user, $params['route']) : array()
+		);
+		
+		return $m->Send();
 	}
 	
 	function _saveModel($store, $object = array()){
@@ -338,25 +372,12 @@ class PXModuleRegister extends PXAbstractModule {
 				session_commit();
 			break;
 			case 'suser':
-				// Security
-				
-				foreach($this->fields as $field){
-					if(isset($object[$field['title']]) && is_string($object[$field['title']])){
-						$object[$field['title']] = $this->db->EscapeString($object[$field['title']]);
-					}
-				}
 				$object += $this->app->InitContentObject('suser'); //merge with prototype
 				
-				if(isset($object['passwd'])) {
-					$authmethodname = $this->user->getPrimaryAuthMethod($this->defaultAuth);
-
-					$object['passwd'] = call_user_func(array($authmethodname, 'passwdToDB'), $object['passwd']);
-				}
-
 				if($object['id'] > 0){ // modify
 					$this->db->ModifyContentObject($this->app->types['suser'], $object);
 				} else { //create 
-					$this->db->AddContentObject($this->app->types['suser'], $object);
+					$object['id'] = $this->db->AddContentObject($this->app->types['suser'], $object);
 				}
 				
 			break;
@@ -367,6 +388,7 @@ class PXModuleRegister extends PXAbstractModule {
 				}
 			break;
 		}
+		$this->_modelCache[$store] = $object;
 	}
 	
 	function &loadModel($store, $filter = null){
@@ -397,6 +419,7 @@ class PXModuleRegister extends PXAbstractModule {
 				
 			break;
 			case 'suser':
+				$this->_applyModifiers($filter);
 				$model = $this->db->GetObjectsByFieldLimited($this->app->types['suser'], null, $filter, null, 1, 0);
 			break;
 			case 'captcha':
@@ -414,15 +437,15 @@ class PXModuleRegister extends PXAbstractModule {
 	
 	//{{{ Validators block
 	function _loginFieldValidator($field, $value, &$errors, &$userData){
-		if (!isValidLogin($value, 2, 16)) {
+		if (!isValidLogin($value, 1, 255)) { //login length must be controlled in the min and max field options
 			$errors[$field]['badlogin'] = true;
 		}
 		$userData['title'] = $value;
-		unset($userData[$field]);
+		if($field !== 'title') unset($userData[$field]);
 	}
 	
 	function _passwordFieldValidator($field, $value, &$errors, &$userData){
-		if (!isset($value[0]) || !isValidPasswd($value[0], 3, 16)) {
+		if (!isset($value[0]) || !isValidPasswd($value[0], 1, 255)) { //password length must be controlled in the min and max field options
 			$errors[$field]['badpassword']    = true;
 		}
 		if (!isset($value[0]) || !isset($value[1]) || $value[0] !== $value[1]) {
@@ -430,10 +453,11 @@ class PXModuleRegister extends PXAbstractModule {
 		}
 		
 		if(!isset($errors[$field])){
-			$userData['passwd'] = $value[0];
+			$userData['passwd']           = $this->_passwdModifier($value[0]);
+			$userData['__plain_passwd__'] = $value[0];
 		}
 		
-		unset($userData[$field]);
+		if($field !== 'passwd') unset($userData[$field]);
 	}
 	
 	function _emailFieldValidator($field, $value, &$errors, &$userData){
@@ -480,7 +504,7 @@ class PXModuleRegister extends PXAbstractModule {
 	}
 	
 	function _fileFieldValidator($field, $value, &$errors, &$userData){
-		$file = $this->req->GetUploadFile($field);
+		$file = $this->request->GetUploadFile($field);
 		if(!empty($file)){
 			$userData[$field] = $file;
 		}
@@ -495,29 +519,99 @@ class PXModuleRegister extends PXAbstractModule {
 			$errors[$field]['badcaptcha']  = true;
 		}
 	}
-	
 	// }}} Validators block
 	
-	function _sendMail(&$user, $params){
-		if(!isset($user[$this->contactEmailField]) || empty($user[$this->contactEmailField])){
-			return false;
+	function _applyModifiers(&$object){
+		if(!is_array($object) || empty($object)) return;
+		
+		foreach($object as $k => $v){
+			if(method_exists($this, $modifier = '_' . $k . 'Modifier')){
+				$object[$k] = $this->$modifier($v);
+			}
 		}
-		$user[$params['route'] . 'code'] = generateRandomString(16);
-		$m = new NLMailMessage();
-		$m->SetFrom($this->systemName, $this->systemEmail);
-		$m->SetTo(NULL, $user[$this->contactEmailField]);
-		
-		//Apply mail template
-		$m->SetTemplate(
-			BASEPATH.'local/mail_templates/registration/'.$params['route'].'.tmpl',
-			TRUE,
-			array(
-				'href' => $this->buildRoute($params['route'], array('code' => $user[$params['route'] . 'code'], 'login' => $user['title']))
-			)
-		);
-		
-		return $m->Send();
 	}
+	
+	// {{{ Modifiers block
+	function _passwdModifier($password){
+		$authmethodname = $this->user->getPrimaryAuthMethod($this->defaultAuth);
+		return call_user_func(array($authmethodname, 'passwdToDB'), $password);
+	}
+	// }}} Modifiers block
+	
+	// {{{ Routes block
+	// common
+	function _defaultRouteRedirect($destination, $urlArgs){
+		return $this->registerPath .'?view=' . $destination . (strlen($urlArgs) ? '&' . $urlArgs : '');
+	}
+	
+	// register controller
+	function _successRoute($urlArgs){
+		return $this->_defaultRouteRedirect('success', $urlArgs);
+	}
+	
+	function _errorRoute($urlArgs){
+		return $this->_defaultRouteRedirect('error', $urlArgs);
+	}
+	
+	// modify controller
+	function _modifyRoute($urlArgs){
+		return $this->_defaultRouteRedirect('modify', $urlArgs);
+	}
+	
+	function _modifysuccessRoute($urlArgs){
+		return $this->_defaultRouteRedirect('modifysuccess', $urlArgs);
+	}
+	
+	function _modifyerrorRoute($urlArgs){
+		return $this->_defaultRouteRedirect('modifyerror', $urlArgs);
+	}
+	
+	// activation controller
+	function _activationRoute($urlArgs){
+		return 'http://' . $this->request->GetHttpHost() . "/action.phtml?area={$this->area}&action=activation" . (strlen($urlArgs) ? '&' . $urlArgs : '');
+	}
+	
+	function _activationsuccessRoute($urlArgs){
+		return $this->_defaultRouteRedirect('activationsuccess', $urlArgs);
+	}
+	
+	function _activationerrorRoute($urlArgs){
+		return $this->_defaultRouteRedirect('activationerror', $urlArgs);
+	}
+	
+	// remind controller
+	function _remindRoute($urlArgs){
+		return 'http://' . $this->request->GetHttpHost() . $this->registerPath . '?view=remind' . (strlen($urlArgs) ? '&' . $urlArgs : '');
+	}
+	
+	function _remindsuccessRoute($urlArgs){
+		return $this->_defaultRouteRedirect('remindsuccess', $urlArgs);
+	}
+	
+	function _reminderrorRoute($urlArgs){
+		return $this->_defaultRouteRedirect('reminderror', $urlArgs);
+	}
+	// }}} Routes block
+	
+	// {{{ Mail templates data assigners block
+	function _activationMailData(&$user, $route){
+		$user[$route . 'code'] = generateRandomString(16);
+		return array(
+			'href' => $this->buildRoute($route, array('code' => $user[$route . 'code'], 'login' => $user['title']))
+		);
+	}
+	
+	function _remindMailData(&$user, $route){
+		return $this->_activationMailData($user, $route);
+	}
+	
+	function _notifyMailData(&$user, $route){
+		return array(
+			'login'    => $user['title'],
+			'password' => $user['__plain_passwd__']
+		);
+	}
+	// }}} Mail templates data assigners block
 }
 
 ?>

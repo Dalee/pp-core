@@ -103,6 +103,8 @@ class PXAdminObjectForm extends NLAbstractHTMLForm {
 		}
 		$html .= '</tr></thead><tbody>';
 
+
+		$params = array('object' => $this->object);
 		foreach ($pLinks as $k=>$v) {
 			$iteration = 0;
 			$linksIsset = isset($links[$v['id']]);
@@ -132,14 +134,15 @@ class PXAdminObjectForm extends NLAbstractHTMLForm {
 					$html .= '</td>';
 				}
 
+				$params['other'] = $v;
+
 				foreach ($reference->fields as $sk=>$sv) {
 					$value = ($linksIsset) ? $links[$v['id']]['fields'][$sk] : NULL;
-
 					$k = $reference->name.'['.$iteration.']['.$v['id'].'][fields]['.$sk.']';
 
 					$sv->name = $k;
 
-					$html .= '<td>'.$sv->displayType->buildInput($sv, array($k=>$value)).'</td>';
+					$html .= '<td>'.$sv->displayType->buildInput($sv, array($k=>$value), $params).'</td>';
 				}
 				$html .= '</tr>';
 				$iteration++;
