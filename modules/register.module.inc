@@ -16,8 +16,8 @@ class PXModuleRegister extends PXAbstractModule {
 	// need for automatic assign using PXRegistry
 	var $response;
 
-	function PXModuleRegister($area, $settings) {
-		$this->PXAbstractModule($area, $settings);
+	function __construct($area, $settings) {
+		parent::__construct($area, $settings);
 		
 		$this->systemName        = GetFromArray($settings,'systemname','PX Site');           //mail From (name)    in the robot emails
 		$this->systemEmail       = GetFromArray($settings,'systememail', 'noreply@www');     //mail From (address) in the robot emails
@@ -46,21 +46,21 @@ class PXModuleRegister extends PXAbstractModule {
 		return compact('title', 'min', 'max', 'validators');
 	}
 	
-	//TODO: Need reFUCKtoring ?
-	function userIndex(&$app, &$request, &$user, &$db, &$layout, &$tree, &$objects, &$subObjects, &$references, &$heap, &$currentSid, &$currentCid, &$currentCtype, &$currentSCid, &$currentSCtype, &$rootId, &$pathId, &$urlFile, &$error) {
+	//reFUCKtoring complete
+	function userIndex() { //&$app, &$request, &$user, &$db, &$layout, &$tree, &$objects, &$subObjects, &$references, &$heap, &$currentSid, &$currentCid, &$currentCtype, &$currentSCid, &$currentSCtype, &$rootId, &$pathId, &$urlFile, &$error) {
 		
 		$this->response->dontCache();
 		
 		$errors = & $this->loadModel('session', 'errors');
 		$input  = & $this->loadModel('session', 'data');
-		$layout->assign('__view', $request->GetVar('view'));
+		$this->layout->assign('__view', $this->request->GetVar('view'));
 
-		switch($request->GetVar('view')){
+		switch($this->request->GetVar('view')){
 			default:
-				if(!$user->isAuthed()){
-					$layout->assign('showRegForm', true);
+				if(!$this->user->isAuthed()){
+					$this->layout->assign('showRegForm', true);
 					if($this->captchaField){
-						$layout->assign($this->captchaField, $this->loadModel('captcha'));
+						$this->layout->assign($this->captchaField, $this->loadModel('captcha'));
 					}
 				}
 			break;
@@ -68,11 +68,11 @@ class PXModuleRegister extends PXAbstractModule {
 				$errors = null;
 			case 'modifysuccess':
 			case 'modifyerror':
-				if($user->isAuthed()){
-				    $layout->assign('showRegForm', true);
-				    $layout->assign('regErrors', $errors);
-				    $layout->assign('getInput', $input);
-				    @$layout->assign('regInput', reset($this->loadModel('suser', array('id' => $user->id))));
+				if($this->user->isAuthed()){
+				    $this->layout->assign('showRegForm', true);
+				    $this->layout->assign('regErrors', $errors);
+				    $this->layout->assign('getInput', $input);
+				    @$this->layout->assign('regInput', reset($this->loadModel('suser', array('id' => $user->id))));
 				}
 			break;
 			case 'success':
@@ -81,29 +81,29 @@ class PXModuleRegister extends PXAbstractModule {
 			case 'remindsuccess':
 			break;
 			case 'error':
-				if(!$user->isAuthed()){
-					$layout->assign('showRegForm', true);
+				if(!$this->user->isAuthed()){
+					$this->layout->assign('showRegForm', true);
 					if($this->captchaField){
-						$layout->assign($this->captchaField, $this->loadModel('captcha'));
+						$this->layout->assign($this->captchaField, $this->loadModel('captcha'));
 					}
-					$layout->assign('regErrors', $errors);
-					$layout->assign('regInput', $input);
+					$this->layout->assign('regErrors', $errors);
+					$this->layout->assign('regInput', $input);
 				}
 			break;
 			case 'remind':
 				$errors = null;
 			case 'reminderror':
-				if(!$user->isAuthed()){
-					$layout->assign('showRemindForm', true);
-					$layout->assign('regErrors', $errors);
+				if(!$this->user->isAuthed()){
+					$this->layout->assign('showRemindForm', true);
+					$this->layout->assign('regErrors', $errors);
 					if($this->captchaField){
-						$layout->assign($this->captchaField, $this->loadModel('captcha'));
+						$this->layout->assign($this->captchaField, $this->loadModel('captcha'));
 					}
 				}
 			break;
 			case 'activationerror':
-				if(!$user->isAuthed()){
-					$layout->assign('regErrors', $errors);
+				if(!$this->user->isAuthed()){
+					$this->layout->assign('regErrors', $errors);
 				}
 			break;
 		}
@@ -112,7 +112,7 @@ class PXModuleRegister extends PXAbstractModule {
 		$this->_saveModel('session');
 	}
 	
-	function userAction(&$app, &$request, &$user, &$db) {
+	function userAction() { //&$app, &$request, &$user, &$db) {
 		$this->response->dontCache();
 		
 		$this->assignController();

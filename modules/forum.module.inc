@@ -6,7 +6,7 @@ TODO:
  -
 */
 
-class PXModuleForum extends PXAbstractModule {
+class PXModuleForum extends PXModule {
 	var $dtForums;
 	var $dtTopics;
 	var $dtMessages;
@@ -30,7 +30,7 @@ class PXModuleForum extends PXAbstractModule {
 		'EDITMESSAGE' => 'editmessage',
 	);
 
-	function PXModuleForum($area, $settings) {
+	function __construct($area, $settings) {
 		parent::__construct($area, $settings);
 
 		$this->dtForums    = 'struct';
@@ -86,25 +86,34 @@ class PXModuleForum extends PXAbstractModule {
 	}
 
 	function userIndex() {
-		$forumSettings = $this->getUserSettingsFromRequest($request, $user);
+		$currentSid  = $this->tree->hasCurrent() ? $this->tree->getCurrent()->id : -1;
 
-		$forumBaseId   = $this->_guessBaseId($tree, $currentSid);
-		$forumBasePath = createPathByParentId($tree, $forumBaseId);
-		$forumCurrPath = createPathByParentId($tree, $currentSid);
+		if($this->subObjects->hasCurrent()){
+			$objs = $this->subObjects->getCurrent();
+		    $currentSCid  = $objs['id'];
+		} else {
+			$currentSCid  = -1;
+		}
 
-		$rqFile = $request->GetFile();
-		$rqCase = $request->GetVar('case', ($rqFile == 'index.html') ? 'viewforum' : 'viewtopic');
+		$forumSettings = $this->getUserSettingsFromRequest();
 
-		if (strpos($request->GetVar('result', ''), 'error') === 0) {
+		$forumBaseId   = $this->_guessBaseId($this->tree->tree, $currentSid);
+		$forumBasePath = createPathByParentId($this->tree->tree, $forumBaseId);
+		$forumCurrPath = createPathByParentId($this->tree->tree, $currentSid);
+
+		$rqFile = $this->request->GetFile();
+		$rqCase = $this->request->GetVar('case', ($rqFile == 'index.html') ? 'viewforum' : 'viewtopic');
+
+		if (strpos($this->request->GetVar('result', ''), 'error') === 0) {
 			if (array_key_exists('registerErrors', $_SESSION)) {
-				$layout->Assign('forumModifyErrors', $_SESSION['registerErrors']);
+				$this->layout->Assign('forumModifyErrors', $_SESSION['registerErrors']);
 			}
 			if (array_key_exists('registerData', $_SESSION)) {
-				$layout->Assign('forumModifyData', $_SESSION['registerData']);
+				$this->layout->Assign('forumModifyData', $_SESSION['registerData']);
 			}
 			if (array_key_exists($this->area . 'Data', $_SESSION)) {
 				foreach ($_SESSION[$this->area . 'Data'] as $k => $v) {
-					$layout->Assign('forum' . ucfirst($k) . 'Data', $v);
+					$this->layout->Assign('forum' . ucfirst($k) . 'Data', $v);
 				}
 			}
 		}
@@ -125,7 +134,7 @@ class PXModuleForum extends PXAbstractModule {
 					$moduleError = 'Некорректный запрос.';
 					break;
 				}
-				if (!$user->IsAuthed()) {
+				if (!$this->user->IsAuthed()) {
 					$moduleError = 'Редактирование персональных данных возможно только для авторизовавшегося пользователя';
 					break;
 				}
@@ -142,49 +151,49 @@ class PXModuleForum extends PXAbstractModule {
 					$moduleError = 'Некорректный запрос.';
 					break;
 				}
-				$u = $db->GetObjectsByFieldLimited($app->types['suser'], "TRUE", 'title', $request->GetVar('id'), 1, 0);
+				$u = $this->db->GetObjectsByFieldLimited($this->app->types['suser'], "TRUE", 'title', $this->request->GetVar('id'), 1, 0);
 				if (count($u)) {
 					$forumUser = current($u);
 					$forumTitle = 'Информация о пользователе '.$forumUser[$this->userTitle];
 					$forumUser['__unix']     = DateGermanToUnix($forumUser['sys_created']);
-					$forumUser['__messages'] = $db->GetObjectsByField($app->types[$this->dtMessages], "TRUE", 'sys_owner', $forumUser['id'], DB_SELECT_COUNT);
-					$layout->Assign('forumUser', $forumUser);
+					$forumUser['__messages'] = $this->db->GetObjectsByField($this->app->types[$this->dtMessages], "TRUE", 'sys_owner', $forumUser['id'], DB_SELECT_COUNT);
+					$this->layout->Assign('forumUser', $forumUser);
 				} else {
 					$moduleError = 'Нет такого пользователя.';
 				}
 				break;
 			case $this->dtCases['NEWMESSAGE']:
-				if ($rqMid = $request->GetVar('mid')) {
+				if ($rqMid = $this->request->GetVar('mid')) {
 					$forumTitle = 'Ответ на сообщение';
-					$message = $db->GetObjectById($app->types[$this->dtMessages], $rqMid);
+					$message = $this->db->GetObjectById($this->app->types[$this->dtMessages], $rqMid);
 					if (!is_array($message) || !isset($message['id']) || !$message['status']) {
 						$moduleError = 'Нет такого сообщения';
 						break;
 					}
-					$topic = $db->GetObjectById($app->types[$this->dtTopics], $message['parent']);
+					$topic = $this->db->GetObjectById($this->app->types[$this->dtTopics], $message['parent']);
 					if ($topic['locked']) {
 						$moduleError = 'Тема закрыта. Вы не можете писать в эту тему.';
 						break;
 					}
 					$message = array($message);
 					$usersIds = $this->_normalizeObjects($this->dtMessages, $message);
-					$u = $db->GetObjectsByIdArray($app->types['suser'], true, $usersIds);
-					$layout->Assign('forumUsers', $u);
+					$u = $this->db->GetObjectsByIdArray($this->app->types['suser'], true, $usersIds);
+					$this->layout->Assign('forumUsers', $u);
 					$author = array_key_exists($message[0]['sys_owner'], $u) ? $u[$message[0]['sys_owner']]: null;
 					$message[0]['__retitle'] = $this->_makeReplyTitle($message[0]['title']);
-					$message[0]['__rebody']  = $this->_makeReplyBody($message[0]['body'], $author, $request->GetVar('mode', 'nocite'));
-					$layout->Assign('forumReMessage', $message[0]);
+					$message[0]['__rebody']  = $this->_makeReplyBody($message[0]['body'], $author, $this->request->GetVar('mode', 'nocite'));
+					$this->layout->Assign('forumReMessage', $message[0]);
 				} else {
 					$forumTitle = 'Создание новой темы';
 				}
 				break;
 			case $this->dtCases['EDITMESSAGE']: // TODO
-				if (!$rqMid = $request->GetVar('mid')) {
+				if (!$rqMid = $this->request->GetVar('mid')) {
 					$moduleError = 'Нет такого сообщения';
 					break;
 				}
 
-				$message = $db->GetObjectById($app->types[$this->dtMessages], $rqMid);
+				$message = $this->db->GetObjectById($this->app->types[$this->dtMessages], $rqMid);
 				if (!is_array($message) || !isset($message['id']) || !$message['status']) {
 					$moduleError = 'Нет такого сообщения';
 					break;
@@ -193,47 +202,49 @@ class PXModuleForum extends PXAbstractModule {
 				$usersIds = $this->_normalizeObjects($this->dtMessages, $message);
 				$message = reset($message);
 
-				if ($message['sys_owner'] != $user->id) {
+				if ($message['sys_owner'] != $this->user->id) {
 					$moduleError = 'Вы не можете редактировать чужие сообщения';
 					break;
 				}
 
-				$topic = $db->GetObjectById($app->types[$this->dtTopics], $message['parent']);
+				$topic = $this->db->GetObjectById($this->app->types[$this->dtTopics], $message['parent']);
 				if ($topic['locked']) {
 					$moduleError = 'Тема закрыта. Вы не можете писать в эту тему.';
 					break;
 				}
 
-				if (time() - $this->forumSettings['timetoedit'] > $message['__created_unix'] and $request->GetVar('result') !== 'ok') {
+				if (time() - $this->forumSettings['timetoedit'] > $message['__created_unix'] and $this->request->GetVar('result') !== 'ok') {
 					$moduleError = 'Срок редактирования сообщения закончился';
 					break;
 				}
 
 				$forumTitle = 'Редактирование сообщения';
-				$layout->Assign('forumEditMessage', $message);
+				$this->layout->Assign('forumEditMessage', $message);
 				break;
 			case $this->dtCases['VIEWTOPIC']:
-				$usersIds = $this->_normalizeObjects($this->dtMessages, $subObjects[$this->dtMessages]);
-				$u = $db->GetObjectsByIdArray($app->types['suser'], true, $usersIds);
-				$layout->Assign('forumUsers', $u);
+				$usersIds = $this->_normalizeObjects($this->dtMessages, $this->subObjects[$this->dtMessages]);
+				$u = $this->db->GetObjectsByIdArray($this->app->types['suser'], true, $usersIds);
+				$this->layout->Assign('forumUsers', $u);
 				if ($forumSettings['active']['view'] == 'plain') {
-					$maxpage = (int)ceil((count($subObjects[$this->dtMessages])/$forumSettings['active']['perpage']));
+					$maxpage = (int)ceil((count($this->subObjects[$this->dtMessages])/$forumSettings['active']['perpage']));
 
 					if($currentSCid !== -1) {
-						$keys = array_flip(array_keys($subObjects[$this->dtMessages]));
+						$keys = array_flip(array_keys($this->subObjects[$this->dtMessages]));
 						$currentpage = ceil(($keys[$currentSCid]+1)/$forumSettings['active']['perpage']);
 					} else {
-						$currentpage = intval($request->GetVar('page', $maxpage));
+						$currentpage = intval($this->request->GetVar('page', $maxpage));
 						if ($currentpage < 1) $currentpage = 1;
 						if ($currentpage > $maxpage) $currentpage = $maxpage;
 					}
 
 					$n = 0;
-					foreach($subObjects[$this->dtMessages] as $k => $v) {
+					foreach($this->subObjects[$this->dtMessages] as $k => $v) {
 						$n++;
-						$subObjects[$this->dtMessages][$k]['__page'] = (int)ceil($n/$forumSettings['active']['perpage']);
+						$t           = $this->subObjects[$this->dtMessages][$k];
+						$t['__page'] = (int)ceil($n/$forumSettings['active']['perpage']);
+						$this->subObjects->add($this->dtMessages, $t);
 					}
-					$layout->Assign('forumCurrentPage', $currentpage);
+					$this->layout->Assign('forumCurrentPage', $currentpage);
 					if ($maxpage > 1) {
 						$pages_min = ($currentpage - $forumSettings['active']['pager']);
 						if ($pages_min < 1) $pages_min = 1;
@@ -241,24 +252,24 @@ class PXModuleForum extends PXAbstractModule {
 						if ($pages_max > $maxpage) $pages_max = $maxpage;
 						$pages = array_fill($pages_min, $pages_max - $pages_min + 1,  false);
 						$pages[$currentpage] = 'current';
-						$layout->Assign('forumPages', array('pages' => $pages, 'first' => 1, 'last' => $maxpage));
+						$this->layout->Assign('forumPages', array('pages' => $pages, 'first' => 1, 'last' => $maxpage));
 					}
 				}
 				break;
 			case $this->dtCases['VIEWFORUM']:
 				$u = array();
-				if (array_key_exists($this->dtTopics, $tree->leafs[$currentSid]->content['allowed'])) {
-					$objects[$this->dtTopics] = $db->GetObjectsByParent($app->types[$this->dtTopics], true, $currentSid, DB_SELECT_TABLE, 'pinned DESC, lastreply DESC');
+				if (array_key_exists($this->dtTopics, $tree->tree->leafs[$currentSid]->content['allowed'])) {
+					$this->objects[$this->dtTopics] = $this->db->GetObjectsByParent($this->app->types[$this->dtTopics], true, $currentSid, DB_SELECT_TABLE, 'pinned DESC, lastreply DESC');
 
-					$usersIds = $this->_normalizeObjects($this->dtTopics, $objects[$this->dtTopics]);
-					$u += $db->GetObjectsByIdArray($app->types['suser'], true, $usersIds);
+					$usersIds = $this->_normalizeObjects($this->dtTopics, $this->objects[$this->dtTopics]);
+					$u += $this->db->GetObjectsByIdArray($this->app->types['suser'], true, $usersIds);
 
-					$currentpage = intval($request->GetVar('page', 1));
-					$maxpage = (int)ceil((count($objects[$this->dtTopics])/$forumSettings['active']['topicpp']));
+					$currentpage = intval($this->request->GetVar('page', 1));
+					$maxpage = (int)ceil((count($this->objects[$this->dtTopics])/$forumSettings['active']['topicpp']));
 					if ($currentpage < 1) $currentpage = 1;
 					if ($currentpage > $maxpage) $currentpage = $maxpage;
-					$objects[$this->dtTopics] = array_slice($objects[$this->dtTopics], ($currentpage - 1) * $forumSettings['active']['topicpp'], $forumSettings['active']['topicpp']);
-					$layout->Assign('forumCurrentPage', $currentpage);
+					$this->objects[$this->dtTopics] = array_slice($this->objects[$this->dtTopics], ($currentpage - 1) * $forumSettings['active']['topicpp'], $forumSettings['active']['topicpp']);
+					$this->layout->Assign('forumCurrentPage', $currentpage);
 					if ($maxpage > 1) {
 						$pages_min = ($currentpage - $forumSettings['active']['pager']);
 						if ($pages_min < 1) $pages_min = 1;
@@ -266,56 +277,56 @@ class PXModuleForum extends PXAbstractModule {
 						if ($pages_max > $maxpage) $pages_max = $maxpage;
 						$pages = array_fill($pages_min, $pages_max - $pages_min + 1,  false);
 						$pages[$currentpage] = 'current';
-						$layout->Assign('forumPages', array('pages' => $pages, 'first' => 1, 'last' => $maxpage));
+						$this->layout->Assign('forumPages', array('pages' => $pages, 'first' => 1, 'last' => $maxpage));
 					}
-					foreach ($objects[$this->dtTopics] as $k => $o) {
+					foreach ($this->objects[$this->dtTopics] as $k => $o) {
 						if ($o['count'] <= $forumSettings['active']['perpage']) continue;
 						$max_page = (int)ceil($o['count']/$forumSettings['active']['perpage']);
 						if ($max_page > $forumSettings['active']['pager'] + 1) {
-							$objects[$this->dtTopics][$k]['_pages']['pages'] = array_fill(1, $forumSettings['active']['pager'],  false);
+							$this->objects[$this->dtTopics][$k]['_pages']['pages'] = array_fill(1, $forumSettings['active']['pager'],  false);
 						} else {
-							$objects[$this->dtTopics][$k]['_pages']['pages'] = array_fill(1, $max_page,  false);
+							$this->objects[$this->dtTopics][$k]['_pages']['pages'] = array_fill(1, $max_page,  false);
 						}
-						$objects[$this->dtTopics][$k]['_pages']['first'] = 1;
-						$objects[$this->dtTopics][$k]['_pages']['last'] = $max_page;
+						$this->objects[$this->dtTopics][$k]['_pages']['first'] = 1;
+						$this->objects[$this->dtTopics][$k]['_pages']['last'] = $max_page;
 					}
 				}
-				if (count($tree->leafs[$currentSid]->children)) {
-					$topics = $db->GetObjectsByField($app->types[$this->dtTopics], true, 'is_last', true);
+				if (count($this->tree->tree->leafs[$currentSid]->children)) {
+					$topics = $this->db->GetObjectsByField($this->app->types[$this->dtTopics], true, 'is_last', true);
 					$usersIds = $this->_normalizeObjects($this->dtTopics, $topics);
-					$u += $db->GetObjectsByIdArray($app->types['suser'], true, $usersIds);
+					$u += $this->db->GetObjectsByIdArray($this->app->types['suser'], true, $usersIds);
 					foreach($topics as $topic) {
-						$tree->leafs[$topic['parent']]->content['__lastpost'] = $topic;
+						$this->tree->tree->leafs[$topic['parent']]->content['__lastpost'] = $topic;
 					}
-					$forumstats = $db->Query("SELECT SUM(count+1) as total_messages, COUNT(id) as total_topics, parent FROM {$this->dtTopics} WHERE status = ".$db->TrueStatusString(true)." GROUP BY parent");
+					$forumstats = $this->db->Query("SELECT SUM(count+1) as total_messages, COUNT(id) as total_topics, parent FROM {$this->dtTopics} WHERE status = ".$this->db->TrueStatusString(true)." GROUP BY parent");
 					foreach($forumstats as $stat) {
-						$tree->leafs[$stat['parent']]->content['__forumstat'] = $stat;
+						$this->tree->tree->leafs[$stat['parent']]->content['__forumstat'] = $stat;
 					}
-					$this->_fixForumStats($tree,$currentSid);
+					$this->_fixForumStats($this->tree->tree,$currentSid);
 				}
-				$layout->Assign('forumUsers', $u);
+				$this->layout->Assign('forumUsers', $u);
 				break;
 			default:
 				$moduleError = 'Некорректный запрос';
 				break;
 
 		}
-		$layout->Assign('forumSettings',    $forumSettings);
-		$layout->Assign('forumBaseId',      $forumBaseId);
-		$layout->Assign('forumBasePath',    $forumBasePath);
-		$layout->Assign('forumCurrPath',    $forumCurrPath);
-		$layout->Assign('forumDtType',      $this->structType);
-		$layout->Assign('forumDtTopics',    $this->dtTopics);
-		$layout->Assign('forumDtMessages',  $this->dtMessages);
-		$layout->Assign('forumDtBlockings', $this->dtBlockings);
-		$layout->Assign('forumDtCases',     $this->dtCases);
+		$this->layout->Assign('forumSettings',    $forumSettings);
+		$this->layout->Assign('forumBaseId',      $forumBaseId);
+		$this->layout->Assign('forumBasePath',    $forumBasePath);
+		$this->layout->Assign('forumCurrPath',    $forumCurrPath);
+		$this->layout->Assign('forumDtType',      $this->structType);
+		$this->layout->Assign('forumDtTopics',    $this->dtTopics);
+		$this->layout->Assign('forumDtMessages',  $this->dtMessages);
+		$this->layout->Assign('forumDtBlockings', $this->dtBlockings);
+		$this->layout->Assign('forumDtCases',     $this->dtCases);
 		if (!is_null($moduleError)) {
-			$layout->Assign('forumCase',  'error');
-			$layout->Assign('forumTitle', 'Ошибка');
-			$layout->Assign('forumError', $moduleError);
+			$this->layout->Assign('forumCase',  'error');
+			$this->layout->Assign('forumTitle', 'Ошибка');
+			$this->layout->Assign('forumError', $moduleError);
 		} else {
-			$layout->Assign('forumTitle', isset($forumTitle) ? $forumTitle : false);
-			$layout->Assign('forumCase',  $rqCase);
+			$this->layout->Assign('forumTitle', isset($forumTitle) ? $forumTitle : false);
+			$this->layout->Assign('forumCase',  $rqCase);
 		}
 	}
 
@@ -370,7 +381,8 @@ class PXModuleForum extends PXAbstractModule {
 		return array_keys($users);
 	}
 
-	function getUserSettingsFromRequest(&$request, &$user) {
+	function getUserSettingsFromRequest() {
+		$user = PXRegistry::getUser();
 		$s = array();
 		if ($user->id) {
 			$s['permanent'] = (array_key_exists($this->area, (array)$user->data[$this->userData]) ? $user->data[$this->userData][$this->area] : array()) + $this->forumSettings;
@@ -378,30 +390,30 @@ class PXModuleForum extends PXAbstractModule {
 			$s['permanent'] = ((array_key_exists($this->area . 'Data', (array)$_SESSION) and array_key_exists('settings', (array)$_SESSION[$this->area . 'Data'])) ? $_SESSION[$this->area . 'Data']['settings'] : array()) + $this->forumSettings;
 		}
 		$s['active'] = $s['permanent'];
-		if (array_key_exists($tmp = $request->GetVar('view' ,'-'), $this->forumSettings['views'])) {
+		if (array_key_exists($tmp = PXRegistry::getRequest()->GetVar('view' ,'-'), $this->forumSettings['views'])) {
 			$s['active']['view'] = $tmp;
 		}
 		return $s;
 	}
 
-	function userAction(&$app, &$request, &$user, &$db) {
-		$successUrl = $request->GetVar('onsuccess', $request->GetReferer());
-		$errorUrl   = $request->GetVar('onerror', $request->GetReferer());
-		$action     = $request->GetVar('action', 'badaction');
+	function userAction(){ //&$this->app, &$this->request, &$user, &$this->db) {
+		$successUrl = $this->request->GetVar('onsuccess', $this->request->GetReferer());
+		$errorUrl   = $this->request->GetVar('onerror', $this->request->GetReferer());
+		$action     = $this->request->GetVar('action', 'badaction');
 		$error = NULL;
 		if (array_key_exists($this->area . 'Data', $_SESSION)) {
 			unset($_SESSION[$this->area . 'Data'][$action]);
 		}
 		switch ($action) {
 			case $this->dtCases['NEWMESSAGE']:
-				if (isset($app->types[$this->dtBlockings]) && $db->getObjectsByWhere($app->types[$this->dtBlockings], true, "ip&mask = ".ip2long($request->getRemoteAddr())."&mask", DB_SELECT_COUNT)) {
+				if (isset($this->app->types[$this->dtBlockings]) && $this->db->getObjectsByWhere($this->app->types[$this->dtBlockings], true, "ip&mask = ".ip2long($this->request->getRemoteAddr())."&mask", DB_SELECT_COUNT)) {
 					$error = 'blocked';
 					break;
 				}
-				$rqFid    = $this->_prepareForumIden($request->GetVar('fid'));
-				$rqMid    = $this->_prepareForumIden($request->GetVar('mid'));
-				$rqTitle  = $this->_prepareForumVar($request->GetVar('title'), 256);
-				$rqBody   = $this->_prepareForumVar($request->GetVar('body'));
+				$rqFid    = $this->_prepareForumIden($this->request->GetVar('fid'));
+				$rqMid    = $this->_prepareForumIden($this->request->GetVar('mid'));
+				$rqTitle  = $this->_prepareForumVar($this->request->GetVar('title'), 256);
+				$rqBody   = $this->_prepareForumVar($this->request->GetVar('body'));
 				$_SESSION[$this->area . 'Data'][$action]['title'] = $rqTitle;
 				$_SESSION[$this->area . 'Data'][$action]['body'] = $rqBody;
 
@@ -418,54 +430,54 @@ class PXModuleForum extends PXAbstractModule {
 					}
 				}
 
-				$tree = $db->getObjects($app->types['struct'], true, DB_SELECT_TREE);
+				$tree = $this->db->getObjects($this->app->types['struct'], true, DB_SELECT_TREE);
 
 				if ($rqMid === 0) {
-					$fObject = $db->GetObjectById($app->types[$this->dtForums], $rqFid);
+					$fObject = $this->db->GetObjectById($this->app->types[$this->dtForums], $rqFid);
 					if (!isset($fObject['id'])) {
 						$error = 'badparent';
 						break;
 					}
-					$fAllowed = $app->types[$this->dtForums]->allowedChilds($fObject);
+					$fAllowed = $this->app->types[$this->dtForums]->allowedChilds($fObject);
 					if (!isset($fAllowed[$this->dtTopics])) {
 						$error = 'noallowed';
 						break;
 					}
-					if (!$user->can('write', $app->types[$this->dtTopics], $fObject)) {
+					if (!$this->user->can('write', $this->app->types[$this->dtTopics], $fObject)) {
 						$error = 'noaccess';
 						break;
 					}
 					// Создаем тему
-					$object    = $this->createTopic($user, $app->types[$this->dtTopics], $rqFid, $rqTitle);
-					$topicId   = $db->AddContentObject($app->types[$this->dtTopics], $object);
-					$tObject   = $db->GetObjectById($app->types[$this->dtTopics], $topicId);
+					$object    = $this->createTopic($this->user, $this->app->types[$this->dtTopics], $rqFid, $rqTitle);
+					$topicId   = $this->db->AddContentObject($this->app->types[$this->dtTopics], $object);
+					$tObject   = $this->db->GetObjectById($this->app->types[$this->dtTopics], $topicId);
 					$tObject['sys_accessput'] = USERLEVEL_USER;
 					$tObject['pathname'] = $tObject['id'].'.html';
-					$db->ModifyContentObject($app->types[$this->dtTopics], $tObject);
-					$db->ModifyObjectSysVars($app->types[$this->dtTopics], $tObject);
-					$object    = $this->createMessage($user, $app->types[$this->dtMessages], $topicId, 0, $rqTitle, $rqBody, $request->getRemoteAddr());
-					$messageId = $db->AddContentObject($app->types[$this->dtMessages], $object);
+					$this->db->ModifyContentObject($this->app->types[$this->dtTopics], $tObject);
+					$this->db->ModifyObjectSysVars($this->app->types[$this->dtTopics], $tObject);
+					$object    = $this->createMessage($user, $this->app->types[$this->dtMessages], $topicId, 0, $rqTitle, $rqBody, $this->request->getRemoteAddr());
+					$messageId = $this->db->AddContentObject($this->app->types[$this->dtMessages], $object);
 				} else {
-					$mObject = $db->GetObjectById($app->types[$this->dtMessages], $rqMid);
+					$mObject = $this->db->GetObjectById($this->app->types[$this->dtMessages], $rqMid);
 					if (!isset($mObject['id'])) {
 						$error = 'badparent';
 						break;
 					}
 					// Создаем мессадж
-					$tObject   = $db->GetObjectById($app->types[$this->dtTopics], $mObject['parent']);
-					$object    = $this->createMessage($user, $app->types[$this->dtMessages], $mObject['parent'], $rqMid, $rqTitle, $rqBody, $request->getRemoteAddr());
-					$messageId = $db->AddContentObject($app->types[$this->dtMessages], $object);
+					$tObject   = $this->db->GetObjectById($this->app->types[$this->dtTopics], $mObject['parent']);
+					$object    = $this->createMessage($this->user, $this->app->types[$this->dtMessages], $mObject['parent'], $rqMid, $rqTitle, $rqBody, $this->request->getRemoteAddr());
+					$messageId = $this->db->AddContentObject($this->app->types[$this->dtMessages], $object);
 				}
-				$successUrl = createPathByParentId($tree, $tObject['parent']) . $tObject['pathname'];
+				$successUrl = createPathByParentId($this->tree->tree, $tObject['parent']) . $tObject['pathname'];
 				$successUrl = appendParamToUrl($successUrl, '', '', 'm' . $messageId);
 				break;
 			case $this->dtCases['EDITMESSAGE']: // TODO
-				if (isset($app->types[$this->dtBlockings]) && $db->getObjectsByWhere($app->types[$this->dtBlockings], true, "ip&mask = ".ip2long($request->getRemoteAddr())."&mask", DB_SELECT_COUNT)) {
+				if (isset($this->app->types[$this->dtBlockings]) && $this->db->getObjectsByWhere($this->app->types[$this->dtBlockings], true, "ip&mask = ".ip2long($this->request->getRemoteAddr())."&mask", DB_SELECT_COUNT)) {
 					$error = 'blocked';
 					break;
 				}
-				$rqMid   = $this->_prepareForumIden($request->GetVar('mid'));
-				$message = $db->GetObjectById($app->types[$this->dtMessages], $rqMid);
+				$rqMid   = $this->_prepareForumIden($this->request->GetVar('mid'));
+				$message = $this->db->GetObjectById($this->app->types[$this->dtMessages], $rqMid);
 				if (!array_key_exists('id', $message)) {
 					$error = 'nomessage';
 					break;
@@ -477,7 +489,7 @@ class PXModuleForum extends PXAbstractModule {
 					$error = 'notowner';
 					break;
 				}
-				$topic = $db->GetObjectById($app->types[$this->dtTopics], $message['parent']);
+				$topic = $this->db->GetObjectById($this->app->types[$this->dtTopics], $message['parent']);
 				if ($topic['locked']) {
 					$error = 'locked';
 					break;
@@ -488,8 +500,8 @@ class PXModuleForum extends PXAbstractModule {
 					break;
 				}
 
-				$rqTitle = $this->_prepareForumVar($request->GetVar('title'), 256);
-				$rqBody  = $this->_prepareForumVar($request->GetVar('body'));
+				$rqTitle = $this->_prepareForumVar($this->request->GetVar('title'), 256);
+				$rqBody  = $this->_prepareForumVar($this->request->GetVar('body'));
 				$_SESSION[$this->area . 'Data'][$action]['title'] = $rqTitle;
 				$_SESSION[$this->area . 'Data'][$action]['body'] = $rqBody;
 
@@ -507,34 +519,34 @@ class PXModuleForum extends PXAbstractModule {
 				}
 				$message['body']  = $rqBody;
 				$message['title'] = $rqTitle;
-				$message['ip']    = $request->getRemoteAddr();
-				$db->ModifyContentObject($app->types[$this->dtMessages], $message);
-				$tree = new NLTree($db->GetObjects($app->types['struct'], true));
+				$message['ip']    = $this->request->getRemoteAddr();
+				$this->db->ModifyContentObject($this->app->types[$this->dtMessages], $message);
+				$tree = new NLTree($this->db->GetObjects($this->app->types['struct'], true));
 				$successUrl = createPathByParentId($tree, $topic['parent']) . $topic['pathname'];
 				$successUrl = appendParamToUrl($successUrl, '', '', 'm' . $message['id']);
 				break;
 			case $this->dtCases['SETTINGS']:
 				$tmp = array();
-				if ($pxForumView = $request->GetVar('pxforumview')) {
+				if ($pxForumView = $this->request->GetVar('pxforumview')) {
 					if (!array_key_exists($pxForumView, $this->forumSettings['views'])) {
 						$error = 'badrequest';
 					}
 					$tmp['view'] = $pxForumView;
 				}
-				if ($pxForumPerPage = (int)$request->GetVar('pxforumperpage',0)) {
+				if ($pxForumPerPage = (int)$this->request->GetVar('pxforumperpage',0)) {
 					$tmp['perpage'] = ($pxForumPerPage < 5 or $pxForumPerPage > 50) ? 20 : $pxForumPerPage;
 				}
-				if ($pxForumTopicPP = (int)$request->GetVar('pxforumtopicpp', 0)) {
+				if ($pxForumTopicPP = (int)$this->request->GetVar('pxforumtopicpp', 0)) {
 					$tmp['topicpp'] = ($pxForumTopicPP < 5 or $pxForumTopicPP > 50) ? 20 : $pxForumTopicPP;
 				}
-				$tmp['noretitle'] = (bool)$request->GetVar('pxforumnoretitle');
+				$tmp['noretitle'] = (bool)$this->request->GetVar('pxforumnoretitle');
 
-				if ($user->id) {
-					if(is_array($user->data[$this->userData]) and array_key_exists($this->area, $user->data[$this->userData])) {
+				if ($this->user->id) {
+					if(is_array($this->user->data[$this->userData]) and array_key_exists($this->area, $this->user->data[$this->userData])) {
 						$tmp = $tmp + $user->data[$this->userData][$this->area];
 					}
-					$user->data[$this->userData][$this->area] = $tmp;
-					$db->ModifyContentObject($app->types['suser'], $user->data);
+					$this->user->data[$this->userData][$this->area] = $tmp;
+					$this->db->ModifyContentObject($this->app->types['suser'], $user->data);
 				} else {
 					$_SESSION[$this->area . 'Data'][$action] = $tmp;
 				}
@@ -543,16 +555,16 @@ class PXModuleForum extends PXAbstractModule {
 				$error = 'badaction';
 		}
 		$nextLocation = is_null($error) ? $successUrl : $errorUrl;
-		if (array_key_exists($tmp = $request->GetVar('view'), $this->forumSettings['views'])) {
+		if (array_key_exists($tmp = $this->request->GetVar('view'), $this->forumSettings['views'])) {
 			$nextLocation = appendParamToUrl($nextLocation, 'view', $tmp);
 		}
 		if (!is_null($error)) {
-			if (!$request->GetVar('noresult')) {
+			if (!$this->request->GetVar('noresult')) {
 				$nextLocation = appendParamToUrl($nextLocation, 'result', 'error');
 				$nextLocation = appendParamToUrl($nextLocation, 'error', $error);
 			}
 		} else {
-			if (!$request->GetVar('noresult')) {
+			if (!$this->request->GetVar('noresult')) {
 				$nextLocation = appendParamToUrl($nextLocation, 'result', 'ok');
 			}
 		}

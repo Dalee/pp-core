@@ -1,10 +1,10 @@
 <?php
-class PXModuleProperties extends PXAbstractModule {
+class PXModuleProperties extends PXModule {
 	var $_settings;
 	var $_pseudoDatatype;
 
-	function PXModuleProperties($area, $settings) {
-		parent::PXAbstractModule($area, $settings);
+	function __construct($area, $settings) {
+		parent::__construct($area, $settings);
 		
 		$this->app       = & PXRegistry::getApp();
 		$this->_settings = $settings;
@@ -58,7 +58,7 @@ class PXModuleProperties extends PXAbstractModule {
 	}
 
 
-	function adminIndex(&$app, &$request, &$user, &$db, &$layout) {
+	function adminIndex(){ // &$app, &$request, &$user, &$db, &$layout) {
 		$layout->setOneColumn();
 
 		if(($error = $this->_checkForErrors()) !== false){
@@ -69,7 +69,7 @@ class PXModuleProperties extends PXAbstractModule {
 		$this->_fillPseudoDatatype();
 		$propObject = PXModuleProperties::loadModel(array_keys($this->_pseudoDatatype->fields));
 		
-		$db->loadDirectoriesByType($this->_pseudoDatatype, $propObject);
+		$this->db->loadDirectoriesByType($this->_pseudoDatatype, $propObject);
 		$objectForm = & new PXAdminObjectForm($this->_pseudoDatatype, $propObject);
 		
 		$formToHtml = $objectForm->MainForm($objectForm->format);
@@ -77,16 +77,16 @@ class PXModuleProperties extends PXAbstractModule {
 
 		$html = $this->_editArea($formToHtml);
 		
-		$layout->Assign("INNER.0.0", $html);
+		$this->layout->Assign("INNER.0.0", $html);
 	}
 
-	function adminAction(&$app, &$request, &$user, &$db) {
+	function adminAction() { //&$app, &$request, &$user, &$db) {
 		if(($error = $this->_checkForErrors()) !== false){
 			FatalError($error);
 		}
 		
 		$this->_fillPseudoDatatype();
-		$propObject = $request->getContentObject($this->_pseudoDatatype);
+		$propObject = $this->request->getContentObject($this->_pseudoDatatype);
 		PXModuleProperties::_saveModel($this->_pseudoDatatype, $propObject);
 	}
 

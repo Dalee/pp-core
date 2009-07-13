@@ -1,5 +1,5 @@
 <?php
-class PXModuleCronRun extends PXAbstractModule {
+class PXModuleCronRun extends PXModule {
 	var $TIME_FORMAT   = 'd-m-Y H:i:s';
 	var $rules;
 

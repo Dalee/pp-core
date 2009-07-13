@@ -1,5 +1,5 @@
 <?
-class PXModuleAuth extends PXAbstractModule {
+class PXModuleAuth extends PXModule {
 	function adminIndex() {
 		$this->layout->setLoginForm(
 			'action.phtml',
