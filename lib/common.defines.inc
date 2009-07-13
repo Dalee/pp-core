@@ -3,6 +3,9 @@
 // Default timezone settings for formated date output
 date_default_timezone_set('Europe/Moscow');
 
+// include_path
+set_include_path(get_include_path() . PATH_SEPARATOR . '/usr/local/lib/php/');
+
 // Определение не на винде ли мы запущены
 if(!defined('IS_WIN')) {
 	define('IS_WIN', (substr(PHP_OS, 0, 3) == 'WIN'));

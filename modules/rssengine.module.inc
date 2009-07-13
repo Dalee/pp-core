@@ -1,7 +1,7 @@
 <?
-class PXModuleRSSEngine extends PXAbstractModule {
-	function PXModuleRSSEngine($area, $settings) {
-		$this->PXAbstractModule($area, $settings);
+class PXModuleRSSEngine extends PXModule {
+	function __construct($area, $settings) {
+		parent::__construct($area, $settings);
 
 		$this->encoding = 'utf-8';
 	}
@@ -14,7 +14,7 @@ class PXModuleRSSEngine extends PXAbstractModule {
 		return $this->items;
 	}
 
-	function userIndex(&$app, &$request, &$user, &$db, &$layout, &$tree, &$objects, &$subObjects, &$references, &$heap, $currentSid, $currentCid, $currentCtype, $currentSCid, $currentSCtype, $rootId, $pathId) {
+	function userIndex(){ //&$app, &$request, &$user, &$db, &$layout, &$tree, &$objects, &$subObjects, &$references, &$heap, $currentSid, $currentCid, $currentCtype, $currentSCid, $currentSCtype, $rootId, $pathId) {
 		FatalError('It\'s interface method. ReWrite it.');
 		exit;
 	}

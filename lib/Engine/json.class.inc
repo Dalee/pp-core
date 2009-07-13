@@ -16,6 +16,13 @@ class PXEngineJSON extends PXEngine {
 	}
 
 	function runModules() {
+		$module_name = $this->request->getVar('area');
+
+		$module = PXRegistry::getApp()->modules[$module_name]->getModule();
+
+		$response =& PXResponse::getInstance();
+		$response->dontCache();
+
 		$this->result = $module->userJson();
 	}
 
