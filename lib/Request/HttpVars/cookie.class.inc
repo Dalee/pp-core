@@ -22,18 +22,16 @@ class NLCookieData extends NLHTTPVarsData {
 	}
 
 	function _GetVar($varName) {
-		if (!isset($this->raw[$varName])) {
+		if (!isset($this->raw[$varName])) 
 			return NULL;
 
-		} else {
-			$value = $this->raw[$varName];
+		$value = $this->raw[$varName];
 
-			if(is_string($value) && strlen($value) && substr($value, 0, 2) == 'a:') {
-				$value = unserialize($value);
-			}
-
-			return $value;
+		if(is_string($value) && strlen($value) && substr($value, 0, 2) == 'a:') {
+			$value = unserialize($value);
 		}
+
+		return $value;
 	}
 }
 

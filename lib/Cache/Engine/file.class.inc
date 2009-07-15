@@ -16,6 +16,10 @@ class PXCacheFile implements IPXCache {
 		$this->_createCacheDir();
 	}
 
+	public function getCacheDir() {
+		return $this->cache_dir;
+	}
+
 	function setOrderLevel($level=0) {
 		$this->orderLevel = $level;
 	}

@@ -1,100 +1,91 @@
 <?php
+
 class PXRegistry {
-	// private
-	var $app;
-	var $db;
-	var $request;
-	var $response;
-	var $user;
-	var $layout;
+	const unknownVarMessage = "Registry - not heap. Store your ? some where else!";
+
+	private $app, $db, $request, $response, $user, $layout;
+	private static $instance = null;
 
 	//constructor
 	private function __construct(){
 	}
 
-	private static function &instance() {
-		static $registry;
-
-		if(!is_object($registry)) {
-			$registry = new PXRegistry();
-		}
-
-		return $registry;
+	private static function instance() {
+		if(self::$instance == null)
+			self::$instance = new PXRegistry();
+		
+		return self::$instance;
 	}
 
 	public static function canSaveIt($varName){
-		$registry =& self::instance();
-		return array_key_exists($varName, get_object_vars($registry));
+		return array_key_exists($varName, get_object_vars(self::instance()));
 	}
 
-	private static function &_get($varName) {
-		$registry =& self::instance();
+	private static function get($varName) {
+		$registry = self::instance();
 
 		if(!is_object($registry->$varName)) {
 			switch($varName) {
 				case 'app':
-					$registry->_varIsNotSetException($varName);
+					throw new Exception("{$varName} wasn't set yet.");
 					break;
 
 				case 'db':
-					$registry->$varName = & new PXDataBase(self::getApp());
+					$registry->$varName = new PXDataBase(self::getApp());
 					break;
 
 				case 'user':
-					$registry->$varName = & new PXUserAuthorized();
+					$registry->$varName = new PXUserAuthorized();
 					break;
 
 				case 'layout':
-					$registry->$varName = & new PXLayoutNull();
+					$registry->$varName = new PXLayoutNull();
 					break;
 
 				case 'request':
-					$registry->$varName = & new PXRequest();
+					$registry->$varName = new PXRequest();
 					break;
 
 				case 'response':
-					$registry->$varName = & PXResponse::getInstance();
+					$registry->$varName = PXResponse::getInstance();
 					break;
 
 				default:
-					$registry->_unknownVarException($varName);
+					throw new Exception(strtr(self::$unknownVarMessage, "?", $varName));
 					break;
 			}
-			
 		}
 
 		return $registry->$varName;
 	}
 
-	public static function &getApp() {
-		return self::_get('app');
+	public static function getApp() {
+		return self::get('app');
 	}
 
-	public static function &getDb() {
-		return self::_get('db');
+	public static function getDb() {
+		return self::get('db');
 	}
 
-	public static function &getRequest() {
-		return self::_get('request');
+	public static function getRequest() {
+		return self::get('request');
 	}
 
-	public static function &getUser() {
-		return self::_get('user');
+	public static function getUser() {
+		return self::get('user');
 	}
 	
-	public static function &getLayout() {
-		return self::_get('layout');
+	public static function getLayout() {
+		return self::get('layout');
 	}
 
-	public static function &getResponse() {
-		return PXRegistry::_get('response');
+	public static function getResponse() {
+		return self::get('response');
 	}
 
-	public static function &getTypes($typeName=null) {
+	public static function getTypes($typeName=null) {
 		static $types;
-
-		$app =& PXRegistry::getApp();
-
+	
 		if(!is_array($types)) {
 			$app =  self::getApp();
 			$types = $app->types;
@@ -113,7 +104,7 @@ class PXRegistry {
 		return $types;
 	}
 
-	public static function assignToObject(&$object) {
+	public static function assignToObject($object) {
 		$registry_fields = array_keys(get_class_vars(__CLASS__));
 		$object_fields   = array_keys(get_object_vars($object));
 		$fields          = array_intersect($registry_fields, $object_fields);
@@ -122,46 +113,39 @@ class PXRegistry {
 
 		foreach($fields as $field) {
 			$registry_method = "get".ucfirst($field);
-			$object->$field =& PXRegistry::$registry_method();
+			$object->$field = PXRegistry::$registry_method();
 		}
 	}
 
-	private static function _set($varName, &$variable) {
-		$registry =& self::instance();
+	private static function set($varName, $variable) {
+		$registry = self::instance();
 
 		if(!self::canSaveIt($varName)) {
-			$registry->_unknownVarException($varName);
+			throw new Exception(strtr(self::unknownVarMessage, "?", $varName));
 		}
 
-		$registry->$varName = & $variable;
+		$registry->$varName = $variable;
 	}
 
-	public static function setApp(&$app) {
-		self::_set('app', $app);
+	public static function setApp($app) {
+		self::set('app', $app);
 	}
 
-	public static function setDB(&$db) {
-		self::_set('db', $db);
+	public static function setDB(PXDatabase $db) {
+		self::set('db', $db);
 	}
 
-	public static function setRequest(&$request) {
-		self::_set('request', $request);
+	public static function setRequest($request) {
+		self::set('request', $request);
 	}
 
-	public static function setUser(&$user) {
-		self::_set('user', $user);
+	public static function setUser($user) {
+		self::set('user', $user);
 	}
 
-	public static function setLayout(&$layout) {
-		self::_set('layout', $layout);
-	}
-
-	function _unknownVarException($e){
-		FatalError("Registry - not heap. Store your {$e} some where else!");
-	}
-
-	function _varIsNotSetException($e){
-		FatalError("{$e} wasn't set yet.");
+	public static function setLayout($layout) {
+		self::set('layout', $layout);
 	}
 }
+
 ?>

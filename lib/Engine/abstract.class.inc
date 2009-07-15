@@ -9,11 +9,8 @@ abstract class PXEngine {
 		$this->initApplication();
 
 		$user = PXRegistry::getUser();
-
 		$user->setAcl();
 		$user->checkAuth();
-
-		$this->saveToRegistry();
 
 		PXRegistry::getDb()->LoadDirectoriesAutomatic(PXRegistry::getApp()->directory);
 
@@ -22,16 +19,8 @@ abstract class PXEngine {
 		PXProfiler::end();
 	}
 
-	function saveToRegistry() {
-		foreach(array_keys(get_object_vars($this)) as $var){
-			if(isset($this->$var) && PXRegistry::canSaveIt($var)){
-				call_user_func_array(array("PXRegistry", 'set'.ucfirst($var)), array(&$this->$var));
-			}
-		}
-	}
-
 	function initApplication() { 
-		$this->app =PXApplication::getInstance(get_class($this));
+		$this->app = PXApplication::getInstance(get_class($this)) ;
 		PXRegistry::setApp($this->app);
 	}
 

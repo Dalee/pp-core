@@ -67,13 +67,9 @@ abstract class NLHTTPVarsData {
 	}
 
 	function _GetVar($varName) {
-		if (!isset($this->raw[$varName])) {
-			return NULL;
-		} else {
-			return $this->raw[$varName];
-		}
+		return isset($this->raw[$varName]) ? $this->raw[$varName] : NULL;
 	}
-
+	
 	function _isSetVar($varName) {
 		return key_exists($varName, $this->raw);
 	}

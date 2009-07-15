@@ -20,7 +20,7 @@ class ObjectCacheTest extends UnitTestCase {
 	}
 
 	function testDomainPath() {
-		$this->assertEqual($this->cache->cache_dir,  BASEPATH . '/tmp/cache/' . $this->cache_domain . '/');
+		$this->assertEqual($this->cache->getCacheDir(),  BASEPATH . '/tmp/cache/' . $this->cache_domain . '/');
 	}
 
 	function testNotExistingObject() {

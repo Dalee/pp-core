@@ -81,7 +81,7 @@ function d2_type2string($v) {
 	}
 }
 
-function &d2_shortArray($variable) {
+function d2_shortArray($variable) {
 	$showAble = array();
 
 	foreach($variable as $k=>$v) {
@@ -91,9 +91,9 @@ function &d2_shortArray($variable) {
 	return $showAble;
 }
 
-function &d2_shortObject($variable) {
+function d2_shortObject($variable) {
 
-	$showAble = & new stdClass;
+	$showAble = new stdClass;
 
 	$methods = array();
 	foreach(get_class_methods($variable) as $k=>$v) {

@@ -15,10 +15,9 @@
 }}}*/
 
 class AppTest extends UnitTestCase {
-
 	function setUp() {
-		$e = new PXEngineSbin(); $e->init();
-		$this->app =& PXRegistry::getApp();
+		$e = new PXEngineSbin();
+		$this->app = PXRegistry::getApp();
 	}
 
 	/**
