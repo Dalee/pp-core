@@ -14,38 +14,64 @@ interface IPXmlNode {
 	function getChildObjects();
 }
 
+class PXmlErrors {
+	public $errors = array();
+
+	private function __contructor() {
+	}
+
+	public static function getErrors() {
+		$instance = self::getInstance();
+		return $instance->errors;
+	}
+
+	public static function addError($errno, $errstr, $errfile, $errline, $errcontext) {
+		$instance = self::getInstance();
+		$instance->errors[] = $errstr;
+	}
+
+	public static function getInstance() {
+		static $instance;
+
+		if(!is_object($instance)) {
+			$instance = new self();
+		}
+
+		return $instance;
+	}
+}
+
 abstract class PXmlAbstract implements IPXml {
 	public $xmlObject;
+	public $errors;
 
 	function PXmlAbstract($xmlEntity){
 		FatalError('Abstract XML object cannot be created!');
 	}
 
 	function identEntity($testingObject, $nodeType, $fileLoader, $stringLoader){
-/*		$oldTrackErrors = ini_set('track_errors', 1);
-		$oldError = error_reporting(0);
-*/
+		set_error_handler(array('PXmlErrors', 'addError'), E_ALL);
+
 		switch(true){
 			case is_a($testingObject, $nodeType):
 				$xmlObject = $testingObject;
+				break;
 
 			case is_callable($fileLoader) && (file_exists($testingObject) || strlen(getFromArray(parse_url($testingObject), 'scheme'))):
 				$xmlObject = @$fileLoader($testingObject);
+				break;
 
 			case is_callable($stringLoader) && is_string($testingObject):
 				$xmlObject = @$stringLoader($testingObject);
+				break;
 
 			default:
 				$xmlObject = false;
+				break;
 		}
-/*
-		error_reporting($oldError);
-		ini_set('track_errors', $oldTrackErrors);
 
-		if(!is_object($xmlObject)) {
-			d2($php_errormsg);
-		}
-*/
+		restore_error_handler();
+
 		return $xmlObject; 
 	}
 	

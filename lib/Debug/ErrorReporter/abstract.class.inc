@@ -34,7 +34,7 @@ class PXErrorReporter {
 		return $instance;
 	}
 
-	// static
+	static
 	function catchError($code, $message, $file, $line) {
 		$reporter =& PXErrorReporter::getInstance();
 
