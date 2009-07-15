@@ -51,7 +51,7 @@ class PXRegistry {
 					break;
 
 				default:
-					throw new Exception(strtr(self::$unknownVarMessage, "?", $varName));
+					throw new Exception(strtr(self::unknownVarMessage, "?", $varName));
 					break;
 			}
 		}
