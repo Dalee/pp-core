@@ -9,7 +9,7 @@ class PXInputImage extends PXInputFile {
 		$this->_default = 'i/v.gif';
 		$this->value = $value;
 		$this->name = $name;
-		$this->entry = !is_null($entry) ? $entry : NULL;
+		$this->entry = $entry;
 		$this->type = 'image';
 	}
 

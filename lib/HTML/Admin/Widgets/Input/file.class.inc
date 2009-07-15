@@ -7,20 +7,20 @@ class PXInputFile extends PXAdminWidget {
 	
 	function PXInputFile($name, $value, $entry = NULL) {
 		$this->value = $value;
-		$this->name = $name;
-		$this->entry = $entry ? $entry : NULL;
-		$this->type = 'file';
+		$this->name  = $name;
+		$this->entry = $entry;
+		$this->type  = 'file';
 	}
-	
+
 	function setparam() {
 		$this->distension = is_null($this->entry) ? '' : '['.$this->entry.']';
 	}
-	
+
 	function preview() {
 		return;
 	}
-	
-	function param() {		
+
+	function param() {
 		$this->value['path']   = $this->value['fullpath'];
 		$this->value['width']  = 0;
 		$this->value['height'] = 0;
@@ -34,7 +34,7 @@ class PXInputFile extends PXAdminWidget {
 			<span>тип</span>
 HTML;
 	}
-	
+
 	function view_copy_del() {
 		if (!is_null($this->value['path'])) {
 			$html = '<br>';

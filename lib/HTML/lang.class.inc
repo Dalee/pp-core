@@ -164,7 +164,7 @@ class PXUserHTMLLang {
 
 	function parseDateToTime($string) {
 		if(strlen($string)) {
-			preg_match("/^(\d{2})\.(\d{2})\.(\d{4})\s+(\d{2}):(\d{2}):(\d{2})$/si", trim($string), $date);
+			preg_match("/^(\d{2})\.(\d{2})\.(\d{4})\s+(\d{2}):(\d{2}):(\d{2})(\.\d+)?$/si", trim($string), $date);
 			return mktime($date[4], $date[5], $date[6], $date[2], $date[1], $date[3]);
 
 		} else {

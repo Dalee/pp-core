@@ -28,19 +28,19 @@ class TextTest extends UnitTestCase {
 	}
 	
 	function testBuildInput() {
-		$resText      = '<input type="text" name="test_field" value="text" >';
-		$resTextarea  = '<textarea name="test_field" wrap="physical" style="height:10px;">text</textarea>';
-		
+        /*
+            '<input type="text" name="test_field" value="text" >';
+            '<textarea name="test_field" wrap="physical" style="height:10px;">text</textarea>';
+         */
 		$object = array('test_field' => 'text');
-		
-		$tt = $this->text->buildInput($this->field, $object);
-		$this->assertEqual($tt, $resText);
+        
+        $tt = $this->text->buildInput($this->field, $object);
+		$this->assertPattern('#<input\s+type="text"\s+name="test_field"\s+value="text"#m', $tt);
 		
 		$this->field->displayTypeArgs[1] = 10;
-		
 		$tt = $this->text->buildInput($this->field, $object);
-		$this->assertEqual($tt, $resTextarea);
-	}
+        $this->assertPattern('#<textarea\s+name="test_field".+style="height:\s*10px;"[^>]*>text</textarea>#m', $tt);
+    }
 }
 
 ?>

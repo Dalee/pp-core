@@ -226,7 +226,7 @@
 				monthSelect += '</SELECT>';
 
                                 yearSelect = '<SELECT onChange="ccYear = this.options[this.selectedIndex].value; printCal(ccDay, ccMonth, this.options[this.selectedIndex].value);" style="font: normal normal 9px Verdana;">';
-				for(var i=1931; 2010>i; i++) {
+				for(var i=1931; (new Date().getFullYear() + 2)>i; i++) {
 					yearSelect += '<OPTION value="'+i+'"';
 
 					if(i == y) {

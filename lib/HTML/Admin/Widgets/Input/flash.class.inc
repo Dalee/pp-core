@@ -8,7 +8,7 @@ class PXInputFlash extends PXInputImage {
 		$this->_default_full = '/admin/i/v.swf';
 		$this->value = $value;
 		$this->name = $name;
-		$this->entry = $entry ? $entry : NULL;
+		$this->entry = $entry;
 		$this->type = 'flash';
 	}
 	

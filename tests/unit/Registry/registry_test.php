@@ -7,14 +7,7 @@ require_once BASEPATH . '/libpp/lib/HTML/Admin/layout.class.inc';
 
 class RegistryTest extends UnitTestCase {
 	function setUp() {
-		Mock::generate('PXApplication');
-		Mock::generate('NLDBDescription');
-		
-		$app         = new MockPXApplication();
-		$description = new MockNLDBDescription();
-		
-		$app->dbDescription['database'] = $description;
-		PXRegistry::setApp($app);
+		$e =& new PXEngineSbin(); $e->init();
 	}
 	
 	function testInstance() {
@@ -26,8 +19,8 @@ class RegistryTest extends UnitTestCase {
 		$mapping = array(
 			'app'     => 'PXApplication', 
 			'db'      => 'PXDataBase', 
-			'request' => 'PXRequest', 
-			'user'    => 'PXUser'
+			'request' => 'PXNullRequest', //checked parent 
+			'user'    => 'PXUserCron'
 		);
 	
 		foreach($mapping as $methodName => $objClass) {
@@ -45,14 +38,15 @@ class RegistryTest extends UnitTestCase {
 		$this->assertIsA(PXRegistry::getUser(), 'PXUserNull');
 	}
 
-	function test_ObjectsIdentity() {
-		foreach(array('app', 'db', 'request', /*'response',*/ 'user', 'layout') as $key) {
+	//deep
+	/*function test_ObjectsIdentity() {
+		foreach(array('app', 'db', 'request', 'response', 'user', 'layout') as $key) {
 			$method = 'get'.$key;
 			$obj1 =& PXRegistry::$method();
 			$obj2 =& PXRegistry::$method();
 
 			$this->assertIdentical($obj1, $obj2);
 		}
-	}
+	}*/
 }
 ?>

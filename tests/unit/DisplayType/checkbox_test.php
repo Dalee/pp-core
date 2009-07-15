@@ -39,8 +39,8 @@ class CheckBoxTest extends UnitTestCase {
 	}
 	
 	function testBuildInput() {
-		$resOff = '<input type="checkbox" class="checkbox" name="test_field">';
-		$resOn  = '<input type="checkbox" class="checkbox" name="test_field" checked>';
+		$resOff = '<input type="checkbox" class="checkbox" name="test_field"  />';
+		$resOn  = '<input type="checkbox" class="checkbox" name="test_field" checked />';
 		
 		$object = array('test_field' => true);
 		$tt = $this->checkbox->buildInput($this->field, $object);

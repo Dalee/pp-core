@@ -22,16 +22,31 @@ abstract class PXmlAbstract implements IPXml {
 	}
 
 	function identEntity($testingObject, $nodeType, $fileLoader, $stringLoader){
+/*		$oldTrackErrors = ini_set('track_errors', 1);
+		$oldError = error_reporting(0);
+*/
 		switch(true){
 			case is_a($testingObject, $nodeType):
-				return $testingObject;
+				$xmlObject = $testingObject;
+
 			case is_callable($fileLoader) && (file_exists($testingObject) || strlen(getFromArray(parse_url($testingObject), 'scheme'))):
-				return @$fileLoader($testingObject);
+				$xmlObject = @$fileLoader($testingObject);
+
 			case is_callable($stringLoader) && is_string($testingObject):
-				return @$stringLoader($testingObject);
+				$xmlObject = @$stringLoader($testingObject);
+
 			default:
-				return false;
+				$xmlObject = false;
 		}
+/*
+		error_reporting($oldError);
+		ini_set('track_errors', $oldTrackErrors);
+
+		if(!is_object($xmlObject)) {
+			d2($php_errormsg);
+		}
+*/
+		return $xmlObject; 
 	}
 	
 	function xpath($query){}

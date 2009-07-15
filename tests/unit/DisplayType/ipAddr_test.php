@@ -14,18 +14,23 @@ class IpAddrTest extends UnitTestCase {
 	}
 	
 	function testBuildInput() {
-		$html = '<div class="ip">';
-		$html .= '<input type="text" maxlength="3" name="test_field[0]" value="10" class="first">';
-		$html .= '<input type="text" class="delim" value="." readonly tabindex="-1">';
-		$html .= '<input type="text" maxlength="3" name="test_field[1]" value="2" class="middle">';
-		$html .= '<input type="text" class="delim" value="." readonly tabindex="-1">';
-		$html .= '<input type="text" maxlength="3" name="test_field[2]" value="2" class="middle">';
-		$html .= '<input type="text" class="delim" value="." readonly tabindex="-1">';
-		$html .= '<input type="text" maxlength="3" name="test_field[3]" value="34" class="last">';
-		$html .= '</div>';
+        /*
+            '<div class="ip">';
+            '<input type="text" maxlength="3" name="test_field[0]" value="10" class="first">';
+            '<input type="text" class="delim" value="." readonly tabindex="-1">';
+            '<input type="text" maxlength="3" name="test_field[1]" value="2" class="middle">';
+            '<input type="text" class="delim" value="." readonly tabindex="-1">';
+            '<input type="text" maxlength="3" name="test_field[2]" value="2" class="middle">';
+            '<input type="text" class="delim" value="." readonly tabindex="-1">';
+            '<input type="text" maxlength="3" name="test_field[3]" value="34" class="last">';
+            '</div>';
+         */
 		
 		$res  = $this->ipAddr->buildInput($this->field, $this->object);
-		$this->assertEqual($html,  $res);
+		$this->assertPattern('/input type="text".+name="test_field\[0\]"\s+value="10"/m',  $res);
+		$this->assertPattern('/input type="text".+name="test_field\[1\]"\s+value="2"/m',  $res);
+		$this->assertPattern('/input type="text".+name="test_field\[2\]"\s+value="2"/m',  $res);
+		$this->assertPattern('/input type="text".+name="test_field\[3\]"\s+value="34"/m',  $res);
 	}
 	
 	function testBuildCell() { //

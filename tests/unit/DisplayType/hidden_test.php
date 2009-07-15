@@ -14,7 +14,7 @@ class HiddenTest extends UnitTestCase {
 	}
 	
 	function testBuildRow() {
-		$html = '<input type="hidden" name="test_field" value="hidden_value">';
+		$html = '<input type="hidden" name="test_field" value="hidden_value" >';
 		$res  = $this->hidden->buildRow($this->field, $this->object);
 		$this->assertEqual($res,  $html);
 	}

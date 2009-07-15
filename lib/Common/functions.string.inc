@@ -993,4 +993,42 @@ function wordWrapHtmlSafe($str, $width = 60, $break = "\n", $nobreak = "", $nobr
 	return $drain;
 }
 
+
+function fixWordLength($string, $length = 10) {
+	$hyphens = $string;
+	
+	$hyphens = preg_replace('/([\s,.-])/i', '$1##', $hyphens);
+	$hyphens = preg_replace('/([ßØÊÙ])/i', '$1##', $hyphens);
+	$hyphens = preg_replace('/([ÕÅÙÁÏÜÑÉÀ])([ÕÅÙÁÏÜÑÉÀ])/i', '$1##$2', $hyphens);
+	$hyphens = preg_replace('/([ÕÅÙÁÏÜÑÉÀ][^ÕÅÙÁÏÜÑÉÀ])([^ÕÅÙÁÏÜÑÉÀ][ÕÅÙÁÏÜÑÉÀ])/i', '$1#$2', $hyphens);
+	$hyphens = preg_replace('/([^ÕÅÙÁÏÜÑÉÀ][ÕÅÙÁÏÜÑÉÀ])([^ÕÅÙÁÏÜÑÉÀ][ÕÅÙÁÏÜÑÉÀ])/i', '$1#$2', $hyphens);
+	$hyphens = preg_replace('/([ÕÅÙÁÏÜÑÉÀ][^ÕÅÙÁÏÜÑÉÀ])([^ÕÅÙÁÏÜÑÉÀ][^ÕÅÙÁÏÜÑÉÀ][ÕÅÙÁÏÜÑÉÀ])/i', '$1#$2', $hyphens);
+	$hyphens = preg_replace('/([ÕÅÙÁÏÜÑÉÀ][^ÕÅÙÁÏÜÑÉÀ][^ÕÅÙÁÏÜÑÉÀ])([^ÕÅÙÁÏÜÑÉÀ][^ÕÅÙÁÏÜÑÉÀ][ÕÅÙÁÏÜÑÉÀ])/i', '$1#$2', $hyphens);
+	
+	// second time (to catch close standing syllables)
+	$hyphens = preg_replace('/([ÕÅÙÁÏÜÑÉÀ])([ÕÅÙÁÏÜÑÉÀ])/i', '$1##$2', $hyphens);
+	$hyphens = preg_replace('/([ÕÅÙÁÏÜÑÉÀ][^ÕÅÙÁÏÜÑÉÀ])([^ÕÅÙÁÏÜÑÉÀ][ÕÅÙÁÏÜÑÉÀ])/i', '$1#$2', $hyphens);
+	$hyphens = preg_replace('/([^ÕÅÙÁÏÜÑÉÀ][ÕÅÙÁÏÜÑÉÀ])([^ÕÅÙÁÏÜÑÉÀ][ÕÅÙÁÏÜÑÉÀ])/i', '$1#$2', $hyphens);
+	$hyphens = preg_replace('/([ÕÅÙÁÏÜÑÉÀ][^ÕÅÙÁÏÜÑÉÀ])([^ÕÅÙÁÏÜÑÉÀ][^ÕÅÙÁÏÜÑÉÀ][ÕÅÙÁÏÜÑÉÀ])/i', '$1#$2', $hyphens);
+	$hyphens = preg_replace('/([ÕÅÙÁÏÜÑÉÀ][^ÕÅÙÁÏÜÑÉÀ][^ÕÅÙÁÏÜÑÉÀ])([^ÕÅÙÁÏÜÑÉÀ][^ÕÅÙÁÏÜÑÉÀ][ÕÅÙÁÏÜÑÉÀ])/i', '$1#$2', $hyphens);
+
+	$syllables = explode('#', $hyphens);
+
+	$string = '';
+	$tmp = '';
+
+	foreach ($syllables as $s) {
+		$tmp .= $s;
+		if (strlen($tmp) + 1 >= $length) {
+			$end = substr($string, strlen($string)-1, 1);
+			$string .=  preg_match('/([\s,.-])/i', $end) ? '<br>'.$s : '-<br>'.$s;
+			$tmp = $s;
+		} else {
+			$string .= $s;
+		}
+	}
+
+	return $string;
+}
+
 ?>

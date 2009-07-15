@@ -16,7 +16,7 @@ class StaticTest extends UnitTestCase {
 	}
 	
 	function testBuildInput() {
-		$html = '<input type="hidden" name="test_field" value="static_value">static_value';
+		$html = '<input type="hidden" name="test_field" value="static_value" >static_value';
 		$res  = $this->static->buildInput($this->field, $this->object);
 		$this->assertEqual($res,  $html);
 		
@@ -24,7 +24,7 @@ class StaticTest extends UnitTestCase {
 		$directory->setReturnValue('GetList', array('static_value'=>'123'));
 		$this->field->values = $directory;
 		
-		$html = '<input type="hidden" name="test_field" value="static_value">123';
+		$html = '<input type="hidden" name="test_field" value="static_value" >123';
 		$res  = $this->static->buildInput($this->field, $this->object);
 		$this->assertEqual($res,  $html);
 	}

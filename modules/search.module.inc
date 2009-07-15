@@ -10,7 +10,6 @@ class PXModuleSearch extends PXModule {
 			$allCount = 0;
 
 			$checkedTypes = $this->request->getVar('d', array());
-
 			foreach($this->app->types as $datatype) {
 				if(!isset($checkedTypes[$datatype->id])) {
 					continue;
@@ -85,6 +84,12 @@ HTML;
 
 		$this->layout->assign('INNER.0.0', $html);
 		$this->layout->setGetVarToSave('word', $this->word);
+
+		// build the string for datatypes check
+		foreach($checkedTypes as $k => $v){
+			$this->layout->setGetVarToSave('d[' . $k . ']', 'on');
+		}
+		
 		$this->layout->setGetVarToSave('charcheck', $this->request->getVar('charcheck'));
 	}
 

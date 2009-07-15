@@ -13,11 +13,11 @@ class TableStaticTest extends UnitTestCase {
 	}
 	
 	function testBuildInput() {
-		$html  = '<input type="hidden" name="test_field" value="Array">';
-		$html .= '<table class="static"><tr><td>text</td></tr></table>';
-		
+        /*
+            '<input type="hidden" name="test_field" value="Array" ><table class="static"><tr><td>text</td></tr></table>';
+         */
 		$res  = $this->tableStatic->buildInput($this->field, $this->object);
-		$this->assertEqual($html,  $res);
+		$this->assertPattern('#input\s+type="hidden"\s+name="test_field"\s+value="Array".+<table.+<td>text</td>.+</table>#i',  $res);
 	}
 }
 ?>

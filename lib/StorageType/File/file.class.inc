@@ -73,7 +73,7 @@ class PXStorageTypeFile extends PXStorageTypeAbstractFile {
 
 		return array(
 			'filename' => isset($fileName) ? $fileName              : NULL,
-			'fullpath' => isset($fileName) ? $basedir.'/'.$fileName : NULL,
+			'fullpath' => isset($fileName) ? $basedir.$fileName     : NULL,
 			'type'     => (isset($fileName) && is_file($d->name.'/'.$fileName)) ? mime_content_type($d->name.'/'.$fileName) : NULL,
 			'size'     => (isset($fileName) && is_file($d->name.'/'.$fileName)) ? filesize($d->name.'/'.$fileName)          : 0
 		);
