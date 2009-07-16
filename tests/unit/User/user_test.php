@@ -3,7 +3,7 @@
 class UserTest extends UnitTestCase {
 
 	function setUp() {/*{{{*/
-		$this->u = new PXUser();
+		$this->u = new PXUserCron();
 		
 		Mock::generate('PXDataBase');
 		Mock::generate('PXApplication');
