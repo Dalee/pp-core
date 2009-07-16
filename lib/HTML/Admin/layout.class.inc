@@ -156,7 +156,7 @@ class PXAdminHTMLLayout extends NLAbstractLayout {
 
 	function appendControls($label, $selectedSid, $allowedFormats) {
 		foreach ($allowedFormats as $format) {
-			$button =& new PXControlButton($this->types[$format]->title);
+			$button = new PXControlButton($this->types[$format]->title);
 			$button->setClickCode('AddContent(\''.$format.'\', '.(int)$selectedSid.')');
 			$button->setClass('add');
 

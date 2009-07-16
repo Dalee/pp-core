@@ -151,7 +151,7 @@ class ParametersExpectation extends SimpleExpectation {
         $descriptions = array();
         if (is_array($args)) {
             foreach ($args as $arg) {
-                $dumper = &new SimpleDumper();
+                $dumper = new SimpleDumper();
                 $descriptions[] = $dumper->describeValue($arg);
             }
         }
@@ -652,8 +652,8 @@ class SimpleMock {
      *    @access public
      */
     function SimpleMock() {
-        $this->_actions = &new SimpleCallSchedule();
-        $this->_expectations = &new SimpleCallSchedule();
+        $this->_actions = new SimpleCallSchedule();
+        $this->_expectations = new SimpleCallSchedule();
         $this->_call_counts = array();
         $this->_expected_counts = array();
         $this->_max_counts = array();

@@ -17,7 +17,7 @@ class PXCacheMemcache implements IPXCache {
 	}
 	
 	private function &connect($connectionString){
-		$mcObject          =& new Memcache;
+		$mcObject          = new Memcache;
 		list($host, $port) = unserialize($connectionString);
 		$mcObject->connect($host) or FatalError(get_class($this) . " error: failed connect to the Memcached server!");
 		$mcObject->setCompressThreshold(20000, 0.2);

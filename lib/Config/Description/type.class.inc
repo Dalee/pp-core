@@ -94,7 +94,7 @@ class PXTypeDescription {
 		}
 
 		foreach ($domDatatypes as $domDatatype) {
-			$type  =& new PXTypeDescription();
+			$type  = new PXTypeDescription();
 
 
 			$type->parseTypeAttributes($domDatatype->attributes());

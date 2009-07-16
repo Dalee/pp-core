@@ -7,7 +7,7 @@ require_once BASEPATH . '/libpp/lib/HTML/Admin/layout.class.inc';
 
 class RegistryTest extends UnitTestCase {
 	function setUp() {
-		$e =& new PXEngineSbin(); $e->init();
+		$e = new PXEngineSbin();
 	}
 	
 	function testInstance() {

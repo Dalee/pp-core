@@ -3,15 +3,15 @@
 class UserTest extends UnitTestCase {
 
 	function setUp() {/*{{{*/
-		$this->u =& new PXUser();
+		$this->u = new PXUser();
 		
 		Mock::generate('PXDataBase');
 		Mock::generate('PXApplication');
 		Mock::generate('PXUserRequest');
 
-		$this->d =& new MockPXDataBase();
-		$this->a =& new MockPXApplication();
-		$this->r =& new MockPXUserRequest();
+		$this->d = new MockPXDataBase();
+		$this->a = new MockPXApplication();
+		$this->r = new MockPXUserRequest();
 
 		$this->u->setDb($this->d);
 		$this->u->setApp($this->a);

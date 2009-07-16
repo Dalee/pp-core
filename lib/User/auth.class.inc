@@ -2,7 +2,7 @@
 class PXUserAuthorized extends PXUser {
 	function can($what, $format = NULL, $object = NULL) {
 		if($format === NULL){
-			$format = & new PXTypeDescription;
+			$format =  new PXTypeDescription;
 		}
 
 		if($object === NULL){
@@ -16,7 +16,7 @@ class PXUserAuthorized extends PXUser {
 		$app        = PXRegistry::getApp();
 		$db         = PXRegistry::getDb();
 		$request    = PXRegistry::getRequest();
-		$user       =& $this;
+		$user       = $this;
 
 		foreach ($app->authrules as $rule => $params) {
 			if (!$params['enabled']) {
@@ -33,7 +33,7 @@ class PXUserAuthorized extends PXUser {
 				continue;
 			}
 
-			$this->auth =& $tmpAuth;
+			$this->auth = $tmpAuth;
 
 			if (isset($app->types[DT_GROUP])) { 
 				$groups = $db->getLinks($app->references[LINK_GROUP2USER], DT_USER, $this->id);

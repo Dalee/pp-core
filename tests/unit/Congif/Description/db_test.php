@@ -1,13 +1,15 @@
 <?php
 
 class DBDescriptionTest extends UnitTestCase {
-	//check test runed
-	/*function testTrue() {
-		$this->assertTrue(false);
-	}*/
+	var $map1 = array(
+			"host"=>"host1",
+			"port"=>"9999",
+			"user"=>"web",
+			"passwd"=>"123",
+			"dbname"=>"test");
 
 	function setUp() {
-		$this->dbd = new NLDBDescription();
+		$this->dbd = new NLDBDescription($this->map1);
 	}
 
 	function testGetDriver() {
@@ -26,13 +28,6 @@ class DBDescriptionTest extends UnitTestCase {
 	function testGetPgsqlConnectString() {
 		$r = $this->dbd->getPgsqlConnectString();
 		$this->assertTrue(empty($r));
-
-		$map = array(
-			"host"=>"host1",
-			"port"=>"9999",
-			"user"=>"web",
-			"passwd"=>"123",
-			"dbname"=>"test");
 
 		foreach(get_object_vars($this->dbd) as $k=>$i) {
 			if(isset($map[$k])) $this->dbd->$k = $map[$k];

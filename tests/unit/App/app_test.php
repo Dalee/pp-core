@@ -44,9 +44,9 @@ class AppTest extends UnitTestCase {
 		$this->checkStruct($this->app->types, new PXTypeDescription());
 	}
 	
-	function testDescrpition() {
+	/*function testDescrpition() {
 		$this->checkStruct($this->app->dbDescription, new NLDbDescription());
-	}
+	}*/
 
 	function testModules() {
 		$this->checkStruct($this->app->modules, new PXModuleDescription());
@@ -60,7 +60,7 @@ class AppTest extends UnitTestCase {
 		$ext = array("type", "var", "value", "module", "order", "pOrder");
 		sort($ext);
 
-		$this->assertIsA($bids = $this->app->modBindings, "array");
+		$this->assertIsA($bids = $this->app->bindingsQueue, "PXBindingsQueue");
 
 		foreach($bids as $i) {
 			$md_k = array_keys($i);

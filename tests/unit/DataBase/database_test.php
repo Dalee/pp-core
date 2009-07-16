@@ -3,10 +3,10 @@
 class DatabaseTest extends UnitTestCase {
 
 	function setUp() {/*{{{*/ 
-		$e = new PXEngineSbin(); $e->init();
+		$e = new PXEngineSbin();
 
-		$this->app =& PXRegistry::getApp();
-		$this->db =& PXRegistry::getDb();
+		$this->app = PXRegistry::getApp();
+		$this->db  = PXRegistry::getDb();
 
 		//testins object /suser/
 		$this->dt = $this->app->types['suser'];
