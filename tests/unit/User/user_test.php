@@ -2,7 +2,7 @@
 
 class UserTest extends UnitTestCase {
 
-	function setUp() {/*{{{*/
+	function setUp() {
 		$this->u = new PXUserCron();
 		
 		Mock::generate('PXDataBase');
@@ -14,9 +14,9 @@ class UserTest extends UnitTestCase {
 		$this->r = new MockPXRequestUser();
 
 		$this->a->authrules = array("secure"=>array("enabled"=>true));
-	}/*}}}*/ 
+	} 
 	
-	function testCheckAuth() {/*{{{*/
+	function testCheckAuth() {
 		$this->r->setReturnValueAt(0, 'getVar', 'admin');
 		$this->r->setReturnValueAt(1, 'getVar', '1010');
 
@@ -38,9 +38,9 @@ class UserTest extends UnitTestCase {
 
 		$this->assertIdentical($this->u->data, $ext);
 	}
-/*}}}*/
 
-	function testAclType() {/*{{{*/
+
+	function testAclType() {
 		$r = $this->u->aclType();
 		$this->assertEqual($r, "basic");
 
@@ -48,27 +48,27 @@ class UserTest extends UnitTestCase {
 		
 		$r = $this->u->aclType();
 		$this->assertEqual($r, "bygroup");
-	}/*}}}*/
+	}
 
 	//how it test?
-	function testCan() {/*{{{*/
+	function testCan() {
 		//...
-	}/*}}}*/
+	}
 
-	function testIsAuthed() {/*{{{*/
+	function testIsAuthed() {
 		$this->u->id = 1;
 		$this->assertTrue($this->u->isAuthed());
-	}/*}}}*/
+	}
 
-	function testGetAuthMethods() {/*{{{*/
+	function testGetAuthMethods() {
 		$r = $this->u->getAuthMethods();
 		$this->assertIdentical(array("0"=>"secure"), $r);
-	}/*}}}*/
+	}
 
-	function testGetPrimaryAuthMethod() {/*{{{*/
+	function testGetPrimaryAuthMethod() {
 		$r = $this->u->getPrimaryAuthMethod();
 		$this->assertEqual("PXAuthSecure", $r);
-	}/*}}}*/
+	}
 }
 
 class CronUserTest extends UnitTestCase {
