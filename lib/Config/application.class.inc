@@ -229,32 +229,34 @@ class PXApplication {
 
 	//TODO:FIXME: REWRITE ME!
 	private function fillLang ($filename) {
-		function __ReplaceIncludeWhenParseLangYaml($replacement, $indent, $fileName) {
-			$string = '';
+		if (!function_exists("__ReplaceIncludeWhenParseLangYaml")) {
+			function __ReplaceIncludeWhenParseLangYaml($replacement, $indent, $fileName) {
+				$string = '';
 
-			if(file_exists($fileName)) {
-				$tmp = @file($fileName);
+				if(file_exists($fileName)) {
+					$tmp = @file($fileName);
 
-			} elseif(file_exists(BASEPATH.$fileName)) {
-				$tmp = @file(BASEPATH.$fileName);
+				} elseif(file_exists(BASEPATH.$fileName)) {
+					$tmp = @file(BASEPATH.$fileName);
 
-			} else {
-				FatalError('Не могу найти '.$fileName);
-			}
-
-			if(is_array($tmp)) {
-				foreach($tmp as $s) {
-					if(!strlen(trim($s))) {
-						continue;
-					}
-
-					$string .= $indent.$s;
+				} else {
+					FatalError('Не могу найти '.$fileName);
 				}
+
+				if(is_array($tmp)) {
+					foreach($tmp as $s) {
+						if(!strlen(trim($s))) {
+							continue;
+						}
+
+						$string .= $indent.$s;
+					}
+				}
+
+				return $string;
 			}
-
-			return $string;
 		}
-
+		
 		$source = ReadFileToString($filename);
 
 		$source = preg_replace('|^((\s*)include\s+(.+?))$|ime', "__ReplaceIncludeWhenParseLangYaml('$1', '$2', '$3');", $source);   // делаем include
