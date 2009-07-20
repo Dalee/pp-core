@@ -7,16 +7,12 @@ class UserTest extends UnitTestCase {
 		
 		Mock::generate('PXDataBase');
 		Mock::generate('PXApplication');
-		Mock::generate('PXUserRequest');
+		Mock::generate('PXRequestUser');
 
 		$this->d = new MockPXDataBase();
 		$this->a = new MockPXApplication();
-		$this->r = new MockPXUserRequest();
+		$this->r = new MockPXRequestUser();
 
-		$this->u->setDb($this->d);
-		$this->u->setApp($this->a);
-		$this->u->setRequest($this->r);
-		
 		$this->a->authrules = array("secure"=>array("enabled"=>true));
 	}/*}}}*/ 
 	

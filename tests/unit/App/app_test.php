@@ -55,25 +55,30 @@ class AppTest extends UnitTestCase {
 	function testDirectory() {
 		$this->checkStruct($this->app->directory, new PXDirectoryDescription("suser"));
 	}
-	
-	function testModBindings() {
+
+    /*
+    FIXME: Rwrite test
+
+    function testModBindings() {
 		$ext = array("type", "var", "value", "module", "order", "pOrder");
 		sort($ext);
-
-		$this->assertIsA($bids = $this->app->bindingsQueue, "PXBindingsQueue");
+        $bids = $this->app->bindingsQueue;
+        
+        $this->assertIsA($bids, "PXBindingsQueue");
 
 		foreach($bids as $i) {
 			$md_k = array_keys($i);
 			sort($md_k);
 			$this->assertIdentical($md_k, $ext);
 		}
-	}
+    }
+    */
 
 	function testGetProperty() {
-		$r[] = $this->app->getProperty("NOT_SUCH", 1);
-		$r[] = $this->app->getProperty("PROFILER", 1);
-
-		$this->assertEqual(array_sum($r) / sizeof($r), 1);
+		$pone  = $this->app->getProperty("NON_EXISTING_TEST_PROPERTY",  1);
+        $pzero = $this->app->getProperty("EXISTING_TEST_PROPERTY0", "**FAILURE**");
+		$this->assertEqual($pone, 1);
+		$this->assertEqual($pzero, 0);
 	}
 
 	function testInitContentObject() {
@@ -85,12 +90,6 @@ class AppTest extends UnitTestCase {
 		$this->assertIdentical($r, $expected);
 	}
 	
-	function testParseProperties() {
-		$r = $this->app->parseProperties();
-		$expt = array("PROFILER"=>"1", "CHILDREN_ON_PAGE"=>"10");
-		$this->assertIdentical($r, $expt);
-	}
-
 	function testGetAvailableModules() {
 		//admin
 		$r = $this->app->getAvailableModules(16384);
