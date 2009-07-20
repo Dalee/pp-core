@@ -1,7 +1,7 @@
 <?php
 require_once BASEPATH . '/libpp/lib/Request/classes.inc';
 
-class PXRequestUserTest extends UnitTestCase {
+class PXRequestBaseTest extends UnitTestCase {
     
     private static $original_bucks_server;
 
@@ -15,46 +15,46 @@ class PXRequestUserTest extends UnitTestCase {
         $_SERVER = self::$original_bucks_server;
     }
 
-    function test_Instance_Should_be_PXRequestUser() {
-        $request = new PXRequestUser();
-        $this->assertIsA($request, 'PXRequestUser');
+    function test_Instance_Should_be_PXRequestBase() {
+        $request = new PXRequestBase();
+        $this->assertIsA($request, 'PXRequestBase');
     }
     
     function test_default_HTTPMethod_should_be_GET() {
-        $this->assertEqual(PXRequestUser::GetHttpMethod(), 'GET');
+        $this->assertEqual(PXRequestBase::GetHttpMethod(), 'GET');
     }
     
     function test_default_HTTPReferer_should_be_defined() {
-        $this->assertEqual(PXRequestUser::getHttpReferer(), 'http://example.com/test/referer');
+        $this->assertEqual(PXRequestBase::getHttpReferer(), 'http://example.com/test/referer');
     }
     
     //TODO: why should we want two referer functions?
     function test_default_Referer_should_be_set() {
-        $request = new PXRequestUser();
+        $request = new PXRequestBase();
         $this->assertEqual($request->getReferer(), 'http://example.com/test/referer');
     }
 
     function test_default_HTTPRequestURI_should_be_defined() {
-        $this->assertEqual(PXRequestUser::getRequestUri(), '/path/to/test/index.phtml?a=1&b=2');
+        $this->assertEqual(PXRequestBase::getRequestUri(), '/path/to/test/index.phtml?a=1&b=2');
     }
 
     function test_GET_HTTPMethod_should_be_GET() {
         $_SERVER['REQUEST_METHOD'] = 'GET';
-        $this->assertEqual(PXRequestUser::getHttpMethod(), 'GET');
+        $this->assertEqual(PXRequestBase::getHttpMethod(), 'GET');
     }
     
     function test_POST_HTTPMethod_should_be_POST() {
         $_SERVER['REQUEST_METHOD'] = 'POST';
-        $this->assertEqual(PXRequestUser::getHttpMethod(), 'POST');
+        $this->assertEqual(PXRequestBase::getHttpMethod(), 'POST');
     }
 
     /* 
      *
-     * PXRequestUser->getPath()
+     * PXRequestBase->getPath()
      *
      */
     function test_GetPath_should_ignore_index_phtml() {
-        $request = new PXRequestUser();
+        $request = new PXRequestBase();
         $path_parts = array('path', 'to', 'test');
         $this->assertEqual($request->getPath(), $path_parts);
     }
@@ -66,19 +66,19 @@ class PXRequestUserTest extends UnitTestCase {
             'index.php3',  'index.php4', 
             'index.jsp', 
             'default.htm', 'default.asp');
+
+        $path_parts = array('path', 'to', 'test');
             
         foreach($known_indexes as $index) {
-            $_SERVER['SCRIPT_NAME'] = '/path/to/test/' . $index;
-            
-            $request = new PXRequestUser();
-            $path_parts = array('path', 'to', 'test');
+            $_SERVER['SCRIPT_NAME'] = '/path/to/test/' . $index;            
+            $request = new PXRequestBase();
             $this->assertEqual($request->getPath(), $path_parts);
         }
     }
 
     function test_GetPath_should_not_ignore_other_extensions() {
         $_SERVER['SCRIPT_NAME'] = '/path/to/test/readme.doc';
-        $request = new PXRequestUser();
+        $request = new PXRequestBase();
         $path_parts = array('path', 'to', 'test', 'readme.doc');
         $this->assertEqual($request->getPath(), $path_parts);
     }
@@ -86,40 +86,40 @@ class PXRequestUserTest extends UnitTestCase {
 
     /*
      *
-     * PXRequestUser::getHttpHost() 
+     * PXRequestBase::getHttpHost() 
      *
      */
     function test_default_getHttpHost_sould_be_defined() {
-        $this->assertEqual(PXRequestUser::getHttpHost(), 'test.example.com');
+        $this->assertEqual(PXRequestBase::getHttpHost(), 'test.example.com');
     }
 
     function test_getHttpHost_sould_be_overrided() {
         $_SERVER['HTTP_X_HOST'] = 'overrided.example.com';
-        $this->assertEqual(PXRequestUser::getHttpHost(), 'overrided.example.com');
+        $this->assertEqual(PXRequestBase::getHttpHost(), 'overrided.example.com');
     }
 
     function test_getHttpHost_sould_handle_multiple_hosts() {
         $_SERVER['HTTP_X_HOST'] = 'maybe.example.com, correct.example.com';
-        $this->assertEqual(PXRequestUser::getHttpHost(), 'correct.example.com');
+        $this->assertEqual(PXRequestBase::getHttpHost(), 'correct.example.com');
     }
     
     /*
      *
-     * PXRequestUser::getRemoteAddr()
+     * PXRequestBase::getRemoteAddr()
      *
      */
     function test_default_getRemoteAddr_sould_be_defined() {
-        $this->assertEqual(PXRequestUser::getRemoteAddr(), '10.1.1.100');
+        $this->assertEqual(PXRequestBase::getRemoteAddr(), '10.1.1.100');
     }
     
     function test_getRemoteAddr_sould_be_overrided() {
         $_SERVER['HTTP_X_REAL_IP'] = '192.168.1.1';
-        $this->assertEqual(PXRequestUser::getRemoteAddr(), '192.168.1.1');
+        $this->assertEqual(PXRequestBase::getRemoteAddr(), '192.168.1.1');
     }
     
     function test_getRemoteAddr_sould_handle_multiple_addreses() {
         $_SERVER['HTTP_X_REAL_IP'] = '10.10.10.10, 20.20.20.20, 192.168.1.1';
-        $this->assertEqual(PXRequestUser::getRemoteAddr(), '192.168.1.1');
+        $this->assertEqual(PXRequestBase::getRemoteAddr(), '192.168.1.1');
     }
 
 

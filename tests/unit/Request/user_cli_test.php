@@ -1,7 +1,7 @@
 <?php
 require_once BASEPATH . '/libpp/lib/Request/classes.inc';
 
-class PXRequestUserCLITest extends UnitTestCase {
+class PXRequestBaseCLITest extends UnitTestCase {
 
     private static $original_bucks_server;
 
@@ -15,40 +15,30 @@ class PXRequestUserCLITest extends UnitTestCase {
         $_SERVER = self::$original_bucks_server;
     }
 
-    function test_Instance_Should_be_PXRequestUser() {
-        $request = new PXRequestUser();
-        $this->assertIsA($request, 'PXRequestUser');
+    function test_Instance_Should_be_PXRequestBase() {
+        $request = new PXRequestBase();
+        $this->assertIsA($request, 'PXRequestBase');
     }
 
     
     function test_default_HTTPMethod_should_be_CLI() {
-        $this->assertEqual(PXRequestUser::GetHttpMethod(), 'CLI');
+        $this->assertEqual(PXRequestBase::GetHttpMethod(), 'CLI');
     }
     
     function test_default_HTTPReferer_should_be_NULL() {
-        $this->assertNull(PXRequestUser::getHttpReferer());
+        $this->assertNull(PXRequestBase::getHttpReferer());
     }
     
     //TODO: why should we want two referer functions?
     function test_default_Referer_should_be_NULL() {
-        $request = new PXRequestUser();
+        $request = new PXRequestBase();
         $this->assertNull($request->getReferer());
     }
 
     function test_default_HTTPRequestURI_should_be_NULL() {
-        $this->assertNull(PXRequestUser::getRequestUri());
+        $this->assertNull(PXRequestBase::getRequestUri());
     }
 
-    function test_GET_HTTPMethod_should_be_GET() {
-        $_SERVER['REQUEST_METHOD'] = 'GET';
-        $this->assertEqual(PXRequestUser::getHttpMethod(), 'GET');
-    }
-    
-    function test_POST_HTTPMethod_should_be_POST() {
-        $_SERVER['REQUEST_METHOD'] = 'POST';
-        $this->assertEqual(PXRequestUser::getHttpMethod(), 'POST');
-    }
-    
     private static function setUp_cli_env() {
         $_SERVER['REQUEST_METHOD'] = NULL;
         $_SERVER['HTTP_REFERER']   = NULL;
