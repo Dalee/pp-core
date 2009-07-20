@@ -89,6 +89,17 @@ abstract class NLAbstractSQLDatabase {
 
 	function transactionRollback() {
 	}
+
+	function LIKE($condition, $percs){
+		return $this->_searchMethod("LIKE", $condition, $percs);
+	}
+
+	function _searchMethod($meth, $condition, $percs){
+		$lperc = P_LEFT  & $percs ? '%' : '';
+		$rperc = P_RIGHT & $percs ? '%' : '';
+		return " ".$meth." '".$lperc.$this->EscapeString($condition).$rperc."' ";
+	}
+
 	
 	function _loadFromCache($query, $customCacheExpiration){
 		if (!$customCacheExpiration || (is_int($customCacheExpiration) && $customCacheExpiration > 0)) {
