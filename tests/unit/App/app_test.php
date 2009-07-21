@@ -5,22 +5,31 @@ class AppTest extends UnitTestCase {
 		$this->app = PXApplication::getInstance("PXEngineIndex");
 	}
 	
-	function testGetInstance() {
+	function testGetInstance() {/*{{{*/
 		$engines  = array("sbin", "json", "sbin", "action", "adminAction", "adminIndex", "adminPopup");
 
 		while($e  = array_shift($engines)) 
 			$this->assertIsA(PXApplication::getInstance("PXEngine".ucfirst($e)), "PXApplication");
 
-	}
+	}/*}}}*/
 
 	function testParseProperties() {
 	}
 
-	function testGetAvailableModules() {
+	function testloadXMLDirectory() {
+	}
+	
+	function testGetAllowedChilds() {
+	}
+	
+	function testGetAllowedChildsKeys() {
+	}
+
+	function testGetAvailableModules() {/*{{{*/
 		foreach($this->app->getAvailableModules(16384) as $k=>$v) {
 			$this->assertIsA($v, "PXModuleDescription");
 		}
-	}
+	}/*}}}*/
 
 	function testGetProperty() {/*{{{*/
 		$app = PXApplication::getInstance("PXEngineSbin");

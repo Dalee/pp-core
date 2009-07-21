@@ -1,7 +1,6 @@
 <?php
 
 class ResponseTest extends UnitTestCase {
-	
 	function setUp() {
 		$this->r = PXResponse::getInstance();
 	}
@@ -12,14 +11,11 @@ class ResponseTest extends UnitTestCase {
 	
 	function testStatuses() {
 		$statuses_map = array(
-			"STATUS_OK"              => '200 OK';
-			"STATUS_MOVED"           => '301 Moved Permanetly';
-			"STATUS_NOT_FOUND"       => '404 Not found';
-			"STATUS_FORBIDDEN"       => '403 Forbidden';
-			"STATUS_NOT_IMPLEMENTED" => '501',
-			"headers"=>array(),
-			"contentType"=>array(),
-			"status"=>null); 
+			"STATUS_OK"              => '200 OK',
+			"STATUS_MOVED"           => '301 Moved Permanetly',
+			"STATUS_NOT_FOUND"       => '404 Not found',
+			"STATUS_FORBIDDEN"       => '403 Forbidden',
+			"STATUS_NOT_IMPLEMENTED" => '501');
 		
 		$vars = get_object_vars($this->r);
 		
@@ -42,7 +38,7 @@ class ResponseTest extends UnitTestCase {
 	}*/
 	function testSetOk() {
 		$this->r->setOk();
-		$this->assertEquals($this->r->status, "200 OK");
+		$this->assertEqual($this->r->status, "200 OK");
 	}	
 
 	/*function notFound() {
@@ -57,8 +53,8 @@ class ResponseTest extends UnitTestCase {
 		$this->status = $this->STATUS_FORBIDDEN;
 	}*/
 	function testForbidden() {
-		$this->r->fobidden();
-		$this->assertEquals($this->r->status, "403 Forbidden");
+		$this->r->forbidden();
+		$this->assertEqual($this->r->status, "403 Forbidden");
 	}
 		
 	/*function notImplemented() {
@@ -75,10 +71,10 @@ class ResponseTest extends UnitTestCase {
 	}*/
 	function testIsError() {
 		$this->r->setOk();
-		$this->assertTrue($this->r->isError());
-		
-		$this->r->fobidden();
 		$this->assertFalse($this->r->isError());
+		
+		$this->r->forbidden();
+		$this->assertTrue($this->r->isError());
 	}
 
 	/*function dontCache() {
@@ -98,17 +94,17 @@ class ResponseTest extends UnitTestCase {
 		$this->addHeader('Cache-Control', 'public');
 	}*/
 	function testCache() {
-		$l = function ($timeout) use ($this) {
-				$hdrs = $this->r->headers;
-				$this->assertEqual($hdrs['X-Accel-Expires'], $timeout);
-				$this->assertEqual($hdrs['Cache-Control'], 'public');
-		}
-	
+		$l = function ($timeout, $o) {
+				$hdrs = $o->r->headers;
+				$o->assertEqual($hdrs['X-Accel-Expires'], $timeout);
+				$o->assertEqual($hdrs['Cache-Control'], 'public');
+		};
+
 		$this->r->cache();
-		$l(3600);
+		$l(3600, $this);
 		
 		$this->r->cache(20000);
-		$l(20000);
+		$l(20000, $this);
 	}
 	
 	/*function setLength($length) {
@@ -116,7 +112,7 @@ class ResponseTest extends UnitTestCase {
 	}*/
 	function testSetLength() {
 		$this->r->setLength(100);
-		$this->assertEqual($this->r->headers['Contest-Length'], 100);
+		$this->assertEqual($this->r->headers['Content-Length'], 100);
 	}
 	
 	/*function setCharset($charset) {
@@ -124,7 +120,8 @@ class ResponseTest extends UnitTestCase {
 	}*/
 	function testSetCharset() {
 		$this->r->setCharset("test-charset");
-		$this->assertEqual($this->r->contentType['type'], "test-charset");
+		$this->assertEqual("test-charset", $this->r->contentType['charset']);
+		$this->assertPattern("#^.*;charset=test-charset$#", $this->r->headers['Content-Type']);
 	}
 		
 	/*function setContentType($contentType, $charset=null) {
@@ -142,8 +139,8 @@ class ResponseTest extends UnitTestCase {
 	}*/
 	function testSetContentType() {
 		$this->r->setContentType("test-type", "test-charset");
-		$this->assertEquals($this->r->contentType['charset'], "test-charset");
-		$this->assertEquals($this->r->headers['Content-Type'], "test-type;charset=test-charset");
+		$this->assertEqual($this->r->contentType['charset'], "test-charset");
+		$this->assertEqual($this->r->headers['Content-Type'], "test-type;charset=test-charset");
 	}
 
 	/*function downloadFile($filename, $contentType = null, $dispositionType = 'attachment', $charset=null) {
@@ -154,7 +151,7 @@ class ResponseTest extends UnitTestCase {
 	}*/
 	function testDownloadFile() {
 		$this->r->downloadFile("test.test", "test-type");
-		$this->r->headers['Content-Disposition'], 'attachment; filename="test.test"');
+		$this->assertEqual($this->r->headers['Content-Disposition'], 'attachment; filename="test.test"');
 	}
 	
 	/*function send($content=null) {
