@@ -26,7 +26,7 @@ class PXObjectsACL {
 	}
 
 	function reload() {
-		$this->_getRules();
+		$this->getRules();
 	}
 
 	function check($what, $format, $object) {
@@ -48,79 +48,72 @@ class PXObjectsACL {
 			FatalError("Format must be type of PXTypeDescription!"); 
 		}
 
-		if ($format->id == 'suser' && $object['id'] == $this->user->id) {
-			return true;
-		}
+		$cond[] = ($format->id == 'suser' && $object['id'] == $this->user->id);
+		$cond[] = ($format->id == 'suser' || $format->id == 'sgroup') && 
+			(in_array('pxuserauth', getColFromTable(debug_backtrace(), 'function')));
 
-		if ($format->id == 'suser' || $format->id == 'sgroup') {
-			if (in_array('pxuserauth', getColFromTable(debug_backtrace(), 'function'))) {
-				return true;
-			}
-		}
-
-		return (bool)$this->_checkGroup($what, $format, $object);
+		if((bool) array_sum($cond)) return true;
+		return (bool) $this->checkGroup($what, $format, $object);
 	}
 
+	private function checkGroup($what, $format, $object) {
+		//SHIT! write cond
+		if(is_null($r1 = $this->checkObject($what, $format, $object)) return $r1;
+		if(is_null($r2 = $this->checkParent($what, $format, $object)) return $r2;
+	}
 
-
-	/**
-	 *
-	 * FIXME: COZ I'M UGLY!
-	 *
-	 */
-	function _checkGroup($what, $format, $object, $groupId = null) {
-		//check access for current $object
-		foreach ($this->rules as $a) {
-			if ($a['what'] != $what) {
-				continue;
-			}
-
-			if(!is_null($a['sgroupid']) && !in_array($a['sgroupid'], $this->user->groups)) {
-				continue;
-			}
-
-			$checkId     = ($a['objectid']     == NULL || $a['objectid']     == $object['id']);
-			$checkParent = ($a['objectparent'] == NULL || $a['objectparent'] == getFromArray($object, 'parent'));
-			$checkType   = ($a['objecttype']   == NULL || $a['objecttype']   == $format->id);
-
-			if ($checkId && $checkParent && $checkType) {
-				if($a['access'] === 'deny') {
-					return false;
-				}
-
-				return true;
-			}
-		}
-
-		//nothing found, let's check parent
-		if ($format->parent && isset($object['parent']) && is_numeric($object['parent']) && $object['parent'] > 0) {
-			$pKey = $format->parent.$object['parent'];
+	private function checkParent($what, $format, $object) {
+		if ((bool) $format->parent 
+		 && isset($object['parent']) 
+		 && is_numeric($object['parent']) 
+		 && $object['parent'] > 0) {
+				
+			$pKey = $format->parent . $object['parent'];
 
 			if (!array_key_exists($pKey, $this->parents)) {
-				$query = 'SELECT parent FROM '.$format->parent.' WHERE id = '.$object['parent'];
-				$tmpParents = $this->db->query($query);
-
-				if(!sizeof($tmpParents)) {
-					return null;
-				}
-
-				$this->parents[$pKey] = current(current($tmpParents));
+				$this->loadParent($format, $object, $pKey);
 			}
 
 			$object['parent'] = $this->parents[$pKey];
 			$format = $this->db->types[$this->db->types[$format->id]->parent];
 
-			return $this->_checkGroup($what, $format, $object);
-		}
-
-		return null;
+			return $this->checkGroup($what, $format, $object);
+		 }
 	}
 
-	function _getRules($loadAll=false) {
+	private function loadParent($format, $object, $pKey) {
+		$tmpParents = $this->db->query(
+			'SELECT parent FROM '.$format->parent.' WHERE id = '.$object['parent']);
+
+		if(count($tmpParents)) 
+			$this->parents[$pKey] = current(current($tmpParents));
+	}
+
+	private function checkObject($what, $format, $object) {
+		foreach ($this->rules as $a) {
+			if (($a['what'] != $what) || 
+				(!is_null($a['sgroupid']) && !in_array($a['sgroupid'], $this->user->groups)) {
+				continue;
+			}
+
+			if(($a['objectid']     == (NULL || $object['id'])
+				&& ($a['objectparent'] == (NULL || getFromArray($object, 'parent'))) 
+				&& ($a['objecttype']   == (NULL || $format->id))) {
+			
+				return ($a['access'] === 'deny') ? false : true;
+			}
+		}
+	}
+
+	private function getRules($loadAll=false) {
 		if (!$this->aclEnabled) {
 			return;
 		}
 
+		$this->rules = $this->db->query($this->sqlLoadRulesStatement($loadAll));
+	}
+
+	function sqlLoadRulesStatement($loadAll) {
 		$query = 'SELECT * FROM acl_objects';
 
 		if(!$loadAll) {
@@ -133,9 +126,7 @@ class PXObjectsACL {
 			$query .= ')';
 		}
 
-		$query .= ' ORDER BY sys_order';
-
-		$this->rules = $this->db->query($query);
+		return $query .= ' ORDER BY sys_order';
 	}
 }
 ?>
