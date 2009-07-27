@@ -56,7 +56,7 @@ class PXObjectsACL {
 		return $this->checkGroup($what, $format, $object);
 	}
 
-	protected function checkGroup($what, $format, $object) {
+	private function checkGroup($what, $format, $object) {
 		foreach(array("checkObject", "checkParent") as $method) {
 			$r = call_user_func_array(array($this, $method), func_get_args());
 			if(!is_null($r)) return $r;
@@ -65,23 +65,23 @@ class PXObjectsACL {
 		return false;
 	}
 	
-	protected function checkObject($what, $format, $object) {
+	private function checkObject($what, $format, $object) {
 		foreach ($this->rules as $a) {
 			if (($a['what'] != $what) || 
 				(!is_null($a['sgroupid']) && !in_array($a['sgroupid'], $this->user->groups))) {
 				continue;
 			}
 
-			if(($a['objectid']     == (NULL || $object['id'])
-				&& ($a['objectparent'] == (NULL || getFromArray($object, 'parent'))) 
-				&& ($a['objecttype']   == (NULL || $format->id)))) {
+			if(($a['objectid'] == (NULL || $object['id'])
+			 && ($a['objectparent'] == (NULL || getFromArray($object, 'parent'))) 
+			 && ($a['objecttype']   == (NULL || $format->id)))) {
 			
 				return !($a['access'] === 'deny');
 			}
 		}
 	}
 
-	protected function checkParent($what, $format, $object) {
+	private function checkParent($what, $format, $object) {
 		if ((bool) $format->parent 
 		 && isset($object['parent']) 
 		 && is_numeric($object['parent']) 
@@ -100,7 +100,7 @@ class PXObjectsACL {
 		 }
 	}
 
-	protected function loadParent($format, $object, $pKey) {
+	private function loadParent($format, $object, $pKey) {
 		$tmpParents = $this->db->query(
 			'SELECT parent FROM '.$format->parent.' WHERE id = '.$object['parent']);
 
@@ -108,7 +108,7 @@ class PXObjectsACL {
 			$this->parents[$pKey] = current(current($tmpParents));
 	}
 
-	protected function getRules($loadAll=false) {
+	private function getRules($loadAll=false) {
 		if (!$this->aclEnabled) {
 			return;
 		}
@@ -116,7 +116,7 @@ class PXObjectsACL {
 		$this->rules = $this->db->query($this->sqlLoadRulesStatement($loadAll));
 	}
 
-	protected function sqlLoadRulesStatement($loadAll) {
+	private function sqlLoadRulesStatement($loadAll) {
 		$query = 'SELECT * FROM acl_objects';
 
 		if(!$loadAll) {
