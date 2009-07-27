@@ -33,19 +33,12 @@ class PXObjectsACL {
 		if (!$this->aclEnabled) {
 			return true;
 		}
-
-		/*
-		 * 
-		 * We have a couple errors with usage of this functon.
-		 * While It must be called as $...->check('action', $app->types['some-type'], $obj), 
-		 * some times it called using type name - $...->check('action', 'some-type', $obj).
-		 * 
-		 * This error is silently ignored in PHP4.
-		 *
-		 */
-
+	
 		if (!is_object($format)) {
-			FatalError("Format must be type of PXTypeDescription!"); 
+			$format = PXRegistry::getApp()->types[$format];
+	
+			if(is_null($format))
+				FatalError("Undefined format!"); 
 		}
 
 		$cond[] = ($format->id == 'suser' && $object['id'] == $this->user->id);

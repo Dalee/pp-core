@@ -31,7 +31,7 @@ class AclTest extends UnitTestCase {
 		$this->assertFalse($r);
 
 		$type = PXRegistry::getApp()->types['article'];
-		$r = $this->acl->check('test_add', $type, array('id'=>null, 'parent'=>null));
+		$r = $this->acl->check('test_add', 'article', array('id'=>null, 'parent'=>null));
 		$this->assertFalse($r);
 		
 		$r = $this->acl->check('test_delete', $type, array('id'=>null, 'parent'=>null));
