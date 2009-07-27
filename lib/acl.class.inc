@@ -53,16 +53,35 @@ class PXObjectsACL {
 			(in_array('pxuserauth', getColFromTable(debug_backtrace(), 'function')));
 
 		if((bool) array_sum($cond)) return true;
-		return (bool) $this->checkGroup($what, $format, $object);
+		return $this->checkGroup($what, $format, $object);
 	}
 
-	private function checkGroup($what, $format, $object) {
-		//SHIT! write cond
-		if(is_null($r1 = $this->checkObject($what, $format, $object)) return $r1;
-		if(is_null($r2 = $this->checkParent($what, $format, $object)) return $r2;
+	protected function checkGroup($what, $format, $object) {
+		foreach(array("checkObject", "checkParent") as $method) {
+			$r = call_user_func_array(array($this, $method), func_get_args());
+			if(!is_null($r)) return $r;
+		}
+
+		return false;
+	}
+	
+	protected function checkObject($what, $format, $object) {
+		foreach ($this->rules as $a) {
+			if (($a['what'] != $what) || 
+				(!is_null($a['sgroupid']) && !in_array($a['sgroupid'], $this->user->groups))) {
+				continue;
+			}
+
+			if(($a['objectid']     == (NULL || $object['id'])
+				&& ($a['objectparent'] == (NULL || getFromArray($object, 'parent'))) 
+				&& ($a['objecttype']   == (NULL || $format->id)))) {
+			
+				return !($a['access'] === 'deny');
+			}
+		}
 	}
 
-	private function checkParent($what, $format, $object) {
+	protected function checkParent($what, $format, $object) {
 		if ((bool) $format->parent 
 		 && isset($object['parent']) 
 		 && is_numeric($object['parent']) 
@@ -81,7 +100,7 @@ class PXObjectsACL {
 		 }
 	}
 
-	private function loadParent($format, $object, $pKey) {
+	protected function loadParent($format, $object, $pKey) {
 		$tmpParents = $this->db->query(
 			'SELECT parent FROM '.$format->parent.' WHERE id = '.$object['parent']);
 
@@ -89,23 +108,7 @@ class PXObjectsACL {
 			$this->parents[$pKey] = current(current($tmpParents));
 	}
 
-	private function checkObject($what, $format, $object) {
-		foreach ($this->rules as $a) {
-			if (($a['what'] != $what) || 
-				(!is_null($a['sgroupid']) && !in_array($a['sgroupid'], $this->user->groups)) {
-				continue;
-			}
-
-			if(($a['objectid']     == (NULL || $object['id'])
-				&& ($a['objectparent'] == (NULL || getFromArray($object, 'parent'))) 
-				&& ($a['objecttype']   == (NULL || $format->id))) {
-			
-				return ($a['access'] === 'deny') ? false : true;
-			}
-		}
-	}
-
-	private function getRules($loadAll=false) {
+	protected function getRules($loadAll=false) {
 		if (!$this->aclEnabled) {
 			return;
 		}
@@ -113,7 +116,7 @@ class PXObjectsACL {
 		$this->rules = $this->db->query($this->sqlLoadRulesStatement($loadAll));
 	}
 
-	function sqlLoadRulesStatement($loadAll) {
+	protected function sqlLoadRulesStatement($loadAll) {
 		$query = 'SELECT * FROM acl_objects';
 
 		if(!$loadAll) {
