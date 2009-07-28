@@ -3,42 +3,33 @@
 class UserTest extends UnitTestCase {
 
 	function setUp() {
-		$this->u = new PXUserCron();
-		
-		Mock::generate('PXDataBase');
-		Mock::generate('PXApplication');
-		Mock::generate('PXRequestUser');
-
-		$this->d = new MockPXDataBase();
-		$this->a = new MockPXApplication();
-		$this->r = new MockPXRequestUser();
-
-		$this->a->authrules = array("secure"=>array("enabled"=>true));
+		$e = new PXEngineIndex();
+		$this->u = PXRegistry::getUser();
+	
+		$sql = "insert into suser (title, access, passwd, status) values ('unit_test_user', 16384, md5('testpasswd'), true)";
+		PXRegistry::getDB()->modifyingQuery($sql);
 	} 
+
+	function tearDown() {
+		$sql = "delete from suser where title like '%unit_test%'";
+		PXRegistry::getDB()->modifyingQuery($sql);
+	}
 	
 	function testCheckAuth() {
-		$this->r->setReturnValueAt(0, 'getVar', 'admin');
-		$this->r->setReturnValueAt(1, 'getVar', '1010');
+		$r = PXRegistry::getRequest();
 
-		$this->r->setReturnValueAt(0, 'getCookieVar', 'admin');
-		$this->r->setReturnValueAt(1, 'getCookieVar', PXAuthSecure::encodePasswd('1010'));
-
-		$this->d->setReturnValueAt(0, 'getObjectsByFieldLimited', array(
-			"1"=>$ext = array(
-				"id"=>1, 
-				"title"=>"admin",
-				"access"=>16384,
-				"passwd"=>PXAuthSecure::passwdToDb("1010"))));
+		$r->setVar('login',  'unit_test_user');
+		$r->setVar('passwd', 'testpasswd');
 
 		$this->u->checkAuth();
 
-		$this->assertEqual($this->u->id, 1);
-		$this->assertEqual($this->u->login, "admin");
+		$this->assertTrue($this->u->isAuthed());
+		$this->assertEqual($this->u->login,  "unit_test_user");
+		$this->assertEqual($this->u->passwd, md5("testpasswd"));
 		$this->assertEqual($this->u->level, 16384);
 
-		$this->assertIdentical($this->u->data, $ext);
+		//need check auth by cookie
 	}
-
 
 	function testAclType() {
 		$r = $this->u->aclType();
@@ -60,7 +51,7 @@ class UserTest extends UnitTestCase {
 		$this->assertTrue($this->u->isAuthed());
 	}
 
-	function testGetAuthMethods() {
+	/*function testGetAuthMethods() {
 		$r = $this->u->getAuthMethods();
 		$this->assertIdentical(array("0"=>"secure"), $r);
 	}
@@ -68,7 +59,7 @@ class UserTest extends UnitTestCase {
 	function testGetPrimaryAuthMethod() {
 		$r = $this->u->getPrimaryAuthMethod();
 		$this->assertEqual("PXAuthSecure", $r);
-	}
+	}*/
 }
 
 class CronUserTest extends UnitTestCase {

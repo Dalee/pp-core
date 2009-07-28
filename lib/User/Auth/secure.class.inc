@@ -1,54 +1,62 @@
 <?php
 class PXAuthSecure extends PXAuthInterface {
+
 	function PXAuthSecure(&$app, &$request, &$user, &$db) {
-		$login   = $this->login($request);
-		$passwd  = $this->passwd($request);
+		$this->loginAndPasswd();
+		$uArray = $this->findUser();
+		$this->proceedAuth($uArray);
+	}
 
-		$cPasswd = null;
+	private function proceedAuth($uArray) {
+		if(!(count($uArray) && strlen($this->passwd))) return;
 
-		if(is_null($login) || is_null($passwd) || !is_string($passwd)) {
-			$login   = $request->getCookieVar('login');
-			$cPasswd = $request->getCookieVar('passwd');
-			$passwd = null;
+		if ($this->passwdToDB($this->passwd) == $uArray['passwd'] 
+		 || $this->passwd == $this->encodePasswd($uArray['passwd'], false)) {
+	 
+			 $this->feelUserFields($uArray);
 		}
+	}
 
-		$login   = $this->parseLogin($login);
-		$passwd  = $this->parsePasswd($passwd);
+	private function findUser() {
+		if(!strlen($this->login)) return null;
 
-		$this->login  = $user->login = $login;
+		$tmp = PXRegistry::getDB()->GetObjectsByFieldLimited(
+			PXRegistry::getApp()->types[DT_USER], true, 'title', $this->login, 1, 0);
 
-		if (is_null($login) || (is_null($passwd) && is_null($cPasswd))) {
-			return;
-		}
+		return count($tmp) ? current($tmp) : null;
+	}
 
-		$tmp = $db->GetObjectsByFieldLimited($app->types[DT_USER], true, 'title', $login, 1, 0);
-		if (!count($tmp)) {
-			return;
-		}
+	private function loginAndPasswd() {
+		$request = PXRegistry::getRequest();
+		$o = $this;
 
-		$uArray = current($tmp);
-		if (!strlen($uArray['passwd'])) {
-			return;
-		}
+		return array_map(
+			function($field) use ($request, $o) {
+				$f = (string) $request->getVar($field);
+				$f = call_user_func_array(array($o, "parse".ucfirst($field)), array($f));
+	
+				if(!strlen($f))
+					$f = (string) $request->getCookieVar($field);
 
-		if (md5($passwd) != $uArray['passwd'] && $cPasswd != $this->encodePasswd($uArray['passwd'], false)) {
-			return;
-		}
+				PXRegistry::getUser()->$field = $f;
+				return $o->$field = $f;
+			}, array('login', 'passwd'));
+	}
+
+	private function feelUserFields($uArray) {
+		$user = PXRegistry::getUser();
 
 		$user->id     = $uArray['id'];
-		$user->login  = $login;
-
-		$this->passwd = $user->passwd = $uArray['passwd'];
-
 		$user->level  = $uArray['access'];
 		$user->data   = $uArray;
 
-		return $this;
+		$this->passwd = $user->passwd = $uArray['passwd'];
 	}
 
 	function encodePasswd($passwd, $toMd5=true) {
 		$md = $toMd5 ? md5($passwd) : $passwd;
 		$tmp = '';
+
 		for($i=0; $i<strlen($md);$i++) {
 			$tmp .= dechex(hexdec($md{$i}) ^ $i);
 		}

@@ -1,4 +1,5 @@
 <?php
+
 class PXUserAuthorized extends PXUser {
 	function can($what, $format = NULL, $object = NULL) {
 		if($format === NULL){
@@ -13,12 +14,12 @@ class PXUserAuthorized extends PXUser {
 	}
 
 	function checkAuth() {
-		foreach (PXRegisrty::getApp()->authrules as $rule => $params) {
+		foreach (PXRegistry::getApp()->authrules as $rule => $params) {
 			if (!$params['enabled']) { 
 				continue;
 			}
 
-			if(!$this->proceedAuth($params)) {
+			if(!$this->proceedAuth($rule, $params)) {
 				continue;
 			}
 
@@ -30,7 +31,7 @@ class PXUserAuthorized extends PXUser {
 		return $this->auth->onAuth();
 	}
 
-	private function proceedAuth($params) {
+	private function proceedAuth($rule, $params) {
 		$authClass = 'PXAuth'.ucfirst(strtolower($rule));
 		
 		if (!class_exists($authClass)) {
@@ -51,9 +52,8 @@ class PXUserAuthorized extends PXUser {
 		$app = PXRegistry::getApp();
 		$db  = PXRegistry::getDB();
 		
-		if (!isset($app->types[DT_GROUP])) 
-			return;
-
+		if (!isset($app->types[DT_GROUP])) return;
+		
 		$groups = $db->getLinks($app->references[LINK_GROUP2USER], DT_USER, $this->id);
 		$this->groups = array_unique(array_merge(array(0, (int)$this->data['parent']), array_keys($groups)));
 	}
