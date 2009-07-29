@@ -28,7 +28,7 @@ class PXAuthDomain extends PXAuthInterface {
 
 	private function loadDomain()  {
 		$du = isset($_SERVER['REMOTE_USER']) ? $_SERVER['REMOTE_USER'] : NULL;
-		$tmp = explode("\\", $du);
+		return explode("\\", $du);
 	}
 }
 ?>
