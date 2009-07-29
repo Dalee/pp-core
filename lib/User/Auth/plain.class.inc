@@ -1,43 +1,20 @@
 <?php
 class PXAuthPlain extends PXAuthInterface {
 	function PXAuthPlain(&$app, &$request, &$user, &$db) {
-		$login  = $this->login($request);
-		$passwd = $this->passwd($request);
+		$this->login();
+		$this->passwd();
+		$uArray = $this->findUser();
+		$this->proceedAuth($uArray);
+	}
 
-		if(is_null($login) || is_null($passwd)) {
-			$login  = $request->GetCookieVar('login');
-			$passwd = $request->GetCookieVar('passwd');
+	private function proceedAuth($uArray) {
+		if(!(count($uArray) && strlen($this->passwd))) return;
+		
+		if ($this->passwdToDB($this->passwd) == $uArray['passwd'] 
+		 || $passwd == $this->encodePasswd($uArray['passwd'])) {
+
+			 $this->feelUserFields($uArray);
 		}
-
-		$login   = $this->parseLogin($login);
-		$passwd  = $this->parsePasswd($passwd);
-
-		$this->login  = $user->login = $login;
-		$this->passwd = $passwd;
-
-		if (is_null($login) || is_null($passwd)) {
-			return;
-		}
-
-		$tmp = $db->getObjectsByFieldLimited($app->types[DT_USER], true, 'title', $login, 1, 0);
-		if (!count($tmp)) {
-			return;
-		}
-
-		$uArray = current($tmp);
-		if (!strlen($uArray['passwd'])) {
-			return;
-		}
-
-		if ($passwd != $uArray['passwd'] && $passwd != $this->EncodePasswd($uArray['passwd'])) {
-			return;
-		}
-
-		$user->id     = $uArray['id'];
-		$user->login  = $login;
-//		$user->passwd = $uArray['passwd'];
-		$user->level  = $uArray['access'];
-		$user->data   = $uArray;
 	}
 
 	function auth() {

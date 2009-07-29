@@ -1,8 +1,9 @@
 <?php
 class PXAuthSecure extends PXAuthInterface {
-
 	function PXAuthSecure(&$app, &$request, &$user, &$db) {
-		$this->loginAndPasswd();
+		$this->login();
+		$this->passwd();
+
 		$uArray = $this->findUser();
 		$this->proceedAuth($uArray);
 	}
@@ -15,42 +16,6 @@ class PXAuthSecure extends PXAuthInterface {
 	 
 			 $this->feelUserFields($uArray);
 		}
-	}
-
-	private function findUser() {
-		if(!strlen($this->login)) return null;
-
-		$tmp = PXRegistry::getDB()->GetObjectsByFieldLimited(
-			PXRegistry::getApp()->types[DT_USER], true, 'title', $this->login, 1, 0);
-
-		return count($tmp) ? current($tmp) : null;
-	}
-
-	private function loginAndPasswd() {
-		$request = PXRegistry::getRequest();
-		$o = $this;
-
-		return array_map(
-			function($field) use ($request, $o) {
-				$f = (string) $request->getVar($field);
-				$f = call_user_func_array(array($o, "parse".ucfirst($field)), array($f));
-	
-				if(!strlen($f))
-					$f = (string) $request->getCookieVar($field);
-
-				PXRegistry::getUser()->$field = $f;
-				return $o->$field = $f;
-			}, array('login', 'passwd'));
-	}
-
-	private function feelUserFields($uArray) {
-		$user = PXRegistry::getUser();
-
-		$user->id     = $uArray['id'];
-		$user->level  = $uArray['access'];
-		$user->data   = $uArray;
-
-		$this->passwd = $user->passwd = $uArray['passwd'];
 	}
 
 	function encodePasswd($passwd, $toMd5=true) {

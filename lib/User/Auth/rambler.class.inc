@@ -2,23 +2,18 @@
 
 class PXAuthRambler extends PXAuthInterface {
 	function PXAuthRambler(&$app, &$request, &$user, &$db) {
-		if (!isset($_COOKIE['rsid'])) {
-			return;
+		if (isset($_COOKIE['rsid'])) {
+			$this->login();
+			$uArray = $this->findUser();
+			$this->feelUserFields($uArray);
 		}
+	}
 
+	function login() {
 		$data = $this->getRamblerDataBySession();
-		$tmp = $db->getObjectsByFieldLimited($app->types[DT_USER], true, 'title', $data['login'], 1, 0);
 
-		if (!count($tmp)) {
-			return ;
-		}
-		$tmp = current($tmp);
-
-		$user->id     = $tmp['id'];
-		$user->login  = $tmp['title'];
-		$user->level  = $tmp['access'];
-		$user->data   = $tmp;
-		
+		if(isset($data['login'])) 
+			$this->login = $data['login'];
 	}
 
 	// static

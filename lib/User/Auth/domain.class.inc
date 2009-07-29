@@ -1,31 +1,34 @@
 <?
 class PXAuthDomain extends PXAuthInterface {
+	private $authParams;	
+
 	function PXAuthDomain(&$app, &$request, &$user, &$db, $authParams) {
+		$this->authParams = $authParams;
+		$this->domain = $this->loadDomain();
+
+		$this->login();
+
+		$uArray = $this->findUser();
+		$this->proceedAuth($uArray);
+	}
+
+	private function proceedAuth($uArray) {
+		if(!count($uArray)) return;
+		$this->feelUserFields($uArray);
+	}		
+
+	protected function login() {
+		if(count($this->domain) != 2
+		 || !isset($this->authParams[$this->domain[0]])) {
+			return;
+		}
+
+		$this->login = (string) _StrToLower($this->domain[1]).'@'.$this->authParams[$this->domain[0]];
+	}
+
+	private function loadDomain()  {
 		$du = isset($_SERVER['REMOTE_USER']) ? $_SERVER['REMOTE_USER'] : NULL;
-
 		$tmp = explode("\\", $du);
-
-		if (count($tmp) != 2) {
-			return;
-		}
-
-		if (!isset($authParams[$tmp[0]])) {
-			return;
-		}
-
-		$tmp_login = _StrToLower($tmp[1]).'@'.$authParams[$tmp[0]];
-		$tmp = $db->GetObjectsByFieldLimited($app->types[DT_USER], true, 'title', $tmp_login, 1, 0);
-		if (!count($tmp)) {
-			return;
-		}
-
-		$uArray = current($tmp);
-
-		$user->login  = $tmp_login;
-		$user->id     = $uArray['id'];
-//		$user->passwd = $uArray['passwd'];
-		$user->level  = $uArray['access'];
-		$user->data   = $uArray;
 	}
 }
 ?>
