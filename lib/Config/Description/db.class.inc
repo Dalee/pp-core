@@ -53,14 +53,14 @@ class NLDBDescription {
 	}
 
 	function GetPgsqlConnectString() {
-		$o = $this;
+		$connectionString = '';
 
-		$connection_array = array_map(function ($n) use ($o) {
-			$k = ($n == "password") ? "passwd" : $n;
-			return ($o->$n) ? "{$k} =  {$o->$n} " : "";
-		}, array("host", "port", "user", "password", "dbname"));
-		
-		return trim(implode(" ", $connection_array));
+		foreach(array("host", "port", "user", "password", "dbname") as $field) {
+			$k = ($field == "password") ? "passwd" : $field;
+			$connectionString .= ($this->$field) ? " {$k} =  {$this->$field} " : "";
+		}
+	
+		return trim($connectionString);
 	}
 
 	function GetMssqlConnectArray() {

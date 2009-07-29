@@ -27,7 +27,7 @@ class PXApplication {
 	 * массив описаний datatypes {@link PXTypeDescription}
 	 * @var Array
 	 */
-	var $types;
+	var $types = array();
 
 	/**
 	 * массив ссылок между datatypes {@link PXRefDescription}
@@ -57,7 +57,7 @@ class PXApplication {
 	 * массив описаний каталогов из etc/datatypes.xml
 	 * @var Array
 	 */
-	var $directory;
+	var $directory = array();
 
 	/**
 	 * биндинги модулей из etc/modules.xml modules/bindings
@@ -77,8 +77,10 @@ class PXApplication {
 		}
 
 		/* try to get config from cache */
-		// FIXME !!!!!!!!!!!
-		//$instance[$engineClass] = self::loadFromCache($engineClass);
+		$cache = self::loadFromCache($engineClass);
+
+		if(!is_null($cache))
+			return $instance[$engineClass] = $cache;
 
 		/* create new instance, if not cached */
 		if (!isset($instance[$engineClass])) {
@@ -96,9 +98,6 @@ class PXApplication {
 	private function __construct($engineClass) {
 		$this->engineClass = $engineClass;
 
-		$this->types = array();
-		$this->directory = array();
-
 		$this->FillDBDescription(self::parseIniFile($this->findConfigFile('database.ini')));
 
 		$this->FillModules($this->findConfigFile('modules.xml'));
@@ -115,7 +114,7 @@ class PXApplication {
 	}
 
 	private static function parseIniFile($file) {
-		return parse_ini_file($file, true);
+		return (array) parse_ini_file($file, true);
 	}
 
 	private static function parseIniFiles($files) {
@@ -125,16 +124,17 @@ class PXApplication {
 		$result = self::parseIniFile(array_pop($files));
 
 		while(count($files)) {
-			$tmp = self::parseIniFile(array_pop($files));
+			$result = $result + self::parseIniFile(array_pop($files));
 
-			foreach($tmp as $k => $v) {
+			/*foreach($tmp as $k => $v) {
 				if (is_array($v) and isset($result[$k]) and is_array($result[$k])) {
 					$result[$k] = array_merge($result[$k], $v);
 				} else {
 					$result[$k] = $v;
 				}
-			}
+			}*/
 		}
+
 		return $result;
 	}
 
@@ -170,10 +170,8 @@ class PXApplication {
 	 *  Searches for the first file in order - site, local, libpp
 	 */
 	private static function findConfigFile($filename, $required=true) {
-		$files = self::findFilesUnless(
-			$filename,
-			create_function('$files', 'return count($files) > 0;')
-		);
+		$files = self::findFilesUnless($filename,
+			function($files) { return count($files) > 0; });
 
 		if ($files) {
 			return $files[0];
@@ -205,7 +203,7 @@ class PXApplication {
 		$files = array();
 
 		foreach(self::configDirs() as $configDir) {
-			$path = $configDir.$filename;
+			$path = $configDir . $filename;
 
 			if (file_exists($path)) {
 				$files[] = $path;
@@ -223,8 +221,7 @@ class PXApplication {
 		return array(
 			BASEPATH.'/site/etc/',
 			BASEPATH.'/local/etc/',
-			BASEPATH.'/libpp/etc/'
-		);
+			BASEPATH.'/libpp/etc/');
 	}
 
 	//TODO:FIXME: REWRITE ME!
@@ -397,6 +394,7 @@ class PXApplication {
 			FatalError("Ошибка в файле настроек <EM>$fileName</EM>");
 		}
 		$domDirectories = $dom->xpath("/model/directories/directory");
+
 		foreach ($domDirectories as $domDirectory) {
 			$name = $domDirectory->getAttribute('name');
 
@@ -543,7 +541,7 @@ class PXApplication {
 	 * @return Boolean  true если файл существует
 	 */
 	private static function loadFromCache($engineClass) {
-		$cacheFile = self::_cacheFilename($engineClass);
+		$cacheFile = self::cacheFilename($engineClass);
 
 		if (!file_exists($cacheFile)) {
 			return null;
@@ -573,13 +571,13 @@ class PXApplication {
 	 * Весь PXApplication сериализуется в tmp/cache/config файл.
 	 */
 	private function saveToCache($engineClass) {
-		$cacheFile = self::_cacheFilename($engineClass);
+		$cacheFile = self::cacheFilename($engineClass);
 
 		MakeDirIfnotExists(dirname($cacheFile));
 		WriteStringToFile($cacheFile, serialize($this));
 	}
 
-	private static function _cacheFilename($name){
+	private static function cacheFilename($name){
 		return BASEPATH.'/tmp/cache/config/'.strtolower($name);
 	}
 }
