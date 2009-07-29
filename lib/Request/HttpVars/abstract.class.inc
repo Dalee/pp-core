@@ -17,7 +17,7 @@ abstract class NLHTTPVarsData {
 
 	function _NormalizeData() {
 		$this->clientCharset = 'w';
-
+		
 		foreach ($this->raw as $k=>$v) {
 			if (is_string($v) && !isAsciiString($v) && isUtfString($v)) {
 				$this->clientCharset = 'u';

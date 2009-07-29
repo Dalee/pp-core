@@ -2,7 +2,7 @@
 class NLPostData extends NLHTTPVarsData {
 	function __construct($needToStripTags = false) {
 		parent::__construct($needToStripTags);
-		$this->raw = $_POST;
+		$this->raw = (array) $_POST;
 		$this->_NormalizeData();
 	}
 

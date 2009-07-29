@@ -3,7 +3,7 @@ class NLCookieData extends NLHTTPVarsData {
 
 	function __construct($needToStripTags = false) {
 		parent::__construct($needToStripTags, true);
-		$this->raw = $_COOKIE;
+		$this->raw = (array) $_COOKIE;
 		$this->_NormalizeData();
 	}
 

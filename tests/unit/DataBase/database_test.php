@@ -26,7 +26,7 @@ class DatabaseTest extends UnitTestCase {
 		$this->assertIsA($this->db, "nlsqldatabaseadapter");
 
 		$this->assertIsA($this->db->app, "pxapplication");
-		$this->assertIsA($this->db->user, "pxabstractuser");
+		$this->assertIsA($this->db->user, "PXUserCron");
 
 		$this->assertIsA($this->db->types, "array");
 	}/*}}}*/ 

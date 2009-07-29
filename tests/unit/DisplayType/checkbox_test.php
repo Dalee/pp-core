@@ -12,8 +12,8 @@ class CheckBoxTest extends UnitTestCase {
 	}
 	
 	function testGetFromRequest() {
-		$request = new PXRequest();
-		$var     = new NLHTTPVarsData();
+		$request = new PXRequestBase();
+		$var     = $request->getData;
 		
 		$var->raw['test_field'] = true;
 		$request->postData = & $var;

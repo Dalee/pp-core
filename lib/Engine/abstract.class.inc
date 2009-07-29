@@ -3,6 +3,8 @@ abstract class PXEngine {
 	protected $modules;
 	protected $area;
 
+	protected $app, $request, $db, $layout, $user;
+
 	function __construct() {     // Инициализация основных объектов приложения
 		PXProfiler::begin('INIT');
 
@@ -17,6 +19,14 @@ abstract class PXEngine {
 		$this->initModules();
 
 		PXProfiler::end();
+	}
+
+	protected function saveToRegistry() {
+		foreach(array_keys(get_object_vars($this)) as $var){
+			if(isset($this->$var) && PXRegistry::canSaveIt($var)) {
+				call_user_func_array(array("PXRegistry", 'set'.ucfirst($var)), array(&$this->$var));
+			}
+		}
 	}
 
 	function initApplication() { 

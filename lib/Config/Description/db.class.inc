@@ -21,57 +21,46 @@ class NLDBDescription {
 	public  $encoding;
 
 	function __construct($config) {
-		if (isset($config['host']))     $this->host     = $config['host'];
-		if (isset($config['port']))     $this->port     = $config['port'];
-		if (isset($config['dbname']))   $this->dbname   = $config['dbname'];
-		if (isset($config['dbtype']))   $this->dbtype   = $config['dbtype'];
-		if (isset($config['dbids']))    $this->dbids    = $config['dbids'];
-		if (isset($config['user']))     $this->user     = $config['user'];
-		if (isset($config['password'])) $this->password = $config['password'];
-		if (isset($config['options']))  $this->options  = $config['options'];
-		if (isset($config['tty']))      $this->tty      = $config['tty'];
-		if (isset($config['cache']))    $this->cache    = $config['cache'];
-		if (isset($config['aicache']))  $this->aicache  = $config['aicache'];
-		if (isset($config['encoding'])) $this->encoding = $config['encoding'];
+		foreach(get_object_vars($this) as $k=>$v) {
+			if(isset($config[$k])) {
+				$this->$k = $config[$k];
+			}
+		}
 	}
 
+	//RESOLVE ME!
+	function __get($name) {
+		return $this->$name;
+	}
+
+	function __set($name, $value) {
+		$this->$name = $value;
+	}
+	//
+
 	function getDriver() {
-		switch ($this->dbtype) {
-			case 'pgsql':
-				require_once('Database/SQL/pgsql.class.inc');
-				return new NLPGSQLDatabase($this);
-				break;
+		$class_file = "Database/SQL/{$this->dbtype}.class.inc";
 
-			case 'mssql':
-				require_once('Database/SQL/mssql.class.inc');
-				return new NLMSSQLDatabase($this);
-				break;
+		if(file_exists(BASEPATH . "/libpp/lib/" . $class_file)) {
+			require_once("Database/SQL/{$this->dbtype}.class.inc");
+			$class_name = "NL".strtoupper($this->dbtype)."Database";
 
-			case 'mysql':
-				require_once('Database/SQL/mysql.class.inc');
-				return new NLMYSQLDatabase($this);
-				break;
-
-			case NULL:
-			case '':
-				FatalError("Вы не выбрали тип базы данных");
-				break;
-			default:
-				FatalError("Указан некорректный тип базы данных");
-				break;
+			return new $class_name($this);
+		} else {
+			FatalError("Вы не выбрали тип базы данных");
+			FatalError("Указан некорректный тип базы данных");
 		}
 	}
 
 	function GetPgsqlConnectString() {
-		$connectString = '';
+		$o = $this;
 
-		if ($this->host)     $connectString .= ' host =   '.$this->host;
-		if ($this->port)     $connectString .= ' port =   '.$this->port;
-		if ($this->user)     $connectString .= ' user =   '.$this->user;
-		if ($this->password) $connectString .= ' passwd = '.$this->password;
-		if ($this->dbname)   $connectString .= ' dbname = '.$this->dbname;
-
-		return trim($connectString);
+		$connection_array = array_map(function ($n) use ($o) {
+			$k = ($n == "password") ? "passwd" : $n;
+			return ($o->$n) ? "{$k} =  {$o->$n} " : "";
+		}, array("host", "port", "user", "password", "dbname"));
+		
+		return trim(implode(" ", $connection_array));
 	}
 
 	function GetMssqlConnectArray() {

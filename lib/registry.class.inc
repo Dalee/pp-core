@@ -10,7 +10,7 @@ class PXRegistry {
 	private function __construct(){
 	}
 
-	private static function instance() {
+	public static function instance() {
 		if(self::$instance == null)
 			self::$instance = new PXRegistry();
 		

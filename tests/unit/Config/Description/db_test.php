@@ -27,26 +27,22 @@ class DBDescriptionTest extends UnitTestCase {
 
 	function testGetPgsqlConnectString() {
 		$r = $this->dbd->getPgsqlConnectString();
-		$this->assertTrue(empty($r));
-
-		foreach(get_object_vars($this->dbd) as $k=>$i) {
-			if(isset($map[$k])) $this->dbd->$k = $map[$k];
-		}
-		$this->dbd->password = $map["passwd"];
+		$this->dbd->password = $this->map1['passwd']; //dirty hack 
 
 		//sprintf black belt ;-)
 		$ff = call_user_func_array("sprintf", 
-			array(implode("", array_pad(array(), count($map), "\s*(#key#\s*=\s*%s)\s*?"))) + $map);
+			array(implode("", array_pad(array(), count($this->map1), "\s*(#key#\s*=\s*%s)\s*?"))) + $this->map1);
 		
 		$rr = call_user_func_array("sprintf", 
-			array("format"=>strtr($ff, array("#key#"=>"%s"))) + array_keys($map));
+			array("format"=>strtr($ff, array("#key#"=>"%s"))) + array_keys($this->map1));
 
 		$r = $this->dbd->getPgsqlConnectString();
 		$this->assertPattern("#^{$rr}$#", $r);
 	}
 
 	function testGetMssqlConnectArray() {
-		$r = $this->dbd->getMssqlConnectArray();
+		$dbd = new NLDBDescription(array());
+		$r = $dbd->getMssqlConnectArray();
 		
 		$expected = array(
 			"host"=>"LOCALHOST",
@@ -59,7 +55,8 @@ class DBDescriptionTest extends UnitTestCase {
 	}
 
 	function testGetMysqlConnectArray() {
-		$r = $this->dbd->getMysqlConnectArray();
+		$dbd = new NLDBDescription(array());
+		$r = $dbd->getMysqlConnectArray();
 		
 		$expected = array(
 			"host"=>"localhost",

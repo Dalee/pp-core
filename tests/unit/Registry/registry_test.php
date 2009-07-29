@@ -19,7 +19,7 @@ class RegistryTest extends UnitTestCase {
 		$mapping = array(
 			'app'     => 'PXApplication', 
 			'db'      => 'PXDataBase', 
-			'request' => 'PXNullRequest', //checked parent 
+			'request' => 'PXRequestNull',
 			'user'    => 'PXUserCron'
 		);
 	
