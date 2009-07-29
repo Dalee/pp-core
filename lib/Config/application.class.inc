@@ -124,15 +124,15 @@ class PXApplication {
 		$result = self::parseIniFile(array_pop($files));
 
 		while(count($files)) {
-			$result = $result + self::parseIniFile(array_pop($files));
+			$tmp = self::parseIniFile(array_pop($files));
 
-			/*foreach($tmp as $k => $v) {
+			foreach($tmp as $k => $v) {
 				if (is_array($v) and isset($result[$k]) and is_array($result[$k])) {
 					$result[$k] = array_merge($result[$k], $v);
 				} else {
 					$result[$k] = $v;
 				}
-			}*/
+			}
 		}
 
 		return $result;
