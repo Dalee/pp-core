@@ -104,7 +104,7 @@ class PXApplication {
 		$this->FillDataTypes($this->findConfigFile('datatypes.xml'));
 		$this->FillDirectories($this->findConfigFile('datatypes.xml'));
 
-		$this->properties = $this->parseProperties();
+		$this->properties = self::parseIniFiles($this->findConfigFiles('properties.ini'));
 		$this->authrules  = self::parseIniFiles($this->findConfigFiles('auth.ini'));
 
 		//todo: one file or many lang files?
@@ -139,39 +139,11 @@ class PXApplication {
 	}
 
 	/**
-	 * @return Array
-	 */
-	function parseProperties() {
-		list($override, $default) = array(array(), array());
-
-		$default_file_exists = file_exists($default_file  = self::findConfigFile('default/properties.ini', false));
-		$user_file_exists    = file_exists($override_file = self::findConfigFile('properties.ini'));
-
-		//пропарсит дефолтный файл если он существует
-		if($default_file_exists) {
-			$default = self::ParseIniFile($default_file);
-		}
-
-		//если есть дефолтный файл но нет юзерского то возращает значение из
-		if(!$user_file_exists && $default_file_exists) {
-			return $default;
-		}
-
-		// парсинг юзерского файла
-		// возбуждение ошибки в случае если нет файла
-		$override = self::ParseIniFile($override_file);
-
-		//возращает склеяный результат
-		return $override + $default;
-	}
-
-
-	/**
 	 *  Searches for the first file in order - site, local, libpp
 	 */
 	private static function findConfigFile($filename, $required=true) {
 		$files = self::findFilesUnless($filename,
-			function($files) { return count($files) > 0; });
+			create_function('$files', 'return count($files) > 0; '));
 
 		if ($files) {
 			return $files[0];

@@ -4,15 +4,15 @@ class PXEngineIndex extends PXEngine {
 		PXProfiler::begin('TOTAL');
 
 		parent::__construct();
-
 		PXRegistry::setLayout(new PXUserHTMLLayout());
+		$this->saveToRegistry();
 
 		$this->content             = new StdClass; // FIXME
-
 		$this->content->tree       = new PXTreeObjects();
 		$this->content->objects    = new PXObjects();
 		$this->content->subObjects = new PXSubObjects();
-		
+
+		$this->fillLayout();
 	}
 
 	function initModules() {
@@ -83,7 +83,7 @@ class PXEngineIndex extends PXEngine {
 
 	function html() {
 		$html = PXRegistry::getLayout()->display();
-
+		
 		$response =& PXResponse::getInstance();
 		$response->send($html);
 	}
