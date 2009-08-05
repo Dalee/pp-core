@@ -87,12 +87,12 @@ class PXModuleMain extends PXModule {
 			FatalError("Некорректный тип данных");
 		}
 
-		$app     =& $this->app;
-		$db      =& $this->db;
-		$request =& $this->request;
-		$layout  =& $this->layout;
+		$app     = $this->app;
+		$db      = $this->db;
+		$request = $this->request;
+		$layout  = $this->layout;
 
-		$rootFormat = $this->rootFormat = &$app->types[$this->rootFormatId];
+		$rootFormat = $this->rootFormat = $app->types[$this->rootFormatId];
 		$this->tree = $this->_loadAdminTree();
 		$rqSid      = $request->GetSid();
 

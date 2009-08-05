@@ -41,17 +41,22 @@ class PXObjectsACL {
 				FatalError("Undefined format!"); 
 		}
 
-		$cond[] = ($format->id == 'suser' && $object['id'] == $this->user->id);
-		$cond[] = ($format->id == 'suser' || $format->id == 'sgroup') && 
-			(in_array('pxuserauth', getColFromTable(debug_backtrace(), 'function')));
+		$cond1 = ($format->id == 'suser' && $object['id'] == $this->user->id);
 
-		if((bool) array_sum($cond)) return true;
+		$cond2_1 = ($format->id == 'suser' || $format->id == 'sgroup');
+		//AND
+		$cond2_2 = in_array('PXAuthSecure', getColFromTable(debug_backtrace(), 'function'));
+		
+		if($cond1 || ($cond2_1 && $cond2_2))
+			return true;
+
 		return $this->checkGroup($what, $format, $object);
 	}
 
 	private function checkGroup($what, $format, $object) {
 		foreach(array("checkObject", "checkParent") as $method) {
-			$r = call_user_func_array(array($this, $method), func_get_args());
+			$args = func_get_args();
+			$r = call_user_func_array(array($this, $method), $args);
 			if(!is_null($r)) return $r;
 		}
 
@@ -60,15 +65,16 @@ class PXObjectsACL {
 	
 	private function checkObject($what, $format, $object) {
 		foreach ($this->rules as $a) {
-			if (($a['what'] != $what) || 
-				(!is_null($a['sgroupid']) && !in_array($a['sgroupid'], $this->user->groups))) {
+			if(($a['what'] != $what)
+				|| (!is_null($a['sgroupid']) && !in_array($a['sgroupid'], $this->user->groups))) {
 				continue;
 			}
 
-			if(($a['objectid'] == (NULL || $object['id'])
-			 && ($a['objectparent'] == (NULL || getFromArray($object, 'parent'))) 
-			 && ($a['objecttype']   == (NULL || $format->id)))) {
-			
+			$null_or_value = create_function('$value', 'return is_null($value) ? $value : null;');
+
+			if(($a['objectid'] == $null_or_value(getFromArray($object, 'id')))
+			 &&($a['objectparent'] == $null_or_value(getFromArray($object, 'parent')))
+			 &&($a['objecttype']   == $null_or_value($format->id))) {
 				return !($a['access'] === 'deny');
 			}
 		}

@@ -29,12 +29,11 @@ class PXEngineIndex extends PXEngine {
 		$layout->assign('response',       PXResponse::getInstance(), true);
 
 		$layout->assignRequest(PXRegistry::getRequest());
-
+		$layout->assign('tree',           $this->content->tree);
 /*
 		$layout->assign('references',     PXRegistry::getVar('references'));                 // delete
 		$layout->assign('heap',           PXRegistry::getVar('heap'));                       // delete
 */
-		$layout->assign('tree',           $this->content->tree->tree);
 //		$layout->assign('currentSid',     PXRegistry::getVar('struct')->currentId);          // move to tree
 
 		$layout->assign('objects',        $this->content->objects);
