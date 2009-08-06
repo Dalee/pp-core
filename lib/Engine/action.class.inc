@@ -4,6 +4,10 @@ class PXEngineAction extends PXEngine {
 
 	function __construct(){
 		$this->initRequest();
+		$this->initLayout();
+
+		$this->saveToRegistry();
+
 		parent::__construct();
 	}
 

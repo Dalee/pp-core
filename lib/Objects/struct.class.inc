@@ -124,6 +124,9 @@ class PXTreeObjects extends PXContentObjects implements ArrayAccess, IteratorAgg
 				break;
 		}
 
+		if(!isset($this->$key) && isset($this->tree->$key))
+			return $this->tree->$key;
+
 		return null;
 	}
 

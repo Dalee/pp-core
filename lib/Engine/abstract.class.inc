@@ -15,7 +15,6 @@ abstract class PXEngine {
 		$user->checkAuth();
 
 		PXRegistry::getDb()->LoadDirectoriesAutomatic(PXRegistry::getApp()->directory);
-
 		$this->initModules();
 
 		PXProfiler::end();

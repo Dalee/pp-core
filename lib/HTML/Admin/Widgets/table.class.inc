@@ -34,7 +34,7 @@ class PXAdminTable extends PXAdminWidget {
 	 * @param Array $getData - массив с GET переменными которые надо добавлять в ссылки таблицы
 	 * @param String $titleKey - тип поля в datatype по которому будет определяться 'title' таблицы
 	 */
-	function PXAdminTable($data, &$dtype, &$getData, $titleKey = NULL) {
+	function PXAdminTable($data, $dtype, $getData, $titleKey = NULL) {
 		$this->data     = $data;
 		$this->dtype    = $dtype;
 		$this->getData  = !empty($getData) ? $getData : array();
@@ -55,7 +55,7 @@ class PXAdminTable extends PXAdminWidget {
 		$this->childLink = NULL;
 	}
 
-	function loadDropdownValues(&$db) {
+	function loadDropdownValues($db) {
 		foreach($this->dtype->fields as $field) {
 			if($field->listed && strlen($field->source) && !sizeof($field->values->values)) {
 				switch($field->values->schema) {

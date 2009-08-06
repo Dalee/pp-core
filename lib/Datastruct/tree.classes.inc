@@ -6,21 +6,21 @@ class NLLeaf {
 	var $parent;
 	var $content;
 	var $level;
+	var $tree;
 
-	function NLLeaf($id, $title, $parentId, $content, &$tree) {
+	function NLLeaf($id, $title, $parentId, $content, $tree) {
 		$this->id       = $id;
 		$this->title    = $title;
 		$this->children = array();
 		$this->parent   = $parentId;
 		$this->content  = $content;
 		$this->level    = 0;
-		$this->tree     = &$tree;
+		$this->tree     = $tree;
 	}
 
 	function GetAncestors($andSelf = false) {
 		return $this->tree->GetAncestors($this->id, $andSelf);
 	}
-
 }
 
 /**

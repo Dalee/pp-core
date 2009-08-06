@@ -76,8 +76,6 @@ class PXEngineIndex extends PXEngine {
 		$layout->assign('rootId', $this->content->tree->rootId);
 		//d2(PXRegistry::getRequest()->getFile(), 0);
 		$layout->assign('urlFile', PXRegistry::getRequest()->getFile());
-
-
 	}
 
 	function html() {
