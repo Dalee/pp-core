@@ -96,32 +96,20 @@ function OpenClose(id) {
 	document.all[id].style.display = (document.all[id].style.display == 'block') ? 'none' : 'block';
 }
 
-function HideShowLeaf(id, img) {
-	if(document.all(img).src.indexOf('open') != -1) {
-		if(document.all(id).length) {
-			for(i=0; i<document.all(id).length; i++) {
-				document.all(id, i).style.display='none';
-			}
-		} else {
-			document.all(id).style.display='none';
+function hideShowLeaf(id) {
+	var direction = (document.getElementById('leafImg'+id).src.indexOf('close') != -1) ? 'open' : 'close';
+
+	document.getElementById('leafImg'+id).src = 'i/tree/'+direction+'.gif';
+	document.cookie = 'leafStatus[leafId'+id+']='+direction;
+
+	parentDiv = document.getElementById('leafId'+id);
+
+	for (i=0; i<parentDiv.childNodes.length; i++) {
+		if (parentDiv.childNodes[i].tagName == 'DIV') {
+			parentDiv.childNodes[i].style.display = (direction == 'open') ? 'block' : 'none';
 		}
-
-		document.all(img).src = 'i/tree/close.gif';
-		document.cookie = 'leafStatus[' + id + ']' + '=' + 'close';
-
-	} else {
-		if(document.all(id).length) {
-			for(i=0; i<document.all(id).length; i++) {
-				document.all(id, i).style.display='block';
-			}
-		} else {
-			document.all(id).style.display='block';
-		}
-
-		document.all(img).src = 'i/tree/open.gif';
-		document.cookie = 'leafStatus[' + id + ']' + '=' + 'open';
 	}
-}
+} 
 
 function Popup(url, width, height) {
 	if (width  == undefined) width  = 760;
