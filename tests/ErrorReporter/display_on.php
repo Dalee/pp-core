@@ -1,4 +1,4 @@
-#!/usr/local/bin/php -q
+#!/usr/bin/php5 -q
 <?php
 	define('BASEPATH', realpath(dirname(__FILE__).'/../../../').'/');
 	require_once BASEPATH.'/libpp/lib/maincommon.inc';
