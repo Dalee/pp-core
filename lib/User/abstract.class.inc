@@ -32,7 +32,7 @@ abstract class PXUser {
 
 	function setAcl() {
 		PXRegistry::getDb()->setUser($this);
-		$this->acl    = new PXObjectsACL(PXRegistry::getDb(), $this);
+		$this->acl = new PXObjectsACL();
 	}
 
 	// FIXME

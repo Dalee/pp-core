@@ -6,7 +6,6 @@ class PXRegistry {
 	private $app, $db, $request, $response, $user, $layout;
 	private static $instance = null;
 
-	//constructor
 	private function __construct(){
 	}
 
@@ -18,7 +17,7 @@ class PXRegistry {
 	}
 
 	public static function canSaveIt($varName){
-		return array_key_exists($varName, get_object_vars(self::instance()));
+		return in_array($varName, self::get_registry_fields());
 	}
 
 	private static function get($varName) {
@@ -51,7 +50,7 @@ class PXRegistry {
 					break;
 
 				default:
-					throw new Exception(strtr(self::unknownVarMessage, "?", $varName));
+					throw new Exception(str_replace('?', $varName, self::unknownVarMessage));
 					break;
 			}
 		}
@@ -104,8 +103,12 @@ class PXRegistry {
 		return $types;
 	}
 
+	private static function get_registry_fields() {
+		return array_keys(get_class_vars(__CLASS__));
+	}
+
 	public static function assignToObject($object) {
-		$registry_fields = array_keys(get_class_vars(__CLASS__));
+		$registry_fields = self::get_registry_fields();
 		$object_fields   = array_keys(get_object_vars($object));
 		$fields          = array_intersect($registry_fields, $object_fields);
 
@@ -121,7 +124,7 @@ class PXRegistry {
 		$registry = self::instance();
 
 		if(!self::canSaveIt($varName)) {
-			throw new Exception(strtr(self::unknownVarMessage, "?", $varName));
+			throw new Exception(str_replace('?', $varName, self::unknownVarMessage));
 		}
 
 		$registry->$varName = $variable;

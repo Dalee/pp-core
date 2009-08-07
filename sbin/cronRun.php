@@ -5,8 +5,7 @@ ini_set('memory_limit','512M'); //for greedy scripts
 require_once dirname(__FILE__).'/../lib/maincommon.inc';
 
 $engine = new PXEngineSbin();
-
-$app =& $engine->app;
+$app = PXRegistry::getApp();
 
 if (!isset($app->modules['cronrun'])) return;
 

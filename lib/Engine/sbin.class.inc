@@ -3,13 +3,16 @@ class PXEngineSbin extends PXEngine {
 	var $result;
 
 	function __construct(){
+		$this->initApplication();
+
 		$this->initRequest();
 		$this->initUser();
 		$this->initLayout();
 
+
 		$this->saveToRegistry();
 
-		parent::__construct();
+		//parent::__construct();
 	}
 
 	function initLayout() {

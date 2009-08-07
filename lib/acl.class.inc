@@ -13,11 +13,11 @@ class PXObjectsACL {
 	/** @var Array */
 	var $rules;
 
-	function PXObjectsACL(&$db, &$user) {
-		$this->db   =& $db;
-		$this->user =& $user;
+	function PXObjectsACL() {
+		$this->db   = PXRegistry::getDB();
+		$this->user = PXRegistry::getUser();
 
-		$this->aclEnabled  = (PXRequest::GetHttpMethod() != 'CLI' && $db->tableExists('acl_objects'));
+		$this->aclEnabled  = (PXRequest::GetHttpMethod() != 'CLI' && $this->db->tableExists('acl_objects'));
 
 		$this->rules   = array();
 		$this->parents = array();
