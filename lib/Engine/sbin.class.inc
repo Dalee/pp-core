@@ -3,6 +3,8 @@ class PXEngineSbin extends PXEngine {
 	var $result;
 
 	function __construct(){
+		parent::__construct();
+		
 		$this->initApplication();
 
 		$this->initRequest();
@@ -11,8 +13,6 @@ class PXEngineSbin extends PXEngine {
 
 
 		$this->saveToRegistry();
-
-		//parent::__construct();
 	}
 
 	function initLayout() {
