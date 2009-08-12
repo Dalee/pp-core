@@ -15,7 +15,7 @@ class PXStorageTypeFilesarray extends PXStorageTypeAbstractFile {
 
 		$fileArray       = $donor[$field->name];
 		$ai              = $this->ai($param['format'], $object['id'], $field->name);
-		$basedir         = BASEPATH.'/htdocs'.$ai;
+		$basedir         = BASEPATH.'/site/htdocs'.$ai;
 
 		if (is_array($fileArray)) {
 			MakeDirIfNotExists($basedir);
@@ -24,8 +24,8 @@ class PXStorageTypeFilesarray extends PXStorageTypeAbstractFile {
 				$object[$field->name][$k]['path'] = $ai.$f['entry'];
 
 				copy(
-					BASEPATH.'/htdocs'.$donor[$field->name][$k]['path'],
-					BASEPATH.'/htdocs'.$object[$field->name][$k]['path']
+					BASEPATH.'/site/htdocs'.$donor[$field->name][$k]['path'],
+					BASEPATH.'/site/htdocs'.$object[$field->name][$k]['path']
 				);
 			}
 		}
@@ -34,7 +34,7 @@ class PXStorageTypeFilesarray extends PXStorageTypeAbstractFile {
 	function proceedFile($field, $object, &$param) {
 		$varName         = $field->name;
 		$ai              = parent::ai($param['format'],$param['id'],$field->name);
-		$basedir         = BASEPATH.'/htdocs'.$ai;
+		$basedir         = BASEPATH.'/site/htdocs'.$ai;
 		$fileArray       = $object[$varName];
 		$allowed         = isset($param['allowed']) ? $param['allowed'] : NULL;
 		$invalidateCache = false;
@@ -91,11 +91,11 @@ class PXStorageTypeFilesarray extends PXStorageTypeAbstractFile {
 	function __normalize($field, $object, &$param) {
 		$filesArray = array();
 		$basedir    = parent::ai($param['format'],$object['id'],$field->name);
-		$d          = new NLDir(BASEPATH.'htdocs'.$basedir);
+		$d          = new NLDir(BASEPATH.'site/htdocs'.$basedir);
 
 		if ($d->Exist()) {
 			foreach ($d->getFileNames() as $entry) {
-				$diskPath = BASEPATH.'/htdocs'.$basedir.$entry;
+				$diskPath = BASEPATH.'/site/htdocs'.$basedir.$entry;
 				$httpPath = $basedir.$entry;
 
 				$filesArray[$entry] = array(
