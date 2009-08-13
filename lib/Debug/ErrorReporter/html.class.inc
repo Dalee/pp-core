@@ -166,7 +166,7 @@ HTML;
 
 	function environmentsUris() {
 		$requestUri  = 'http://'.PXRequestBase::GetHttpHost().urldecode(PXRequestBase::GetRequestUri());
-		$remoteAddr  = PXRequestBase::Addr();
+		$remoteAddr  = PXRequestBase::GetRemoteAddr();
 		$httpReferer = urldecode(PXRequestBase::GetHttpReferer());
 
 		return <<<HTML
