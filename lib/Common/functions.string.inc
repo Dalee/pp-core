@@ -423,7 +423,7 @@ function appendParamToUrl($url, $k, $v, $fragment = false) {
 	if (!empty($tmp['scheme'])) {
 		$url .= $tmp['scheme'].'://'.$tmp['host'];
 	} else {
-		$url .= 'http://'.NLRequest::GetHttpHost();
+		$url .= 'http://'.PXRequest::GetHttpHost();
 	}
 	if (!empty($tmp['path'])) {
 		if ($tmp['path']{0} == '/') {
@@ -465,7 +465,7 @@ function removeParamFromUrl($url, $k, $fragment = false, $removeAll = false) {
 	if (!empty($tmp['scheme'])) {
 		$url .= $tmp['scheme'].'://'.$tmp['host'];
 	} else {
-		$url .= 'http://'.NLRequest::GetHttpHost();
+		$url .= 'http://'.PXRequestBase::GetHttpHost();
 	}
 	if (!empty($tmp['path'])) {
 		if ($tmp['path']{0} == '/') {

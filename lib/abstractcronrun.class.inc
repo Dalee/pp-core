@@ -30,7 +30,7 @@ class PXAbstractCronRun {
 
 			$this->logger =& NLLogger::getLogger('cron');
 
-			if(NLRequest::getHttpMethod() === 'CLI') {
+			if(PXRequestBase::getHttpMethod() === 'CLI') {
 				$this->logger->addAppender('file', 'FileAppender');
 			} else {
 				$this->logger->addAppender('file', 'Appender');

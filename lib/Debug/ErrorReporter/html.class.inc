@@ -165,9 +165,9 @@ HTML;
 	}
 
 	function environmentsUris() {
-		$requestUri  = 'http://'.NLRequest::GetHttpHost().urldecode(NLRequest::GetRequestUri());
-		$remoteAddr  = NLRequest::GetRemoteAddr();
-		$httpReferer = urldecode(NLRequest::GetHttpReferer());
+		$requestUri  = 'http://'.PXRequestBase::GetHttpHost().urldecode(PXRequestBase::GetRequestUri());
+		$remoteAddr  = PXRequestBase::Addr();
+		$httpReferer = urldecode(PXRequestBase::GetHttpReferer());
 
 		return <<<HTML
 			<dt>RequestUri:</dt>
