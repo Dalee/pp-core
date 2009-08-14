@@ -108,12 +108,27 @@ class BaseHttpVarsTest extends UnitTestCase {
 	}
 
 	function test_get_ip_addr_var() {
+		$this->object->raw['test'] = '10.1.1.1';
+		$this->assertEqual('10.1.1.1', $this->object->_GetIPAddrVar('test'));
+
+		$this->object->raw['test'] = '10.1.1.1';
 	}
 
 	function test_is_set() {
+		$this->object->raw['test'] = 1;
+		$this->assertTrue($this->object->_IsSet('test'));
+		$this->assertFalse($this->object->_IsSet('unknown'));
 	}
 
 	function test_get_all() {
+		$test1 = array("a1"=>"", "a2"=>"1");
+		$test2 = "test";
+
+		$this->object->raw['test'] = $test1;
+		$this->assertEqual(array("test"=>array("a2"=>"1")), $this->object->GetAll());
+		
+		$this->object->raw['test'] = $test2;
+		$this->assertEqual(array("test"=>"test"), $this->object->GetAll());
 	}
 }
 
