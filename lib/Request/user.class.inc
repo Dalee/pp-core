@@ -59,38 +59,44 @@ class PXRequestUser extends PXRequestBase {
 		return $this->postData->_getArrayVar($reference->name, false);
 	}
 
+	function include_handler($handler) {
+		$file      = strtolower($handler).".inputhandler.inc";
+
+		if (file_exists(BASEPATH.'/local/handlers/'.$file)) {
+			include_once BASEPATH.'/local/handlers/'.$file;
+		} elseif (file_exists(BASEPATH.'/libpp/handlers/'.$file)) {
+			include_once BASEPATH.'/libpp/handlers/'.$file;
+		}
+	}	
+
+	function doHandler(&$object_field, $handler, $extraArgs) {
+		$function = 'PXInputHandler'.$handler;
+
+		if (function_exists($function)) {
+			$object_field = $function($v, $object_field, $extraArgs);
+		}
+	}
+
 	// POST
 	function getContentObject($format) {
 		$object = array();
+
 		$p = array('request' => $this);
 
 		foreach ($format->fields as $k=>$v) {
 			$object[$k] = $v->displayType->getFromRequest($v, $object, $p);
-		}
-
-		foreach ($format->fields as $k=>$v) {
+			
 			if (!empty($v->handler)) {
 				$extraArgs = explode('|', $v->handler);
-				$handler   = array_shift($extraArgs);
-				$file      = strtolower($handler).".inputhandler.inc";
+				$handler = array_shift($extraArgs);
 
-				if (file_exists(BASEPATH.'/local/handlers/'.$file)) {
-					include_once BASEPATH.'/local/handlers/'.$file;
-				} elseif (file_exists(BASEPATH.'/libpp/handlers/'.$file)) {
-					include_once BASEPATH.'/libpp/handlers/'.$file;
-				}
-
-				$function = 'PXInputHandler'.$handler;
-
-				if (function_exists($function)) {
-					$object[$k] = $function($v, $object[$k], $extraArgs);
-				}
+				$this->include_handler($handler);
+				$this->doHandler($object[$k], $handler, $extraArgs);
 			}
-		}
-
-		foreach ($format->fields as $k=>$v) {
+			
 			$object[$k] = $v->storageType->getFromRequest($v, $object, $p);
 		}
+
 		return $object;
 	}
 

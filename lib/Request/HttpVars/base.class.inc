@@ -172,14 +172,18 @@ DO
 
 	function _GetIPAddrVar($varName) {
 		if (isset($this->raw[$varName])) {
+			
 			if (is_array($this->raw[$varName])) {
+			
 				return ip2long((!empty($this->raw[$varName][0]) ? $this->raw[$varName][0] : '0')."."
 					. (!empty($this->raw[$varName][0]) ? $this->raw[$varName][1] : '0')."."
 					. (!empty($this->raw[$varName][0]) ? $this->raw[$varName][2] : '0')."."
 					. (!empty($this->raw[$varName][0]) ? $this->raw[$varName][3] : '0'));
+			
 			} else {
 				return $this->raw[$varName];
 			}
+
 		}
 	}
 

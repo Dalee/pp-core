@@ -192,22 +192,5 @@ class PXRequestAbstract {
 
 		return (int)(strcmp($firstpart, $firstip) === 0);
 	}
-
-	/**
-	 * ðÒÏ×ÅÒÑÅÔ ×ÈÏÖÄÅÎÉÅ ip-ÁÄÒÅÓÁ × ÓÐÉÓÏË ÐÏÄÓÅÔÅÊ.
-	 *
-	 * @param String $ip            - ip-ÁÄÒÅÓ, ÎÁÐÒÉÍÅÒ 192.168.0.1
-	 * @param Array	 $subnet	- ÍÁÓÓÉ× ÐÏÄÓÅÔÅÊ
-	 * @return Int
-	 */
-	static function IsIpInSubnets($ip, $subnets) {
-		$isIn = 0;
-
-		foreach($subnets as $s) {
-			$isIn += NLRequest::IsIpInSubnet($ip, $s);
-		}
-
-		return $isIn;
-	}
 }
 ?>
