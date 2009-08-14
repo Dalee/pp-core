@@ -6,6 +6,15 @@ class NLPostData extends NLHTTPVarsData {
 		$this->_NormalizeData();
 	}
 
+	function setImageArray(&$retArray) {
+		$tmpArray = $retArray['name'];
+		$retArray['name'] = array();
+		
+		foreach ($tmpArray as $k=>$v) {
+			$retArray['name'][$k] = stripslashes($v);
+		}
+	}
+
 	function _GetImageVar($varName, $isArray=FALSE) {
 		$retArray = array();
 
@@ -15,18 +24,16 @@ class NLPostData extends NLHTTPVarsData {
 			$this->_Normalize($retArray);
 
 			if ($isArray) {
-				$tmpArray = $retArray['name'];
-				$retArray['name'] = array();
-				foreach ($tmpArray as $k=>$v) {
-					$retArray['name'][$k] = stripslashes($v);
-				}
+				$this->setImageArray($retArray);
 			} else {
 				$retArray['name'] = stripslashes($retArray['name']);
 			}
 		}
+
 		if (isset($this->raw[$varName.'_remove']) && is_array($this->raw[$varName.'_remove'])) {
 			$retArray = array_merge($retArray, array('remove' => array_keys($this->raw[$varName.'_remove'])));
 		}
+
 		return $retArray;
 	}
 

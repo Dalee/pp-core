@@ -1,7 +1,7 @@
 <?php
 require_once('Common/functions.array.inc');
 
-abstract class NLHTTPVarsData {
+class NLHTTPVarsData {
 	var $raw;
 	var $clientCharset;
 	var $_needToConvert;
@@ -15,32 +15,43 @@ abstract class NLHTTPVarsData {
 		$this->_needToStripTags = $needToStripTags;
 	}
 
-	function _NormalizeData() {
-		$this->clientCharset = 'w';
-		
+	function charcheck_machine($testable) {
+		switch ($testable) {
+			case 'éöóêåí':
+			case 'ëçèìåï':
+			case '??????':
+				return 'w';
+				break;
+
+			case 'ÊÃÕËÅÎ':
+				return 'k';
+				break;
+
+			case chr(208).chr(185).chr(209).chr(134).chr(209).chr(131).chr(208).chr(186).chr(208).chr(181).chr(208).chr(189):
+				return 'u';
+				break;
+		}
+	}
+
+	function isUtf() {
 		foreach ($this->raw as $k=>$v) {
 			if (is_string($v) && !isAsciiString($v) && isUtfString($v)) {
-				$this->clientCharset = 'u';
+				return true;
 			}
 		}
 
+		return false;
+	}
+
+	function _NormalizeData() {
+		$this->clientCharset = 'w';
+
+		if($this->isUtf())
+			$this->clientCharset = 'u';
+
 		if (isset($this->raw['charcheck'])) {
 			$this->_needToConvert = true;
-			switch ($this->raw['charcheck']) {
-				case 'éöóêåí':
-				case 'ëçèìåï':
-				case '??????':
-					$this->clientCharset = 'w';
-					break;
-
-				case 'ÊÃÕËÅÎ':
-					$this->clientCharset = 'k';
-					break;
-
-				case chr(208).chr(185).chr(209).chr(134).chr(209).chr(131).chr(208).chr(186).chr(208).chr(181).chr(208).chr(189):
-					$this->clientCharset = 'u';
-					break;
-			}
+			$this->clientCharset = $this->charcheck_machine($this->raw['charcheck']);
 		}
 
 		$this->_Normalize($this->raw);
@@ -95,18 +106,19 @@ abstract class NLHTTPVarsData {
 		if (!is_array($this->raw[$varName])) {
 			return array();
 		}
+
 		$temp = $this->raw[$varName];
-		foreach ($temp as $k=>$v) {
-			if (is_array($v)) {
-				$idx = 0;
-				foreach ($v as $sk=>$sv) {
-					if (strval($sv) == "" && $killEmptyRows) $idx++;
-				}
-				if ($idx == count($v) && $killEmptyRows) unset($temp[$k]);
-			} else {
-				if (strval($v) == "" && $killEmptyRows) unset($temp[$k]);
-			}
-		}
+
+		static $callback;
+
+		if(!isset($callback)) {
+			$callback = create_function('$k, $v, &$arrayItself, $opts', <<<DO
+				if(strval(\$v) == "" && \$opts['killEmptyRows']) unset(\$arrayItself[\$k]);
+DO
+			);
+ 		}
+		
+		NestedArrayWalk($temp, $callback, array('killEmptyRows' => $killEmptyRows));
 		return $temp;
 	}
 
@@ -124,9 +136,16 @@ abstract class NLHTTPVarsData {
 		} elseif($this->raw[$varName]['year'] == '' && $this->raw[$varName]['month'] == '' && $this->raw[$varName]['day'] == '') {
 			return NULL;
 		} else {
-			return $this->raw[$varName]['day'].'.'.$this->raw[$varName]['month'].
-				'.'.$this->raw[$varName]['year'].' '.$this->raw[$varName]['hour'].
-				':'.$this->raw[$varName]['minute'].':'.$this->raw[$varName]['second'];
+			$r = $this->raw[$varName];
+		
+			$pattern = array("year", "month", "day", "hour", "minute", "second");
+			$diff = array_diff($pattern, array_keys($r));
+
+			if(!empty($diff))
+				return null;
+
+			return call_user_func_array("sprintf", array("pattern"=>"%02d.%02d.%04d %02d:%02d:%02d", $r['day'], $r['month'], $r['year'], $r['hour'],
+				$r['minute'], $r['second']));
 		}
 	}
 
@@ -134,8 +153,20 @@ abstract class NLHTTPVarsData {
 		if (!isset($this->raw[$varName])) {
 			return date('j-n-Y');
 		} else {
-			return $this->raw[$varName]['day'].'.'.$this->raw[$varName]['month'].
-				'.'.$this->raw[$varName]['year'];
+			$r = $this->raw[$varName];
+
+			$reverse = array_flip($r);
+			if(isset($reverse['']))
+				return null;
+
+			$pattern = array("year", "month", "day");
+			$diff = array_diff($pattern, array_keys($r));
+
+			if(!empty($diff))
+				return null;
+
+			return call_user_func_array("sprintf", array("pattern"=>"%02d.%02d.%04d",
+				$r['day'], $r['month'], $r['year']));
 		}
 	}
 
