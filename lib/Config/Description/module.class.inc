@@ -11,9 +11,10 @@ class PXModuleDescription {
 	var $class       = NULL;
 	var $access      = NULL;
 	var $settings    = array();
-	var $hidetab     = NULL;
 	var $trigger     = NULL;
 	var $package     = NULL;
+	
+	const EMPTY_DESCRIPTION = '---';
 
 	public function getModule() {
 		$this->load();

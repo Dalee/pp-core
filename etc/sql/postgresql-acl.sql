@@ -46,4 +46,6 @@ INSERT INTO acl_objects (what, access) VALUES ('read', 'allo');
 INSERT INTO acl_objects (sgroupid, what) VALUES ((SELECT id FROM sgroup WHERE title = 'Администраторы' LIMIT 1), 'admin');
 INSERT INTO acl_objects (sgroupid, what) VALUES ((SELECT id FROM sgroup WHERE title = 'Администраторы' LIMIT 1), 'write');
 
+INSERT INTO acl_objects (objecttype, what, objectrule) VALUES ('auth', 'admin', 'module');
+
 UPDATE acl_objects SET access = 'allo', sys_order = id;

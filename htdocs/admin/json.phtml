@@ -1,0 +1,8 @@
+<?
+	include '../../lib/mainadmin.inc';
+	$engine = new PXEngineAdminJSON();
+
+	$engine->runModules();
+
+	$engine->sendJson();
+?>

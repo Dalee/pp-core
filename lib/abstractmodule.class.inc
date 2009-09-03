@@ -6,6 +6,7 @@ interface PXModuleIF {
 	function userIndex();
 	function userAction();
 	function userJson();
+	function adminJson();
 }
 
 abstract class PXModule implements PXModuleIF {
@@ -28,6 +29,7 @@ abstract class PXModule implements PXModuleIF {
 		$this->db         = PXRegistry::getDb();
 		$this->layout     = PXRegistry::getLayout();
 		$this->types      = PXRegistry::getTypes();
+		
 /*
 TODO FIXME
 		$this->struct     = PXRegistry::getVar('struct');
@@ -42,6 +44,12 @@ TODO FIXME
 		PXRegistry::assignToObject($this);
 	}
 
+	function getAclModuleActions() {
+		return array('viewmenu' => 'Показывать в меню',
+					 'admin' => 'Доступ в админке'
+		);
+	}
+	
 	function buildAdminUrl() {
 		return str_replace('action.phtml', '', $_SERVER['SCRIPT_URL']);
 	}
@@ -69,6 +77,9 @@ TODO FIXME
 	}
 
 	function userJson() {
+	}
+	
+	function adminJson() {
 	}
 }
 

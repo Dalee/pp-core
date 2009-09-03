@@ -463,3 +463,22 @@ function ShowFlash(url, w, h, id) {
 		'</object>'
 	);
 }
+
+$(function() {
+	$('select[name=objecttype]').change(function() {
+		if ($('input[name=area]').val() == 'macl') {
+			var currentSelect = $(this).val();
+		  	var nextSelect = $('select[name=what]');
+	
+			$.getJSON('/admin/json.phtml?area=macl', {currentModule:currentSelect}, function(data) {
+				$('select[name=what] option').remove();
+				
+				$.each(data, function(index, value){
+					$("<option></option>").attr("value", index).html(value).appendTo(nextSelect); 
+					$('select[name=what] option:first').attr('selected', 'yes');
+		    	});
+			});	
+		}
+		return false;		
+	});
+});

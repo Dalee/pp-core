@@ -2,17 +2,13 @@
 
 class PXUserAuthorized extends PXUser {
 	function can($what, $format = NULL, $object = NULL) {
-		if($format === NULL){
-			$format =  new PXTypeDescription;
-		}
-
 		if($object === NULL){
 			$object = array('id'=>NULL,'parent'=>NULL);
 		}
 
 		return $this->acl->check($what, $format, $object);
 	}
-
+	
 	function checkAuth() {
 		foreach (PXRegistry::getApp()->authrules as $rule => $params) {
 			if (!$params['enabled']) { 

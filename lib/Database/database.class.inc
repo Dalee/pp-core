@@ -1678,6 +1678,14 @@ SQL;
 			$table = new NLTree($plainTable, $table->_idField, $table->_parentField, $table->_titleField, $table->saveOrphans);
 		}
 	}
+	
+	function getAclObjectActions() {
+		return array('read' => 'Просмотр/Чтение',
+					 'write'  => 'Изменение/Запись',
+					 'linkto' => 'Создание связи',
+					 'admin'  => 'Просмотр в админке'
+		);
+	}
 
 }
 

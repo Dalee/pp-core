@@ -274,10 +274,10 @@ class PXApplication {
 	 * @param Integer $leve  название текущего раздела
 	 * @return Array         массив из элементов 'module_name' => $module
 	 */
-	public function getAvailableModules($level) {
-		return array_filter($this->modules, create_function('$module', "return \$module->access <= $level;"));
+	public function getAvailableModules() {
+		return array_filter($this->modules, create_function('$module', "return PXRegistry::getUser()->can('admin', \$module);"));
 	}
-
+	
 	/**
 	 * Возвращает ассоциативный массив разрешенных детей.
 	 *

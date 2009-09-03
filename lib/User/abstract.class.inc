@@ -10,7 +10,7 @@ define('DT_GROUP',        'sgroup');
 define('LINK_GROUP2USER', 'sgroup2suser');
 
 require_once 'User/Auth/classes.inc';
-require_once('acl.class.inc');
+require_once 'Acl/classes.inc';
 
 abstract class PXUser {
 	var $id;
@@ -32,7 +32,7 @@ abstract class PXUser {
 
 	function setAcl() {
 		PXRegistry::getDb()->setUser($this);
-		$this->acl = new PXObjectsACL();
+		$this->acl = new PXObjectsACL(PXRegistry::getDb(), $this);
 	}
 
 	// FIXME

@@ -10,23 +10,26 @@ class PXEngineAdminIndex extends PXEngine {
 	}
 
 	function initModules() {
-		$this->modules = PXRegistry::getApp()->getAvailableModules(PXRegistry::getUser()->level);
+		$this->modules = PXRegistry::getApp()->getAvailableModules();
 	}
 
 	function initMenu() {
 		$menuItems = array();
 		foreach ($this->modules as $module) {
-			if($module->hidetab) {
-				continue;
+			// check modules acl rules
+			if (PXRegistry::getUser()->can('viewmenu', $module)) {
+				$menuItems[$module->name] = $module->description == '' || $module->description == PXModuleDescription::EMPTY_DESCRIPTION ? $module->name : $module->description;
 			}
-
-			$menuItems[$module->name] = $module->description;
 		}
-
+		
 		$this->menu = $menuItems;
 	}
 
 	function showAuthForm() {
+		if(!isset($this->modules['auth'])) {
+			FatalError('Undefined auth module or you forget insert "allo" for "admin" auth module in acl_objects');
+		}
+
 		$auth = $this->modules['auth']->getModule();
 		$auth->adminIndex();
 	}

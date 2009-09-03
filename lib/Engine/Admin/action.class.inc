@@ -8,7 +8,7 @@ class PXEngineAdminAction extends PXEngine {
 	}
 
 	function initModules() {
-		$this->modules = PXRegistry::getApp()->getAvailableModules(PXRegistry::getUser()->level);
+		$this->modules = PXRegistry::getApp()->getAvailableModules();
 		$this->area    = PXRegistry::getRequest()->getArea(current(array_keys($this->modules)));
 	}
 

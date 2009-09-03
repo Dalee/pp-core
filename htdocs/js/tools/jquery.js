@@ -1,3 +1,4 @@
+alert('123');
 /*
  * jQuery 1.2.1 - New Wave Javascript
  *
