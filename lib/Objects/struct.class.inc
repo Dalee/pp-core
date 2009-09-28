@@ -28,6 +28,11 @@ class PXStructLeaf implements Iterator {
 		return sizeof($this->data->children) >  0;
 	}
 
+
+	function createpath() {
+		return createPathByParentId($this->struct->tree, $this->id);
+	}
+
 	/* Iterator methods */
 	public function valid() {
 		return $this->current() !== false;
@@ -103,11 +108,12 @@ class PXStructLeaf404 extends PXStructLeaf {
 	}
 }
 
-class PXTreeObjects extends PXContentObjects implements ArrayAccess, IteratorAggregate {
+class PXTreeObjects extends PXContentObjects implements ArrayAccess, Iterator {
 	public $format;
 
 	public $pathId = array();
 	public $rootId = -1;
+	public $currentId;
 
 	function __get($key) {
 		switch($key) {
@@ -152,6 +158,7 @@ class PXTreeObjects extends PXContentObjects implements ArrayAccess, IteratorAgg
 		$this->_findRoot($urlPath[0]);
 
 		$this->pathId    = $this->tree->getIdArrayByPath('pathname', $urlPath);
+
 		$this->currentId = end($this->pathId);
 		$this->rootId    = reset($this->pathId);
 	}
@@ -227,10 +234,28 @@ class PXTreeObjects extends PXContentObjects implements ArrayAccess, IteratorAgg
 		unset($this->tree->leafs[$id]);
 	}
 
-	/* IteratorAggregate */
-	public function getIterator() {
-		return new ArrayIterator($this->tree->leafs);
+	/* Iterator */
+	function rewind() {
+		reset($this->tree->leafs);
 	}
-	/* /IteratorAggregate */
+
+	function current() {
+		$leaf = new PXStructLeaf($this->tree->leafs[$this->key()], $this); 
+		return $leaf;
+	}
+
+	function key() {
+		return key($this->tree->leafs);
+	}
+
+	function next() {
+		next($this->tree->leafs);
+	}
+
+	function valid() {
+		$current = key($this->tree->leafs);
+		return isset($this->tree->leafs[$current]);
+	}
+	/* /Iterator */
 }
 ?>

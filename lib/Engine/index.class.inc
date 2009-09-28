@@ -54,14 +54,14 @@ class PXEngineIndex extends PXEngine {
 		$currentSid  = $this->content->tree->hasCurrent()       ? $this->content->tree->getCurrent()->id       : -1;
 		if($this->content->objects->hasCurrent()){
 			$objs = $this->content->objects->getCurrent();
-		    $currentCid  = $objs['id'];
+			$currentCid  = $objs['id'];
 		} else {
 			$currentCid  = -1;
 		}
 
 		if($this->content->subObjects->hasCurrent()){
 			$objs = $this->content->subObjects->getCurrent();
-		    $currentSCid  = $objs['id'];
+			$currentSCid  = $objs['id'];
 		} else {
 			$currentSCid  = -1;
 		}
@@ -89,7 +89,6 @@ class PXEngineIndex extends PXEngine {
 		PXProfiler::begin('RUN MODULES');
 
 		foreach(PXRegistry::getApp()->bindingsQueue as $bind) {
-			
 			if(!$bind->isBinding($this->content)) {
 				continue;
 			}
@@ -101,9 +100,9 @@ class PXEngineIndex extends PXEngine {
 			PXProfiler::begin($debugKey);
 			$module = $moduleDescription->getModule();
 
-			$module->tree       = $this->content->tree;
-			$module->objects    = $this->content->objects;
-			$module->subObjects = $this->content->subObjects;
+			$module->tree       =& $this->content->tree;
+			$module->objects    =& $this->content->objects;
+			$module->subObjects =& $this->content->subObjects;
 
 			$module->userIndex();
 			PXProfiler::end();
