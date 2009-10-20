@@ -9,6 +9,10 @@ class PXStructLeaf implements Iterator {
 	}
 
 	function __get($key) {
+		if($key == 'content') {
+			return $this->data->content;
+		}
+
 		return $this->data->content[$key];
 	}
 
