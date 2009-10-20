@@ -69,11 +69,11 @@ class PXRequestUser extends PXRequestBase {
 		}
 	}	
 
-	function doHandler(&$object_field, $handler, $extraArgs) {
+	function doHandler(&$field, &$object_field, $handler, $extraArgs) {
 		$function = 'PXInputHandler'.$handler;
 
 		if (function_exists($function)) {
-			$object_field = $function($v, $object_field, $extraArgs);
+			$object_field = $function($field, $object_field, $extraArgs);
 		}
 	}
 
@@ -91,7 +91,7 @@ class PXRequestUser extends PXRequestBase {
 				$handler = array_shift($extraArgs);
 
 				$this->include_handler($handler);
-				$this->doHandler($object[$k], $handler, $extraArgs);
+				$this->doHandler($v, $object[$k], $handler, $extraArgs);
 			}
 			
 			$object[$k] = $v->storageType->getFromRequest($v, $object, $p);
