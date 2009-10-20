@@ -1,5 +1,4 @@
 <?php
-
 class PXObjectsACL {
 	/** @var boolean */
 	var $ruleclEnabled;
@@ -33,7 +32,7 @@ class PXObjectsACL {
 		if (!$this->aclEnabled) {
 			return true;
 		}
-		
+
 		$checker = CheckerObject::get($format);
 		return $checker->checkAcl($this, $what, $format, $object);
 	}

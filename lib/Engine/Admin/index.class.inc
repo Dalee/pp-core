@@ -21,7 +21,7 @@ class PXEngineAdminIndex extends PXEngine {
 				$menuItems[$module->name] = $module->description == '' || $module->description == PXModuleDescription::EMPTY_DESCRIPTION ? $module->name : $module->description;
 			}
 		}
-		
+
 		$this->menu = $menuItems;
 	}
 
