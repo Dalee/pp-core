@@ -2,5 +2,5 @@ ALTER TABLE acl_objects ADD objectrule VARCHAR;
 UPDATE acl_objects SET objectrule = 'user' WHERE objectrule IS NULL;
 INSERT INTO acl_objects (objecttype, what, objectrule) VALUES ('auth', 'admin', 'module');
 
-INSERT INTO acl_objects (sgroupid, what, access, objectrule) VALUES ((SELECT id FROM sgroup WHERE title = '–ê–¥–º–∏–Ω–∏—Å—Ç—Ä–∞—Ç–æ—Ä—ã'), 'admin', 'allow', 'module');
-INSERT INTO acl_objects (sgroupid, what, access, objectrule) VALUES ((SELECT id FROM sgroup WHERE title = '–ê–¥–º–∏–Ω–∏—Å—Ç—Ä–∞—Ç–æ—Ä—ã'), 'viewmenu', 'allow', 'module');
+INSERT INTO acl_objects (sgroupid, what, access, objectrule) VALUES ((SELECT id FROM sgroup WHERE title = '·ƒÕ…Œ…”‘“¡‘œ“Ÿ'), 'admin', 'allow', 'module');
+INSERT INTO acl_objects (sgroupid, what, access, objectrule) VALUES ((SELECT id FROM sgroup WHERE title = '·ƒÕ…Œ…”‘“¡‘œ“Ÿ'), 'viewmenu', 'allow', 'module');
