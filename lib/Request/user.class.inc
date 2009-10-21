@@ -117,6 +117,17 @@ class PXRequestUser extends PXRequestBase {
 
 		return $object;
 	}
+	function getAck() {
+		switch ($this->httpMethod) {
+			case 'POST':    return $this->postData->_getCheckBoxVar('ack');
+			default:        return $this->getData->_getCheckBoxVar('ack');
+		}
+	}
+
+	// POST
+	function getIniFileSettings() {
+		return $this->postData->getIniFileSettings();
+	}
 
 	// POST
 	function getAfterActionDeal() {
