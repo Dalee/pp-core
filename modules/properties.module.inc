@@ -50,7 +50,7 @@ class PXModuleProperties extends PXModule {
 			return "Сайт не предусматривает пользовательских настроек.";
 		}
 
-		if(!is_writable(BASEPATH . 'etc/properties.ini')){
+		if(!is_writable(BASEPATH . '/site/etc/properties.ini')){
 			return "Файл properties.ini не доступен для записи или не существует";
 		}
 		
@@ -58,25 +58,25 @@ class PXModuleProperties extends PXModule {
 	}
 
 
-	function adminIndex(){ // &$app, &$request, &$user, &$db, &$layout) {
-		$layout->setOneColumn();
+	function adminIndex(){
+		$this->layout->setOneColumn();
 
 		if(($error = $this->_checkForErrors()) !== false){
-			$layout->assignError("INNER.0.0", $error);
+			$this->layout->assignError("INNER.0.0", $error);
 			return;
 		}
-		
+
 		$this->_fillPseudoDatatype();
 		$propObject = PXModuleProperties::loadModel(array_keys($this->_pseudoDatatype->fields));
-		
+
 		$this->db->loadDirectoriesByType($this->_pseudoDatatype, $propObject);
 		$objectForm = & new PXAdminObjectForm($this->_pseudoDatatype, $propObject);
-		
+
 		$formToHtml = $objectForm->MainForm($objectForm->format);
 		$formToHtml = preg_replace("#<input .*?(?>name\s*=\s*('|\")area\\1).*?>#", '', $formToHtml); //FIXME: it's a hack, waiting for Widgets interface
 
 		$html = $this->_editArea($formToHtml);
-		
+
 		$this->layout->Assign("INNER.0.0", $html);
 	}
 
@@ -108,7 +108,7 @@ HTML;
 		if(!isset($mapper)){
 			$mapper = create_function('$search, $key, $outerScope','if(!in_array($key, $outerScope["filter"])) unset($outerScope["self"][$key]);');
 		}
-		if(file_exists($store = BASEPATH . 'etc/properties.ini')){
+		if(file_exists($store = BASEPATH . '/site/etc/properties.ini')){
 			$object = $this->app->properties;
 
 			if(sizeof($filter) && $object){
@@ -120,7 +120,7 @@ HTML;
 	}
 
 	function _saveModel($format, $object){
-		if(is_writable($store = BASEPATH . 'etc/properties.ini')){
+		if(is_writable($store = BASEPATH . '/site/etc/properties.ini')){
 			$arStrings = file($store);
 			$newData = array();
 			foreach($format->fields as $field){

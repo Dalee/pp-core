@@ -292,6 +292,9 @@ function ContextEdit(id, status, format, title, alias, level, up, down) {
 	ret += '<a class="edit" href="javascript: EditContent(\''+format+'\', '+id+')">Изменить</a>';
 	ret += '<a class="copy" href="javascript: CloneContent(\''+format+'\', '+id+')">Клонировать</a>';
 
+	console.log(area);
+	console.log(id);
+
 	if(level) {
 		ret += '<a class="del" href="action.phtml?id='+id+'&area=objects&action=directremove&format='+format+'" onclick="return window.confirm(\'Вы дейтвительно хотите удалить '+title+'?\');">Удалить</a>';
 	} else {
