@@ -17,11 +17,7 @@ class PXModuleObjects extends PXModule {
 	}
 
 	function adminIndex() {
-		$app     = $this->app;
-		$layout  = $this->layout;
-		$request = $this->request;
-
-		$rSid = $request->getSid();
+		$rSid = $this->request->getSid();
 
 		$this->indexSetMenu($rSid);
 
@@ -32,7 +28,7 @@ class PXModuleObjects extends PXModule {
 		$this->datatype =& $this->getDatatype('sid');
 		$format = $this->datatype->id;
 
-		$rView = $request->getVar($format.'_view');
+		$rView = $this->request->getVar($format.'_view');
 		$this->layout->setGetVarToSave($format.'_view', $rView);
 
 
@@ -43,8 +39,8 @@ class PXModuleObjects extends PXModule {
 			$this->indexAppendTree();
 		}
 
-		$layout->assignControls('INNER.1.1', 0, array($format));
-		$layout->assignContextMenu('INNER.1.0.CONTEXT', 0, array($format));
+		$this->layout->assignControls('INNER.1.1', 0, array($format));
+		$this->layout->assignContextMenu('INNER.1.0.CONTEXT', 0, array($format));
 	}
 
 	function indexSetMenu($rSid) {
@@ -100,29 +96,31 @@ class PXModuleObjects extends PXModule {
 	}
 
 	function adminPopup() {
-		$layout  = $this->layout;
-		$request = $this->request;
-		$db      = $this->db;
-
 		$this->datatype =& $this->getDatatype();
+		$this->object   = $this->popupGetObject();
 
-		$action = $request->getAction();
+		if (!$this->user->isAdmin() || empty($this->object)) {
+			return $this->layout->assignError('OUTER.CONTENT', 'Нет доступа');
+		}
 
-		$layout->setGetVarToSave('id',     $request->getId());
-		$layout->setGetVarToSave('format', $this->datatype->id);
-		$layout->setGetVarToSave('action', $action);
+		$action = $this->request->getAction();
 
-		$layout->setOuterForm('action.phtml', 'POST', 'multipart/form-data');
+		$this->layout->setGetVarToSave('id',     $this->request->getId());
+		$this->layout->setGetVarToSave('format', $this->datatype->id);
+		$this->layout->setGetVarToSave('action', $action);
 
-		$this->object = $this->popupGetObject();
+		$this->layout->setOuterForm('action.phtml', 'POST', 'multipart/form-data');
+
 		$this->form = new PXAdminObjectForm($this->datatype, $this->object);
 
 		$this->popupSetMenu();
 		$this->popupCheckAccess();
 
-		$layout->assign('OUTER.LEFTCONTROLS',  $this->form->leftControls());
-		$layout->assign('OUTER.RIGHTCONTROLS', $this->form->rightControls());
-		$db->LoadDirectoriesByType($this->datatype, $this->object);
+		$this->layout->assign('OUTER.LEFTCONTROLS',  $this->form->leftControls());
+		$this->layout->assign('OUTER.RIGHTCONTROLS', $this->form->rightControls());
+		$this->db->LoadDirectoriesByType($this->datatype, $this->object);
+
+		$this->layout->append('OUTER.CONTENT', $this->form->baseInputs($action));
 
 		switch ($action) {
 			case 'main':
@@ -161,6 +159,7 @@ class PXModuleObjects extends PXModule {
 
 	function popupGetObject() {
 		$rId = $this->request->getId();
+		$object = array();
 
 		if ($rId == 0) {
 			$object  = $this->app->initContentObject($this->datatype->id);
@@ -172,11 +171,12 @@ class PXModuleObjects extends PXModule {
 				}
 			}
 		} else {
-			$object = $this->db->getObjectById($this->datatype, $rId);
+			if(!sizeof($object = $this->db->getObjectById($this->datatype, $rId))){
+				FatalError('Объект не существует !');
+			}
 
 			if(!$this->user->can('admin', $this->datatype, $object)) {
 				$object = array();
-				$rId = 0;
 			}
 		}
 
@@ -271,7 +271,7 @@ class PXModuleObjects extends PXModule {
 		$onPage  = $this->app->getProperty('CHILDREN_ON_PAGE', 15);
 
 		$count = $this->viewer->getCount();
-		$data  = $this->viewer->getData($page, $onPage);
+		$data  = $this->viewer->getData($page, $onPage, $count);
 
 		if($count) {
 			$caption  = '<a href="./?area=auditlog&format='.$this->datatype->id.'&id='.$this->object['id'].'" target="_blank">Журнал аудита</a>, ';
@@ -302,7 +302,7 @@ class PXModuleObjects extends PXModule {
 		$request  =& $this->request;
 		$layout   =& $this->layout;
 		$object   =& $this->object;
-		
+
 		$refFilters    = (array)$request->GetVar('filters', array());
 
 		foreach ($datatype->references as $k=>$reference) {
@@ -310,7 +310,7 @@ class PXModuleObjects extends PXModule {
 				continue;
 			}
 			$refDatatype   = $app->types[$k];
-			
+
 			$existingLinks = $db->getLinks($reference, $datatype->id, $object['id']);
 
 			$onPage        = $app->getProperty('LINKS_ON_PAGE', 10);
@@ -323,7 +323,7 @@ class PXModuleObjects extends PXModule {
 			$filteredWhere = $this->applyFiltersToWhere($refFilters, $refDatatype);
 			$trueCond      = $db->TrueStatusString() . '=' . $db->TrueStatusString();
 			$falseCond     = $db->TrueStatusString() . '=' . $db->TrueStatusString(false);
-			
+
 			if($onlyExistingLinks) {
 				if(count($existingLinks)){
 					$existingLinksWhere = $k . '.id IN ( ' .join(',',array_keys($existingLinks)). ' ) ' ;
@@ -352,6 +352,7 @@ class PXModuleObjects extends PXModule {
 					unset($possibleLinks[$object['id']]);
 				}
 			}
+
 			$layout->append('OUTER.CONTENT', $this->form->linksForm($reference, $refDatatype, $existingLinks, $possibleLinks, $onPage, $currentPage, $pagerCount, $overallCount, $layout, $onlyExistingLinks, $refFilters));
 		}
 	}
@@ -367,11 +368,7 @@ class PXModuleObjects extends PXModule {
 	function adminAction() {
 		$this->datatype =& $this->getDatatype();
 
-		$rAction = $this->request->getAction();
-
-		$this->nextLocation = 'popup.phtml?area=objects&format='.$this->datatype->id.'&action='.$rAction;
-
-		switch ($rAction) {
+		switch ($this->_route()) {
 			case 'main':
 				$this->actionMain();
 				break;
@@ -418,6 +415,12 @@ class PXModuleObjects extends PXModule {
 		}
 
 		return $this->nextLocation;
+	}
+
+	function _route() {
+		$rAction = $this->request->getAction();
+		$this->nextLocation = 'popup.phtml?area=objects&format='.$this->datatype->id.'&action='.$rAction;
+		return $rAction;
 	}
 
 	function actionMain() {
