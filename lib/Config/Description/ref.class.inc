@@ -34,12 +34,14 @@ class PXRefDescription {
 	*/
 	var $hidden     = false;
 
-	public function addField($field) {
+	public
+	function addField($field) {
 		$this->fields[$field->name] = $field;
 	}
 
 	//fixme: find better name
-	public function getOther($formatName) {
+	public
+	function getOther($formatName) {
 		return (($this->from == $formatName) ? $this->to : $this->from);
 	}
 	

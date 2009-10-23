@@ -12,7 +12,11 @@ class PXErrorReporterHTML extends PXErrorReporter {
 	}
 
 	function fatalWarning($error) {
-		echo <<<HTML
+		$response    = & PXResponse::getInstance();
+		$host        = PXRequestBase::GetHttpHost();
+		$uri         = urldecode(PXRequestBase::GetRequestUri());
+		$response->unavailable();
+		$response->send(<<<HTML
 			<html>
 				<head>
 					<title>Error</title>
@@ -28,14 +32,15 @@ class PXErrorReporterHTML extends PXErrorReporter {
 				<body>
 					<h1>Error</h1>
 					<p>Sorry, but fatal error occured and your request can not be contented</p>
-					<p>Please, inform <a href="mailto:{$this->toEmail}">site administrator</a> about it.</p>
+					<p>Please, inform <a href="mailto:{$this->toEmail}?subject=Error%20report%20from%20{$host}&body=%0A%0ARequest%20URI:%20{$uri}">site administrator</a> about it.</p>
 
 					<h1>Ошибка</h1>
 					<p>Извините, произошла ошибка, ваш запрос не может быть корректно завершен.</p>
-					<p>Пожалуйста, сообщите о ней <a href="mailto:{$this->toEmail}">администратору сайта</a>.</p>
+					<p>Пожалуйста, сообщите о ней <a href="mailto:{$this->toEmail}?subject=Сообщение%20об%20ошибке%20с%20сайта%20{$host}&body=%0A%0ARequest%20URI:%20{$uri}">администратору сайта</a>.</p>
 				</body>
 			</html>
-HTML;
+HTML
+		);
 	}
 
 	function _getMailSubject() {

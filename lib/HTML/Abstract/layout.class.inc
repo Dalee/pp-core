@@ -116,7 +116,7 @@ class NLAbstractLayout {
 
 	function setOuterLogo($image, $text, $width, $height, $href='') {
 		if (!empty($image)) {
-			$html = '<a href="'.$href.'"><img src="'.$image.'" width="'.$width.'" height="'.$height.'" border="0" alt="'.$text.'"></a>';
+			$html = '<a href="'.$href.'"><img src="'.$image.'" width="'.$width.'" height="'.$height.'" border="0" alt="'.$text.'" class="logo"></a>';
 		} else {
 			$pad = round($height-22)/2;
 			$html = '<div style="width:'.$width.'; height:'.$height.'; text-align:center; padding:'.$pad.';"><h1><a href="'.$href.'" style="color:#FFFFFF;">'.$text.'</a></h1></div>';
@@ -176,9 +176,7 @@ class NLAbstractLayout {
 				$this->blocks[$label][] =& $value;
 				break;
 
-			case is_bool($value):
-			case is_integer($value):
-			case is_string($value):
+			case is_scalar($value):
 				unset($this->blocks[$label]);
 				$this->labels[$label] = (string)$value;
 				break;
@@ -210,9 +208,7 @@ class NLAbstractLayout {
 				$this->blocks[$label][] =& $value;
 				break;
 
-			case is_bool($value):
-			case is_integer($value):
-			case is_string($value):
+			case is_scalar($value):
 				if(!isset($this->labels[$label]) || !is_string($this->labels[$label])) {
 					$this->labels[$label] = '';
 				}

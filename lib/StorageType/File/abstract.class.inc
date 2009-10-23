@@ -59,7 +59,14 @@ class PXStorageTypeAbstractFile extends PXStorageType {
 			return reset($fileInfo);
 		}
 
-		return $this->saveToCache($key, $this->__normalize($field, $object, $param, $allowed));
+		$normalizedObject = $this->saveToCache($key, $this->__normalize($field, $object, $param, $allowed));
+	
+		//For some triggers, which need original fields like tmp_name, etc ...
+		if (isset($object[$field->name]) && is_array($object[$field->name])) {
+			$normalizedObject = array_merge($object[$field->name], $normalizedObject);
+		}
+
+		return $normalizedObject;
 	}
 
 	function __normalize(){

@@ -40,7 +40,7 @@ HTML;
 			$html = '<br>';
 
 			$html .= '<a href="'.$this->value['path'].'" target="_blank" class="img-preview">просмотр</a> ';
-			$html .= '<button onclick="ToClipboardMulti(\''.$this->value['path'].'\', '.(int)$this->value['width'].', '.(int)$this->value['height'].', \''.$this->type.'\'); return false;">HTML в буфер</button>';
+			$html .= '<button onclick="ToClipboardMulti(\''.$this->value['path'].'\', '.(int)$this->value['width'].', '.(int)$this->value['height'].', \''.$this->type.'\'); return false;"'.$this->disable.'>HTML в буфер</button>';
 
 			$html .= '<br>';
 

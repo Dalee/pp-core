@@ -1,9 +1,10 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<HTML>
-	<HEAD>
-		<TITLE>Календарь</TITLE>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=KOI8-R">
+		<title>Календарь</title>
 
-		<SCRIPT type="text/javascript" language="JavaScript">
+		<script type="text/javascript">
 			var DaysOfWeek = [
 				'пн',
 				'вт',
@@ -12,7 +13,7 @@
 				'пт',
 				'сб',
 				'вс'
-				];
+			];
 
 			var Months = [
 				'Январь',
@@ -28,14 +29,28 @@
 				'Ноябрь',
 				'Декабрь'
 			];
-			var Months2    = ['янв','фев','мар','апр','май','июн','июл','авг','сен','окт','ноя','дек'];
+
+			var Months2 = [
+				'янв',
+				'фев',
+				'мар',
+				'апр',
+				'май',
+				'июн',
+				'июл',
+				'авг',
+				'сен',
+				'окт',
+				'ноя',
+				'дек'
+			];
 
 			var bgColorHighLight = '#385A94';
 			var colorHighLight   = '#FFFFFF';
-		</SCRIPT>
+		</script>
 
-		<STYLE type="text/css">
-			BODY {
+		<style type="text/css">
+			body {
 				margin: 0;
 				padding: 0;
 			}
@@ -51,7 +66,7 @@
 				border-right-color: #ECECEC;
 			}
 
-			INPUT.button {
+			button {
 				background-color: #C9CED6;
 
 				background-repeat: no-repeat;
@@ -125,16 +140,30 @@
 				border-bottom-color: #ECECEC;
 				border-right-color: #ECECEC;
 			}
-		</STYLE>
 
-		<SCRIPT type="text/javascript" language="JavaScript">
+			select {
+				font: normal normal 9px Verdana;
+			}
+
+			#caption select {
+				margin: 0;
+				width: 45px !important;
+			}
+
+			#caption select.year {
+				width: 60px !important;
+			}
+		</style>
+
+		<script type="text/javascript">
 			var ctrl = parent.document.getElementById(self.name);
-		</SCRIPT>
-	</HEAD>
+		</script>
+	</head>
 
-	<BODY onload="ctrl.style.visibility='hidden';">
-		<SCRIPT type="text/javascript" language="JavaScript">
-			eval("parent.ctrlCalendar=parent.frames[self.name];");
+	<body onload="ctrl.style.visibility='hidden';">
+		<script type="text/javascript">
+			parent.ctrlCalendar = parent.ctrlCalendar || {}
+			eval("parent.ctrlCalendar." + (self.name || 'default') + "=parent.frames[self.name];");
 			var DateControl;
 			var DayControl;
 			var MonthControl;
@@ -145,11 +174,13 @@
 			var ccMonth;
 			var ccYear;
 
+			var oldEvt = parent.document.onclick || function(){};
 			parent.document.onclick=function(e){
 				var t=!e?parent.event.srcElement.name:e.target.name;
 				if(t != "") {
 					ShowCalendar(false);
 				}
+				oldEvt(e);
 			}
 
 			function IsVisible() {
@@ -212,45 +243,45 @@
 
 				FillGrid(m,y);
 
-				title = '<DIV class="caption">' + Months[m-1] + ' ' + y + '</DIV>';
-				monthSelect = '<SELECT onChange="ccMonth = this.options[this.selectedIndex].value; printCal(ccDay,this.options[this.selectedIndex].value,ccYear);" style="font: normal normal 9px Verdana;">';
+				title = '<div class="caption">' + Months[m-1] + ' ' + y + '</div>';
+				monthSelect = '<select class="month" onChange="ccMonth = this.options[this.selectedIndex].value; printCal(ccDay,this.options[this.selectedIndex].value,ccYear);">';
 				for(var i=0; 12>i; i++) {
-					monthSelect += '<OPTION value="'+(i+1)+'"';
+					monthSelect += '<option value="'+(i+1)+'"';
 
 					if(i == m -1) {
 						monthSelect += ' selected';
 					}
 
-					monthSelect += '>'+Months2[i]+'</OPTION>';
+					monthSelect += '>'+Months2[i]+'</option>';
 				}
-				monthSelect += '</SELECT>';
+				monthSelect += '</select>';
 
-                                yearSelect = '<SELECT onChange="ccYear = this.options[this.selectedIndex].value; printCal(ccDay, ccMonth, this.options[this.selectedIndex].value);" style="font: normal normal 9px Verdana;">';
+				yearSelect = '<select class="year" onChange="ccYear = this.options[this.selectedIndex].value; printCal(ccDay, ccMonth, this.options[this.selectedIndex].value);">';
 				for(var i=1931; (new Date().getFullYear() + 2)>i; i++) {
-					yearSelect += '<OPTION value="'+i+'"';
+					yearSelect += '<option value="'+i+'"';
 
 					if(i == y) {
 						yearSelect += ' selected';
 					}
 
-					yearSelect += '>'+i+'</OPTION>';
+					yearSelect += '>'+i+'</option>';
 				}
-				yearSelect += '</SELECT>';
+				yearSelect += '</select>';
 
-				caption.innerHTML = monthSelect + yearSelect;
-				captionX.innerHTML = title;
+				document.getElementById('caption').innerHTML = monthSelect + yearSelect;
+				document.getElementById('captionX').innerHTML = title;
 
-				content = '<TABLE name="calendarTable" border="0" cellpadding="2" cellspacing="0" height="100%" width="100%">';
-				content += '<TR>';
+				content = '<table name="calendarTable" border="0" cellpadding="2" cellspacing="0" height="100%" width="100%">';
+				content += '<tr>';
 
 				for(var i=0;7>i;i++) {
-					content += '<TD class="weekday">'+DaysOfWeek[i]+'</TD>';
+					content += '<td class="weekday">'+DaysOfWeek[i]+'</td>';
 				}
 
-				content += '</TR>';
+				content += '</tr>';
 
 				for (var w=0;6>w;w++) {
-					content += '<TR bgcolor="#FFFFFF">';
+					content += '<tr bgcolor="#FFFFFF">';
 
 					for (var d=0;7>d;d++) {
 						day = cal[w][d];
@@ -262,20 +293,20 @@
 
 						if(day[1] > 0) {
 							if (day[1]==d2) {
-								content += '<TD ' + onClick +' class="todayday" onMouseOver="colorOld=this.style.color;this.style.color=colorHighLight; bgColorOld=this.style.backgroundColor;this.style.backgroundColor=bgColorHighLight;" onMouseOut="this.style.backgroundColor=bgColorOld;this.style.color=colorOld;">' +day[1] + '</TD>';
+								content += '<TD ' + onClick +' class="todayday" onMouseOver="colorOld=this.style.color;this.style.color=colorHighLight; bgColorOld=this.style.backgroundColor;this.style.backgroundColor=bgColorHighLight;" onMouseOut="this.style.backgroundColor=bgColorOld;this.style.color=colorOld;">' +day[1] + '</td>';
 							} else {
-								content += '<TD ' + onClick +' class="activemonthday" onMouseOver="colorOld=this.style.color;this.style.color=colorHighLight; bgColorOld=this.style.backgroundColor;this.style.backgroundColor=bgColorHighLight;" onMouseOut="this.style.backgroundColor=bgColorOld;this.style.color=colorOld;">' +day[1] + '</TD>';
+								content += '<TD ' + onClick +' class="activemonthday" onMouseOver="colorOld=this.style.color;this.style.color=colorHighLight; bgColorOld=this.style.backgroundColor;this.style.backgroundColor=bgColorHighLight;" onMouseOut="this.style.backgroundColor=bgColorOld;this.style.color=colorOld;">' +day[1] + '</td>';
 							}
 						} else {
-							content += '<TD class="monthday">&nbsp;</TD>';
+							content += '<td class="monthday">&nbsp;</td>';
 						}
 					}
 
-					content += '</TR>'+"\n";
+					content += '</tr>'+"\n";
 				}
 
-				content += '</TABLE>';
-				calendar.innerHTML = content;
+				content += '</table>';
+				document.getElementById('calendar').innerHTML = content;
 			}
 
 			function PostResult(d,m,y) {
@@ -344,7 +375,7 @@
 					var d = new Date();
 					dt[0] = d.getDate();
 					dt[1] = d.getMonth()+1;
-					dt[2] = d.getYear();
+					dt[2] = d.getFullYear();
 				} else {
 					dt = datefield.value.split(".");
 				}
@@ -368,11 +399,6 @@
 					p[1]-=oh>0?h+2:h+25;
 				}
 
-//                              ctrl.style.left=p[0]-225+"px";
-//                              ctrl.style.top=p[1]+oh+1-50+"px";
-
-//                              ctrl.style.left=parent.window.event.x+"px";
-//                              ctrl.style.top=parent.window.event.y+"px";
 				ShowCalendar(true);
 			}
 
@@ -400,16 +426,16 @@
 			}
 
 
-			var prevControl='<INPUT type="button" class="button" title="Предыдущий месяц" onClick="return SelectPrevMonth();" style="background-image: url(left.gif);">';
-			var nextControl='<INPUT type="button" class="button" title="Следующий месяц" onClick="return SelectNextMonth();" style="background-image: url(right.gif);">';
+			var prevControl='<button title="Предыдущий месяц" onClick="return SelectPrevMonth();" style="background-image: url(left.gif);"></button>';
+			var nextControl='<button title="Следующий месяц" onClick="return SelectNextMonth();" style="background-image: url(right.gif);"></button>';
 
 			with(document) {
-				write('<TABLE width="100%" height="100%" border="0" cellspacing="1" cellpadding="0" bgcolor="#C9CED6"><TR><TD>');
-				write('<TABLE width="100%" border="0" cellspacing="0" cellpadding="0">');
-				write('<TR><TD align="center" colspan="3"><DIV id="captionX" name="captionX">&nbsp;</DIV></TD></TR>');
-				write('<TR><TD width="20" align="left">'+prevControl+'</TD><TD align="center"><DIV id="caption" name="caption">&nbsp;</DIV></TD><TD width="20" align="right">'+nextControl+'</TD></TR>');
-				write('</TABLE></TD></TR><TR><TD height="100%"><DIV id="calendar" name="calendar"></DIV></TD></TR></TABLE>');
+				write('<table width="100%" height="100%" border="0" cellspacing="1" cellpadding="0" bgcolor="#C9CED6"><TR><TD>');
+				write('<table width="100%" border="0" cellspacing="0" cellpadding="0">');
+				write('<tr><td align="center" colspan="3"><div id="captionX" name="captionX">&nbsp;</div></td></tr>');
+				write('<tr><td width="20" align="left">'+prevControl+'</td><td><div id="caption" name="caption">&nbsp;</div></td><td width="20" align="right">'+nextControl+'</td></tr>');
+				write('</table></td></tr><tr><td height="100%"><div id="calendar" name="calendar"></div></td></tr></table>');
 			}
-		</SCRIPT>
-	</BODY>
-</HTML>
+		</script>
+	</body>
+</html>

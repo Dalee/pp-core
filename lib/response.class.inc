@@ -1,10 +1,11 @@
 <?php
 class PXResponse {
-	var $STATUS_OK              = '200 OK';
-	var $STATUS_MOVED           = '301 Moved Permanetly'; // òÅËÏÍÅÎÄÁÃÉÑ áÛÍÁÎÏ×Á É Co
-	var $STATUS_NOT_FOUND       = '404 Not found';
-	var $STATUS_FORBIDDEN       = '403 Forbidden';
-	var $STATUS_NOT_IMPLEMENTED = '501';
+	var $STATUS_OK                      = '200 OK';
+	var $STATUS_MOVED                   = '301 Moved Permanetly'; // òÅËÏÍÅÎÄÁÃÉÑ áÛÍÁÎÏ×Á É Co
+	var $STATUS_NOT_FOUND               = '404 Not found';
+	var $STATUS_FORBIDDEN               = '403 Forbidden';
+	var $STATUS_NOT_IMPLEMENTED         = '501';
+	var $STATUS_TEMPORARILY_UNAVAILABLE = '503 Service Temporarily Unavailable';
 
 	var $headers = array();
 	var $status;
@@ -79,6 +80,10 @@ class PXResponse {
 	
 	function notImplemented() {
 		$this->status = $this->STATUS_NOT_IMPLEMENTED;
+	}
+	
+	function unavailable(){
+		$this->status = $this->STATUS_TEMPORARILY_UNAVAILABLE;
 	}
 
 	function isError() {

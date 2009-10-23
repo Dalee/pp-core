@@ -8,8 +8,8 @@
  * storageType file
  */
 class PXStorageTypeFile extends PXStorageTypeAbstractFile {
-	function proceedFile($field, $object, &$param) {
-		$fileArray       = $object[$field->name];
+	function proceedFile($field, &$object, &$param) {
+		$fileArray       = &$object[$field->name];
 		$ai              = parent::ai($param['format'],$param['id'],$field->name);
 		$basedir         = BASEPATH.'/site/htdocs'.$ai;
 		$filename        = null;
@@ -57,6 +57,9 @@ class PXStorageTypeFile extends PXStorageTypeAbstractFile {
 		}
 		if($invalidateCache){
 			parent::removeFromCache($ai);
+		}
+		if (method_exists($this, "normalize")) {
+			$fileArray = $this->normalize($field, $object, $param);
 		}
 	}
 

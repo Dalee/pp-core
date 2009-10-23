@@ -31,11 +31,11 @@ class PXStorageTypeFilesarray extends PXStorageTypeAbstractFile {
 		}
 	}
 
-	function proceedFile($field, $object, &$param) {
+	function proceedFile($field, &$object, &$param) {
 		$varName         = $field->name;
 		$ai              = parent::ai($param['format'],$param['id'],$field->name);
 		$basedir         = BASEPATH.'/site/htdocs'.$ai;
-		$fileArray       = $object[$varName];
+		$fileArray       = &$object[$varName];
 		$allowed         = isset($param['allowed']) ? $param['allowed'] : NULL;
 		$invalidateCache = false;
 
@@ -85,6 +85,9 @@ class PXStorageTypeFilesarray extends PXStorageTypeAbstractFile {
 		}
 		if($invalidateCache){
 			parent::removeFromCache($ai);
+		}
+		if (method_exists($this, "normalize")) {
+			$fileArray = $this->normalize($field, $object, $param);
 		}
 	}
 

@@ -13,7 +13,7 @@ class PXStorageTypeImage extends PXStorageTypeFile {
 		return parent::proceedFile($field, $object, $param);
 	}
 
-	function __normalize($field, $object, &$param, $allowed) {
+	function __normalize($field, &$object, &$param, $allowed) {
 		$allowedImageTypes = array_unique(unserialize(is_null($allowed) ? ENUM_ALLOWED_IMAGETYPES : $allowed));
 		$basedir           = parent::ai($param['format'],$object['id'],$field->name);
 		$tmp               = glob(BASEPATH.'/site/htdocs' . $basedir . '/*');

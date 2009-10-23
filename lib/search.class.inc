@@ -243,11 +243,11 @@ class PXSearch {
 					continue;
 				}
 
-				$result[$row['id']] = $tmpres2[$key];
-				$result[$row['id']]['data'] = $row;
+				$result[$key] = $tmpres2[$key];
+				$result[$key]['data'] = $row;
 
 				if ($withParents) {
-					$result[$row['id']]['ancestor'] = $tmpParents[$row['parent']];
+					$result[$key]['ancestor'] = $tmpParents[$row['parent']];
 				}
 			}
 		}

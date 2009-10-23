@@ -182,8 +182,8 @@ function AddRowNew(name) {
 	tableName = "table" + name;
 	domTable = document.getElementById(tableName);
 	numRows  = domTable.rows.length;
-	numCols  = domTable.cells.length/numRows;
-	newRow = domTable.insertRow();
+	numCols  = domTable.getElementsByTagName('td').length/numRows; 
+	newRow = domTable.insertRow(numRows);
 	prevRow = domTable.rows[numRows-1];
 	for (i=0;i<numCols;i++) {
 		newCell = newRow.insertCell();
@@ -264,12 +264,20 @@ function ToClipboardMulti(src, width, height, type) {
 		text += '</object>';
 	}
 
-	window.clipboardData.setData("Text", text);
-	alert('Готово');
+	try { 
+		window.clipboardData.setData("Text", text); 
+		alert('Done'); 
+	} catch(e) {
+		alert('Your browser not support clipboard modify'); 
+	}
 }
 
 function FromClipboard() {
-	return window.clipboardData.getData('Text');
+	try {
+		return window.clipboardData.getData('Text');
+	} catch(e) {
+		alert('Your browser not support clipboard modify');
+	}
 }
 
 function nl2p(text) {
@@ -292,11 +300,8 @@ function ContextEdit(id, status, format, title, alias, level, up, down) {
 	ret += '<a class="edit" href="javascript: EditContent(\''+format+'\', '+id+')">Изменить</a>';
 	ret += '<a class="copy" href="javascript: CloneContent(\''+format+'\', '+id+')">Клонировать</a>';
 
-	console.log(area);
-	console.log(id);
-
 	if(level) {
-		ret += '<a class="del" href="action.phtml?id='+id+'&area=objects&action=directremove&format='+format+'" onclick="return window.confirm(\'Вы дейтвительно хотите удалить '+title+'?\');">Удалить</a>';
+		ret += '<a class="del" href="action.phtml?id='+id+'&area=objects&action=directremove&format='+format+'" onclick="return window.confirm(\'Вы действительно хотите удалить '+title+'?\');">Удалить</a>';
 	} else {
 		ret += '<span class="del">Удалить</span>';
 	}
@@ -350,22 +355,22 @@ function ContextAdd(parent, format, title) {
 	return '<a class="add" href="javascript: AddContent(\''+format+'\', '+parent+')">'+title+'</a>';
 }
 
-function Context(div) {
+function Context(event) {
 	menu = document.getElementById('ContextMenu');
 	menu.innerHTML = '';
 
-	if(arguments.length > 0) {
-		if (arguments[0] == 'add') {
+	if(arguments.length > 1) {
+		if (arguments[1] == 'add') {
 			menu.innerHTML += '<strong>Добавить</strong>';
-			for(i=2; i<arguments.length; i+=2) {
-				menu.innerHTML += ContextAdd(arguments[1], arguments[i], arguments[i+1]);
+			for(i=3; i<arguments.length; i+=2) {
+				menu.innerHTML += ContextAdd(arguments[2], arguments[i], arguments[i+1]);
 			}
 
-		} else if (arguments[0] == 'file') {
-			menu.innerHTML += ContextFile(arguments[1], arguments[2], arguments[3], arguments[4], arguments[5], arguments[6], arguments[7], arguments[8], arguments[9], arguments[10]);
+		} else if (arguments[1] == 'file') {
+			menu.innerHTML += ContextFile(arguments[2], arguments[3], arguments[4], arguments[5], arguments[6], arguments[7], arguments[8], arguments[9], arguments[10], arguments[1]);
 
 		} else {
-			menu.innerHTML += ContextEdit(arguments[1], arguments[2], arguments[3], arguments[4], arguments[5], arguments[6], arguments[7], arguments[8]);
+			menu.innerHTML += ContextEdit(arguments[2], arguments[3], arguments[4], arguments[5], arguments[6], arguments[7], arguments[8], arguments[9]);
 		}
 	}
 
@@ -384,6 +389,12 @@ function Context(div) {
 	menu.style.left = x + w > dw ? dw - w - 24 : x;
 	menu.style.top  = y + h > dh ? dh - h - 24 : y;
 	menu.style.visibility = 'visible';
+	if (window.event) {
+		window.event.cancelBubble = true;
+	}
+	if (event.stopPropagation) {
+		event.stopPropagation();
+	}
 }
 
 function GetParentOffsetTop(obj) {
@@ -402,7 +413,7 @@ function GetParentOffsetLeft(obj) {
 
 	}
 }
-function ContextHide () {
+function ContextHide() {
 	menu = document.getElementById('ContextMenu');
 	menu.style.display    = 'none';
 	menu.style.visibility = 'hidden';
@@ -485,3 +496,61 @@ $(function() {
 		return false;		
 	});
 });
+function ShowHideFilter(container){
+	function isHidden(){
+		return /ref-filter-hide/.test(this.className)
+	}
+	function isVisible(){
+		return /ref-filter-show/.test(this.className)
+	}
+	function switchVisibility(){
+		this.className = this.className.replace(/(ref-filter-)\w+/, '$1' + (isHidden.call(this) ? 'show' : 'hide'));
+	}
+
+	switchVisibility.call(container)
+	var left = 0
+	var th = container.parentNode.getElementsByTagName('th')
+	for(var c in th){
+		if(isVisible.call(th[c])) {
+			left++
+ 		}
+	}
+	if(left == 1){
+		switchVisibility.call(th[0])
+	}
+}
+
+var possibleNewRows = {}
+
+function appendLinksRow(container){
+	var selfTr = container.parentNode.parentNode;
+	container.parentNode.removeChild(container);
+	var newTr = document.createElement('tr');
+	
+	newTr.className = "newRow";
+	
+	var regx     = /((\w+)(\[|-))(\d+)((\]|-)\[?(\d+))/g
+	
+	regx.test(selfTr.innerHTML);
+	var currentRefName = RegExp.$2;
+	var currentRefId   = RegExp.$7;
+	possibleNewRows[currentRefName][currentRefId]++;
+	
+	var selfCols = selfTr.childNodes;
+	var htmlData = '';
+	for(var td = 0; td < selfCols.length; td++){
+		htmlData = selfCols.item(td).innerHTML;
+		htmlData = htmlData.replace(regx, "$1"+possibleNewRows[currentRefName][currentRefId]+"$5");
+		htmlData = htmlData.replace(/(selected|checked)/gi, '');
+		htmlData = htmlData.replace(/(ref-linked)/gi, 'ref-unlinked');
+		htmlData = htmlData.replace(/(<OPTION value="")/gi, '$1 selected="selected"');
+		newTr.appendChild(document.createElement('td'));
+		newTr.childNodes.item(td).innerHTML = htmlData;
+	}
+	
+	if(neighbour = selfTr.nextSibling){
+		selfTr.parentNode.insertBefore(newTr, neighbour)
+	} else {
+		selfTr.parentNode.appendChild(newTr);
+	}
+}

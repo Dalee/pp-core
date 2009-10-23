@@ -10,7 +10,7 @@
  * storageType imagesarray
  */
 class PXStorageTypeImagesarray extends PXStorageTypeFilesarray {
-	function proceedFile($field, $object, &$param, $allowed=ENUM_ALLOWED_IMAGETYPES) {
+	function proceedFile($field, &$object, &$param, $allowed=ENUM_ALLOWED_IMAGETYPES) {
 		$param['allowed'] = unserialize($allowed);
 		return parent::proceedFile($field, $object, $param);
 	}

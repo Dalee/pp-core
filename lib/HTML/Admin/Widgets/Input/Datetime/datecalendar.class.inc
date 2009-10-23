@@ -3,6 +3,7 @@ require_once 'abstract.class.inc';
 class PXInputDateCalendar extends PXInputDateTime {
 	function html() {
 		$name  = $this->name;
+		$saneName = str_replace(array('[',']'),'',$name);
 
 		$day   = is_null($this->date['day']) ? null : sprintf('%02d', $this->date['day']);
 		$month = is_null($this->date['day']) ? null : sprintf('%02d', $this->date['month']);
@@ -12,17 +13,17 @@ class PXInputDateCalendar extends PXInputDateTime {
 
 		$html = <<<HTML
 			<span class="datetime">
-				<input maxlength="2" type="text" class="first"  name="{$name}[day]"   id="returnDay{$name}"   value="{$day}"   {$this->disable}>{$delim}
-				<input maxlength="2" type="text" class="middle" name="{$name}[month]" id="returnMonth{$name}" value="{$month}" {$this->disable}>{$delim}
-				<input maxlength="4" type="text" class="last"   name="{$name}[year]"  id="returnYear{$name}"  value="{$year}"  {$this->disable}>
+				<input maxlength="2" type="text" class="first"  name="{$name}[day]"   id="returnDay{$saneName}"   value="{$day}"   {$this->disable}>{$delim}
+				<input maxlength="2" type="text" class="middle" name="{$name}[month]" id="returnMonth{$saneName}" value="{$month}" {$this->disable}>{$delim}
+				<input maxlength="4" type="text" class="last"   name="{$name}[year]"  id="returnYear{$saneName}"  value="{$year}"  {$this->disable}>
 
-				<input type="hidden" id="returnDate{$name}" value="">
+				<input type="hidden" id="returnDate{$saneName}" value="{$day}.{$month}.{$year}">
 
-				<iframe src="tools/calendar/index.html" name="calendar{$name}" id="calendar{$name}" scrolling="no" frameborder="0"></iframe>
+				<iframe src="tools/calendar/index.html" name="calendar{$saneName}" id="calendar{$saneName}" scrolling="no" frameborder="0"></iframe>
 
-				<button title="календарь" class="calendar" onfocus="this.blur();" onclick="with(this.form)ctrlCalendar.calendar{$name}.DoModal(this.form.returnDate{$name}, this.form.returnDay{$name}, this.form.returnMonth{$name}, this.form.returnYear{$name}); return false;" {$this->disable}></button>
+				<button title="календарь" class="calendar" onfocus="this.blur();" onclick="with(this.form)ctrlCalendar.calendar{$saneName}.DoModal(this.form.returnDate{$saneName}, this.form.returnDay{$saneName}, this.form.returnMonth{$saneName}, this.form.returnYear{$saneName}); return false;" {$this->disable}></button>
 
-				<button onclick="with(this.form)ctrlCalendar.calendar{$name}.SetNull(this.form.returnDate{$name}, this.form.returnDay{$name}, this.form.returnMonth{$name}, this.form.returnYear{$name}); return false;" {$this->disable}>обнулить</button>
+				<button onclick="with(this.form)ctrlCalendar.calendar{$saneName}.SetNull(this.form.returnDate{$saneName}, this.form.returnDay{$saneName}, this.form.returnMonth{$saneName}, this.form.returnYear{$saneName}); return false;" {$this->disable}>обнулить</button>
 			</span>
 HTML;
 

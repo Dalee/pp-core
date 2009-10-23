@@ -13,12 +13,13 @@ class PXTypeDescription {
 	var $references    = array();
 	var $order         = NULL;
 	var $fields        = array();
+	var $groups        = array('' => array('name' => null, 'view' => null)); //TODO|FIXME: need standalone group description ?
+	var $fieldGroups   = array();
 	var $sTypes        = array();
 	var $dTypes        = array();
 	var $struct        = 'plain';
 	var $byDefault     = NULL;
 	var $outputHandler = NULL;
-	var $fieldGroups  = array();
 
 	/**
 	 * Возвращает массив типов потомков для переданного формата
@@ -99,6 +100,25 @@ class PXTypeDescription {
 
 			$type->parseTypeAttributes($domDatatype->attributes());
 
+			$groupNodes = $dom->xpath("//datatype[@name='{$type->id}']//group");
+			foreach ($groupNodes as $groupNode) {
+				if ($groupNode->nodeType() != 1) {
+					continue;
+				}
+			$name = $view = null;
+				foreach($groupNode->attributes() as $attr){
+					switch ($attr->name) {
+						case 'name':
+							$name = utf8_decode($attr->value);
+							break;
+						case 'view':
+							$view = utf8_decode($attr->value);
+							break;
+					}
+				}
+				$type->groups[$name] = array('name' => $name, 'view' => $view);
+			}
+
 			/*
 
 			FIXME:
@@ -137,6 +157,7 @@ class PXTypeDescription {
 				$field->getComments($fieldNode, $dom);
 
 				$type->addField($field);
+				$type->assignToGroup($field);
 			}
 
 			$app->types[$type->id] = $type;
@@ -164,7 +185,16 @@ class PXTypeDescription {
 		$name = $field->name;
 
 		$this->fields[$name] = $field;
-		$this->fieldGroups[$field->groupName][$name] =& $this->fields[$name];
+	}
+	
+	function assignToGroup($field) {
+		static $groupId = 0;
+		static $fillingGroup;
+		if($fillingGroup !== $field->groupName){
+			$fillingGroup = $field->groupName;
+			$groupId++;
+		}
+		$this->fieldGroups[$groupId][$field->groupName][$field->name] = $field;
 	}
 
 
@@ -200,6 +230,7 @@ class PXTypeDescription {
 		switch($string) {
 			case 'all'     : return PP_CHILDREN_FETCH_ALL;
 			case 'selected': return PP_CHILDREN_FETCH_SELECTED;
+			case 'paged'   : return PP_CHILDREN_FETCH_PAGED;
 			case 'none'    : return PP_CHILDREN_FETCH_NONE;
 			default        : return NULL;
 		}

@@ -8,7 +8,7 @@
  * storageType flash
  */
 class PXStorageTypeFlash extends PXStorageTypeImage {
-	function proceedFile($field, $object, &$param) {
+	function proceedFile($field, &$object, &$param) {
 		return parent::proceedFile($field, $object, $param, ENUM_ALLOWED_FLASHTYPES);
 	}
 

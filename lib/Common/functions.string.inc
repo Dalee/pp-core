@@ -417,7 +417,7 @@ function _strReplaceLimited($search, $replacement, $subject, $limit = 1, $caseMa
 	return $subject;
 }
 
-function appendParamToUrl($url, $k, $v, $fragment = false) {
+function appendParamToUrl($url, $k, $v, $fragment = false, $num_save = false) {
 	$tmp = parse_url($url);
 	$url = NULL;
 	if (!empty($tmp['scheme'])) {
@@ -443,9 +443,7 @@ function appendParamToUrl($url, $k, $v, $fragment = false) {
 	$url .= '?';
 	foreach ($qs as $qk=>$qv) {
 		if (is_array($qv)) {
-			foreach ($qv as $sqk=>$sqv) {
-				$url .= $qk.'[]='.urlencode($sqv).'&';
-			}
+			$url .= multiLevelVarsToString($qk, $qv, null, $num_save) . '&';
 		} else {
 			$url .= $qk.'='.urlencode($qv).'&';
 		}
@@ -459,7 +457,7 @@ function appendParamToUrl($url, $k, $v, $fragment = false) {
 	return $url;
 }
 
-function removeParamFromUrl($url, $k, $fragment = false, $removeAll = false) {
+function removeParamFromUrl($url, $k, $fragment = false, $removeAll = false, $num_save = false) {
 	$tmp = parse_url($url);
 	$url = NULL;
 	if (!empty($tmp['scheme'])) {
@@ -490,9 +488,7 @@ function removeParamFromUrl($url, $k, $fragment = false, $removeAll = false) {
 	$url .= '?';
 	foreach ($qs as $qk=>$qv) {
 		if (is_array($qv)) {
-			foreach ($qv as $sqk=>$sqv) {
-				$url .= $qk.'[]='.urlencode($sqv).'&';
-			}
+			$url .= multiLevelVarsToString($qk, $qv, null, $num_save) . '&';
 		} else {
 			$url .= $qk.'='.urlencode($qv).'&';
 		}
@@ -500,6 +496,14 @@ function removeParamFromUrl($url, $k, $fragment = false, $removeAll = false) {
 	$url = substr($url, 0, -1);
 	if ($fragment === false  and isset($tmp['fragment'])) $url .= '#' . $tmp['fragment'];
 	return $url;
+}
+function multiLevelVarsToString($name, $arrayVars, $leaf=null, $num_save=false) {
+	foreach($arrayVars as $k=>$a) {
+		$t[$k] = "{$leaf}[".((is_numeric($k) && !$num_save) ? '' : $k)."]";
+		$t[$k] = is_array($a) ? multiLevelVarsToString($name, $a, $t[$k], $num_save) : $name.$t[$k]."=".urlencode($a); 
+	}
+
+	return join ('&', $t);
 }
 
 function generateRandomString($length) {
@@ -511,15 +515,24 @@ function generateRandomString($length) {
 	return $string;
 }
 
-function isUtfString($Str) {
-	for ($i=0; $i<strlen($Str); $i++) {
-		if (ord($Str[$i]) < 0x80) $n=0; # 0bbbbbbb
-		elseif ((ord($Str[$i]) & 0xE0) == 0xC0) $n=1; # 110bbbbb
-		elseif ((ord($Str[$i]) & 0xF0) == 0xE0) $n=2; # 1110bbbb
-		elseif ((ord($Str[$i]) & 0xF0) == 0xF0) $n=3; # 1111bbbb
-		else return false; # Does not match any model
-		for ($j=0; $j<$n; $j++) { # n octets that match 10bbbbbb follow ?
-			if ((++$i == strlen($Str)) || ((ord($Str[$i]) & 0xC0) != 0x80)) return false;
+function isUtfString($str) {
+	$len = strlen($str);
+	for ($i = 0; $i < $len; $i++) {
+		$cp = ord($str[$i]);
+		if     ($cp >= 0x00 && $cp <= 0x7F) continue; # 00 - 7F -- 1 byte ascii
+		elseif ($cp >= 0xC2 && $cp <= 0xDF) $n = 1;   # C2 - DF -- 2 bytes
+		elseif (($cp & 0xF0) == 0xE0)       $n = 2;   # E0 - EF -- 3 bytes
+		elseif ($cp >= 0xF0 && $cp <= 0xF4) $n = 3;   # F0 - F4 -- 4 bytes
+		else return false;
+
+		# length check
+		if ($i + $n >= $len)
+			return false;
+
+		# hardcore
+		for ($j = 0; $j < $n; $j++) {
+			if ((ord($str[++$i]) & 0xC0) != 0x80)     # 80 - BF -- 2nd, 3rd, 4th bytes 
+				return false;
 		}
 	}
 	return true;
@@ -994,40 +1007,67 @@ function wordWrapHtmlSafe($str, $width = 60, $break = "\n", $nobreak = "", $nobr
 }
 
 
+
 function fixWordLength($string, $length = 10) {
-	$hyphens = $string;
+	$delim = chr(1);
+	$doubleDelim = $delim . $delim;
+	$vowel    = "[ÕÅÙÁÏÜÑÉÀaeiouy]";  // english vowels: a, e, i, o, u, y.
+	$notvowel = "[^ÕÅÙÁÏÜÑÉÀaeiouy" . $delim ."]";
+	$endPattern = '\s\d\?\)!,.\-;:\'"`';
 	
-	$hyphens = preg_replace('/([\s,.-])/i', '$1##', $hyphens);
-	$hyphens = preg_replace('/([ßØÊÙ])/i', '$1##', $hyphens);
-	$hyphens = preg_replace('/([ÕÅÙÁÏÜÑÉÀ])([ÕÅÙÁÏÜÑÉÀ])/i', '$1##$2', $hyphens);
-	$hyphens = preg_replace('/([ÕÅÙÁÏÜÑÉÀ][^ÕÅÙÁÏÜÑÉÀ])([^ÕÅÙÁÏÜÑÉÀ][ÕÅÙÁÏÜÑÉÀ])/i', '$1#$2', $hyphens);
-	$hyphens = preg_replace('/([^ÕÅÙÁÏÜÑÉÀ][ÕÅÙÁÏÜÑÉÀ])([^ÕÅÙÁÏÜÑÉÀ][ÕÅÙÁÏÜÑÉÀ])/i', '$1#$2', $hyphens);
-	$hyphens = preg_replace('/([ÕÅÙÁÏÜÑÉÀ][^ÕÅÙÁÏÜÑÉÀ])([^ÕÅÙÁÏÜÑÉÀ][^ÕÅÙÁÏÜÑÉÀ][ÕÅÙÁÏÜÑÉÀ])/i', '$1#$2', $hyphens);
-	$hyphens = preg_replace('/([ÕÅÙÁÏÜÑÉÀ][^ÕÅÙÁÏÜÑÉÀ][^ÕÅÙÁÏÜÑÉÀ])([^ÕÅÙÁÏÜÑÉÀ][^ÕÅÙÁÏÜÑÉÀ][ÕÅÙÁÏÜÑÉÀ])/i', '$1#$2', $hyphens);
+	// replace htmlentities
+	$entityPattern = '/(&#\d+;|&\w+;)/';
+	$entityReplacement = chr(2);
+	
+	preg_match_all($entityPattern, $string, $replacement);
+	$replacement = current($replacement);
+	
+	$string = preg_replace($entityPattern, $entityReplacement, $string);
+
+	$hyphens = $string;
+	$hyphens = preg_replace('/([\s,.-])/i', '$1' . $doubleDelim, $hyphens);
+	$hyphens = preg_replace('/([ßØÊÙ])/i' , '$1' . $doubleDelim, $hyphens);
+
+	$hyphens = preg_replace('/(' . $vowel .')(' . $vowel . ')([^' . $endPattern . '])/i',                             '$1' . $doubleDelim . '$2$3', $hyphens);
+	$hyphens = preg_replace('/(' . $vowel    . $notvowel . ')(' . $notvowel . $vowel .')/i',                          '$1' . $delim .       '$2', $hyphens);
+	$hyphens = preg_replace('/(' . $notvowel . $vowel    . ')(' . $notvowel . $vowel . ')/i',                         '$1' . $delim .       '$2', $hyphens);
+	$hyphens = preg_replace('/(' . $vowel    . $notvowel . ')(' . $notvowel . $notvowel . $vowel . ')/i',             '$1' . $delim .       '$2', $hyphens);
+	$hyphens = preg_replace('/(' . $vowel    . $notvowel . $notvowel . ')(' . $notvowel . $notvowel . $vowel . ')/i', '$1' . $delim .       '$2', $hyphens);
 	
 	// second time (to catch close standing syllables)
-	$hyphens = preg_replace('/([ÕÅÙÁÏÜÑÉÀ])([ÕÅÙÁÏÜÑÉÀ])/i', '$1##$2', $hyphens);
-	$hyphens = preg_replace('/([ÕÅÙÁÏÜÑÉÀ][^ÕÅÙÁÏÜÑÉÀ])([^ÕÅÙÁÏÜÑÉÀ][ÕÅÙÁÏÜÑÉÀ])/i', '$1#$2', $hyphens);
-	$hyphens = preg_replace('/([^ÕÅÙÁÏÜÑÉÀ][ÕÅÙÁÏÜÑÉÀ])([^ÕÅÙÁÏÜÑÉÀ][ÕÅÙÁÏÜÑÉÀ])/i', '$1#$2', $hyphens);
-	$hyphens = preg_replace('/([ÕÅÙÁÏÜÑÉÀ][^ÕÅÙÁÏÜÑÉÀ])([^ÕÅÙÁÏÜÑÉÀ][^ÕÅÙÁÏÜÑÉÀ][ÕÅÙÁÏÜÑÉÀ])/i', '$1#$2', $hyphens);
-	$hyphens = preg_replace('/([ÕÅÙÁÏÜÑÉÀ][^ÕÅÙÁÏÜÑÉÀ][^ÕÅÙÁÏÜÑÉÀ])([^ÕÅÙÁÏÜÑÉÀ][^ÕÅÙÁÏÜÑÉÀ][ÕÅÙÁÏÜÑÉÀ])/i', '$1#$2', $hyphens);
+	$hyphens = preg_replace('/(' . $vowel .')(' . $vowel . ')([^' . $endPattern . '])/i',                             '$1' . $doubleDelim . '$2$3', $hyphens);
+	$hyphens = preg_replace('/(' . $vowel    . $notvowel . ')(' . $notvowel . $vowel . ')/i',                         '$1' . $delim .       '$2', $hyphens);
+	$hyphens = preg_replace('/(' . $notvowel . $vowel    . ')(' . $notvowel . $vowel . ')/i',                         '$1' . $delim .       '$2', $hyphens);
+	$hyphens = preg_replace('/(' . $vowel    . $notvowel . ')(' . $notvowel . $notvowel . $vowel . ')/i',             '$1' . $delim .       '$2', $hyphens);
+	$hyphens = preg_replace('/(' . $vowel    . $notvowel . $notvowel . ')(' . $notvowel . $notvowel . $vowel . ')/i', '$1' . $delim .       '$2', $hyphens);
+	
+	$syllables = explode($delim, $hyphens);
 
-	$syllables = explode('#', $hyphens);
-
-	$string = '';
-	$tmp = '';
+	$string = $tmp = array_shift($syllables);
 
 	foreach ($syllables as $s) {
 		$tmp .= $s;
-		if (strlen($tmp) + 1 >= $length) {
-			$end = substr($string, strlen($string)-1, 1);
-			$string .=  preg_match('/([\s,.-])/i', $end) ? '<br>'.$s : '-<br>'.$s;
+		$end = substr($string, -1);
+
+		if (strlen(trim($tmp)) > $length || $end == ' ') {
 			$tmp = $s;
-		} else {
-			$string .= $s;
+			if (!preg_match("/([{$endPattern}])/i", $end)) {
+				$string .= "&shy;";
+			}
+		}
+		
+		$string .= $s;
+	}
+	
+	// get back htmlentities
+	$pieces = explode($entityReplacement, $string);
+	foreach($pieces as $key => $piece){
+		if (isset($replacement[$key])) {
+			$pieces[$key] = $piece . $replacement[$key];
 		}
 	}
-
+	$string = implode($pieces);
+	
 	return $string;
 }
 

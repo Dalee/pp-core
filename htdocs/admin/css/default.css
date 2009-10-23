@@ -9,6 +9,17 @@ body {
 	font-family: verdana;
 }
 
+img.logo {
+	float: left;
+}
+
+span.version {
+	color: #ffffff;
+	font-size: 150%;
+	line-height: 3em;
+	margin-left: -40px;
+}
+
 a.img-preview {
 	margin-right: 50px;
 }
@@ -142,6 +153,17 @@ table.objects th.c2, table.objects-table th.c2 {
 table.objects th.c3, table.objects-table th.c3 {
 	width: 47px;
 	text-align: center;
+}
+
+table.links label {
+	width: 100%;
+}
+table.links label.ref-unlinked {
+	font-weight: normal;
+}
+
+table.links label.ref-linked {
+	font-weight: bold;
 }
 
 table.objects th.c4, table.objects-table th.c4 {
@@ -518,9 +540,9 @@ div.colorselect div {
 	height: 20px;
 	font-size: 0;
 	border-style: groove;
-	display: inline;
 	vertical-align: middle;
 	overflow: hidden;
+	float: left;
 }
 
 div.password input {
@@ -656,30 +678,42 @@ div.imagepreview img {
 	vertical-align: middle;
 }
 
-table.mainform td div.ip input {
-	width: 21px;
+td div.ip input, td .datetime input {
+	width: 2.5em;
 	text-align: right;
+	margin: 0;
 }
-table.mainform td div.ip input.middle {
+
+td div.ip input.middle,
+td div.ip input.delim,
+td .datetime input.middle {
+	margin: 0;
+}
+
+td div.ip input.middle, td .datetime input.middle {
 	border-left: 0;
 	border-right: 0;
 }
-table.mainform td div.ip input.first {
+td div.ip input.first, td .datetime input.first {
 	border-right: 0;
 }
-table.mainform td div.ip input.last {
+td div.ip input.last, td .datetime input.last {
 	border-left: 0;
 }
-table.mainform td div.ip input.delim {
+td div.ip input.delim, td .datetime input.delim {
 	width: 5px;
 	border-left: 0;
 	border-right: 0;
 	text-align: right;
 }
 
-table.mainform td div.datetime input {
-	width: 60px;
-	margin: 0 10px;
+td .datetime input.first, td .datetime input.middle {
+	width: 1.5em;
+}
+
+td .datetime input.last {
+	width: 3em;
+	margin: 0 20px 0 0;
 }
 
 table.mainform td optgroup.disabled {
@@ -709,12 +743,12 @@ table.mainform td.delim div.rhr {
 	float: none;
 }
 
-div.datetime span {
+.datetime span {
 	width: 10px;
 	text-align: center;
 }
 
-div.datetime iframe {
+.datetime iframe {
 	margin: 0;
 	padding: 0;
 	visibility: hidden;
@@ -728,8 +762,9 @@ div.datetime iframe {
 	height: 160px;
 }
 
-div.datetime button.calendar {
-	margin: 0;
+.datetime button.calendar {
+	margin:0 5px 0 0;
+	height: 22px;
 	width: 22px;
 	background: transparent url(../i/icon/calendar.gif) 50% 50% no-repeat;
 }
@@ -996,3 +1031,40 @@ div#ContextMenu .on     { background-image: url(../i/icon/on.gif     );}
 div#ContextMenu .rename { background-image: url(../i/icon/rename.gif );}
 div#ContextMenu .unzip  { background-image: url(../i/icon/unzip.gif  );}
 div#ContextMenu .up     { background-image: url(../i/icon/up.gif     );}
+
+/* Reference Filter */
+.ref-filter-show, .ref-filter-hide {
+	cursor: hand;
+	cursor: pointer;
+}
+.ref-filter-show input, .ref-filter-hide input {
+	width: 90%;
+}
+.ref-filter-show input {
+	display: block;
+}
+.ref-filter-show span {
+	display: none;
+}
+.ref-filter-hide input {
+	display: none;
+}
+.ref-filter-hide span {
+	display: inline;
+}
+
+.ref-plus-tr {
+	float:  right;
+	cursor: hand;
+	cursor: pointer;
+	margin-top: -12px;
+}
+
+div.field-group-inline {
+	float:left;
+	margin-right: 2em;
+}
+
+div.field-group-inline label {
+	text-decoration: underline;
+}

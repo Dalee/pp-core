@@ -64,43 +64,30 @@ HTML;
 	}
 
 	function traceToHtml($trace) {
-		return implode(
-			"\n", 
+		return join("\n", array_map(array(&$this, '_errorToHTML'), $trace));
+	}
+	
+	function _errorToHTML($error){
+		$function  = str_replace('->', '&rarr;', $error['function']);
 
-			array_map(
-				create_function(
-					'$error',
+		$arguments = join(', ', array_map(array(&$this, '_argsToHTML'), $error['args']));
 
-					<<<TRACE_TO_HTML
-						\$function  = str_replace('->', '&rarr;', \$error['function']);
+		return <<<ERROR_ROW
+			<tr>
+				<td>{$error['file']}</td>
+				<td class="line">{$error['line']}</td>
+				<td>{$function}()</td>
+				<td>{$arguments}</td>
+			</tr>
+ERROR_ROW;
+	}
 
-						\$arguments = implode(
-							', ',
-
-							array_map(
-								create_function(
-									'\$a', 
-									" return '<span class=\"'.\\\$a['type'].'\" title=\"'.\\\$a['type'].'\">'.\\\$a['value'].'</span>' ;"
-								),
-
-								\$error['args']
-							)
-						);
-
-						return "
-							<tr>
-								<td>{\$error['file']}</td>
-								<td class=\"line\">{\$error['line']}</td>
-								<td>{\$function}()</td>
-								<td>{\$arguments}</td>
-							</tr>
-						";
-TRACE_TO_HTML
-				),
-
-				$trace
-			)
-		);
+	function _argsToHTML($arg){
+		return <<<ARGS
+			<span class="{$arg['type']}" title="{$arg['type']}">
+				{$arg['value']}
+			</span>
+ARGS;
 	}
 
 	function css() {

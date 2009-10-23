@@ -57,9 +57,8 @@ function NestedArrayWalk(&$multiArray, $mapper, $optArgs = array()){
 	foreach($multiArray as $key => $value){
 		if(is_array($value) && sizeof($value)){
 			NestedArrayWalk($multiArray[$key], $mapper, $optArgs);
-		} else {
-			$mapper($key, $value, $multiArray, $optArgs);
 		}
+		$mapper($multiArray, $key, $optArgs);
 	}
 	
 	return true;

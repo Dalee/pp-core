@@ -120,7 +120,7 @@ class PXStorageType {
 	 *
 	 * @return String
 	 */
-	function proceedFile($field, $object, &$param) {
+	function proceedFile($field, &$object, &$param) {
 		return null;
 	}
 

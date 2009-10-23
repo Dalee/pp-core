@@ -1,19 +1,40 @@
 <?php
 	define('BASEPATH', $_SERVER["DOCUMENT_ROOT"]);
+	require_once BASEPATH.'/libpp/lib/mainuser.inc';
 	require_once BASEPATH.'/libpp/lib/Security/blockingnumbers.class.inc';
 	require_once BASEPATH.'/libpp/lib/Security/captcha.class.inc';
 
-	$k = intval(@$_GET['k']);
+	$request = new PXUserRequest();
+	$bn      = new NLBlockingNumbers(BASEPATH.'/site/var/blocking_nums');
+	
+	switch($request->GetVar('action')){
+		default:
+		case 'get_image':
+			$k = (int)$request->GetVar('k');
+			if(($str = $bn->GetValueByKey($k)) == ''){
+				$response = & PXResponse::getInstance();
+				$response->notFound();
+				$response->send();
+				exit;
+			}
+			
+			$fonts = array(
+				BASEPATH.'/local/share/fonts/tahoma.ttf'
+			);
 
-	if ($k<=0) {
-		$str = '';
-	} else {
-		$bn = new NLBlockingNumbers();
-		$str = $bn->GetValueByKey($k);
+			$colors = array('lite' => 'FBFEFF', 'dark' => '545B5D');
+			$width  = strlen($str) * 25;
+
+			$captcha = new NLCaptcha($str, $width, 40, $fonts, $colors, false, 23);
+		break;
+		
+		case 'get_code':
+			$length       = (int)$request->GetVar('len');
+			$length       = $length > 0 && $length <= 16 ? $length : 4;
+			$allowedChars = $request->GetVar('char_map', "23456789qweyupasdfkzxcvbnm23456789");
+			
+			$bn->CreateNew($length, $allowedChars);
+			print $bn->key;
+		break;
 	}
-
-	$fonts = array(BASEPATH.'/local/share/fonts/tahoma.ttf');
-	$colors = array('lite' => 'FBFEFF', 'dark' => '545B5D');
-
-	$captcha = new NLCaptcha($str, 100, 40, $fonts, $colors, false, 23);
 ?>
