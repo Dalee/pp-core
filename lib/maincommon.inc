@@ -25,8 +25,6 @@ require_once 'abstracttrigger.class.inc';
 require_once 'abstractcronrun.class.inc';
 
 require_once 'search.class.inc';
-
-
 require_once 'logger.class.inc';
 require_once 'Objects/classes.inc';
 require_once 'HTML/interface.class.inc';

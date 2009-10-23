@@ -65,7 +65,7 @@ class PXInputDateTime extends PXAdminWidget {
 	}
 
 	function html() {
-		FatalError("Its abstract class, use other date or time inputs class");
+		FatalError("It's abstract class, use other date or time inputs class");
 	}
 }
 

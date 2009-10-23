@@ -11,7 +11,7 @@ class PXInputRichEdit extends PXAdminWidget {
 	}
 	function html() {
 		return <<<HTML
-			<textarea name="{$this->name}" id="{$this->name}" style="width: 100%; height: {$this->height}px;">{$this->value}</textarea>
+			<textarea name="{$this->name}" id="{$this->name}" style="width: 100%; height: {$this->height}px;" {$this->disable}>{$this->value}</textarea>
 
 			<script type="text/javascript">
 				editor_generate('{$this->name}');

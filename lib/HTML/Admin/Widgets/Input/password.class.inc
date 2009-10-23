@@ -18,7 +18,7 @@ class PXInputPassword extends PXAdminWidget {
 
 		if(strlen($this->value) == 32 && $this->canDelete) {
 			$deleteHTML = <<<HTML
-				<input type="checkbox" name="{$name}[delete]" id="{$name}[delete]" class="checkbox">
+				<input type="checkbox" name="{$name}[delete]" id="{$name}[delete]" class="checkbox" {$this->disable}>
 				<label for="{$name}[delete]">удалить пароль</label>
 HTML;
 		} else {
@@ -27,8 +27,8 @@ HTML;
 
 		return <<<HTML
 			<div class="password">
-				<input type="password" name="{$name}[type]"   onfocus="startCheckPassword(this, '{$name}')">
-				<input type="password" name="{$name}[retype]" onfocus="startCheckPassword(this, '{$name}')">
+				<input type="password" name="{$name}[type]"   {$this->disable} onfocus="startCheckPassword(this, '{$name}')">
+				<input type="password" name="{$name}[retype]" {$this->disable} onfocus="startCheckPassword(this, '{$name}')">
 
 				{$deleteHTML}
 

@@ -41,4 +41,9 @@ require_once('HTML/Admin/Widgets/list.class.inc');
 require_once 'HTML/Admin/Widgets/tablesimple.class.inc';
 
 require_once 'HTML/Admin/Widgets/menuTabbed.class.inc';
+
+require_once 'HTML/Admin/Widgets/FieldGroups/abstract.class.inc';
+require_once 'HTML/Admin/Widgets/FieldGroups/table.class.inc';
+require_once 'HTML/Admin/Widgets/FieldGroups/inline.class.inc';
+
 ?>

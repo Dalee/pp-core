@@ -1,13 +1,9 @@
 <?php
-if (!defined('FORM_ALLOW_NONE')) {
-	define('FORM_ALLOW_NONE',  0);
-	define('FORM_ALLOW_READ',  1);
-	define('FORM_ALLOW_WRITE', 2);
-}
-
 class PXAdminObjectForm extends NLAbstractHTMLForm {
 	var $format;
 	var $object;
+
+	var $area = 'objects';
 
 	function PXAdminObjectForm($format, $object) {
 		$this->NLAbstractHTMLForm();
@@ -15,35 +11,25 @@ class PXAdminObjectForm extends NLAbstractHTMLForm {
 		$this->object = $object;
 	}
 
+	function setArea($area){
+		$this->area = $area;
+	}
+
 	function MainForm($datatype) {
-		$html  = $this->BaseInputs('main');
+		$html        = '';
+		$defaultView = 'table';
 
-		$param = array(
-			'even'        => false,
-			'datatype'    => $datatype
-		);
+		foreach($datatype->fieldGroups as $group) {
+			$k = key($group);
+			$v = current($group);
+			unset($v['id']);
 
-		foreach($datatype->fieldGroups as $groupName => $fields) {
-			$html .= '<table class="mainform">';
-
-			if(strlen($groupName)) {
-				$html .= '<caption>' . $groupName . '</caption>';
+			$viewKlass = sprintf('PXWidgetFieldGroups%sView', ucfirst(strtolower($view = (empty($datatype->groups[$k]['view']) ? $defaultView : $datatype->groups[$k]['view']))));
+			if(!class_exists($viewKlass)){
+				FatalError("Unknown group view '{$view}' (undefined widget class '{$viewKlass}') in datatype '{$datatype->id}'");
 			}
-
-
-			foreach ($fields as $k=>$v) {
-				if($k === 'id') {
-					continue;
-				}
-
-				if(!isset($this->object[$k]) && isset($v->defaultValue)) {
-					$this->object[$k] = htmlspecialchars($v->defaultValue);
-				}
-
-				$html .= $v->displayType->buildRow($v, $this->object, $param);
-			}
-
-			$html .= '</table>';
+			$groupViewer = new $viewKlass($k, $v, $datatype, $this->object);
+			$html .= $groupViewer->html();
 		}
 
 		if (isset($this->object['sys_created']) || isset($this->object['sys_modified']) || isset($this->object['ownerlogin'])) {
@@ -67,7 +53,7 @@ class PXAdminObjectForm extends NLAbstractHTMLForm {
 
 	function BaseInputs($action) {
 		return  $this->BuildHidden('id', ((isset($this->object['id'])) ? $this->object['id'] : '')).
-			$this->BuildHidden('area', 'objects').
+			$this->BuildHidden('area', $this->area).
 			$this->BuildHidden('action', $action).
 			$this->BuildHidden('format', $this->format->id);
 	}
@@ -85,23 +71,25 @@ class PXAdminObjectForm extends NLAbstractHTMLForm {
 			$html  .= '<!--%%OBJECT2JS%%-->';
 		}
 		$html .= '<table class="objects links">';
-		$html .= '<thead><tr><th class="c3"><br/></th>';
-
+		
+		$thead = ''; $enabledFilters = 0;
 		foreach ($displayFields as $f) {
 			if($f->storageType->filterable()){
-				$filterOn = isset($filters[$formatTo->id][$f->name]);
-				$html .= '<th class="ref-filter-'.( $filterOn ? 'show' : 'hide').'" ondblclick="ShowHideFilter(this)" title="Двойной клик, чтобы скрыть/показать фильтр по этому полю"><span>'.$f->description.'</span>';
-				$html .= '<input type="text" name="filters['.$formatTo->id.']['.$f->name.']" value="'.($filterOn ? $filters[$formatTo->id][$f->name]: null).'" />';
-				$html .= '</th>';
+				!($filterOn = isset($filters[$formatTo->id][$f->name])) OR $enabledFilters++;
+				$thead .= '<th class="ref-filter-'.( $filterOn ? 'show' : 'hide').'" ondblclick="ShowHideFilter(this)" title="Двойной клик, чтобы скрыть/показать фильтр по этому полю"><span>'.$f->description.'</span>';
+				$thead .= '<input type="text" name="filters['.$formatTo->id.']['.$f->name.']" value="'.($filterOn ? $filters[$formatTo->id][$f->name]: null).'" />';
+				$thead .= '</th>';
 			} else {
-				$html .= '<th>'.$f->description.'</th>';
+				$thead .= '<th>'.$f->description.'</th>';
 			}
 		}
+		$html .= '<thead><tr><th class="c3 ref-filter-'.( $enabledFilters ? 'show' : 'hide').'"><input type="submit" title="Применить фильтр(ы)" value="&gt;&gt;&gt;"/></th>' . $thead;
 
 		foreach ($reference->fields as $k=>$v) {
 			$html .= '<th>'.$v->description.'</th>';
 		}
 		$html .= '</tr></thead><tbody>';
+		#TODO remove
 
 
 		$params = array('object' => $this->object);
@@ -137,7 +125,7 @@ class PXAdminObjectForm extends NLAbstractHTMLForm {
 				$params['other'] = $v;
 
 				foreach ($reference->fields as $sk=>$sv) {
-					$value = ($linksIsset) ? $links[$v['id']]['fields'][$sk] : NULL;
+					$value = ($linksIsset) ? $links[$v['id']]['fields'][$sk] : htmlspecialchars($sv->defaultValue);
 					$k = $reference->name.'['.$iteration.']['.$v['id'].'][fields]['.$sk.']';
 
 					$sv->name = $k;
@@ -164,8 +152,17 @@ class PXAdminObjectForm extends NLAbstractHTMLForm {
 		$html .= '</tbody></table>';
 
 		$html .= '<div class="perpage" style="zoom: 1;">';
+
+		//Reset current objects pager for All/Linked switch
+		if(isset($layout->getData[$formatTo->id . '_page'])){
+			$currentPager = $layout->getData[$formatTo->id . '_page'];
+			unset($layout->getData[$formatTo->id . '_page']);
+		}
 		$html .= '<a style="float: right;" href="'.$layout->_BuildHref($formatTo->id.'_exist', 1).'" '.( $onlyExistingLinks ? 'class="selected"': '').'>привязанные</a>';
 		$html .= '<a style="float: right;" href="'.$layout->_BuildHref($formatTo->id.'_exist', 0).'" '.(!$onlyExistingLinks ? 'class="selected"': '').'>все</a>';
+		if(isset($currentPager)){
+			$layout->getData[$formatTo->id . '_page'] = $currentPager;
+		}
 
 		if(!is_bool($onlyExistingLinks)){
 			$html .= $this->BuildHidden($formatTo->id.'_exist', $onlyExistingLinks ? 1 : 0);
@@ -215,14 +212,15 @@ class PXAdminObjectForm extends NLAbstractHTMLForm {
 		}
 		$html .= '</DIV>';
 
-		return $this->BaseInputs('links').$html;
+		return $html;
 	}
 
 	function childrenForm($types, $counts = NULL) {
 		$values = array(
 			PP_CHILDREN_FETCH_ALL      => 'Все',
 			PP_CHILDREN_FETCH_SELECTED => 'Текущий',
-			PP_CHILDREN_FETCH_NONE     => 'Никакие'
+			PP_CHILDREN_FETCH_NONE     => 'Никакие',
+			PP_CHILDREN_FETCH_PAGED    => 'С постраничкой'
 		);
 
 		$name = OBJ_FIELD_CHILDREN;
@@ -272,15 +270,7 @@ HTML;
 
 		$html .= '</dl>';
 
-		return $this->baseInputs('children').$html;
-	}
-
-	function AccessForm($accessList) {
-		$html  = '<h2>На редактирование:</h2><p>'.$this->BuildDropDown("sys_accessmod", $this->object['sys_accessmod'], $accessList).'</p>';
-		if (count($this->format->childs)) {
-			$html .= '<h2>На добавление дочерних объектов:</h2><p>'.$this->BuildDropDown("sys_accessput", $this->object['sys_accessput'], $accessList).'</p>';
-		}
-		return $this->BaseInputs('access').$html;
+		return $html;
 	}
 
 	function EditTextFileForm($file, $dir) {
@@ -294,7 +284,7 @@ HTML;
 	function removeForm() {
 		$title = $this->object['title'];
 
-		return $this->BaseInputs('remove').<<<HTML
+		return <<<HTML
 			<h2>
 				Вы уверены, что хотите удалить объект &laquo;<strong>{$title}</strong>&raquo;
 			</h2>

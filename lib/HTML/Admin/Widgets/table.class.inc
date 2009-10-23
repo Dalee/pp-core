@@ -16,7 +16,7 @@ class PXAdminTable extends PXAdminWidget {
 	var $tree;
 
 	var $controls;                  //custom controls array
-	var $showDefaultControls;       //show default main and edit controls
+	var $showDefaultControls;       //where to show (or not to show) default main and edit controls : ENUM { 'before' , 'after', false }
 
 	var $selectedRow;
 
@@ -35,24 +35,24 @@ class PXAdminTable extends PXAdminWidget {
 	 * @param String $titleKey - тип поля в datatype по которому будет определяться 'title' таблицы
 	 */
 	function PXAdminTable($data, $dtype, $getData, $titleKey = NULL) {
-		$this->data     = $data;
-		$this->dtype    = $dtype;
-		$this->getData  = !empty($getData) ? $getData : array();
+		$this->data                = $data;
+		$this->dtype               = $dtype;
+		$this->getData             = !empty($getData) ? $getData : array();
 
-		$this->currentOrder = isset($getData[$this->dtype->id.'_order']) ? $getData[$this->dtype->id.'_order'] : $this->dtype->order;
+		$this->currentOrder        = isset($getData[$this->dtype->id.'_order']) ? $getData[$this->dtype->id.'_order'] : $this->dtype->order;
 
-		$this->titleKey = ($titleKey) ? $titleKey : 'title';
+		$this->titleKey            = ($titleKey) ? $titleKey : 'title';
 
-		$this->controls    = array();
-		$this->showDefaultControls = true;
+		$this->controls            = array();
+		$this->showDefaultControls = 'before';
 
-		$this->selectedRow = NULL;
+		$this->selectedRow         = NULL;
 
-		$this->currentPage = 0;
-		$this->rowsPerPage = 0;
-		$this->rowsCount   = 0;
-		$this->showChildObjects = false;
-		$this->childLink = NULL;
+		$this->currentPage         = 0;
+		$this->rowsPerPage         = 0;
+		$this->rowsCount           = 0;
+		$this->showChildObjects    = false;
+		$this->childLink           = NULL;
 	}
 
 	function loadDropdownValues($db) {
@@ -96,7 +96,7 @@ class PXAdminTable extends PXAdminWidget {
 
 	}
 
-	function showDefaultControls($show=true) {
+	function showDefaultControls($show = 'before') {
 		$this->showDefaultControls = $show;
 	}
 
@@ -188,16 +188,17 @@ class PXAdminTable extends PXAdminWidget {
 
 				$alias = isset($row['pathname']) && strlen($row['pathname']) ? $this->_buildShowOnSiteLink($row) : '';
 
-				if ($this->showDefaultControls) {
+				if (in_array($this->showDefaultControls, array('before', 'after'))) {
+					$meths = array('before' => 'insertControl', 'after' => 'appendControl');
+					
+					$t1  = '<a href="#"><img src="i/icon/menu.gif" ';
+					$t1 .= 'onclick="{{context}}" oncontextmenu="{{context}}" alt=""></a>';
 
-					$t1 = '<a href="#"><img src="i/icon/menu.gif" ';
-					$t1.= 'onclick="{{context}}" oncontextmenu="{{context}}" alt=""></a>';
+					$t2  = '<a oncontextmenu="{{context}}" href="javascript:EditContent(\'{{format}}\',\'{{id}}\')">';
+					$t2 .= '<img src="i/icon/edit.gif" alt=""></A>';
 
-					$t2 = '<a oncontextmenu="{{context}}" href="javascript:EditContent(\'{{format}}\',\'{{id}}\')">';
-					$t2.= '<img src="i/icon/edit.gif" alt=""></A>';
-
-					$this->insertControl('edit', $t2, 'edit');
-					$this->insertControl('main', $t1, 'edit');
+					$this->{$meths[$this->showDefaultControls]}('edit', $t2, 'edit');
+					$this->{$meths[$this->showDefaultControls]}('main', $t1, 'edit');
 				}
 
 				//templateVars
@@ -473,5 +474,5 @@ class PXAdminTable extends PXAdminWidget {
 		}
 	}
 	
-}//class
+}
 ?>

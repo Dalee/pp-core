@@ -78,9 +78,10 @@ class NLHTTPClient {
 		unset($this->replyHeaders);
 		unset($this->replyBody);
 
-		$host    = isset($tmp['host']) && strlen($tmp['host']) ? $tmp['host'] : '';
-		$port    = isset($tmp['port']) && $tmp['port'] > 0     ? $tmp['port'] : '80';
-		$path    = isset($tmp["path"]) && strlen($tmp["path"]) ? $tmp["path"] : '/';
+		$host    = isset($tmp['host'])  && strlen($tmp['host'])  ? $tmp['host'] : '';
+		$port    = isset($tmp['port'])  && $tmp['port'] > 0      ? $tmp['port'] : '80';
+		$path    = isset($tmp["path"])  && strlen($tmp["path"])  ? $tmp["path"] : '/';
+		$path   .= isset($tmp["query"]) && strlen($tmp["query"]) ? '?'.$tmp["query"] : '';
 
 		$this->headers[] = "GET ".($fullPath ? 'http://'.$host: '').$path." HTTP/1.0";
 		$this->headers[] = "Host: ".$host;

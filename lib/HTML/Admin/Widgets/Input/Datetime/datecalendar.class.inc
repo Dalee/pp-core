@@ -9,7 +9,7 @@ class PXInputDateCalendar extends PXInputDateTime {
 		$month = is_null($this->date['day']) ? null : sprintf('%02d', $this->date['month']);
 		$year  = $this->date['year'];
 
-		$delim = '<input type="text" class="delim" value="." readonly tabindex="-1">';
+		$delim = '<input type="text" class="delim" value="." ' . $this->disable . ' readonly tabindex="-1">';
 
 		$html = <<<HTML
 			<span class="datetime">

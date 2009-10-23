@@ -1,4 +1,5 @@
 <?php
+include_once 'svn_revision.inc';
 
 // Default timezone settings for formated date output
 date_default_timezone_set('Europe/Moscow');

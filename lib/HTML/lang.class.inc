@@ -121,8 +121,8 @@ class PXUserHTMLLang {
 		$full  = $this->_get('weekdays'); 
 
 		return array(
-			'%a' => $short[$weekDay],
-			'%A' => $full[$weekDay]
+			'%a' => $short[$weekDay -1],
+			'%A' => $full[$weekDay -1]
 		);
 	}
 
@@ -164,6 +164,10 @@ class PXUserHTMLLang {
 
 	function parseDateToTime($string) {
 		if(strlen($string)) {
+			if(strlen($string) == 10 && is_numeric($string)) {
+				return $string;
+			}
+
 			preg_match("/^(\d{2})\.(\d{2})\.(\d{4})\s+(\d{2}):(\d{2}):(\d{2})(\.\d+)?$/si", trim($string), $date);
 			return mktime($date[4], $date[5], $date[6], $date[2], $date[1], $date[3]);
 

@@ -4,31 +4,43 @@ class PXInputDropDown extends PXAdminWidget {
 	var $value;
 	var $values = array();
 	
+	var $multiple = '';
+	var $size     = '';
+	
 	function PXInputDropDown($name, $value, $values) {
 		$this->name = $name;
 		$this->value = $value;
 		$this->values = $values;
 	}
-
+	
+	function setMultiple($multiple){
+		$this->multiple = $multiple ? 'multiple="multiple"' : '';
+	}
+	
+	function setSize($size){
+		$this->size = is_numeric($size) ? 'size="'.$size.'"' : '';
+	}
+	
 	function html() {
-		$html = '<select name="'.$this->name.'"'.$this->disable.'>';
-
-		$notSelected = true;
-		foreach ($this->values as $k=>$v) {
+		$html     = squeeze(sprintf('<select name="%s" %s %s %s>', $this->name, $this->disable, $this->multiple, $this->size), ' ');
+		$empty    = array(null => 0);
+		$selected = max($empty, array_flip((array)$this->value));
+		
+		foreach ($this->values as $k=>$title) {
 			$selectedHTML = '';
-
-			if($notSelected) {
-				if($k == $this->value) {
-					$selectedHTML = ' selected';
-					$notSelected = false;
-				}
+			$value        = $k;
+			
+			//if there is no empty value and no "bydefault" value, try to use value == 0
+			if(isset($selected[$k]) || ($selected == $empty && empty($k) && (($k = null) || true))) {
+				$selectedHTML = ' selected';
+				unset($selected[$k]);
 			}
-
-			$html .= '<option value="'.$k.'"'.$selectedHTML.'>'.$v.'</option>';
+			
+			$html .= sprintf('<option value="%s"%s>%s</option>', $value, $selectedHTML, $title);
 		}
-
-		if(!in_array($this->value, array_keys($this->values))) {
-			$html .= '<option value="'.$this->value.'" selected>[нет в списке - '.$this->value.']</option>';
+		
+		foreach($selected as $unknown => $k){
+			$html .= sprintf('<option value="%s" selected>[нет в списке - "%s"]</option>', $unknown, $unknown);
 		}
 
 		$html .= '</select>';

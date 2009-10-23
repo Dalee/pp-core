@@ -7,7 +7,12 @@ class PXAdminHTMLLayout extends NLAbstractLayout {
 		$this->setOuterLayout($outerLayout);
 		$this->assignTitle();
 		$this->setOuterLogo('i/admin.gif', 'Proxima CMS Портал', 250, 45);
+		$this->assignVersion();
 		$this->types = $types;
+	}
+
+	function assignVersion() {
+		$this->assign('OUTER.VERSION', 'version '.PP_VERSION.'.'.PP_REVISION);
 	}
 
 	function setApp() {
