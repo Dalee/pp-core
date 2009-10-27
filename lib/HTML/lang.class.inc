@@ -34,7 +34,7 @@ class PXUserHTMLLang {
 
 		if(isset($param['date'])) {
 			$date = $param['date'];
-			$path = 'date';
+			$path = is_null($path) ? 'date' : $path;
 			$action = 'date';
 		}
 
