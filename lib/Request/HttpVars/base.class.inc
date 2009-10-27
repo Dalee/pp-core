@@ -112,11 +112,11 @@ class NLHTTPVarsData {
 		static $callback;
 
 		if(!isset($callback)) {
-			$callback = create_function('$k, $v, &$arrayItself, $opts', <<<DO
-				if(strval(\$v) == "" && \$opts['killEmptyRows']) unset(\$arrayItself[\$k]);
+			$callback = create_function('&$arrayItself, $key, $opts', <<<DO
+			if(empty(\$arrayItself[\$key]) && !in_array(\$arrayItself[\$key], array(0, "0"), true) && \$opts['killEmptyRows']) unset(\$arrayItself[\$key]);
 DO
-			);
- 		}
+		);
+}
 		
 		NestedArrayWalk($temp, $callback, array('killEmptyRows' => $killEmptyRows));
 		return $temp;

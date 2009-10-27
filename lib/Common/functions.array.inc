@@ -53,11 +53,15 @@ if(!function_exists('array_combine')){
 }
 
 function NestedArrayWalk(&$multiArray, $mapper, $optArgs = array()){
-	if(!is_callable($mapper)) return false;
+	if(!is_callable($mapper)) {
+		return false;
+	}
+
 	foreach($multiArray as $key => $value){
 		if(is_array($value) && sizeof($value)){
 			NestedArrayWalk($multiArray[$key], $mapper, $optArgs);
 		}
+
 		$mapper($multiArray, $key, $optArgs);
 	}
 	
