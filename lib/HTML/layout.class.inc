@@ -126,6 +126,10 @@ class PXUserHTMLLayout extends PXLayoutInterface  {
 		}
 	}
 
+	function assignByRef($varName, $variable) {
+		$this->smarty->assign_by_ref($varName, $variable);
+	}
+
 	function assignRequest(&$request) {
 		$this->smarty->_get     = $request->GetAllGetData();
 		$this->smarty->_post    = $request->GetAllPostData();
@@ -139,8 +143,12 @@ class PXUserHTMLLayout extends PXLayoutInterface  {
 	}
 
 	function getVar($varName, $default=NULL) {
-		$var = $this->smarty->get_template_vars($varName);
+		$var =& $this->smarty->get_template_vars($varName);
 		return (isset($var) ? $var : $default);
+	}
+
+	function &getVarByRef($varName) {
+		return $this->smarty->get_template_vars($varName);
 	}
 
 	function changeIndexTemplate($filename='index.tmpl') {
