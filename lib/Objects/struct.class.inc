@@ -119,6 +119,11 @@ class PXTreeObjects extends PXContentObjects implements ArrayAccess, Iterator {
 	public $rootId = -1;
 	public $currentId;
 
+	private
+	function __getLeaf($leafArray) {
+		return new PXStructLeaf($leafArray, $this);
+	}
+
 	function __get($key) {
 		switch($key) {
 			case 'root':
@@ -127,15 +132,16 @@ class PXTreeObjects extends PXContentObjects implements ArrayAccess, Iterator {
 
 			case 'current':
 				if($this->hasCurrent()) {
-					return new PXStructLeaf($this->tree->leafs[$this->currentId], $this);
+					return $this->__getLeaf($this->tree->leafs[$this->currentId]);
 				} else {
 					return new PXStructLeaf404();
 				}
 				break;
 		}
 
-		if(!isset($this->$key) && isset($this->tree->$key))
+		if(!isset($this->$key) && isset($this->tree->$key)) {
 			return $this->tree->$key;
+		}
 
 		return null;
 	}
@@ -154,7 +160,7 @@ class PXTreeObjects extends PXContentObjects implements ArrayAccess, Iterator {
 	}
 
 	function getCurrent() {
-		return $this->tree->leafs[$this->currentId];
+		return $this->__getLeaf($this->tree->leafs[$this->currentId]);
 	}
 
 	function findCurrent($urlPath) {
@@ -223,7 +229,7 @@ class PXTreeObjects extends PXContentObjects implements ArrayAccess, Iterator {
 
 	// ArrayAccess if
 	public function offsetGet($id) {
-		return $this->tree->leafs[$id];
+		return $this->__getLeaf($this->tree->leafs[$id]);
 	}
 
 	public function offsetSet($id, $object) {
@@ -244,8 +250,7 @@ class PXTreeObjects extends PXContentObjects implements ArrayAccess, Iterator {
 	}
 
 	function current() {
-		$leaf = new PXStructLeaf($this->tree->leafs[$this->key()], $this); 
-		return $leaf;
+		return $this->__getLeaf($this->tree->leafs[$this->key()]); 
 	}
 
 	function key() {
