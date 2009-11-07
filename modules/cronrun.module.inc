@@ -3,8 +3,13 @@ class PXModuleCronRun extends PXModule {
 	var $TIME_FORMAT   = 'd-m-Y H:i:s';
 	var $rules;
 
+	private $RESULTS_FILE;
+
 	function __construct($area, $settings) {
 		parent::__construct($area, $settings);
+
+		$this->RESULTS_FILE = BASEPATH.'/site/var/cron.results';
+		MakeDirIfNotExists(dirname($this->RESULTS_FILE));
 
 		$this->rules    = array();
 		$this->job2rule = array();
@@ -114,7 +119,7 @@ class PXModuleCronRun extends PXModule {
 		// log  up
 
 		$cronStat = array();
-		$fp = @fopen(BASEPATH.'/var/cron.results', "r+");
+		$fp = @fopen($this->RESULTS_FILE, "r+");
 		if ($fp) {
 			do{
 				//nothing;
@@ -133,7 +138,7 @@ class PXModuleCronRun extends PXModule {
 				}
 			}
 		} else {
-			$fp = @fopen(BASEPATH.'/var/cron.results', "w");
+			$fp = @fopen($this->RESULTS_FILE, "w");
 			if($fp){
 				do{
 					//nothing;
@@ -141,6 +146,7 @@ class PXModuleCronRun extends PXModule {
 			}
 		}
 		$cronStat[$job['jobhash']] = array('start' => $tmStart, 'end' => $tmEnd, 'result' => $res);
+
 		fwrite($fp, serialize($cronStat));
 		flock($fp, LOCK_UN);
 		fclose($fp);
@@ -178,7 +184,7 @@ class PXModuleCronRun extends PXModule {
 	}
 
 	function adminIndex() {
-		$fp = @fopen(BASEPATH.'/var/cron.results', 'r');
+		$fp = @fopen($this->RESULTS_FILE, 'r');
 		if ($fp) {
 			flock($fp, LOCK_EX);
 

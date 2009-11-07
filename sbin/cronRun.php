@@ -18,9 +18,6 @@ if (isset($cronModule->jobs[$jobName])) {
 
 	$cronModule->RunJob($cronModule->jobs[$jobName], $app, time());
 
-	echo "\n\n/* Press Enter button */\n";
-	ListenInput();
-
 } else {
 	ini_set('display_errors', 0);
 	
