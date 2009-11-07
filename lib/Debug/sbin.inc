@@ -28,7 +28,7 @@ function Label($str, $alwaysPrint=false) {
 
 // Отображает индикатор, считающий циклы в циклах =)
 function WorkProgress($finish=FALSE, $total=0, $step = 1) {
-	static $progress, $counter;
+	static $progress, $counter, $lastTotal;
 
 	if(isset($_SERVER['REQUEST_METHOD']))  {
 		return;
@@ -43,11 +43,18 @@ function WorkProgress($finish=FALSE, $total=0, $step = 1) {
 	}
 
 	if($finish) {
+		// clear string
+		print "\r";
+		print " \t".str_repeat(' ', strlen((string) $counter) + 6 + strlen((string) $lastTotal));
+
 		print "\r";
 		$progress = '+';
 		$counter = 0;
+		$lastTotal = 0;
 		return;
 	}
+
+	$lastTotal = $total;
 
 	if(++$counter % $step) {
 		return;

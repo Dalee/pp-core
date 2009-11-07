@@ -134,6 +134,33 @@ abstract class PXmlAbstractNode implements IPXmlNode {
 		return array();
 	}
 
+	function getChildNode($nodeName) {
+		$find = array();
+
+		foreach($this->childNodes() as $node) {
+			if($node->nodeName() == $nodeName) {
+				$find[] = $node;
+			}
+		}
+
+		if(!sizeof($find)) {
+			return null;
+		}
+
+		return sizeof($find) == 1 ? $find[0] : $find;
+	}
+
+	function __get($name) {
+		$attr = $this->getAttribute($name);
+
+		if($attr !== FALSE) {
+			return $attr;
+		}
+
+		return $this->getChildNode($name);
+
+	}
+
 	function getAttribute($attrName){
 		$this->attributes();
 
