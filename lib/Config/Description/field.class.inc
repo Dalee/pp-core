@@ -11,6 +11,7 @@ class PXFieldDescription {
 	var $name            = NULL;
 	var $description     = NULL;
 	var $storageType     = NULL;
+	var $storageTypeArgs = NULL;
 	var $handler         = NULL;
 	var $displayType     = NULL;
 	var $displayTypeArgs = NULL;
@@ -121,16 +122,20 @@ class PXFieldDescription {
 
 	function setDisplayType($string) {
 		$this->displayTypeArgs = explode("|", $string);
-		
+
 		$displayType = $this->_getType($this->displayTypeArgs[0], 'PXDisplayType');
 		$this->displayType = new $displayType($this, $this->displayTypeArgs[0]);
 
 		array_shift($this->displayTypeArgs);
 	}
-	
-	function setStorageType($fieldType) {
-		$storageType = $this->_getType($fieldType, 'PXStorageType');
-		$this->storageType = new $storageType($this, $fieldType);
+
+	function setStorageType($string) {
+		$this->storageTypeArgs = explode("|", $string);
+
+		$storageType = $this->_getType($this->storageTypeArgs[0], 'PXStorageType');
+		$this->storageType = new $storageType($this, $this->storageTypeArgs[0]);
+
+		array_shift($this->storageTypeArgs);
 	}
 	
 	function _getType($type, $baseClass) {
