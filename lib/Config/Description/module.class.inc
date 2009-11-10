@@ -13,7 +13,7 @@ class PXModuleDescription {
 	var $settings    = array();
 	var $trigger     = NULL;
 	var $package     = NULL;
-	
+
 	const EMPTY_DESCRIPTION = '---';
 
 	public function getModule() {
@@ -84,5 +84,4 @@ class PXModuleDescription {
 		}
 	}
 }
-
 ?>

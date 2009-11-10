@@ -23,32 +23,37 @@ class PXDirectoryDescription {
 		$this->loaded      = false;
 		$this->parentField = false;
 	}
-			
-	public function GetList() {
+
+	public
+	function GetList() {
 		$retArray = array();
+
 		foreach ($this->values as $v) {
 			$retArray[$v['id']] = $v[$this->displayField];
 		}
+
 		return $retArray;
 	}
-	
+
 	function GetTree() {
 		$retArray = array();
+
 		if (count($this->values) && $this->parentField !== false) {
 			$retArray = new NLTree($this->values, 'id', $this->parentField, 'title');
 		}
 
 		return $retArray;
 	}
-	
 
-	public function SetLoaded($addDefault = true) {
+	public
+	function SetLoaded($addDefault = true) {
 		if ($addDefault && !isset($this->values[0]) && !isset($this->values[''])) {
 			$this->values[''] = array(
 				'id' => '',
 				$this->displayField => '---'
 			);
 		}
+
 		$this->loaded = true;
 	}
 }
