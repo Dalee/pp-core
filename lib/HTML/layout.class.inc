@@ -126,7 +126,7 @@ class PXUserHTMLLayout extends PXLayoutInterface  {
 		}
 	}
 
-	function assignByRef($varName, $variable) {
+	function assignByRef($varName, &$variable) {
 		$this->smarty->assign_by_ref($varName, $variable);
 	}
 
@@ -148,7 +148,8 @@ class PXUserHTMLLayout extends PXLayoutInterface  {
 	}
 
 	function &getVarByRef($varName) {
-		return $this->smarty->get_template_vars($varName);
+		$variable =& $this->smarty->get_template_vars($varName);
+		return $variable;
 	}
 
 	function changeIndexTemplate($filename='index.tmpl') {
