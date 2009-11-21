@@ -29,7 +29,9 @@ abstract class PXModule implements PXModuleIF {
 		$this->db         = PXRegistry::getDb();
 		$this->layout     = PXRegistry::getLayout();
 		$this->types      = PXRegistry::getTypes();
-		
+
+		$this->response   = PXRegistry::getResponse();
+
 /*
 TODO FIXME
 		$this->struct     = PXRegistry::getVar('struct');
@@ -45,9 +47,7 @@ TODO FIXME
 	}
 
 	function getAclModuleActions() {
-		return array('viewmenu' => 'Показывать в меню',
-					 'admin' => 'Доступ в админке'
-		);
+		return array('viewmenu' => 'Показывать в меню', 'admin' => 'Доступ в админке');
 	}
 	
 	function buildAdminUrl() {

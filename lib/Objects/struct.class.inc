@@ -9,8 +9,8 @@ class PXStructLeaf implements Iterator {
 	}
 
 	function __get($key) {
-		if($key == 'content') {
-			return $this->data->content;
+		if(isset($this->data->{$key})) {
+			return $this->data->{$key};
 		}
 
 		return $this->data->content[$key];
@@ -122,6 +122,15 @@ class PXTreeObjects extends PXContentObjects implements ArrayAccess, Iterator {
 	private
 	function __getLeaf($leafArray) {
 		return new PXStructLeaf($leafArray, $this);
+	}
+
+	function __call($name, $arguments) {
+		if(method_exists($this->tree, $name)) {
+			return call_user_func_array(array($this->tree, $name), $arguments);
+		} else {
+			$trace = pxtrace();
+			FatalError('Call to undefined method '.__CLASS__.'::'.$name.'() in '.$trace[1]['file'].' on line '.$trace[1]['line']);
+		}
 	}
 
 	function __get($key) {

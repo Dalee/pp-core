@@ -16,6 +16,19 @@ class PXBindingsQueue implements Iterator {
 		$this->rules  = array();
 	}
 
+	function getRequestBinding() {
+		$rArea = PXRegistry::getRequest()->getArea();
+
+		if(strlen($rArea) && sizeof(PXRegistry::getRequest()->getHostAndDir()) <= 1) {
+			// FIXME
+			array_unshift($this->rules, new PXBindingDescription(array('type' => 'request', 'module' => $rArea), $this->pOrder++));
+		}
+	}
+
+	function __addRule($cls, $rule) {
+		$this->rules[] = new $cls($rule, $this->pOrder++);
+	}
+
 	function add($xmlNode, $type) {
 		$rule = array(
 			'type'   => $type,
@@ -49,7 +62,7 @@ class PXBindingsQueue implements Iterator {
 				break;
 		}
 
-		$this->rules[] = new $cls($rule, $this->pOrder++);
+		$this->__addRule($cls, $rule);
 	}
 
 	function sort() {
