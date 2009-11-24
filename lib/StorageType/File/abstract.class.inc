@@ -62,7 +62,7 @@ class PXStorageTypeAbstractFile extends PXStorageType {
 		$normalizedObject = $this->saveToCache($key, $this->__normalize($field, $object, $param, $allowed));
 	
 		//For some triggers, which need original fields like tmp_name, etc ...
-		if (isset($object[$field->name]) && is_array($object[$field->name])) {
+		if (isset($object[$field->name]) && is_array($object[$field->name]) && is_array($normalizedObject)) {
 			$normalizedObject = array_merge($object[$field->name], $normalizedObject);
 		}
 
