@@ -85,7 +85,7 @@ class PXRequestUser extends PXRequestBase {
 
 		foreach ($format->fields as $k=>$v) {
 			$object[$k] = $v->displayType->getFromRequest($v, $object, $p);
-			
+
 			if (!empty($v->handler)) {
 				$extraArgs = explode('|', $v->handler);
 				$handler = array_shift($extraArgs);

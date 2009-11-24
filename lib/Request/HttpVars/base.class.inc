@@ -62,6 +62,7 @@ class NLHTTPVarsData {
 			foreach ($data as $k=>$v) {
 				$this->_Normalize($data[$k]);
 			}
+
 		} else {
 			if (get_magic_quotes_gpc()) {
 				$data = stripslashes($data);

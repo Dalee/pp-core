@@ -86,8 +86,7 @@ class PXRequestAbstract {
 		if (isset($_SERVER['HTTP_X_REAL_IP'])) {
 			$http_x_real_ip = $_SERVER['HTTP_X_REAL_IP'];
 
-			return strstr($http_x_real_ip, ",") ?
-				 trim(substr($http_x_real_ip, strrpos($http_x_real_ip, ',') + 1)) : $http_x_real_ip;
+			return strstr($http_x_real_ip, ",") ? trim(substr($http_x_real_ip, strrpos($http_x_real_ip, ',') + 1)) : $http_x_real_ip;
 
 		} elseif (isset($_SERVER['REMOTE_ADDR'])) {
 			return $_SERVER['REMOTE_ADDR'];

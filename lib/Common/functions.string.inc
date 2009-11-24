@@ -837,7 +837,7 @@ function myconv($from, $to, $string, $be_quiet = false) {
 	$php_errormsg = false;
 	$res = @iconv($from, $to, $string);
 	ini_set('track_errors', $prev_track_errors);
-	if ($php_errormsg === false) {
+	if ($php_errormsg === false && strlen($res) == strlen($string)) { // FIXME: hotfix HACK
 		return $res;
 	} else {
 		unset($res);
@@ -860,7 +860,7 @@ function myconv($from, $to, $string, $be_quiet = false) {
 	$key = $onebyte ? "$from~$to": $to;
 
 	if (!array_key_exists($key, $tables)) {
-		$fname = (defined('BASEPATH') ? BASEPATH . 'var' : ini_get('upload_tmp_dir')) . '/recode-table-' . $key;
+		$fname = (defined('BASEPATH') ? BASEPATH . 'tmp/cache/myconv' : ini_get('upload_tmp_dir')) . '/recode-table-' . $key;
 		$tables[$key] = array();
 
 		if (is_file($fname)) {
@@ -899,12 +899,14 @@ function myconv($from, $to, $string, $be_quiet = false) {
 				}
 			}
 
+			MakeDirIfNotExists(dirname($fname));
 			if ($f = @fopen($fname, 'w')) {
 				fwrite($f, serialize($tables[$key]));
 				fclose($f);
 			}
 		}
 	}
+
 	return strtr($onebyte ? $string : iconv($from, 'ucs-2be', $string), $tables[$key]);
 }
 
