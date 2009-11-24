@@ -837,7 +837,7 @@ function myconv($from, $to, $string, $be_quiet = false) {
 	$php_errormsg = false;
 	$res = @iconv($from, $to, $string);
 	ini_set('track_errors', $prev_track_errors);
-	if ($php_errormsg === false && strlen($res) == strlen($string)) { // FIXME: hotfix HACK
+	if ($php_errormsg === false && strlen($res) == strlen($string)) { // FIXME: hotfix HACK, replace me to try/catch section
 		return $res;
 	} else {
 		unset($res);
