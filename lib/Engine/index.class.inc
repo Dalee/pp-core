@@ -101,7 +101,6 @@ class PXEngineIndex extends PXEngine {
 			}
 
 			$moduleDescription = $bind->getModuleDescription();
-
 			$debugKey = 'MODULE: '.$moduleDescription->class;
 
 			PXProfiler::begin($debugKey);

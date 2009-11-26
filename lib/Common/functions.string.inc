@@ -540,10 +540,14 @@ function isUtfString($str) {
 
 function isAsciiString($AStr) {
 	static $ptrASCII = '[\x00-\x7F]';
-	return preg_match("/^{$ptrASCII}*$/s", $AStr);
+	return preg_match("/^{$ptrASCII}*$/S", $AStr);
 }
 
 function myconv($from, $to, $string, $be_quiet = false) {
+	if(isAsciiString($string)) {
+		return $string;
+	}
+
 	if(!function_exists('iconv')) {
 		FatalError('Can\'t find ICONV');
 	}
@@ -886,6 +890,7 @@ function myconv($from, $to, $string, $be_quiet = false) {
 						}
 					}
 				}
+
 			} else {
 				for ($i = 0; $i <= 0xffff; $i++) {
 					$c = pack('n', $i);

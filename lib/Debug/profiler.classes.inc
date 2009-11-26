@@ -79,16 +79,17 @@ class PXProfiler {
 		}
 		$collection = $self->getItems();
 		ksort($collection);
+
 		return $collection;
 	}
 
 	function toString() {
 		$collection = PXProfiler::finalize();
 		array_walk($collection, create_function('&$item', '$item = $item->toString();'));
-		
+
 		$result = '';
 		$self   = & PXProfiler::getInstance();
-		
+
 		if($self->_isMemoryProfile) {
 			$result .= sprintf('%16s%16s', 'MemoryStart(Kb)', 'MemoryDelta(Kb)');
 		}

@@ -1,0 +1,52 @@
+{php}
+	$this->assign('PXProfilerResult', PXProfiler::finalize());
+{/php}
+
+{if $PXProfilerResult|@sizeof}
+	<link rel="stylesheet" type="text/css" href="/css/profiler.css" />
+
+	<div id="profiler">
+		<table>
+			<tr>
+				<th>Memory, Kb</th>
+				<th>delta, Kb</th>
+
+				<th>Time</th>
+				<th class="label">Process</th>
+			</tr>
+	
+			{foreach from=$PXProfilerResult item=call}
+				{assign var=class value=''}
+	
+				{if     $call->time.delta > 1}
+					{assign var=class value='1'}
+	
+				{elseif $call->time.delta > 0.1}
+					{assign var=class value='01'}
+	
+				{elseif $call->time.delta > 0.01}
+					{assign var=class value='001'}
+	
+				{elseif $call->time.delta > 0.001}
+					{assign var=class value='0001'}
+				{/if}
+	
+				<tr{if $class|@strlen} class="long{$class}"{/if} title="level {$call->level} &#8212; {$call->eventName|escape}">
+					{if $call->memory.start}
+						<td>{$call->memory.start|number_format:2:",":" "}</td>
+						<td>{$call->memory.delta|number_format:2:",":" "}</td>
+					{else}
+						<td>&#8212;</td>
+						<td>&#8212;</td>
+					{/if}
+
+					<td>{$call->time.delta|string_format:'%.3f'}</td>
+
+					<td class="label lev{$call->level}">
+						{$call->eventName|regex_replace:'/\s+/':' '|escape}
+					</td>
+				</tr>
+			{/foreach}
+		</table>
+	</div>
+{/if}
