@@ -311,22 +311,9 @@ function htmlspecialcharsArray($array) {
 
 function DbQuoteString($s) {
 	return "'".addslashes($s)."'";
-	// return "'".pg_escape_string($s)."'";
 }
 
 function Strip1251($s) {
-	/*
-	$htmlEsc = array(
-		chr(171) => '"',
-		chr(187) => '"',
-		chr(150) => '-',
-		chr(151) => '-',
-		chr(146) => '\'',
-		chr(147) => '"',
-		chr(148) => '"'
-	);
-	return strtr($s, $htmlEsc);
-	*/
 	static $ent = array (
 		'&sbquo;' => "'",
 		'&bdquo;' => '"',
@@ -540,7 +527,7 @@ function isUtfString($str) {
 
 function isAsciiString($AStr) {
 	static $ptrASCII = '[\x00-\x7F]';
-	return preg_match("/^{$ptrASCII}*$/S", $AStr);
+	return preg_match("/^{$ptrASCII}*$/sS", $AStr);
 }
 
 function myconv($from, $to, $string, $be_quiet = false) {
