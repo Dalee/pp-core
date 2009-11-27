@@ -8,7 +8,6 @@ class PXModuleRegister extends PXAbstractModule {
 	var $userNotify;
 	var $contactEmailField;
 	var $captchaField;
-	var $defaultAccess;
 	var $defaultAuth;
 
 	var $fields;
@@ -26,7 +25,6 @@ class PXModuleRegister extends PXAbstractModule {
 		$this->userNotify        = GetFromArray($settings,'notify');                         //notify users about successful registration
 		$this->contactEmailField = GetFromArray($settings,'useremail');                      //form field used for user contact email
 		$this->captchaField      = GetFromArray($settings,'captcha');                        //form field used for the captcha
-		$this->defaultAccess     = GetFromArray($settings,'defaultaccess', 1024);            //default user access after registration
 		$this->defaultAuth       = GetFromArray($settings,'authtype', null);                 //auth engine used on this site, for password encryption purposes
 
 		$this->fields            = array();
@@ -299,8 +297,6 @@ class PXModuleRegister extends PXAbstractModule {
 		$rq = $this->_parseFields($input, $errors);
 
 		if (!count($errors)) {
-			$newUser['access'] = $this->defaultAccess;
-
 			foreach ($rq as $k=>$v) {
 				$newUser[$k] = $v;
 			}

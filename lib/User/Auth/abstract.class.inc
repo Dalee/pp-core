@@ -7,7 +7,6 @@ class PXAuthInterface {
 		$user = PXRegistry::getUser();
 
 		$user->id     = $uArray['id'];
-		$user->level  = $uArray['access'];
 		$user->data   = $uArray;
 
 		$this->passwd = $user->passwd = $uArray['passwd'];

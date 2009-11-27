@@ -9,7 +9,6 @@ class PXModuleDescription {
 	var $name        = NULL;
 	var $description = NULL;
 	var $class       = NULL;
-	var $access      = NULL;
 	var $settings    = array();
 	var $trigger     = NULL;
 	var $package     = NULL;

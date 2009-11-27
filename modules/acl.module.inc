@@ -12,7 +12,7 @@ class PXModuleAcl extends PXModule {
 		$this->what     = $this->getAvailableActions();
 		$this->access   = array();
 		$this->sqlTable = 'acl_objects';
-		
+
 		if(!isset($settings['access'])) {
 			FatalError('Не описаны правила access');
 		}

@@ -16,7 +16,6 @@ abstract class PXUser {
 	var $id;
 	var $login;
 	var $groups;
-	var $level;
 	var $data;
 	var $auth;
 
@@ -24,7 +23,6 @@ abstract class PXUser {
 		$this->id     = NULL;
 		$this->login  = NULL;
 		$this->groups = array(0);
-		$this->level  = USERLEVEL_UNAUTHED;
 		$this->data   = array();
 
 		$this->auth = new PXAuthNull();
@@ -49,7 +47,14 @@ abstract class PXUser {
 	}
 
 	function isAdmin() {
-		return ($this->level >= USERLEVEL_ADMIN);
+		foreach(PXRegistry::getApp()->modules as $module) {
+			if($module->name != 'auth' && $this->can('admin', $module)) {
+				return true;
+			}
+		}
+//		d2($this, false);
+
+		return false;
 	}
 
 	function isAuthed() {
@@ -58,7 +63,7 @@ abstract class PXUser {
 
 	function checkAuth() {
 	}
-	
+
 	function getAuthMethods($req_auth_method = null) {
 		$authmethods = null;
 
@@ -67,17 +72,19 @@ abstract class PXUser {
 				$authmethods[0] = $rule; //single element
 				break;
 			}
-				
+
 			if($param['enabled']) {
 				$authmethods[] = $rule;
 			}
 		}
-		
-		if(is_null($authmethods)) $authmethods[] = 'null';
-		
+
+		if(is_null($authmethods)) {
+			$authmethods[] = 'null';
+		}
+
 		return $authmethods;
 	}
-	
+
 	function getPrimaryAuthMethod($type = null){
 		return 'PXAuth' . ucfirst(reset($this->getAuthMethods($type)));
 	}
