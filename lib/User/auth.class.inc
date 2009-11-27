@@ -29,16 +29,16 @@ class PXUserAuthorized extends PXUser {
 
 	private function proceedAuth($rule, $params) {
 		$authClass = 'PXAuth'.ucfirst(strtolower($rule));
-		
+
 		if (!class_exists($authClass)) {
 			FatalError('Неизвестный способ авторизации ' . $authClass);
 		}
-		
-		$tmpAuth  = new $authClass(PXRegistry::getApp(), PXRegistry::getRequest(), $this,
-			PXRegistry::getDB(), $params);
 
-		if(!$this->isAuthed()) 
+		$tmpAuth  = new $authClass(PXRegistry::getApp(), PXRegistry::getRequest(), $this, PXRegistry::getDB(), $params);
+
+		if(!$this->isAuthed()) {
 			return false;
+		}
 
 		$this->auth = $tmpAuth;
 		return true;
@@ -47,9 +47,11 @@ class PXUserAuthorized extends PXUser {
 	private function setGroups() {
 		$app = PXRegistry::getApp();
 		$db  = PXRegistry::getDB();
-		
-		if (!isset($app->types[DT_GROUP])) return;
-		
+
+		if (!isset($app->types[DT_GROUP])) {
+			return;
+		}
+
 		$groups = $db->getLinks($app->references[LINK_GROUP2USER], DT_USER, $this->id);
 		$this->groups = array_unique(array_merge(array(0, (int)$this->data['parent']), array_keys($groups)));
 	}

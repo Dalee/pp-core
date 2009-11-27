@@ -9,10 +9,8 @@ class PXAuthPlain extends PXAuthInterface {
 
 	private function proceedAuth($uArray) {
 		if(!(count($uArray) && strlen($this->passwd))) return;
-		
-		if ($this->passwdToDB($this->passwd) == $uArray['passwd'] 
-		 || $passwd == $this->encodePasswd($uArray['passwd'])) {
 
+		if ($this->passwdToDB($this->passwd) == $uArray['passwd'] || $passwd == $this->encodePasswd($uArray['passwd'])) {
 			 $this->feelUserFields($uArray);
 		}
 	}
@@ -30,5 +28,4 @@ class PXAuthPlain extends PXAuthInterface {
 		return md5('rewqr'.$passwd);
 	}
 }
-
 ?>
