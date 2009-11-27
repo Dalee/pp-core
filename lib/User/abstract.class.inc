@@ -52,7 +52,6 @@ abstract class PXUser {
 				return true;
 			}
 		}
-//		d2($this, false);
 
 		return false;
 	}
