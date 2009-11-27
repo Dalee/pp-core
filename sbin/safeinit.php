@@ -1,4 +1,4 @@
-#!/usr/local/bin/php -q
+#!/usr/bin/php5 -q
 <?
 
 if (count($_SERVER['argv']) < 2) {
