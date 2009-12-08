@@ -19,6 +19,7 @@ class PXModuleMain extends PXModule {
 		// Loading struct tree
 		PXProfiler::begin('load tree');
 		$this->tree->load($urlPath);
+
 		$this->tree->getLinks();
 		PXProfiler::end();
 
@@ -156,7 +157,7 @@ class PXModuleMain extends PXModule {
 						$layout->append('INNER.1.0', $table->getTable());
 					}
 
-					if ($request->GetCid()) {
+					if ($request->GetCid() && $childFormat == $request->getCtype()) {
 						$pos = array_search($request->GetCid(), GetColFromTable($objects, 'id')); // FIXME
 
 						if (isset($objects[$request->GetCid()])) {

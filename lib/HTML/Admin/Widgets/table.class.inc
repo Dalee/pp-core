@@ -230,7 +230,8 @@ class PXAdminTable extends PXAdminWidget {
 				$html .= $this->_buildControls($tVars);
 
 				if ($this->dtype->childs && $this->showChildObjects && isset($this->childLink)) {
-					 $html .= '<a href="'.$this->_BuildHref($this->childLink, $row['id']).'">';
+					 $chLink = array($this->childLink => $row['id'], 'ctype' => $this->dtype->id);
+					 $html .= '<a href="'.$this->_BuildHref($chLink, $row['id']).'">';
 					 $html .= '<img src="i/icon/childs.gif" alt=""></a>';
 				}
 
