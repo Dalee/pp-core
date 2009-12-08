@@ -53,6 +53,11 @@ class PXRequestUser extends PXRequestBase {
 	function getAction() {
 		return $this->_getGetPostVar('action');
 	}
+	
+	// Возвращаяет тип текущего объекта
+	function getCtype() {
+		return $this->_getGetPostVar('ctype');
+	}
 
 	// POST
 	function getLinks($reference) {
