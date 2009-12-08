@@ -47,6 +47,7 @@ class PXAdminTable extends PXAdminWidget {
 		$this->showDefaultControls = 'before';
 
 		$this->selectedRow         = NULL;
+		$this->selectedType        = NULL;
 
 		$this->currentPage         = 0;
 		$this->rowsPerPage         = 0;
@@ -113,8 +114,9 @@ class PXAdminTable extends PXAdminWidget {
 	 * Устанавливает указатель и подсветку на строку с выбранным id.
 	 * @param Integer $id - id строки.
 	 */
-	function setSelected($id) {
-		$this->selectedRow = $id;
+	function setSelected($id, $type=NULL) {
+		$this->selectedRow  = $id;
+		$this->selectedType = $type;
 	}
 	/**
 	 * Устанавливает значение переменной для ссылки на дочерние объекты
@@ -174,7 +176,6 @@ class PXAdminTable extends PXAdminWidget {
 
 			$rowPos = 0;
 			foreach ($this->data as $rowKey=>$row){
-
 				$up    = ($rowPos == 0 && $this->currentPage == 1) || !is_numeric(strpos($this->dtype->order, 'sys_order')) ? 0 : 1;
 				$down  = ($rowPos == sizeof($this->data)-1 && $this->rowsCount <= $this->currentPage * $this->rowsPerPage) || !is_numeric(strpos($this->dtype->order, 'sys_order')) ? 0 : 1;
 
@@ -218,7 +219,7 @@ class PXAdminTable extends PXAdminWidget {
 					$html .= ' hide';
 				}
 
-				if ($row['id'] == $this->selectedRow) {
+				if ($row['id'] == $this->selectedRow && $this->dtype->id == $this->selectedType) {
 					$html .= ' selected';
 				}
 
@@ -230,8 +231,7 @@ class PXAdminTable extends PXAdminWidget {
 				$html .= $this->_buildControls($tVars);
 
 				if ($this->dtype->childs && $this->showChildObjects && isset($this->childLink)) {
-					 $chLink = array($this->childLink => $row['id'], 'ctype' => $this->dtype->id);
-					 $html .= '<a href="'.$this->_BuildHref($chLink, $row['id']).'">';
+					 $html .= '<a href="'.$this->_BuildHref($this->childLink, $row['id'], 'ctype', $this->dtype->id).'">';
 					 $html .= '<img src="i/icon/childs.gif" alt=""></a>';
 				}
 
@@ -438,28 +438,36 @@ class PXAdminTable extends PXAdminWidget {
 	 * @return String - строка с html кодом ссылки
 	 */
 	function _buildHref($key, $val = NULL) {
+		$args      = func_get_args();
+		$argsCount = func_num_args();
+
 		$href = "?";
-		if (is_array($key)) {
-			foreach ($key as $k => $v) {
-				foreach ($this->getData as $gdK => $gdV)
-					if ($k != $gdK && isset($gdV))
-						$href .= $gdK.'='.urlencode($gdV).'&';
-
-				$href .= $k.'='.urlencode($v).'&';
-			}//fe
-
-		} elseif (!is_null($key) && !is_null($val)) {
-			foreach ($this->getData as $gdK => $gdV)
-				if ($key != $gdK && isset($gdV))
-					$href .= $gdK.'='.urlencode($gdV).'&';
-
-			$href .= $key.'='.urlencode($val).'&';
-		} else {
-			$href = " ";//h8t substr -1 ,-)
+		for ($i = 0; $i < $argsCount; $i++) {
+			if (is_array($args[$i])) {
+				foreach ($args[$i] as $k => $v) {
+					$this->_addToUrl($href, $k, $v);
+				}
+			} else {
+				if (isset($args[$i+1])) {
+					$this->_addToUrl($href, $args[$i], $args[++$i]);
+				} else {
+					$href = " ";
+				}
+			}
 		}
 		$href = substr($href, 0, -1);
 		return $href;
 	}
+	
+	function _addToUrl(&$href, $k, $v) {
+		foreach ($this->getData as $gdK => $gdV)
+			if ($k != $gdK && isset($gdV))
+				$href .= $gdK.'='.urlencode($gdV).'&';
+
+		$href .= $k.'='.urlencode($v).'&';
+	}
+	
+	
 	function setSiteTree($tree){
 		$this->tree = $tree;
 	}

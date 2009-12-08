@@ -149,7 +149,7 @@ class PXModuleMain extends PXModule {
 						$table = new PXAdminTable($objects, $app->types[$childFormat], $layout->getData);
 						$table->loadDropdownValues($db);
 						$table->setPager($currentPage, $onPage, $count);
-						$table->setSelected($request->GetCid());
+						$table->setSelected($request->GetCid(), $request->getCtype());
 						$table->setParentPathName($parentObjectPath);
 						$table->setShowChildObjects(true);
 						$table->setChildLink('cid');
