@@ -12,7 +12,7 @@ class PXAdminHTMLLayout extends NLAbstractLayout {
 	}
 
 	function assignVersion() {
-		$this->assign('OUTER.VERSION', 'version '.PP_VERSION.'.'.PP_REVISION);
+		$this->assign('OUTER.VERSION', 'version '.PP_VERSION.(defined('PP_REVISION') ? '.'.PP_REVISION : ''));
 	}
 
 	function setApp() {
