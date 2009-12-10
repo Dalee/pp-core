@@ -12,7 +12,6 @@ class PXEngineIndex extends PXEngine {
 		$this->content->objects    = new PXObjects();
 		$this->content->subObjects = new PXSubObjects();
 
-		$this->fillLayout();
 	}
 
 	function initModules() {
