@@ -16,6 +16,12 @@ class PXObjects extends PXContentObjects implements ArrayAccess, IteratorAggrega
 		$this->data[$type] = $objsArray;
 	}
 
+	public
+	function setCurrent($id, $type) {
+		$this->currentId   = $id;
+		$this->currentType = $type;
+	}
+
 	function findCurrent($type, $pathname) {
 		if (!isset(PXRegistry::getTypes($type)->fields['pathname'])) {
 			return;
@@ -23,9 +29,7 @@ class PXObjects extends PXContentObjects implements ArrayAccess, IteratorAggrega
 
 		foreach ($this->data[$type] as $o) {
 			if($o['pathname'] == $pathname) {
-				$this->currentId   = $o['id'];
-				$this->currentType = $type;
-
+				$this->setCurrent($o['id'], $type);
 				return;
 			}
 		}
