@@ -5,7 +5,7 @@
 	require_once BASEPATH.'/libpp/lib/Security/captcha.class.inc';
 
 	$request = new PXRequest();
-	$bn      = new NLBlockingNumbers(BASEPATH.'/tmp/blocking_nums');
+	$bn      = new NLBlockingNumbers();
 	
 	switch($request->GetVar('action')){
 		default:
