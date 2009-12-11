@@ -19,7 +19,7 @@ class PXErrorReporter {
 	// protected
 	var $errors = array();
 
-	// static
+	static
 	function &getInstance() {
 		static $instance;
 
@@ -47,7 +47,7 @@ class PXErrorReporter {
 		return $code;
 	}
 
-	// static
+	static
 	function fatalError($message) {
 		$reporter =& PXErrorReporter::getInstance();
 
@@ -58,7 +58,7 @@ class PXErrorReporter {
 		exit;
 	}
 
-	// static
+	static
 	function shutdown() {
 		$reporter =& PXErrorReporter::getInstance();
 		if($reporter->hasErrors()) {

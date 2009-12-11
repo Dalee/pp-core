@@ -2,10 +2,10 @@
 define('NOT_CLI', isset($_SERVER['REQUEST_METHOD']));
 define('CLI',    !isset($_SERVER['REQUEST_METHOD']));
 
+require_once 'trace.inc';
 require_once 'ErrorReporter/abstract.class.inc';
 require_once 'profiler.classes.inc';
 require_once 'sbin.inc';
-require_once 'trace.inc';
 
 function getMicroTime() {
 	list($usec, $sec) = explode(" ", microtime());
