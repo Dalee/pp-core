@@ -4,8 +4,8 @@
 	require_once BASEPATH.'/libpp/lib/Security/blockingnumbers.class.inc';
 	require_once BASEPATH.'/libpp/lib/Security/captcha.class.inc';
 
-	$request = new PXUserRequest();
-	$bn      = new NLBlockingNumbers(BASEPATH.'/site/var/blocking_nums');
+	$request = new PXRequest();
+	$bn      = new NLBlockingNumbers(BASEPATH.'/tmp/blocking_nums');
 	
 	switch($request->GetVar('action')){
 		default:
@@ -19,7 +19,7 @@
 			}
 			
 			$fonts = array(
-				BASEPATH.'/local/share/fonts/tahoma.ttf'
+				BASEPATH.'/libpp/share/fonts/tahoma.ttf'
 			);
 
 			$colors = array('lite' => 'FBFEFF', 'dark' => '545B5D');
