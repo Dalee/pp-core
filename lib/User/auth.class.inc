@@ -15,7 +15,9 @@ class PXUserAuthorized extends PXUser {
 				continue;
 			}
 
-			if(!$this->proceedAuth($rule, $params)) {
+			$isAuth = $this->proceedAuth($rule, $params);
+
+			if(!$isAuth) {
 				continue;
 			}
 
@@ -35,7 +37,6 @@ class PXUserAuthorized extends PXUser {
 		}
 
 		$tmpAuth  = new $authClass(PXRegistry::getApp(), PXRegistry::getRequest(), $this, PXRegistry::getDB(), $params);
-
 		if(!$this->isAuthed()) {
 			return false;
 		}
@@ -53,6 +54,7 @@ class PXUserAuthorized extends PXUser {
 		}
 
 		$groups = $db->getLinks($app->references[LINK_GROUP2USER], DT_USER, $this->id);
+
 		$this->groups = array_unique(array_merge(array(0, (int)$this->data['parent']), array_keys($groups)));
 	}
 
