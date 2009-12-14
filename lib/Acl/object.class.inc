@@ -24,10 +24,14 @@ class ObjectChecker {
 	}
 
 	private function checkGroup($what, $format, $object) {
+		$params = func_get_args();
+
 		foreach(array("checkObject", "checkParent") as $method) {
-			$params = func_get_args();
 			$r = call_user_func_array(array($this, $method), $params);
-			if(!is_null($r)) return $r;
+
+			if(!is_null($r)) {
+				return $r;
+			}
 		}
 
 		return false;
@@ -35,12 +39,23 @@ class ObjectChecker {
 
 	private function checkObject($what, $format, $object) {
 		foreach ($this->acl->rules as $a) {
-			if (($a['what'] != $what) || (!is_null($a['sgroupid']) && !in_array($a['sgroupid'], $this->acl->user->groups)) || ($a['objectrule'] != 'user')) {
+			$notEqualWhat    = !($a['what'] == $what);
+			$notNullGroup    = !is_null($a['sgroupid']);
+			$notInUserGroups = !in_array($a['sgroupid'], $this->acl->user->groups);
+			$notUser         = $a['objectrule'] != 'user';
+
+			if ($notEqualWhat || ($notNullGroup && $notInUserGroups) || $notUser) {
 				continue;
 			}
 
-			if( in_array($a['objectid'],        array($object['id'], NULL)) && in_array($a['objectparent'], array(getFromArray($object, 'parent'), NULL)) && in_array($a['objecttype'],   array($format->id, NULL))) {
-				return !($a['access'] === 'deny');
+			$objectIdOrNull     = in_array($a['objectid'],     array($object['id'],                   NULL));
+			$objectParentOrNull = in_array($a['objectparent'], array(getFromArray($object, 'parent'), NULL));
+			$objectTypeOrNull   = in_array($a['objecttype'],   array($format->id,                     NULL));
+
+			$notEqualAccess     = !($a['access'] === 'deny');
+
+			if($objectIdOrNull  && $objectParentOrNull && $objectTypeOrNull) {
+				return $notEqualAccess;
 			}
 		}
 	}

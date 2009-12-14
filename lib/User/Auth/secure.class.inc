@@ -9,7 +9,9 @@ class PXAuthSecure extends PXAuthInterface {
 	}
 
 	private function proceedAuth($uArray) {
-		if(!(count($uArray) && strlen($this->passwd))) return;
+		if(!(count($uArray) && strlen($this->passwd))) {
+			return;
+		}
 
 		if ($this->passwdToDB($this->passwd) == $uArray['passwd'] || $this->passwd == $this->encodePasswd($uArray['passwd'], false)) {
 			 $this->feelUserFields($uArray);
