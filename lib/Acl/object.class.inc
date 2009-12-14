@@ -52,10 +52,10 @@ class ObjectChecker {
 			$objectParentOrNull = in_array($a['objectparent'], array(getFromArray($object, 'parent'), NULL));
 			$objectTypeOrNull   = in_array($a['objecttype'],   array($format->id,                     NULL));
 
-			$notEqualAccess     = !($a['access'] === 'deny');
+			$notDenyAccess      = !($a['access'] === 'deny');
 
 			if($objectIdOrNull  && $objectParentOrNull && $objectTypeOrNull) {
-				return $notEqualAccess;
+				return $notDenyAccess;
 			}
 		}
 	}

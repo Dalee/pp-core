@@ -7,16 +7,16 @@ class ModuleChecker {
 			$notInUserGroups = !in_array($a['sgroupid'], $acl->user->groups);
 			$notModule       = $a['objectrule'] != 'module';
 
-			$equalType       = $a['objecttype'] == $format->name;
-			$isNullType      = is_null($a['objecttype']);
-			$notEqualAccess  = !($a['access'] === 'deny');
-
 			if ($notEqualWhat || ($notNullGroup && $notInUserGroups) || $notModule) {
 				continue;
 			}
 
+			$equalType       = $a['objecttype'] == $format->name;
+			$isNullType      = is_null($a['objecttype']);
+			$notDenyAccess  = !($a['access'] === 'deny');
+
 			if ($equalType || $isNullType) {
-				return $notEqualAccess;
+				return $notDenyAccess;
 			}
 		}
 

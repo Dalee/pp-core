@@ -70,6 +70,7 @@ class PXEngineAdminIndex extends PXEngine {
 		}
 
 		$area = PXRegistry::getRequest()->getArea(current(array_keys($this->menu)));
+
 		$this->fillLayout($area);
 
 		if($area == 'exit') {
