@@ -182,11 +182,11 @@ function AddRowNew(name) {
 	tableName = "table" + name;
 	domTable = document.getElementById(tableName);
 	numRows  = domTable.rows.length;
-	numCols  = domTable.getElementsByTagName('td').length/numRows; 
+	numCols  = domTable.getElementsByTagName('td').length/numRows;
 	newRow = domTable.insertRow(numRows);
 	prevRow = domTable.rows[numRows-1];
 	for (i=0;i<numCols;i++) {
-		newCell = newRow.insertCell();
+		newCell = newRow.insertCell(0);
 		control = prevRow.cells[i].childNodes.item(0);
 
 		if (control.tagName == 'TEXTAREA') {
