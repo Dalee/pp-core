@@ -51,18 +51,26 @@ class PXRequestAbstract {
 		$tmpArray = explode("/", $this->path);
 		$path = array();
 		foreach ($tmpArray as $tmp) {
-			if (empty($tmp)          ) continue;
-
-			if ($tmp == 'index.html' ) continue;
-			if ($tmp == 'index.shtml') continue;
-			if ($tmp == 'index.phtml') continue;
-			if ($tmp == 'index.php'  ) continue;
-			if ($tmp == 'index.php3' ) continue;
-			if ($tmp == 'index.php4' ) continue;
-			if ($tmp == 'default.htm') continue;
-			if ($tmp == 'default.asp') continue;
-			if ($tmp == 'index.jsp'  ) continue;
-
+			if (!strlen($tmp) || 
+				in_array(
+					$tmp, 
+					array(
+						'index.html',
+						'index.shtml',
+						'index.phtml',
+						'index.php',
+						'index.php3',
+						'index.php4',
+						'default.htm',
+						'default.asp',
+						'index.jsp'
+					),
+					true
+				)
+			){
+				continue;
+			}
+			
 			$path[] = $tmp;
 		}
 		return $path;
