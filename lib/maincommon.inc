@@ -17,6 +17,8 @@ require_once 'Config/application.class.inc';
 require_once 'Database/database.class.inc';
 require_once 'User/classes.inc';
 
+require_once 'session.class.inc';
+
 require_once 'DisplayType/classes.inc';
 require_once 'StorageType/classes.inc';
 

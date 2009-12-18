@@ -19,4 +19,5 @@ require_once 'File/imagesarray.class.inc';
 require_once 'File/flashsarray.class.inc';
 
 require_once 'virtual.class.inc';
+require_once 'session_st.class.inc';
 ?>
