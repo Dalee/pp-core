@@ -45,6 +45,13 @@ class PXSession {
 		return true;
 	}
 	
+	function destroy() {
+		@$this->open();
+		session_destroy();
+		unset($_SESSION);
+		unset($_COOKIE[$this->sessionName]);
+	}
+	
 	function setSessionLifeTime($lifeTime) {
 		$this->lifeTime = $lifeTime;
 	}
