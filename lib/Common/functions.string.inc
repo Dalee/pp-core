@@ -814,7 +814,9 @@ function myconv($from, $to, $string, $be_quiet = false) {
 	$prev_track_errors = ini_get('track_errors');
 	ini_set('track_errors', true);
 	$php_errormsg = false;
+	set_error_handler("_myconvErrorHandler", E_NOTICE);
 	@iconv($from, $to, '');
+	restore_error_handler();
 	ini_set('track_errors', $prev_track_errors);
 	if ($php_errormsg) {
 		if(!$be_quiet) {
@@ -826,9 +828,11 @@ function myconv($from, $to, $string, $be_quiet = false) {
 	// maybe we can just use iconv?
 	ini_set('track_errors', true);
 	$php_errormsg = false;
+	set_error_handler("_myconvErrorHandler", E_NOTICE);
 	$res = @iconv($from, $to, $string);
+	restore_error_handler();
 	ini_set('track_errors', $prev_track_errors);
-	if ($php_errormsg === false && strlen($res) == strlen($string)) { // FIXME: hotfix HACK, replace me to try/catch section
+	if ($php_errormsg === false && strlen($res) == strlen($string)) { 
 		return $res;
 	} else {
 		unset($res);
@@ -837,7 +841,9 @@ function myconv($from, $to, $string, $be_quiet = false) {
 	// check if string can be converted from $from encoding to ucs-2be
 	ini_set('track_errors', true);
 	$php_errormsg = false;
+	set_error_handler("_myconvErrorHandler", E_NOTICE);
 	@iconv($from, 'ucs-2be', $string);
+	restore_error_handler();
 	ini_set('track_errors', $prev_track_errors);
 	if ($php_errormsg) {
 		if (!$be_quiet) {
@@ -1065,4 +1071,8 @@ function fixWordLength($string, $length = 10) {
 	return $string;
 }
 
+// dirty hack
+function _myconvErrorHandler($error_code, $error_msg) {
+	return false;
+}
 ?>
