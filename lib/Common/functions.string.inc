@@ -832,7 +832,7 @@ function myconv($from, $to, $string, $be_quiet = false) {
 	$res = @iconv($from, $to, $string);
 	restore_error_handler();
 	ini_set('track_errors', $prev_track_errors);
-	if ($php_errormsg === false && strlen($res) == strlen($string)) { 
+	if ($php_errormsg === false) { 
 		return $res;
 	} else {
 		unset($res);
