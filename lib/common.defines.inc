@@ -47,20 +47,11 @@ if(!isset($_SERVER['REQUEST_METHOD'])) {
 			}
 		}
 
-
-
-
 		if ($path) {
 			$_SERVER['DOCUMENT_ROOT'] = $path;
 		} else {
 			die("Can't guess DOCUMENT_ROOT path...");
 		}
-
-		@$nobody = trim(file_get_contents($_SERVER['DOCUMENT_ROOT'].'/site/etc/boot.ini'));
-		if (!$nobody) $nobody = 'nobody';
-		$nobody = posix_getpwnam($nobody);
-		//var_dump($_SERVER['DOCUMENT_ROOT']);
-		//var_dump($nobody);die();
 
 		$path = realpath($path);
 
