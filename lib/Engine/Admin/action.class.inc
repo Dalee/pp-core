@@ -38,7 +38,7 @@ class PXEngineAdminAction extends PXEngine {
 
 			case 'back':
 				$nextLocation = $this->nextLocation;
-				$nextLocation = !is_null($nextLocation) ? $nextLocation : $this->request->getReferer();
+				$nextLocation = !is_null($nextLocation) ? $nextLocation : PXRegistry::getRequest()->getReferer();
 
 				$response->redirect($nextLocation);
 				break;
