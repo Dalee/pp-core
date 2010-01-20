@@ -1,6 +1,6 @@
 <?php
 class PXEngineIndex extends PXEngine {
-	function __construct() {     // Ã©ÃŽÃ‰ÃƒÃ‰ÃÃŒÃ‰ÃšÃÃƒÃ‰Ã‘ ÃÃ“ÃŽÃÃ—ÃŽÃ™Ãˆ ÃÃ‚ÃŸÃ…Ã‹Ã”ÃÃ— ÃÃ’Ã‰ÃŒÃÃ–Ã…ÃŽÃ‰Ã‘
+	function __construct() {     // éÎÉÃÉÁÌÉÚÁÃÉÑ ÏÓÎÏ×ÎÙÈ ÏÂßÅËÔÏ× ÐÒÉÌÏÖÅÎÉÑ
 		PXProfiler::begin('TOTAL');
 
 		parent::__construct();
@@ -21,7 +21,7 @@ class PXEngineIndex extends PXEngine {
 		$layout = PXRegistry::getLayout();
 		$layout->setApp(PXRegistry::getApp());
 
-		// Ã°Ã…Ã’Ã…Ã„ÃÃžÃ Ã„ÃÃŽÃŽÃ™Ãˆ Ã— Ã›ÃÃ‚ÃŒÃÃŽÃ‰ÃšÃÃ”ÃÃ’
+		// ðÅÒÅÄÁÞÁ ÄÁÎÎÙÈ × ÛÁÂÌÏÎÉÚÁÔÏÒ
 		$layout->assign('app',            PXRegistry::getApp(),      true);
 		$layout->assign('user',           PXRegistry::getUser(),     true);
 		$layout->assign('request',        PXRegistry::getRequest(),  true);
