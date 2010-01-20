@@ -6,12 +6,12 @@ class PXModuleProperties extends PXModule {
 	function __construct($area, $settings) {
 		parent::__construct($area, $settings);
 		
-		$this->app       = & PXRegistry::getApp();
+		$this->app       = PXRegistry::getApp();
 		$this->_settings = $settings;
 	}
 
 	function _fillPseudoDatatype(){
-		$this->_pseudoDatatype         = & new PXTypeDescription();
+		$this->_pseudoDatatype         = new PXTypeDescription();
 		$this->_pseudoDatatype->id     = 'properties';
 		$this->_pseudoDatatype->title  = 'Настройки сайта';
 
@@ -42,6 +42,7 @@ class PXModuleProperties extends PXModule {
 				unset($_tmpSource);
 			}
 			$this->_pseudoDatatype->addField($field);
+			$this->_pseudoDatatype->assignToGroup($field);
 		}
 	}
 	
@@ -70,7 +71,7 @@ class PXModuleProperties extends PXModule {
 		$propObject = PXModuleProperties::loadModel(array_keys($this->_pseudoDatatype->fields));
 
 		$this->db->loadDirectoriesByType($this->_pseudoDatatype, $propObject);
-		$objectForm = & new PXAdminObjectForm($this->_pseudoDatatype, $propObject);
+		$objectForm = new PXAdminObjectForm($this->_pseudoDatatype, $propObject);
 
 		$formToHtml = $objectForm->MainForm($objectForm->format);
 		$formToHtml = preg_replace("#<input .*?(?>name\s*=\s*('|\")area\\1).*?>#", '', $formToHtml); //FIXME: it's a hack, waiting for Widgets interface
@@ -80,7 +81,7 @@ class PXModuleProperties extends PXModule {
 		$this->layout->Assign("INNER.0.0", $html);
 	}
 
-	function adminAction() { //&$app, &$request, &$user, &$db) {
+	function adminAction() {
 		if(($error = $this->_checkForErrors()) !== false){
 			FatalError($error);
 		}
