@@ -118,7 +118,7 @@ class PXModuleMain extends PXModule {
 
 			$cidType   = null;
 			$cidObject = null;
-			$onPage    = $app->GetProperty('CHILDREN_ON_PAGE', 20);
+			$onPage    = max(1, $app->GetProperty('CHILDREN_ON_PAGE', 20));
 			if (count($allowedChilds)) {
 				foreach ($allowedChilds as $childFormat) {
 					$layout->SetGetVarToSave($childFormat.'_page', $request->GetVar($childFormat.'_page', 1));
@@ -142,7 +142,7 @@ class PXModuleMain extends PXModule {
 						
 						$layout->SetGetVarToSave($childFormat.'_order', $currentOrder);
 
-						$currentPage = $currentPage > ceil($count/$onPage) ? ceil($count/$onPage) : $currentPage;
+						$currentPage = max(1, ($currentPage > ceil($count/$onPage) ? ceil($count/$onPage) : $currentPage));
 
 						$objects = $this->_loadContentLimited($app->types[$childFormat], NULL, 'parent', $rqSid, $onPage, $onPage*($currentPage-1), DB_SELECT_TABLE, $currentOrder);
 
@@ -189,7 +189,7 @@ class PXModuleMain extends PXModule {
 								
 								$layout->SetGetVarToSave($childFormat.'_order', $currentOrder);
 
-								$currentPage = $currentPage > ceil($count/$onPage) ? ceil($count/$onPage) : $currentPage;
+								$currentPage = max(1, ($currentPage > ceil($count/$onPage) ? ceil($count/$onPage) : $currentPage));
 
 								$objects = $this->_loadContentLimited($app->types[$childFormat], NULL, 'parent', $request->GetCid(), $onPage, $onPage*($currentPage-1), DB_SELECT_TABLE, $currentOrder);
 
