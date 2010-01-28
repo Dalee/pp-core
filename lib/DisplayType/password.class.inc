@@ -20,8 +20,7 @@ class PXDisplayTypePassword extends PXDisplayType {
 
 		$value = (isset($tmp['type']) && isset($tmp['retype']) && strlen($tmp['type']) && ($tmp['type'] === $tmp['retype'])) ? trim($tmp['type']) : null;
 		if(strlen($value) && !is_null($value)) {
-			$user = PXRegistry::getUser();
-			$authmethodname = $user->getPrimaryAuthMethod($field->displayTypeArgs[0]);
+			$authmethodname = PXRegistry::getUser()->getPrimaryAuthMethod($field->displayTypeArgs[0]);
 			$value = call_user_func(array($authmethodname, 'passwdToDB'), $value);
 		}
 
