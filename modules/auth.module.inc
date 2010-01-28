@@ -20,7 +20,6 @@ class PXModuleAuth extends PXModule {
 			)
 		);
 
-		d2($this->user->id);
 		if ($this->user->IsAuthed()) {
 			$this->layout->assign('LOGIN.ERROR', '<strong class="error">Нет доступа.</strong>');
 			$this->user->unAuth();
