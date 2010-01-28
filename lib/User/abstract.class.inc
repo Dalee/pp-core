@@ -18,12 +18,14 @@ abstract class PXUser {
 	var $groups;
 	var $data;
 	var $auth;
+	var $app;
 
 	function __construct() {
 		$this->id     = NULL;
 		$this->login  = NULL;
 		$this->groups = array(0);
 		$this->data   = array();
+		$this->app    = PXRegistry::getApp();
 
 		$this->auth = new PXAuthNull();
 	}
@@ -47,7 +49,7 @@ abstract class PXUser {
 	}
 
 	function isAdmin() {
-		foreach(PXRegistry::getApp()->modules as $module) {
+		foreach($this->app->modules as $module) {
 			if($module->name != 'auth' && $this->can('admin', $module)) {
 				return true;
 			}

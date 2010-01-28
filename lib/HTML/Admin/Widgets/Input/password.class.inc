@@ -16,7 +16,7 @@ class PXInputPassword extends PXAdminWidget {
 	function html() {
 		$name = $this->name;
 
-		if(strlen($this->value) == 32 && $this->canDelete) {
+		if(strlen($this->value) && $this->canDelete) {
 			$deleteHTML = <<<HTML
 				<input type="checkbox" name="{$name}[delete]" id="{$name}[delete]" class="checkbox" {$this->disable}>
 				<label for="{$name}[delete]">удалить пароль</label>
