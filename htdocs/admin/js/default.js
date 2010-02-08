@@ -179,23 +179,28 @@ function AddRow(table, name, width, height, cols) {
 }
 
 function AddRowNew(name) {
-	tableName = "table" + name;
-	domTable = document.getElementById(tableName);
-	numRows  = domTable.rows.length;
-	numCols  = domTable.getElementsByTagName('td').length/numRows;
-	newRow = domTable.insertRow(numRows);
-	prevRow = domTable.rows[numRows-1];
-	for (i=0;i<numCols;i++) {
-		newCell = newRow.insertCell(0);
-		control = prevRow.cells[i].childNodes.item(0);
-
+	var tableName = "table" + name;
+	var domTable = document.getElementById(tableName);
+	var numRows  = domTable.rows.length;
+	var numCols  = domTable.getElementsByTagName('td').length/numRows;
+	var newRow = domTable.insertRow(numRows);
+	var prevRow = domTable.rows[numRows-1];
+	
+	for (var i=0;i<numCols;i++) {
+		var newCell = newRow.insertCell(0);
+		var j = 0;
+		while(j < prevRow.cells[i].childNodes.length){
+			var control = prevRow.cells[i].childNodes.item(j++);
+			if(control.nodeType === 1 /*Node.ELEMENT_NODE; Node is undefined in IE*/ ) break;
+		}
+		
 		if (control.tagName == 'TEXTAREA') {
-			width = control.style.width;
-			height = control.style.height;
+			var width = control.style.width;
+			var height = control.style.height;
 			newCell.innerHTML = '<textarea name="'+name+'['+newRow.rowIndex+'][]" style="height:'+height+';"></textarea>';
 
 		} else {
-			width = control.style.width;
+			var width = control.style.width;
 			newCell.innerHTML = '<input type="text" name="'+name+'['+newRow.rowIndex+'][]" value="">';
 		}
 	}
