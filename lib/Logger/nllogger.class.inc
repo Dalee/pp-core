@@ -263,6 +263,10 @@ class SQLAppender extends Appender {
 
 	function write($level, $message) {
 		if ($this->db !== null){
+			// Escape text message
+			if (isset($message[4])) {
+				$message[4] = $this->db->EscapeString($message[4]);
+			}
 			$msg = $this->_compileMessage($level, $message);
 
 			//false -- do not cache query

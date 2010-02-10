@@ -15,7 +15,6 @@ require_once 'File/imagesArray.class.inc';
 require_once 'File/filesArray.class.inc';
 require_once 'File/flashsArray.class.inc';
 
-
 require_once 'File/linkToFile.class.inc';
 
 require_once 'Dropdown/dropdown.class.inc';

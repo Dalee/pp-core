@@ -45,21 +45,24 @@ class PXModuleRegister extends PXAbstractModule {
 		return compact('title', 'min', 'max', 'validators');
 	}
 
-	//reFUCKtoring complete
 	function userIndex() { //&$app, &$request, &$user, &$db, &$layout, &$tree, &$objects, &$subObjects, &$references, &$heap, &$currentSid, &$currentCid, &$currentCtype, &$currentSCid, &$currentSCtype, &$rootId, &$pathId, &$urlFile, &$error) {
+		$layout  = $this->layout;
+		$request = $this->request;
+		$user    = $this->user;
+		
 		$this->response->dontCache();
 
 		$errors = & $this->loadModel('session', 'errors');
 		$input  = & $this->loadModel('session', 'data');
-		$this->layout->assign('__view', $this->request->GetVar('view'));
+		$layout->assign('__view', $request->GetVar('view'));
 
-		switch($this->request->GetVar('view')){
+		switch($request->GetVar('view')){
 			default:
-				if(!$this->user->isAuthed()){
-					$this->layout->assign('showRegForm', true);
+				if(!$user->isAuthed()){
+					$layout->assign('showRegForm', true);
 
 					if($this->captchaField){
-						$this->layout->assign($this->captchaField, $this->loadModel('captcha'));
+						$layout->assign($this->captchaField, $this->loadModel('captcha'));
 					}
 				}
 				break;
@@ -68,11 +71,11 @@ class PXModuleRegister extends PXAbstractModule {
 				$errors = null;
 			case 'modifysuccess':
 			case 'modifyerror':
-				if($this->user->isAuthed()){
-				    $this->layout->assign('showRegForm', true);
-				    $this->layout->assign('regErrors', $errors);
-				    $this->layout->assign('getInput', $input);
-				    @$this->layout->assign('regInput', reset($this->loadModel('suser', array('id' => $user->id))));
+				if($user->isAuthed()){
+				    $layout->assign('showRegForm', true);
+				    $layout->assign('regErrors', $errors);
+				    $layout->assign('getInput', $input);
+				    @$layout->assign('regInput', reset($this->loadModel('user', array('id' => $user->id))));
 				}
 				break;
 
@@ -83,34 +86,34 @@ class PXModuleRegister extends PXAbstractModule {
 				break;
 
 			case 'error':
-				if(!$this->user->isAuthed()){
-					$this->layout->assign('showRegForm', true);
+				if(!$user->isAuthed()){
+					$layout->assign('showRegForm', true);
 
 					if($this->captchaField){
-						$this->layout->assign($this->captchaField, $this->loadModel('captcha'));
+						$layout->assign($this->captchaField, $this->loadModel('captcha'));
 					}
 
-					$this->layout->assign('regErrors', $errors);
-					$this->layout->assign('regInput', $input);
+					$layout->assign('regErrors', $errors);
+					$layout->assign('regInput', $input);
 				}
 				break;
 
 			case 'remind':
 				$errors = null;
 			case 'reminderror':
-				if(!$this->user->isAuthed()){
-					$this->layout->assign('showRemindForm', true);
-					$this->layout->assign('regErrors', $errors);
+				if(!$user->isAuthed()){
+					$layout->assign('showRemindForm', true);
+					$layout->assign('regErrors', $errors);
 
 					if($this->captchaField){
-						$this->layout->assign($this->captchaField, $this->loadModel('captcha'));
+						$layout->assign($this->captchaField, $this->loadModel('captcha'));
 					}
 				}
 				break;
 
 			case 'activationerror':
-				if(!$this->user->isAuthed()){
-					$this->layout->assign('regErrors', $errors);
+				if(!$user->isAuthed()){
+					$layout->assign('regErrors', $errors);
 				}
 				break;
 		}
@@ -172,14 +175,14 @@ class PXModuleRegister extends PXAbstractModule {
 		$userData['title'] = $this->user->data['title']; //protect login from modification
 
 		$this->_saveModel('session');
-		$this->_saveModel('suser', $userData);
+		$this->_saveModel('user', $userData);
 
 		return $this->buildRoute('modifysuccess');
 	}
 
 	// TODO: For the future inheritance purposes same handlers may be written for other controllers
 	function _modifyControllerLoadDataHandler(&$userData){
-		if(!count($userData = $this->loadModel('suser', array('id' => $this->user->id, 'passwd' => $this->request->GetPostVar('currentpassword'))))){
+		if(!count($userData = $this->loadModel('user', array('id' => $this->user->id, 'passwd' => $this->request->GetPostVar('currentpassword'))))){
 			return $this->buildRoute('modifyerror', array('currentpassword' => 'wrong'));
 		}
 	}
@@ -199,7 +202,7 @@ class PXModuleRegister extends PXAbstractModule {
 		switch(isset($key)){
 			case false:
 				//Send remind key to the account owner
-				if(!count($userToRemember = & $this->loadModel('suser', array('title' => $this->request->GetVar('login'), 'status' => true)))){
+				if(!count($userToRemember = & $this->loadModel('user', array('title' => $this->request->GetVar('login'), 'status' => true)))){
 					$errors['login']['usernotexists'] = true;
 				}
 
@@ -217,7 +220,7 @@ class PXModuleRegister extends PXAbstractModule {
 					}
 
 					$this->_saveModel('session');
-					$this->_saveModel('suser', $userToRemember);
+					$this->_saveModel('user', $userToRemember);
 
 					return $this->buildRoute('remindsuccess', $stages);
 				}
@@ -225,7 +228,7 @@ class PXModuleRegister extends PXAbstractModule {
 				return $this->buildRoute('reminderror');
 
 			case true:
-				if(!count($existingUser = & $this->loadModel('suser', array('title' => $this->request->GetPostVar('login'), 'remindcode' => $key)))){
+				if(!count($existingUser = & $this->loadModel('user', array('title' => $this->request->GetPostVar('login'), 'remindcode' => $key)))){
 					$errors['login']['badloginorkey'] = true;
 				}
 
@@ -235,7 +238,7 @@ class PXModuleRegister extends PXAbstractModule {
 				if(!count($errors)){
 					$existingUser['remindcode'] = '';
 					$this->_saveModel('session');
-					$this->_saveModel('suser', $existingUser);
+					$this->_saveModel('user', $existingUser);
 					return $this->buildRoute('remindsuccess', array('password' => 'changed'));
 				}
 
@@ -255,7 +258,7 @@ class PXModuleRegister extends PXAbstractModule {
 		$errors = null;
 		$stages = array();
 
-		if(!count($inactiveUser =& $this->loadModel('suser', array('title' => $this->request->GetVar('login'), 'activationcode' => $this->request->GetVar('code'))))) {
+		if(!count($inactiveUser =& $this->loadModel('user', array('title' => $this->request->GetVar('login'), 'activationcode' => $this->request->GetVar('code'))))) {
 			$errors['badconfirmcode'] = true;
 			$this->_saveModel('session');
 			return $this->buildRoute('activationerror');
@@ -275,7 +278,7 @@ class PXModuleRegister extends PXAbstractModule {
 				$activateUser['__plain_passwd__'] = '';
 			}
 
-			$this->_saveModel('suser', $activateUser);
+			$this->_saveModel('user', $activateUser);
 			$this->_saveModel('session');
 
 			return $this->buildRoute('activationsuccess', $stages);
@@ -323,7 +326,7 @@ class PXModuleRegister extends PXAbstractModule {
 				}
 			}
 
-			$this->_saveModel('suser', $newUser);
+			$this->_saveModel('user', $newUser);
 			$this->_saveModel('session');
 
 			return $this->buildRoute('success', $stages);
@@ -393,13 +396,13 @@ class PXModuleRegister extends PXAbstractModule {
 				session_commit();
 				break;
 
-			case 'suser':
-				$object += $this->app->InitContentObject('suser'); //merge with prototype
+			case 'user':
+				$object += $this->app->InitContentObject(DT_USER); //merge with prototype
 				
 				if($object['id'] > 0){ // modify
-					$this->db->ModifyContentObject($this->app->types['suser'], $object);
+					$this->db->ModifyContentObject($this->app->types[DT_USER], $object);
 				} else { //create 
-					$object['id'] = $this->db->AddContentObject($this->app->types['suser'], $object);
+					$object['id'] = $this->db->AddContentObject($this->app->types[DT_USER], $object);
 				}
 				break;
 
@@ -445,9 +448,9 @@ class PXModuleRegister extends PXAbstractModule {
 				$model =& $_SESSION['registration'][$filter];
 				break;
 
-			case 'suser':
+			case 'user':
 				$this->_applyModifiers($filter);
-				$model = $this->db->GetObjectsByFieldLimited($this->app->types['suser'], null, $filter, null, 1, 0);
+				$model = $this->db->GetObjectsByFieldLimited($this->app->types[DT_USER], null, $filter, null, 1, 0);
 				break;
 
 			case 'captcha':
@@ -502,9 +505,9 @@ class PXModuleRegister extends PXAbstractModule {
 
 	function _uniqueFieldValidator($field, $value, &$errors, &$userData){
 		if(strlen(trim($value))){
-			$suser =& $this->loadModel('suser', array($field => trim($value)));
+			$user =& $this->loadModel('user', array($field => trim($value)));
 
-			if(!count($suser) or $this->user->id > 0 && key($suser) == $this->user->id){
+			if(!count($user) or $this->user->id > 0 && key($user) == $this->user->id){
 				return;
 			}
 

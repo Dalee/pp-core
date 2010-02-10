@@ -1,10 +1,15 @@
 <?php
-
 class PXRegistry {
 	const unknownVarMessage = "Registry - not heap. Store your ? some where else!";
 
-	private $app, $db, $request, $response, $user, $layout;
 	private static $instance = null;
+
+	private $app;
+	private $db;
+	private $request;
+	private $response;
+	private $user;
+	private $layout;
 
 	private function __construct(){
 	}
@@ -12,7 +17,7 @@ class PXRegistry {
 	public static function instance() {
 		if(self::$instance == null)
 			self::$instance = new PXRegistry();
-		
+
 		return self::$instance;
 	}
 
@@ -73,7 +78,7 @@ class PXRegistry {
 	public static function getUser() {
 		return self::get('user');
 	}
-	
+
 	public static function getLayout() {
 		return self::get('layout');
 	}
@@ -84,9 +89,9 @@ class PXRegistry {
 
 	public static function getTypes($typeName=null) {
 		static $types;
-	
+
 		if(!is_array($types)) {
-			$app =  self::getApp();
+			$app   = self::getApp();
 			$types = $app->types;
 		}
 
@@ -116,11 +121,12 @@ class PXRegistry {
 
 		foreach($fields as $field) {
 			$registry_method = "get".ucfirst($field);
-			$object->$field = PXRegistry::$registry_method();
+			$object->$field = self::$registry_method();
 		}
 	}
 
-	private static function set($varName, $variable) {
+	private static
+	function _set($varName, $variable) {
 		$registry = self::instance();
 
 		if(!self::canSaveIt($varName)) {
@@ -131,24 +137,23 @@ class PXRegistry {
 	}
 
 	public static function setApp($app) {
-		self::set('app', $app);
+		self::_set('app', $app);
 	}
 
 	public static function setDB(PXDatabase $db) {
-		self::set('db', $db);
+		self::_set('db', $db);
 	}
 
 	public static function setRequest($request) {
-		self::set('request', $request);
+		self::_set('request', $request);
 	}
 
 	public static function setUser($user) {
-		self::set('user', $user);
+		self::_set('user', $user);
 	}
 
 	public static function setLayout($layout) {
-		self::set('layout', $layout);
+		self::_set('layout', $layout);
 	}
 }
-
 ?>

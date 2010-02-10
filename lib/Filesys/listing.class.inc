@@ -1,4 +1,4 @@
-<?
+<?php
 include_once 'Filesys/dir.class.inc';
 class PXFileListingRoots extends PXFileListing {
 	var $_comments;

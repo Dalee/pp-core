@@ -25,7 +25,7 @@ class UserRequestTest extends UnitTestCase {
 		$_POST['part'] = 'part';
 		$_POST['test_datatype_order'] = "test_datatype_title DESC";
 
-		$this->object = new PXRequestUser;
+		$this->object = new PXRequest;
 	}
 
 

@@ -70,9 +70,10 @@ class PXFieldDescription {
 				case 'noindex': 
 					$noindex = strtoupper($value); 
 					$this->noindex = $noindex == 'TRUE' ? true : false;
+					break;
 
 				default:
-					d2("Unknown attr name: " . $name .' line: '. __LINE__);
+					d2("Unknown attr name: " . $name . ' line: '. __LINE__);
 					break;
 			}
 		}
@@ -137,7 +138,7 @@ class PXFieldDescription {
 
 		array_shift($this->storageTypeArgs);
 	}
-	
+
 	function _getType($type, $baseClass) {
 		$inputClass  = $baseClass.ucfirst(strtolower($type));
 		return class_exists($inputClass) ? $inputClass : $baseClass;

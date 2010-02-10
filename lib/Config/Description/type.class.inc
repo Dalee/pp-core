@@ -49,6 +49,7 @@ class PXTypeDescription {
 		$cTypes = $this->childTypes();
 
 		$ac = array();
+
 		if (is_object($object)) {
 			$ac = isset($object->content[OBJ_FIELD_CHILDREN]) ? $object->content[OBJ_FIELD_CHILDREN] : array();
 		}
@@ -97,7 +98,6 @@ class PXTypeDescription {
 		foreach ($domDatatypes as $domDatatype) {
 			$type  = new PXTypeDescription();
 
-
 			$type->parseTypeAttributes($domDatatype->attributes());
 
 			$groupNodes = $dom->xpath("//datatype[@name='{$type->id}']//group");
@@ -105,7 +105,7 @@ class PXTypeDescription {
 				if ($groupNode->nodeType() != 1) {
 					continue;
 				}
-			$name = $view = null;
+				$name = $view = null;
 				foreach($groupNode->attributes() as $attr){
 					switch ($attr->name) {
 						case 'name':
@@ -164,7 +164,6 @@ class PXTypeDescription {
 		}
 
 		PXTypeDescription::findParents($app->types);
-		
 	}
 
 	// static
@@ -183,7 +182,6 @@ class PXTypeDescription {
 
 	function addField(&$field) {
 		$name = $field->name;
-
 		$this->fields[$name] = $field;
 	}
 	

@@ -15,7 +15,7 @@ class PXEngineJSON extends PXEngine {
 	}
 	
 	function initRequest() {
-		$this->request = new PXRequestUser();
+		$this->request = new PXRequest();
 	}
 
 	function runModules() {

@@ -15,7 +15,7 @@ class PXStorageTypeFilesarray extends PXStorageTypeAbstractFile {
 
 		$fileArray       = $donor[$field->name];
 		$ai              = $this->ai($param['format'], $object['id'], $field->name);
-		$basedir         = BASEPATH.'/site/htdocs'.$ai;
+		$basedir         = $this->htdocsPath.$ai;
 
 		if (is_array($fileArray)) {
 			MakeDirIfNotExists($basedir);
@@ -24,8 +24,8 @@ class PXStorageTypeFilesarray extends PXStorageTypeAbstractFile {
 				$object[$field->name][$k]['path'] = $ai.$f['entry'];
 
 				copy(
-					BASEPATH.'/site/htdocs'.$donor[$field->name][$k]['path'],
-					BASEPATH.'/site/htdocs'.$object[$field->name][$k]['path']
+					$this->htdocsPath.$donor[$field->name][$k]['path'],
+					$this->htdocsPath.$object[$field->name][$k]['path']
 				);
 			}
 		}
@@ -34,7 +34,7 @@ class PXStorageTypeFilesarray extends PXStorageTypeAbstractFile {
 	function proceedFile($field, &$object, &$param) {
 		$varName         = $field->name;
 		$ai              = parent::ai($param['format'],$param['id'],$field->name);
-		$basedir         = BASEPATH.'/site/htdocs'.$ai;
+		$basedir         = $this->htdocsPath.$ai;
 		$fileArray       = &$object[$varName];
 		$allowed         = isset($param['allowed']) ? $param['allowed'] : NULL;
 		$invalidateCache = false;
@@ -86,6 +86,7 @@ class PXStorageTypeFilesarray extends PXStorageTypeAbstractFile {
 		if($invalidateCache){
 			parent::removeFromCache($ai);
 		}
+
 		if (method_exists($this, "normalize")) {
 			$fileArray = $this->normalize($field, $object, $param);
 		}
@@ -94,11 +95,11 @@ class PXStorageTypeFilesarray extends PXStorageTypeAbstractFile {
 	function __normalize($field, $object, &$param) {
 		$filesArray = array();
 		$basedir    = parent::ai($param['format'],$object['id'],$field->name);
-		$d          = new NLDir(BASEPATH.'site/htdocs'.$basedir);
+		$d          = new NLDir($this->htdocsPath.$basedir);
 
 		if ($d->Exist()) {
 			foreach ($d->getFileNames() as $entry) {
-				$diskPath = BASEPATH.'/site/htdocs'.$basedir.$entry;
+				$diskPath = $this->htdocsPath.$basedir.$entry;
 				$httpPath = $basedir.$entry;
 
 				$filesArray[$entry] = array(

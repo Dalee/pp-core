@@ -1,10 +1,17 @@
 <?php
 class PXModuleMain extends PXModule {
 	private $rootFormatId;
+	private $objectsLoadMode;
 
 	function __construct($area, $settings) {
 		parent::__construct($area, $settings);
-		$this->rootFormatId = $settings['rootFormat'];
+		$this->rootFormatId    = $settings['rootFormat'];
+		$this->objectsLoadMode = array(
+			PP_CHILDREN_FETCH_NONE     => 'none',
+			PP_CHILDREN_FETCH_SELECTED => 'selected',
+			PP_CHILDREN_FETCH_ALL      => 'all',
+			PP_CHILDREN_FETCH_PAGED    => 'paged'
+		);
 	}
 
 	function userIndex() {
@@ -19,19 +26,18 @@ class PXModuleMain extends PXModule {
 		// Loading struct tree
 		PXProfiler::begin('load tree');
 		$this->tree->load($urlPath);
-
 		$this->tree->getLinks();
 		PXProfiler::end();
 
 		// Loading content objects
 		PXProfiler::begin('load objects');
-		$this->tree->loadChilds($this->objects, $urlFile);
+		$this->loadObjects($this->tree, $urlFile, $this->objects);
 		$this->objects->getLinks();
 		PXProfiler::end();
 
 		// Loading subcontent objects
 		PXProfiler::begin('load subObjects');
-		$this->objects->loadChilds($this->subObjects, $urlPart);
+		$this->loadObjects($this->objects, $urlPath, $this->subObjects);
 		$this->subObjects->getLinks();
 		PXProfiler::end();
 
@@ -82,6 +88,88 @@ class PXModuleMain extends PXModule {
 	function _loadAdminTree() {
 		return $this->db->GetObjects($this->rootFormat, null, DB_SELECT_TREE);
 	}
+	
+	private function loadObjects($object, $pathName, $fillObj) {
+		if (!$object->hasCurrent()) {
+			return;
+		}
+
+		$allowed = $object->getAllowedChilds();
+		
+		if (!count($allowed)) {
+			return;
+		}
+
+		foreach ($allowed as $type => $behaviour) {
+			$format = PXRegistry::getTypes($type);
+
+			if(!is_object($format)) {
+				continue;
+			}
+
+			$loadingMethod  = 'load'.ucfirst($this->objectsLoadMode[$behaviour]).'Objects';
+			$objsArray      = $this->$loadingMethod($object, $format, $pathName);
+
+			if (count($objsArray)) {
+				$fillObj->add($type, $objsArray, $pathName);
+				$fillObj->findCurrent($type, $pathName);
+			}
+		}
+	}
+	
+	private function loadAllObjects($object, $format, $pathName) {
+		$objsArray = array();
+		
+		$objsArray = $this->_loadContent($format, true, 'parent', $object->currentId);
+		
+		return $objsArray;
+	}
+
+	private function loadNoneObjects($object, $format, $pathName) {
+		return array();
+	}
+
+	private function loadPagedObjects($object, $format, $pathName) {
+		$objsArray = array();
+
+		if (!$this->request->isIndexFile()) {
+			$objsArray = $this->_loadContentLimited($format, true, array('pathname' => $pathName, 'parent' => $object->currentId), 'IGNORED', 1, 0);
+
+		} else {
+			$a_per_page  = $this->app->getProperty(strtoupper($format->id).'_PER_PAGE', DEFAULT_CHILDREN_PER_PAGE);
+			$count       = $this->db->getObjectsByField($format, true, 'parent', $object->currentId, DB_SELECT_COUNT);
+			$currentPage = $this->getCurrentPage($format, $count, $a_per_page);
+
+			$this->layout->assign('FP_' . strtoupper($format->id) . '_TOTAL',        $count);
+			$this->layout->assign('FP_' . strtoupper($format->id) . '_PER_PAGE',     $a_per_page);
+			$this->layout->assign('FP_' . strtoupper($format->id) . '_DEFAULT_PAGE', $currentPage);
+
+			$objsArray = $this->_loadContentLimited($format, true, 'parent', $object->currentId, $a_per_page, $a_per_page*($currentPage-1));
+		}
+
+		return $objsArray;
+	}
+	
+	private function loadSelectedObjects($object, $format, $pathName) {
+		$objsArray = array();
+		
+		if (!isset($format->fields['pathname'])) {
+			return;
+		}
+
+		$objsArray = $this->_loadContentLimited($format, true, array('pathname' => $pathName, 'parent' => $object->currentId), 'IGNORED', 1, 0);
+		return $objsArray;
+	}
+	
+	private function getCurrentPage($format, $count, $a_per_page) {
+		// default page - from properties.ini (first or last)
+		$defaultPage = $this->app->getProperty('FP_' . strtoupper($format->id).'_DEFAULT_LAST_PAGE') ? ceil($count/$a_per_page) : 1;
+
+		$currentPage = $this->request->getVar('page', $defaultPage);
+		$currentPage = max(1, ($currentPage > ceil($count/$a_per_page) ? ceil($count/$a_per_page) : $currentPage));
+
+		return $currentPage;
+	}
 
 	function adminIndex() {
 		if (!isset($this->app->types[$this->rootFormatId])) {
@@ -95,6 +183,7 @@ class PXModuleMain extends PXModule {
 
 		$rootFormat = $this->rootFormat = $app->types[$this->rootFormatId];
 		$this->tree = $this->_loadAdminTree();
+		
 		$rqSid      = $request->GetSid();
 
 		if ($rqSid != null && isset($this->tree->leafs[$rqSid])) {
@@ -107,7 +196,7 @@ class PXModuleMain extends PXModule {
 		unset($this->rootFormat->makeTreeWithSid);
 
 		if ($rqSid != null && isset($this->tree->leafs[$rqSid])) {
-			$parentObject = $db->GetObjectByID($rootFormat, $rqSid);
+			$parentObject = $db->GetObjectByID($this->rootFormat, $rqSid);
 
 			$layout->AssignTitle('раздел &laquo;'.$parentObject['title'].'&raquo;');
 
@@ -158,6 +247,7 @@ class PXModuleMain extends PXModule {
 					}
 
 					if ($request->GetCid() && $childFormat == $request->getCtype()) {
+						$layout->SetGetVarToSave('ctype', $request->getCtype());
 						$pos = array_search($request->GetCid(), GetColFromTable($objects, 'id')); // FIXME
 
 						if (isset($objects[$request->GetCid()])) {

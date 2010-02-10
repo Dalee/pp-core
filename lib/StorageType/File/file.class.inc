@@ -11,7 +11,7 @@ class PXStorageTypeFile extends PXStorageTypeAbstractFile {
 	function proceedFile($field, &$object, &$param) {
 		$fileArray       = &$object[$field->name];
 		$ai              = parent::ai($param['format'],$param['id'],$field->name);
-		$basedir         = BASEPATH.'/site/htdocs'.$ai;
+		$basedir         = $this->htdocsPath.$ai;
 		$filename        = null;
 		$invalidateCache = false;
 
@@ -66,7 +66,7 @@ class PXStorageTypeFile extends PXStorageTypeAbstractFile {
 	function __normalize($field, $object, &$param) {
 		$fileName = NULL;
 		$basedir  = parent::ai($param['format'],$object['id'],$field->name);
-		$d        = new NLDir(BASEPATH.'/site/htdocs/'.$basedir);
+		$d        = new NLDir($this->htdocsPath.$basedir);
 
 		if ($d->Exist()) {
 			while ($entry = $d->Read()) {

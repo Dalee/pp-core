@@ -1,4 +1,4 @@
-<?
+<?php
 function SortByRelevant($a, $b) {
 	if (($r = NumericCmp($b['words'], $a['words'])) != 0) {
 		return $r;
@@ -29,6 +29,7 @@ class PXSearch {
 		$this->app = PXRegistry::getApp();
 		$this->db  = PXRegistry::getDB();
 		$this->withIndexField = $withIndexField;
+		$this->searchCount    = 0;
 
 		$this->loadStopwords(
 			'а без более бы был была были было быть в вам вас весь во вот все всего мочь можно
@@ -124,7 +125,10 @@ class PXSearch {
 		$result = array();
 		foreach ($a as $v) {
 			$s = $this->getStemByWord($v);
-			if (!is_null($s)) $result[] = $s;
+
+			if (!is_null($s)) {
+				$result[] = $s;
+			}
 		}
 		return $result;
 	}
@@ -142,10 +146,10 @@ class PXSearch {
 		return "'".$this->db->escapeString($word)."'";
 	}
 
-	function doSearch($query, $parents = NULL, $allowTypes=NULL) {
+	function doSearch($query, $parents = NULL, $allowTypes=NULL, $limit = NULL, $page = NULL) {
 		preg_match_all("/\w+/s", _StrToLower(_yo2ye($query)), $tmp);
-		$stemsArray = array_unique($this->getStemsByArray(array_unique($tmp[0])));
 
+		$stemsArray = array_unique($this->getStemsByArray(array_unique($tmp[0])));
 		if (!count($stemsArray)) {
 			return array();
 		}
@@ -164,7 +168,47 @@ class PXSearch {
 
 		$totalwords = count($stemsArray);
 
-		$tmp = $this->db->Query("SELECT did, dtype, weightsum, stem FROM sitesearch WHERE stem IN (".join(',', array_map(array($this, 'escapeString'), $stemsArray)).")");
+		$where = " stem IN (".join(',', array_map(array($this, 'escapeString'), $stemsArray)).")";
+
+		if(isset($allowTypes) && is_array($allowTypes)) {
+			$allowTypes = array_flip($allowTypes);
+			$where .= " AND dtype IN (".join(',', array_map(array($this, 'escapeString'), $allowTypes)).")";
+		}
+
+		$sql = <<<SQL
+			SELECT 
+				did, dtype, count(*) as words, sum(weightsum) as sum
+			FROM
+				sitesearch
+			WHERE
+				{$where}
+			GROUP BY 
+				dtype, did
+			HAVING
+				count(*) = {$totalwords}
+			ORDER BY 
+				words DESC, sum DESC
+SQL;
+
+
+		$tmp = $this->db->Query("SELECT count(*) FROM (" . $sql . ") AS tmp");
+
+		if (!isset($tmp[0]['count'])) {
+			return array();
+		}
+
+		$this->searchCount = $tmp[0]['count'];
+
+		if($limit && $page) {
+			$limitpair = array(
+				$limit,
+				$limit * ($page - 1)
+			);
+		} else {
+			$limitpair = null;
+		}
+	
+		$tmp = $this->db->query($sql, false, $limitpair);
 
 		$tmpres = array();
 		$dtypes = array();
@@ -175,39 +219,17 @@ class PXSearch {
 			}
 
 			$key = $v['dtype'].' '.$v['did'];
-
-			if (isset($tmpres[$key])) {
-				$tmpres[$key]['sum']   += $v['weightsum'];
-				$tmpres[$key]['words'] += 1;
-				$tmpres[$key]['diffs'][$v['stem']] = 1;
-
-			} else {
-				$tmpres[$key] = array(
-					'did'   => $v['did'],
-					'dtype' => $v['dtype'],
-					'sum'   => $v['weightsum'],
-					'words' => 1,
-					'diffs' => array($v['stem'] => 1)
-				);
-			}
+			$tmpres[$key] = array (
+				'did'   => $v['did'],
+				'dtype' => $v['dtype'],
+				'sum'   => $v['sum'],
+				'words' => $v['words']
+			);
 
 			$dtypes[$v['dtype']][$v['did']] = true;
 		}
 
-		$tmpres2 = array();
-		foreach ($tmpres as $k => $v) {
-			if (count($v['diffs']) == $totalwords) {
-				$tmpres2[$k] = $v;
-			} else {
-				unset($dtypes[$v['dtype']][$v['did']]);
-			}
-		}
-
 		$result = array();
-
-		if(isset($allowTypes) && is_array($allowTypes)) {
-			$allowTypes = array_flip($allowTypes);
-		}
 
 		if($this->withIndexField) {
 			if ($this->app->dbDescription['database']->dbtype == 'mssql') {
@@ -224,10 +246,6 @@ class PXSearch {
 				continue;
 			}
 
-			if(is_array($allowTypes) && !isset($allowTypes[$k])) {
-				continue;
-			}
-
 			if(isset($parents) && is_array($parents) && sizeof($parents) && isset($this->app->types[$k]->fields['parent'])) {
 				$withParents = true;
 			} else {
@@ -239,11 +257,11 @@ class PXSearch {
 			foreach($tmp as $row) {
 				$key =  $k.' '.$row['id'];
 
-				if(!isset($tmpres2[$key])) {
+				if(!isset($tmpres[$key])) {
 					continue;
 				}
 
-				$result[$key] = $tmpres2[$key];
+				$result[$key] = $tmpres[$key];
 				$result[$key]['data'] = $row;
 
 				if ($withParents) {
@@ -256,6 +274,8 @@ class PXSearch {
 		return $result;
 	}
 
+	function getSearchCount() {
+		return $this->searchCount;
+	}
 }
-
 ?>

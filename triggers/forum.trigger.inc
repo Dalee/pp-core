@@ -1,4 +1,4 @@
-<?
+<?php
 class PXTriggerForum extends PXAbstractTrigger {
 	var $dtForums;
 	var $dtTopics;
@@ -39,8 +39,9 @@ class PXTriggerForum extends PXAbstractTrigger {
 		}
 
 		// Выставить lastreply = sys_created последнего сообщения со status = 1
-		// Выставить lastauthor = автору последнего сообщения со status = 1
-		$this->db->Query('UPDATE '.$this->dtTopics.' SET lastreply = \''.$last['sys_created'].'\', lastauthor = '.$last['sys_owner'].' WHERE id = '.$id, true);
+		// Выставить lastauthor = автору последнего сообщения со status = 1, если он есть:
+		$lastauthor = !is_null($last['sys_owner']) ? ', lastauthor = '.$last['sys_owner'] : '';
+		$this->db->Query("UPDATE " . $this->dtTopics . " SET lastreply = '" . $last['sys_created'] . "'" . $lastauthor . " WHERE id = " . $id, true);
 
 		// Выставить count = количеству сообщений в топике - 1
 		$this->db->Query("UPDATE ".$this->dtTopics." SET ".$this->db->mapFields('count')." = ((SELECT count(id) FROM ".$this->dtMessages." WHERE parent = ".$id." AND status = '1') - 1) WHERE id = ".$id, true);
@@ -112,5 +113,4 @@ class PXTriggerForum extends PXAbstractTrigger {
 		return;
 	}
 }
-
 ?>

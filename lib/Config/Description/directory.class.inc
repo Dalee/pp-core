@@ -2,7 +2,7 @@
 /**
  * Класс - хранилище данных о Каталоге (Directory).
  * Стоится по etc/datatypes.xml /directories/directory
- *
+ * 
  * @subpackage Application
  */
 class PXDirectoryDescription {

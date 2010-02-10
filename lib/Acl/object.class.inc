@@ -2,16 +2,8 @@
 class ObjectChecker {
 	var $acl;
 
-	public function checkAcl(&$acl, $what, $format, $object) {
-		$this->acl = & $acl;
-
-		if (!is_object($format)) {
-			$format = PXRegistry::getApp()->types[$format];
-	
-			if(is_null($format)) {
-				FatalError("Undefined format!"); 
-			}
-		}
+	public function checkAcl($acl, $what, $format, $object) {
+		$this->acl = $acl;
 
 		$cond[] = ($format->id == 'suser' && $object['id'] == $this->acl->user->id);
 		$cond[] = ($format->id == 'suser' || $format->id == 'sgroup') && (in_array('pxuserauth', getColFromTable(debug_backtrace(), 'function')));
@@ -20,13 +12,13 @@ class ObjectChecker {
 			return true;
 		}
 
-		return $this->checkGroup($what, $format, $object);
+		return $this->_checkGroup($what, $format, $object);
 	}
 
-	private function checkGroup($what, $format, $object) {
+	private function _checkGroup($what, $format, $object) {
 		$params = func_get_args();
 
-		foreach(array("checkObject", "checkParent") as $method) {
+		foreach(array("_checkObject", "_checkParent") as $method) {
 			$r = call_user_func_array(array($this, $method), $params);
 
 			if(!is_null($r)) {
@@ -37,7 +29,7 @@ class ObjectChecker {
 		return false;
 	}
 
-	private function checkObject($what, $format, $object) {
+	private function _checkObject($what, $format, $object) {
 		foreach ($this->acl->rules as $a) {
 			$notEqualWhat    = !($a['what'] == $what);
 			$notNullGroup    = !is_null($a['sgroupid']);
@@ -48,9 +40,9 @@ class ObjectChecker {
 				continue;
 			}
 
-			$objectIdOrNull     = in_array($a['objectid'],     array($object['id'],                   NULL));
-			$objectParentOrNull = in_array($a['objectparent'], array(getFromArray($object, 'parent'), NULL));
-			$objectTypeOrNull   = in_array($a['objecttype'],   array($format->id,                     NULL));
+			$objectIdOrNull     = ($a['objectid']     == NULL || $a['objectid']     == $object['id']);
+			$objectParentOrNull = ($a['objectparent'] == NULL || $a['objectparent'] == getFromArray($object, 'parent'));
+			$objectTypeOrNull   = ($a['objecttype']   == NULL || $a['objecttype']   == $format->id);
 
 			$notDenyAccess      = !($a['access'] === 'deny');
 
@@ -60,22 +52,22 @@ class ObjectChecker {
 		}
 	}
 
-	private function checkParent($what, $format, $object) {
+	private function _checkParent($what, $format, $object) {
 		if ((bool) $format->parent && isset($object['parent']) && is_numeric($object['parent']) && $object['parent'] > 0) {
 			$pKey = $format->parent . $object['parent'];
 
 			if (!array_key_exists($pKey, $this->acl->parents)) {
-				$this->loadParent($format, $object, $pKey);
+				$this->_loadParent($format, $object, $pKey);
 			}
 
 			$object['parent'] = $this->acl->parents[$pKey];
 			$format = $this->acl->db->types[$this->acl->db->types[$format->id]->parent];
 
-			return $this->checkGroup($what, $format, $object);
+			return $this->_checkGroup($what, $format, $object);
 		 }
 	}
 
-	private function loadParent($format, $object, $pKey) {
+	private function _loadParent($format, $object, $pKey) {
 		$tmpParents = $this->acl->db->query('SELECT parent FROM '.$format->parent.' WHERE id = '.$object['parent']);
 
 		if(count($tmpParents)) {

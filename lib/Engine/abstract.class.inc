@@ -10,9 +10,9 @@ abstract class PXEngine {
 
 		$this->initApplication();
 
-		$user = PXRegistry::getUser();
-		$user->setAcl();
-		$user->checkAuth();
+		$this->user = PXRegistry::getUser();
+		$this->user->setAcl();
+		$this->user->checkAuth();
 
 		PXRegistry::getDb()->LoadDirectoriesAutomatic(PXRegistry::getApp()->directory);
 		$this->initModules();

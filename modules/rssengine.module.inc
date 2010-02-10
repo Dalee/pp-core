@@ -1,4 +1,4 @@
-<?
+<?php
 class PXModuleRSSEngine extends PXModule {
 	function __construct($area, $settings) {
 		parent::__construct($area, $settings);

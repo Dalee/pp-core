@@ -2,6 +2,10 @@
 class PXModuleSearch extends PXModule {
 	var $word;
 
+	function __construct($area, $settings) {
+		parent::__construct($area, $settings);
+	}
+	
 	function adminIndex() {
 		$this->word = trim($this->request->GetVar('word'));
 		$this->searchForm();

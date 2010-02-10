@@ -1,7 +1,5 @@
 <?php
-
 class UserTest extends UnitTestCase {
-
 	function setUp() {
 		$e = new PXEngineIndex();
 		$this->u = PXRegistry::getUser();
@@ -51,7 +49,7 @@ class UserTest extends UnitTestCase {
 		$this->assertTrue($this->u->isAuthed());
 	}
 
-	/*function testGetAuthMethods() {
+	function testGetAuthMethods() {
 		$r = $this->u->getAuthMethods();
 		$this->assertIdentical(array("0"=>"secure"), $r);
 	}
@@ -59,7 +57,7 @@ class UserTest extends UnitTestCase {
 	function testGetPrimaryAuthMethod() {
 		$r = $this->u->getPrimaryAuthMethod();
 		$this->assertEqual("PXAuthSecure", $r);
-	}*/
+	}
 }
 
 class CronUserTest extends UnitTestCase {
@@ -72,5 +70,4 @@ class CronUserTest extends UnitTestCase {
 		$this->assertEqual($this->u->aclType(), "GOD");
 	}
 }
-
 ?>

@@ -44,7 +44,7 @@ class PXRefDescription {
 	function getOther($formatName) {
 		return (($this->from == $formatName) ? $this->to : $this->from);
 	}
-	
+
 	function fillReferences(&$dom, &$app){
 		$domReferences = $dom->xpath("/model/references/reference");
 		if (!is_array($domReferences) || count($domReferences) == 0) {

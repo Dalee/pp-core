@@ -3,6 +3,7 @@ class FileTypeTest extends UnitTestCase {
 	
 	function setUp() {
 		$this->UnitTestCase();
+		$this->aiTestPath = BASEPATH.'/site/htdocs/ai/test/';
 		
 		Mock::generate('PXFieldDescription');
 		
@@ -13,7 +14,7 @@ class FileTypeTest extends UnitTestCase {
 											'size'     => 'fsize',
 											'type'     => 'txt',
 											'fullpath' => 'fullpath',
-											'tmp_name' => BASEPATH.'/site/htdocs/ai/test/tmp_name.txt');
+											'tmp_name' => $this->aiTestPath.'tmp_name.txt');
 		$this->object['id'] = '1';
 		
 		$this->param['format']         = 'test';
@@ -25,16 +26,16 @@ class FileTypeTest extends UnitTestCase {
 		
 	function testProceedFile() {
 		// создадим временный файл для теста
-		$testTmp = BASEPATH.'/site/htdocs/ai/test/tmp_name.txt';
+		$testTmp = $this->aiTestPath.'tmp_name.txt';
 		
 		if (!file_exists($testTmp)) {
-			MakeDirIfNotExists(BASEPATH.'/site/htdocs/ai/test/');
-			fopen(BASEPATH.'/site/htdocs/ai/test/tmp_name.txt', 'w');
+			MakeDirIfNotExists($this->aiTestPath);
+			fopen($this->aiTestPath.'tmp_name.txt', 'w');
 		}
 		
 		$this->file->proceedFile($this->field, $this->object, $this->param);
 		
-		$res = file_exists(BASEPATH.'/site/htdocs/ai/test/1/test_field/fname.txt');
+		$res = file_exists($this->aiTestPath.'1/test_field/fname.txt');
 		$this->assertTrue($res);
 	}
 	
@@ -42,8 +43,8 @@ class FileTypeTest extends UnitTestCase {
 		$test = array(
 			'filename' => 'fname.txt',
 			'fullpath' => '/ai/test/1/test_field/fname.txt',
-			'type'     => mime_content_type(BASEPATH.'/site/htdocs/ai/test/1/test_field/fname.txt'),
-			'size'     => filesize(BASEPATH.'/site/htdocs/ai/test/1/test_field/fname.txt')
+			'type'     => mime_content_type($this->aiTestPath.'1/test_field/fname.txt'),
+			'size'     => filesize($this->aiTestPath.'1/test_field/fname.txt')
 		);
 		$res = $this->file->normalize($this->field, $this->object, $this->param);
 		$this->assertEqual($res['size'], $test['fullpath']);

@@ -1,4 +1,4 @@
-<?
+<?php
 /**
  * Класс - одиночка "Singleton" для журналирования событий в ProximaPortal.
  */
@@ -69,7 +69,9 @@ class PXAuditLogger {
 		if ($instance === null) {
 			$app = & PXRegistry::getApp();
 			$db  = & PXRegistry::getDb();
-			$instance = new PXAuditLogger($app, $db);
+
+			$class = $app->getProperty('LOGGER_CLASS', 'PXAuditLogger');
+			$instance = new $class($app, $db);
 		}
 
 		return $instance;

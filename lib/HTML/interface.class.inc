@@ -1,4 +1,4 @@
-<?
+<?php
 class PXLayoutInterface {
 	function __construct() {
 	}
@@ -8,7 +8,7 @@ class PXLayoutInterface {
 
 	function setApp($app) {
 	}
-	
+
 	function setLang($lang='rus') {
 	}
 }

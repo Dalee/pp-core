@@ -1,4 +1,4 @@
-<?
+<?php
 class PXCronRunNull extends PXAbstractCronRun {
 	var $name;
 
@@ -12,5 +12,4 @@ class PXCronRunNull extends PXAbstractCronRun {
 	}
 
 }
-
 ?>
