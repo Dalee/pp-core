@@ -8,6 +8,21 @@ class PXStructLeaf implements Iterator {
 		$this->struct = $struct;
 	}
 
+	function __call($name, $arguments) {
+		if(method_exists($this->data, $name)) {
+			return call_user_func_array(array($this->data, $name), $arguments);
+
+		} else {
+			$trace = pxtrace();
+			FatalError('Call to undefined method '.__CLASS__.'::'.$name.'() in '.$trace[1]['file'].' on line '.$trace[1]['line']);
+		}
+	}
+
+	function parent($level=1) {
+		$parentId = $this->data->parent($level);
+		return is_null($parentId) ? new PXStructLeaf404() : new PXStructLeaf($this->data->tree->leafs[$parentId], $this->struct);
+	}
+
 	function __get($key) {
 		if(isset($this->data->{$key})) {
 			return $this->data->{$key};

@@ -1,4 +1,4 @@
-<?
+<?php
 class NLLeaf {
 	var $id;
 	var $title;
@@ -18,8 +18,18 @@ class NLLeaf {
 		$this->tree     = $tree;
 	}
 
-	function GetAncestors($andSelf = false) {
+	function getAncestors($andSelf = false) {
 		return $this->tree->GetAncestors($this->id, $andSelf);
+	}
+
+	function parent($level=1) {
+		$ancestors = $this->getAncestors();
+
+		if(isset($ancestors[$level - 1])) {
+			return $ancestors[$level - 1];
+		} else {
+			return null;
+		}
 	}
 }
 
