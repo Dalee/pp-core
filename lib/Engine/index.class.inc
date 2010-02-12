@@ -11,57 +11,74 @@ class PXEngineIndex extends PXEngine {
 		$this->content->tree       = new PXTreeObjects();
 		$this->content->objects    = new PXObjects();
 		$this->content->subObjects = new PXSubObjects();
+
 	}
 
 	function initModules() {
 	}
 
 	function fillLayout() {
-		$this->layout = PXRegistry::getLayout();
-		$this->layout->setApp(PXRegistry::getApp());
+		$layout = PXRegistry::getLayout();
+		$layout->setApp(PXRegistry::getApp());
 
 		// Передача данных в шаблонизатор
-		$this->layout->assign('app',            PXRegistry::getApp(),      true);
-		$this->layout->assign('user',           PXRegistry::getUser(),     true);
-		$this->layout->assign('request',        PXRegistry::getRequest(),  true);
-		$this->layout->assign('response',       PXResponse::getInstance(), true);
+		$layout->assign('app',            PXRegistry::getApp(),      true);
+		$layout->assign('user',           PXRegistry::getUser(),     true);
+		$layout->assign('request',        PXRegistry::getRequest(),  true);
+		$layout->assign('response',       PXResponse::getInstance(), true);
 
-		$this->layout->assignRequest(PXRegistry::getRequest());
+		$layout->assignRequest(PXRegistry::getRequest());
+		$layout->assign('tree',           $this->content->tree);
+/*
+		$layout->assign('references',     PXRegistry::getVar('references'));                 // delete
+		$layout->assign('heap',           PXRegistry::getVar('heap'));                       // delete
+*/
+//		$layout->assign('currentSid',     PXRegistry::getVar('struct')->currentId);          // move to tree
 
-		$this->layout->assign('tree',           $this->content->tree);
-		$this->layout->assign('objects',        $this->content->objects);
-		$this->layout->assign('subObjects',     $this->content->subObjects);
+		$layout->assign('objects',        $this->content->objects);
+//		$layout->assign('currentCid',     PXRegistry::getVar('content')->currentId);         // move to objects
+//		$layout->assign('currentCtype',   PXRegistry::getVar('content')->currentType);       // move to objects
+
+		$layout->assign('subObjects',     $this->content->subObjects);
+//		$layout->assign('currentSCid',    PXRegistry::getVar('subContent')->currentId);      // move to subObjects
+//		$layout->assign('currentSCtype',  PXRegistry::getVar('subContent')->currentType);    // move to subObjects
+
+//		$layout->assign('rootId',         PXRegistry::getVar('rootId'));                     // move to tree
+//		$layout->assign('pathId',         PXRegistry::getVar('pathId'));                     // move to tree
+//		$layout->assign('urlFile',        PXRegistry::getVar('urlFile'));                    // move to request
+
+//		$layout->assign('error',          PXRegistry::getVar('error'));
 
 		// Deprecated features
-		$currentSid  = $this->content->tree->hasCurrent() ? $this->content->tree->getCurrent()->id : -1;
-		if($this->content->objects->hasCurrent()) {
+		$currentSid  = $this->content->tree->hasCurrent()       ? $this->content->tree->getCurrent()->id       : -1;
+		if($this->content->objects->hasCurrent()){
 			$objs = $this->content->objects->getCurrent();
-			$currentCid = $objs['id'];
+			$currentCid  = $objs['id'];
 		} else {
-			$currentCid = -1;
+			$currentCid  = -1;
 		}
 
-		if($this->content->subObjects->hasCurrent()) {
+		if($this->content->subObjects->hasCurrent()){
 			$objs = $this->content->subObjects->getCurrent();
-			$currentSCid = $objs['id'];
+			$currentSCid  = $objs['id'];
 		} else {
-			$currentSCid = -1;
+			$currentSCid  = -1;
 		}
 
-		$this->layout->assign('currentSid',     $currentSid);
-		$this->layout->assign('currentCid',     $currentCid);
-		$this->layout->assign('currentSCid',    $currentSCid);
+		$layout->assign('currentSid',  $currentSid);
+		$layout->assign('currentCid',  $currentCid);
+		$layout->assign('currentSCid', $currentSCid);
 
-		$this->layout->assign('currentCtype',   $this->content->objects->getCurrentType());
+		$layout->assign('currentCtype', $this->content->objects->getCurrentType());
 
-		$this->layout->assign('pathId',         $this->content->tree->pathId);
-		$this->layout->assign('rootId',         $this->content->tree->rootId);
-		$this->layout->assign('urlFile',        PXRegistry::getRequest()->getFile());
+		$layout->assign('pathId', $this->content->tree->pathId);
+		$layout->assign('rootId', $this->content->tree->rootId);
+		$layout->assign('urlFile', PXRegistry::getRequest()->getFile());
 
-		$this->layout->assign('requestHost',    PXRegistry::getRequest()->getHttpHost());
-		$this->layout->assign('requestUri',     $_SERVER['REQUEST_URI']);
-		$this->layout->assign('requestReferer', PXRegistry::getRequest()->getHttpReferer());
-		$this->layout->assign('requestPath',    $_SERVER['SCRIPT_NAME']);
+		$layout->assign('requestHost',    PXRegistry::getRequest()->getHttpHost());
+		$layout->assign('requestUri',     $_SERVER['REQUEST_URI']);
+		$layout->assign('requestReferer', PXRegistry::getRequest()->getHttpReferer());
+		$layout->assign('requestPath',    $_SERVER['SCRIPT_NAME']);
 	}
 
 	function html() {
@@ -74,8 +91,9 @@ class PXEngineIndex extends PXEngine {
 	function runModules() {
 		PXProfiler::begin('RUN MODULES');
 
-		$queue = PXRegistry::getApp()->bindingsQueue;
+		$queue = PXRegistry::getApp()->bindingsQueue; 
 		$queue->getRequestBinding();
+
 		foreach($queue as $bind) {
 			if(!$bind->isBinding($this->content)) {
 				continue;

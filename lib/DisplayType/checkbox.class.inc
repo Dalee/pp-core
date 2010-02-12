@@ -8,7 +8,7 @@
 class PXDisplayTypeCheckbox extends PXDisplayType {
 	function buildInput($field, $object, $param=NULL) {
 		$value = (isset($object[$field->name])  && $object[$field->name] == true) ? true : false;
-		return NLAbstractHTMLForm::BuildInputCheckBox($field->name, $value, null, isset($param['id']) ? $param['id'] : null);
+		return NLAbstractHTMLForm::BuildInputCheckBox($field->name, $value);
 	}
 
 	function buildCell($field, $object, $param=NULL) {

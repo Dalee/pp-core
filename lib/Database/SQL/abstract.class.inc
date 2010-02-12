@@ -100,6 +100,7 @@ abstract class NLAbstractSQLDatabase {
 		return " ".$meth." '".$lperc.$this->EscapeString($condition).$rperc."' ";
 	}
 
+	
 	function _loadFromCache($query, $customCacheExpiration){
 		if (!$customCacheExpiration || (is_int($customCacheExpiration) && $customCacheExpiration > 0)) {
 			$data = $this->cache->load($query);

@@ -1,4 +1,4 @@
-<?php
+<?
 function GetColFromTable($table, $rowName) {
 	$retArray = array();
 	foreach ($table as $row) {

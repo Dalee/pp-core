@@ -235,7 +235,6 @@ class PXAdminObjectForm extends NLAbstractHTMLForm {
 			}
 		</script>
 HTML;
-
 		$html .= '<dl class="allowed">'."\n";
 
 		foreach ($types as $k=>$v) {
@@ -297,4 +296,5 @@ HTML;
 HTML;
 	}
 }
+
 ?>

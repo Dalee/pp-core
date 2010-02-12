@@ -4,12 +4,13 @@ class PXEngineSbin extends PXEngine {
 
 	function __construct(){
 		parent::__construct();
-
+		
 		$this->initApplication();
 
 		$this->initRequest();
 		$this->initUser();
 		$this->initLayout();
+
 
 		$this->saveToRegistry();
 	}
@@ -19,7 +20,7 @@ class PXEngineSbin extends PXEngine {
 	}
 
 	function initRequest() {
-		$this->request = new PXNullRequest();
+		$this->request = new PXRequestNull();
 	}
 
 	function initUser() {

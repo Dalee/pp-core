@@ -1,7 +1,5 @@
 <?php
 class PXObjects extends PXContentObjects implements ArrayAccess, IteratorAggregate {
-	public $currentId, $currentType;
-	
 	function hasCurrent() {
 		return isset($this->data[$this->currentType][$this->currentId]);
 	}

@@ -10,7 +10,7 @@ class PXEngineAdminPopup extends PXEngineAdminIndex {
 
 	function initModules() {
 		$this->modules = PXRegistry::getApp()->getAvailableModules();
-		$this->area    = PXRegistry::getRequest()->getArea(current(array_keys($this->modules)));
+		$this->area = PXRegistry::getRequest()->getArea(current(array_keys($this->modules)));
 	}
 
 	function fillLayout() {
@@ -30,7 +30,8 @@ class PXEngineAdminPopup extends PXEngineAdminIndex {
 
 		$this->fillLayout();
 
-		$instance = $this->modules[$this->area]->getModule();
+		$module = $this->modules[$this->area];
+		$instance = $module->getModule();
 
 		$this->layout->append('OUTER.CONTENT', $instance->adminPopup());
 

@@ -1,4 +1,4 @@
-<?php
+<?
 class PXAdminPager extends PXAdminWidget {
 	var $_currentPage;
 	var $_rowsPerPage;

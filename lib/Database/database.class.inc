@@ -167,7 +167,7 @@ class PXDatabase extends NLSQLDatabaseAdapter {
 	function ParseWhereTemplate($where, $object, $format) {
 		if(strpos($where, 'THIS.') !== false) {
 			if(is_array($object)) {
-				preg_match_all('/THIS\.([A-Z0-9\-_]+)/', $where, $backhref);
+				preg_match_all('/THIS\.([A-Z0-9]+)/', $where, $backhref);
 
 				foreach($backhref[1] as $b) {
 					if(array_key_exists(strtolower($b), $object)) {
@@ -255,13 +255,13 @@ class PXDatabase extends NLSQLDatabaseAdapter {
 		$order_by = null;
 
 		if ($mode == DB_SELECT_COUNT) {
-			$selector = 'count(' . $format->id . '.id)';
+			$selector = 'count('.$format->id.'.id)';
 
 		} else {
 			$selector = $this->_createSelector($format);
 
 			if ($format->id != DT_USER) {
-				$selector .= ', ' . $format->id . '.sys_owner';
+				$selector .= ', '.$format->id.'.sys_owner';
 			}
 
 			$order_by = ' ORDER BY ' . $format->id . '.' . (is_null($order) ? $format->order : $order);
@@ -631,6 +631,7 @@ class PXDatabase extends NLSQLDatabaseAdapter {
 		return $this->_GetData($format, $mode, $whereClause, array($limit, $offset), $order);
 	}
 
+
 	/**
 	 * Добавляет объект в БД.
 	 * Перед добавлением объект преобразуется к необходимому storage type.
@@ -715,14 +716,10 @@ class PXDatabase extends NLSQLDatabaseAdapter {
 				FatalError($errString);
 			}
 			$this->ModifyingQuery('UPDATE '.$format->id.' SET sys_order = id WHERE id = '.$newId);
-
-			$object['id'] = $newId;
 			foreach ($format->fields as $k=>$v) {
 				$p = array('id'=>$newId, 'format'=>$format->id);
 				$v->storageType->proceedFile($v, $object, $p);
 			}
-			
-			$object['sys_order'] = $newId;
 
 			if (count($this->triggers))
 				foreach ($this->triggers as $t)
@@ -973,9 +970,6 @@ class PXDatabase extends NLSQLDatabaseAdapter {
 				$p = array('id'=>$object['id'], 'format'=>$format->id);
 				$v->storageType->proceedFile($v, $object, $p);
 			}
-			
-			$object['sys_order'] = isset($objectInDB['sys_order']) ? $objectInDB['sys_order'] : null;
-			
 			$this->LoadTriggers();
 			if (count($this->triggers))
 				foreach ($this->triggers as $t)
@@ -1143,7 +1137,6 @@ class PXDatabase extends NLSQLDatabaseAdapter {
 		if($swap) {
 			$down = !$down;
 		}
-
 		$where = $format->id.'.sys_order '.($down ? '>' : '<').' '.$objectInDB['sys_order'];
 
 		if (!empty($format->parent)) {
@@ -1363,8 +1356,6 @@ SQL;
 
 		$resTable = $this->Query($query, false, $limit);
 		$retTable = array();
-		$param = array('db'=>&$this, 'format'=>$reference->name);
-
 		foreach ($resTable as $element) {
 			$title = $element[$linkedFormat.'title'];
 			$lid   = $element[$linkedFormat.'id'];
@@ -1380,11 +1371,6 @@ SQL;
 					//search first empty node in our linked list
 				}
 			}
-			
-			foreach($reference->fields as $fk => $fv){
-				$element[$fk] = $fv->storageType->normalize($fv, $element, $param);
-			}
-			
 			$table = array(
 				'title'  => $title,
 				'fields' => $element,
@@ -1627,7 +1613,6 @@ SQL;
 				PXProfiler::begin('PREPARE: '.$format->id.' ['.sizeof($resTable).'x'.sizeof($format->fields).']');
 
 				$this->_NormalizeTable($resTable, $format);
-
 				$newTable = array();
 				foreach ($resTable as $k=>$v) {
 					if ($this->user->can('read', $format, $v)) {
@@ -1647,7 +1632,6 @@ SQL;
 
 				$this->_NormalizeTable($resTable, $format);
 				$newTable = array();
-
 				foreach ($resTable as $k=>$v) {
 					if ($this->user->can('read', $format, $v)) {
 						$newTable[$v['id']] = $v;
@@ -1655,6 +1639,7 @@ SQL;
 					unset($resTable[$k]);
 				}
 				PXProfiler::end();
+
 
 				PXProfiler::begin('TREE: '.$format->id.' ['.sizeof($newTable).']');
 
@@ -1701,5 +1686,7 @@ SQL;
 					 'admin'  => 'Просмотр в админке'
 		);
 	}
+
 }
+
 ?>

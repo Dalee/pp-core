@@ -16,7 +16,7 @@ class PXStorageTypeImage extends PXStorageTypeFile {
 	function __normalize($field, &$object, &$param, $allowed) {
 		$allowedImageTypes = array_unique(unserialize(is_null($allowed) ? ENUM_ALLOWED_IMAGETYPES : $allowed));
 		$basedir           = parent::ai($param['format'],$object['id'],$field->name);
-		$tmp               = glob($this->htdocsPath . $basedir . '/*');
+		$tmp               = glob(BASEPATH.'/site/htdocs' . $basedir . '/*');
 
 		if (!count($tmp)) {
 			return;
@@ -27,7 +27,7 @@ class PXStorageTypeImage extends PXStorageTypeFile {
 		}
 
 		$diskPath = $tmp[0];
-		$httpPath = str_replace($this->htdocsPath, '', $diskPath);
+		$httpPath = str_replace(BASEPATH.'/site/htdocs', '', $diskPath);
 		$httpPath = urlencode($httpPath);
 		$httpPath = str_replace('%2F', '/', $httpPath);
 		$httpPath = str_replace('//', '/', $httpPath);

@@ -18,19 +18,38 @@ abstract class PXModule implements PXModuleIF {
 	var $request;
 	var $user;
 	var $layout;
-	var $response;
 
 	function __construct($area, $settings) {
-		$this->area     = $area;
-		$this->settings = $settings;
+		$this->area       = $area;
+		$this->settings   = $settings;
 
+		$this->app        = PXRegistry::getApp();
+		$this->request    = PXRegistry::getRequest();
+		$this->user       = PXRegistry::getUser();
+		$this->db         = PXRegistry::getDb();
+		$this->layout     = PXRegistry::getLayout();
+		$this->types      = PXRegistry::getTypes();
+
+		$this->response   = PXRegistry::getResponse();
+
+/*
+TODO FIXME
+		$this->struct     = PXRegistry::getVar('struct');
+		$this->content    = PXRegistry::getVar('content');
+		$this->subContent = PXRegistry::getVar('subContent');
+
+		$this->tree       = $this->struct->tree;
+		$this->objects    = $this->content->data;
+		$this->subObjects = $this->subContent->data;
+*/
+	
 		PXRegistry::assignToObject($this);
 	}
 
 	function getAclModuleActions() {
 		return array('viewmenu' => 'Показывать в меню', 'admin' => 'Доступ в админке');
 	}
-
+	
 	function buildAdminUrl() {
 		return str_replace('action.phtml', '', $_SERVER['SCRIPT_URL']);
 	}
@@ -61,10 +80,6 @@ abstract class PXModule implements PXModuleIF {
 	}
 	
 	function adminJson() {
-	}
-	
-	function finalizeBindingsQueue(){
-		 $this->app->bindingsQueue->stopLoading();
 	}
 }
 

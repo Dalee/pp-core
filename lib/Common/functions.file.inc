@@ -1,4 +1,4 @@
-<?php
+<?
 function copyr($source, $dest) {
 	/**
 	 * Copy a file, or a folder and its contents
@@ -154,12 +154,7 @@ function AppendStringToFile($fileName, $string) {
 
 if (!function_exists("mime_content_type")) {
 	function mime_content_type($file) {
-		if(function_exists("finfo_file") && file_exists('/etc/magic')) {
-			$tmp = finfo_file(finfo_open(FILEINFO_MIME, '/etc/magic'), $file);
-		} else {
-			$tmp = exec(sprintf("file -bi '%s'", escapeshellcmd($file)));
-		}
-		return $tmp;
+		return exec ("file -bi " . escapeshellcmd($file));
 	}
 }
 

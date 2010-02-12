@@ -1,23 +1,23 @@
-<?php
+<?
 class PXAuthDomain extends PXAuthInterface {
 	private $authParams;	
 
 	function PXAuthDomain(&$app, &$request, &$user, &$db, $authParams) {
 		$this->authParams = $authParams;
-		$this->domain = $this->_loadDomain();
+		$this->domain = $this->loadDomain();
 
-		$this->_login();
+		$this->login();
 
 		$uArray = $this->findUser();
-		$this->_proceedAuth($uArray);
+		$this->proceedAuth($uArray);
 	}
 
-	private function _proceedAuth($uArray) {
+	private function proceedAuth($uArray) {
 		if(!count($uArray)) return;
-		$this->fillUserFields($uArray);
+		$this->feelUserFields($uArray);
 	}		
 
-	protected function _login() {
+	protected function login() {
 		if(count($this->domain) != 2
 		 || !isset($this->authParams[$this->domain[0]])) {
 			return;
@@ -26,7 +26,7 @@ class PXAuthDomain extends PXAuthInterface {
 		$this->login = (string) _StrToLower($this->domain[1]).'@'.$this->authParams[$this->domain[0]];
 	}
 
-	private function _loadDomain()  {
+	private function loadDomain()  {
 		$du = isset($_SERVER['REMOTE_USER']) ? $_SERVER['REMOTE_USER'] : NULL;
 		return explode("\\", $du);
 	}

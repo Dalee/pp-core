@@ -66,11 +66,11 @@ class PXCacheFile implements IPXCache {
 	function clear() {
 		$this->_cleanDir($this->cache_dir.'/');
 	}
-
+	
 	/*
 	   protected:
 	*/
-
+	
 	protected function _cleanDir($dirName) {
 		if ($handle = opendir($dirName)) {
 			while (false !== ($file = readdir($handle))) {

@@ -3,7 +3,7 @@ class PXAuthInterface {
 	function PXAuth(&$app, &$request, &$user, &$db, $authParams) {
 	}
 
-	protected function fillUserFields($uArray) {
+	protected function feelUserFields($uArray) {
 		$user = PXRegistry::getUser();
 
 		$user->id     = $uArray['id'];
@@ -22,7 +22,7 @@ class PXAuthInterface {
 		return count($tmp) ? current($tmp) : null;
 	}
 
-	protected function _lazySetAuthField($field) {
+	protected function lazySetAuthField($field) {
 		$request = PXRegistry::getRequest();
 
 		$f = $request->getVar($field);
@@ -79,11 +79,11 @@ class PXAuthInterface {
 	}
 
 	protected function login(){
-		$this->_lazySetAuthField("login");
+		$this->lazySetAuthField("login");
 	}
 
 	protected function passwd(){
-		$this->_lazySetAuthField("passwd");
+		$this->lazySetAuthField("passwd");
 	}
 }
 ?>

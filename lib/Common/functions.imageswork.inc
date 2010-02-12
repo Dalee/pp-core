@@ -1,4 +1,4 @@
-<?php
+<?
 function GDInDrawPicture($src_im, &$dst_im) {
 	$src_width  = ImageSX($src_im);
 	$src_height = ImageSY($src_im);

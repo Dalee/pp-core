@@ -16,4 +16,5 @@ class PXStorageTypeVirtual extends PXStorageType {
 		return true;
 	}
 }
+
 ?>

@@ -8,7 +8,6 @@ class PXModuleFile extends PXModule {
 
 	function __construct($area, $settings) {
 		parent::__construct($area, $settings);
-
 		$this->area     = $area;
 		$this->settings = array();
 
@@ -179,22 +178,22 @@ HTML;
 	}
 
 	function adminPopup() {
-		$this->layout->setGetVarToSave('id',     $this->request->GetId());
-		$this->layout->setGetVarToSave('format', $this->request->GetFormat());
-		$this->layout->setGetVarToSave('action', $this->request->GetAction());
+		$layout->setGetVarToSave('id',     $request->GetId());
+		$layout->setGetVarToSave('format', $request->GetFormat());
+		$layout->setGetVarToSave('action', $request->GetAction());
 
 		$this->_initRequestVars();
 
-		$this->layout->setOuterForm('action.phtml', 'POST', 'multipart/form-data');
-		switch($this->request->getVar('action')) {
+		$layout->setOuterForm('action.phtml', 'POST', 'multipart/form-data');
+		switch($request->getVar('action')) {
 			case 'edit':
 				$html = '<div class="edit-file-form">'.$this->editFileForm().'</div>';
 				break;
 
 			case 'link':
-				$rName = $this->request->GetVar('name');
+				$rName = $request->GetVar('name');
 
-				$curDir = $this->request->GetVar('ldir');
+				$curDir = $request->GetVar('ldir');
 				$othDir = null;
 
 				$href = '?area='.$this->area.'&action=link&name='.$rName.'&rdir=';
@@ -206,7 +205,7 @@ HTML;
 				$listing->getList($curDir);
 				$listing->setDecorator(new PXHTMLFileListingLink($href, 'l', $rName));
 
-				$this->layout->assign('OUTER.LEFTCONTROLS', '<button class="unlink" onclick="return UnLinkFile(\''.$rName.'\');">Отвязать</button>');
+				$layout->assign('OUTER.LEFTCONTROLS', '<button class="unlink" onclick="return UnLinkFile(\''.$rName.'\');">Отвязать</button>');
 
 				$html = '<table class="filemanager"><tbody><tr><td><div class="content">'.$listing->html().'</div></td></tr></tbody></table>';
 				break;
@@ -256,7 +255,7 @@ HTML;
 	function adminAction() {
 		$this->_initRequestVars();
 
-		switch($this->request->getVar('action')) {
+		switch($request->getVar('action')) {
 			case 'createdir': $this->_aCreateDir(); break;
 
 			case 'copy':      $this->_aCopy();      break;

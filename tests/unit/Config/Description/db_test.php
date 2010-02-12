@@ -1,11 +1,12 @@
 <?php
+
 class DBDescriptionTest extends UnitTestCase {
 	var $map1 = array(
-			"host"   => "host1",
-			"port"   => "9999",
-			"user"   => "web",
-			"passwd" => "123",
-			"dbname" => "test");
+			"host"=>"host1",
+			"port"=>"9999",
+			"user"=>"web",
+			"passwd"=>"123",
+			"dbname"=>"test");
 
 	function setUp() {
 		$this->dbd = new NLDBDescription($this->map1);
@@ -26,11 +27,6 @@ class DBDescriptionTest extends UnitTestCase {
 
 	function testGetPgsqlConnectString() {
 		$r = $this->dbd->getPgsqlConnectString();
-		$this->assertTrue(empty($r));
-
-		foreach(get_object_vars($this->dbd) as $k=>$i) {
-			if(isset($this->map1[$k])) $this->dbd->$k = $this->map1[$k];
-		}
 		$this->dbd->password = $this->map1['passwd']; //dirty hack 
 
 		//sprintf black belt ;-)
@@ -71,5 +67,7 @@ class DBDescriptionTest extends UnitTestCase {
 
 		$this->assertIdentical($r, $expected);
 	}
+
 }
+
 ?>

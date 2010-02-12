@@ -1,4 +1,5 @@
 <?php
+
 class DatabaseTest extends UnitTestCase {
 
 	function setUp() {/*{{{*/ 

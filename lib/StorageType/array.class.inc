@@ -47,7 +47,7 @@ class PXStorageTypeArray extends PXStorageType {
 		 $value = $object[$field->name];
 		 $value = split("},{", $value);
 		 foreach($value as $k => $v) {
-			$v = str_replace(array('{','"','}'), '',  $v);
+			$v = preg_replace("/\{|\}/", "", $v);
 			$value[$k] = split(",", $v);
 		 }
 		return (is_array($value) ? $value : array());

@@ -1,4 +1,4 @@
-<?php
+<?
 class PXCronRunSearchIndex extends PXAbstractCronRun {
 	var $name;
 

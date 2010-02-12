@@ -41,15 +41,15 @@ class PXUserHTMLLayout extends PXLayoutInterface  {
 	}
 
 	function setApp($app) {
+		$this->app = $app;
 		$this->lang->setTree($app->langTree);
 	}
 
-	private 
-	function _initLang() {
+	private function _initLang() {
 		include_once 'HTML/lang.class.inc';
-
+	
 		$this->lang = new PXUserHTMLLang();
-		$this->AddTemplateFunction('lang', array(&$this->lang, 'lang'));
+		$this->addTemplateFunction('lang',  array(&$this->lang, 'lang'));
 
 		$this->AddTemplateFunction('pager', array(&$this, 'pager'));
 		$this->AddTemplateFunction('autopager', array(&$this, 'autopager')); 
@@ -90,7 +90,7 @@ class PXUserHTMLLayout extends PXLayoutInterface  {
 			return '';
 		}
 
-		return $this->htmlPager($total, $a_per_page, $smarty, $param);
+	 	return $this->htmlPager($total, $a_per_page, $smarty, $param);
 	}
 
 	function pager($param, &$smarty) {

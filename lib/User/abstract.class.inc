@@ -40,6 +40,7 @@ abstract class PXUser {
 		if(strtolower(get_class($this->auth)) != 'pxauthnull' || $this->checkAuth()){
 			return $this->auth->auth();
 		}
+
 		return false;
 	}
 

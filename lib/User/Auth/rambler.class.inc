@@ -1,10 +1,11 @@
-<?php
+<?
+
 class PXAuthRambler extends PXAuthInterface {
 	function PXAuthRambler(&$app, &$request, &$user, &$db) {
 		if (isset($_COOKIE['rsid'])) {
 			$this->login();
 			$uArray = $this->findUser();
-			$this->fillUserFields($uArray);
+			$this->feelUserFields($uArray);
 		}
 	}
 
@@ -28,14 +29,14 @@ class PXAuthRambler extends PXAuthInterface {
 		}
 		return PXAuthRambler::_getRamblerData($url);
 	}
-
+	
 	function _getRamblerData($checkUrl) {
 		$data = @file_get_contents('http://'.$checkUrl);
 
 		if (!strlen($data)) {
 			$data = @file_get_contents('http://www.index20.ru/'.$checkUrl);
 		}
-
+		
 		if (!strlen($data)) {
 			return 0;
 		}
@@ -43,7 +44,7 @@ class PXAuthRambler extends PXAuthInterface {
 		$data = PXAuthRambler::_parseRamblerResponse($data);
 		return $data;
 	}
-
+	
 	// static
 	function _parseRamblerResponse($data) {
 		$res = array();
@@ -54,5 +55,7 @@ class PXAuthRambler extends PXAuthInterface {
 		}
 		return $res;
 	}
+
 }
+
 ?>

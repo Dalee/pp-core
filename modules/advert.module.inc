@@ -14,6 +14,12 @@ class PXModuleAdvert extends PXModule {
 	}
 
 	function adminIndex() {
+		$layout  = $this->layout;
+		$app     = $this->app;
+		$db      = $this->db;
+		$request = $this->request;
+		$user    = $this->user;
+
 		$this->onPage = $this->app->getProperty('CHILDREN_ON_PAGE', 5);
 		$sid = $this->request->getVar('sid');
 
@@ -98,11 +104,6 @@ class PXModuleAdvert extends PXModule {
 	}
 
 	function adminPopup() {
-		$layout  = $this->layout;
-		$app     = $this->app;
-		$db      = $this->db;
-		$request = $this->request;
-		
 		$months = array(
 			0  => '',
 			1  => 'Январь',
@@ -119,21 +120,21 @@ class PXModuleAdvert extends PXModule {
 			12 => 'Декабрь'
 		);
 
-		$format = $request->GetVar('format');
+		$format = $this->request->GetVar('format');
 
-		$mode   = ($request->GetVar('mode') != '') ? $request->GetVar('mode') : 'shows' ; //shows, clicks, ctr
+		$mode   = ($this->request->GetVar('mode') != '') ? $this->request->GetVar('mode') : 'shows' ; //shows, clicks, ctr
 		$mode   = ($mode === 'shows' || $mode === 'clicks' || $mode === 'ctr') ? $mode : 'shows'; //double check
 
-		$year   = (int)$request->GetVar('year')  > 0 ? (int)$request->GetVar('year')  : date("Y"); //stat year
-		$month  = ((int)$request->GetVar('month') > 0 && (int)$request->GetVar('month') <= 12 ) ? (int)$request->GetVar('month') : date("n"); //stat month w/o zero
+		$year   = (int)$this->request->GetVar('year')  > 0 ? (int)$this->request->GetVar('year')  : date("Y"); //stat year
+		$month  = ((int)$this->request->GetVar('month') > 0 && (int)$this->request->GetVar('month') <= 12 ) ? (int)$this->request->GetVar('month') : date("n"); //stat month w/o zero
 
-		$id     = (int)$request->GetId(); //banner id
+		$id     = (int)$this->request->GetId(); //banner id
 
-		if (!isset($app->types[$format])) {
+		if (!isset($this->app->types[$format])) {
 			FatalError("Unknown format type. Check \"format\" variable.");
 		}
 
-		switch($request->getAction()) {
+		switch($this->request->getAction()) {
 			//show image and exit
 			case 'image':
 				$response =& PXResponse::getInstance();
@@ -150,9 +151,9 @@ class PXModuleAdvert extends PXModule {
 							FROM adstat WHERE adbanner=\''.$id.'\'
 							AND EXTRACT(MONTH FROM ts) = '.$month.' AND EXTRACT(YEAR FROM ts) = '.$year.'
 							GROUP BY days ORDER BY days';
-					$res = $db->Query($sql);
+					$res = $this->db->Query($sql);
 
-					$object = $db->GetObjectByID($this->app->types[$format], $id);
+					$object = $this->db->GetObjectByID($this->app->types[$format], $id);
 
 					if (!empty($object)) {
 						$bannerTitle  = ($mode == 'ctr' ? 'CTR' : ($mode == 'clicks' ? 'Клики' : 'Показы')) .  ' для ';
@@ -259,7 +260,7 @@ class PXModuleAdvert extends PXModule {
 					ORDER BY day
 SQL;
 
-				$res = $db->Query($sql);
+				$res = $this->db->Query($sql);
 
 				echo '"date";"shows";"clicks";"ctr"'. "\r\n";
 				foreach ($res as $row) {
@@ -271,23 +272,23 @@ SQL;
 
 			//show textual content
 			default:
-				$object = $db->GetObjectByID($app->types[$request->GetFormat()], $request->GetId());
+				$object = $this->db->GetObjectByID($this->app->types[$this->request->GetFormat()], $this->request->GetId());
 				$title = isset($object['title']) ? substr(strip_tags($object['title']), 0, 32):'баннер не найден';
 
 
-				$layout->SetOuterForm('action.phtml', 'POST', 'multipart/form-data', true);
-				$layout->Assign('OUTER.RIGHTCONTROLS', PXAdminObjectForm::BuildClose('Закрыть'));
-				$years = $db->Query('SELECT EXTRACT(YEAR FROM ts) as year FROM adstat GROUP BY year ORDER BY year ASC;');
+				$this->layout->SetOuterForm('action.phtml', 'POST', 'multipart/form-data', true);
+				$this->layout->Assign('OUTER.RIGHTCONTROLS', PXAdminObjectForm::BuildClose('Закрыть'));
+				$years = $this->db->Query('SELECT EXTRACT(YEAR FROM ts) as year FROM adstat GROUP BY year ORDER BY year ASC;');
 				//DD-MM-YYYY
 				$html = '<DIV style="padding: 10px 0; width: 100%;">
 						 <select name="stat[year]">';
 				foreach($years as $y) {
-					$html .= '<option value="' . $y['year'] . '" ' . ($y['year'] == $year ? 'SELECTED' : '') . '>' . $y['year'] . '</option>';
+					$html .='<option value="'.$y['year'].'" ' . ($y['year'] == $year ? 'SELECTED' : '') . '>'.$y['year'].'</option>';
 				}
 				$html.= '</select>
 						 <select name="stat[month]">';
 				foreach($months as $k=>$m) {
-					$html .= '<option value="' . $k . '" ' . ($k == $month ? 'SELECTED' : '') . '>' . $m . '</option>';
+					$html .='<option value="'.$k.'" ' . ($k == $month ? 'SELECTED' : '') . '>'.$m.'</option>';
 				}
 				$html .= '</select>
 
@@ -314,8 +315,8 @@ SQL;
 					$html .= '&year='.$year.'&month='.$month.'';
 				$html .= '">';
 
-				$layout->assign('OUTER.TITLE', 'Статистика для баннера &laquo;'. $title .'&raquo;');
-				$layout->assign('OUTER.CONTENT', $html);
+				$this->layout->assign('OUTER.TITLE', 'Статистика для баннера &laquo;'. $title .'&raquo;');
+				$this->layout->assign('OUTER.CONTENT', $html);
 
 				break;
 		}
@@ -323,15 +324,13 @@ SQL;
 	}//function
 
 	function adminAction() {
-		$request = $this->request;
-
 		//$action = $request->getVar("action");
-		$stat   = $request->getVar('stat');
+		$stat   = $this->request->getVar('stat');
 
-		$mode   = $request->getVar('mode');
-		$format = $request->getFormat();
+		$mode   = $this->request->getVar('mode');
+		$format = $this->request->getFormat();
 
-		$id     = (int)$request->getId();
+		$id     = (int)$this->request->getId();
 		$year   = (int)$stat['year'];
 		$month  = (int)$stat['month'];
 
@@ -339,20 +338,15 @@ SQL;
 	}
 
 	function userIndex() {
-		$layout  = $this->layout;
-		$app     = $this->app;
-		$db      = $this->db;
-		$request = $this->request;
-		
 		$error = 0;
 		$refName = $this->dtBanner.'2'.$this->dtPlace;
-		if ($rqPlaceId = $request->GetVar('p')) {
-			$adPlace = $db->GetObjectById($app->types[$this->dtPlace], $rqPlaceId);
-			$attached = $db->GetLinks($app->references[$refName], $this->dtPlace, $rqPlaceId);
+		if ($rqPlaceId = $this->request->GetVar('p')) {
+			$adPlace = $this->db->GetObjectById($this->app->types[$this->dtPlace], $rqPlaceId);
+			$attached = $this->db->GetLinks($this->app->references[$refName], $this->dtPlace, $rqPlaceId);
 			if (count($attached)) {
-				$banners = $db->GetObjectsByIdArray($app->types[$this->dtBanner], "TRUE", array_keys($attached));
+				$banners = $this->db->GetObjectsByIdArray($this->app->types[$this->dtBanner], "TRUE", array_keys($attached));
 			} else {
-				$banners = $db->_GetData($app->types[$this->dtBanner], DB_SELECT_TABLE, "{$this->dtBanner}.type='{$adPlace['type']}' AND {$this->dtBanner}.dynamic = TRUE AND {$this->dtBanner}.status = TRUE");
+				$banners = $this->db->_GetData($this->app->types[$this->dtBanner], DB_SELECT_TABLE, "{$this->dtBanner}.type='{$adPlace['type']}' AND {$this->dtBanner}.dynamic = TRUE AND {$this->dtBanner}.status = TRUE");
 			}
 			if (count($banners)) {
 				$distrib = array();
@@ -362,18 +356,18 @@ SQL;
 					}
 				}
 				$toShow = $banners[$distrib[array_rand($distrib)]];
-				if ($request->GetVar('d') == 'gif') {
+				if ($this->request->GetVar('d') == 'gif') {
 					setcookie('place'.$request->GetVar('p'), $toShow['id']);
 
 					$response =& PXResponse::getInstance();
 					$response->redirect($toShow['image']['path']);
 
 				} else {
-					$this->ShowAd($request->GetVar('p'), $toShow);
+					$this->ShowAd($this->request->GetVar('p'), $toShow);
 				}
 				$toShow['shows'] = (is_numeric($toShow['shows'])) ? $toShow['shows']+1 : 1;
-				$db->user->level = 16384;
-				$db->ModifyContentObject($app->types[$this->dtBanner], $toShow);
+				$this->db->user->level = 16384;
+				$this->db->ModifyContentObject($this->app->types[$this->dtBanner], $toShow);
 			} else {
 				$error = 2; //  ERROR: no banners to show
 			}
@@ -470,23 +464,19 @@ SQL;
 
 
 	function userAction() {
-		$app     = $this->app;
-		$db      = $this->db;
-		$request = $this->request;
-		
-		if ($request->GetVar('b')) {
-			$bannerId = $request->GetVar('b');
+		if ($this->request->GetVar('b')) {
+			$bannerId = $this->request->GetVar('b');
 		} else {
-			if ($request->GetVar('p')) {
-				$bannerId = $request->GetCookieVar('place'.$request->GetVar('p'));
+			if ($this->request->GetVar('p')) {
+				$bannerId = $this->request->GetCookieVar('place'.$this->request->GetVar('p'));
 			}
 		}
 		if (isset($bannerId) && !empty($bannerId)) {
-			$adBanner = $db->GetObjectById($app->types[$this->dtBanner], $bannerId);
+			$adBanner = $this->db->GetObjectById($this->app->types[$this->dtBanner], $bannerId);
 			$retValue = $adBanner['reference'];
 			$adBanner['clicks'] = (is_numeric($adBanner['clicks'])) ? $adBanner['clicks']+1 : 1;
-			$db->user->level = 16384;
-			$db->ModifyContentObject($app->types[$this->dtBanner], $adBanner);
+			$this->db->user->level = 16384;
+			$this->db->ModifyContentObject($this->app->types[$this->dtBanner], $adBanner);
 		} else {
 			$retValue = '/';
 		}
@@ -494,4 +484,5 @@ SQL;
 	}
 
 }
+
 ?>

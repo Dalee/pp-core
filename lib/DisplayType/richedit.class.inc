@@ -1,6 +1,4 @@
 <?php
-require_once 'text.class.inc';
- 
 /**
  * Визуальный редактор
  *
@@ -11,26 +9,8 @@ require_once 'text.class.inc';
  */
 class PXDisplayTypeRichedit extends PXDisplayTypeText {
 	function buildInput($field, $object, $param=NULL) {
-		$value    = isset($object[$field->name]) ? htmlspecialchars($object[$field->name]) : NULL;
-		$req      = PXRegistry::getRequest();
-		$layout   =& PXRegistry::getLayout();
-		$redactor = $req->getCookieVar('richedit');
-		$html     = NLAbstractHTMLForm::BuildRichEdit($field->name, $value, $field->displayTypeArgs[1], $redactor);
-		$layout->assignInlineJS(<<<JS
-			var selects = document.getElementsByTagName('select');
-			for(var i = 0; i < selects.length; i++) {
-				if(selects[i].parentNode.className == 'redactor') {
-					selects[i].onchange = function() {
-						var date = new Date();
-						date = new Date (date.getFullYear() + 1, date.getMonth(), date.getDate(),  23, 59, 59);
-						document.cookie = ['richedit=', this.value, '; expires=', date.toUTCString()].join('');
-						location.reload();
-					}
-				}
-			}
-JS
-);
-		return $html;
+		$value = isset($object[$field->name]) ? htmlspecialchars($object[$field->name]) : NULL;
+		return NLAbstractHTMLForm::BuildRichEdit($field->name, $value, $field->displayTypeArgs[1]);
 	}
 }
 ?>

@@ -1,5 +1,4 @@
-<?php
-	ini_set('display_errors', 1);
+<?
 	$file = $_SERVER['HTTP_X_REWRITE_URL'];
 
 	if (preg_match('/\.js$/i', $file)) {
@@ -13,11 +12,9 @@
 	if ($s === false) {
 		header("HTTP/1.0 404 Not found");
 		exit;
-
 	} else {
-		echo $s;
-		exit;
-		require_once '../../lib/Common/functions.string.inc';
+		include_once '../../lib/Common/functions.string.inc';
 		echo myconv('k', 'w', $s);
 	}
+
 ?>

@@ -48,7 +48,7 @@ class PXmlSimplexmlNode extends PXmlAbstractNode implements IPXmlNode {
 	function nodeType(){
 		return $this->_nodeType;
 	}
-	
+
 	function attributes(){
 		if(isset($this->_attributes)){
 			return array_values($this->_attributes);

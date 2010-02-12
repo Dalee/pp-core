@@ -16,27 +16,27 @@ class PXRequestBaseCLITest extends UnitTestCase {
     }
 
     function test_Instance_Should_be_PXRequestBase() {
-        $request = new PXRequest();
-        $this->assertIsA($request, 'PXRequest');
+        $request = new PXRequestBase();
+        $this->assertIsA($request, 'PXRequestBase');
     }
 
     
     function test_default_HTTPMethod_should_be_CLI() {
-        $this->assertEqual(PXRequest::GetHttpMethod(), 'CLI');
+        $this->assertEqual(PXRequestBase::GetHttpMethod(), 'CLI');
     }
     
     function test_default_HTTPReferer_should_be_NULL() {
-        $this->assertNull(PXRequest::getHttpReferer());
+        $this->assertNull(PXRequestBase::getHttpReferer());
     }
     
     //TODO: why should we want two referer functions?
     function test_default_Referer_should_be_NULL() {
-        $request = new PXRequest();
+        $request = new PXRequestBase();
         $this->assertNull($request->getReferer());
     }
 
     function test_default_HTTPRequestURI_should_be_NULL() {
-        $this->assertNull(PXRequest::getRequestUri());
+        $this->assertNull(PXRequestBase::getRequestUri());
     }
 
     private static function setUp_cli_env() {

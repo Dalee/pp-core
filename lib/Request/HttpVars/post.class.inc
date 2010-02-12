@@ -12,10 +12,6 @@ class NLPostData extends NLHTTPVarsData {
 		
 		foreach ($tmpArray as $k=>$v) {
 			$retArray['name'][$k] = stripslashes($v);
-			
-			if($retArray['error'][$k] != 0 || $retArray['size'][$k] == 0) {
-				unset($retArray['name'][$k]);
-			}
 		}
 	}
 
@@ -23,7 +19,7 @@ class NLPostData extends NLHTTPVarsData {
 		$retArray = array();
 
 		if (!empty($_FILES[$varName]['name'])) {
-			$retArray = $_FILES[$varName];
+			$retArray = array_merge($retArray, $_FILES[$varName]);
 
 			$this->_Normalize($retArray);
 
@@ -31,10 +27,6 @@ class NLPostData extends NLHTTPVarsData {
 				$this->setImageArray($retArray);
 			} else {
 				$retArray['name'] = stripslashes($retArray['name']);
-				
-				if($retArray['error'] != 0 || $retArray['size'] == 0) {
-					$retArray = array();
-				}
 			}
 		}
 

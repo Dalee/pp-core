@@ -16,6 +16,10 @@ do
 
 			cmd="svn ps svn:mime-type '"${mime}"; charset=koi8-r' "${file}
 			eval $cmd
+#		else
+#			echo $file
+#			cat "$dName/.svn/prop-base/$bName.svn-base" | grep -v 'END' | egrep -v '^[KV] [0-9]+' | tail -n 1
+#			echo
 		fi
 	fi
 done

@@ -1,4 +1,4 @@
-<?php
+<?
 /*
 Proxima CMS web engine
 (c) Dalee, 2003-2007

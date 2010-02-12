@@ -33,27 +33,25 @@ class NLHTTPVarsData {
 		}
 	}
 
-	function charSet($needFixIisRewrite) {
+	function isUtf() {
 		foreach ($this->raw as $k=>$v) {
-			// FIXME! temporary hack
-			if($needFixIisRewrite && is_string($v)) {
-				$this->raw[$k] = $v = myconv('utf-8', 'iso-8859-1', $v);
-			}
-
 			if (is_string($v) && !isAsciiString($v) && isUtfString($v)) {
-				$this->clientCharset = 'u';
+				return true;
 			}
 		}
+
+		return false;
 	}
 
-	function _NormalizeData($needFixIisRewrite=false) {
+	function _NormalizeData() {
 		$this->clientCharset = 'w';
 
-		$this->charSet($needFixIisRewrite);
+		if($this->isUtf())
+			$this->clientCharset = 'u';
 
 		if (isset($this->raw['charcheck'])) {
 			$this->_needToConvert = true;
-			$this->clientCharset  = $this->charcheck_machine($this->raw['charcheck']);
+			$this->clientCharset = $this->charcheck_machine($this->raw['charcheck']);
 		}
 
 		$this->_Normalize($this->raw);
@@ -83,9 +81,9 @@ class NLHTTPVarsData {
 	function _GetVar($varName) {
 		return isset($this->raw[$varName]) ? $this->raw[$varName] : NULL;
 	}
-
+	
 	function _isSetVar($varName) {
-		return array_key_exists($varName, $this->raw);
+		return key_exists($varName, $this->raw);
 	}
 
 	function _SetVar($varName, $value) {
@@ -116,12 +114,12 @@ class NLHTTPVarsData {
 
 		if(!isset($callback)) {
 			$callback = create_function('&$arrayItself, $key, $opts', <<<DO
-				if(empty(\$arrayItself[\$key]) && !in_array(\$arrayItself[\$key], array(0, "0"), true) && \$opts['killEmptyRows']) unset(\$arrayItself[\$key]);
+			if(empty(\$arrayItself[\$key]) && !in_array(\$arrayItself[\$key], array(0, "0"), true) && \$opts['killEmptyRows']) unset(\$arrayItself[\$key]);
 DO
-			);
-		}
-		NestedArrayWalk($temp, $callback, array('killEmptyRows' => $killEmptyRows));
+		);
+}
 		
+		NestedArrayWalk($temp, $callback, array('killEmptyRows' => $killEmptyRows));
 		return $temp;
 	}
 
@@ -175,15 +173,18 @@ DO
 
 	function _GetIPAddrVar($varName) {
 		if (isset($this->raw[$varName])) {
+			
 			if (is_array($this->raw[$varName])) {
+			
 				return ip2long((!empty($this->raw[$varName][0]) ? $this->raw[$varName][0] : '0')."."
 					. (!empty($this->raw[$varName][0]) ? $this->raw[$varName][1] : '0')."."
 					. (!empty($this->raw[$varName][0]) ? $this->raw[$varName][2] : '0')."."
 					. (!empty($this->raw[$varName][0]) ? $this->raw[$varName][3] : '0'));
-
+			
 			} else {
 				return $this->raw[$varName];
 			}
+
 		}
 	}
 

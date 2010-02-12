@@ -1,4 +1,4 @@
-<?php
+<?
 class PXAdminTableSimple extends PXAdminWidget {
 	function PXAdminTableSimple($cols) {
 		$this->cols   = $cols;

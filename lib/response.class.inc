@@ -1,11 +1,10 @@
 <?php
 class PXResponse {
 	var $STATUS_OK                      = '200 OK';
-	var $STATUS_MOVED                   = '301 Moved Permanently'; // òÅËÏÍÅÎÄÁÃÉÑ áÛÍÁÎÏ×Á É Co
-	var $STATUS_NOT_MODIFIED            = '304 Not Modified';
-	var $STATUS_NOT_FOUND               = '404 Not Found';
+	var $STATUS_MOVED                   = '301 Moved Permanetly'; // òÅËÏÍÅÎÄÁÃÉÑ áÛÍÁÎÏ×Á É Co
+	var $STATUS_NOT_FOUND               = '404 Not found';
 	var $STATUS_FORBIDDEN               = '403 Forbidden';
-	var $STATUS_NOT_IMPLEMENTED         = '501 Not Implemented';
+	var $STATUS_NOT_IMPLEMENTED         = '501';
 	var $STATUS_TEMPORARILY_UNAVAILABLE = '503 Service Temporarily Unavailable';
 
 	var $headers = array();
@@ -75,10 +74,6 @@ class PXResponse {
 		$this->status = $this->STATUS_NOT_FOUND;
 	}
 	
-	function notModified() {
-		$this->status = $this->STATUS_NOT_MODIFIED;
-	}
-	
 	function forbidden() {
 		$this->status = $this->STATUS_FORBIDDEN;
 	}
@@ -97,14 +92,12 @@ class PXResponse {
 
 	function dontCache() {
 		$this->addHeader('X-Accel-Expires',  0);
-		$this->addHeader('Cache-Control', 'no-store, no-cache, must-revalidate, post-check=0, pre-check=0');
-		$this->addHeader('Expires', DateUnixToGMT());
+		$this->addHeader('Cache-Control', 'no-cache, must-revalidate');
 	}
 
-	function cache($timeOut = 3600, $xae = null) {
-		$this->addHeader('X-Accel-Expires', isset($xae) ? (int)$xae : (int)$timeOut);
-		$this->addHeader('Cache-Control', sprintf('private, max-age=%d', (int)$timeOut));
-		$this->addHeader('Expires', DateUnixToGMT(time()+(int)$timeOut));
+	function cache($timeOut = 3600) {
+		$this->addHeader('X-Accel-Expires', $timeOut);
+		$this->addHeader('Cache-Control', 'public');
 	}
 
 	function setLength($length) {
@@ -113,10 +106,6 @@ class PXResponse {
 
 	function setCharset($charset) {
 		$this->setContentType($this->contentType['type'], $charset);
-	}
-	
-	function setLastModified($timestamp){
-		$this->addHeader('Last-Modified', DateUnixToGMT($timestamp));
 	}
 	
 	function setContentType($contentType, $charset=null) {

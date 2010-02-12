@@ -77,7 +77,6 @@ class PXProfiler {
 		while ($self->stackSize() > 0){
 			PXProfiler::end();
 		}
-
 		$collection = $self->getItems();
 		ksort($collection);
 

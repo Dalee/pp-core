@@ -410,7 +410,7 @@ function appendParamToUrl($url, $k, $v, $fragment = false, $num_save = false) {
 	if (!empty($tmp['scheme'])) {
 		$url .= $tmp['scheme'].'://'.$tmp['host'];
 	} else {
-		$url .= 'http://'.PXRequest::GetHttpHost();
+		$url .= 'http://'.PXRequestBase::GetHttpHost();
 	}
 	if (!empty($tmp['path'])) {
 		if ($tmp['path']{0} == '/') {
@@ -450,7 +450,7 @@ function removeParamFromUrl($url, $k, $fragment = false, $removeAll = false, $nu
 	if (!empty($tmp['scheme'])) {
 		$url .= $tmp['scheme'].'://'.$tmp['host'];
 	} else {
-		$url .= 'http://'.PXRequest::GetHttpHost();
+		$url .= 'http://'.PXRequestBase::GetHttpHost();
 	}
 	if (!empty($tmp['path'])) {
 		if ($tmp['path']{0} == '/') {
@@ -484,7 +484,6 @@ function removeParamFromUrl($url, $k, $fragment = false, $removeAll = false, $nu
 	if ($fragment === false  and isset($tmp['fragment'])) $url .= '#' . $tmp['fragment'];
 	return $url;
 }
-
 function multiLevelVarsToString($name, $arrayVars, $leaf=null, $num_save=false) {
 	foreach($arrayVars as $k=>$a) {
 		$t[$k] = "{$leaf}[".((is_numeric($k) && !$num_save) ? '' : $k)."]";
@@ -541,7 +540,7 @@ function myconv($from, $to, $string, $be_quiet = false) {
 	}
 
 	// FIXME: it hack
-	if (is_string($string) && isUtfString($string)) {
+	if (is_string($string) && !isAsciiString($string) && isUtfString($string)) {
 		$from = 'u';
 	}
 
@@ -833,7 +832,7 @@ function myconv($from, $to, $string, $be_quiet = false) {
 	$res = @iconv($from, $to, $string);
 	restore_error_handler();
 	ini_set('track_errors', $prev_track_errors);
-	if ($php_errormsg === false) {
+	if ($php_errormsg === false) { 
 		return $res;
 	} else {
 		unset($res);
@@ -884,6 +883,7 @@ function myconv($from, $to, $string, $be_quiet = false) {
 						}
 					}
 				}
+
 			} else {
 				for ($i = 0; $i <= 0xffff; $i++) {
 					$c = pack('n', $i);
@@ -1005,6 +1005,8 @@ function wordWrapHtmlSafe($str, $width = 60, $break = "\n", $nobreak = "", $nobr
 	// Return contents of the drain
 	return $drain;
 }
+
+
 
 function fixWordLength($string, $length = 10) {
 	$delim = chr(1);

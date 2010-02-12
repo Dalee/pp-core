@@ -28,6 +28,48 @@ abstract class PXContentObjects {
 		return $this->currentType;
 	}
 
+	function loadChilds($childs, $pathName) {
+		if(!$this->hasCurrent()) {
+			return;
+		}
+
+		$allowed = $this->getAllowedChilds();
+
+		if (!count($allowed)) {
+			return array();
+		}
+
+		foreach ($allowed as $type=>$behaviour) {
+			$format = PXRegistry::getTypes($type);
+
+			if(!is_object($format)) {
+				continue;
+			}
+
+			$objsArray = array();
+
+			switch ($behaviour) {
+				case PP_CHILDREN_FETCH_NONE:
+					break;
+
+				case PP_CHILDREN_FETCH_SELECTED:
+					if (!isset($format->fields['pathname'])) {
+						break(2);
+					}
+
+					$objsArray = PXRegistry::getDb()->getObjectsByFieldLimited($format, true, array('pathname' => $pathName, 'parent' => $this->currentId), 'IGNORED', 1, 0);
+					break;
+
+				case PP_CHILDREN_FETCH_ALL:
+					$objsArray = PXRegistry::getDb()->getObjectsByParent($format, true, $this->currentId);
+					break;
+			}
+
+			$childs->add($type, $objsArray);
+			$childs->findCurrent($type, $pathName);
+		}
+	}
+
 	function getLinks() {
 		if(!$this->hasCurrent()) {
 			return;
@@ -53,6 +95,7 @@ abstract class PXContentObjects {
 			$this->links[$ref->name] = $links;
 			$this->linkedObjs[$otherType] = $db->getObjectsByIdArray($otherFormat, true, array_keys($links));
 		}
+		
 	}
 }
 ?>

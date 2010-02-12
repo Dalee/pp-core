@@ -1,4 +1,4 @@
-<?php
+<?
 function isEmail($string) {
 	$string = trim($string);
 	$emails = preg_split('/\s*[,;]\s*/', $string);

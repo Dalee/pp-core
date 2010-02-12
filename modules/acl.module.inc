@@ -3,6 +3,7 @@ class PXModuleAcl extends PXModule {
 	var $what;
 	var $access;
 	var $objectRule     = 'user';
+	var $moduleName     = 'acl';
 	var $aclObjectTitle = 'Тип объекта';
 
 	function __construct($area, $settings) {
@@ -25,31 +26,30 @@ class PXModuleAcl extends PXModule {
 	function getAvailableActions() {
     	return PXDatabase::getAclObjectActions();
 	}
-	
-	function getWhatDict() { 
-		return $this->what; 
-	}
 
+	function getWhatDict() {
+		return $this->what;
+	}
+	
 	function adminIndex() {
 		$rules  = $this->_getRules();
 		$fields = $this->_getFields();
 		$dicts  = $this->_getDicts();
 
 		$table = new PXAdminTableAcl($fields);
-
 		$table->setData($rules);
 
 		$table->setNullText('Все');
-		$table->setDict('sgroupid',   $dicts['sgroup']);
-		$table->setDict('objecttype', $dicts['types']);
-		$table->setDict('what',       $this->getWhatDict());
-		$table->setDict('access',     $this->access);
+		$table->setDict('sgroupid',       $dicts['sgroup']);
+		$table->setDict('objecttype',     $dicts['types']);
+		$table->setDict('what',           $this->getWhatDict());
+		$table->setDict('access',         $this->access);
 
-		$table->setControls('/admin/popup.phtml?area='  . $this->area . '&id=',               'изменить это правило', 'edit', false, true);
-		$table->setControls('/admin/action.phtml?area=' . $this->area . '&action=delete&id=', 'удалить  это правило', 'del',  true,  false);
+		$table->setControls('/admin/popup.phtml?area='  . $this->moduleName. '&id=',                'изменить это правило', 'edit', false, true);
+		$table->setControls('/admin/action.phtml?area=' . $this->moduleName. '&action=delete&id=', 'удалить  это правило', 'del',  true,  false);
 
-		$table->setControls('/admin/action.phtml?area=' . $this->area . '&action=up&id=',     'поднять  это правило', 'up' ,  false, false);
-		$table->setControls('/admin/action.phtml?area=' . $this->area . '&action=down&id=',   'опустить это правило', 'down', false, false);
+		$table->setControls('/admin/action.phtml?area=' . $this->moduleName. '&action=up&id=',     'поднять  это правило', 'up' ,  false, false);
+		$table->setControls('/admin/action.phtml?area=' . $this->moduleName. '&action=down&id=',   'опустить это правило', 'down', false, false);
 		$table->showEven();
 
 		$table->addToParent('INNER.0.0');
@@ -57,7 +57,7 @@ class PXModuleAcl extends PXModule {
 		$this->layout->setOneColumn();
 
 		$_  = '';
-		$_ .= '<a href="/admin/popup.phtml?area=' . $this->area . '" onclick="Popup(this.href); return false;" class="button">';
+		$_ .= '<a href="/admin/popup.phtml?area=' . $this->moduleName. '" onclick="Popup(this.href); return false;" class="button">';
 		$_ .= '<img src="i/icon/add.gif" alt="Добавить правило">';
 		$_ .= 'Правило доступа';
 		$_ .= '</a>';
@@ -66,9 +66,9 @@ class PXModuleAcl extends PXModule {
 	}
 
 	function adminPopup() {
-		$layout  = $this->layout;
+		$layout = $this->layout;
 		$request = $this->request;
-		$app     = $this->app;
+		$app = $this->app;
 
 		$rules  = $this->_getRules();
 		$fields = $this->_getFields();
@@ -142,15 +142,15 @@ class PXModuleAcl extends PXModule {
 
 	function _getFields() {
 		return array(
-			'sgroupid'     => 'Группа',
-			'objectid'     => 'Объект',
-			'objectparent' => 'Родитель объекта',
-			'objecttype'   => $this->aclObjectTitle,
-			'what'         => 'Действие',
-			'access'       => 'Доступ'
+			'sgroupid'       => 'Группа',
+			'objectid'       => 'Объект',
+			'objectparent'   => 'Родитель объекта',
+			'objecttype'     => $this->aclObjectTitle,
+			'what'           => 'Действие',
+			'access'         => 'Доступ'
 		);
 	}
-
+	
 	function _getRules() {
 		$tmp = $this->db->query("SELECT * FROM ".$this->sqlTable . " WHERE objectrule = '" . $this->objectRule . "' ORDER BY sys_order");
 
@@ -172,7 +172,7 @@ class PXModuleAcl extends PXModule {
 		
 		return $types;
 	}
-
+	
 	function _getDicts() {
 		$db =& $this->db;
 
@@ -187,10 +187,9 @@ class PXModuleAcl extends PXModule {
 		$dicts['sgroupid']   =& $dicts['sgroup'];
 		$dicts['access']     =& $this->access;
 		$dicts['objecttype'] =& $dicts['types'];
-
 		return $dicts;
 	}
-
+	
 	function _moveRule($rId, $direction) {
 		$db = $this->db;
 
@@ -233,6 +232,7 @@ class PXModuleAcl extends PXModule {
 
 			case 'add':
 				$fields = array_keys($this->_getFields());
+				
 				$values = array();
 
 				foreach($fields as $field) {
@@ -242,7 +242,7 @@ class PXModuleAcl extends PXModule {
 				$ruleTypeField          = 'objectrule';
 				$fields[]               = $ruleTypeField;
 				$values[$ruleTypeField] = $this->objectRule;
-
+				
 				$rId = $this->db->InsertObject($this->sqlTable, $fields, $values);
 				$this->db->ModifyingQuery('UPDATE '.$this->sqlTable.' SET sys_order = id WHERE id = '.$rId);
 

@@ -95,11 +95,12 @@ class PXModuleCronRun extends PXModule {
 		// !!! run code here !!!
 		$db   = new PXDatabase($app); //add NEW connect to the database from current child
 		$user = new PXUserCron();
+		//$user->setDb($db);
 
 		PXRegistry::setDb($db);
 		PXRegistry::setUser($user);
 		$db->setUser($user);
-
+		
 		$db->LoadDirectoriesAutomatic($app->directory); //init directory from here !
 		if (isset($app->types['struct'])) {
 			$tree = new NLTree($db->getObjects($app->types['struct'], true));
@@ -183,9 +184,7 @@ class PXModuleCronRun extends PXModule {
 	}
 
 	function adminIndex() {
-		$layout = $this->layout;
-		
-		$fp = @fopen(BASEPATH.'/var/cron.results', 'r');
+		$fp = @fopen($this->RESULTS_FILE, 'r');
 		if ($fp) {
 			flock($fp, LOCK_EX);
 
@@ -198,8 +197,8 @@ class PXModuleCronRun extends PXModule {
 			$cronStat = array();
 		}
 
-		$layout->setOneColumn();
-		$layout->assign('INNER.0.1', '<a href="?area='.$this->area.'&t='.time().'" class="reload">Обновить</a>');
+		$this->layout->setOneColumn();
+		$this->layout->assign('INNER.0.1', '<a href="?area='.$this->area.'&t='.time().'" class="reload">Обновить</a>');
 
 		$fields = array(
 			'rule'    => 'Правило',
@@ -241,7 +240,7 @@ class PXModuleCronRun extends PXModule {
 		$table = new PXAdminTableSimple($fields);
 		$table->setData($result);
 
-		$layout->Assign('INNER.0.0', $table->html());
+		$this->layout->Assign('INNER.0.0', $table->html());
 	}
 }
 ?>

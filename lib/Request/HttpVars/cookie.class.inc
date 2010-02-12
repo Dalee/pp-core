@@ -1,5 +1,6 @@
 <?php
 class NLCookieData extends NLHTTPVarsData {
+
 	function __construct($needToStripTags = false) {
 		parent::__construct($needToStripTags, true);
 		$this->raw = (array) $_COOKIE;
@@ -14,16 +15,15 @@ class NLCookieData extends NLHTTPVarsData {
 		$value = convert_cyr_string($value, 'k', 'w');
 
 		if(is_numeric($expire)) {
-			return setcookie($varName, $value, $expire, '/');
+			return setcookie($varName, $value, $expire);
 		} else {
-			return setcookie($varName, $value, 0, '/');
+			return setcookie($varName, $value);
 		}
 	}
 
 	function _GetVar($varName) {
-		if (!isset($this->raw[$varName])) {
+		if (!isset($this->raw[$varName])) 
 			return NULL;
-		}
 
 		$value = $this->raw[$varName];
 
@@ -34,4 +34,5 @@ class NLCookieData extends NLHTTPVarsData {
 		return $value;
 	}
 }
+
 ?>

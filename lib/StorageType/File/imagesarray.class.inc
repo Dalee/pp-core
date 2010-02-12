@@ -19,11 +19,11 @@ class PXStorageTypeImagesarray extends PXStorageTypeFilesarray {
 		$imagesArray = array();
 		$basedir     = parent::ai($param['format'],$object['id'],$field->name);
 
-		$d = new NLDir($this->htdocsPath.$basedir);
+		$d = new NLDir(BASEPATH.'/site/htdocs'.$basedir);
 
 		if ($d->Exist()) {
 			foreach ($d->getFileNames() as $entry) {
-				$diskPath = $this->htdocsPath.$basedir.$entry;
+				$diskPath = BASEPATH.'/site/htdocs'.$basedir.$entry;
 				$httpPath = $basedir.$entry;
 				list($width, $height, ) = getimagesize($diskPath);
 

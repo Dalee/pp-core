@@ -1,29 +1,6 @@
 <?php
 class PXAdminHTMLLayout extends NLAbstractLayout {
 	var $types;
-	
-	var $_scripts = array();
- 
-	//TODO: there must be right places in <HEAD> for this
-	var $_scriptsTemplates  = array(
-		':css' => array(
-			':area'  => 'OUTER.FORMBEGIN',
-			':proto' => '<link rel="stylesheet" href="%s" type="text/css" />'
-		),
-		':js'  => array(
-			':area'  => 'OUTER.FORMEND',
-			':proto' => '<script src="%s" type="text/javascript"></script>'
-		),
-		':inline_js'  => array(
-			':area'  => 'OUTER.FORMEND',
-			':proto' => "<script type=\"text/javascript\">\n%s\n</script>"
-		),
-		':inline_css'  => array(
-			':area'  => 'OUTER.FORMBEGIN',
-			':proto' => "<style type=\"text/css\">\n%s\n</style>"
-		)
- 
-	);
 
 	function PXAdminHTMLLayout($outerLayout, $types) {
 		$this->NLAbstractLayout();
@@ -299,28 +276,6 @@ class PXAdminHTMLLayout extends NLAbstractLayout {
 
 	function assignKeyValueList($label, $list, $selected, $varName = 'sid') {
 		parent::AssignKeyValueList($label, $list, $varName, $selected);
-	}
-	
-	function assignJS($pathToScript){
-		$this->_renderScript($pathToScript, ':js', true);
-	}
- 
-	function assignInlineJS($scriptBody, $uniq = true){
-		$this->_renderScript($scriptBody, ':inline_js', $uniq);
-	}
- 
-	function assignCSS($pathToScript){
-		$this->_renderScript($pathToScript, ':css', true);
-	}
- 
-	function assignInlineCSS($scriptBody){
-		$this->_renderScript($scriptBody, ':inline_css', true);
-	}
-
-	function _renderScript($body, $template, $singleton){
-		if(!strlen($body) || ($singleton && isset($this->_scripts[$hash = md5($body)]))) return false;
-		$this->append($this->_scriptsTemplates[$template][':area'], sprintf($this->_scriptsTemplates[$template][':proto'], $body));
-		return $singleton ? ($this->_scripts[$hash] = true) : true;
 	}
 }
 ?>

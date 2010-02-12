@@ -1,4 +1,4 @@
-<?php
+<?
 class NLAntiCheating {
 	var $protectedId;
 	var $userIP;

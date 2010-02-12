@@ -19,7 +19,9 @@ class PXEngineAdminAction extends PXEngine {
 			FatalError('Некорректный параметр area = <em>'.strip_tags($this->area).'</em>');
 		}
 
-		$instance = $this->modules[$this->area]->getModule();
+		$module = $this->modules[$this->area];
+
+		$instance = $module->getModule();
 		$this->nextLocation = $instance->adminAction();
 
 		PXProfiler::end();

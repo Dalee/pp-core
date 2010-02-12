@@ -3,7 +3,6 @@ require_once 'abstract.class.inc';
 
 require_once 'string.class.inc';
 require_once 'integer.class.inc';
-require_once 'bigint.class.inc';
 require_once 'pk.class.inc';
 require_once 'float.class.inc';
 require_once 'boolean.class.inc';

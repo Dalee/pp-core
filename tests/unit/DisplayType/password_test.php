@@ -53,7 +53,7 @@ class PasswordTest extends UnitTestCase {
 	}
 	
 	function testGetFromRequest() {
-		$request = new PXRequest();
+		$request = new PXRequestBase();
 		$var     = new NLGetData();
 		$var->raw['test_field'] = array ('type' => 'qwerty', 'retype' => 'qwerty');
 		

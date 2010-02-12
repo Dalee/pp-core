@@ -12,12 +12,19 @@ class PXEngineAction extends PXEngine {
 	}
 
 	function initRequest() {
-		$this->request = new PXRequest();
+		$this->request = new PXRequestUser();
 	}
 
 	function initLayout() {
 		$this->layout = new PXLayoutNull();
 	}
+
+	/*function runModules() {
+		$response =& PXResponse::getInstance();
+		$response->dontCache();
+
+		$this->nextLocation = $module->userAction();
+	}*/
 
 	function runModules() {
 		$module_name = $this->request->getVar('area');

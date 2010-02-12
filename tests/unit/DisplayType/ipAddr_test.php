@@ -41,7 +41,7 @@ class IpAddrTest extends UnitTestCase {
 	}
 	
 	function testGetFromRequest() {
-		$request = new PXRequest();
+		$request = new PXRequestBase();
 		$var     = new NLGetData();
 		
 		$var->raw['test_field'] = array(10, 2, 2, 34);

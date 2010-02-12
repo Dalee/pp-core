@@ -44,7 +44,7 @@ HTML;
 		$html .= '<input id="'.$this->name.$this->distension.'height" type="text" readonly value="'.$this->value['height'].'">';
 		$html .= '<span>высота</span>';
 
-		$html .= '<input id="'.$this->name.$this->distension.'size"   type="text" readonly value="'.($this->value['path'] ? filesize(BASEPATH.'site/htdocs/'.$this->value['path']) : NULL).'">';
+		$html .= '<input id="'.$this->name.$this->distension.'size"   type="text" readonly value="'.($this->value['path'] ? filesize(BASEPATH.'/site/htdocs/'.$this->value['path']) : NULL).'">';
 		$html .= '<span>размер</span>';
 		
 		return $html;

@@ -1,4 +1,4 @@
-<?php
+<?
 /**
  * PXAdminTable - конструктор HTML таблиц для ProximaPortal.
  *
@@ -466,6 +466,7 @@ class PXAdminTable extends PXAdminWidget {
 
 		$href .= $k.'='.urlencode($v).'&';
 	}
+	
 	
 	function setSiteTree($tree){
 		$this->tree = $tree;

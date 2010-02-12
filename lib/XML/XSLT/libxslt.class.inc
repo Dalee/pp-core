@@ -120,4 +120,5 @@ class PXLibXSLT extends PXXSLT {
 		return $html;
 	}
 }
+
 ?>

@@ -5,7 +5,7 @@ class PXModuleProperties extends PXModule {
 
 	function __construct($area, $settings) {
 		parent::__construct($area, $settings);
-
+		
 		$this->app       = PXRegistry::getApp();
 		$this->_settings = $settings;
 	}
@@ -32,7 +32,7 @@ class PXModuleProperties extends PXModule {
 				$_tmpSource = $dataDesc['source'];
 				unset($dataDesc['source']);
 			}
-			$dataDesc['displaytype'] = str_replace(',','|', $dataDesc['displaytype']);
+			str_replace(',','|', $dataDesc['displaytype']);
 			array_walk($dataDesc, $arToObject);
 			$field         = new PXFieldDescription(array_values($dataDesc), $this->app, $this->_pseudoDatatype);
 			$field->listed = false;
@@ -60,20 +60,17 @@ class PXModuleProperties extends PXModule {
 
 
 	function adminIndex(){
-		$layout = $this->layout;
-		$db     = $this->db;
-		
-		$layout->setOneColumn();
+		$this->layout->setOneColumn();
 
 		if(($error = $this->_checkForErrors()) !== false){
-			$layout->assignError("INNER.0.0", $error);
+			$this->layout->assignError("INNER.0.0", $error);
 			return;
 		}
 
 		$this->_fillPseudoDatatype();
 		$propObject = PXModuleProperties::loadModel(array_keys($this->_pseudoDatatype->fields));
 
-		$db->loadDirectoriesByType($this->_pseudoDatatype, $propObject);
+		$this->db->loadDirectoriesByType($this->_pseudoDatatype, $propObject);
 		$objectForm = new PXAdminObjectForm($this->_pseudoDatatype, $propObject);
 
 		$formToHtml = $objectForm->MainForm($objectForm->format);
@@ -81,7 +78,7 @@ class PXModuleProperties extends PXModule {
 
 		$html = $this->_editArea($formToHtml);
 
-		$layout->Assign("INNER.0.0", $html);
+		$this->layout->Assign("INNER.0.0", $html);
 	}
 
 	function adminAction() {
@@ -124,41 +121,41 @@ HTML;
 	}
 
 	function _saveModel($format, $object){
-		if(!is_writable($store = BASEPATH . 'site/etc/properties.ini')){
-			return false;
-		}
-		
-		$arStrings = array_map('trim', file($store));
-		$newData   = array();
-		
-		foreach($format->fields as $field){
-			if($field->storageType->notInDB(NULL, NULL)) {
-				continue;
-			}
-			
-			$updated     = false;
-			$param       = array('dbFields' => null, 'dbValues' => null);
-			list($_ ,,)  = $field->storageType->normalizeObjectAttribute($field, $object, $param);
-			$_           = trim(str_replace(array("\r","\n",'"'), '', $_)); //sanitize input
+		if(is_writable($store = BASEPATH . '/site/etc/properties.ini')){
+			$arStrings = file($store);
+			$newData = array();
+			foreach($format->fields as $field){
+				if($field->storageType->notInDB(NULL, NULL)) {
+					continue;
+				}
+				
+				$updated     = false;
+				$param       = array('dbFields' => null, 'dbValues' => null);
+				list($_ ,,)  = $field->storageType->normalizeObjectAttribute($field, $object, $param);
+				$_           = trim(str_replace(array("\r","\n",'"'), '', $_)); //sanitize input
 
-			$paramString = "{$field->name} = \"{$_}\"";
-			
-			foreach($arStrings as $line => $data){
-				if(preg_match("#^(?>{$field->name}\s*=)#iS", $data)){
-					$arStrings[$line] = $paramString; //Update existing
-					$updated = true;
+				$paramString = "{$field->name} = \"{$_}\"\n";
+				
+				foreach($arStrings as $line => $data){
+					if(preg_match("#^(?>\s*{$field->name}\s*=)#iS", $data)){
+						$arStrings[$line] = $paramString; //Update existing
+						$updated = true;
+					}
+				}
+				
+				if(!$updated){
+					$newData[] = $paramString; //Add new
 				}
 			}
+			$arStrings = array_merge($arStrings, $newData);
+			WriteStringToFile($store, join('', $arStrings));
 			
-			if(!$updated){
-				$newData[] = $paramString; //Add new
-			}
+			return true;
 		}
-		
-		$arStrings = array_merge($arStrings, $newData);
-		WriteStringToFile($store, join("\n", $arStrings));
-		
-		return true;
+
+		return false;
 	}
+
 }
+
 ?>

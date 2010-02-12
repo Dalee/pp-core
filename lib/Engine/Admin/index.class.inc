@@ -5,15 +5,12 @@ class PXEngineAdminIndex extends PXEngine {
 	function __construct() {
 		parent::__construct();
 
-		$types = $this->app->types;
+		$types = PXRegistry::getApp()->types;
 		PXRegistry::setLayout(new PXAdminHTMLLayout('index', $types));
-		
-		$this->layout =& PXRegistry::getLayout();
-		$this->request = PXRegistry::getRequest();
 	}
 
 	function initModules() {
-		$this->modules = $this->app->getAvailableModules();
+		$this->modules = PXRegistry::getApp()->getAvailableModules();
 	}
 
 	function initMenu() {
@@ -38,21 +35,25 @@ class PXEngineAdminIndex extends PXEngine {
 	}
 
 	function fillLayout($area) {
-		$this->layout->setLogoutForm('?area=exit');
+		$layout = PXRegistry::getLayout();
 
-		$this->layout->setMenu($this->menu, $area, 'area', false);
+		$layout->setLogoutForm('?area=exit');
 
-		$this->layout->setTwoColumns();
+		$layout->setMenu($this->menu, $area, 'area', false);
 
-		$this->layout->setGetVarToSave('area', $area);
-		$this->layout->setGetVarToSave('sid', $this->request->getSid());
+		$layout->setTwoColumns();
+
+		$layout->setGetVarToSave('area', $area);
+		$layout->setGetVarToSave('sid', PXRegistry::getRequest()->getSid());
 	}
 
 	function checkArea($area) {
 		if (!isset($this->modules[$area])) {
-			$this->layout->setOneColumn();
-			$this->layout->assignError('INNER.0.0', 'Некорректный параметр <em>area</em> = <em>'.strip_tags($area).'</em>');
-			$this->layout->assignTitle('Некорректный параметр area');
+			$layout = PXRegistry::getLayout();
+
+			$layout->setOneColumn();
+			$layout->assignError('INNER.0.0', 'Некорректный параметр <em>area</em> = <em>'.strip_tags($area).'</em>');
+			$layout->assignTitle('Некорректный параметр area');
 			return false;
 		}
 
@@ -64,11 +65,12 @@ class PXEngineAdminIndex extends PXEngine {
 
 		$this->initMenu();
 
-		if (!$this->user->isAdmin()) {
+		if (!PXRegistry::getUser()->isAdmin()) {
 			return $this->showAuthForm();
 		}
 
-		$area = $this->request->getArea(current(array_keys($this->menu)));
+		$area = PXRegistry::getRequest()->getArea(current(array_keys($this->menu)));
+
 		$this->fillLayout($area);
 
 		if($area == 'exit') {
@@ -89,10 +91,10 @@ class PXEngineAdminIndex extends PXEngine {
 		$response =& PXResponse::getInstance();
 		$response->dontCache();
 
-		$charset = $this->app->GetProperty('OUTPUT_CHARSET', DEFAULT_CHARSET);
+		$charset = PXRegistry::getApp()->GetProperty('OUTPUT_CHARSET', DEFAULT_CHARSET);
 
 		PXRegistry::getDb()->close();
-		$this->layout->flush($charset);
+		PXRegistry::getLayout()->flush($charset);
 	}
 }
 ?>

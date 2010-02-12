@@ -3,18 +3,15 @@ class PXAuthPlain extends PXAuthInterface {
 	function PXAuthPlain(&$app, &$request, &$user, &$db) {
 		$this->login();
 		$this->passwd();
-	
 		$uArray = $this->findUser();
 		$this->proceedAuth($uArray);
 	}
 
 	private function proceedAuth($uArray) {
-		if(!(count($uArray) && strlen($this->passwd))) {
-			return;
-		}
+		if(!(count($uArray) && strlen($this->passwd))) return;
 
-		if ($this->passwdToDB($this->passwd) == $uArray['passwd'] || $this->passwd == $this->encodePasswd($uArray['passwd'])) {
-			 $this->fillUserFields($uArray);
+		if ($this->passwdToDB($this->passwd) == $uArray['passwd'] || $passwd == $this->encodePasswd($uArray['passwd'])) {
+			 $this->feelUserFields($uArray);
 		}
 	}
 

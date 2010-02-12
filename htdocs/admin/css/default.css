@@ -29,11 +29,11 @@ ul.list {
 	margin: 0;
 	list-style-type: none;
 }
-
+	
 li  {
 	padding: 2px;
 }
-
+	
 li.selected {
 	background-color: #385A94;
 }
@@ -509,11 +509,6 @@ div.edit-file-form, div.edit-file-form textarea {
 
 table.mainform td input.checkbox {
 	width: auto;
-}
-
-table.mainform td div.redactor {
-	margin: 5px;
-	padding: 5px;
 }
 
 table.mainform td input:hover, table.mainform td textarea:hover {
@@ -1018,7 +1013,7 @@ div#ContextMenu span {
 button.add {
 	background-color: transparent;
 	background-position: 7px 50%;
-	background-repeat: no-repeat;
+	background-repeat: no-repeat; 
 	padding: 0 0 0 20px;
 	margin: 0 5px 0 0;
 }

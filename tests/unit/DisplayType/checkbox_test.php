@@ -12,7 +12,7 @@ class CheckBoxTest extends UnitTestCase {
 	}
 	
 	function testGetFromRequest() {
-		$request = new PXRequest();
+		$request = new PXRequestBase();
 		$var     = $request->getData;
 		
 		$var->raw['test_field'] = true;
