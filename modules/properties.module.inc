@@ -124,7 +124,7 @@ HTML;
 	}
 
 	function _saveModel($format, $object){
-		if(!is_writable($store = BASEPATH . 'etc/properties.ini')){
+		if(!is_writable($store = BASEPATH . 'site/etc/properties.ini')){
 			return false;
 		}
 		
