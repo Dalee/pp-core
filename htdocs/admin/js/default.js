@@ -180,13 +180,12 @@ function AddRow(table, name, width, height, cols) {
 
 function AddRowNew(name) {
 	var tableName = "table" + name;
-	var domTable = document.getElementById(tableName);
-	var numRows  = domTable.rows.length;
-	var newRow = domTable.insertRow(numRows);
-	var prevRow = domTable.rows[numRows-1];
-
+	var domTable  = document.getElementById(tableName);
+	var numRows   = domTable.rows.length;
+	var newRow    = domTable.insertRow(numRows);
+	var prevRow   = domTable.rows[numRows-1];
 	var numCols   = prevRow.getElementsByTagName('td').length;
-
+	
 	for (var i=0;i<numCols;i++) {
 		var newCell = newRow.insertCell(0);
 		var j = 0;
@@ -194,7 +193,7 @@ function AddRowNew(name) {
 			var control = prevRow.cells[i].childNodes.item(j++);
 			if(control.nodeType === 1 /*Node.ELEMENT_NODE; Node is undefined in IE*/ ) break;
 		}
-
+		
 		if (control.tagName == 'TEXTAREA') {
 			var width = control.style.width;
 			var height = control.style.height;
