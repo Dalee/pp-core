@@ -422,8 +422,8 @@ class PXModuleRegister extends PXAbstractModule {
 				static $firstOpen = 0;
 
 				if(!$firstOpen++){
-					MakeDirIfNotExists(BASEPATH."var/sessions/");
-					session_save_path(BASEPATH."var/sessions/");
+					MakeDirIfNotExists(BASEPATH."site/var/sessions/");
+					session_save_path(BASEPATH."site/var/sessions/");
 					ini_set('session.use_cookies',      1);
 					ini_set('session.use_only_cookies', 1);
 					ini_set('session.use_trans_sid',    0);
@@ -451,7 +451,7 @@ class PXModuleRegister extends PXAbstractModule {
 				break;
 
 			case 'captcha':
-				$bn = new NLBlockingNumbers(BASEPATH.'/var/blocking_nums');
+				$bn = new NLBlockingNumbers(BASEPATH.'site/var/blocking_nums');
 
 				if(isset($filter)){
 					$model = $bn->CheckValueByKey(key($filter), current($filter));
