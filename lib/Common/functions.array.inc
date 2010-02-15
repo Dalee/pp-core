@@ -52,17 +52,17 @@ if(!function_exists('array_combine')){
 	}
 }
 
-function NestedArrayWalk(&$multiArray, $mapper, $optArgs = array()){
+function NestedArrayWalk(&$multiArray, $mapper, $optArgs = array(), $nestingLevel = 0){
 	if(!is_callable($mapper)) {
 		return false;
 	}
 
 	foreach($multiArray as $key => $value){
 		if(is_array($value) && sizeof($value)){
-			NestedArrayWalk($multiArray[$key], $mapper, $optArgs);
+			NestedArrayWalk($multiArray[$key], $mapper, $optArgs, (int)$nestingLevel + 1);
 		}
 
-		$mapper($multiArray, $key, $optArgs);
+		$mapper($multiArray, $key, $optArgs, $nestingLevel);
 	}
 	
 	return true;
