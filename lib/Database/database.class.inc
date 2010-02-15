@@ -697,7 +697,6 @@ class PXDatabase extends NLSQLDatabaseAdapter {
 			}
 			$dbValues[] = serialize($_children);
 		}
-
 		$this->LoadTriggers();
 		$permitAdd = true;
 		$newId = 0;
@@ -716,10 +715,13 @@ class PXDatabase extends NLSQLDatabaseAdapter {
 				FatalError($errString);
 			}
 			$this->ModifyingQuery('UPDATE '.$format->id.' SET sys_order = id WHERE id = '.$newId);
+			
+			$object['id'] = $newId;
 			foreach ($format->fields as $k=>$v) {
 				$p = array('id'=>$newId, 'format'=>$format->id);
 				$v->storageType->proceedFile($v, $object, $p);
 			}
+			$object['sys_order'] = $newId;
 
 			if (count($this->triggers))
 				foreach ($this->triggers as $t)
@@ -727,7 +729,6 @@ class PXDatabase extends NLSQLDatabaseAdapter {
 
 			$audit->info('Объект добавлен', $format->id .'/'. $newId);
 		}
-
 		return $newId;
 	}
 
