@@ -57,9 +57,9 @@ class PXAdminHTMLLayout extends NLAbstractLayout {
 		$last  = end($leafs);
 
 		foreach ($leafs as $leaf) {
-			$haveSysOrder = strpos($objectFormat->order, 'sys_order') !== false ? true : false;
-			$up   = $leaf == $first || !$haveSysOrder ? 0 : 1;
-			$down = $leaf == $last  || !$haveSysOrder ? 0 : 1;
+			$haveSysOrder = strpos($objectFormat->order, 'sys_order') !== false;
+			$up           = (int)($haveSysOrder && $leaf != $first);
+			$down         = (int)($haveSysOrder && $leaf != $last);
 
 			if ($level) {
 				$leafAlias[$leaf] = (isset($objectFormat->fields['pathname'])) ? $tree->leafs[$leaf]->content['pathname'] : NULL;
