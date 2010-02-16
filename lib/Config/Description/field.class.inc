@@ -45,7 +45,7 @@ class PXFieldDescription {
 					break;
 
 				case 'displaytype':
-					$this->setDisplayType($value);
+					$this->setDisplayType(utf8_decode($value));
 					break;
 
 				case 'handler':

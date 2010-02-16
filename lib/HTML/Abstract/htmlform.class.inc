@@ -220,18 +220,18 @@ class NLAbstractHTMLForm {
 	}
 
 	static
-	function BuildTable($name, $value, $cols, $height) {
+	function BuildTable($name, $value, $cols, $height, $header = array()) {
 		$colsWidth = array();
 
 		for ($i=0; $i<$cols; $i++) {
 			$colsWidth[] = 1;
 		}
 
-		return NLAbstractHTMLForm::BuildTableByCols($name, $value, $colsWidth, $height);
+		return NLAbstractHTMLForm::BuildTableByCols($name, $value, $colsWidth, $height, $header);
 	}
 
-	function BuildTableByCols($name, $value, $cols, $height) {
-		$table = new PXInputTable($name, $value, $cols, $height);
+	function BuildTableByCols($name, $value, $cols, $height, $header = array()) {
+		$table = new PXInputTable($name, $value, $cols, $height, $header);
 		$table->setDisabled(NLAbstractHTMLForm::_DisabledStatus());
 		return $table->html();
 	}

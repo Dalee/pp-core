@@ -4,11 +4,14 @@ class PXInputTable extends PXAdminWidget {
 	var $value;
 	var $colsWidth;
 	var $height;
+	var $header;
 
-	function PXInputTable($name, $value, $cols, $height) {
-		$this->name = $name;
-		$this->value = $value;
+	function PXInputTable($name, $value, $cols, $height, $header = array()) {
+		$this->name    = $name;
+		$this->value   = $value;
 		$this->value[] = NULL;
+		$this->height  = $height;
+		$this->header  = $header;
 		
 		if (is_array($cols)) {
 			$this->colsWidth = $cols;
@@ -18,8 +21,10 @@ class PXInputTable extends PXAdminWidget {
 				$this->colsWidth[] = 1;
 			}
 		}
-
-		$this->height = $height;
+	}
+	
+	function header(){
+		return sizeof($this->header) ? sprintf("<thead><tr><th>%s</th></tr></thead>", join('</th><th>', $this->header)) : '';
 	}
 	
 	function colgroup() {
@@ -40,6 +45,8 @@ class PXInputTable extends PXAdminWidget {
 		$idx = 0;
 		
 		$html  = '<table id="table'.$this->name.'" class="datagrid">';
+
+		$html .= $this->header();
 
 		$html .= $this->colgroup();
 
