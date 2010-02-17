@@ -1,7 +1,7 @@
 <?php
 class PXResponse {
 	var $STATUS_OK                      = '200 OK';
-	var $STATUS_MOVED                   = '301 Moved Permanently'; // òÅËÏÍÅÎÄÁÃÉÑ áÛÍÁÎÏ×Á É Co
+	var $STATUS_MOVED                   = '301 Moved Permanently';
 	var $STATUS_NOT_MODIFIED            = '304 Not Modified';
 	var $STATUS_NOT_FOUND               = '404 Not Found';
 	var $STATUS_FORBIDDEN               = '403 Forbidden';
@@ -17,7 +17,7 @@ class PXResponse {
 
 		$this->status = $this->STATUS_OK;
 		$this->cache(3600);
-		$this->setContentType('text/html', 'koi8-r');
+		$this->setContentType('text/html', PXRegistry::getApp()->getProperty("OUTPUT_CHARSET", DEFAULT_CHARSET));
 	}
 
 	function &getInstance() {
