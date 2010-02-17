@@ -126,7 +126,7 @@ class PXResponse {
 			$this->contentType['charset'] = $charset;
 		}
 
-		if(strlen($charset)) {
+		if(!empty($this->contentType['charset'])) {
 			$contentType .= ';charset='.$charset;
 		}
 
