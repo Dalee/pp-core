@@ -10,9 +10,9 @@ abstract class PXEngine {
 
 		$this->initApplication();
 
-		$user = PXRegistry::getUser();
-		$user->setAcl();
-		$user->checkAuth();
+		$this->user = PXRegistry::getUser();
+		$this->user->setAcl();
+		$this->user->checkAuth();
 
 		PXRegistry::getDb()->LoadDirectoriesAutomatic(PXRegistry::getApp()->directory);
 		$this->initModules();
@@ -42,6 +42,16 @@ abstract class PXEngine {
 
 		$this->modules = PXRegistry::getApp()->modules;
 		$this->area = $rArea;
+	}
+
+	function profilerStart() {
+		PXProfiler::begin('TOTAL');
+	}
+
+	function profilerStop() {
+		PXProfiler::end();
+
+		$this->layout->assign('PXProfilerResult', PXProfiler::finalize());
 	}
 
 	abstract function runModules();

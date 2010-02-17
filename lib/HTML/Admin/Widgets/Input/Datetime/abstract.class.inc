@@ -5,12 +5,13 @@ class PXInputDateTime extends PXAdminWidget {
 	var $date;   // array(year, month, day, hour, minute, second);
 
 	function PXInputDateTime($name, $value, $notNull=true) {
-		$this->name = $name;
+		$this->name    = $name;
+		$this->notNull = $notNull;
 
 		$this->date = $this->_parseDate($value, $notNull);
 	}
 
-	function _parseDate($value, $notNull=true) {
+	function _parseDate($value, $notNull) {
 		$date = array(
 			'year'   => null,
 			'month'  => null,

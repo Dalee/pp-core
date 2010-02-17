@@ -11,7 +11,7 @@ class PXObjectsACL {
 
 	/** @var Array */
 	var $rules;
-	
+
 	function __construct(&$db, &$user) {
 		$this->db   =& $db;
 		$this->user =& $user;
@@ -25,7 +25,7 @@ class PXObjectsACL {
 	}
 
 	function reload() {
-		$this->getRules();
+		$this->_getRules();
 	}
 
 	function check($what, $format, $object) {
@@ -37,15 +37,15 @@ class PXObjectsACL {
 		return $checker->checkAcl($this, $what, $format, $object);
 	}
 
-	private function getRules($loadAll=false) {
+	private function _getRules($loadAll=false) {
 		if (!$this->aclEnabled) {
 			return;
 		}
 
-		$this->rules = $this->db->query($this->sqlLoadRulesStatement($loadAll));
+		$this->rules = $this->db->query($this->_sqlLoadRulesStatement($loadAll));
 	}
 
-	private function sqlLoadRulesStatement($loadAll) {
+	private function _sqlLoadRulesStatement($loadAll) {
 		$query = 'SELECT * FROM acl_objects';
 
 		if(!$loadAll) {

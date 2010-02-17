@@ -15,9 +15,10 @@ interface IPXmlNode {
 }
 
 class PXmlErrors {
-	public $errors = array();
+	public $errors;
 
-	private function __contructor() {
+	private function __construct() {
+		$this->errors = array();
 	}
 
 	public static function getErrors() {
@@ -74,7 +75,7 @@ abstract class PXmlAbstract implements IPXml {
 
 		return $xmlObject; 
 	}
-	
+
 	function xpath($query){}
 }
 
@@ -109,6 +110,10 @@ abstract class PXmlAbstractNode implements IPXmlNode {
 	function nodeValue(){}
 	function nodeType(){}
 	function attributes(){}
+	
+	function isXmlNode() {
+		return $this->nodeType() == XML_ELEMENT_NODE;
+	}
 
 	function childNodes(){
 		if(isset($this->_childNodes)){
@@ -121,9 +126,8 @@ abstract class PXmlAbstractNode implements IPXmlNode {
 			$self   = get_class($this);
 			$childs = $this->getChildObjects();
 			
-			
 			foreach($childs as $node){
-				$this->_childNodes[] = new $self($node);
+				$this->_childNodes[] = & new $self($node);
 			}
 		}
 

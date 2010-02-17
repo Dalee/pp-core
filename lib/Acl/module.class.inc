@@ -1,6 +1,6 @@
 <?php
 class ModuleChecker {
-	public function checkAcl(&$acl, $what, $format, $object = NULL) {
+	public function checkAcl($acl, $what, $format, $object = NULL) {
 		foreach ($acl->rules as $a) {
 			$notEqualWhat    = !($a['what'] == $what);
 			$notNullGroup    = !is_null($a['sgroupid']);

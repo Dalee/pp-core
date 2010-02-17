@@ -1,4 +1,4 @@
-<?
+<?php
 class PXHTMLFileListingLink extends PXHTMLFileListing {
 	function PXHTMLFileListingLink($href, $side, $name) {
 		$this->PXHTMLFileListing($href, $side);

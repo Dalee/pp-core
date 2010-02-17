@@ -1,4 +1,4 @@
-<?
+<?php
 /**
  * Project:     NetLogic PHP-classes library
  * File:        captcha.class.inc

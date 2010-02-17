@@ -9,5 +9,4 @@
 	d2($php_errormsg);
 
 	FatalError('test error');
-
 ?>

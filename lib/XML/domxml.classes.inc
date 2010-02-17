@@ -35,7 +35,6 @@ class PXmlDomxmlNode extends PXmlAbstractNode implements IPXmlNode {
 		}
 
 		$this->_nodeName = $this->_node->node_name();
-
 		return $this->_nodeName;
 	}
 
@@ -45,7 +44,6 @@ class PXmlDomxmlNode extends PXmlAbstractNode implements IPXmlNode {
 		}
 
 		$this->_nodeValue = $this->_node->get_content();
-
 		return $this->_nodeValue;
 	}
 

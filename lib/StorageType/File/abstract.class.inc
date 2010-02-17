@@ -19,7 +19,7 @@ class PXStorageTypeAbstractFile extends PXStorageType {
 
 		$fileArray       = $donor[$field->name];
 		$ai              = $this->ai($param['format'], $object['id'], $field->name);
-		$basedir         = BASEPATH.'/site/htdocs'.$ai;
+		$basedir         = $this->htdocsPath.$ai;
 
 		if (is_array($fileArray)) {
 			MakeDirIfNotExists($basedir);
@@ -27,8 +27,8 @@ class PXStorageTypeAbstractFile extends PXStorageType {
 			$object[$field->name]['path'] = $ai.basename($fileArray['path']);
 
 			copy(
-				BASEPATH.'/site/htdocs'.$donor[$field->name]['path'],
-				BASEPATH.'/site/htdocs'.$object[$field->name]['path']
+				$this->htdocsPath.$donor[$field->name]['path'],
+				$this->htdocsPath.$object[$field->name]['path']
 			);
 		}
 	}
@@ -60,7 +60,7 @@ class PXStorageTypeAbstractFile extends PXStorageType {
 		}
 
 		$normalizedObject = $this->saveToCache($key, $this->__normalize($field, $object, $param, $allowed));
-	
+
 		//For some triggers, which need original fields like tmp_name, etc ...
 		if (isset($object[$field->name]) && is_array($object[$field->name]) && is_array($normalizedObject)) {
 			$normalizedObject = array_merge($object[$field->name], $normalizedObject);

@@ -9,18 +9,19 @@ class PXBindingDescription {
 		$this->order  = isset($rule['order']) ? (int) $rule['order']    : 0;
 
 		$this->pOrder = (int) $pOrder;
+		$this->finalizeQueue = false;
 	}
 
 	public function isBinding($content) {
-		if(!isset(PXRegistry::getApp()->modules[$this->module])) {
-			return false;
-		}
-
-		return true;
+		return isset(PXRegistry::getApp()->modules[$this->module]);
 	}
 
 	function getModuleDescription() {
 		return PXRegistry::getApp()->modules[$this->module];
+	}
+	
+	public function finalizeBindingsQueue(){
+		$this->finalizeQueue = true;
 	}
 }
 ?>

@@ -42,10 +42,11 @@ class NLDBDescription {
 		$class_file = "Database/SQL/{$this->dbtype}.class.inc";
 
 		if(file_exists(BASEPATH . "/libpp/lib/" . $class_file)) {
-			require_once("Database/SQL/{$this->dbtype}.class.inc");
+			require_once($class_file);
 			$class_name = "NL".strtoupper($this->dbtype)."Database";
 
-			return new $class_name($this);
+			$db = new $class_name($this);
+			return $db;
 		} else {
 			FatalError("Вы не выбрали тип базы данных");
 			FatalError("Указан некорректный тип базы данных");
@@ -85,5 +86,4 @@ class NLDBDescription {
 		return $connectArray;
 	}
 }
-
 ?>

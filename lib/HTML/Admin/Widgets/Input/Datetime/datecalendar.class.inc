@@ -11,6 +11,10 @@ class PXInputDateCalendar extends PXInputDateTime {
 
 		$delim = '<input type="text" class="delim" value="." ' . $this->disable . ' readonly tabindex="-1">';
 
+		$setNullButton = $this->notNull ? '' : <<<HTML
+		<button onclick="with(this.form)ctrlCalendar.calendar{$saneName}.SetNull(this.form.returnDate{$saneName}, this.form.returnDay{$saneName}, this.form.returnMonth{$saneName}, this.form.returnYear{$saneName}); return false;" {$this->disable}>обнулить</button>
+HTML;
+ 
 		$html = <<<HTML
 			<span class="datetime">
 				<input maxlength="2" type="text" class="first"  name="{$name}[day]"   id="returnDay{$saneName}"   value="{$day}"   {$this->disable}>{$delim}
@@ -23,7 +27,7 @@ class PXInputDateCalendar extends PXInputDateTime {
 
 				<button title="календарь" class="calendar" onfocus="this.blur();" onclick="with(this.form)ctrlCalendar.calendar{$saneName}.DoModal(this.form.returnDate{$saneName}, this.form.returnDay{$saneName}, this.form.returnMonth{$saneName}, this.form.returnYear{$saneName}); return false;" {$this->disable}></button>
 
-				<button onclick="with(this.form)ctrlCalendar.calendar{$saneName}.SetNull(this.form.returnDate{$saneName}, this.form.returnDay{$saneName}, this.form.returnMonth{$saneName}, this.form.returnYear{$saneName}); return false;" {$this->disable}>обнулить</button>
+				{$setNullButton}
 			</span>
 HTML;
 

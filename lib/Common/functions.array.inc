@@ -1,4 +1,4 @@
-<?
+<?php
 function GetColFromTable($table, $rowName) {
 	$retArray = array();
 	foreach ($table as $row) {
@@ -64,8 +64,7 @@ function NestedArrayWalk(&$multiArray, $mapper, $optArgs = array(), $nestingLeve
 
 		$mapper($multiArray, $key, $optArgs, $nestingLevel);
 	}
-	
+
 	return true;
 }
-
 ?>

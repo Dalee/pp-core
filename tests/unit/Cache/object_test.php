@@ -36,6 +36,5 @@ class ObjectCacheTest extends UnitTestCase {
 		$this->cache->save($this->object_id, $this->object_value);
 		$this->assertEqual($this->object_value, $this->cache->load($this->object_id));
 	}
-
 }
 ?>

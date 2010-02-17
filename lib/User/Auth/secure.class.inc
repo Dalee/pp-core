@@ -5,16 +5,16 @@ class PXAuthSecure extends PXAuthInterface {
 		$this->passwd();
 
 		$uArray = $this->findUser();
-		$this->proceedAuth($uArray);
+		$this->_proceedAuth($uArray);
 	}
 
-	private function proceedAuth($uArray) {
+	private function _proceedAuth($uArray) {
 		if(!(count($uArray) && strlen($this->passwd))) {
 			return;
 		}
 
 		if ($this->passwdToDB($this->passwd) == $uArray['passwd'] || $this->passwd == $this->encodePasswd($uArray['passwd'], false)) {
-			 $this->feelUserFields($uArray);
+			$this->fillUserFields($uArray);
 		}
 	}
 

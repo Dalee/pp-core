@@ -118,8 +118,9 @@ class NLAbstractHTMLForm {
 	}
 
 	static
-	function BuildRichEdit($name, $value, $height) {
+	function BuildRichEdit($name, $value, $height, $redactor = null) {
 		$richedit = new PXInputRichEdit($name, $value, $height);
+		$richedit->setFavoriteEditor($redactor);
 		$richedit->setDisabled(NLAbstractHTMLForm::_DisabledStatus());
 		return $richedit->html();
 	}
@@ -246,14 +247,6 @@ class NLAbstractHTMLForm {
 	static
 	function BuildUserType($name, $value, $color, &$field) {
 		return $field->displayType->name;
-	}
-
-	/*
-	 *  todo: remove this shit outta of here
-	 */
-	// static function for request!!!
-	function RequestGetUserVar($name, &$request, &$field) {
-		return $request->postData->_GetVar($name);
 	}
 }
 

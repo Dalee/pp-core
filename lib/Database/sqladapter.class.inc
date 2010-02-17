@@ -3,7 +3,6 @@ require_once 'Cache/classes.inc';
 
 class NLSQLDatabaseAdapter {
 	private   $dbDriver;
-
 	protected $selfDescription; // ?
 
 	function NLSQLDatabaseAdapter(&$dbDescription) {
@@ -47,6 +46,10 @@ class NLSQLDatabaseAdapter {
 
 	function ClearCache($force=false) {
 		return $this->dbDriver->cache->clear();
+	}
+
+	function setCache($on) {
+		return $on ? $this->cacheOn() : $this->cacheOff();
 	}
 
 	function cacheOn(){

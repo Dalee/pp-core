@@ -100,10 +100,18 @@ class NLPGSQLDatabase extends NLAbstractSQLDatabase {
 				$line = str_replace("\n", "\\n", $line);
 				$line = str_replace("\t", "\\t", $line);
 				$line = str_replace(chr(1), "\t", $line);
-				while (strstr($line, "\t\t")) $line = str_replace("\t\t", "\t\\N\t", $line);
 
-				if ($line{0} == "\t") $line = "\\N\t" . substr($line, 1);
-				if ($line{strlen($line)-1} == "\t") $line .= "\\N";
+				while (strstr($line, "\t\t")) {
+					$line = str_replace("\t\t", "\t\\N\t", $line);
+				}
+
+				if ($line{0} == "\t") {
+					$line = "\\N\t" . substr($line, 1);
+				}
+				
+				if ($line{strlen($line)-1} == "\t") {
+					$line .= "\\N";
+				}
 
 				if (pg_put_line($this->connection, $line."\n") == false) {
 					PXProfiler::end();

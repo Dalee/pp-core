@@ -1,19 +1,14 @@
 <?php
-require_once 'Description/Bindings/default.class.inc';
-
-require_once 'Description/Bindings/struct.class.inc';
-require_once 'Description/Bindings/content.class.inc';
-require_once 'Description/Bindings/subcontent.class.inc';
-
-require_once 'Description/Bindings/main.class.inc';
-require_once 'Description/Bindings/types.class.inc';
+require_once 'Description/Bindings/classes.inc';
 
 class PXBindingsQueue implements Iterator {
 	private $pOrder, $rules;
+	private $finalize;
 
 	function __construct() {
-		$this->pOrder = 0;
-		$this->rules  = array();
+		$this->pOrder   = 0;
+		$this->rules    = array();
+		$this->finalize = false;
 	}
 
 	function getRequestBinding() {
@@ -87,7 +82,7 @@ class PXBindingsQueue implements Iterator {
 	}
 
 	public function valid() {
-		return $this->current() !== false;
+		return !$this->finalize && ($this->current() !== false);
 	}
 	/* /Iterator methods */
 
@@ -117,6 +112,10 @@ class PXBindingsQueue implements Iterator {
 		}
 
 		return 0;
+	}
+	
+	function stopLoading() {
+		$this->finalize = true;
 	}
 }
 ?>

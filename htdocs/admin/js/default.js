@@ -109,7 +109,7 @@ function hideShowLeaf(id) {
 			parentDiv.childNodes[i].style.display = (direction == 'open') ? 'block' : 'none';
 		}
 	}
-} 
+}
 
 function Popup(url, width, height) {
 	if (width  == undefined) width  = 760;
@@ -118,7 +118,6 @@ function Popup(url, width, height) {
 	g = window.open(url, '', 'width='+width+', height='+height+',toolbar=no,status=no,location=no,menubar=no,resizable=yes,scrollbars=yes');
 	g.focus();
 }
-
 
 function AdminPopup(area, format, id, action, width, height) {
 	if (action == undefined) action = 'main';
@@ -185,7 +184,7 @@ function AddRowNew(name) {
 	var newRow    = domTable.insertRow(numRows);
 	var prevRow   = domTable.rows[numRows-1];
 	var numCols   = prevRow.getElementsByTagName('td').length;
-	
+
 	for (var i=0;i<numCols;i++) {
 		var newCell = newRow.insertCell(0);
 		var j = 0;
@@ -193,7 +192,7 @@ function AddRowNew(name) {
 			var control = prevRow.cells[i].childNodes.item(j++);
 			if(control.nodeType === 1 /*Node.ELEMENT_NODE; Node is undefined in IE*/ ) break;
 		}
-		
+
 		if (control.tagName == 'TEXTAREA') {
 			var width = control.style.width;
 			var height = control.style.height;
@@ -269,11 +268,11 @@ function ToClipboardMulti(src, width, height, type) {
 		text += '</object>';
 	}
 
-	try { 
-		window.clipboardData.setData("Text", text); 
-		alert('Done'); 
+	try {
+		window.clipboardData.setData("Text", text);
+		alert('Done');
 	} catch(e) {
-		alert('Your browser not support clipboard modify'); 
+		alert('Your browser not support clipboard modify');
 	}
 }
 
@@ -364,7 +363,7 @@ function Context(event) {
 	menu = document.getElementById('ContextMenu');
 	menu.innerHTML = '';
 
-	if(arguments.length > 1) {
+	if (arguments.length > 1) {
 		if (arguments[1] == 'add') {
 			menu.innerHTML += '<strong>Добавить</strong>';
 			for(i=3; i<arguments.length; i+=2) {
@@ -442,19 +441,6 @@ if (document.getElementById && navigator.appName=="Netscape") {
 	}
 }
 
-_editor_url = "tools/htmlarea/";
-var win_ie_ver = parseFloat(navigator.appVersion.split("MSIE")[1]);
-if (navigator.userAgent.indexOf('Mac')        >= 0) { win_ie_ver = 0; }
-if (navigator.userAgent.indexOf('Windows CE') >= 0) { win_ie_ver = 0; }
-if (navigator.userAgent.indexOf('Opera')      >= 0) { win_ie_ver = 0; }
-if (win_ie_ver >= 5.5) {
-	document.write('<scr' + 'ipt src="' +_editor_url+ 'editor.js"');
-	document.write(' language="Javascript1.2"></scr' + 'ipt>');
-} else {
-	document.write('<scr'+'ipt>function editor_generate() { return false; }</scr'+'ipt>');
-}
-
-
 // Flash detection
 var plugin = (navigator.mimeTypes && navigator.mimeTypes["application/x-shockwave-flash"]) ? navigator.mimeTypes["application/x-shockwave-flash"].enabledPlugin : 0;
 
@@ -501,6 +487,7 @@ $(function() {
 		return false;		
 	});
 });
+
 function ShowHideFilter(container){
 	function isHidden(){
 		return /ref-filter-hide/.test(this.className)
@@ -518,7 +505,7 @@ function ShowHideFilter(container){
 	for(var c in th){
 		if(isVisible.call(th[c])) {
 			left++
- 		}
+		}
 	}
 	if(left == 1){
 		switchVisibility.call(th[0])
@@ -531,16 +518,16 @@ function appendLinksRow(container){
 	var selfTr = container.parentNode.parentNode;
 	container.parentNode.removeChild(container);
 	var newTr = document.createElement('tr');
-	
+
 	newTr.className = "newRow";
-	
+
 	var regx     = /((\w+)(\[|-))(\d+)((\]|-)\[?(\d+))/g
-	
+
 	regx.test(selfTr.innerHTML);
 	var currentRefName = RegExp.$2;
 	var currentRefId   = RegExp.$7;
 	possibleNewRows[currentRefName][currentRefId]++;
-	
+
 	var selfCols = selfTr.childNodes;
 	var htmlData = '';
 	for(var td = 0; td < selfCols.length; td++){
@@ -552,7 +539,7 @@ function appendLinksRow(container){
 		newTr.appendChild(document.createElement('td'));
 		newTr.childNodes.item(td).innerHTML = htmlData;
 	}
-	
+
 	if(neighbour = selfTr.nextSibling){
 		selfTr.parentNode.insertBefore(newTr, neighbour)
 	} else {

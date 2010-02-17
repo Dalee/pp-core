@@ -1,4 +1,4 @@
-<?
+<?php
 class NLHTTPClient {
 	var $connection;
 	var $timeout;

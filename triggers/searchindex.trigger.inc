@@ -1,4 +1,4 @@
-<?
+<?php
 class PXTriggerSearchIndex extends PXAbstractTrigger {
 
 	function OnAddObject(&$db, &$objId, &$format, &$object, &$dbFields, &$dbValues) {

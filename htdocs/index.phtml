@@ -3,8 +3,9 @@
 	$engine = new PXEngineIndex();
 
 	$engine->runModules();
-	$engine->fillLayout();
-	
 
+	$engine->fillLayout();
+
+	$engine->profilerStop();
 	$engine->html();
 ?>

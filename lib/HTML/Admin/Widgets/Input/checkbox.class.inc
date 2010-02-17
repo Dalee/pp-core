@@ -5,8 +5,10 @@ class PXInputCheckbox extends PXAdminWidget {
 	var $value = NULL;
 	var $id = NULL;
 
-	function PXInputCheckbox($name) {
+	function PXInputCheckbox($name, $on=false, $value="") {
 		$this->name = $name;
+		$this->setOn($on);
+		$this->setValue($value);
 	}
 
 	function setOn($on) {

@@ -66,7 +66,7 @@ HTML;
 	function traceToHtml($trace) {
 		return join("\n", array_map(array(&$this, '_errorToHTML'), $trace));
 	}
-	
+
 	function _errorToHTML($error){
 		$function  = str_replace('->', '&rarr;', $error['function']);
 

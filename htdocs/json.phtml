@@ -1,8 +1,9 @@
-<?
+<?php
 	include_once '../lib/mainuser.inc';
 	$engine = new PXEngineJSON();
 
 	$engine->runModules();
 
+	$engine->profilerStop();
 	$engine->sendJson();
 ?>

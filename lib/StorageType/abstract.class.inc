@@ -6,10 +6,12 @@
 class PXStorageType {
 	var $field;
 	var $name;
+	var $htdocsPath;
 
 	function PXStorageType(&$field, $name) {
+		$this->htdocsPath = BASEPATH.'/site/htdocs';
 		$this->field = &$field;
-		$this->name = $name;
+		$this->name  = $name;
 	}
 
 	/**

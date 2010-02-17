@@ -1,4 +1,4 @@
-<?
+<?php
 class PXAbstractTrigger {
 	function PXAbstractTrigger() {
 		// none action

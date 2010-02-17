@@ -158,7 +158,7 @@ class PXModuleObjects extends PXModule {
 	}
 
 	function popupGetObject() {
-		$rId = $this->request->getId();
+		$rId    = $this->request->getId();
 		$object = array();
 
 		if ($rId == 0) {
@@ -228,13 +228,13 @@ class PXModuleObjects extends PXModule {
 				$title = '&laquo;'.substr(strip_tags($object['title']), 0, 32).'&raquo; &#8212; ';
 			}
 
-				$title .= ' Редактирование';
+			$title .= ' Редактирование';
 
-			} else {
-				$title = 'Добавление';
-			}
+		} else {
+			$title = 'Добавление';
+		}
 
-			$title .= ' объекта формата &laquo;'.strip_tags($this->datatype->title).'&raquo;';
+		$title .= ' объекта формата &laquo;'.strip_tags($this->datatype->title).'&raquo;';
 
 		$this->layout->assignTitle($title);
 	}
@@ -259,40 +259,26 @@ class PXModuleObjects extends PXModule {
 	}
 
 	function popupAuditLog() {
-		$filters = array(
+		require_once BASEPATH . 'libpp/lib/Logger/Audit/wrapper.class.inc';
+
+		$audit_wrapper = new PXAdminAuditWrapper();
+		$audit_wrapper->frame =  "OUTER.CONTENT";
+
+		$audit_wrapper->filters = array(
 			'format' => $this->datatype->id,
-			'id'     => $this->object['id']
-		);
+			'id'     => $this->object['id']);
 
-		require_once 'libpp/modules/auditlog.module.inc';
-		$this->viewer = new PXAuditViewer($filters);
+		$audit_wrapper->hasFilterFrom = false;
 
-		$page    = $this->request->getVar('_page', 1);
-		$onPage  = $this->app->getProperty('CHILDREN_ON_PAGE', 15);
+		$audit_wrapper->init();
 
-		$count = $this->viewer->getCount();
-		$data  = $this->viewer->getData($page, $onPage, $count);
+		if(!$audit_wrapper->count) return;
 
-		if($count) {
-			$caption  = '<a href="./?area=auditlog&format='.$this->datatype->id.'&id='.$this->object['id'].'" target="_blank">Журнал аудита</a>, ';
-			$caption .= $count.' '.NumericEndingsRussian($count, 'запись', 'записи', 'записей');
-			$caption .= ' для текущего объекта';
+		$audit_wrapper->caption  = '<a href="./?area=auditlog&format='.$this->datatype->id.'&id='.$this->object['id'].'" target="_blank">Журнал аудита</a>, ';
+		$audit_wrapper->caption .= $audit_wrapper->count.' '.NumericEndingsRussian($audit_wrapper->count, 'запись', 'записи', 'записей');
+		$audit_wrapper->caption .= ' для текущего объекта';
 
-			$table = new PXAdminAuditTable();
-			$table->setDict('level', $this->viewer->getErrorLevels());
-			$table->setData($data);
-			$table->setCaption($caption);
-
-			$this->layout->append('OUTER.CONTENT', $table->html());
-
-			if($count > $onPage) {
-				$param = $this->request->getAllGetData();
-
-				$pager = new PxAdminPager($page, $onPage, $count, '',  $param);
-				$this->layout->append('OUTER.CONTENT', $pager->html());
-			}
-		}
-
+		$audit_wrapper->render();
 	}
 
 	function popupLinks() {
@@ -609,5 +595,4 @@ class PXModuleObjects extends PXModule {
 		return strcoll($a, $b);
 	}
 }
-
 ?>
