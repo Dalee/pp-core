@@ -37,11 +37,10 @@ if($jobName) {
 		echo "\n";
 	}
 
-	} else {
-		ini_set('display_errors', 0);
-		Label('Run all jobs, if it\'s time');
+} else {
+	ini_set('display_errors', 0);
+	Label('Run all jobs, if it\'s time');
 
-		$cronModule->RunTasks($engine->app, time());
-	}
+	$cronModule->RunTasks($engine->app, time());
 }
 ?>
