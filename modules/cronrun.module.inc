@@ -44,8 +44,10 @@ class PXModuleCronRun extends PXModule {
 
 			if (file_exists(BASEPATH.'/local/cronruns/'.$file)) {
 				include_once BASEPATH.'/local/cronruns/'.$file;
+
 			} elseif (file_exists(BASEPATH.'/libpp/cronruns/'.$file)) {
 				include_once BASEPATH.'/libpp/cronruns/'.$file;
+
 			} else {
 				continue;
 			}
@@ -72,26 +74,37 @@ class PXModuleCronRun extends PXModule {
 		// ******* child code ******
 		$fname = $tmpDir.'/'.$job['jobname'].'.lock';
 		$fp = @fopen($fname, 'r');
-		if (!$fp) $fp = fopen($fname, 'w');
+
+		if (!$fp) {
+			$fp = fopen($fname, 'w');
+		}
+
 		$st = flock($fp, LOCK_EX | LOCK_NB);
 		if (!$st) {
 			$fatal = true;
+
 			if (isset($job['job']->longrunner)) {
 				$tmp = intval($job['job']->longrunner);
 				$mtime = fstat($fp);
 				$mtime = $mtime['mtime'];
-				if (time() - $mtime < $tmp) $fatal = false;
+
+				if (time() - $mtime < $tmp) {
+					$fatal = false;
+				}
 			}
+
 			fclose($fp);
+
 			if ($fatal) {
 				FatalError('Cant lock tmp lock file: '.$job['jobname']);
 			}
 			# else: Another instance of job is running and it's OK
 			exit();
 		}
-		touch($fname); # update mtime
 
+		touch($fname); # update mtime
 		$tmStart = time();
+
 		// !!! run code here !!!
 		$db   = new PXDatabase($app); //add NEW connect to the database from current child
 		$user = new PXUserCron();
@@ -101,6 +114,7 @@ class PXModuleCronRun extends PXModule {
 		$db->setUser($user);
 
 		$db->LoadDirectoriesAutomatic($app->directory); //init directory from here !
+
 		if (isset($app->types['struct'])) {
 			$tree = new NLTree($db->getObjects($app->types['struct'], true));
 		} else {
@@ -119,31 +133,38 @@ class PXModuleCronRun extends PXModule {
 
 		$cronStat = array();
 		$fp = @fopen($this->RESULTS_FILE, "r+");
+
 		if ($fp) {
 			do{
 				//nothing;
 			} while(!flock($fp, LOCK_EX));
+
 			fseek($fp, 0, SEEK_END);
 			$fsize = ftell($fp);
 			rewind($fp);
+
 			if ($fsize > 0) {
 				$tStat = unserialize(fread($fp, $fsize));
 				ftruncate($fp, 0);
 				rewind($fp);
+
 				foreach ($tStat as $tHash => $vHash) {
 					if (isset($this->job2rule[$tHash])) {
 						$cronStat[$tHash] = $vHash;
 					}
 				}
 			}
+
 		} else {
 			$fp = @fopen($this->RESULTS_FILE, "w");
+
 			if($fp){
 				do{
 					//nothing;
 				} while(!flock($fp, LOCK_EX));
 			}
 		}
+
 		$cronStat[$job['jobhash']] = array('start' => $tmStart, 'end' => $tmEnd, 'result' => $res);
 
 		fwrite($fp, serialize($cronStat));
@@ -159,6 +180,7 @@ class PXModuleCronRun extends PXModule {
 			if ($this->isNotMatchTime($k['rule']->match, $t)) {
 				continue;
 			}
+
 			if (IS_WIN || ($pid = pcntl_fork()) == 0) {
 				$this->RunJob($k, $app, $matchedTime); //child code
 				if(!IS_WIN) exit(); //close child process
@@ -171,7 +193,7 @@ class PXModuleCronRun extends PXModule {
 			}
 		}
 	}
-	
+
 	function isNotMatchTime($match, $t){
 		return !(
 			isset($match['min'][$t['tm_min']])   &&
@@ -186,6 +208,7 @@ class PXModuleCronRun extends PXModule {
 		$layout = $this->layout;
 		
 		$fp = @fopen(BASEPATH.'/var/cron.results', 'r');
+
 		if ($fp) {
 			flock($fp, LOCK_EX);
 
@@ -194,6 +217,7 @@ class PXModuleCronRun extends PXModule {
 
 			flock($fp, LOCK_UN);
 			fclose($fp);
+
 		} else {
 			$cronStat = array();
 		}
@@ -209,6 +233,7 @@ class PXModuleCronRun extends PXModule {
 		);
 
 		$result = array();
+
 		foreach ($this->rules as $k) {
 			$_ = array();
 
