@@ -580,6 +580,7 @@ class PXModuleRegister extends PXAbstractModule {
 	// {{{ Modifiers block
 	function _passwdModifier($password){
 		$authmethodname = $this->user->getPrimaryAuthMethod($this->defaultAuth);
+		is_callable(array($authmethodname, 'passwdToDB')) or FatalError("Can't modify password with {$authmethodname}::passwdToDB() !");
 		return call_user_func(array($authmethodname, 'passwdToDB'), $password);
 	}
 	// }}} Modifiers block

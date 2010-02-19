@@ -20,7 +20,8 @@ class PXDisplayTypePassword extends PXDisplayType {
 
 		$value = (isset($tmp['type']) && isset($tmp['retype']) && strlen($tmp['type']) && ($tmp['type'] === $tmp['retype'])) ? trim($tmp['type']) : null;
 		if(strlen($value) && !is_null($value)) {
-			$authmethodname = PXRegistry::getUser()->getPrimaryAuthMethod($field->displayTypeArgs[0]);
+			$authmethodname = PXRegistry::getUser()->getPrimaryAuthMethod(empty($field->displayTypeArgs[0]) ? null : $field->displayTypeArgs[0]);
+			is_callable(array($authmethodname, 'passwdToDB')) or FatalError("Can't process password with {$authmethodname}::passwdToDB() !");
 			$value = call_user_func(array($authmethodname, 'passwdToDB'), $value);
 		}
 
