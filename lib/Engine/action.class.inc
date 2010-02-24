@@ -3,26 +3,14 @@ class PXEngineAction extends PXEngine {
 	var $nextLocation;
 
 	function __construct(){
-		$this->initRequest();
-		$this->initLayout();
-
-		$this->saveToRegistry();
-
+		parent::profilerStart();
 		parent::__construct();
-	}
-
-	function initRequest() {
-		$this->request = new PXRequest();
-	}
-
-	function initLayout() {
-		$this->layout = new PXLayoutNull();
 	}
 
 	function runModules() {
 		$module_name = $this->request->getVar('area');
 
-		$module = PXRegistry::getApp()->modules[$module_name]->getModule();
+		$module = $this->app->modules[$module_name]->getModule();
 
 		$response =& PXResponse::getInstance();
 		$response->dontCache();

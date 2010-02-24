@@ -1,11 +1,10 @@
 <?php
 class PXEngineIndex extends PXEngine {
-	function __construct() {     // Инициализация основных объектов приложения
-		PXProfiler::begin('TOTAL');
+	var $layout = array('factory' => 'PXUserHTMLLayout');
 
+	function __construct() {     // Инициализация основных объектов приложения
+		parent::profilerStart();
 		parent::__construct();
-		PXRegistry::setLayout(new PXUserHTMLLayout());
-		$this->saveToRegistry();
 
 		$this->content             = new StdClass; // FIXME
 		$this->content->tree       = new PXTreeObjects();
@@ -17,7 +16,6 @@ class PXEngineIndex extends PXEngine {
 	}
 
 	function fillLayout() {
-		$this->layout = PXRegistry::getLayout();
 		$this->layout->setApp(PXRegistry::getApp());
 
 		// Передача данных в шаблонизатор

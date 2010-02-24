@@ -25,14 +25,23 @@ abstract class PXUser {
 		$this->login  = NULL;
 		$this->groups = array(0);
 		$this->data   = array();
-		$this->app    = PXRegistry::getApp();
 
 		$this->auth = new PXAuthNull();
 	}
 
-	function setAcl() {
-		PXRegistry::getDb()->setUser($this);
-		$this->acl = new PXObjectsACL(PXRegistry::getDb(), $this);
+	function setDb(&$db) {
+		$this->db =& $db;
+		$db->setUser($this);
+
+		$this->acl = new PXObjectsACL($db, $this);
+	}
+
+	function setApp(&$app) {
+		$this->app =& $app;
+	}
+
+	function setRequest(&$request) {
+		$this->request =& $request;
 	}
 
 	// FIXME

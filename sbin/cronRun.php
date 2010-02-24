@@ -24,7 +24,7 @@ if($jobName) {
 	if (isset($cronModule->jobs[$jobName])) {
 		Label('Run: '.$jobName);
 
-		$cronModule->runJob($cronModule->jobs[$jobName], $engine->app, time());
+		$cronModule->runJob($cronModule->jobs[$jobName], $app, time());
 
 	} else {
 		Label('Choose job:');

@@ -1,16 +1,10 @@
 <?php
 class PXEngineAdminPopup extends PXEngineAdminIndex {
-	function __construct() {
-		parent::__construct();
-
-		$types = PXRegistry::getApp()->types;
-		$this->layout = new PXAdminHTMLLayout('popup', $types);
-		PXRegistry::setLayout($this->layout);
-	}
+	var $outerLayout = 'popup';
 
 	function initModules() {
-		$this->modules = PXRegistry::getApp()->getAvailableModules();
-		$this->area    = PXRegistry::getRequest()->getArea(current(array_keys($this->modules)));
+		$this->modules = $this->app->getAvailableModules();
+		$this->area    = $this->request->getArea(current(array_keys($this->modules)));
 	}
 
 	function fillLayout() {
@@ -20,7 +14,7 @@ class PXEngineAdminPopup extends PXEngineAdminIndex {
 	function runModules() {
 		PXProfiler::begin('RUN MODULES');
 
-		if (!PXRegistry::getUser()->isAdmin()) {
+		if (!$this->user->isAdmin()) {
 			return $this->layout->assignError('OUTER.CONTENT', 'Нет доступа');
 		}
 

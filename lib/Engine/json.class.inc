@@ -3,25 +3,14 @@ class PXEngineJSON extends PXEngine {
 	var $result;
 
 	function __construct(){
-		$this->initRequest();
-		$this->initLayout();
-
-		$this->saveToRegistry();
+		parent::profilerStart();
 		parent::__construct();
-	}
-
-	function initLayout() {
-		$this->layout = new PXLayoutNull();
-	}
-	
-	function initRequest() {
-		$this->request = new PXRequest();
 	}
 
 	function runModules() {
 		$module_name = $this->request->getVar('area');
 
-		$module = PXRegistry::getApp()->modules[$module_name]->getModule();
+		$module = $this->app->modules[$module_name]->getModule();
 
 		$response =& PXResponse::getInstance();
 		$response->dontCache();
@@ -31,12 +20,9 @@ class PXEngineJSON extends PXEngine {
 
 	function sendJson() {
 		$encodedResult = $this->jsonEncodeCyr($this->result);
-		
 		$response =& PXResponse::getInstance();
-		$response->setContentType('text/javascript', DEFAULT_CHARSET);
-		$response->send();
-		
-		echo json_encode($encodedResult);
+		$response->setContentType('text/javascript');
+		$response->send(json_encode($encodedResult));
 		exit;
 	}
 	
@@ -46,25 +32,25 @@ class PXEngineJSON extends PXEngine {
 	
 	function jsonEncodeCyr($object) {
 		if (is_array($object)) {
-	       $encoded = array();
-	       
-	       foreach ($object as $k => $v) {
-	           $encoded[$this->jsonEncodeCyr($k)] = $this->jsonEncodeCyr($v);
-	       }
-	       $object = $encoded;
-	       
-	   } elseif (is_object($object)) {
-	       $vars = get_object_vars($object);
-	       
-	       foreach ($vars as $m => $v) {
-	           $object->$m = $this->jsonEncodeCyr($v);
-	       }
-	       
-	   } elseif (is_string($object)) {
-	       $object = myconv('k', 'u', $object);
-	   }
-	   
-	   return $object;
+			$encoded = array();
+
+			foreach ($object as $k => $v) {
+				$encoded[$this->jsonEncodeCyr($k)] = $this->jsonEncodeCyr($v);
+			}
+			$object = $encoded;
+
+		} elseif (is_object($object)) {
+			$vars = get_object_vars($object);
+
+			foreach ($vars as $m => $v) {
+				$object->$m = $this->jsonEncodeCyr($v);
+			}
+
+		} elseif (is_string($object)) {
+			$object = myconv('k', 'u', $object);
+		}
+
+		return $object;
 	}
 }
 ?>

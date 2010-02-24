@@ -46,7 +46,24 @@ class NLHTTPVarsData {
 		}
 	}
 
+	// Раскодирование JavaScript escape();
+	// private 
+	function _unEscape(&$data) {
+		if (is_array($data)) {
+			foreach ($data as $k=>$v) {
+				$this->_unEscape($data[$k]);
+			}
+
+		} else {
+			if(preg_match('/^(%u\d{4})+$/', $data)) {
+				$data = utf8_urldecode($data);
+			}
+		}
+	}
+
 	function _NormalizeData($needFixIisRewrite=false) {
+		$this->_unEscape($this->raw);
+
 		$this->clientCharset = 'w';
 
 		$this->charSet($needFixIisRewrite);

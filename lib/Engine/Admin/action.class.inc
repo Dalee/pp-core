@@ -1,15 +1,10 @@
 <?php
-set_time_limit(0);
 class PXEngineAdminAction extends PXEngine {
 	var $nextLocation;
 
-	function initLayout() {
-		$this->layout = new PXLayoutNull();
-	}
-
 	function initModules() {
-		$this->modules = PXRegistry::getApp()->getAvailableModules();
-		$this->area    = PXRegistry::getRequest()->getArea(current(array_keys($this->modules)));
+		$this->modules = $this->app->getAvailableModules();
+		$this->area    = $this->request->getArea(current(array_keys($this->modules)));
 	}
 
 	function runModules() {
@@ -29,14 +24,14 @@ class PXEngineAdminAction extends PXEngine {
 		$response =& PXResponse::getInstance();
 		$response->dontCache();
 
-		switch (PXRegistry::getRequest()->getAfterActionDeal()) {
+		switch ($this->request->getAfterActionDeal()) {
 			case 'close':
 				closeAndRefresh();
 				break;
 
 			case 'back':
 				$nextLocation = $this->nextLocation;
-				$nextLocation = !is_null($nextLocation) ? $nextLocation : PXRegistry::getRequest()->getReferer();
+				$nextLocation = !is_null($nextLocation) ? $nextLocation : $this->request->getReferer();
 
 				$response->redirect($nextLocation);
 				break;

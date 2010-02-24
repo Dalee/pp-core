@@ -2,14 +2,11 @@
 class PXEngineAdminIndex extends PXEngine {
 	var $menu;
 
-	function __construct() {
-		parent::__construct();
+	var $layout      = array('factory' => 'PXAdminHTMLLayout', 'helper' => true);
+	var $outerLayout = 'index';
 
-		$types = $this->app->types;
-		PXRegistry::setLayout(new PXAdminHTMLLayout('index', $types));
-		
-		$this->layout =& PXRegistry::getLayout();
-		$this->request = PXRegistry::getRequest();
+	function initLayout($klass){
+		$this->layout = & new $klass($this->outerLayout, $this->app->types);
 	}
 
 	function initModules() {
