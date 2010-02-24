@@ -454,7 +454,7 @@ class PXModuleRegister extends PXAbstractModule {
 				break;
 
 			case 'captcha':
-				$bn = new NLBlockingNumbers(BASEPATH.'site/var/blocking_nums');
+				$bn = new NLBlockingNumbers();
 
 				if(isset($filter)){
 					$model = $bn->CheckValueByKey(key($filter), current($filter));
