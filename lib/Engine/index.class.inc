@@ -10,6 +10,8 @@ class PXEngineIndex extends PXEngine {
 		$this->content->tree       = new PXTreeObjects();
 		$this->content->objects    = new PXObjects();
 		$this->content->subObjects = new PXSubObjects();
+
+		$this->layout->setApp($this->app);
 	}
 
 	function initModules() {
