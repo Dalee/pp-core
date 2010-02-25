@@ -18,6 +18,25 @@ class PXObjects extends PXContentObjects implements ArrayAccess, IteratorAggrega
 		$this->data[$type] = $objsArray;
 	}
 
+	function __get($key) {
+		switch($key) {
+			case 'current':
+				if($this->hasCurrent()) {
+					return $this->getCurrent();
+				} else {
+					return null;
+				}
+				break;
+		}
+
+		if(!isset($this->$key) && isset($this->data->$key)) {
+			return $this->data->$key;
+		}
+
+		return null;
+	}
+
+
 	public
 	function setCurrent($id, $type) {
 		$this->currentId   = $id;
