@@ -137,7 +137,7 @@ class PXModuleMain extends PXModule {
 
 		} else {
 			$a_per_page  = $this->app->getProperty(strtoupper($format->id).'_PER_PAGE', DEFAULT_CHILDREN_PER_PAGE);
-			$count       = $this->_loadContent($format, true, 'parent', $parent, DB_SELECT_COUNT);
+			$count       = $this->_loadContent($format, true, 'parent', $object->currentId, DB_SELECT_COUNT);
 			$currentPage = $this->getCurrentPage($format, $count, $a_per_page);
 
 			$this->layout->assign('FP_' . strtoupper($format->id) . '_TOTAL',        $count);
