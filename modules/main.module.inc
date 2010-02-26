@@ -110,10 +110,8 @@ class PXModuleMain extends PXModule {
 			$loadingMethod  = 'load'.ucfirst($this->objectsLoadMode[$behaviour]).'Objects';
 			$objsArray      = $this->$loadingMethod($object, $format, $pathName);
 
-			if (count($objsArray)) {
-				$fillObj->add($type, $objsArray, $pathName);
-				$fillObj->findCurrent($type, $pathName);
-			}
+			$fillObj->add($type, $objsArray);
+			$fillObj->findCurrent($type, $pathName);
 		}
 	}
 	
