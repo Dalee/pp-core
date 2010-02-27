@@ -127,7 +127,7 @@ abstract class PXmlAbstractNode implements IPXmlNode {
 			$childs = $this->getChildObjects();
 			
 			foreach($childs as $node){
-				$this->_childNodes[] = & new $self($node);
+				$this->_childNodes[] = new $self($node);
 			}
 		}
 
