@@ -1,5 +1,8 @@
 <?php
 class PXAuthInterface {
+	var $login;
+	var $passwd;
+	
 	function PXAuth(&$app, &$request, &$user, &$db, $authParams) {
 	}
 
