@@ -19,7 +19,7 @@ class PXStorageTypeAbstractFile extends PXStorageType {
 
 		$fileArray       = $donor[$field->name];
 		$ai              = $this->ai($param['format'], $object['id'], $field->name);
-		$basedir         = $this->htdocsPath.$ai;
+		$basedir         = HTDOCS_PATH . $ai;
 
 		if (is_array($fileArray)) {
 			MakeDirIfNotExists($basedir);
@@ -27,8 +27,8 @@ class PXStorageTypeAbstractFile extends PXStorageType {
 			$object[$field->name]['path'] = $ai.basename($fileArray['path']);
 
 			copy(
-				$this->htdocsPath.$donor[$field->name]['path'],
-				$this->htdocsPath.$object[$field->name]['path']
+				HTDOCS_PATH . $donor[$field->name]['path'],
+				HTDOCS_PATH . $object[$field->name]['path']
 			);
 		}
 	}

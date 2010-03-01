@@ -156,4 +156,6 @@ if (!IS_WIN) {
 			die("\n\nThis script must be runned as " . SYSTEM_USER . " (uid ".$system_user['uid'].") or root. \nNow it runned as ".posix_getlogin()."(uid ".posix_getuid().")");
 	}
 }
+
+define('HTDOCS_PATH', BASEPATH.'/htdocs');
 ?>
