@@ -157,5 +157,5 @@ if (!IS_WIN) {
 	}
 }
 
-define('HTDOCS_PATH', BASEPATH.'/htdocs');
+define('HTDOCS_PATH', BASEPATH.'/site/htdocs');
 ?>
