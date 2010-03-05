@@ -114,7 +114,8 @@ class PXModuleAcl extends PXModule {
 			if(isset($dicts[$col])) {
 				$dType = 'DROPDOWN';
 				if($col == 'sgroupid' && $app->types['sgroup']->struct == 'tree') {
-					$param['datatype'] = & $app->types['sgroup'];
+					$param['datatype']   = & $app->types['sgroup'];
+					$param['root_title'] = '-- любая --';
 					$dType = 'PARENTDROPDOWN';
 				}
 				

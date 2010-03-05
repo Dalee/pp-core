@@ -14,6 +14,9 @@ class PXDisplayTypeParentdropdown extends PXDisplayTypeDropdown {
 		$tree     = parent::getParentTree($object,$parentFormat);
 		$restrictedId = $format == $parentFormat ? getFromArray($object, 'id') : null;
 		$parents  = $tree->getPlainTree($restrictedId);
+		if(isset($param['root_title'])){
+			$parents[NULL] = $param['root_title'];
+		}
 
 		foreach($parents as $k => $v){
 			@$allowed =& $tree->leafs[$k]->content['allowed'];

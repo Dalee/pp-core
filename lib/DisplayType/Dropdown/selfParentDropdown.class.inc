@@ -11,6 +11,9 @@ class PXDisplayTypeSelfparentdropdown extends PXDisplayTypeParentdropdown {
 		$value    = isset($object[$field->name]) ? htmlspecialchars($object[$field->name]) : NULL;
 		$selfTree = parent::getSelfParentTree($object,$param);
 		$selfTree = $selfTree->getPlainTree(getFromArray($object, 'id'));
+		if(isset($param['root_title'])){
+			$selfTree[NULL] = $param['root_title'];
+		}
 		
 		return NLAbstractHTMLForm::BuildDropDown($field->name, $value, $selfTree);
 	}
