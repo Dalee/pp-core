@@ -99,21 +99,26 @@ class PXModuleAcl extends PXModule {
 		$_ .= $form->buildHidden('area', $this->area);
 		$_ .= $form->buildHidden('action', ($rId ? 'edit' : 'add'));
 
-		$param = array(
-			'parents'     => NULL,
-			'selfParents' => NULL,
-			'even'        => false
-		);
-
 		$_ .= '<table class="mainform">';
 		foreach($fields as $col=>$title) {
 			$p = array();
 			$fieldType = new PXFieldDescription(array(), $app, $p);
 			$fieldType->name = $col;
 			$fieldType->description = $title;
-
+			$param = array(
+				'parents'     => NULL,
+				'selfParents' => NULL,
+				'even'        => false
+			);
+			
 			if(isset($dicts[$col])) {
-				$fieldType->setDisplayType('DROPDOWN');
+				$dType = 'DROPDOWN';
+				if($col == 'sgroupid' && $app->types['sgroup']->struct == 'tree') {
+					$param['datatype'] = & $app->types['sgroup'];
+					$dType = 'PARENTDROPDOWN';
+				}
+				
+				$fieldType->setDisplayType($dType);
 
 				$tmpVals = array();
 				foreach($dicts[$col] as $id=>$val) {
