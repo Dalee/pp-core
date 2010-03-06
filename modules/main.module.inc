@@ -130,7 +130,7 @@ class PXModuleMain extends PXModule {
 	private function loadPagedObjects($object, $format, $pathName) {
 		$objsArray = array();
 
-		if (!$this->request->isIndexFile()) {
+		if (!$this->request->isIndexFile($pathName)) {
 			$objsArray = $this->_loadContentLimited($format, true, array('pathname' => $pathName, 'parent' => $object->currentId), 'IGNORED', 1, 0);
 
 		} else {

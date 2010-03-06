@@ -9,6 +9,18 @@ class PXRequest {
 	var $getData;
 	var $postData;
 	var $cookieData;
+	
+	protected $rootPathsList = array( 
+		'index.html', 
+	        'index.shtml', 
+		'index.phtml', 
+		'index.php', 
+		'index.php3', 
+		'index.php4', 
+		'default.htm', 
+		'default.asp', 
+		'index.jsp' 
+	); 
 
 	function __construct() {
 		$this->httpMethod = $this->GetHttpMethod();
@@ -53,18 +65,8 @@ class PXRequest {
 		foreach ($tmpArray as $tmp) {
 			if (!strlen($tmp) || 
 				in_array(
-					$tmp, 
-					array(
-						'index.html',
-						'index.shtml',
-						'index.phtml',
-						'index.php',
-						'index.php3',
-						'index.php4',
-						'default.htm',
-						'default.asp',
-						'index.jsp'
-					),
+					$tmp,
+					$this->rootPathsList,
 					true
 				)
 			){
@@ -398,8 +400,8 @@ class PXRequest {
 		return 'index.html';
 	}
 	
-	function isIndexFile() {
-		return $this->getFile() == 'index.html';
+	function isIndexFile($file = '') {
+		return in_array(strlen($file) ? $file : $this->getFile(), $this->rootPathsList, true);
 	}
 
 	function getPart() {
