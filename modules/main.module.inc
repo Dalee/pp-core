@@ -56,8 +56,8 @@ class PXModuleMain extends PXModule {
 		// Определение кода ошибки
 		if (
 			!$this->tree->hasCurrent() ||
-			($urlFile != 'index.html' && !$this->objects->hasCurrent())    ||
-			($urlPart != 'index.html' && !$this->subObjects->hasCurrent())
+			!($this->request->isIndexFile($urlFile) || $this->objects->hasCurrent())    ||
+			!($this->request->isIndexFile($urlPart) || $this->subObjects->hasCurrent())
 		) {
 			$response->notFound();
 		} else {
