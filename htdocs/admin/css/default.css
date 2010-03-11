@@ -15,9 +15,13 @@ img.logo {
 
 span.version {
 	color: #ffffff;
-	font-size: 150%;
-	line-height: 3em;
-	margin-left: -40px;
+	font-size: 1em;
+	//margin-left: -40px;
+	display: block;
+	clear: both;
+	posiiton: relative;
+	margin: 0 0 10px 45px;
+	line-height: 1em;
 }
 
 a.img-preview {
@@ -273,14 +277,17 @@ textarea {
 
 DIV.content {
 	height: 100%;
-	padding: 10px;
 	overflow: expression('auto');
 	background-color: #FFFFFF;
 	border: 1px solid #808080;
 	border-right-color: #E7E9ED;
-	border-bottom-color: #E7E9ED;
 }
-
+DIV.content .tree {
+	padding: 10px 0 0 10px;
+}
+DIV.content h2 {
+	padding: 0 0 5px 10px;
+}
 DIV.context {
 	padding: 1px;
 	background-color: #C9CED6;
