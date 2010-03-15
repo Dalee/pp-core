@@ -16,7 +16,8 @@ class PXBindingsQueue implements Iterator {
 
 		if(strlen($rArea) && sizeof(PXRegistry::getRequest()->getHostAndDir()) <= 1) {
 			// FIXME
-			array_unshift($this->rules, new PXBindingDescription(array('type' => 'request', 'module' => $rArea), $this->pOrder++));
+			//array_unshift($this->rules, new PXBindingDescription($this->app, array('type' => 'request', 'module' => $rArea), $this->pOrder++));
+			$this->__addRule('PXBindingDescription', array('type' => 'request', 'module' => $rArea));
 		}
 	}
 
