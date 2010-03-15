@@ -1,0 +1,93 @@
+body.queryInProgress * {
+	cursor: wait !important;
+}
+
+.display-none {
+	display: none;
+}
+
+div#ContextMenu {
+	z-index: 1;
+}
+
+input.multiselect {
+	float: left;
+}
+
+table.objects th.c3 {
+	width: 55px;
+}
+
+table.objects th.c4 {
+	width: 70px;
+}
+
+div.multiselect-all {
+	clear: both;
+}
+
+div.content h2, p.error {
+	margin: 0;
+	clear: both;
+}
+
+p.error {
+	padding-top: 40px;
+}
+
+div.content div.table_wrapper h2 {
+	height: 20px;
+}
+
+div.multiple-bottom-controls {
+	font-weight: bold;
+	font-size: 110%;
+	float: left;
+	margin: 10px 0 20px 10px;
+	position: relative;
+}
+
+div.multiple-bottom-controls a {
+	font-weight: normal;
+	margin-left: 5px;
+}
+
+div.helper-bubbled {
+	z-index: 100;
+}
+
+div.helper {
+	display: none;
+	width: auto;
+	position: absolute;
+	padding: 15px;
+	top: -1px; left: 60px;
+	background-color: #C9CED6;
+	border: 1px outset #000;
+}
+
+div.helper div.status-changer {
+	width: 215px;
+}
+
+div.helper div.status-changer button {
+	padding-left: 10px;
+	float: left;
+	width: 100px;
+}
+
+div.helper button.on {
+	margin-right: 15px;
+}
+
+div.helper div.status-changer button.on{
+	background: #ECE9D8 url(/admin/i/icon/on.gif) 5px 50% no-repeat;
+}
+
+div.helper div.status-changer button.off{
+	background: #ECE9D8 url(/admin/i/icon/off.gif) 5px 50% no-repeat;
+}
+
+div.helper div.parent-section-changer form {
+	display: inline;
+}

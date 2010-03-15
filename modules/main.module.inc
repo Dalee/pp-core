@@ -236,6 +236,7 @@ class PXModuleMain extends PXModule {
 						$table = new PXAdminTable($objects, $app->types[$childFormat], $layout->getData);
 						$table->loadDropdownValues($db);
 						$table->setPager($currentPage, $onPage, $count);
+						$table->enableMultiOperations();
 						$table->setSelected($request->GetCid(), $request->getCtype());
 						$table->setParentPathName($parentObjectPath);
 						$table->setShowChildObjects(true);
@@ -284,6 +285,7 @@ class PXModuleMain extends PXModule {
 								$table = new PXAdminTable($objects, $app->types[$childFormat], $layout->getData);
 								$table->loadDropdownValues($db);
 								$table->setPager($currentPage, $onPage, $count);
+								$table->enableMultiOperations();
 								if (isset($cidObject['pathname'])) {
 									$table->setParentPathName($parentObjectPath.$cidObject['pathname'].'?part=');
 								}

@@ -5,7 +5,7 @@
  * @package ProximaPortal
  * @subpackage HTML
  */
-class PXAdminTable extends PXAdminWidget {
+class PXAdminTable extends PXAdminComplexWidget {
 	var $data;
 	var $dtype;
 	var $getData;
@@ -26,6 +26,9 @@ class PXAdminTable extends PXAdminWidget {
 	var $showChildObjects;
 	var $childLink;
 
+	const BEFORE_CONTENT = 0;
+	const AFTER_CONTENT  = 1;
+	
 	/**
 	 * Конструктор класса PXAdminTable.
 	 *
@@ -54,6 +57,11 @@ class PXAdminTable extends PXAdminWidget {
 		$this->rowsCount           = 0;
 		$this->showChildObjects    = false;
 		$this->childLink           = NULL;
+		
+		$this->blocks              = array( //set up available subwidgets areas
+			self::BEFORE_CONTENT => array(),
+			self::AFTER_CONTENT  => array()
+		);
 	}
 
 	function loadDropdownValues($db) {
@@ -94,6 +102,8 @@ class PXAdminTable extends PXAdminWidget {
 		$this->currentPage = $currentPage;
 		$this->rowsPerPage = $rowsPerPage;
 		$this->rowsCount   = $rowsCount;
+		
+		$this->append(new PXAdminPager($this->currentPage, $this->rowsPerPage, $this->rowsCount, $this->dtype->id, $this->getData), self::AFTER_CONTENT);
 
 	}
 
@@ -136,6 +146,9 @@ class PXAdminTable extends PXAdminWidget {
 	 */
 	function getTable() {
 		$html  = '';
+		
+		$html .= '<div class="table_wrapper">';
+		
 		$html .= '<h2>'.$this->dtype->title;
 		if ($this->rowsCount != 0) {
 			$html .= '&nbsp;(' .$this->rowsCount .')';
@@ -148,7 +161,8 @@ class PXAdminTable extends PXAdminWidget {
 		$html .= '</h2>';
 
 		if (count($this->data)) {
-
+			$html .= join($this->blocks[self::BEFORE_CONTENT]);
+			
 			$html .= '<table class="objects">';
 
 			//<!-- table header
@@ -251,11 +265,13 @@ class PXAdminTable extends PXAdminWidget {
 
 			$html .= '</table>';
 
-			$html .= $this->_buildPager();
+			$html .= join($this->blocks[self::AFTER_CONTENT]);
 		} else {
 			$html .= '<div class="empty">&#8212;</DIV>';
 		}//if
-
+		
+		$html .= '<div';
+		
 		return $html;
 	}
 
@@ -482,5 +498,8 @@ class PXAdminTable extends PXAdminWidget {
 		}
 	}
 	
+	function enableMultiOperations(){
+		PXDecorativeWidgetsCollection::fillByType($this, 'MULTIOPERATIONS');
+	}
 }
 ?>

@@ -46,4 +46,9 @@ require_once 'HTML/Admin/Widgets/FieldGroups/abstract.class.inc';
 require_once 'HTML/Admin/Widgets/FieldGroups/table.class.inc';
 require_once 'HTML/Admin/Widgets/FieldGroups/inline.class.inc';
 
+require_once 'HTML/Admin/Widgets/Multiops/admin_table_multicheckboxes.class.inc';
+require_once 'HTML/Admin/Widgets/Multiops/admin_table_bottom_label.class.inc';
+require_once 'HTML/Admin/Widgets/Multiops/admin_table_common_controls.class.inc';
+require_once 'HTML/Admin/Widgets/Multiops/admin_table_change_parent.class.inc';
+
 ?>

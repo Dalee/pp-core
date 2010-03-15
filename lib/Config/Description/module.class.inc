@@ -70,16 +70,16 @@ class PXModuleDescription {
 	}
 
 	function lookPackage($dom) {
-		$path    = null;
+		$path    = array();
 		$package = $dom->xpath("/modules//module[@name='".$this->getName()."']/ancestor::package/@folder");
 
 		if($package) {
 			$tmp = $package;
 			foreach($tmp  as $pack) {
-				$path .= '/'.$pack->nodeValue();
+				$path[] = $pack->nodeValue();
 			}
 
-			$this->setToPackage($path);
+			$this->setToPackage(join(DIRECTORY_SEPARATOR, $path));
 		}
 	}
 }

@@ -76,6 +76,7 @@ class PXModuleObjects extends PXModule {
 
 		$table = new PXAdminTable($objects, $this->datatype, $this->layout->getData);
 		$table->setPager($currentPage, $onPage, $count);
+		$table->enableMultiOperations();
 		$table->loadDropdownValues($this->db);
 
 		$this->layout->append('INNER.1.0', $table->getTable());

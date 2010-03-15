@@ -16,6 +16,10 @@ class PXAdminWidget /*implements PXAdminWidgetIF */{
 	function html() {
 	}
 
+	function __toString() {
+		return $this->html();
+	}
+
 	function setParent(&$widget) {
 		$this->parentWidget =& $widget;
 	}
