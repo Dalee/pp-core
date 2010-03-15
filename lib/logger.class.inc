@@ -125,7 +125,7 @@ class PXAuditLogger {
 	 * @return Array - массив из 5 элементов для передачи в NLLogger->debug|...|fatal()
 	 */
 	function _createMsg($description, $source, $type) {
-		$user = (isset($this->db->user->login) && $this->db->user->isauthed()) ? $this->db->user->login : 'UNKNOWN';
+		$user = $this->db->user->isAuthed() ? $this->db->user->login : 'UNKNOWN';
 		$ip   = (PXRequest::GetRemoteAddr() !== null) ? PXRequest::GetRemoteAddr() : 'UNKNOWN';
 		return array($type, $source, $user, $ip, $description);
 	}
