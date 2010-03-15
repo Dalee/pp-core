@@ -858,7 +858,7 @@ function myconv($from, $to, $string, $be_quiet = false) {
 	$key = $onebyte ? "$from~$to": $to;
 
 	if (!array_key_exists($key, $tables)) {
-		$fname = (defined('BASEPATH') ? BASEPATH . 'tmp/cache/myconv' : ini_get('upload_tmp_dir')) . '/recode-table-' . $key;
+		$fname = (defined('BASEPATH') ? BASEPATH . '/tmp/cache/myconv' : ini_get('upload_tmp_dir')) . '/recode-table-' . $key;
 		$tables[$key] = array();
 
 		if (is_file($fname)) {
