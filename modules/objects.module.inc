@@ -259,7 +259,7 @@ class PXModuleObjects extends PXModule {
 	}
 
 	function popupAuditLog() {
-		require_once BASEPATH . 'libpp/lib/Logger/Audit/wrapper.class.inc';
+		require_once BASEPATH . '/libpp/lib/Logger/Audit/wrapper.class.inc';
 
 		$audit_wrapper = new PXAdminAuditWrapper();
 		$audit_wrapper->frame =  "OUTER.CONTENT";

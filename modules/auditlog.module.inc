@@ -14,7 +14,7 @@ class PXModuleAuditLog extends PXModule {
 	}
 
 	function adminIndex() {
-		require_once BASEPATH . 'libpp/lib/Logger/Audit/wrapper.class.inc';
+		require_once BASEPATH . '/libpp/lib/Logger/Audit/wrapper.class.inc';
 		$audit_wrapper = new PXAdminAuditWrapper();
 		$audit_wrapper->init_and_render();
 	}
