@@ -35,6 +35,9 @@ function makeCall(method, action, objects){
 		},
 		complete: function(){
 			$('body').toggleClass("queryInProgress")
+		},
+		error: function() {
+			alert("Oбработчик мультиопераций masschange не описан или произошла неизвестная ошибка");
 		}
 	});
 }
