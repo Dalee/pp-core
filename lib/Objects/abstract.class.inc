@@ -1,19 +1,14 @@
 <?php
-abstract class PXContentObjects {
-	protected $data, $links, $linkedObjs; //FIXME
+abstract class PXContentObjects extends ArrayObject {
+	protected $links, $linkedObjs; //FIXME
 	protected $currentId, $currentType;
 
 	function __construct() {
 		$this->currentId   = -1;
 		$this->currentType = -1;
 
-		$this->data        = array();
 		$this->links       = array();
 		$this->linkedObjs  = array();
-	}
-
-	function sizeof() {
-		return sizeof($this->data);
 	}
 
 	abstract function hasCurrent();
@@ -21,7 +16,7 @@ abstract class PXContentObjects {
 	abstract function getAllowedChilds();
 
 	function hasType($type) {
-		return array_key_exists($type, $this->data) && sizeof($this->data[$type]);
+		return array_key_exists($type, $this) && sizeof($this[$type]);
 	}
 
 	function getCurrentType(){

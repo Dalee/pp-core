@@ -1,13 +1,13 @@
 <?php
-class PXObjects extends PXContentObjects implements ArrayAccess, IteratorAggregate {
+class PXObjects extends PXContentObjects {
 	public $currentId, $currentType;
 	
 	function hasCurrent() {
-		return isset($this->data[$this->currentType][$this->currentId]);
+		return isset($this[$this->currentType]) && isset($this[$this->currentType][$this->currentId]);
 	}
 
 	function getCurrent() {
-		return $this->data[$this->currentType][$this->currentId];
+		return $this[$this->currentType][$this->currentId];
 	}
 
 	function getAllowedChilds() {
@@ -15,7 +15,7 @@ class PXObjects extends PXContentObjects implements ArrayAccess, IteratorAggrega
 	}
 
 	function add($type, $objsArray) {
-		$this->data[$type] = $objsArray;
+		$this[$type] = $objsArray;
 	}
 
 	function __get($key) {
@@ -29,13 +29,12 @@ class PXObjects extends PXContentObjects implements ArrayAccess, IteratorAggrega
 				break;
 		}
 
-		if(!isset($this->$key) && isset($this->data->$key)) {
-			return $this->data->$key;
+		if(isset($this->$key)) {
+			return $this->$key;
 		}
 
 		return null;
 	}
-
 
 	public
 	function setCurrent($id, $type) {
@@ -48,35 +47,12 @@ class PXObjects extends PXContentObjects implements ArrayAccess, IteratorAggrega
 			return;
 		}
 
-		foreach ($this->data[$type] as $o) {
+		foreach ($this[$type] as $o) {
 			if($o['pathname'] == $pathname) {
 				$this->setCurrent($o['id'], $type);
 				return;
 			}
 		}
 	}
-
-	// ArrayAccess if
-	public function offsetGet($id) {
-		return $this->data[$id];
-	}
-
-	public function offsetSet($id, $object) {
-		$this->data[$id] = $object;
-	}
-
-	public function offsetExists ($id) {
-		return isset($this->data[$id]);
-	}
-
-	public function offsetUnset($id) {
-		unset($this->data[$id]);
-	}
-
-	/* IteratorAggregate */
-	public function getIterator() {
-		return new ArrayIterator($this->data);
-	}
-	/* /IteratorAggregate */
 }
 ?>
