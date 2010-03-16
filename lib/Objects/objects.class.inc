@@ -3,7 +3,7 @@ class PXObjects extends PXContentObjects {
 	public $currentId, $currentType;
 	
 	function hasCurrent() {
-		return isset($this[$this->currentType]) && isset($this[$this->currentType][$this->currentId]);
+		return @isset($this[$this->currentType][$this->currentId]);
 	}
 
 	function getCurrent() {

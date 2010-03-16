@@ -1,6 +1,6 @@
 <?php
 abstract class PXContentObjects extends ArrayObject {
-	protected $links, $linkedObjs; //FIXME
+	protected $data, $links, $linkedObjs; //FIXME
 	protected $currentId, $currentType;
 
 	function __construct() {
