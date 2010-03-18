@@ -41,6 +41,6 @@ if($jobName) {
 	ini_set('display_errors', 0);
 	Label('Run all jobs, if it\'s time');
 
-	$cronModule->RunTasks($engine->app, time());
+	$cronModule->RunTasks($app, time());
 }
 ?>
