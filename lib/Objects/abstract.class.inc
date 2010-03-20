@@ -1,5 +1,15 @@
 <?php
-abstract class PXContentObjects extends ArrayObject {
+interface PXContentObjectsInterface {
+	function hasCurrent();
+	function getCurrent();
+	function getAllowedChilds();
+	function hasType($type);
+	function getCurrentType();
+	function getLinks();
+//	function findCurrent($urlPath); FIXME!!!
+}
+
+abstract class PXContentObjects extends ArrayObject implements PXContentObjectsInterface {
 	protected $data, $links, $linkedObjs; //FIXME
 	protected $currentId, $currentType;
 
@@ -10,10 +20,6 @@ abstract class PXContentObjects extends ArrayObject {
 		$this->links       = array();
 		$this->linkedObjs  = array();
 	}
-
-	abstract function hasCurrent();
-	abstract function getCurrent();
-	abstract function getAllowedChilds();
 
 	function hasType($type) {
 		return array_key_exists($type, $this) && sizeof($this[$type]);

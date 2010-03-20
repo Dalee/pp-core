@@ -127,7 +127,7 @@ class PXStructLeaf404 extends PXStructLeaf {
 	}
 }
 
-class PXTreeObjects extends PXContentObjects implements ArrayAccess, Iterator {
+class PXTreeObjects implements PXContentObjectsInterface, ArrayAccess, Iterator {
 	public $format;
 
 	public $pathId = array();
@@ -185,6 +185,14 @@ class PXTreeObjects extends PXContentObjects implements ArrayAccess, Iterator {
 
 	function getCurrent() {
 		return $this->__getLeaf($this->tree->leafs[$this->currentId]);
+	}
+
+	function getCurrentType(){
+		return $this->currentType;
+	}
+
+	// FIXME !!!
+	function getLinks() {
 	}
 
 	function findCurrent($urlPath) {
