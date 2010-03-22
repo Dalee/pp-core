@@ -285,7 +285,7 @@ DIV.content .tree {
 	padding: 10px 0 0 10px;
 }
 DIV.content h2 {
-	padding: 0 0 5px 10px;
+	padding: 10px 0 5px 10px;
 }
 DIV.context {
 	padding: 1px;
@@ -527,7 +527,7 @@ table.mainform td input:hover, table.mainform td textarea:hover {
 }
 
 dl.sysinfo {
-	margin: 5px 0 0;
+	margin: 5px 0;
 	padding: 0;
 }
 
