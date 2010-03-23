@@ -153,9 +153,9 @@ function AppendStringToFile($fileName, $string) {
 }
 
 if (!function_exists("mime_content_type")) {
-	function mime_content_type($file) {
+	function mime_content_type($file, $type = 'mime') { //without Fileinfo extension constants FILEINFO_* are undefined
 		if(function_exists("finfo_file") && file_exists('/etc/magic')) {
-			$tmp = finfo_file(finfo_open(FILEINFO_MIME, '/etc/magic'), $file);
+			$tmp = finfo_file(finfo_open(constant('FILEINFO_' . strtoupper($type)), '/etc/magic'), $file);
 		} else {
 			$tmp = exec(sprintf("file -bi '%s'", escapeshellcmd($file)));
 		}
