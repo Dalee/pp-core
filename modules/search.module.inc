@@ -38,7 +38,7 @@ class PXModuleSearch extends PXModule {
 				}
 			}
 			if(!sizeof($chapters)) {
-				$chapters[$this->tree->rootId] = $this->tree->GetDescendantsOrSelf(array($this->tree->rootId));
+				$chapters[$this->tree->root->id] = $this->tree->GetDescendantsOrSelf(array($this->tree->root->id));
 			}
 		} 
 		return $chapters;
