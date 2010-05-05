@@ -244,13 +244,44 @@ class PXCronRunSearchIndex extends PXAbstractCronRun {
 			$db->Query("VACUUM ANALYZE sitesearch", true);
 		}
 
+		//delete non-exist objects: tmp decision
+		$this->_deleteNonExistents($db);
+		
 		$db->ClearCache();
-
+		
 		if (!$quietFlag) Label("end");
 
 		return array($totalr, $totalt);
 	}
-
+	
+	function _deleteNonExistents(&$db) {
+		$sitesearch = $db->query("SELECT did, dtype from sitesearch");
+		
+		$idsForDelete = array();
+		
+		$tmp = array();
+		foreach($sitesearch as $row) {
+			WorkProgress();
+			$tmp[$row['dtype']][] = $row['did'];
+		}
+		WorkProgress(true);
+		
+		foreach($tmp as $dtype => $ids) {
+			WorkProgress();
+			$ids = array_unique($ids);
+			$tmp = $db->query("SELECT id FROM " . $dtype ."  WHERE id IN (" . implode(',', $ids) . ")");
+			
+			$diff = array_diff($ids, GetColFromTable($tmp, 'id'));
+			if (!empty($diff)) {
+				$idsForDelete[$dtype] = $diff;
+			}
+		}
+		WorkProgress(true);
+		
+		foreach($idsForDelete as $dtype => $ids) {
+			$db->query("DELETE FROM sitesearch WHERE dtype ='" . $dtype ."' AND did IN (" . implode(',', $ids) . ")");
+		}
+	}
 }
 
 ?>

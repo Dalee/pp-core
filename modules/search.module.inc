@@ -6,6 +6,59 @@ class PXModuleSearch extends PXModule {
 		parent::__construct($area, $settings);
 	}
 	
+	function userIndex() {
+		if(!$query = $this->getSearchText()) {
+			return;
+		}
+		$chapters = $this->getChapters();
+		$this->objects['search'] = $this->search($query, $chapters);
+	}
+	
+	
+	function getSearchText() {
+		$query = trim($this->request->getVar('text'));
+		if(!strlen($query)) {
+			return '';
+		}
+		
+		$this->layout->assign('text', $query);
+		return $query; 
+	}
+	
+	function getChapters() {
+		$chapters = null;
+		
+		if (isset($this->settings['useParent'])) {
+			$t = $this->request->GetVar('ch', array());
+			$chapters = array();
+
+			foreach ($t as $k) {
+				if(is_numeric($k)) {
+					$chapters[$k] = $this->tree->GetDescendantsOrSelf(array($k));
+				}
+			}
+			if(!sizeof($chapters)) {
+				$chapters[$this->tree->rootId] = $this->tree->GetDescendantsOrSelf(array($this->tree->rootId));
+			}
+		} 
+		return $chapters;
+	}
+	
+	function search($query, $chapters) {
+		$per_page    = $this->app->getProperty('SEARCH_PER_PAGE', DEFAULT_CHILDREN_PER_PAGE);
+		$currentPage = $this->request->getVar('page', 1);
+
+		$search = new PXSearch($this->app, $this->db);
+		$res = $search->doSearch($query, $chapters, null, $per_page, $currentPage);
+		$search->Finish();
+
+		$this->layout->assign('FP_SEARCH_TOTAL',        $search->getSearchCount());
+		$this->layout->assign('FP_SEARCH_PER_PAGE',     $per_page);
+		$this->layout->assign('FP_SEARCH_DEFAULT_PAGE', $currentPage);
+		
+		return $res;
+	}
+	
 	function adminIndex() {
 		$this->word = trim($this->request->GetVar('word'));
 		$this->searchForm();
