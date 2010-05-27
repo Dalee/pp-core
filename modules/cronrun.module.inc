@@ -207,7 +207,7 @@ class PXModuleCronRun extends PXModule {
 	function adminIndex() {
 		$layout = $this->layout;
 		
-		$fp = @fopen(BASEPATH.'/var/cron.results', 'r');
+		$fp = @fopen(BASEPATH.'/site/var/cron.results', 'r');
 
 		if ($fp) {
 			flock($fp, LOCK_EX);
