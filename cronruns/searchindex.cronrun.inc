@@ -269,7 +269,7 @@ class PXCronRunSearchIndex extends PXAbstractCronRun {
 		foreach($tmp as $dtype => $ids) {
 			WorkProgress();
 			$ids = array_unique($ids);
-			$tmp = $db->query("SELECT id FROM " . $dtype ."  WHERE id IN (" . implode(',', $ids) . ")");
+			$tmp = $db->query("SELECT id FROM " . $dtype ."  WHERE id IN (" . implode(',', $ids) . ") AND status=true");
 			
 			$diff = array_diff($ids, GetColFromTable($tmp, 'id'));
 			if (!empty($diff)) {
