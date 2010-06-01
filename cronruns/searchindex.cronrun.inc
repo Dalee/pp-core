@@ -7,6 +7,8 @@ class PXCronRunSearchIndex extends PXAbstractCronRun {
 	}
 
 	function Run(&$app, &$db, &$tree, $matchedTime, $matchedRule) {
+		$this->tree = & $tree;
+		
 		$r = $this->_reindex();
 		return array("status" => 0, "note" => "Успешно! obj/words: {$r[0]}/{$r[1]}");
 	}
@@ -245,7 +247,7 @@ class PXCronRunSearchIndex extends PXAbstractCronRun {
 		}
 
 		//delete non-exist objects: tmp decision
-		$this->_deleteNonExistents($db);
+		$this->_deleteNonExistents($db, $app);
 		
 		$db->ClearCache();
 		
@@ -254,7 +256,9 @@ class PXCronRunSearchIndex extends PXAbstractCronRun {
 		return array($totalr, $totalt);
 	}
 	
-	function _deleteNonExistents(&$db) {
+	function _deleteNonExistents(&$db, &$app) {
+		$tree = $db->getObjects($app->types['struct'], true, DB_SELECT_TREE);
+		
 		$sitesearch = $db->query("SELECT did, dtype from sitesearch");
 		
 		$idsForDelete = array();
@@ -269,13 +273,26 @@ class PXCronRunSearchIndex extends PXAbstractCronRun {
 		foreach($tmp as $dtype => $ids) {
 			WorkProgress();
 			$ids = array_unique($ids);
-			$tmp = $db->query("SELECT id FROM " . $dtype ."  WHERE id IN (" . implode(',', $ids) . ") AND status=true");
 			
-			$diff = array_diff($ids, GetColFromTable($tmp, 'id'));
-			if (!empty($diff)) {
-				$idsForDelete[$dtype] = $diff;
+			if (!isset($app->types[$dtype]->fields['parent'])) {
+				$idsForDelete[$dtype] = $ids;
+				
+			} else {
+				$actualObjects = $db->query("SELECT id, parent FROM " . $dtype ."  WHERE id IN (" . implode(',', $ids) . ") AND status=true");
+				
+				foreach($actualObjects as $k => $tmpId) {
+					if(!isset($tree->leafs[$tmpId['parent']])) {
+						unset($actualObjects[$k]);
+					}
+				}
+				
+				$diff = array_diff($ids, GetColFromTable($actualObjects, 'id'));
+				if (!empty($diff)) {
+					$idsForDelete[$dtype] = $diff;
+				}
 			}
 		}
+		
 		WorkProgress(true);
 		
 		foreach($idsForDelete as $dtype => $ids) {
