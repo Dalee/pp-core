@@ -7,8 +7,6 @@ class PXCronRunSearchIndex extends PXAbstractCronRun {
 	}
 
 	function Run(&$app, &$db, &$tree, $matchedTime, $matchedRule) {
-		$this->tree = & $tree;
-		
 		$r = $this->_reindex();
 		return array("status" => 0, "note" => "Успешно! obj/words: {$r[0]}/{$r[1]}");
 	}
