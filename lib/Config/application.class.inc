@@ -466,6 +466,10 @@ class PXApplication {
 	}
 
 	function getPlugins($fileName) {
+		if($fileName === false) {
+			return;
+		}
+		
 		if (!($dom = PXml::load($fileName))) {
 			FatalError("Ошибка в файле настроек <em>$fileName</em>");
 		}
