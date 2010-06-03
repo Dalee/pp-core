@@ -276,7 +276,7 @@ SQL;
 
 
 				$layout->SetOuterForm('action.phtml', 'POST', 'multipart/form-data', true);
-				$layout->Assign('OUTER.RIGHTCONTROLS', PXAdminObjectForm::BuildClose('Закрыть'));
+				$layout->Assign('OUTER.RIGHTCONTROLS', NLAbstractHTMLForm::BuildClose('Закрыть'));
 				$years = $db->Query('SELECT EXTRACT(YEAR FROM ts) as year FROM adstat GROUP BY year ORDER BY year ASC;');
 				//DD-MM-YYYY
 				$html = '<DIV style="padding: 10px 0; width: 100%;">
