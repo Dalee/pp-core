@@ -448,10 +448,18 @@ class PXApplication {
 	 * */
 
 	function fillPlugins($fileName) {
-		$domPlugins = $this->getPlugins($fileName);
+		if($fileName === false) {
+			return false;
+		}
+		
+		if (!($dom = PXml::load($fileName))) {
+			FatalError("Ошибка в файле настроек <em>$fileName</em>");
+		}
 
+		$domPlugins = $dom->xpath("/plugins//plugin");
+		
 		if (!is_array($domPlugins) || count($domPlugins) == 0) {
-			FatalError("Не описаны plugins проекта");
+			FatalError("Не описаны плагины проекта");
 		}
 
 		foreach($domPlugins as $domPlugin) {
@@ -459,18 +467,6 @@ class PXApplication {
 			$plugin->setAttrs($domPlugin->attributes());
 			$this->setPlugin($plugin);
 		}
-	}
-
-	function getPlugins($fileName) {
-		if($fileName === false) {
-			return;
-		}
-
-		if (!($dom = PXml::load($fileName))) {
-			FatalError("Ошибка в файле настроек <em>$fileName</em>");
-		}
-
-		return $domPlugins = $dom->xpath("/plugins//plugin");
 	}
 
 	function setPlugin($plugin) {
@@ -488,7 +484,7 @@ class PXApplication {
 	 *
 	 * @param String $fileName имя файла
 	 */
-	private function FillTriggers($fileName) {
+	private function fillTriggers($fileName) {
 		$this->triggers = new PXTriggersList;
 		
 		if($fileName === false) {
