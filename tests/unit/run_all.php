@@ -1,4 +1,4 @@
-#!/usr/local/bin/php
+#!/usr/bin/php5
 <?php
 	/* let it be */
 	define(BASEPATH, realpath(dirname(__FILE__) . '/../../../')."/");

@@ -33,8 +33,7 @@ class PXObjectsACL {
 			return true;
 		}
 
-		$checker = CheckerObject::get($format);
-		return $checker->checkAcl($this, $what, $format, $object);
+		return CheckerObject::get($format)->checkAcl($this, $what, $format, $object);
 	}
 
 	private function _getRules($loadAll=false) {

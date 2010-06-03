@@ -1,0 +1,4 @@
+<?
+class PXTriggerSystemVersion extends PXAbstractSystemTrigger {
+}
+?>

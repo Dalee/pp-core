@@ -1,6 +1,5 @@
 <?php
 	final class PXDecorativeWidgetsCollection {
-		
 		private 
 			static $namedData               = array();
 			private static $objectsNameHash = array();
@@ -26,6 +25,15 @@
 			}
 		
 		public
+			static function fill(PXAdminComplexWidget $decorableWidget){
+				$key    = self::hash_key($decorableWidget);
+				if(!empty(self::$namedData[$key])){
+					foreach(self::$namedData[$key] as $decorableAreal => $_){
+						self::fillByType($decorableWidget, $decorableAreal);
+					}
+				}
+			}
+			
 			static function fillByType(PXAdminComplexWidget $decorableWidget, $decorableAreal){
 				$key    = self::hash_key($decorableWidget);
 				$subkey = self::hash_key($decorableAreal);

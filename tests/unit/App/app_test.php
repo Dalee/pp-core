@@ -12,7 +12,7 @@ class AppTest extends UnitTestCase {
 	}/*}}}*/
 
 	function testParseProperties() {
-		$r = $this->app->parseProperties();
+		$r = $this->app->properties;
 		$expt = array("PROFILER"=>"1", "CHILDREN_ON_PAGE"=>"10");
 		$this->assertIdentical($r, $expt);
 	}

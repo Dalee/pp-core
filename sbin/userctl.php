@@ -14,6 +14,10 @@ ini_set('display_errors', 1);
 
 require_once dirname(__FILE__).'/../lib/maincommon.inc';
 
+if(file_exists($localLib = dirname(__FILE__).'/../../local/lib/mainsbin.inc')){
+        include_once $localLib;
+}
+
 $engine = new PXEngineSbin();
 
 $ARGV = $_SERVER['argv'];

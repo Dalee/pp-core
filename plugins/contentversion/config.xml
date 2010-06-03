@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<components>
+	<component name="version" type="trigger">
+		<attribute name="version" />
+		<attribyte type="database" />
+	</component>
+	<component name="version" type="trigger">
+		<attribute name="version" />
+		<attribyte type="system" />
+	</component>
+	<component name="version" type="trigger">
+		<attribute name="version" />
+		<attribyte type="storagetype" />
+	</component>
+</components>
+

@@ -23,5 +23,11 @@ class PXml {
 	public static function loadString($xmlDataInString){
 		return PXml::load($xmlDataInString);
 	}
+
+	// XML data unified prototypes
+	
+	public static function attributePrototype($name, $value){
+		return (object)array('name' => $name, 'value' => $value);
+	}
 }
 ?>

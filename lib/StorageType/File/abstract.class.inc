@@ -14,22 +14,25 @@ class PXStorageTypeAbstractFile extends PXStorageType {
 		return $aiCache[$pid];
 	}
 
-	function cloneFile($field, $object, &$param) {
+	function cloneFile($field, $object, &$param, $symlink = false) {
 		$donor = $param['donor'];
-
 		$fileArray       = $donor[$field->name];
-		$ai              = $this->ai($param['format'], $object['id'], $field->name);
+		$ai              = $this->ai($field, $object, $param['format']);
 		$basedir         = HTDOCS_PATH . $ai;
 
-		if (is_array($fileArray)) {
+		if (is_array($fileArray) && !empty($donor[$field->name]['path'])) {
 			MakeDirIfNotExists($basedir);
-
-			$object[$field->name]['path'] = $ai.basename($fileArray['path']);
-
-			copy(
-				HTDOCS_PATH . $donor[$field->name]['path'],
-				HTDOCS_PATH . $object[$field->name]['path']
-			);
+			if($symlink) {
+				symlink(
+					HTDOCS_PATH . $donor[$field->name]['path'],
+					HTDOCS_PATH . $ai.basename($fileArray['path'])
+				);
+			} else {
+				copy(
+					HTDOCS_PATH . $donor[$field->name]['path'],
+					HTDOCS_PATH . $ai.basename($fileArray['path'])
+				);
+			}
 		}
 	}
 
@@ -49,12 +52,21 @@ class PXStorageTypeAbstractFile extends PXStorageType {
 		return $data;
 	}
 	
-	function ai($format, $id, $name){
-		return '/ai/'.$format.'/'.$id.'/'.$name.'/';
+	function ai($field, &$object, $format){
+		$params = array(
+			'format' => $format,
+			'id'     => $object['id'],
+			'name'   => $field->name
+		);
+
+		foreach(PXRegistry::getApp()->triggers->{'storagetype'} as $t) {
+			$t->getTrigger()->normalizeFilePath($field, $object, $params);
+		}
+		return '/ai/' . implode('/', $params) . '/';
 	}
 	
 	function normalize($field, $object, &$param, $allowed = null) {
-		$key = $this->ai($param['format'],$object['id'],$field->name);
+		$key = $this->ai($field, $object, $param['format']);
 		if(is_array($fileInfo = $this->getFromCache($key))){
 			return reset($fileInfo);
 		}

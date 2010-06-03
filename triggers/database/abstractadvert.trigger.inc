@@ -1,5 +1,5 @@
 <?php
-class PXAbstractTriggerAdvert extends PXAbstractTrigger {
+class PXTriggerDatabaseAbstractAdvert extends PXAbstractDatabaseTrigger {
 	var $dtPlace;
 	var $dtBanner;
 	var $refName;
@@ -7,9 +7,11 @@ class PXAbstractTriggerAdvert extends PXAbstractTrigger {
 	var $isDynamic;
 	var $imageFields = array('image', 'flash');
 
-	function PXTriggerAdvert(&$settings) {
-		$this->path       = BASEPATH.'/var/ad/in';
+	function PXTriggerDatabaseAbstractAdvert() {
+		$this->path       = BASEPATH.'site/var/ad/in';
 		$this->db         =& PXRegistry::getDb();
+		$settings         = $this->db->app->modules['advert']->settings;
+		
 		$this->dtBanner   = $this->db->app->types[$settings['banner']];
 		$this->dtPlace    = $this->db->app->types[$settings['place']];
 		$this->refName    = $this->db->app->references[$settings['banner'].'2'.$settings['place']];

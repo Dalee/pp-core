@@ -23,6 +23,11 @@ abstract class PXEngine {
 		$this->user->setRequest($this->request);
 
 		$this->user->checkAuth();
+
+		foreach($this->app->triggers->system as $t){
+			$t->getTrigger()->OnAfterEngineStart($this); //FIXME: this line is correct placeholder for this event ?
+		}
+
 		$this->db->LoadDirectoriesAutomatic($this->app->directory);
 		$this->initModules();
 
@@ -48,7 +53,7 @@ abstract class PXEngine {
 			if($initHelper = (!empty($this->{$var}['helper']) && method_exists($this, 'init'.ucfirst($var)) ? 'init'.ucfirst($var) : false)){
 				$this->$initHelper($this->{$var}['factory']);
 			} else {
-				$this->$var = & new $this->{$var}['factory'];
+				$this->$var = new $this->{$var}['factory'];
 			}
 		}
 	}
@@ -83,5 +88,9 @@ abstract class PXEngine {
 	}
 
 	abstract function runModules();
+
+	public function engineClass(){
+		return PX_ENGINE_USER;
+	}
 }
 ?>

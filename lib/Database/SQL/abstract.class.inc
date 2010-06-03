@@ -94,6 +94,9 @@ abstract class NLAbstractSQLDatabase {
 		return $this->_searchMethod("LIKE", $condition, $percs);
 	}
 
+	function inArray($arrayField, $value){
+	}
+
 	function _searchMethod($meth, $condition, $percs){
 		$lperc = P_LEFT  & $percs ? '%' : '';
 		$rperc = P_RIGHT & $percs ? '%' : '';
@@ -114,8 +117,8 @@ abstract class NLAbstractSQLDatabase {
 		if (!$customCacheExpiration){
 			$this->cache->save($query, $data);
 		} elseif (is_int($customCacheExpiration) && $customCacheExpiration > 0) {
-		        $this->cache->save($query, $data, $customCacheExpiration);
-                }	
+			$this->cache->save($query, $data, $customCacheExpiration);
+		}
 	}
 }
 ?>

@@ -12,6 +12,7 @@ interface IPXmlNode {
 	function childNodes();
 	function xpath($query);
 	function getChildObjects();
+	function parent();
 }
 
 class PXmlErrors {
@@ -173,6 +174,10 @@ abstract class PXmlAbstractNode implements IPXmlNode {
 		}
 
 		return false;
+	}
+	
+	function parent($selector = null){
+		return reset($this->xpath('..')); //TODO: make here selector context apply
 	}
 }
 ?>

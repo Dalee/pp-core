@@ -217,7 +217,7 @@ class PXModuleForum extends PXModule {
 		$this->layout->Assign('forumUsers', $this->_getForumUsers($this->dtMessages, $this->subObjects[$this->dtMessages]));
 		$this->layout->Assign('format', $this->dtMessages);
 
-		$isTopicAutoPaged = isset($this->objects[$this->currentCtype][$this->currentCid]['allowed']) && $this->objects[$this->currentCtype][$this->currentCid]['allowed'][$this->dtMessages] == PP_CHILDREN_FETCH_PAGED && $this->rqForumSettings['active']['view'] != 'tree';
+		$isTopicAutoPaged = isset($this->objects[$this->currentCtype][$this->currentCid][OBJ_FIELD_CHILDREN]) && $this->objects[$this->currentCtype][$this->currentCid][OBJ_FIELD_CHILDREN][$this->dtMessages] == PP_CHILDREN_FETCH_PAGED && $this->rqForumSettings['active']['view'] != 'tree';
 
 		if ($isTopicAutoPaged) {
 			return;
@@ -255,7 +255,7 @@ class PXModuleForum extends PXModule {
 		$u = array();
 
 		if ($this->isAllowedForumContent) {
-			$isForumAutoPaged = $this->tree->leafs[$this->tree->current->id]->content['allowed'][$this->dtTopics] == PP_CHILDREN_FETCH_PAGED;
+			$isForumAutoPaged = $this->tree->leafs[$this->tree->current->id]->content[OBJ_FIELD_CHILDREN][$this->dtTopics] == PP_CHILDREN_FETCH_PAGED;
 
 			if (!$isForumAutoPaged) {
 				$this->objects[$this->dtTopics] = $this->db->getObjectsByParent($this->app->types[$this->dtTopics], true, $this->tree->current->id, DB_SELECT_TABLE, 'pinned DESC, lastreply DESC');
@@ -426,7 +426,7 @@ class PXModuleForum extends PXModule {
 		$this->rqCase          = $this->request->GetVar('case', ($this->rqFile == 'index.html') ? 'viewforum' : 'viewtopic');
 		$this->moduleError     = NULL;
 
-		$this->isAllowedForumContent = array_key_exists($this->dtTopics, $this->tree->leafs[$this->tree->current->id]->content['allowed']);
+		$this->isAllowedForumContent = array_key_exists($this->dtTopics, $this->tree->leafs[$this->tree->current->id]->content[OBJ_FIELD_CHILDREN]);
 
 		$methodName = 'index' . ucfirst($this->rqCase);
 		if (method_exists($this, $methodName)) {

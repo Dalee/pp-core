@@ -79,17 +79,8 @@ class PXFieldDescription {
 		}
 	}
 
-	function getGroupName(&$node, &$dom) {
-		/*
-
-		FIXME:
-			right xpath query $node->xpath('/parent::group');
-			$dom->xpath("//datatype[@name='{$this->typeDescription->id}']/group[attribute/@name='{$this->name}']") used for some projects on php 4.3.11,
-			that do not understand right xpath
-
-		*/
-
-		$groups = @$dom->xpath("//datatype[@name='{$this->typeDescription->id}']/group[attribute/@name='{$this->name}']");
+	function getGroupName($node) {
+		$groups = @$node->xpath('parent::group');
 
 		if(sizeof($groups) > 0) {
 			$groupName = $groups[0]->attributes();
@@ -97,8 +88,8 @@ class PXFieldDescription {
 		}
 	}
 
-	function getComments(&$node, &$dom) {
-		$commentsNode = @$dom->xpath("//datatype[@name='{$this->typeDescription->id}']//attribute[@name='{$this->name}']/comment");
+	function getComments($node) {
+		$commentsNode = @$node->xpath("comment");
 
 		if(sizeof($commentsNode) > 0) {
 			foreach($commentsNode as $comment) {
@@ -107,8 +98,8 @@ class PXFieldDescription {
 		}
 	}
 
-	function getDefaultValueNode(&$node, &$dom) {
-		$defaultValueNode = @$dom->xpath("//datatype[@name='{$this->typeDescription->id}']//attribute[@name='{$this->name}']/defaultvalue");
+	function getDefaultValueNode($node) {
+		$defaultValueNode = @$node->xpath("defaultvalue");
 
 		if(sizeof($defaultValueNode) > 0) {
 			foreach($defaultValueNode as $value) {

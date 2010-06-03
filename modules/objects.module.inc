@@ -18,7 +18,6 @@ class PXModuleObjects extends PXModule {
 
 	function adminIndex() {
 		$rSid = $this->request->getSid();
-
 		$this->indexSetMenu($rSid);
 
 		if (is_null($rSid)) {
@@ -31,10 +30,8 @@ class PXModuleObjects extends PXModule {
 		$rView = $this->request->getVar($format.'_view');
 		$this->layout->setGetVarToSave($format.'_view', $rView);
 
-
 		if ($rView === 'plain' || $this->datatype->struct === 'plain' ) {
 			$this->indexAppendTable();
-
 		} else {
 			$this->indexAppendTree();
 		}
@@ -57,50 +54,105 @@ class PXModuleObjects extends PXModule {
 	}
 
 	function indexAppendTable() {
-		$format = $this->datatype->id;
-
 		$this->db->LoadDirectoriesByType($this->datatype);
-		$count = & $this->_loadObjects(DB_SELECT_COUNT);
+		$this->layout->append('INNER.1.0', $this->_createObjectsTable($this->datatype->id, true));
+	}
 
-		$onPage      = $this->app->getProperty('CHILDREN_ON_PAGE', 20);
-		$currentPage = $this->request->getVar($format.'_page', 1);
+	function _createObjectsTable($format, $children = false, $parent = null) {
+		$count       =& $this->_loadObjects(DB_SELECT_COUNT, NULL, NULL, NULL, $format, $parent);
+		$onPage      =  $this->app->getProperty('CHILDREN_ON_PAGE', 20);
+		$currentPage =  $this->request->getVar($format.'_page', 1);
+
 		$this->layout->setGetVarToSave($format.'_page', $currentPage);
 
 		$currentPage  = $this->request->getVar($format.'_page', 1);
 		$currentOrder = $this->request->GetOrderVar($format, $this->app->types[$format]->order, $this->app->types[$format]->fields);
+
 		$this->layout->setGetVarToSave($format.'_order', $currentOrder);
 
-		$currentPage = $currentPage > ceil($count/$onPage) ? ceil($count/$onPage) : $currentPage;
+		$currentPage =  $currentPage > ceil($count/$onPage) ? ceil($count/$onPage) : $currentPage;
+		$objects     =& $this->_loadObjects(DB_SELECT_TABLE, $onPage, $onPage*($currentPage-1), $currentOrder, $format, $parent);
 
-		$objects = & $this->_loadObjects(DB_SELECT_TABLE, $onPage, $onPage*($currentPage-1), $currentOrder);
-
-		$table = new PXAdminTable($objects, $this->datatype, $this->layout->getData);
+		$table = new PXAdminTable($objects, $this->app->types[$format], $this->layout->getData);
 		$table->setPager($currentPage, $onPage, $count);
-		$table->enableMultiOperations();
 		$table->loadDropdownValues($this->db);
 
-		$this->layout->append('INNER.1.0', $table->getTable());
+		if($children) {
+			$cId  = $this->request->GetCid();
+			$table->setSelected($cId, $format);
+			$table->setShowChildObjects(true);
+			$table->setChildLink('cid');
+			if($cId) {
+				 $this->indexAppendChild($objects[$cId]);
+			}
+		}
+
+		return $table->getTable();
 	}
+
+	function indexAppendChild($cidObject) {
+		$format = $this->datatype->id;
+
+		$this->layout->setThreeColumns();
+		$this->layout->SetGetVarToSave('cid', $this->request->GetCid());
+
+		$allowedChilds = $this->app->GetAllowedChildsKeys($format, $cidObject);
+
+		if (count($allowedChilds)) {
+			foreach ($allowedChilds as $childFormat) {
+				$this->layout->SetGetVarToSave($childFormat.'_page', $this->request->GetVar($childFormat.'_page', 1));
+				$this->layout->SetGetVarToSave($childFormat.'_view', $this->request->GetVar($childFormat.'_view', 'plain'));
+
+				if ($this->app->types[$childFormat]->struct == 'tree' && $this->request->GetVar($childFormat.'_view') != 'plain') {
+					$objects = $this->_loadContent($app->types[$childFormat], NULL, 'parent', $this->request->GetCid(), DB_SELECT_TREE);
+					$this->layout->AppendTableAsTree('INNER.2.0', $childFormat, $objects, $this->request->GetCid(), $this->request->GetLeafStatus());
+
+				} else {
+					$table = $this->_createObjectsTable($childFormat, false, $this->request->GetCid());
+					$this->layout->append('INNER.2.0', $table);
+				}
+			}
+			$this->layout->AssignContextMenu('INNER.2.0.CONTEXT', $this->request->GetCid(), $allowedChilds);
+			$this->layout->AssignControls('INNER.2.1', $this->request->GetCid(), $allowedChilds);
+
+		} else {
+			$this->layout->Assign('INNER.2.0', '
+			<H2>Для добавления в раздел информации необходимо указать разрешенные форматы</H2>
+			<UL><LI><A href="javascript:EditContent(\''.$format.'\', \''.$this->request->GetCid().'\', \'children\')">Разрешенные форматы раздела</A></LI></UL>
+			');
+		}
+	}
+
 
 	function indexAppendTree() {
 		$objects = & $this->_loadObjects(DB_SELECT_TREE);
 		$this->layout->appendTableAsTree('INNER.1.0', $this->datatype->id, $objects, $this->request->getCid(), $this->request->getLeafStatus());
 	}
 
-	function &_loadObjects($mode, $limit = NULL, $offset = NULL, $order = NULL){
+	function &_loadObjects($mode, $limit = NULL, $offset = NULL, $order = NULL, $type = NULL, $parent = NULL){
+		$type = ($type == null) ? $this->datatype : $this->app->types[$type];
+
 		if(is_null($limit) && is_null($offset)){
-			$objects = $this->db->getObjects($this->datatype, NULL, $mode);
+			if (is_null($parent)) {
+				$objects = $this->db->getObjects($type, NULL, $mode);
+			} else {
+				$objects = $this->db->getObjectsByParent($type, NULL, $parent, $mode);
+			}
 		} else {
-			$objects = $this->db->getObjectsLimited($this->datatype, NULL, $limit, $offset, $mode, $order);
+			if (is_null($parent)) {
+				$objects = $this->db->getObjectsLimited($type, NULL, $limit, $offset, $mode, $order);
+			} else {
+				$objects = $this->db->getObjectsByParentLimited($type, NULL, $parent, $limit, $offset, $mode, $order);
+			}
 		}
 		return $objects;
 	}
 
 	function adminPopup() {
 		$this->datatype =& $this->getDatatype();
-		$this->object   = $this->popupGetObject();
+		$object   = $this->popupGetObject();
 
-		if (!$this->user->isAdmin() || empty($this->object)) {
+		if (!$this->user->isAdmin() || empty($object)) {
 			return $this->layout->assignError('OUTER.CONTENT', 'Нет доступа');
 		}
 
@@ -110,51 +162,29 @@ class PXModuleObjects extends PXModule {
 		$this->layout->setGetVarToSave('format', $this->datatype->id);
 		$this->layout->setGetVarToSave('action', $action);
 
-		$this->layout->setOuterForm('action.phtml', 'POST', 'multipart/form-data');
+		$counts = array();
+		$possibleFormats = $this->datatype->childTypes();
 
-		$this->form = new PXAdminObjectForm($this->datatype, $this->object);
-
-		$this->popupSetMenu();
-		$this->popupCheckAccess();
-
-		$this->layout->assign('OUTER.LEFTCONTROLS',  $this->form->leftControls());
-		$this->layout->assign('OUTER.RIGHTCONTROLS', $this->form->rightControls());
-		$this->db->LoadDirectoriesByType($this->datatype, $this->object);
-
-		$this->layout->append('OUTER.CONTENT', $this->form->baseInputs($action));
-
-		switch ($action) {
-			case 'main':
-				$this->popupMain();
-				break;
-
-			case 'children':
-				$this->popupAllowedChildren();
-				break;
-
-			case 'remove':
-				$this->popupRemove();
-				break;
-
-			case 'links':
-				$this->popupLinks();
-				break;
-
-			case 'auditlog':
-				$this->popupAuditLog();
-				break;
+		foreach ($this->datatype->allowedChildTypes($object) as $allowedFormat=>$childType) {
+			$counts[$allowedFormat] = $this->db->getObjectsByParent($childType, NULL, $object['id'], DB_SELECT_COUNT);
 		}
 
-		$this->popupSetTitle();
+		$form = new PXAdminForm($object, $this->datatype);
+		$form->disable = $this->popupCheckAccess($object);
+
+		$form->setAction($this->request->getAction());
+		$form->setArea('objects');
+		$form->setChildren($possibleFormats, $counts);
+		$form->setLinks($this->popupLinks($object));
+		$form->setTitle($this->popupSetTitle($object));
+		$form->getForm();
 	}
 
 	function &getDatatype($varName='format') {
 		$rFormat = $this->request->getVar($varName);
-
 		if (!isset($this->app->types[$rFormat])) {
 			FatalError('Undefined datatype '.$rFormat);
 		}
-
 		return $this->app->types[$rFormat];
 	}
 
@@ -189,109 +219,36 @@ class PXModuleObjects extends PXModule {
 		return $object;
 	}
 
-	// protected
-	function popupGetMenuItems() {
-		$menuItems = array();
-		$menuItems['main'] = 'Основная информация';
-
-		if (isset($this->object['id']) && $this->object['id'] != 0) {
-			if (count($this->datatype->childs)) {
-				$menuItems['children'] = 'Разрешенные дети';
-			}
-
-			if (!empty($this->datatype->references)) {
-				$menuItems['links'] = 'Связи';
-			}
-
-			$menuItems['auditlog'] = 'Журнал';
-			$menuItems['remove']   = 'Удаление';
-		}
-
-		return $menuItems;
-	}
-
-	function popupSetMenu() {
-		$this->layout->setMenu($this->popupGetMenuItems(), $this->request->getAction(), 'action');
-	}
-
-	function popupCheckAccess(){
-		if (!$this->user->can('write', $this->datatype, $this->object)) {
-			$this->form->disable = true;
+	function popupCheckAccess($object){
+		if (!$this->user->can('write', $this->datatype, $object)) {
+			return true;
 		}
 	}
 
-	function popupSetTitle() {
-		$object =& $this->object;
+	function popupSetTitle($object) {
 		$title = '';
-
 		if ($this->request->getId() > 0) {
 			if(isset($object) && isset($object['title'])) {
 				$title = '&laquo;'.substr(strip_tags($object['title']), 0, 32).'&raquo; &#8212; ';
 			}
-
 			$title .= ' Редактирование';
-
 		} else {
 			$title = 'Добавление';
 		}
-
 		$title .= ' объекта формата &laquo;'.strip_tags($this->datatype->title).'&raquo;';
-
-		$this->layout->assignTitle($title);
+		return $title;
 	}
 
-	function popupMain() {
-		$this->layout->append('OUTER.CONTENT', $this->form->MainForm($this->datatype));
-	}
-
-	function popupAllowedChildren() {
-		$counts = array();
-		$possibleFormats = $this->datatype->childTypes();
-
-		foreach ($this->datatype->allowedChildTypes($this->object) as $allowedFormat=>$childType) {
-			$counts[$allowedFormat] = $this->db->getObjectsByParent($childType, NULL, $this->object['id'], DB_SELECT_COUNT);
-		}
-
-		$this->layout->append('OUTER.CONTENT', $this->form->childrenForm($possibleFormats, $counts));
-	}
-
-	function popupRemove() {
-		$this->layout->append('OUTER.CONTENT', $this->form->removeForm());
-	}
-
-	function popupAuditLog() {
-		require_once BASEPATH . '/libpp/lib/Logger/Audit/wrapper.class.inc';
-
-		$audit_wrapper = new PXAdminAuditWrapper();
-		$audit_wrapper->frame =  "OUTER.CONTENT";
-
-		$audit_wrapper->filters = array(
-			'format' => $this->datatype->id,
-			'id'     => $this->object['id']);
-
-		$audit_wrapper->hasFilterFrom = false;
-
-		$audit_wrapper->init();
-
-		if(!$audit_wrapper->count) return;
-
-		$audit_wrapper->caption  = '<a href="./?area=auditlog&format='.$this->datatype->id.'&id='.$this->object['id'].'" target="_blank">Журнал аудита</a>, ';
-		$audit_wrapper->caption .= $audit_wrapper->count.' '.NumericEndingsRussian($audit_wrapper->count, 'запись', 'записи', 'записей');
-		$audit_wrapper->caption .= ' для текущего объекта';
-
-		$audit_wrapper->render();
-	}
-
-	function popupLinks() {
+	function popupLinks($object) {
 		$db       =& $this->db;
 		$app      =& $this->app;
 		$datatype =& $this->datatype;
 		$request  =& $this->request;
 		$layout   =& $this->layout;
-		$object   =& $this->object;
+
+		$linksParam = array();
 
 		$refFilters    = (array)$request->GetVar('filters', array());
-
 		foreach ($datatype->references as $k=>$reference) {
 			if($reference->hidden){
 				continue;
@@ -340,8 +297,20 @@ class PXModuleObjects extends PXModule {
 				}
 			}
 
-			$layout->append('OUTER.CONTENT', $this->form->linksForm($reference, $refDatatype, $existingLinks, $possibleLinks, $onPage, $currentPage, $pagerCount, $overallCount, $layout, $onlyExistingLinks, $refFilters));
+			$linksParam[$k] = array(
+				"reference"         => $reference,
+				"formatTo"          => $refDatatype,
+				"links"             => $existingLinks,
+				"pLinks"            => $possibleLinks,
+				"objectsOnPage"     => $onPage,
+				"page"              => $currentPage,
+				"count"             => $pagerCount,
+				"fullCount"         => $overallCount,
+				"onlyExistingLinks" => $onlyExistingLinks,
+				"filters"           => $refFilters
+			);
 		}
+		return $linksParam;
 	}
 	
 	function _getLinksData($dType, $where, $whereAllCount, $onPage, $cPage){
@@ -355,7 +324,9 @@ class PXModuleObjects extends PXModule {
 	function adminAction() {
 		$this->datatype =& $this->getDatatype();
 
-		switch ($this->_route()) {
+		$action = $this->_route();
+		switch ($action) {
+			default:
 			case 'main':
 				$this->actionMain();
 				break;
@@ -395,12 +366,7 @@ class PXModuleObjects extends PXModule {
 			case 'links':
 				$this->actionModifyLinks();
 				break;
-
-			default:
-				FatalError('Неизвестный системе <em>action</em>');
-				break;
 		}
-
 		return $this->nextLocation;
 	}
 
@@ -576,7 +542,7 @@ class PXModuleObjects extends PXModule {
 		$this->appendLinksExistFlag();
 		$this->returnToId($id);
 	}
-	
+
 	function _makeLinkedListFrom($ref){
 		$linkedList = array();
 		foreach($this->request->getLinks($ref) as $values){

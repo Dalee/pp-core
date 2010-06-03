@@ -10,11 +10,11 @@
  * storageType filesarray
  */
 class PXStorageTypeFilesarray extends PXStorageTypeAbstractFile {
-	function cloneFile($field, $object, &$param) {
+	function cloneFile($field, $object, &$param, $symlink = false) {
 		$donor = $param['donor'];
 
 		$fileArray       = $donor[$field->name];
-		$ai              = $this->ai($param['format'], $object['id'], $field->name);
+		$ai              = $this->ai($field, $object, $param['format']);
 		$basedir         = HTDOCS_PATH . $ai;
 
 		if (is_array($fileArray)) {
@@ -23,17 +23,25 @@ class PXStorageTypeFilesarray extends PXStorageTypeAbstractFile {
 			foreach($fileArray as $k=>$f) {
 				$object[$field->name][$k]['path'] = $ai.$f['entry'];
 
-				copy(
-					HTDOCS_PATH . $donor[$field->name][$k]['path'],
-					HTDOCS_PATH . $object[$field->name][$k]['path']
-				);
+				if($symlink) {
+					symlink(
+						HTDOCS_PATH . $donor[$field->name][$k]['path'],
+						HTDOCS_PATH . $object[$field->name][$k]['path']
+					);
+
+				} else {
+					copy(
+						HTDOCS_PATH . $donor[$field->name][$k]['path'],
+						HTDOCS_PATH . $object[$field->name][$k]['path']
+					);
+				}
 			}
 		}
 	}
 
 	function proceedFile($field, &$object, &$param) {
 		$varName         = $field->name;
-		$ai              = parent::ai($param['format'],$param['id'],$field->name);
+		$ai              = parent::ai($field, $object, $param['format']);;
 		$basedir         = HTDOCS_PATH . $ai;
 		$fileArray       = &$object[$varName];
 		$allowed         = isset($param['allowed']) ? $param['allowed'] : NULL;
@@ -94,7 +102,7 @@ class PXStorageTypeFilesarray extends PXStorageTypeAbstractFile {
 
 	function __normalize($field, $object, &$param) {
 		$filesArray = array();
-		$basedir    = parent::ai($param['format'],$object['id'],$field->name);
+		$basedir    = parent::ai($field, $object, $param['format']);
 		$d          = new NLDir(HTDOCS_PATH . $basedir);
 
 		if ($d->Exist()) {
@@ -103,12 +111,13 @@ class PXStorageTypeFilesarray extends PXStorageTypeAbstractFile {
 				$httpPath = $basedir.$entry;
 
 				$filesArray[$entry] = array(
-					'fullpath' => isset($httpPath) ? $httpPath : NULL,
+					'path' => isset($httpPath) ? $httpPath : NULL,
 					'filename' => $entry,
 					'size'     => filesize($diskPath),
 					'type'     => mime_content_type($diskPath),
 					'entry'    => $entry
 				);
+				$filesArray[$entry]['fullpath'] = &$filesArray[$entry]['path'];
 
 				unset($httpPath);
 				unset($diskPath);

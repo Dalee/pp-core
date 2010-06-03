@@ -22,9 +22,14 @@ require_once 'session.class.inc';
 require_once 'DisplayType/classes.inc';
 require_once 'StorageType/classes.inc';
 
+require_once 'Triggers/abstracttrigger.class.inc';
+require_once 'Triggers/abstractsystrigger.class.inc';
+require_once 'Triggers/abstractdbtrigger.class.inc';
+require_once 'Triggers/abstractsttrigger.class.inc';
+
 require_once 'abstractmodule.class.inc';
-require_once 'abstracttrigger.class.inc';
 require_once 'abstractcronrun.class.inc';
+require_once 'abstractplugin.class.inc';
 
 require_once 'search.class.inc';
 require_once 'logger.class.inc';

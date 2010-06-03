@@ -74,9 +74,9 @@ class PXModuleProperties extends PXModule {
 		$propObject = PXModuleProperties::loadModel(array_keys($this->_pseudoDatatype->fields));
 
 		$db->loadDirectoriesByType($this->_pseudoDatatype, $propObject);
-		$objectForm = new PXAdminObjectForm($this->_pseudoDatatype, $propObject);
+		$objectForm = new PXAdminForm($propObject, $this->_pseudoDatatype);
 
-		$formToHtml = $objectForm->MainForm($objectForm->format);
+		$formToHtml = $objectForm->form();
 		$formToHtml = preg_replace("#<input .*?(?>name\s*=\s*('|\")area\\1).*?>#", '', $formToHtml); //FIXME: it's a hack, waiting for Widgets interface
 
 		$html = $this->_editArea($formToHtml);

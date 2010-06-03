@@ -12,6 +12,8 @@ class NLAbstractLayout {
 	var $blocks = array();
 
 	var $getData;
+	
+	public $outerLayout;
 
 	function NLAbstractLayout() {
 		$this->getData      = array();
@@ -23,7 +25,9 @@ class NLAbstractLayout {
 	}
 
 	function setOuterLayout($template) {
-		$this->html = $this->template($template.'.tmpl');
+		$this->outerLayout = $template;
+		
+		$this->html        = $this->template($template.'.tmpl');
 	}
 
 	function template($filename) {
@@ -126,10 +130,7 @@ class NLAbstractLayout {
 	}
 
 	function setMenu($menuItems, $current, $getParam='area', $buildHref=true) {
-		$menu = new PXWidgetTabbedMenu($menuItems, $buildHref);
-		$menu->setSelected($current);
-		$menu->setVarName($getParam);
-
+		$menu = new PXWidgetMenuTabbed($menuItems, $current, $getParam, $buildHref);
 		$this->assign('OUTER.MENU', $menu);
 	}
 
@@ -298,7 +299,6 @@ class NLAbstractLayout {
 					foreach ($v as $sk=>$sv) {
 						$href .= $k.'[]='.urlencode($sv).'&';
 					}
-
 				} else {
 					$href .= $k.'='.urlencode($v).'&';
 				}

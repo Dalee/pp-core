@@ -10,7 +10,7 @@
 class PXStorageTypeFile extends PXStorageTypeAbstractFile {
 	function proceedFile($field, &$object, &$param) {
 		$fileArray       = &$object[$field->name];
-		$ai              = parent::ai($param['format'],$param['id'],$field->name);
+		$ai              = parent::ai($field, $object, $param['format']);;
 		$basedir         = HTDOCS_PATH . $ai;
 		$filename        = null;
 		$invalidateCache = false;
@@ -33,9 +33,7 @@ class PXStorageTypeFile extends PXStorageTypeAbstractFile {
 
 				if(!is_null($filename)) {
 					MakeDirIfNotExists($basedir);
-
 					$d = dir($basedir);
-
 					while ($entry = $d->read()) {
 						if (is_file($basedir.$entry)) {
 							unlink($basedir.$entry);
@@ -65,7 +63,7 @@ class PXStorageTypeFile extends PXStorageTypeAbstractFile {
 
 	function __normalize($field, $object, &$param) {
 		$fileName = NULL;
-		$basedir  = parent::ai($param['format'],$object['id'],$field->name);
+		$basedir  = parent::ai($field, $object, $param['format']);
 		$d        = new NLDir(HTDOCS_PATH . $basedir);
 
 		if ($d->Exist()) {
@@ -74,12 +72,15 @@ class PXStorageTypeFile extends PXStorageTypeAbstractFile {
 			}
 		}
 
-		return array(
+		$file =  array(
 			'filename' => isset($fileName) ? $fileName              : NULL,
-			'fullpath' => isset($fileName) ? $basedir.$fileName     : NULL,
+			'path'     => isset($fileName) ? $basedir.$fileName     : NULL,
 			'type'     => (isset($fileName) && is_file($d->name.'/'.$fileName)) ? mime_content_type($d->name.'/'.$fileName) : NULL,
 			'size'     => (isset($fileName) && is_file($d->name.'/'.$fileName)) ? filesize($d->name.'/'.$fileName)          : 0
 		);
+		$file['fullpath'] = &$file['path'];
+
+		return $file;
 	}
 }
 ?>

@@ -81,3 +81,27 @@ months:
 		- October
 		- November
 		- December
+
+# правила ACL
+module_acl_rules:
+	actions:
+		read:
+			rus: Просмотр/Чтение
+			eng: View/Read
+		write:
+			rus: Изменение/Запись
+			eng: Change/Write
+			
+		linkto:
+			rus: Создание связи
+			eng: Make reference
+		admin:
+			rus: Просмотр в админке
+			eng: View in admin area
+	access:
+		allo:
+			rus: Разрешить
+			eng: Allow
+		deny:
+			rus: Запретить
+			eng: Deny

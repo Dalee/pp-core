@@ -10,11 +10,6 @@ class RegistryTest extends UnitTestCase {
 		$e = new PXEngineSbin();
 	}
 	
-	function testInstance() {
-		$registry =& PXRegistry::instance();
-		$this->assertIsA($registry, 'PXRegistry');
-	}
-
 	function testGet() {
 		$mapping = array(
 			'app'     => 'PXApplication', 

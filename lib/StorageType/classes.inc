@@ -10,6 +10,7 @@ require_once 'boolean.class.inc';
 require_once 'timestamp.class.inc';
 require_once 'serialized.class.inc';
 require_once 'array.class.inc';
+require_once 'intarray.class.inc';
 
 require_once 'File/abstract.class.inc';
 require_once 'File/file.class.inc';

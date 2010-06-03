@@ -1,8 +1,5 @@
 <?php
-class PXAbstractTrigger {
-	function PXAbstractTrigger() {
-		// none action
-	}
+abstract class PXAbstractDatabaseTrigger extends PXAbstractTrigger {
 
 	//All ObBefore* triggers MUST return TRUE, otherwise object will not be added/modifyed/deleted !
 	//It can be used for additional content checks in order to forbid addition/modification/deletion of object. 
@@ -40,7 +37,17 @@ class PXAbstractTrigger {
 	
 	function OnMoveObject(&$db, &$objectId, &$format, &$objectInDB){
 	}
-
+	
+	//Triggers for low-level sql query modifications before do it
+	function OnBeforeGetDataBuildQuery($db, $format, &$mode, &$selector, &$where, &$order, &$limit){
+		return true;
+	}
+	
+	function OnGetDataBuildQuery($db, $format, &$mode, &$query, &$selector, &$where, &$order, &$limit){
+	}
+	
+	function OnBeforeNormalizePathBuildQuery($objectFormat, $exObjectFormat, &$table) {
+	}
 }
 
 ?>

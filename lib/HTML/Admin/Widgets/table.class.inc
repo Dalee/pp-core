@@ -25,10 +25,10 @@ class PXAdminTable extends PXAdminComplexWidget {
 	var $rowsCount;
 	var $showChildObjects;
 	var $childLink;
-
+	
 	const BEFORE_CONTENT = 0;
 	const AFTER_CONTENT  = 1;
-	
+
 	/**
 	 * Конструктор класса PXAdminTable.
 	 *
@@ -145,6 +145,8 @@ class PXAdminTable extends PXAdminComplexWidget {
 	 * @return String - html table
 	 */
 	function getTable() {
+		$this->decorate();
+		
 		$html  = '';
 		
 		$html .= '<div class="table_wrapper">';
@@ -496,10 +498,6 @@ class PXAdminTable extends PXAdminComplexWidget {
 			default:
 				return '';
 		}
-	}
-	
-	function enableMultiOperations(){
-		PXDecorativeWidgetsCollection::fillByType($this, 'MULTIOPERATIONS');
 	}
 }
 ?>

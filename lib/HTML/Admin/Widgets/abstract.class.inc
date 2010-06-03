@@ -1,12 +1,10 @@
 <?php
-/*
+
 interface PXAdminWidgetIF {
 	function html();
 }
-*/
 
-/*abstract*/
-class PXAdminWidget /*implements PXAdminWidgetIF */{
+abstract class PXAdminWidget implements PXAdminWidgetIF{
 	var $disable;
 	var $parentWidget = null;
 
@@ -20,13 +18,13 @@ class PXAdminWidget /*implements PXAdminWidgetIF */{
 		return $this->html();
 	}
 
-	function setParent(&$widget) {
-		$this->parentWidget =& $widget;
+	function setParent($widget) {
+		$this->parentWidget = $widget;
 	}
 
-	function &getParentWidget() {
+	function getParentWidget() {
 		if(is_null($this->parentWidget)) {
-			$layout =& PXRegistry::getLayout();
+			$layout = PXRegistry::getLayout();
 			$this->setParent($layout);
 		}
 
@@ -34,20 +32,20 @@ class PXAdminWidget /*implements PXAdminWidgetIF */{
 	}
 
 	function addToParent($label) {
-		$parent =& $this->getParentWidget();
+		$parent = $this->getParentWidget();
 		$this->addTo($label, $parent);
 	}
 
 	function setToParent($label) {
-		$parent =& $this->getParentWidget();
+		$parent = $this->getParentWidget();
 		$this->setTo($label, $parent);
 	}
 
-	function addTo($label, &$widget) {
+	function addTo($label, $widget) {
 		$widget->add($label, $this);
 	}
 
-	function setTo($label, &$widget) {
+	function setTo($label, $widget) {
 		$widget->set($label, $this);
 	}
 
@@ -56,15 +54,22 @@ class PXAdminWidget /*implements PXAdminWidgetIF */{
 	}
 }
 
-class PXAdminComplexWidget extends PXAdminWidget {
+abstract class PXAdminComplexWidget extends PXAdminWidget {
 	var $blocks;
-
 	function PXAdminComplexWidget() {
 		$this->PXAdminWidget();
 	}
 
-	function append($block, $label) { // $block instance of PXAdminWidget or PXAdminComplexWidget
+	function append(PXAdminWidget $block, $label) { // $block instance of PXAdminWidget or PXAdminComplexWidget
 		$this->blocks[$label][] = $block;
+	}
+
+	function decorate($type = null){
+		if($type){
+			PXDecorativeWidgetsCollection::fillByType($this, $type);
+		} else {
+			PXDecorativeWidgetsCollection::fill($this);
+		}
 	}
 }
 ?>

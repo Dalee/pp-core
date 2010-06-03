@@ -11,8 +11,8 @@ class ModuleChecker {
 				continue;
 			}
 
-			$equalType       = $a['objecttype'] == $format->name;
-			$isNullType      = is_null($a['objecttype']);
+			$equalType      = $a['objecttype'] == $format->getName();
+			$isNullType     = is_null($a['objecttype']);
 			$notDenyAccess  = !($a['access'] === 'deny');
 
 			if ($equalType || $isNullType) {

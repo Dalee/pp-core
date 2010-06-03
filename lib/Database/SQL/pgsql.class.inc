@@ -259,10 +259,12 @@ class NLPGSQLDatabase extends NLAbstractSQLDatabase {
 
 		$query = "SELECT (0 ";
 		foreach($tables as $t) {
-			$query .= "+ (SELECT count(*) FROM {$t} WHERE ";
+			$tableName = $t['tableName'];
+			$query .= "+ (SELECT count(*) FROM {$tableName} WHERE ";
 
 			foreach($colValues as $c=>$v) {
 				$query .= "{$c} = '{$v}' AND ";
+				$query .= $t['exWhere'];
 			}
 
 			if(sizeof($exception)) {
@@ -270,6 +272,7 @@ class NLPGSQLDatabase extends NLAbstractSQLDatabase {
 					$query .= "{$c} != '{$v}' AND ";
 				}
 			}
+			
 			$query = substr($query, 0, -4);
 			$query .= ")";
 		}
@@ -303,5 +306,8 @@ class NLPGSQLDatabase extends NLAbstractSQLDatabase {
 		return $this->_searchMethod("ILIKE", $condition, $percs);
 	}
 
+	function inArray($arrayField, $value){
+		return sprintf("%s @> ARRAY[%s]", $this->EscapeString($arrayField), $this->EscapeString($value));
+	}
 }
 ?>

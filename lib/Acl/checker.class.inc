@@ -1,8 +1,8 @@
 <?php
 class CheckerObject {
-	public static function get($format){
+	public static function get(&$format){
 		if($format === NULL){
-			$format =  new PXTypeDescription;
+			$format = new PXTypeDescription;
 		}
 
 		if(is_a($format, 'PXTypeDescription')) {

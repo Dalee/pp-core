@@ -41,7 +41,7 @@ class PXModuleAdvert extends PXModule {
 
 		$dtCampaign->makeTreeWithSid = true;
 
-		$this->layout->append('INNER.0.0', '<h2>'.$dtCampaign->title.' ('.sizeof($tree->leafs).')</h2>');
+		$this->layout->append('INNER.0.0', '<h2>'.$dtCampaign->title.' ('.(sizeof($tree->leafs) - 1).')</h2>');
 		$this->layout->appendTree('INNER.0.0', $dtCampaign, $tree, $sid, $this->request->getLeafStatus());
 
 		if ($this->user->can('write', $dtCampaign, array())) {

@@ -29,11 +29,11 @@ class PXDatabase extends NLSQLDatabaseAdapter {
 	/** @var array */
 	var $types;
 
+	/** @var triggers */
+	var $triggers;
+
 	/** @var PXUser */
 	var $user;
-
-	/** @var mixed */
-	var $triggers;
 
 	/**
 	 * Конструктор класса
@@ -47,7 +47,7 @@ class PXDatabase extends NLSQLDatabaseAdapter {
 
 		$this->app      = $app;
 		$this->types    = $app->types;
-		$this->triggers = NULL;
+		$this->triggers = $this->app->triggers->{$dbDescriptionName};
 	}
 
 	function setUser($user) {
@@ -78,35 +78,6 @@ class PXDatabase extends NLSQLDatabaseAdapter {
 	}
 
 	/**
-	 * Загружает триггеры для модулей.
-	 *
-	 * @todo docme please !
-	 */
-	function LoadTriggers() {
-		if (!is_null($this->triggers)) {
-			return;
-		}
-
-		$this->triggers = array();
-
-		foreach ($this->app->modules as $name => $module) {
-			if (!$module->trigger) {
-				continue;
-			}
-
-			if($file = $module->getPathToClass('trigger')){
-				include_once $file;
-
-			} else {
-				FatalError('Отсутствует привязанный триггер '.substr(strtolower($module->class), 8).'.trigger.inc для модуля '.$name);
-			}
-
-			$triggername = 'PXTrigger'.substr($module->class, 8);
-			$this->triggers[] = new $triggername($module->settings);
-		}
-	}
-
-	/**
 	 * Загружает каталоги (directories) помеченные в datatypes.xml как schema="sql" && load="automatic"
 	 * @see LoadSQLDirectory
 	 *
@@ -121,9 +92,9 @@ class PXDatabase extends NLSQLDatabaseAdapter {
 	}
 
 	/**
-	 * Загружает справочники (directories) помеченные в datatypes.xml как schema="sql"
+	 * Загружает справочники (directories)
 	 *
-	 * @uses LoadSQLDirectory
+	 * @uses LoadDirectory
 	 *
 	 * @todo docme подробнее
 	 *
@@ -131,19 +102,32 @@ class PXDatabase extends NLSQLDatabaseAdapter {
 	 */
 	function LoadDirectoriesByType(&$format, $object=NULL) {
 		foreach ($format->fields as $k=>$v) {
-			if (is_object($v->values) && strtolower(get_class($v->values)) == 'pxdirectorydescription') {
-				if (!$format->fields[$k]->values->loaded) {
-					switch($v->values->schema) {
-						case 'sql':
-							$this->LoadSQLDirectory($format->fields[$k]->values, true, $object, $format);
-							break;
-
-						case 'xml':
-							$this->app->LoadXMLDirectory($format->fields[$k]->values, true);
-							break;
-					}
-				}
+			if (
+				is_object($v->values) && 
+				strtolower(get_class($v->values)) == 'pxdirectorydescription' && 
+				!$v->values->loaded
+			) {
+				$this->LoadDirectory($format->fields[$k]->values, $object, true, $format);
 			}
+		}
+	}
+	
+	/**
+	 * Загружает справочник (directories) в зависимости от типа
+	 *
+	 * @uses LoadSQLDirectory, PXApplication::LoadXMLDirectory
+	 *
+	 * @param PXDirectoryDescription $directory
+	 */
+	function LoadDirectory(PXDirectoryDescription $directory, $object, $addDefault = true, $format = NULL){
+		switch($directory->schema) {
+			case 'sql':
+				$this->LoadSQLDirectory($directory, $addDefault, $object, $format);
+				break;
+
+			case 'xml':
+				$this->app->LoadXMLDirectory($directory, $addDefault);
+				break;
 		}
 	}
 
@@ -201,7 +185,7 @@ class PXDatabase extends NLSQLDatabaseAdapter {
 	}
 
 	/**
-	 * Загружает справочник (directory) по ссылке
+	 * Загружает по ссылке справочник (directory)  помеченный в datatypes.xml как schema="sql"
 	 * Использует {@link PXDatabase::_GetData()} для загрузки каталогов из базы данных
 	 *
 	 * @param PXDirectoryDescription $directory
@@ -242,7 +226,7 @@ class PXDatabase extends NLSQLDatabaseAdapter {
 	 * @param Array|NULL $limit     NULL or array(LIMIT,OFFSET)
 	 * @return Array|NULL           results of {@link NLSQLDatabaseAdapter::Query()}
 	 */
-	function _GetData($format, $mode, $where=NULL, $limit=NULL, $order=NULL) {
+	protected function _GetData($format, $mode, $where=NULL, $limit=NULL, $order=NULL) {
 
 		PXProfiler::begin('GET DATA: ' . $format->id . '[' . $where . ']-[' . 
 		                  (is_array($limit) ? implode('.', $limit) : '') . ']-[' . $order . ']');
@@ -254,25 +238,23 @@ class PXDatabase extends NLSQLDatabaseAdapter {
 
 		} else {
 			$selector = $this->_createSelector($format);
-
-			if ($format->id != DT_USER) {
-				$selector .= ', ' . $format->id . '.sys_owner';
-			}
-
-			$order_by = ' ORDER BY ' . $format->id . '.' . (is_null($order) ? $format->order : $order);
+			$order_by = $format->id . '.' . (is_null($order) ? $format->order : $order);
 		}
 
+		foreach ($this->triggers as $t){
+			$t->getTrigger()->OnBeforeGetDataBuildQuery($this, $format, $mode, $selector, $where, $order_by, $limit);
+		}
+		
 		$query = 'SELECT ' . $selector . ' FROM ' . $format->id;
 
 		if (!is_null($where))    $query .= ' WHERE ' . $where;
-		if (!is_null($order_by)) $query .= $order_by;
+		if (!is_null($order_by)) $query .= ' ORDER BY ' . $order_by;
 
-		$usergroups = '';
-		if(isset($this->user->groups)) {
-			$usergroups = ';groups:' . implode('.', $this->user->groups);
+		foreach ($this->triggers as $t){
+			$t->getTrigger()->OnGetDataBuildQuery($this, $format, $mode, $query, $selector, $where, $order_by, $limit);
 		}
-
-		$queryIden = $this->_getCacheIden($query, $mode, $limit, $usergroups, $this->user->aclType());
+		
+		$queryIden = $this->_getCacheIden($query, $mode, $limit);
 		$data = $this->cache->load($queryIden);
 
 		if ($data === null) {
@@ -285,21 +267,18 @@ class PXDatabase extends NLSQLDatabaseAdapter {
 		return $data;
 	}
 
-	function _getCacheIden($query, $mode, $limit, $userGroups, $aclType) {
-		$queryIden = $query . ';mode:' . $mode;
-
-		if (is_array($limit)) {
-			$queryIden .= ';limit:'.implode('.', $limit);
-		}
-
-		$queryIden .= ';groups:'.$userGroups;
-		$queryIden .= ';acl:'.$aclType;
-
-		return $queryIden;
+	protected function _getCacheIden($query, $mode, $limit) {
+		return sprintf('%s;mode:%s;limit:%s;groups:%s;acl:',
+			$query,
+			$mode,
+			is_array($limit) ? join('.', $limit) : '',
+			isset($this->user->groups) ? join('.', $this->user->groups) : '',
+			$this->user->aclType()
+		);
 	}
 
 
-	function _createSelector(&$format) {
+	protected function _createSelector($format) {
 		$selector = NULL;
 		foreach ($format->fields as $k=>$v) {
 			$p = array();
@@ -311,14 +290,15 @@ class PXDatabase extends NLSQLDatabaseAdapter {
 		}
 
 		if (count($format->childs)) {
-			$selector .= $format->id.'.allowed, ';
+			$selector .= sprintf('%s.%s, ', $format->id, OBJ_FIELD_CHILDREN);
 		}
 
 		$selector .= $format->id.'.sys_created, '.$format->id.'.sys_modified, '.$format->id.'.sys_order';
 
-		if ($format->id != 'suser') {
+		if ($format->id != DT_USER) {
 			$selector .= ', '.$format->id.'.sys_owner';
 		}
+
 		return $selector;
 	}
 
@@ -635,7 +615,6 @@ class PXDatabase extends NLSQLDatabaseAdapter {
 	 * Метод использует {@link PXDatabase::InsertObject} для добавления объектов.
 	 *
 	 * @see InsertObject
-	 * @see LoadTriggers
 	 * @see ModifyingQuery
 	 *
 	 * @param PXTypeDescription $format
@@ -677,6 +656,7 @@ class PXDatabase extends NLSQLDatabaseAdapter {
 		$dbFields[] = 'sys_modified';
 		$dbValues[] = '##now##';
 		$dbValues[] = '##now##';
+
 		if ($format->id != DT_USER) {
 			$dbFields[] = 'sys_owner';
 			$dbValues[] = $this->user->id;
@@ -692,14 +672,11 @@ class PXDatabase extends NLSQLDatabaseAdapter {
 			$dbValues[] = serialize($_children);
 		}
 
-		$this->LoadTriggers();
 		$permitAdd = true;
 		$newId = 0;
-		if(count($this->triggers)){
-			foreach ($this->triggers as $t){
-				$permitAdd = $t->OnBeforeAddObject($this, $newId, $format, $object, $dbFields, $dbValues);
-				if(!$permitAdd) break;
-			}
+		foreach ($this->triggers as $t){
+			$permitAdd = $t->getTrigger()->OnBeforeAddObject($this, $newId, $format, $object, $dbFields, $dbValues);
+			if(!$permitAdd) break;
 		}
 
 		if($permitAdd){
@@ -719,9 +696,8 @@ class PXDatabase extends NLSQLDatabaseAdapter {
 			
 			$object['sys_order'] = $newId;
 
-			if (count($this->triggers))
-				foreach ($this->triggers as $t)
-					$t->OnAddObject($this, $newId, $format, $object, $dbFields, $dbValues);
+			foreach ($this->triggers as $t)
+				$t->getTrigger()->OnAddObject($this, $newId, $format, $object, $dbFields, $dbValues);
 
 			$audit->info('Объект добавлен', $format->id .'/'. $newId);
 		}
@@ -856,7 +832,7 @@ class PXDatabase extends NLSQLDatabaseAdapter {
 		$donorObject = $this->getObjectById($format, $donorId);
 
 		$object = $donorObject;
-		unset($object['id']);
+		$object['id'] = null;
 		$object['status'] = false;
 
 		$object['id'] = $this->addContentObject($format, $object);
@@ -935,13 +911,10 @@ class PXDatabase extends NLSQLDatabaseAdapter {
 			}
 		}
 
-		$this->LoadTriggers();
 		$permitModify = true;
-		if (count($this->triggers)){
-			foreach ($this->triggers as $t){
-				$permitModify = $t->OnBeforeModifyObject($this, $object['id'], $format, $object, $dbFields, $dbValues, $objectInDB);
-				if(!$permitModify) break;
-			}
+		foreach ($this->triggers as $t){
+			$permitModify = $t->getTrigger()->OnBeforeModifyObject($this, $object['id'], $format, $object, $dbFields, $dbValues, $objectInDB);
+			if(!$permitModify) break;
 		}
 
 		if($permitModify){
@@ -971,10 +944,8 @@ class PXDatabase extends NLSQLDatabaseAdapter {
 			
 			$object['sys_order'] = isset($objectInDB['sys_order']) ? $objectInDB['sys_order'] : null;
 			
-			$this->LoadTriggers();
-			if (count($this->triggers))
-				foreach ($this->triggers as $t)
-					$t->OnModifyObject($this, $object['id'], $format, $object, $dbFields, $dbValues, $objectInDB);
+			foreach ($this->triggers as $t)
+				$t->getTrigger()->OnModifyObject($this, $object['id'], $format, $object, $dbFields, $dbValues, $objectInDB);
 
 			$audit->info('Объект изменен', $format->id .'/'. $object['id']);
 		}
@@ -982,7 +953,7 @@ class PXDatabase extends NLSQLDatabaseAdapter {
 	}
 
 	/**
-	 * Изменяет системные параметры объекта хранящегося в БД ('allowed', 'sys_accessmod', 'sys_accessput')
+	 * Изменяет системные параметры объекта хранящегося в БД ('sys_allowed', 'sys_accessmod', 'sys_accessput')
 	 * Использует {@link PXDatabase::UpdateObjectByID} для доступа к объектам.
 	 *
 	 * @see OBJ_FIELD_CHILDREN
@@ -1021,7 +992,6 @@ class PXDatabase extends NLSQLDatabaseAdapter {
 	 * Перед и после удаления вызываются триггеры. Если хотя бы один OnBeforeDeleteObject
 	 * триггер вернёт false, удаление не произойдёт.
 	 *
-	 * @see LoadTriggers
 	 *
 	 * @param PXTypeDescription $format
 	 * @param Array             $objectId   object id
@@ -1042,13 +1012,11 @@ class PXDatabase extends NLSQLDatabaseAdapter {
 		} else {
 			$objectsToDelete = array($objectId);
 		}
-		$this->LoadTriggers();
+
 		$permitDelete = true;
-		if (count($this->triggers)) {
-			foreach ($this->triggers as $t) {
-				$permitDelete = $t->OnBeforeDeleteObject($this, $objectId, $format, $objectInDB);
-				if(!$permitDelete) break;
-			}
+		foreach ($this->triggers as $t) {
+			$permitDelete = $t->getTrigger()->OnBeforeDeleteObject($this, $objectId, $format, $objectInDB);
+			if(!$permitDelete) break;
 		}
 
 		if($permitDelete) {
@@ -1057,9 +1025,8 @@ class PXDatabase extends NLSQLDatabaseAdapter {
 
 			$d = new NLDir(BASEPATH.'/site/htdocs/ai/'.$format->id.'/'.$objectId.'/');
 			$d->Delete();
-			if (count($this->triggers))
-				foreach ($this->triggers as $t)
-					$t->OnDeleteObject($this, $objectId, $format, $objectInDB);
+			foreach ($this->triggers as $t)
+				$t->getTrigger()->OnDeleteObject($this, $objectId, $format, $objectInDB);
 
 			$audit->info('Объект удален', $format->id .'/'. $objectId);
 		}
@@ -1154,13 +1121,10 @@ class PXDatabase extends NLSQLDatabaseAdapter {
 
 		$nearObject = $this->GetObjectsByWhereLimited($format, NULL, $where, 1, 0, DB_SELECT_TABLE, 'sys_order '.($down ? '' : 'DESC'));
 
-		$this->LoadTriggers();
 		$permitMove = true;
-		if (count($this->triggers)){
-			foreach ($this->triggers as $t){
-				$permitMove = $t->OnBeforeMoveObject($this, $objectId, $format, $objectInDB);
-				if(!$permitMove) break;
-			}
+		foreach ($this->triggers as $t){
+			$permitMove = $t->getTrigger()->OnBeforeMoveObject($this, $objectId, $format, $objectInDB);
+			if(!$permitMove) break;
 		}
 
 		if($permitMove) {
@@ -1172,9 +1136,8 @@ class PXDatabase extends NLSQLDatabaseAdapter {
 				$this->ModifyingQuery('UPDATE '.$format->id.' SET sys_order='.$nearObject['sys_order'].' WHERE id='.$objectInDB['id']);
 				$this->transactionCommit();
 
-				if (count($this->triggers))
-					foreach ($this->triggers as $t)
-						$t->OnMoveObject($this, $objectId, $format, $objectInDB);
+				foreach ($this->triggers as $t)
+					$t->getTrigger()->OnMoveObject($this, $objectId, $format, $objectInDB);
 
 				$audit->info('Объект перемещен в списке', $format->id .'/'. $objectId);
 			}
@@ -1199,7 +1162,6 @@ class PXDatabase extends NLSQLDatabaseAdapter {
 		);
 
 		list($v, $dbFields, $dbValues) = $field->storageType->normalizeObjectAttribute($field, $object, $p);
-
 		return $v;
 	}
 
@@ -1212,7 +1174,7 @@ class PXDatabase extends NLSQLDatabaseAdapter {
 	 * @param Array             $pathnames
 	 */
 	function _NormalizeObjectPathName($format, $object, &$pathnames) {
-		$url = strtolower(_Translit($object['pathname']));
+		$url = strtolower(_TranslitModern($object['pathname']));
 
 		// part 1: make url if doesn't set
 		if (!$url) {
@@ -1226,7 +1188,7 @@ class PXDatabase extends NLSQLDatabaseAdapter {
 			}
 		}
 
-		if (!$url) $url = strtolower(_Translit(substr(preg_replace('/\&.+?\;/', '', $object['title']), 0, 32)));
+		if (!$url) $url = strtolower(_TranslitModern(substr(preg_replace('/\&.+?\;/', '', $object['title']), 0, 32)));
 		if (!$url) $url = sprintf('%08d', rand(0, 100000000));
 
 		// part 2: triming bad chars
@@ -1258,12 +1220,19 @@ class PXDatabase extends NLSQLDatabaseAdapter {
 					$exception  = isset($object['id']) ? array('id'=>$object['id']) : array();
 					$condCols   = array('pathname'=>$url, 'parent'=>$object['parent']);
 					$condTables = array();
+					
 					foreach ($this->types[$format->parent]->childs as $child) {
 						if (isset($this->types[$child]->fields['pathname'])) {
-							$condTables[] = $child;
+							$condTable = array('tableName' => $child, 'exWhere' => '');
+							
+							foreach ($this->triggers as $t){
+								$t->getTrigger()->OnBeforeNormalizePathBuildQuery($format, $this->types[$child], $condTable);
+							}
+
+							$condTables[] = $condTable;
 						}
 					}
-
+					
 					$reiteration = (int)$this->IsUniqueColsCombination($condTables, $condCols, $exception);
 				}
 
@@ -1487,13 +1456,11 @@ SQL;
 				FatalError($errString);
 			}
 		}
-		$this->LoadTriggers();
+
 		$permitModifyLinks = true;
-		if (count($this->triggers)){
-			foreach ($this->triggers as $t){
-				$permitModifyLinks = $t->OnBeforeModifyLinks($this, $id, $format, $links, $linkedFormat);
-				if(!$permitModifyLinks) break;
-			}
+		foreach ($this->triggers as $t){
+			$permitModifyLinks = $t->getTrigger()->OnBeforeModifyLinks($this, $id, $format, $links, $linkedFormat);
+			if(!$permitModifyLinks) break;
 		}
 
 		if($permitModifyLinks){
@@ -1567,9 +1534,8 @@ SQL;
 			}
 			$this->transactionCommit();
 
-			if (count($this->triggers))
-				foreach ($this->triggers as $t)
-					$t->OnModifyLinks($this, $id, $format, $links, $linkedFormat);
+			foreach ($this->triggers as $t)
+				$t->getTrigger()->OnModifyLinks($this, $id, $format, $links, $linkedFormat);
 		}
 	}
 
@@ -1596,7 +1562,7 @@ SQL;
 					$table[$k][OBJ_FIELD_CHILDREN] = array();
 				}
 			}
-			if (isset($format->outputHandler)) {
+			if (isset($format->outputHandler)) { //TODO: make trigger here instead of obsoleted handlers !
 				$file = strtolower($format->outputHandler).'.outputhandler.inc';
 				if (file_exists(BASEPATH.'/local/lib/handlers/'.$file)) {
 					include_once BASEPATH.'/local/lib/handlers/'.$file;
@@ -1616,7 +1582,7 @@ SQL;
 	 * @access protected
 	 * @todo docme (check params documentation)
 	 */
-	function _PrepareResult($resTable, $format, $mode) {
+	protected function _PrepareResult($resTable, $format, $mode) {
 		switch ($mode) {
 			case DB_SELECT_TABLE:
 				PXProfiler::begin('PREPARE: '.$format->id.' ['.sizeof($resTable).'x'.sizeof($format->fields).']');
@@ -1687,15 +1653,6 @@ SQL;
 
 			$table = new NLTree($plainTable, $table->_idField, $table->_parentField, $table->_titleField, $table->saveOrphans);
 		}
-	}
-
-	//TODO: move to PXAbstractModule
-	function getAclObjectActions() {
-		return array('read' => 'Просмотр/Чтение',
-					 'write'  => 'Изменение/Запись',
-					 'linkto' => 'Создание связи',
-					 'admin'  => 'Просмотр в админке'
-		);
 	}
 }
 ?>

@@ -67,4 +67,25 @@ function NestedArrayWalk(&$multiArray, $mapper, $optArgs = array(), $nestingLeve
 
 	return true;
 }
+
+function array_recursive_inheritance() {
+	$arrays = func_get_args();
+	$base = array_shift($arrays);
+	if(!is_array($base)) $base = empty($base) ? array() : array($base);
+	foreach($arrays as $append) {
+		foreach((array)$append as $key => $value) {
+			if(!array_key_exists($key, $base)) {
+				$base[$key] = $append[$key];
+				continue;
+			}
+			if(is_array($value) or is_array($base[$key])) {
+				$base[$key] = array_recursive_inheritance($base[$key], $append[$key]);
+			} else {
+				$base[$key] = $value;
+			}
+		}
+	}
+	return $base;
+}
+
 ?>

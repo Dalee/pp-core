@@ -1,12 +1,12 @@
 <?php
-class PXEngineAdminIndex extends PXEngine {
+class PXEngineAdminIndex extends PXEngineAdmin {
 	var $menu;
 
 	var $layout      = array('factory' => 'PXAdminHTMLLayout', 'helper' => true);
 	var $outerLayout = 'index';
 
 	function initLayout($klass){
-		$this->layout = & new $klass($this->outerLayout, $this->app->types);
+		$this->layout = new $klass($this->outerLayout, $this->app->types);
 	}
 
 	function initModules() {

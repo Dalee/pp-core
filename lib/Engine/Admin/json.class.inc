@@ -10,5 +10,9 @@ class PXEngineAdminJSON extends PXEngineJSON {
 	function getJson($module) {
 		return $module->adminJson();
 	}
+
+	public function engineClass(){
+		return PX_ENGINE_ADMIN;
+	}
 }
 ?>

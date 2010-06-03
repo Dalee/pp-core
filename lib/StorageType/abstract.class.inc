@@ -6,6 +6,7 @@
 class PXStorageType {
 	var $field;
 	var $name;
+	var $triggers;
 
 	function PXStorageType(&$field, $name) {
 		$this->field = &$field;

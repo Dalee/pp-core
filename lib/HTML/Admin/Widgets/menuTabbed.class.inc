@@ -1,75 +1,36 @@
 <?php
-class PXWidgetTabbedMenu extends PXAdminWidget {
+require_once('tabs.class.inc');
+class PXWidgetMenuTabbed extends PXAdminComplexWidget {
 	var $items;
 	var $selected;
+	const BEFORE_TABS = 0;
+	const TABS        = 1;
+	const AFTER_TABS  = 2;
 
-	function PXWidgetTabbedMenu($items, $buildHref=true) {
-		$this->items     = $items;
-		$this->varName   = 'area';
-		$this->buildHref = $buildHref;
-	}
 
-	function setSelected($selected) {
-		$this->selected = $selected;
-	}
-
-	function setVarName($varName) {
-		$this->varName = $varName;
+	function PXWidgetMenuTabbed($items, $current, $getParam='area', $buildHref=true) {
+		$this->items      = $items;
+		$this->varName    = $getParam;
+		$this->buildHref  = $buildHref;
+		$this->selected   = $current;
+		$this->blocks     = array();
 	}
 
 	function html() {
-		$current = $this->selected;
+		$this->decorate();
 
-		$html = '<TABLE border="0" cellpadding="0" cellspacing="0"><TR>';
+		$tabs = new PXWidgetTabs($this->items, $this->buildHref);
+		$tabs->setSelected($this->selected);
+		$tabs->setVarName($this->varName);
+		$this->append($tabs, self::TABS);
 
-		$i = 0;
-		foreach ($this->items as $k=>$v) {
-			if ($i == 0) {
-				if ($current == $k) {
-					$html .= '<TD><IMG src="i/tab/1-on.gif" width="4" height="27" alt=""></TD>';
-					$currentI = 1;
-				} else {
-					$html .= '<TD><IMG src="i/tab/1-off.gif" width="4" height="27" alt=""></TD>';
-				}
+		$html = array();
 
-			} else {
-				if ($current == $k) {
-					$html .= '<TD><IMG src="i/tab/n.gif" width="4" height="27" alt=""></TD>';
-					$currentI = $i+1;
-
-				} else {
-					if (isset($currentI) && $currentI == $i) {
-						$html .= '<TD><IMG src="i/tab/p.gif" width="4" height="27" alt=""></TD>';
-					} else {
-						$html .= '<TD><IMG src="i/tab/off.gif" width="4" height="27" alt=""></TD>';
-					}
-				}
-			}
-
-			if ($current == $k) {
-				$bg = 'on';
-			} else {
-				$bg = 'off';
-			}
-
-			$href = $this->buildHref ? NLAbstractLayout::buildHref($this->varName, $k) : '?'.$this->varName.'='.$k; 
-
-			$html   .= '<TD nowrap align="center" class="tabs" background="i/tab/bg-'.$bg.'.gif"><A href="'.$href.'" class="tabs">';
-			$html   .= $v;
-			$html   .= '</A>';
-			$html   .= '</TD>';
-			$i++;
+		foreach($this->blocks as $b) {
+			//	$html[] = sprintf('<div style="float: left; margin-top: -5px; text-align: left;">%s</div>', join($b));
+			$html[] = join($b);
 		}
-
-		if (isset($currentI) && $currentI == sizeof($this->items)) {
-			$html .= '<TD><IMG src="i/tab/l-on.gif" width="4" height="27" alt=""></TD>';
-		} else {
-			$html .= '<TD><IMG src="i/tab/l-off.gif" width="4" height="27" alt=""></TD>';
-		}
-
-		$html .= '</TR></TABLE>';
-
-		return $html;
+		return join($html);
 	}
 }
 ?>

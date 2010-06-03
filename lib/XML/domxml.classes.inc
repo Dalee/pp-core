@@ -68,7 +68,7 @@ class PXmlDomxmlNode extends PXmlAbstractNode implements IPXmlNode {
 
 			if($attrs){
 				foreach($attrs as $k=>$v){
-					$this->_attributes[trim($v->name)] = $v;
+					$this->_attributes[trim($v->name)] = PXml::attributePrototype($v->name, $v->value);
 				}
 			}
 		}

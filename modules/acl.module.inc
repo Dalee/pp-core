@@ -9,21 +9,25 @@ class PXModuleAcl extends PXModule {
 		parent::__construct($area, $settings);
 
 		$this->what     = $this->getAvailableActions();
-		$this->access   = array();
+		$this->access   = $this->getAvailableAccess();
 		$this->sqlTable = 'acl_objects';
-
-		if(!isset($settings['access'])) {
-			FatalError('Не описаны правила access');
-		}
-
-		foreach($settings['access'] as $w) {
-			$tmp = preg_split('/\s*=\s*/', $w);
-			$this->access[$tmp[0]] = $tmp[1];
-		}
 	}
 	
 	function getAvailableActions() {
-    	return PXDatabase::getAclObjectActions();
+		return $this->getAclDefinitionsFor('actions');
+	}
+	
+	function getAvailableAccess(){
+		return $this->getAclDefinitionsFor('access');
+	}
+	
+	function getAclDefinitionsFor($what){
+		if(empty($this->app->langTree['module_acl_rules'][$what])) {
+			FatalError("Не описаны правила module_acl_rules[{$what}] в lang.yaml");
+		}
+		
+		$_ = $this->app->langTree['module_acl_rules'][$what];
+		return array_combine(array_keys($_), getColFromTable($_, 'rus')); //TODO: make lang choose optional
 	}
 	
 	function getWhatDict() { 
@@ -89,15 +93,13 @@ class PXModuleAcl extends PXModule {
 			}
 		}
 
-		$form = new PXAdminObjectForm(null, $object); // =(
-
-		$layout->Assign('OUTER.LEFTCONTROLS',  $form->LeftControls());
-		$layout->Assign('OUTER.RIGHTCONTROLS', $form->RightControls());
+		$layout->Assign('OUTER.LEFTCONTROLS',  PXAdminForm::LeftControls());
+		$layout->Assign('OUTER.RIGHTCONTROLS', PXAdminForm::RightControls());
 
 		$_ = '';
-		$_ .= $form->buildHidden('id', $rId);
-		$_ .= $form->buildHidden('area', $this->area);
-		$_ .= $form->buildHidden('action', ($rId ? 'edit' : 'add'));
+		$_ .= NLAbstractHTMLForm::buildHidden('id', $rId);
+		$_ .= NLAbstractHTMLForm::buildHidden('area', $this->area);
+		$_ .= NLAbstractHTMLForm::buildHidden('action', ($rId ? 'edit' : 'add'));
 
 		$_ .= '<table class="mainform">';
 		foreach($fields as $col=>$title) {

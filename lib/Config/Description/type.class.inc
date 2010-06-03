@@ -88,8 +88,7 @@ class PXTypeDescription {
 	}
 
 	// static parser factory
-	function fillAppTypes(&$dom, &$app) {
-		$domDatatypes = $dom->xpath("/model/datatypes/datatype");
+	function fillAppTypes($domDatatypes, &$app) {
 
 		if (!is_array($domDatatypes) || count($domDatatypes) == 0) {
 			FatalError("Не определена объектная модель проекта");
@@ -100,9 +99,9 @@ class PXTypeDescription {
 
 			$type->parseTypeAttributes($domDatatype->attributes());
 
-			$groupNodes = $dom->xpath("//datatype[@name='{$type->id}']//group");
+			$groupNodes = $domDatatype->xpath("group");
 			foreach ($groupNodes as $groupNode) {
-				if ($groupNode->nodeType() != 1) {
+				if (!$groupNode->isXmlNode()) {
 					continue;
 				}
 				$name = $view = null;
@@ -119,19 +118,10 @@ class PXTypeDescription {
 				$type->groups[$name] = array('name' => $name, 'view' => $view);
 			}
 
-			/*
-
-			FIXME:
-				right xpath query $domDatatype->xpath('/descendant-or-self::attribute')
-				$dom->xpath("//datatype[@name='{$type->id}']//attribute") used for some projects on php 4.3.11,
-				that do not understand right xpath
-
-			*/
-
-			$fieldsNodes = $dom->xpath("//datatype[@name='{$type->id}']//attribute");
+			$fieldsNodes = $domDatatype->xpath('descendant-or-self::attribute');
 
 			foreach ($fieldsNodes as $fieldNode) {
-				if ($fieldNode->nodeType() != 1) {
+				if (!$fieldNode->isXmlNode()) {
 					continue;
 				}
 
@@ -150,11 +140,11 @@ class PXTypeDescription {
 				}
 
 				if(is_null($field->defaultValue)) {
-					$field->getDefaultValueNode($fieldNode, $dom);
+					$field->getDefaultValueNode($fieldNode);
 				}
 
-				$field->getGroupName($fieldNode, $dom);
-				$field->getComments($fieldNode, $dom);
+				$field->getGroupName($fieldNode);
+				$field->getComments($fieldNode);
 
 				$type->addField($field);
 				$type->assignToGroup($field);

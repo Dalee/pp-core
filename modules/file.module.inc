@@ -224,7 +224,7 @@ HTML;
 
 		if(is_file($filePath) && is_writable($filePath) && !is_binary($filePath)) {
 			$object = array();
-			$form   = new PXAdminObjectForm(NULL, $object);
+			$form   = new PXAdminForm($object, null);
 
 			$this->layout->assign('OUTER.TITLE', 'Редактирование файла &laquo;'.$this->mFile.'&raquo;');
 			$this->layout->assign('OUTER.LEFTCONTROLS',  $form->leftControls());

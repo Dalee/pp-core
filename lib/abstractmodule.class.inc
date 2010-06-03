@@ -12,6 +12,7 @@ interface PXModuleIF {
 abstract class PXModule implements PXModuleIF {
 	var $area;
 	var $settings;
+	protected $__selfDescription;
 
 	var $app;
 	var $db;
@@ -20,9 +21,10 @@ abstract class PXModule implements PXModuleIF {
 	var $layout;
 	var $response;
 
-	function __construct($area, $settings) {
-		$this->area     = $area;
-		$this->settings = $settings;
+	function __construct($area, $settings, $selfDescription = null) {
+		$this->area              = $area;
+		$this->settings          = $settings;
+		$this->__selfDescription = $selfDescription; //for module acl checks purposes
 
 		PXRegistry::assignToObject($this);
 	}

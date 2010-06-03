@@ -10,14 +10,13 @@ class PXModuleDescription {
 	var $description = NULL;
 	var $class       = NULL;
 	var $settings    = array();
-	var $trigger     = NULL;
 	var $package     = NULL;
 
 	const EMPTY_DESCRIPTION = '---';
 
 	public function getModule() {
 		$this->load();
-		return new $this->class($this->name, $this->settings);
+		return new $this->class($this->name, $this->settings, $this);
 	}
 
 	public function getInstance() {

@@ -1,5 +1,5 @@
 <?php
-class PXTriggerForum extends PXAbstractTrigger {
+class PXTriggerDatabaseForum extends PXAbstractDatabaseTrigger {
 	var $dtForums;
 	var $dtTopics;
 	var $dtMessages;

@@ -1,6 +1,6 @@
 <?php
-class PXRegistry {
-	const unknownVarMessage = "Registry - not heap. Store your ? some where else!";
+final class PXRegistry {
+	const unknownVarMessage = "Registry - not heap. Store your %s somewhere else!";
 
 	private static $instance = null;
 
@@ -12,9 +12,10 @@ class PXRegistry {
 	private $layout;
 
 	private function __construct(){
+		$this->userRegistry = new PXRegistryUSER();
 	}
 
-	public static function instance() {
+	private static function instance() {
 		if(self::$instance == null)
 			self::$instance = new PXRegistry();
 
@@ -55,7 +56,7 @@ class PXRegistry {
 					break;
 
 				default:
-					throw new Exception(str_replace('?', $varName, self::unknownVarMessage));
+					throw new Exception(sprintf(self::unknownVarMessage, $varName));
 					break;
 			}
 		}
@@ -108,6 +109,10 @@ class PXRegistry {
 		return $types;
 	}
 
+	public static function getHKCU() {
+		return self::instance()->userRegistry;
+	}
+
 	private static function get_registry_fields() {
 		return array_keys(get_class_vars(__CLASS__));
 	}
@@ -130,7 +135,7 @@ class PXRegistry {
 		$registry = self::instance();
 
 		if(!self::canSaveIt($varName)) {
-			throw new Exception(str_replace('?', $varName, self::unknownVarMessage));
+			throw new Exception(sprintf(self::unknownVarMessage, $varName));
 		}
 
 		$registry->$varName = $variable;
@@ -156,4 +161,38 @@ class PXRegistry {
 		self::_set('layout', $layout);
 	}
 }
+
+final class PXRegistryUSER {
+	private 
+		$__hash__;
+	
+	public 
+		function get($key){
+			if(isset($this->__hash__[$key])){
+				return $this->__hash__[$key];
+			}
+		}
+
+		function &getByRef($key){
+			if(isset($this->__hash__[$key])){
+				return $this->__hash__[$key];
+			}
+		}
+
+		function set($key, $value, $overwrite = true){
+			if(!isset($this->__hash__[$key]) || $overwrite){
+				$this->__hash__[$key] = $value;
+			}
+		}
+		
+		// Overloading
+		function __get($name){
+			return $this->get($name);
+		}
+
+		function __isset($name) {
+			return isset($this->__hash__[$name]);
+		}
+}
+
 ?>

@@ -45,8 +45,7 @@ class PXRefDescription {
 		return (($this->from == $formatName) ? $this->to : $this->from);
 	}
 
-	function fillReferences(&$dom, &$app){
-		$domReferences = $dom->xpath("/model/references/reference");
+	function fillReferences($domReferences, &$app){
 		if (!is_array($domReferences) || count($domReferences) == 0) {
 			return;
 		}

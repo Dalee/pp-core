@@ -1,5 +1,5 @@
 <?php
-class PXEngineAdminAction extends PXEngine {
+class PXEngineAdminAction extends PXEngineAdmin {
 	var $nextLocation;
 
 	function initModules() {

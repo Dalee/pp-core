@@ -10,6 +10,11 @@ require_once 'Description/ref.class.inc';
 require_once 'Description/module.class.inc';
 require_once 'bindingsQueue.class.inc';
 
+require_once 'Description/trigger.class.inc';
+require_once 'triggersList.class.inc';
+
+require_once 'Description/plugin.class.inc';
+
 /**
  * PXApplication - главный класс.
  *
@@ -36,10 +41,22 @@ class PXApplication {
 	var $references;
 
 	/**
+	 * контейнер c триггерами {@link PXTriggersList}
+	 * @var Object
+	 */
+	var $triggers = null;
+
+	/**
 	 * массив модулей {@link PXModuleDescription}
 	 * @var Array
 	 */
 	var $modules;
+
+	/**
+	 * массив плагинов
+	 * @var Array
+	 */
+	var $plugins = null;
 
 	/**
 	 * массив настроек из etc/properties.ini
@@ -47,6 +64,12 @@ class PXApplication {
 	 */
 	var $properties;
 
+	/**
+	 * массив языковых настроек из (site|local|libpp)/etc/lang.yaml (суммарный)
+	 * @var Array
+	 */
+	var $langTree = array();
+	
 	/**
 	 * массив правил авторизации из etc/auth.ini
 	 * @var Array
@@ -101,6 +124,9 @@ class PXApplication {
 		$this->engineClass = $engineClass;
 
 		$this->fillDBDescription(self::parseIniFile($this->findConfigFile('database.ini')));
+		$this->fillTriggers($this->findConfigFile('triggers.xml', false));
+
+		$this->fillPlugins($this->findConfigFile('plugins.xml', false));
 
 		$this->fillModules($this->findConfigFile('modules.xml'));
 		$this->fillDataTypes($this->findConfigFile('datatypes.xml'));
@@ -109,14 +135,13 @@ class PXApplication {
 		$this->properties = self::parseIniFiles($this->findConfigFiles('properties.ini'));
 		$this->authrules  = self::parseIniFiles($this->findConfigFiles('auth.ini'));
 
-		//todo: one file or many lang files?
-		$this->fillLang($this->findConfigFile('lang.yaml'));
+		$this->fillLang($this->findConfigFiles('lang.yaml'));
 
 		$this->saveToCache($engineClass);
 	}
 
 	//TODO:FIXME: REWRITE ME!
-	private function fillLang ($filename) {
+	private function fillLang ($filenames) {
 		if (!function_exists("__ReplaceIncludeWhenParseLangYaml")) {
 			function __ReplaceIncludeWhenParseLangYaml($replacement, $indent, $filename) {
 				$string = '';
@@ -145,20 +170,22 @@ class PXApplication {
 			}
 		}
 
-		$source = ReadFileToString($filename);
+		foreach(array_reverse($filenames) as $filename){
+			$source = ReadFileToString($filename);
 
-		$source = preg_replace('|^((\s*)include\s+(.+?))$|ime', "__ReplaceIncludeWhenParseLangYaml('$1', '$2', '$3');", $source);   // делаем include
-		$source = preg_replace('/\t/',          ' ' ,         $source);   // я люблю табы для читабельности
-		$source = preg_replace('/(\r?\n){2,}/', "\n",         $source);   // и лишние переводы строк
+			$source = preg_replace('|^((\s*)include\s+(.+?))$|ime', "__ReplaceIncludeWhenParseLangYaml('$1', '$2', '$3');", $source);   // делаем include
+			$source = preg_replace('/\t/',          ' ' ,         $source);   // я люблю табы для читабельности
+			$source = preg_replace('/(\r?\n){2,}/', "\n",         $source);   // и лишние переводы строк
 
-		$tmp = tempnam(BASEPATH.'tmp/lang/', 'lang');
-		WriteStringToFile($tmp, $source);
+			$tmp = tempnam(BASEPATH.'tmp/lang/', 'lang');
+			WriteStringToFile($tmp, $source);
 
-		// Spyc'у не нравятся мои конфиги, поэтому их стоит немного переделать
-		include_once 'spyc/spyc.php';
-		$spyc = new Spyc();
-		$this->langTree = $spyc->load($tmp);
-		unlink($tmp);
+			// Spyc'у не нравятся мои конфиги, поэтому их стоит немного переделать
+			include_once 'spyc/spyc.php';
+			$spyc = new Spyc();
+			$this->langTree = array_recursive_inheritance($this->langTree, $spyc->load($tmp));
+			unlink($tmp);
+		}
 	}
 
 	/**
@@ -214,7 +241,7 @@ class PXApplication {
 	/**
 	 * Возвращает массив наименований разрешенных форматов дочерних объектов.
 	 *
-	 * @uses getAllowedChilds
+	 *  @uses getAllowedChilds
 	 *
 	 * @param NULL			не используется
 	 * @param Object|Array	объект для которого искать детей
@@ -261,8 +288,8 @@ class PXApplication {
 			FatalError("Ошибка в файле настроек <EM>$fileName</EM>");
 		}
 
-		PXTypeDescription::fillAppTypes($dom, $this);
-		PXRefDescription::fillReferences($dom, $this);
+		PXTypeDescription::fillAppTypes($dom->xpath("/model/datatypes/datatype"), $this);
+		PXRefDescription::fillReferences($dom->xpath("/model/references/reference"), $this);
 	}
 
 	/**
@@ -416,6 +443,92 @@ class PXApplication {
 		$this->modules[$module->getName()] = $module; 
 	}
 
+	/*
+	 * plugins
+	 * */
+
+	function fillPlugins($fileName) {
+		$domPlugins = $this->getPlugins($fileName);
+
+		if (!is_array($domPlugins) || count($domPlugins) == 0) {
+			FatalError("Не описаны plugins проекта");
+		}
+
+		foreach($domPlugins as $domPlugin) {
+			$plugin = new PXPluginDescription();
+			$plugin->setAttrs($domPlugin->attributes());
+			$this->setPlugin($plugin);
+		}
+	}
+
+	function getPlugins($fileName) {
+		if($fileName === false) {
+			return;
+		}
+
+		if (!($dom = PXml::load($fileName))) {
+			FatalError("Ошибка в файле настроек <em>$fileName</em>");
+		}
+
+		return $domPlugins = $dom->xpath("/plugins//plugin");
+	}
+
+	function setPlugin($plugin) {
+		$this->plugins[$plugin->getName()] = $plugin->getPlugin($this);
+	}
+
+	/**
+	 * Заполняет {@link PXApplication::$triggers} данными из файла.
+	 *
+	 * В качестве параметра обычно используется файл etc/triggers.xml. <br>
+	 * XPath /triggers//trigger
+	 * Инициализирует поле triggers объектом-коллекцией триггеров
+	 *
+	 * @uses PXTriggerDescription
+	 *
+	 * @param String $fileName имя файла
+	 */
+	private function FillTriggers($fileName) {
+		$this->triggers = new PXTriggersList;
+		
+		if($fileName === false) {
+			return;
+		}
+		
+		if (!($dom = PXml::load($fileName))) {
+			FatalError("Ошибка в файле настроек <em>$fileName</em>");
+		}
+
+		$domTriggers = $dom->xpath("/triggers//trigger");
+
+		if (!is_array($domTriggers) || count($domTriggers) == 0) {
+			FatalError("Не описаны триггеры проекта");
+		}
+
+		foreach ($domTriggers as $domTrigger) {
+			$this->setTrigger($domTrigger->attributes(), $domTrigger->parent()->nodeName());
+		}
+	}
+	
+	private function setTrigger($attributes, $type) {
+		$trigger = new PXTriggerDescription();
+		$trigger->setAttrs($attributes);
+		$trigger->setType($type);
+		$this->triggers[$trigger->getType()][$trigger->getName()] = $trigger;
+	}
+	
+	/**
+	 * Пользовательская функция для регистрации триггеров не через конфиг triggers.xml, а в процессе работы системы
+	 * @param  String   $type - тип триггера
+	 * @param  Array    $args - массив с параметрами триггера, имя => значение
+	 */
+	function registerTrigger($type, array $args){
+		foreach($args as $name => &$value){
+			$value = PXml::attributePrototype($name, $value); //XML style attributes compatibility
+		}
+		$this->setTrigger($args, $type);
+	}
+	
 	/**
 	 * Проверяет наличие кешированного файла настроек и загружает его.
 	 *
@@ -447,7 +560,16 @@ class PXApplication {
 			}
 		}
 
-		return unserialize(ReadFileToString($cacheFile));
+		$plugins = self::getPlugins(self::findConfigFile('plugins.xml', false));
+		if (is_array($plugins) || count($plugins) != 0) {
+			foreach($plugins as $domPlugin) {
+				$plugin = new PXPluginDescription();
+				$plugin->setAttrs($domPlugin->attributes());
+				$plugin->load();
+			}
+		}
+		$app = unserialize(ReadFileToString($cacheFile));
+		return $app;
 	}
 
 	/**
