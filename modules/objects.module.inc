@@ -1,6 +1,7 @@
 <?php
 class PXModuleObjects extends PXModule {
 	var $formats;
+	var $object;
 
 	function __construct($area, $settings) {
 		parent::__construct($area, $settings);
