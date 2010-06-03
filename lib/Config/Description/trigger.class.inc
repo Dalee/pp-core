@@ -64,8 +64,12 @@ class PXTriggerDescription {
 		} elseif (file_exists(BASEPATH.'/libpp/'.$file)) {
 			return BASEPATH.'/libpp/'.$file;
 
+		} elseif (file_exists(BASEPATH.'/local/plugins/' . $this->folder . '/' .$file)) { 
+			return BASEPATH.'/local/plugins/'. $this->folder . '/' .$file;
+
 		} elseif (file_exists(BASEPATH.'/libpp/plugins/' . $this->folder . '/' .$file)) {
 			return BASEPATH.'/libpp/plugins/'. $this->folder . '/' .$file;
+
 		}
 	}
 }

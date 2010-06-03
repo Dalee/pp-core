@@ -460,41 +460,30 @@ class PXApplication {
 
 	/*
 	 * plugins
-	 * */
-
+	 *
+	 */
 	function fillPlugins($fileName) {
 		if($fileName === false) {
 			return;
 		}
 	
-		$domPlugins = $this->getPlugins($fileName);
+		if (!($dom = PXml::load($fileName))) {
+			FatalError("Ошибка в файле настроек <em>$fileName</em>");
+		}
+
+		$domPlugins = $dom->xpath("/plugins//plugin");
 
 		if (!is_array($domPlugins) || count($domPlugins) == 0) {
-			FatalError("Не описаны plugins проекта");
+			FatalError("Не описаны плагины проекта");
 		}
 
 		foreach($domPlugins as $domPlugin) {
 			$plugin = new PXPluginDescription();
 			$plugin->setAttrs($domPlugin->attributes());
-			$this->setPlugin($plugin);
-		}
-	}
-
-	function getPlugins($fileName) {
-		if($fileName === false) {
-			return;
+			$this->plugins[$plugin->getName()] = $plugin;
+			$plugin->getPlugin($this); //initialize plugin
 		}
 		
-		if (!($dom = PXml::load($fileName))) {
-			FatalError("Ошибка в файле настроек <em>$fileName</em>");
-		}
-
-		return $domPlugins = $dom->xpath("/plugins//plugin");
-	}
-
-	function setPlugin($plugin) {
-		$plugin->getPlugin($this);
-		$this->plugins[$plugin->getName()] = $plugin;
 		$this->reinitialize['plugins'] = true;
 	}
 

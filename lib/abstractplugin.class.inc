@@ -17,7 +17,7 @@ class PXAbstractPlugin {
 	}
 
 	private function registerComponents($app) {
-		$fileName = BASEPATH . 'libpp/plugins/' . $this->name . '/config.xml';
+		$fileName = dirname($this->description->getPathToPlugin()) . '/config.xml'; //FIXME ?
 		if(!file_exists($fileName)) {
 			return;
 		}
