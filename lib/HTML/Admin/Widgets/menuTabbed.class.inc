@@ -13,7 +13,12 @@ class PXWidgetMenuTabbed extends PXAdminComplexWidget {
 		$this->varName    = $getParam;
 		$this->buildHref  = $buildHref;
 		$this->selected   = $current;
-		$this->blocks     = array();
+		$this->blocks     = array(
+			self::BEFORE_TABS => array(),
+			self::TABS => array(),
+			self::AFTER_TABS => array()
+		);
+
 	}
 
 	function html() {
@@ -26,10 +31,10 @@ class PXWidgetMenuTabbed extends PXAdminComplexWidget {
 
 		$html = array();
 
-		foreach($this->blocks as $b) {
-			//	$html[] = sprintf('<div style="float: left; margin-top: -5px; text-align: left;">%s</div>', join($b));
-			$html[] = join($b);
-		}
+		$html[] =  join($this->blocks[self::BEFORE_TABS]);
+		$html[] =  join($this->blocks[self::TABS]);
+		$html[] =  join($this->blocks[self::AFTER_TABS]);
+
 		return join($html);
 	}
 }
