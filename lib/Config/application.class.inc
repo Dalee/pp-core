@@ -88,12 +88,27 @@ class PXApplication {
 	 */
 	var $bindingsQueue;
 
+    /**
+	 * экземпляр класса Engine
+	 * @var Object
+	 */
+	public $engine;
+
+	/**
+	 * массив названий полей, чьи объекты требуют инициализации при загрузке из кэша.
+	 * Description объекта должен реализовывать метод initialize
+	 * @var Array
+	 **/
+	protected $reinitialize = array();
+
 	/**
 	 * Singleton array with caching.
 	 *
 	 */
-	public static function getInstance($engineClass) {
+	public static function getInstance($engineObject) {
 		static $instance = array();
+
+		$engineClass = get_class($engineObject);
 
 		if (isset($instance[$engineClass])) {
 			return $instance[$engineClass];
@@ -109,7 +124,7 @@ class PXApplication {
 
 		/* create new instance, if not cached */
 		if (!isset($instance[$engineClass])) {
-			$instance[$engineClass] = new PXApplication($engineClass);
+			$instance[$engineClass] = new PXApplication($engineClass, $engineObject);
 		}
 
 		return $instance[$engineClass];
@@ -120,8 +135,8 @@ class PXApplication {
 	 *
 	 * @param String $engineClass - имя класса Engine, используется в имени файла кэша
 	 */
-	private function __construct($engineClass) {
-		$this->engineClass = $engineClass;
+	private function __construct($engineClass, $engineObject) {
+		$this->engine = $engineObject;
 
 		$this->fillDBDescription(self::parseIniFile($this->findConfigFile('database.ini')));
 		$this->fillTriggers($this->findConfigFile('triggers.xml', false));
@@ -478,7 +493,9 @@ class PXApplication {
 	}
 
 	function setPlugin($plugin) {
-		$this->plugins[$plugin->getName()] = $plugin->getPlugin($this);
+		$plugin->getPlugin($this);
+		$this->plugins[$plugin->getName()] = $plugin;
+		$this->reinitialize['plugins'] = true;
 	}
 
 	/**
@@ -564,14 +581,6 @@ class PXApplication {
 			}
 		}
 
-		$plugins = self::getPlugins(self::findConfigFile('plugins.xml', false));
-		if (is_array($plugins) || count($plugins) != 0) {
-			foreach($plugins as $domPlugin) {
-				$plugin = new PXPluginDescription();
-				$plugin->setAttrs($domPlugin->attributes());
-				$plugin->load();
-			}
-		}
 		$app = unserialize(ReadFileToString($cacheFile));
 		return $app;
 	}
@@ -673,6 +682,14 @@ class PXApplication {
 			BASEPATH.'/site/etc/',
 			BASEPATH.'/local/etc/',
 			BASEPATH.'/libpp/etc/');
+	}
+
+	function __wakeup() {
+		foreach($this->reinitialize as $name=>$bool) {
+			foreach((array) $this->{$name} as $o) {
+				$o->initialize($this);
+			}
+		}
 	}
 }
 ?>

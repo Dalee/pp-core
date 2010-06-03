@@ -8,7 +8,7 @@ class PXAdminForm extends PXAdminComplexWidget {
 	private $childTypes;
 	private $childCount = null;
 	private $linksParam;
-	public $disable;
+	public  $disable;
 
 	const BEFORE_CONTENT = 0;
 	const AFTER_CONTENT  = 1;

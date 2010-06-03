@@ -1,7 +1,6 @@
 <?
-//require_once(BASEPATH . 'libpp/plugins/multipleregions/regions.class.inc');
 class PXTriggerDatabaseMultipleregions extends PXAbstractDatabaseTrigger {
-	/*function OnBeforeAddObject(&$db, &$objId, &$format, &$object, &$dbFields, &$dbValues) {
+	function OnBeforeAddObject(&$db, &$objId, &$format, &$object, &$dbFields, &$dbValues) {
 		$regions = $this->getRegions();
 		$regions->addRegionByDefault($format, $dbFields, $dbValues);
 		$permit = $regions->checkRegionAccessToParent($format, $object);
@@ -72,7 +71,7 @@ class PXTriggerDatabaseMultipleregions extends PXAbstractDatabaseTrigger {
 	}
 
 	function getRegions(){
-		return PXRegistry::getApp()->plugins['multipleregions'];
+		return PXMultiRegions::getInstance();
 	}
 
 	function fireError(){
@@ -90,6 +89,6 @@ class PXTriggerDatabaseMultipleregions extends PXAbstractDatabaseTrigger {
 			</script>
 JS;
 		exit;
-	}*/
+	}
 }
 ?>

@@ -42,7 +42,7 @@ abstract class PXEngine {
 		}
 	}
 
-	function initApplication() {
+	protected function initApplication() {
 		foreach($this->initOrder as $var){
 			if(!is_array($this->$var) || empty($this->{$var}['factory'])){
 				continue;
@@ -58,11 +58,11 @@ abstract class PXEngine {
 		}
 	}
 
-	function initApp($klass){
-		$this->app =& PXApplication::getInstance(get_class($this)); //$klass::getInstance(...) available since php 5.3.0 only
+	protected function initApp($klass){
+		$this->app =& PXApplication::getInstance($this); //$klass::getInstance(...) available since php 5.3.0 only
 	}
 
-	function initDb($klass){
+	protected function initDb($klass){
 		$this->db =& new $klass($this->app);
 	}
 

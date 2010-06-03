@@ -1,10 +1,16 @@
 <?php
 class PXAbstractPlugin {
-	private $name = null;
+	protected $name = null;
+	protected $description;
 
-	function __construct($app, $name) {
-		$this->name = $name;
+	function __construct($app, $description) {
+		$this->description = $description;
+		$this->name = $description->getName();
 		$this->registerComponents($app);
+		$this->initialize($app);
+	}
+
+	function initialize($app) {
 	}
 
 	function initSet($params = null) {
@@ -58,6 +64,5 @@ class PXAbstractPlugin {
 
 		$app->registerTrigger($type, $args);
 	}
-
 }
 ?>
