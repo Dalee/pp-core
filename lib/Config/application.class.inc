@@ -449,17 +449,13 @@ class PXApplication {
 
 	function fillPlugins($fileName) {
 		if($fileName === false) {
-			return false;
+			return;
 		}
-		
-		if (!($dom = PXml::load($fileName))) {
-			FatalError("Ошибка в файле настроек <em>$fileName</em>");
-		}
+	
+		$domPlugins = $this->getPlugins($fileName);
 
-		$domPlugins = $dom->xpath("/plugins//plugin");
-		
 		if (!is_array($domPlugins) || count($domPlugins) == 0) {
-			FatalError("Не описаны плагины проекта");
+			FatalError("Не описаны plugins проекта");
 		}
 
 		foreach($domPlugins as $domPlugin) {
@@ -467,6 +463,14 @@ class PXApplication {
 			$plugin->setAttrs($domPlugin->attributes());
 			$this->setPlugin($plugin);
 		}
+	}
+
+	function getPlugins($fileName) {
+		if (!($dom = PXml::load($fileName))) {
+			FatalError("Ошибка в файле настроек <em>$fileName</em>");
+		}
+
+		return $domPlugins = $dom->xpath("/plugins//plugin");
 	}
 
 	function setPlugin($plugin) {
