@@ -1,8 +1,0 @@
-<triggers>
-	<database>
-		<trigger name="advert"          />
-		<trigger name="search" class="PXTriggerSearch"   />
-		<trigger name="searchIndex"     />
-		<trigger name="forum"        />
-	</database>
-</triggers>
