@@ -101,14 +101,14 @@ class PXAdminForm extends PXAdminComplexWidget {
 		$this->layout->append('OUTER.CONTENT', join('',$html));
 	}
 
-	function leftControls() {
+	public static function leftControls() {
 		$control = NLAbstractHTMLForm::BuildSubmit('Сохранить') . NLAbstractHTMLForm::BuildSubmit('Сохранить и закрыть', "close");
-		$this->layout->assign('OUTER.LEFTCONTROLS',  $control);
+		PXRegistry::getLayout()->assign('OUTER.LEFTCONTROLS',  $control);
 	}
 
-	function rightControls() {
+	public static function rightControls() {
 		$control = NLAbstractHTMLForm::BuildReset('Отменить') . NLAbstractHTMLForm::BuildClose('Закрыть');
-		$this->layout->assign('OUTER.RIGHTCONTROLS', $control);
+		PXRegistry::getLayout()->assign('OUTER.RIGHTCONTROLS', $control);
 	}
 
 	private function setControls() {
