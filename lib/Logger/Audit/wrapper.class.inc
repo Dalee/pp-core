@@ -265,8 +265,15 @@ HTML;
 
 		foreach($in as $field=>$value) {
 			$var = $this->request->getVar($field, $value);
+			
 			if(is_null($var)) {
 				continue;
+			}
+			
+			if(is_array($var)) {
+				$var = array_map(array($this->db, "escapeString"), $var);
+			} else {
+				$var = $this->db->escapeString($var);
 			}
 
 			$this->layout->setGetVarToSave($field, $var);
