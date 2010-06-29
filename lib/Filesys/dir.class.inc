@@ -1,18 +1,17 @@
 <?php
 /**
- * Project:     NetLogic PHP-classes library
+ * Project:     Dalee PHP-classes library
  * File:        dir.class.inc
  *
- * @copyright   NetLogic, 2003-2006
- * @author      Michael Beloshapka <mb@netlogic.ru>
- * @package     Netlogic
+ * @copyright   Dalee, 2003-2010
+ * @author      Michael Beloshapka <mb@dalee.ru>
+ * @package     ProximaPortal
  * @subpackage  Filesys
- * @version     $Id$
  */
 
 /**
  * Directory manipulation class.
- * @package Netlogic
+ * @package Dalee
  * @subpackage Filesys
  */
 class NLDir {

@@ -36,8 +36,8 @@ class NLLeaf {
 /**
  * Класс-репрезентация абстрактного дерева
  *
- * @author Michael Beloshapka <mb@netlogic.ru>
- * @package Netlogic
+ * @author Michael Beloshapka <mb@dalee.ru>
+ * @package ProximaPortal
  * @subpackage Datastruct
  */
 class NLTree {

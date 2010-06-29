@@ -3,11 +3,10 @@
  * Project:     Dalee PHP-classes library
  * File:        common.functions.inc
  *
- * @copyright   Dalee, 2003-2007
- * @author      Michael Beloshapka <mb@netlogic.ru>
- * @package     pp
+ * @copyright   Dalee, 2003-2010
+ * @author      Michael Beloshapka <mb@dalee.ru>
+ * @package     ProximaPortal
  * @subpackage  Common
- * @version     $Id: functions.inc 14663 2009-01-14 14:11:46Z nastya $
  */
 
 if (!defined('IS_WIN')) {

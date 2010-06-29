@@ -1,13 +1,12 @@
 <?php
 /**
- * Project:     NetLogic PHP-classes library
+ * Project:     Dalee PHP-classes library
  * File:        nllogger.classes.inc
  *
- * @copyright   NetLogic, 2003-2006
+ * @copyright   Dalee, 2003-2010
  * @author      Andrey Nikolaev <na@index20.ru>
- * @package     Netlogic
+ * @package     ProximaPortal
  * @subpackage  Logger
- * @version     $Id$
  */
 
 /**

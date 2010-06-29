@@ -1,17 +1,16 @@
 <?php
 /**
- * Project:     NetLogic PHP-classes library
+ * Project:     Dalee PHP-classes library
  * File:        captcha.class.inc
  *
  * Генератор captcha изображений
  *
- * @copyright   NetLogic, 2003-2006
- * @author      Stanislav Tugovikov <st@netlogic.ru>
+ * @copyright   Dalee, 2003-2010
+ * @author      Stanislav Tugovikov <st@dalee.ru>
  * @author      Andrey Nikolaev <andrey.nikolaev@dalee.ru>
- * @author      Alexey Ten <aten@index20.ru>
- * @package     Netlogic
+ * @author      Alexey Ten <aten@dalee.ru>
+ * @package     ProximaPortal
  * @subpackage  Security
- * @version     $Id$
  */
 class NLCaptcha {
 	/**

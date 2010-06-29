@@ -1,13 +1,12 @@
 <?php
 /**
- * Project:     NetLogic PHP-classes library
+ * Project:     Dalee PHP-classes library
  * File:        dbadatabase.class.inc
  *
- * @copyright   NetLogic, 2003-2006
- * @author      Stanislav Tugivikov <st@netlogic.ru>
- * @package     Netlogic
+ * @copyright   Dalee, 2003-2010
+ * @author      Stanislav Tugivikov <st@dalee.ru>
+ * @package     ProximaPortal
  * @subpackage  Database
- * @version     $Id$
  */
 
 class NLDBADatabase {

@@ -1,13 +1,12 @@
 <?php
 /**
- * Project:     NetLogic PHP-classes library
+ * Project:     Dalee PHP-classes library
  * File:        common.functions.inc
  *
- * @copyright   NetLogic, 2003-2006
- * @author      Michael Beloshapka <mb@netlogic.ru>
- * @package     Netlogic
+ * @copyright   Dalee, 2003-2010
+ * @author      Michael Beloshapka <mb@dalee.ru>
+ * @package     ProximaPortal
  * @subpackage  Common
- * @version     $Id$
  */
 
 function _PrepareWMLText($string) {
