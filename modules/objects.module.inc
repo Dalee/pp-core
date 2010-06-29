@@ -72,6 +72,7 @@ class PXModuleObjects extends PXModule {
 		$this->layout->setGetVarToSave($format.'_order', $currentOrder);
 
 		$currentPage =  $currentPage > ceil($count/$onPage) ? ceil($count/$onPage) : $currentPage;
+
 		$objects     =& $this->_loadObjects(DB_SELECT_TABLE, $onPage, $onPage*($currentPage-1), $currentOrder, $format, $parent);
 
 		$table = new PXAdminTable($objects, $this->app->types[$format], $this->layout->getData);
@@ -83,6 +84,7 @@ class PXModuleObjects extends PXModule {
 			$table->setSelected($cId, $format);
 			$table->setShowChildObjects(true);
 			$table->setChildLink('cid');
+
 			if($cId) {
 				 $this->indexAppendChild($objects[$cId]);
 			}
@@ -105,7 +107,7 @@ class PXModuleObjects extends PXModule {
 				$this->layout->SetGetVarToSave($childFormat.'_view', $this->request->GetVar($childFormat.'_view', 'plain'));
 
 				if ($this->app->types[$childFormat]->struct == 'tree' && $this->request->GetVar($childFormat.'_view') != 'plain') {
-					$objects = $this->_loadContent($app->types[$childFormat], NULL, 'parent', $this->request->GetCid(), DB_SELECT_TREE);
+					$objects =& $this->_loadObjects(DB_SELECT_TREE, null, null, null, $childFormat, $this->request->GetCid());
 					$this->layout->AppendTableAsTree('INNER.2.0', $childFormat, $objects, $this->request->GetCid(), $this->request->GetLeafStatus());
 
 				} else {
@@ -146,6 +148,7 @@ class PXModuleObjects extends PXModule {
 				$objects = $this->db->getObjectsByParentLimited($type, NULL, $parent, $limit, $offset, $mode, $order);
 			}
 		}
+
 		return $objects;
 	}
 

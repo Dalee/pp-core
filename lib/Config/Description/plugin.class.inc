@@ -3,6 +3,8 @@ class PXPluginDescription {
 	private $name     = null;
 	private $class    = null;
 	private $instance = NULL;
+	private $app;
+	public  $params   = array();
 
 	public function initialize($app) {
 		$this->getPlugin($app);
@@ -19,6 +21,15 @@ class PXPluginDescription {
 	function setAttrs($attrs) {
 		foreach($attrs as $item) {
 			$this->{$item->name} = utf8_decode($item->value);
+		}
+	}
+
+	function setParams($params) {
+		is_object($params) && $params = array($params);
+
+		foreach($params as $p) {
+			$ps = $p->attributes();
+			$this->params[$ps[0]->value] = $ps[1]->value;
 		}
 	}
 

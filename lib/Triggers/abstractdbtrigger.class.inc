@@ -46,7 +46,7 @@ abstract class PXAbstractDatabaseTrigger extends PXAbstractTrigger {
 	function OnGetDataBuildQuery($db, $format, &$mode, &$query, &$selector, &$where, &$order, &$limit){
 	}
 	
-	function OnBeforeNormalizePathBuildQuery($objectFormat, $exObjectFormat, &$table) {
+	function OnBeforeNormalizePathBuildQuery($objectFormat, $exObjectFormat, &$table, $object=null) {
 	}
 }
 

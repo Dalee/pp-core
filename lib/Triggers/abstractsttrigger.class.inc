@@ -1,6 +1,7 @@
 <?php
 abstract class PXAbstractStoragetypeTrigger extends PXAbstractTrigger {
-	function normalizeFilePath($field, &$object, &$vars) {
+	function __call($m, $a) {
+		return true;
 	}
 }
 ?>

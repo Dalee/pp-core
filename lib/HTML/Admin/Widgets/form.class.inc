@@ -10,11 +10,36 @@ class PXAdminForm extends PXAdminComplexWidget {
 	private $linksParam;
 	public  $disable;
 
-	const BEFORE_CONTENT = 0;
-	const AFTER_CONTENT  = 1;
-	const CONTENT        = 2;
-	const CONTROLS       = 3;
-	const MENU           = 4;
+	const BEFORE_CONTENT        = 0;
+	const CONTENT               = 1;
+	const AFTER_CONTENT         = 2;
+
+	const PREPEND_LEFTCONTROLS  = 3;
+	const LEFTCONTROLS          = 4;
+	const APPEND_LEFTCONTROLS   = 5;
+
+	const PREPEND_RIGHTCONTROLS = 6;
+	const RIGHTCONTROLS         = 7;
+	const APPEND_RIGHTCONTROLS  = 8;
+	
+	const TITLE                = 9;
+	const MENU                 = 10;
+
+	public $blocks = array( //set up available subwidgets areas
+		self::PREPEND_LEFTCONTROLS => array(),
+		self::LEFTCONTROLS         => array(),
+		self::APPEND_LEFTCONTROLS  => array(),
+
+		self::PREPEND_RIGHTCONTROLS =>	array(),
+		self::RIGHTCONTROLS         => array(),
+		self::APPEND_RIGHTCONTROLS  => array(),
+		
+		self::MENU                 => array(),
+		self::TITLE                => array(),
+
+		self::BEFORE_CONTENT       => array(),
+		self::CONTENT              => array(),
+		self::AFTER_CONTENT        => array());
 
 	function __construct($object, $format) {
 		$this->object = $object;
@@ -22,13 +47,6 @@ class PXAdminForm extends PXAdminComplexWidget {
 		$this->app    = PXRegistry::getApp();
 
 		$this->format = $format;
-		$this->blocks              = array( //set up available subwidgets areas
-			self::CONTROLS       => array(),
-			self::MENU           => array(),
-			self::BEFORE_CONTENT => array(),
-			self::CONTENT        => array(),
-			self::AFTER_CONTENT  => array()
-		);
 	}
 
 	function setAction($action) {
@@ -70,45 +88,69 @@ class PXAdminForm extends PXAdminComplexWidget {
 
 		$this->setMenu();
 		$this->setControls();
+
 		$this->showTitle();
 
 		$html[] =  join($this->blocks[self::BEFORE_CONTENT]);
+
 		switch ($this->action) {
 			case 'main':
-				$html[] = $this->mainForm();
+				$content = $this->mainForm();
 				break;
 
 			case 'children':
-				$html[] = $this->childrenForm();
+				$content = $this->childrenForm();
 				break;
 
 			case 'remove':
-				$html[] = $this->removeForm();
+				$content = $this->removeForm();
 				break;
 
 			case 'links':
-				$html[] = $this->linksForm();
+				$content = $this->linksForm();
 				break;
 
 			case 'auditlog':
-				$html[] = $this->auditlogForm();
+				$content = $this->auditlogForm();
 				break;
 		}
-		$html[] =  join($this->blocks[self::CONTENT]);
+		
+		if (strlen($_ = join($this->blocks[self::CONTENT]))) {
+			$content = $_;
+		}
+	
+		$html[] =  $content;
 		$html[] =  join($this->blocks[self::AFTER_CONTENT]);
 
 		$this->setControls();
-		$this->layout->append('OUTER.CONTENT', join('',$html));
+
+		$this->layout->append('OUTER.CONTENT', join($html));
 	}
 
-	public static function leftControls() {
+	public function leftControls() {
 		$control = NLAbstractHTMLForm::BuildSubmit('Сохранить') . NLAbstractHTMLForm::BuildSubmit('Сохранить и закрыть', "close");
-		PXRegistry::getLayout()->assign('OUTER.LEFTCONTROLS',  $control);
+
+		if (strlen($_ = join($this->blocks[self::LEFTCONTROLS]))) {
+			$control  = $_;
+		}
+
+		PXRegistry::getLayout()->assign('OUTER.LEFTCONTROLS',
+			  join($this->blocks[self::PREPEND_LEFTCONTROLS]) 
+			. $control 
+			. join($this->blocks[self::APPEND_LEFTCONTROLS]));
 	}
 
-	public static function rightControls() {
+	public function rightControls() {
 		$control = NLAbstractHTMLForm::BuildReset('Отменить') . NLAbstractHTMLForm::BuildClose('Закрыть');
-		PXRegistry::getLayout()->assign('OUTER.RIGHTCONTROLS', $control);
+		
+		if (strlen($_ = join($this->blocks[self::RIGHTCONTROLS]))) {
+			$control  = $_;
+		}
+
+		PXRegistry::getLayout()->assign('OUTER.RIGHTCONTROLS',
+			join($this->blocks[self::PREPEND_RIGHTCONTROLS]) 
+			. $control 
+			. join($this->blocks[self::APPEND_RIGHTCONTROLS]));
 	}
 
 	private function setControls() {
@@ -116,6 +158,7 @@ class PXAdminForm extends PXAdminComplexWidget {
 		$this->rightControls();
 
 		$control = join('', array(NLAbstractHTMLForm::BuildHidden('id', ((isset($this->object['id'])) ? $this->object['id'] : '')),
+	
 		NLAbstractHTMLForm::BuildHidden('area', $this->area),
 		NLAbstractHTMLForm::BuildHidden('action', $this->action),
 		NLAbstractHTMLForm::BuildHidden('format', $this->format->id)));
@@ -144,6 +187,10 @@ class PXAdminForm extends PXAdminComplexWidget {
 	}
 
 	private function showTitle() {
+		if(strlen($_ = join($this->blocks[self::TITLE]))) {
+			$this->title = $_;
+		}
+
 		$this->layout->assignTitle($this->title);
 	}
 

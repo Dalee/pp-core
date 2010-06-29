@@ -16,7 +16,11 @@ class PXDisplayTypeStatic extends PXDisplayType {
 
 	function buildCell($field, $object, $param=NULL) {
 		$value = $object[$field->name];
-		return isset($field->values->values[$value]) && isset($field->values->values[$value]['title']) ? $field->values->values[$value]['title'] : $value;
+		$value =  isset($field->values->values[$value]) && isset($field->values->values[$value]['title']) ? $field->values->values[$value]['title'] : $value;
+		
+		strlen($_ = include 'subdirectory.helper.inc') && $value = $_;
+
+		return $value;
 	}
 
 	function preModifyObject($field, $object, $param=NULL) {

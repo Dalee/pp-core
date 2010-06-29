@@ -4,6 +4,9 @@ require_once 'common.defines.inc';
 require_once 'registry.class.inc';
 require_once 'Common/functions.inc';
 require_once 'Debug/functions.inc';
+
+require_once 'loader.class.inc';
+
 require_once 'Filesys/dir.class.inc';
 require_once 'Datastruct/tree.classes.inc';
 require_once 'response.class.inc';
@@ -43,4 +46,6 @@ require_once 'XML/domxml.classes.inc';
 require_once 'XML/simplexml.classes.inc';
 require_once 'XML/xml.class.inc';
 require_once 'XML/XSLT/classes.inc';
+
+
 ?>

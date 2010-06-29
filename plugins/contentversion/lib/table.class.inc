@@ -1,5 +1,5 @@
 <?php
-class PVersionsTable extends PXAdminTableSimple {
+class PXVersionsTable extends PXAdminTableSimple {
 	function cell($row) {
 		$menuTitle = (strlen($row['title']) > 10) ? trim(substr($row['title'], 0, 10)).'&hellip;' : $row['title'];
 		$context = 'Context(event, \'showversion\', '.$row['id'].', '.(int)($row['status']).', \''. $this->dict['datatypes']->id .'\',  \''.$menuTitle.'\', \'\', 1, 0, 0); return false;';

@@ -1,104 +1,144 @@
 <?php
-require_once(BASEPATH . 'libpp/plugins/contentversion/data.class.inc');
-require_once(BASEPATH . 'libpp/plugins/contentversion/table.class.inc');
-require_once(BASEPATH . 'libpp/plugins/contentversion/decorators.php');
 
 class PXPluginContentVersion extends PXAbstractPlugin {
 	private $request;
 	private $app;
 	private $db;
 	private $layout;
+	
+	private $have_original;
+	public $version;
 
-	function initSet() {
-		$this->request = PXRegistry::getRequest();
+	const SQL_SELECT_VERSION     = "sys_original = '%s' and sys_version = '%s'";
+	const SQL_SELECT_MAX_VERSION = "select max(sys_version) from %s where sys_original = '%s'";
+
+	private $meta = array(
+		"remove"         => array("saveInVersion", true),
+		"directremove"   => array("saveInVersion", true),
+		"main"           => array("saveInVersion", true),
+		"contentversion" => array("backVersion",   false));
+
+	function initialize($app) {/*{{{*/
+		$plugin_path = dirname($this->description->getPathToPlugin());
+
+		PXLoader::getInstance($plugin_path . "/lib")
+			-> load("PXVersion", "widget.class.inc")
+			-> load("PXVersionsData",  "data.class.inc")
+			-> load("PXVersionsTable", "table.class.inc")
+			-> load("PXVersionsTab",   "tab.class.inc");
+		
+		require_once ($plugin_path . "/triggers/database/version.trigger.inc");
+		require_once ($plugin_path . "/triggers/system/version.trigger.inc");
+		require_once ($plugin_path . "/triggers/storagetype/version.trigger.inc");
+
+		$app
+			->registerTrigger("database",    array("name"=>"version"))
+			->registerTrigger("system",      array("name"=>"version"))
+			->registerTrigger("storagetype", array("name"=>"version"));
+
+		if ($app->engine->engineClass() == PX_ENGINE_ADMIN) {
+			require_once $plugin_path . '/decorators.php';
+		}
+	}/*}}}*/
+
+	public function invoke($method, $type, $object, $version=false) {/*{{{*/
 		$this->app     = PXRegistry::getApp();
 		$this->db      = PXRegistry::getDB();
+		$this->type    = $type;
+		$this->object  = $object;
+		$this->version = $version;
 
-		$id = $this->request->getId();
-		$this->type = $this->request->getVar('format');
-		$this->object = $id != null ? $this->db->getObjectById($this->app->types[$this->type], $id) : null;
-	}
+		return $this->$method();
+	}/*}}}*/
 
-	function popupAction() {
-		$this->initSet();
-		$res = array('contentversion' => false, 'main' => true);
-		$action = $this->request->getAction();
-		if(empty($this->object) || empty($this->type) || !in_array($action, array_keys($res))) {
-			return;
+	function __call($m, $a) {/*{{{*/
+		if($_ = @$this->meta[$m]) {
+			$returned_value = array_pop($_);
+
+			foreach($_ as $method) {
+				$this->$method();
+			}
+
+			return $returned_value;
 		}
 
-		switch($action) {
-			case 'contentversion': 
-				$this->backVersion();
-				break;
+		return true;
+	}/*}}}*/
 
-			case 'main':
-				$this->saveInVersion();
-				break;
-
-			default:
-				break;
-		}
-
-		return $res[$action];
-	}
+	private function log($message, $source) {/*{{{*/
+		PXAuditLogger::getLogger($this->app, $this->db)->info($message, $source);
+	}/*}}}*/
 
 	function saveInVersion() {
 		$obj = $this->object;
+
 		$obj['sys_original'] = $obj['id'];
 		$obj['id']           = null;
 		$obj['sys_modifyer'] = PXRegistry::getUser()->id;
 		$obj['sys_version']  = $this->getEndVersion();
 
 		$obj['id'] = $this->db->addContentObject($this->app->types[$this->type], $obj);
+
 		if(!is_null($obj['id'])) {
-			foreach ($this->app->types[$this->type]->fields as $k=>$v) {
+			/*foreach ($this->app->types[$this->type]->fields as $k=>$v) {
 				if(is_array($obj[$v->name]) && isset($obj[$v->name]['path'])) {
 					$this->cloneFile($v, $obj);
 				}
-			}
-			PXAuditLogger::getLogger($this->app, $this->db)->info('Версия номер ' . $obj['sys_version'], $this->type .'/'. $obj['id']);
+			}*/
+
+			$this->log("Версия номер {$obj['sys_version']}", "{$this->type}/{$obj['id']}");
 		}
+
 		return $obj['id'];
 	}
 
-	private function backVersion() {
-		$vId = $this->request->getVar('version');
-		if(is_null($vId)) {
-			return;
-		}
-		$obj = current($this->db->getObjectsByWhere($this->app->types[$this->type], null, 'sys_original =' . $this->object['id'] . ' AND sys_version = ' . $vId . 'OR sys_version IS NOT NULL'));
-		if(empty($obj)) {
-			return;
-		}
+	private function getVersionObject($vId) {
+		$type = PXRegistry::getApp()->types[$this->type];
 
-		$this->saveInVersion();
-		$obj['id'] = $this->object['id'];
-		$vers = $obj['sys_version'];
-		$obj['sys_version'] = null;
+		$this->description->params['no_modify_query'] = true;
 
-		foreach ($this->app->types[$this->type]->fields as $k=>$v) {
-			if(is_array($obj[$v->name]) && isset($obj[$v->name]['path'])) {
-				$this->cloneFile($v, $obj);
-			}
+		if(!$this->version) {
+			$_ = pos($this->db->getObjectsByWhere($type, true, sprintf(self::SQL_SELECT_VERSION, $this->object['id'], (int) $vId)));
+			return $_;
 		}
 
+		$obj = $this->object;
+		$original = $this->db->getObjectById($type, $this->object['sys_original']);
+		!empty($original) && $this->object = $original;
+
+		$this->description->params['no_modify_query'] = false;
+		
+		return $obj;
+	}
+
+	public function backVersion() {
+		$vId = (int) PXRegistry::getRequest()->getVar('version');
+		if($vId < 1) return;
+
+		$obj = $this->getVersionObject($vId);
+		if(empty($obj)) return;
+
+		if($this->object['id'] != $obj['id']) {
+			$this->saveInVersion();
+		}
+
+		$obj['i_am_version'] = $this->version;
+		$obj['sys_version']  = null;
+
+		$this->log("Из версии {$vId}", sprintf("%s/%s", PXRegistry::getApp()->types[$this->type]->id, $obj['id']));
 		$this->db->ModifyContentObject($this->app->types[$this->type], $obj);
-		PXAuditLogger::getLogger($this->app, $this->db)->info('Из версии' . $vers,  $this->app->types[$this->type]->id .'/'. $obj['id']);
 	}
 
 	private function getEndVersion() {
-		$sql = <<<SQL
-			SELECT max(sys_version) FROM {$this->type}
-					WHERE sys_original = {$this->object['id']}
-SQL;
-		$ver = current($this->db->query($sql));
+		$ver = pos($this->db->query(sprintf(self::SQL_SELECT_MAX_VERSION, $this->type, $this->object['id'])));
 		return empty($ver) ? 1 : $ver['max'] + 1;
 	}
 
-	private function cloneFile($field, &$obj) {
+	private function cloneFile($field, &$obj) {/*{{{*/
 		$p = array('donor' => $this->object, 'format' => $this->app->types[$this->type]->id);
+
 		$basepath = BASEPATH.'/site/htdocs';
+		
 		if(is_null($obj['sys_version'])) {
 			if(is_link($basepath.$obj[$field->name]['path']) && $link = readlink($basepath.$obj[$field->name]['path'])) {
 				$link = str_replace($basepath, '', $link);
@@ -107,8 +147,10 @@ SQL;
 			}
 			$p = array('donor' => $obj, 'format' => $this->app->types[$this->type]->id);
 			$field->storageType->cloneFile($field, $this->object, $p);
+		
 		} elseif($obj['sys_version'] == 1) {
 			$field->storageType->cloneFile($field, $obj, $p);
+		
 		} else {
 			$versions = $this->db->getObjectsByWhere($this->app->types[$this->type], null, "sys_original = " . $this->object['id'] . " AND sys_version <> -1 OR sys_version IS NOT NULL");
 			$cT = fileatime($basepath.$this->object[$field->name]['path']);
@@ -121,7 +163,7 @@ SQL;
 			}
 			$field->storageType->cloneFile($field, $obj, $p);
 		}
-	}
+	}/*}}}*/
 
 }
 ?>

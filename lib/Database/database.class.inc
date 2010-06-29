@@ -1226,7 +1226,7 @@ class PXDatabase extends NLSQLDatabaseAdapter {
 							$condTable = array('tableName' => $child, 'exWhere' => '');
 							
 							foreach ($this->triggers as $t){
-								$t->getTrigger()->OnBeforeNormalizePathBuildQuery($format, $this->types[$child], $condTable);
+								$t->getTrigger()->OnBeforeNormalizePathBuildQuery($format, $this->types[$child], $condTable, $object);
 							}
 
 							$condTables[] = $condTable;

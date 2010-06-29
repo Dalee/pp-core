@@ -65,24 +65,30 @@ class PXAdminTable extends PXAdminComplexWidget {
 	}
 
 	function loadDropdownValues($db) {
-		foreach($this->dtype->fields as $field) {
-			if($field->listed && strlen($field->source) && !sizeof($field->values->values)) {
+		foreach($this->dtype->fields as $k => $field) {
+			if($field->listed && strlen($field->source) && !sizeof(@$field->values->values)) {
 				switch($field->values->schema) {
 					case 'xml':
-						$db->app->LoadXMLDirectory($field->values, true);
+						PXRegistry::getApp()->loadXMLDirectory($field->values, true);
 						break;
 
 					case 'sql':
-						if(!isset($db->types[$field->values->source])) {
-							FatalError('Не описан тип данных '.$field->source);
+						$app = PXRegistry::getApp();
+
+						if(!@$source_type = $app->types[$app->directory[$field->source]->source]) {
+							FatalError('Не описана директория для типа данных '.$field->source);
 						}
+
 						$idsArray = GetColFromTable($this->data, $field->name);
+
 						if(!sizeof($idsArray)) {
 							break;
 						}
 
-						$field->values->location = $field->values->source.'.id IN ('.implode(',', $idsArray).')';
-						$db->LoadSQLDirectory($field->values, true, array(), $this->dtype);
+						$directory = $app->directory[$field->source];
+						$directory->location = $source_type->id.'.id IN ('.implode(',', $idsArray).')';
+
+						$db->LoadSQLDirectory($directory, true, array(), $this->dtype);
 						break;
 				}
 			}

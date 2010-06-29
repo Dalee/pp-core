@@ -130,7 +130,13 @@ class NLAbstractLayout {
 	}
 
 	function setMenu($menuItems, $current, $getParam='area', $buildHref=true) {
-		$menu = new PXWidgetMenuTabbed($menuItems, $current, $getParam, $buildHref);
+		$menu = new PXWidgetMenuTabbed;
+	
+		$menu->items    = $menuItems;
+		$menu->selected = $current;
+		$menu->varName  = $getParam;
+		$menu->buildHref = $buildHref;
+	
 		$this->assign('OUTER.MENU', $menu);
 	}
 

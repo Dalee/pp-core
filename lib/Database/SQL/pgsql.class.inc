@@ -259,24 +259,29 @@ class NLPGSQLDatabase extends NLAbstractSQLDatabase {
 
 		$query = "SELECT (0 ";
 		foreach($tables as $t) {
-			$tableName = $t['tableName'];
-			$query .= "+ (SELECT count(*) FROM {$tableName} WHERE ";
+			list($where_clauses, $tableName) = array(array(), $t['tableName']);
 
-			foreach($colValues as $c=>$v) {
-				$query .= "{$c} = '{$v}' AND ";
-				$query .= $t['exWhere'];
+			foreach($colValues as $c => $v) {
+				$where_clauses[] = sprintf("%s = '%s'", $c, $v);
 			}
 
 			if(sizeof($exception)) {
 				foreach($exception as $c=>$v) {
-					$query .= "{$c} != '{$v}' AND ";
+					$where_clauses[] = sprintf("%s != '%s'", $c, $v);
 				}
 			}
-			
-			$query = substr($query, 0, -4);
+
+			$query = sprintf("%s + (SELECT count(*) FROM %s WHERE %s", 
+				$query, $tableName, join(" AND ", $where_clauses));
+
+			if($t['exWhere']) {
+				$query = sprintf("%s and %s", $query,  $t['exWhere']);
+			}
+
 			$query .= ")";
 		}
 		$query .= ")";
+
 		return (int)(current(current($this->Query($query, TRUE))));
 	}
 

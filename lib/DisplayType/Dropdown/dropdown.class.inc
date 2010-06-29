@@ -18,7 +18,7 @@ class PXDisplayTypeDropdown extends PXDisplayType {
 	function buildCell($field, $object, $param=NULL) {
 		$displayField = $field->values->displayField;
 		$value = $object[$field->name];
-		return isset($field->values->values[$value]) && isset($field->values->values[$value][$displayField]) ? $field->values->values[$value][$displayField] : '';
+		return isset($field->values->values[$value][$displayField]) ? $field->values->values[$value][$displayField] : '';
 	}
 	
 	function getFormats(&$param) {

@@ -14,6 +14,7 @@ class PXTriggerDatabaseMultipleregions extends PXAbstractDatabaseTrigger {
 		$regions = $this->getRegions();
 
 		$permit = $regions->checkRegionAccess($format, $objectInDB) && $regions->checkRegionAccessToParent($format, $objectInDB);
+		
 		if($permit){
 			$regions->addRegionByDefault($format, $dbFields, $dbValues);
 		} else {
@@ -64,9 +65,11 @@ class PXTriggerDatabaseMultipleregions extends PXAbstractDatabaseTrigger {
 	function OnBeforeNormalizePathBuildQuery($objectFormat, $exObjectFormat, &$table) {
 		$regions = $this->getRegions();
 		
-		if($regions->isRegionalObject($objectFormat) && $regions->isRegionalObject($exObjectFormat)){
+		if($regions->isRegionalObject($objectFormat) && $regions->isRegionalObject($exObjectFormat)) {
 			$regionFilter = $regions->findByRegion();
-			$table['exWhere'] = (strlen($table['exWhere']) ? "({$table['exWhere']}) AND $regionFilter" : $regionFilter) . " AND ";
+	
+			strlen($table['exWhere']) && $table['exWhere'] .= " and ";
+			$table['exWhere'] .= $regionFilter;
 		}
 	}
 

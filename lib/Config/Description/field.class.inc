@@ -24,8 +24,8 @@ class PXFieldDescription {
 	var $comments        = '';
 	var $groupName       = NULL;
 
-	public function __construct($nodeattrs, &$app, &$type) {
-		$this->typeDescription = & $type;
+	public function __construct($nodeattrs, &$app, $type) {
+		$this->typeDescription = $type;
 
 		foreach ($nodeattrs as $node) {
 			$name  = $node->name;

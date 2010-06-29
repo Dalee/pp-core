@@ -1079,3 +1079,55 @@ div.field-group-inline {
 div.field-group-inline label {
 	text-decoration: underline;
 }
+
+
+
+/* new tabs menu */
+
+ul.topmenu {
+	margin: 0;
+	clear: both;
+	overflow: hidden;
+	float: right;
+	list-style: none;
+	margin: 7px 0 0 0;
+	backgroud: red;
+	font: 10px Verdana, Arial, serif;
+}
+ul.topmenu li {
+	height: 27px;
+	float: left;
+	background: url(../i/tab/tab.gif) 0 0 no-repeat;
+	padding: 0;
+	position: relative;
+	overflow: hidden;
+}
+ul.topmenu li a {
+	display: block;
+	padding: 7px 13px;
+	height: 20px;
+	color: #000;
+	text-decoration: none;
+	display: inline-block;
+}
+ul.topmenu li b {
+	background: url(../i/tab/tab.gif) 100% 0 no-repeat;
+	width: 4px;
+	height: 27px;
+	display: block;
+	position: absolute;
+	top: 0;
+	right: 0;
+}
+ul.topmenu li.current {
+	background: url(../i/tab/tab-a.gif) 0 0 no-repeat;
+}
+ul.topmenu li.current b {
+	background: url(../i/tab/tab-a.gif) 100% 0 no-repeat;
+}
+
+/* end new tabs menu */
+
+body.objects ul.list {
+	margin-left: 3px;
+}

@@ -339,6 +339,7 @@ class PXApplication {
 			$curDir->sourceDir    = dirname($fileName).DIRECTORY_SEPARATOR;
 
 			$displayfield = trim($domDirectory->getAttribute('displayfield'));
+
 			$curDir->displayField = strlen($displayfield) ? $displayfield : 'title';
 
 			$location = $domDirectory->getAttribute('location');
@@ -480,6 +481,11 @@ class PXApplication {
 		foreach($domPlugins as $domPlugin) {
 			$plugin = new PXPluginDescription();
 			$plugin->setAttrs($domPlugin->attributes());
+
+			if($params = @$domPlugin->param) {
+				$plugin->setParams($params);
+			}
+
 			$this->plugins[$plugin->getName()] = $plugin;
 			$plugin->getPlugin($this); //initialize plugin
 		}
@@ -537,6 +543,8 @@ class PXApplication {
 			$value = PXml::attributePrototype($name, $value); //XML style attributes compatibility
 		}
 		$this->setTrigger($args, $type);
+
+		return $this;
 	}
 	
 	/**

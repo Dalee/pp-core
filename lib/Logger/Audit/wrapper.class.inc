@@ -119,27 +119,27 @@ class PXAdminAuditWrapper {
 	<H2>Filter</H2>
 
 	<style type="text/css">
-		form {
+		.content form {
 			padding: 0;
 		}
 
-		label, select, form input {
+		.content label, .content select, .content form input {
 			display: block;
 			width: 12%;
 			float: left;
 			margin: 1em;
 		}
 
-		label {
+		.content label {
 			text-align: right;
 		}
 
-		select, form input, form span.datetime {
+		.content select, .content form input, .content form span.datetime {
 			width: 30%;
 			display: block;
 		}
 
-		form input[type='hidden'] {
+		.content form input[type='hidden'] {
 			display: none;
 		}
 
@@ -147,32 +147,32 @@ class PXAdminAuditWrapper {
 			clear: left;
 		}
 
-		table {
+		.content table {
 			clear: left;
 		}
 
-		form .datetime {
+		.content form .datetime {
 			float: left;
 			margin: 1em;
 		}
 
-		form .datetime input {
+		.content form .datetime input {
 			margin: 0;
 		}
 
-		form input[type='submit'] {
+		.content form input[type='submit'] {
 			clear: left;
 			float: right;
 		}
 
-		legend {
+		.content legend {
 			color: #000000;
 			font-weight: bold;
 			font-size: 1.2em;
 			padding: 0 0.5em;
 		}
 
-		fieldset {
+		.content fieldset {
 			float: left;
 			width: 48%;
 			margin: 1em 0 1em 2%;
@@ -270,6 +270,12 @@ HTML;
 				continue;
 			}
 			
+			if(is_array($var)) {
+				$var = array_map(array($this->db, "escapeString"), $var);
+			} else {
+				$var = $this->db->escapeString($var);
+			}
+
 			if(is_array($var)) {
 				$var = array_map(array($this->db, "escapeString"), $var);
 			} else {

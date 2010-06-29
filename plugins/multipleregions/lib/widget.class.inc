@@ -9,7 +9,7 @@ class PXTabbedMenuRegionChanger extends PXAdminWidget {
 			){
 				$regions = PXMultiRegions::getInstance();
 				if($regionsData = $regions->getRegionsAsDirectory() ){
-					$html             .= sprintf('<span style="margin: 0 0 0 5px; color: #fff;">Выберите регион:</span><br/><div id="region_selector" style="display: inline-block;"><form method="POST" action="%s">&nbsp;', PXRegistry::getRequest()->GetRequestUri());
+					$html             .= sprintf('<span style="margin: 0 0 0 5px; color: #fff;">Выберите регион:</span><br/><div id="region_selector"><form method="POST" action="%s">&nbsp;', PXRegistry::getRequest()->GetRequestUri());
 					$varName           = PXMultiRegions::REGION_MARK . '[rid]';
 					$regionsData[null] = '- ПОКАЗАТЬ ВСЕ РЕГИОНЫ -';
 					$regionSelector    = new PXInputDropDown($varName, $regions->getRid(), $regionsData);

@@ -1,5 +1,5 @@
 <?php
-class PVersionData {
+class PXVersionsData {
 	private $db;
 	private $filter;
 	private $app;
@@ -13,8 +13,9 @@ class PVersionData {
 	}
 
 	public function getData($page, $onPage, $count, $author = true) {
-		$offset = null;
-		$limit = null;
+		$offset = 0;
+		$limit = 10;
+
 		if($count > $onPage) {
 			$limit = $onPage;
 			$offset = ($page-1) * $onPage;
