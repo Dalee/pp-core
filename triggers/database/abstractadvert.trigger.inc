@@ -63,7 +63,7 @@ class PXTriggerDatabaseAbstractAdvert extends PXAbstractDatabaseTrigger {
 	
 	function adbanner($object) {
 		$name = $this->path."/adv_b".$object['id'].".dat";
-		
+
 		$this->normalizeFiles($object);
 		$this->_writeCache($name, implode("\n", $this->writeBanner($object)) . "\n", $object['status']);
 
@@ -78,6 +78,7 @@ class PXTriggerDatabaseAbstractAdvert extends PXAbstractDatabaseTrigger {
 		$text = $object['id']."\n";
 		$text .= $object['type']."\n";
 		$attached = $this->db->GetObjectsByIdArray($this->dtBanner, TRUE, array_keys($this->db->GetLinks($this->refName, $this->dtPlace->id, $object['id'])));
+
 		foreach ($attached as $k=>$v) {
 			if($v['status']) {
 				$text .= $k."\n";
@@ -87,10 +88,14 @@ class PXTriggerDatabaseAbstractAdvert extends PXAbstractDatabaseTrigger {
 		$this->_writeCache($name, $text, $object['status']);
 	}
 
-	function _writeCache($name, $text, $status) { 
+	function _writeCache($name, $text, $status) {
 		if(!$status){
 			$handle = opendir($this->path);
-			if (!$handle) return;
+
+			if (!$handle) {
+				return;
+			}
+
 			@unlink($name);
 			closedir($handle);
 		} else {
@@ -98,6 +103,7 @@ class PXTriggerDatabaseAbstractAdvert extends PXAbstractDatabaseTrigger {
 			fwrite($fd, $text);
 			fclose($fd);
 		}
+
 	}
 	
 	function _getFormat($object) {
