@@ -21,9 +21,7 @@ class PXDisplayTypeHidden extends PXDisplayType {
 
 	function buildCell($field, $object, $param=NULL) {
 		$value = is_string($object[$field->name]) ? strip_tags($object[$field->name]) : $object[$field->name];
-		strlen($_ = include 'subdirectory.helper.inc') && $value = $_;
-
-		return $value;
+		return $this->getSubDirectoryIfExists($field, $object, $value);
 	}
 }
 ?>

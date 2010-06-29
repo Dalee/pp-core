@@ -18,9 +18,7 @@ class PXDisplayTypeStatic extends PXDisplayType {
 		$value = $object[$field->name];
 		$value =  isset($field->values->values[$value]) && isset($field->values->values[$value]['title']) ? $field->values->values[$value]['title'] : $value;
 		
-		strlen($_ = include 'subdirectory.helper.inc') && $value = $_;
-
-		return $value;
+		return $this->getSubDirectoryIfExists($field, $object, $value);
 	}
 
 	function preModifyObject($field, $object, $param=NULL) {

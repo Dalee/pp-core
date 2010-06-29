@@ -148,5 +148,17 @@ class PXDisplayType {
 		$value = is_string($object[$field->name]) ? strip_tags($object[$field->name]) : $object[$field->name];
 		return $field->displayType->name.' - '.$value;
 	}
+
+
+	protected function getSubDirectoryIfExists($field, $object, $value) {
+		$_ = "";
+
+		if($directory = @PXRegistry::getApp()->directory[$field->source]) {
+			$dir_object = $directory->values[$object[$field->name]];
+			$_ =  (string) @$dir_object[$directory->displayField];
+		}
+
+		return strlen($_) ? $_ : $value;
+	}
 }
 ?>

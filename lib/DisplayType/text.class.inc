@@ -23,9 +23,7 @@ class PXDisplayTypeText extends PXDisplayType {
 		$value = strip_tags($object[$field->name]);
 		$value = strlen($value) > $trunc ? substr($value, 0, $trunc).'&hellip;' : $value;
 		
-		strlen($_ = include 'subdirectory.helper.inc') && $value = $_;
-
-		return $value;
+		return $this->getSubDirectoryIfExists($field, $object, $value);
 	}
 }
 ?>
