@@ -1,0 +1,2443 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+  <html xmlns="http://www.w3.org/1999/xhtml">
+		<head>
+			<!-- template designed by Marco Von Ballmoos  -->
+			<title>Docs For Class PXDatabase</title>
+			<link rel="stylesheet" href="../media/stylesheet.css" />
+						<script src="../media/lib/classTree.js"></script>
+												<script language="javascript" type="text/javascript">
+				var imgPlus = new Image();
+				var imgMinus = new Image();
+				imgPlus.src = "../media/images/plus.png";
+				imgMinus.src = "../media/images/minus.png";
+				
+				function showNode(Node){
+							switch(navigator.family){
+								case 'nn4':
+									// Nav 4.x code fork...
+							var oTable = document.layers["span" + Node];
+							var oImg = document.layers["img" + Node];
+									break;
+								case 'ie4':
+									// IE 4/5 code fork...
+							var oTable = document.all["span" + Node];
+							var oImg = document.all["img" + Node];
+									break;
+								case 'gecko':
+									// Standards Compliant code fork...
+							var oTable = document.getElementById("span" + Node);
+							var oImg = document.getElementById("img" + Node);
+									break;
+							}
+					oImg.src = imgMinus.src;
+					oTable.style.display = "block";
+				}
+				
+				function hideNode(Node){
+							switch(navigator.family){
+								case 'nn4':
+									// Nav 4.x code fork...
+							var oTable = document.layers["span" + Node];
+							var oImg = document.layers["img" + Node];
+									break;
+								case 'ie4':
+									// IE 4/5 code fork...
+							var oTable = document.all["span" + Node];
+							var oImg = document.all["img" + Node];
+									break;
+								case 'gecko':
+									// Standards Compliant code fork...
+							var oTable = document.getElementById("span" + Node);
+							var oImg = document.getElementById("img" + Node);
+									break;
+							}
+					oImg.src = imgPlus.src;
+					oTable.style.display = "none";
+				}
+				
+				function nodeIsVisible(Node){
+							switch(navigator.family){
+								case 'nn4':
+									// Nav 4.x code fork...
+							var oTable = document.layers["span" + Node];
+									break;
+								case 'ie4':
+									// IE 4/5 code fork...
+							var oTable = document.all["span" + Node];
+									break;
+								case 'gecko':
+									// Standards Compliant code fork...
+							var oTable = document.getElementById("span" + Node);
+									break;
+							}
+					return (oTable && oTable.style.display == "block");
+				}
+				
+				function toggleNodeVisibility(Node){
+					if (nodeIsVisible(Node)){
+						hideNode(Node);
+					}else{
+						showNode(Node);
+					}
+				}
+			</script>
+					</head>
+		<body>
+			<div class="page-body">			
+<h2 class="class-name"><img src="../media/images/Class_logo.png"
+														alt=" Class"
+														title=" Class"
+														style="vertical-align: middle"> PXDatabase</h2>
+
+<a name="sec-description"></a>
+<div class="info-box">
+	<div class="info-box-title">Description</div>
+	<div class="nav-bar">
+					<span class="disabled">Description</span> |
+													<a href="#sec-var-summary">Vars</a> (<a href="#sec-vars">details</a>)
+						|											<a href="#sec-method-summary">Methods</a> (<a href="#sec-methods">details</a>)
+						
+					</div>
+	<div class="info-box-body">
+        		<!-- ========== Info from phpDoc block ========= -->
+		<p class="notes">
+			Located in <a class="field" href="_lib---Database---database.class.inc.html">/lib/Database/database.class.inc</a> (line <span class="field">22</span>)
+		</p>
+		
+				
+		<pre><a href="../ProximaPortal/NLSQLDatabaseAdapter.html">NLSQLDatabaseAdapter</a>
+   |
+   --PXDatabase</pre>
+	
+			</div>
+</div>
+
+
+
+	<a name="sec-var-summary"></a>
+	<div class="info-box">
+		<div class="info-box-title">Variable Summary</span></div>
+		<div class="nav-bar">
+			<a href="#sec-description">Description</a> |
+						<span class="disabled">Vars</span> (<a href="#sec-vars">details</a>)
+							| 
+									<a href="#sec-method-summary">Methods</a> (<a href="#sec-methods">details</a>)
+							
+								</div>
+		<div class="info-box-body">
+			<div class="var-summary">
+																																																<div class="var-title">
+					<img src="../media/images/Variable.png" alt=" " />
+					<span class="var-type"><a href="../ProximaPortal/PXApplication.html">PXApplication</a></span>
+					<a href="#$app" title="details" class="var-name">$app</a>
+				</div>
+																<div class="var-title">
+					<img src="../media/images/Variable.png" alt=" " />
+					<span class="var-type">triggers</span>
+					<a href="#$triggers" title="details" class="var-name">$triggers</a>
+				</div>
+																<div class="var-title">
+					<img src="../media/images/Variable.png" alt=" " />
+					<span class="var-type">array</span>
+					<a href="#$types" title="details" class="var-name">$types</a>
+				</div>
+																<div class="var-title">
+					<img src="../media/images/Variable.png" alt=" " />
+					<span class="var-type"><a href="../ProximaPortal/PXUser.html">PXUser</a></span>
+					<a href="#$user" title="details" class="var-name">$user</a>
+				</div>
+											</div>
+		</div>
+	</div>
+
+	<a name="sec-method-summary"></a>
+	<div class="info-box">
+		<div class="info-box-title">Method Summary</span></div>
+		<div class="nav-bar">
+			<a href="#sec-description">Description</a> |
+																		<a href="#sec-var-summary">Vars</a> (<a href="#sec-vars">details</a>)
+				 
+				|
+						<span class="disabled">Methods</span> (<a href="#sec-methods">details</a>)
+		</div>
+		<div class="info-box-body">			
+			<div class="method-summary">
+																																																																																																																																																																																																																																																																																																																																																																																																							
+				<div class="method-definition">
+					<img src="../media/images/Constructor.png" alt=" "/>
+											<span class="method-result">PXDatabase</span>
+										<a href="#PXDatabase" title="details" class="method-name">PXDatabase</a>
+											(<span class="var-type"><a href="../ProximaPortal/PXApplication.html">PXApplication</a></span>&nbsp;<span class="var-name">$app</span>, [<span class="var-type"></span>&nbsp;<span class="var-name">$dbDescriptionName</span> = <span class="var-default">'database'</span>])
+									</div>
+															
+				<div class="method-definition">
+					<img src="../media/images/Method.png" alt=" "/>
+											<span class="method-result">void</span>
+										<a href="#AddContentObject" title="details" class="method-name">AddContentObject</a>
+											(<span class="var-type"><a href="../ProximaPortal/PXTypeDescription.html">PXTypeDescription</a></span>&nbsp;<span class="var-name">$format</span>, <span class="var-type">Array</span>&nbsp;<span class="var-name">$object</span>)
+									</div>
+															
+				<div class="method-definition">
+					<img src="../media/images/Method.png" alt=" "/>
+											<span class="method-result">void</span>
+										<a href="#AddContentObjects" title="details" class="method-name">AddContentObjects</a>
+											(<span class="var-type"><a href="../ProximaPortal/PXTypeDescription.html">PXTypeDescription</a></span>&nbsp;<span class="var-name">$format</span>, <span class="var-type">Array</span>&nbsp;<span class="var-name">$objectsArray</span>)
+									</div>
+															
+				<div class="method-definition">
+					<img src="../media/images/Method.png" alt=" "/>
+											<span class="method-result">void</span>
+										<a href="#cloneContentObject" title="details" class="method-name">cloneContentObject</a>
+											(<span class="var-type"></span>&nbsp;<span class="var-name">&$format</span>, <span class="var-type"></span>&nbsp;<span class="var-name">$donorId</span>)
+									</div>
+															
+				<div class="method-definition">
+					<img src="../media/images/Method.png" alt=" "/>
+											<span class="method-result">void</span>
+										<a href="#DeleteContentObject" title="details" class="method-name">DeleteContentObject</a>
+											(<span class="var-type"><a href="../ProximaPortal/PXTypeDescription.html">PXTypeDescription</a></span>&nbsp;<span class="var-name">$format</span>, <span class="var-type">Array</span>&nbsp;<span class="var-name">$objectId</span>)
+									</div>
+															
+				<div class="method-definition">
+					<img src="../media/images/Method.png" alt=" "/>
+											<span class="method-result">void</span>
+										<a href="#DownContentObject" title="details" class="method-name">DownContentObject</a>
+											(<span class="var-type"><a href="../ProximaPortal/PXTypeDescription.html">PXTypeDescription</a></span>&nbsp;<span class="var-name">$format</span>, <span class="var-type">Array</span>&nbsp;<span class="var-name">$objectId</span>)
+									</div>
+															
+				<div class="method-definition">
+					<img src="../media/images/Method.png" alt=" "/>
+											<span class="method-result">void</span>
+										<a href="#filterByAccess" title="details" class="method-name">filterByAccess</a>
+											(<span class="var-type"></span>&nbsp;<span class="var-name">$what</span>, <span class="var-type"></span>&nbsp;<span class="var-name">$format</span>, <span class="var-type"></span>&nbsp;<span class="var-name">&$table</span>)
+									</div>
+															
+				<div class="method-definition">
+					<img src="../media/images/Method.png" alt=" "/>
+											<span class="method-result">void</span>
+										<a href="#getAllLinks" title="details" class="method-name">getAllLinks</a>
+											(<span class="var-type"></span>&nbsp;<span class="var-name">$reference</span>)
+									</div>
+															
+				<div class="method-definition">
+					<img src="../media/images/Method.png" alt=" "/>
+											<span class="method-result">void</span>
+										<a href="#GetLinks" title="details" class="method-name">GetLinks</a>
+											(<span class="var-type">Mixed</span>&nbsp;<span class="var-name">$reference</span>, <span class="var-type"><a href="../ProximaPortal/PXTypeDescription.html">PXTypeDescription</a></span>&nbsp;<span class="var-name">$format</span>, <span class="var-type">Mixed</span>&nbsp;<span class="var-name">$id</span>)
+									</div>
+															
+				<div class="method-definition">
+					<img src="../media/images/Method.png" alt=" "/>
+											<span class="method-result">void</span>
+										<a href="#GetLinksCount" title="details" class="method-name">GetLinksCount</a>
+											(<span class="var-type">Mixed</span>&nbsp;<span class="var-name">$reference</span>, <span class="var-type"><a href="../ProximaPortal/PXTypeDescription.html">PXTypeDescription</a></span>&nbsp;<span class="var-name">$format</span>, <span class="var-type">Mixed</span>&nbsp;<span class="var-name">$id</span>)
+									</div>
+															
+				<div class="method-definition">
+					<img src="../media/images/Method.png" alt=" "/>
+											<span class="method-result">void</span>
+										<a href="#getLinksLimited" title="details" class="method-name">getLinksLimited</a>
+											(<span class="var-type">Mixed</span>&nbsp;<span class="var-name">$reference</span>, <span class="var-type"><a href="../ProximaPortal/PXTypeDescription.html">PXTypeDescription</a></span>&nbsp;<span class="var-name">$format</span>, <span class="var-type">Mixed</span>&nbsp;<span class="var-name">$id</span>, <span class="var-type"></span>&nbsp;<span class="var-name">$limit</span>, <span class="var-type"></span>&nbsp;<span class="var-name">$offset</span>)
+									</div>
+															
+				<div class="method-definition">
+					<img src="../media/images/Method.png" alt=" "/>
+											<span class="method-result">Array</span>
+										<a href="#GetObjectById" title="details" class="method-name">GetObjectById</a>
+											(<span class="var-type"><a href="../ProximaPortal/PXTypeDescription.html">PXTypeDescription</a></span>&nbsp;<span class="var-name">$format</span>, <span class="var-type">Integer</span>&nbsp;<span class="var-name">$id</span>)
+									</div>
+															
+				<div class="method-definition">
+					<img src="../media/images/Method.png" alt=" "/>
+											<span class="method-result">Array</span>
+										<a href="#GetObjects" title="details" class="method-name">GetObjects</a>
+											(<span class="var-type"><a href="../ProximaPortal/PXTypeDescription.html">PXTypeDescription</a></span>&nbsp;<span class="var-name">$format</span>, <span class="var-type">String</span>&nbsp;<span class="var-name">$status</span>, [<span class="var-type">Integer</span>&nbsp;<span class="var-name">$mode</span> = <span class="var-default">DB_SELECT_TABLE</span>], [<span class="var-type"></span>&nbsp;<span class="var-name">$order</span> = <span class="var-default">NULL</span>])
+									</div>
+															
+				<div class="method-definition">
+					<img src="../media/images/Method.png" alt=" "/>
+											<span class="method-result">Array</span>
+										<a href="#GetObjectsByField" title="details" class="method-name">GetObjectsByField</a>
+											(<span class="var-type"><a href="../ProximaPortal/PXTypeDescription.html">PXTypeDescription</a></span>&nbsp;<span class="var-name">$format</span>, <span class="var-type">String</span>&nbsp;<span class="var-name">$status</span>, <span class="var-type">String</span>&nbsp;<span class="var-name">$field</span>, <span class="var-type">String</span>&nbsp;<span class="var-name">$value</span>, [<span class="var-type">Integer</span>&nbsp;<span class="var-name">$mode</span> = <span class="var-default">DB_SELECT_TABLE</span>], [<span class="var-type"></span>&nbsp;<span class="var-name">$order</span> = <span class="var-default">NULL</span>])
+									</div>
+															
+				<div class="method-definition">
+					<img src="../media/images/Method.png" alt=" "/>
+											<span class="method-result">void</span>
+										<a href="#GetObjectsByFieldLike" title="details" class="method-name">GetObjectsByFieldLike</a>
+											(<span class="var-type"></span>&nbsp;<span class="var-name">$format</span>, <span class="var-type"></span>&nbsp;<span class="var-name">$status</span>, <span class="var-type"></span>&nbsp;<span class="var-name">$field</span>, <span class="var-type"></span>&nbsp;<span class="var-name">$value</span>, [<span class="var-type"></span>&nbsp;<span class="var-name">$mode</span> = <span class="var-default">DB_SELECT_TABLE</span>], [<span class="var-type"></span>&nbsp;<span class="var-name">$order</span> = <span class="var-default">NULL</span>])
+									</div>
+															
+				<div class="method-definition">
+					<img src="../media/images/Method.png" alt=" "/>
+											<span class="method-result">void</span>
+										<a href="#GetObjectsByFieldLikeLimited" title="details" class="method-name">GetObjectsByFieldLikeLimited</a>
+											(<span class="var-type"></span>&nbsp;<span class="var-name">$format</span>, <span class="var-type"></span>&nbsp;<span class="var-name">$status</span>, <span class="var-type"></span>&nbsp;<span class="var-name">$field</span>, <span class="var-type"></span>&nbsp;<span class="var-name">$value</span>, <span class="var-type"></span>&nbsp;<span class="var-name">$limit</span>, <span class="var-type"></span>&nbsp;<span class="var-name">$offset</span>, [<span class="var-type"></span>&nbsp;<span class="var-name">$mode</span> = <span class="var-default">DB_SELECT_TABLE</span>], [<span class="var-type"></span>&nbsp;<span class="var-name">$order</span> = <span class="var-default">NULL</span>])
+									</div>
+															
+				<div class="method-definition">
+					<img src="../media/images/Method.png" alt=" "/>
+											<span class="method-result">Array</span>
+										<a href="#GetObjectsByFieldLimited" title="details" class="method-name">GetObjectsByFieldLimited</a>
+											(<span class="var-type"><a href="../ProximaPortal/PXTypeDescription.html">PXTypeDescription</a></span>&nbsp;<span class="var-name">$format</span>, <span class="var-type">String</span>&nbsp;<span class="var-name">$status</span>, <span class="var-type">String</span>&nbsp;<span class="var-name">$field</span>, <span class="var-type">String</span>&nbsp;<span class="var-name">$value</span>, <span class="var-type">Integer</span>&nbsp;<span class="var-name">$limit</span>, <span class="var-type">Integer</span>&nbsp;<span class="var-name">$offset</span>, [<span class="var-type">Integer</span>&nbsp;<span class="var-name">$mode</span> = <span class="var-default">DB_SELECT_TABLE</span>], [<span class="var-type"></span>&nbsp;<span class="var-name">$order</span> = <span class="var-default">NULL</span>])
+									</div>
+															
+				<div class="method-definition">
+					<img src="../media/images/Method.png" alt=" "/>
+											<span class="method-result">void</span>
+										<a href="#GetObjectsByFieldNotEmpty" title="details" class="method-name">GetObjectsByFieldNotEmpty</a>
+											(<span class="var-type"></span>&nbsp;<span class="var-name">$format</span>, <span class="var-type"></span>&nbsp;<span class="var-name">$status</span>, <span class="var-type"></span>&nbsp;<span class="var-name">$field</span>, [<span class="var-type"></span>&nbsp;<span class="var-name">$mode</span> = <span class="var-default">DB_SELECT_TABLE</span>], [<span class="var-type"></span>&nbsp;<span class="var-name">$order</span> = <span class="var-default">NULL</span>])
+									</div>
+															
+				<div class="method-definition">
+					<img src="../media/images/Method.png" alt=" "/>
+											<span class="method-result">void</span>
+										<a href="#GetObjectsByFieldNotEmptyLimited" title="details" class="method-name">GetObjectsByFieldNotEmptyLimited</a>
+											(<span class="var-type"></span>&nbsp;<span class="var-name">$format</span>, <span class="var-type"></span>&nbsp;<span class="var-name">$status</span>, <span class="var-type"></span>&nbsp;<span class="var-name">$field</span>, <span class="var-type"></span>&nbsp;<span class="var-name">$limit</span>, <span class="var-type"></span>&nbsp;<span class="var-name">$offset</span>, [<span class="var-type"></span>&nbsp;<span class="var-name">$mode</span> = <span class="var-default">DB_SELECT_TABLE</span>], [<span class="var-type"></span>&nbsp;<span class="var-name">$order</span> = <span class="var-default">NULL</span>])
+									</div>
+															
+				<div class="method-definition">
+					<img src="../media/images/Method.png" alt=" "/>
+											<span class="method-result">Array</span>
+										<a href="#GetObjectsByIdArray" title="details" class="method-name">GetObjectsByIdArray</a>
+											(<span class="var-type"><a href="../ProximaPortal/PXTypeDescription.html">PXTypeDescription</a></span>&nbsp;<span class="var-name">$format</span>, <span class="var-type">Array</span>&nbsp;<span class="var-name">$status</span>, <span class="var-type">Integer</span>&nbsp;<span class="var-name">$idArray</span>, [<span class="var-type"></span>&nbsp;<span class="var-name">$mode</span> = <span class="var-default">DB_SELECT_TABLE</span>], [<span class="var-type"></span>&nbsp;<span class="var-name">$order</span> = <span class="var-default">NULL</span>])
+									</div>
+															
+				<div class="method-definition">
+					<img src="../media/images/Method.png" alt=" "/>
+											<span class="method-result">Array</span>
+										<a href="#GetObjectsByParent" title="details" class="method-name">GetObjectsByParent</a>
+											(<span class="var-type"><a href="../ProximaPortal/PXTypeDescription.html">PXTypeDescription</a></span>&nbsp;<span class="var-name">$format</span>, <span class="var-type">String</span>&nbsp;<span class="var-name">$status</span>, <span class="var-type">Integer</span>&nbsp;<span class="var-name">$parent</span>, [<span class="var-type">Integer</span>&nbsp;<span class="var-name">$mode</span> = <span class="var-default">DB_SELECT_TABLE</span>], [<span class="var-type"></span>&nbsp;<span class="var-name">$order</span> = <span class="var-default">NULL</span>])
+									</div>
+															
+				<div class="method-definition">
+					<img src="../media/images/Method.png" alt=" "/>
+											<span class="method-result">Array</span>
+										<a href="#GetObjectsByParentLimited" title="details" class="method-name">GetObjectsByParentLimited</a>
+											(<span class="var-type"><a href="../ProximaPortal/PXTypeDescription.html">PXTypeDescription</a></span>&nbsp;<span class="var-name">$format</span>, <span class="var-type">String</span>&nbsp;<span class="var-name">$status</span>, <span class="var-type">Integer</span>&nbsp;<span class="var-name">$parent</span>, <span class="var-type">Integer</span>&nbsp;<span class="var-name">$limit</span>, <span class="var-type">Integer</span>&nbsp;<span class="var-name">$offset</span>, [<span class="var-type">Integer</span>&nbsp;<span class="var-name">$mode</span> = <span class="var-default">DB_SELECT_TABLE</span>], [<span class="var-type"></span>&nbsp;<span class="var-name">$order</span> = <span class="var-default">NULL</span>])
+									</div>
+															
+				<div class="method-definition">
+					<img src="../media/images/Method.png" alt=" "/>
+											<span class="method-result">Array</span>
+										<a href="#GetObjectsBySearchWord" title="details" class="method-name">GetObjectsBySearchWord</a>
+											(<span class="var-type"><a href="../ProximaPortal/PXTypeDescription.html">PXTypeDescription</a></span>&nbsp;<span class="var-name">$format</span>, <span class="var-type">String</span>&nbsp;<span class="var-name">$status</span>, <span class="var-type">String</span>&nbsp;<span class="var-name">$word</span>, [<span class="var-type">Integer</span>&nbsp;<span class="var-name">$mode</span> = <span class="var-default">DB_SELECT_TABLE</span>], [<span class="var-type"></span>&nbsp;<span class="var-name">$order</span> = <span class="var-default">NULL</span>])
+									</div>
+															
+				<div class="method-definition">
+					<img src="../media/images/Method.png" alt=" "/>
+											<span class="method-result">Array</span>
+										<a href="#GetObjectsBySearchWordLimited" title="details" class="method-name">GetObjectsBySearchWordLimited</a>
+											(<span class="var-type"><a href="../ProximaPortal/PXTypeDescription.html">PXTypeDescription</a></span>&nbsp;<span class="var-name">$format</span>, <span class="var-type">String</span>&nbsp;<span class="var-name">$status</span>, <span class="var-type">String</span>&nbsp;<span class="var-name">$word</span>, <span class="var-type">Integer</span>&nbsp;<span class="var-name">$limit</span>, <span class="var-type">Integer</span>&nbsp;<span class="var-name">$offset</span>, [<span class="var-type">Integer</span>&nbsp;<span class="var-name">$mode</span> = <span class="var-default">DB_SELECT_TABLE</span>], [<span class="var-type"></span>&nbsp;<span class="var-name">$order</span> = <span class="var-default">NULL</span>])
+									</div>
+															
+				<div class="method-definition">
+					<img src="../media/images/Method.png" alt=" "/>
+											<span class="method-result">Array</span>
+										<a href="#GetObjectsByWhere" title="details" class="method-name">GetObjectsByWhere</a>
+											(<span class="var-type"><a href="../ProximaPortal/PXTypeDescription.html">PXTypeDescription</a></span>&nbsp;<span class="var-name">$format</span>, <span class="var-type">String</span>&nbsp;<span class="var-name">$status</span>, <span class="var-type"></span>&nbsp;<span class="var-name">$whereClause</span>, [<span class="var-type">Integer</span>&nbsp;<span class="var-name">$mode</span> = <span class="var-default">DB_SELECT_TABLE</span>], [<span class="var-type"></span>&nbsp;<span class="var-name">$order</span> = <span class="var-default">NULL</span>], <span class="var-type">String</span>&nbsp;<span class="var-name">$where</span>)
+									</div>
+															
+				<div class="method-definition">
+					<img src="../media/images/Method.png" alt=" "/>
+											<span class="method-result">Array</span>
+										<a href="#GetObjectsByWhereLimited" title="details" class="method-name">GetObjectsByWhereLimited</a>
+											(<span class="var-type"><a href="../ProximaPortal/PXTypeDescription.html">PXTypeDescription</a></span>&nbsp;<span class="var-name">$format</span>, <span class="var-type">String</span>&nbsp;<span class="var-name">$status</span>, <span class="var-type"></span>&nbsp;<span class="var-name">$whereClause</span>, <span class="var-type">Integer</span>&nbsp;<span class="var-name">$limit</span>, <span class="var-type">Integer</span>&nbsp;<span class="var-name">$offset</span>, [<span class="var-type">Integer</span>&nbsp;<span class="var-name">$mode</span> = <span class="var-default">DB_SELECT_TABLE</span>], [<span class="var-type"></span>&nbsp;<span class="var-name">$order</span> = <span class="var-default">NULL</span>], <span class="var-type">String</span>&nbsp;<span class="var-name">$field</span>, <span class="var-type">String</span>&nbsp;<span class="var-name">$value</span>)
+									</div>
+															
+				<div class="method-definition">
+					<img src="../media/images/Method.png" alt=" "/>
+											<span class="method-result">Array</span>
+										<a href="#GetObjectsLimited" title="details" class="method-name">GetObjectsLimited</a>
+											(<span class="var-type"><a href="../ProximaPortal/PXTypeDescription.html">PXTypeDescription</a></span>&nbsp;<span class="var-name">$format</span>, <span class="var-type">String</span>&nbsp;<span class="var-name">$status</span>, <span class="var-type">Integer</span>&nbsp;<span class="var-name">$limit</span>, <span class="var-type">Integer</span>&nbsp;<span class="var-name">$offset</span>, [<span class="var-type">Integer</span>&nbsp;<span class="var-name">$mode</span> = <span class="var-default">DB_SELECT_TABLE</span>], [<span class="var-type"></span>&nbsp;<span class="var-name">$order</span> = <span class="var-default">NULL</span>])
+									</div>
+															
+				<div class="method-definition">
+					<img src="../media/images/Method.png" alt=" "/>
+											<span class="method-result">void</span>
+										<a href="#LoadDirectoriesAutomatic" title="details" class="method-name">LoadDirectoriesAutomatic</a>
+											(<span class="var-type"></span>&nbsp;<span class="var-name">&$directories</span>, <span class="var-type">Array</span>&nbsp;<span class="var-name">$directories</span>)
+									</div>
+															
+				<div class="method-definition">
+					<img src="../media/images/Method.png" alt=" "/>
+											<span class="method-result">void</span>
+										<a href="#LoadDirectoriesByType" title="details" class="method-name">LoadDirectoriesByType</a>
+											(<span class="var-type"></span>&nbsp;<span class="var-name">&$format</span>, [<span class="var-type"></span>&nbsp;<span class="var-name">$object</span> = <span class="var-default">NULL</span>], <span class="var-type">Mixed</span>&nbsp;<span class="var-name">$format</span>)
+									</div>
+															
+				<div class="method-definition">
+					<img src="../media/images/Method.png" alt=" "/>
+											<span class="method-result">void</span>
+										<a href="#LoadDirectory" title="details" class="method-name">LoadDirectory</a>
+											(<span class="var-type"><a href="../ProximaPortal/PXDirectoryDescription.html">PXDirectoryDescription</a></span>&nbsp;<span class="var-name">$directory</span>, <span class="var-type"></span>&nbsp;<span class="var-name">$object</span>, [<span class="var-type"></span>&nbsp;<span class="var-name">$addDefault</span> = <span class="var-default">true</span>], [<span class="var-type"></span>&nbsp;<span class="var-name">$format</span> = <span class="var-default">NULL</span>])
+									</div>
+															
+				<div class="method-definition">
+					<img src="../media/images/Method.png" alt=" "/>
+											<span class="method-result">void</span>
+										<a href="#LoadSQLDirectory" title="details" class="method-name">LoadSQLDirectory</a>
+											(<span class="var-type"></span>&nbsp;<span class="var-name">&$directory</span>, [<span class="var-type"></span>&nbsp;<span class="var-name">$addDefault</span> = <span class="var-default">true</span>], [<span class="var-type"></span>&nbsp;<span class="var-name">$object</span> = <span class="var-default">NULL</span>], [<span class="var-type"></span>&nbsp;<span class="var-name">$format</span> = <span class="var-default">NULL</span>], <span class="var-type"><a href="../ProximaPortal/PXDirectoryDescription.html">PXDirectoryDescription</a></span>&nbsp;<span class="var-name">$directory</span>)
+									</div>
+															
+				<div class="method-definition">
+					<img src="../media/images/Method.png" alt=" "/>
+											<span class="method-result">void</span>
+										<a href="#ModifyContentObject" title="details" class="method-name">ModifyContentObject</a>
+											(<span class="var-type"><a href="../ProximaPortal/PXTypeDescription.html">PXTypeDescription</a></span>&nbsp;<span class="var-name">$format</span>, <span class="var-type">Array</span>&nbsp;<span class="var-name">$object</span>, [<span class="var-type"></span>&nbsp;<span class="var-name">$skipHidden</span> = <span class="var-default">false</span>])
+									</div>
+															
+				<div class="method-definition">
+					<img src="../media/images/Method.png" alt=" "/>
+											<span class="method-result">void</span>
+										<a href="#ModifyLinks" title="details" class="method-name">ModifyLinks</a>
+											(<span class="var-type">Mixed</span>&nbsp;<span class="var-name">$reference</span>, <span class="var-type"><a href="../ProximaPortal/PXTypeDescription.html">PXTypeDescription</a></span>&nbsp;<span class="var-name">$format</span>, <span class="var-type">Mixed</span>&nbsp;<span class="var-name">$id</span>, <span class="var-type">Mixed</span>&nbsp;<span class="var-name">$links</span>, [<span class="var-type"></span>&nbsp;<span class="var-name">$deleteAll</span> = <span class="var-default">true</span>])
+									</div>
+															
+				<div class="method-definition">
+					<img src="../media/images/Method.png" alt=" "/>
+											<span class="method-result">void</span>
+										<a href="#ModifyObjectSysVars" title="details" class="method-name">ModifyObjectSysVars</a>
+											(<span class="var-type"><a href="../ProximaPortal/PXTypeDescription.html">PXTypeDescription</a></span>&nbsp;<span class="var-name">$format</span>, <span class="var-type">Array</span>&nbsp;<span class="var-name">$object</span>)
+									</div>
+															
+				<div class="method-definition">
+					<img src="../media/images/Method.png" alt=" "/>
+											<span class="method-result">void</span>
+										<a href="#MoveContentObject" title="details" class="method-name">MoveContentObject</a>
+											(<span class="var-type"><a href="../ProximaPortal/PXTypeDescription.html">PXTypeDescription</a></span>&nbsp;<span class="var-name">$format</span>, <span class="var-type">Array</span>&nbsp;<span class="var-name">$objectId</span>, [<span class="var-type">Integer</span>&nbsp;<span class="var-name">$shift</span> = <span class="var-default">-1</span>])
+									</div>
+															
+				<div class="method-definition">
+					<img src="../media/images/Method.png" alt=" "/>
+											<span class="method-result">void</span>
+										<a href="#ParseWhereTemplate" title="details" class="method-name">ParseWhereTemplate</a>
+											(<span class="var-type">Mixed</span>&nbsp;<span class="var-name">$where</span>, <span class="var-type">Mixed</span>&nbsp;<span class="var-name">$object</span>, <span class="var-type">Mixed</span>&nbsp;<span class="var-name">$format</span>)
+									</div>
+															
+				<div class="method-definition">
+					<img src="../media/images/Method.png" alt=" "/>
+											<span class="method-result">Array</span>
+										<a href="#query" title="details" class="method-name">query</a>
+											(<span class="var-type">String</span>&nbsp;<span class="var-name">$query</span>, [<span class="var-type">Boolean</span>&nbsp;<span class="var-name">$donotusecache</span> = <span class="var-default">false</span>], [<span class="var-type">Array</span>&nbsp;<span class="var-name">$limitpair</span> = <span class="var-default">NULL</span>])
+									</div>
+															
+				<div class="method-definition">
+					<img src="../media/images/Method.png" alt=" "/>
+											<span class="method-result">void</span>
+										<a href="#setUser" title="details" class="method-name">setUser</a>
+											(<span class="var-type"></span>&nbsp;<span class="var-name">$user</span>)
+									</div>
+															
+				<div class="method-definition">
+					<img src="../media/images/Method.png" alt=" "/>
+											<span class="method-result">void</span>
+										<a href="#UpContentObject" title="details" class="method-name">UpContentObject</a>
+											(<span class="var-type"><a href="../ProximaPortal/PXTypeDescription.html">PXTypeDescription</a></span>&nbsp;<span class="var-name">$format</span>, <span class="var-type">Array</span>&nbsp;<span class="var-name">$objectId</span>)
+									</div>
+															
+				<div class="method-definition">
+					<img src="../media/images/Method.png" alt=" "/>
+											<span class="method-result">void</span>
+										<a href="#_createSelector" title="details" class="method-name">_createSelector</a>
+											(<span class="var-type"></span>&nbsp;<span class="var-name">$format</span>)
+									</div>
+															
+				<div class="method-definition">
+					<img src="../media/images/Method.png" alt=" "/>
+											<span class="method-result">void</span>
+										<a href="#_getCacheIden" title="details" class="method-name">_getCacheIden</a>
+											(<span class="var-type"></span>&nbsp;<span class="var-name">$query</span>, <span class="var-type"></span>&nbsp;<span class="var-name">$mode</span>, <span class="var-type"></span>&nbsp;<span class="var-name">$limit</span>)
+									</div>
+															
+				<div class="method-definition">
+					<img src="../media/images/Method.png" alt=" "/>
+											<span class="method-result">Array|NULL</span>
+										<a href="#_GetData" title="details" class="method-name">_GetData</a>
+											(<span class="var-type"><a href="../ProximaPortal/PXTypeDescription.html">PXTypeDescription</a></span>&nbsp;<span class="var-name">$format</span>, <span class="var-type">Integer</span>&nbsp;<span class="var-name">$mode</span>, [<span class="var-type">String</span>&nbsp;<span class="var-name">$where</span> = <span class="var-default">NULL</span>], [<span class="var-type">Array|NULL</span>&nbsp;<span class="var-name">$limit</span> = <span class="var-default">NULL</span>], [<span class="var-type"></span>&nbsp;<span class="var-name">$order</span> = <span class="var-default">NULL</span>])
+									</div>
+															
+				<div class="method-definition">
+					<img src="../media/images/Method.png" alt=" "/>
+											<span class="method-result">void</span>
+										<a href="#_moveContentObject" title="details" class="method-name">_moveContentObject</a>
+											(<span class="var-type"><a href="../ProximaPortal/PXTypeDescription.html">PXTypeDescription</a></span>&nbsp;<span class="var-name">$format</span>, <span class="var-type">Array</span>&nbsp;<span class="var-name">$objectId</span>, <span class="var-type">String</span>&nbsp;<span class="var-name">$direction</span>)
+									</div>
+															
+				<div class="method-definition">
+					<img src="../media/images/Method.png" alt=" "/>
+											<span class="method-result">void</span>
+										<a href="#_NormalizeObjectAttribute" title="details" class="method-name">_NormalizeObjectAttribute</a>
+											(<span class="var-type">String</span>&nbsp;<span class="var-name">$k</span>, <span class="var-type">Array</span>&nbsp;<span class="var-name">$object</span>, <span class="var-type"></span>&nbsp;<span class="var-name">$field</span>, <span class="var-type"></span>&nbsp;<span class="var-name">&$dbFields</span>, <span class="var-type"></span>&nbsp;<span class="var-name">&$dbValues</span>, <span class="var-type">String</span>&nbsp;<span class="var-name">$storageType</span>, <span class="var-type">Array</span>&nbsp;<span class="var-name">$dbFields</span>, <span class="var-type">Array</span>&nbsp;<span class="var-name">$dbValues</span>)
+									</div>
+															
+				<div class="method-definition">
+					<img src="../media/images/Method.png" alt=" "/>
+											<span class="method-result">void</span>
+										<a href="#_NormalizeObjectPathName" title="details" class="method-name">_NormalizeObjectPathName</a>
+											(<span class="var-type"><a href="../ProximaPortal/PXTypeDescription.html">PXTypeDescription</a></span>&nbsp;<span class="var-name">$format</span>, <span class="var-type">Array</span>&nbsp;<span class="var-name">$object</span>, <span class="var-type"></span>&nbsp;<span class="var-name">&$pathnames</span>, <span class="var-type">Array</span>&nbsp;<span class="var-name">$pathnames</span>)
+									</div>
+															
+				<div class="method-definition">
+					<img src="../media/images/Method.png" alt=" "/>
+											<span class="method-result">void</span>
+										<a href="#_NormalizeTable" title="details" class="method-name">_NormalizeTable</a>
+											(<span class="var-type"></span>&nbsp;<span class="var-name">&$table</span>, <span class="var-type"></span>&nbsp;<span class="var-name">$format</span>)
+									</div>
+															
+				<div class="method-definition">
+					<img src="../media/images/Method.png" alt=" "/>
+											<span class="method-result">void</span>
+										<a href="#_PrepareResult" title="details" class="method-name">_PrepareResult</a>
+											(<span class="var-type"></span>&nbsp;<span class="var-name">$resTable</span>, <span class="var-type"></span>&nbsp;<span class="var-name">$format</span>, <span class="var-type"></span>&nbsp;<span class="var-name">$mode</span>)
+									</div>
+											</div>
+		</div>
+	</div>		
+
+	<a name="sec-vars"></a>
+	<div class="info-box">
+		<div class="info-box-title">Variables</div>
+		<div class="nav-bar">
+			<a href="#sec-description">Description</a> |
+										<a href="#sec-var-summary">Vars</a> (<span class="disabled">details</span>)
+						
+			
+										| 
+									<a href="#sec-method-summary">Methods</a> (<a href="#sec-methods">details</a>)
+							
+					</div>
+		<div class="info-box-body">
+			
+<a name="var$app" id="$app"><!-- --></A>
+<div class="evenrow">
+
+	<div class="var-header">
+		<img src="../media/images/Variable.png" />
+		<span class="var-title">
+			<span class="var-type"><a href="../ProximaPortal/PXApplication.html">PXApplication</a></span>
+			<span class="var-name">$app</span>
+						(line <span class="line-number">27</span>)
+		</span>
+	</div>
+
+	<!-- ========== Info from phpDoc block ========= -->
+<p class="short-description">PXApplication reference</p>
+	
+	
+		
+		
+
+</div>
+<a name="var$triggers" id="$triggers"><!-- --></A>
+<div class="oddrow">
+
+	<div class="var-header">
+		<img src="../media/images/Variable.png" />
+		<span class="var-title">
+			<span class="var-type">triggers</span>
+			<span class="var-name">$triggers</span>
+						(line <span class="line-number">33</span>)
+		</span>
+	</div>
+
+	<!-- ========== Info from phpDoc block ========= -->
+	
+	
+		
+		
+
+</div>
+<a name="var$types" id="$types"><!-- --></A>
+<div class="evenrow">
+
+	<div class="var-header">
+		<img src="../media/images/Variable.png" />
+		<span class="var-title">
+			<span class="var-type">array</span>
+			<span class="var-name">$types</span>
+						(line <span class="line-number">30</span>)
+		</span>
+	</div>
+
+	<!-- ========== Info from phpDoc block ========= -->
+	
+	
+		
+		
+
+</div>
+<a name="var$user" id="$user"><!-- --></A>
+<div class="oddrow">
+
+	<div class="var-header">
+		<img src="../media/images/Variable.png" />
+		<span class="var-title">
+			<span class="var-type"><a href="../ProximaPortal/PXUser.html">PXUser</a></span>
+			<span class="var-name">$user</span>
+						(line <span class="line-number">36</span>)
+		</span>
+	</div>
+
+	<!-- ========== Info from phpDoc block ========= -->
+	
+	
+		
+		
+
+</div>
+							<h4>Inherited Variables</h4>
+				<A NAME='inherited_vars'><!-- --></A>
+									<p>Inherited from <span class="classname"><a href="../ProximaPortal/NLSQLDatabaseAdapter.html">NLSQLDatabaseAdapter</a></span></p>
+					<blockquote>
+													<img src="../media/images/Variable.png" />
+							<span class="var-title">
+								<span class="var-name"><a href="../ProximaPortal/NLSQLDatabaseAdapter.html#var$selfDescription">NLSQLDatabaseAdapter::$selfDescription</a></span><br>
+							</span>
+											</blockquote> 
+										
+		</div>
+	</div>
+	
+	<a name="sec-methods"></a>
+	<div class="info-box">
+		<div class="info-box-title">Methods</div>
+		<div class="nav-bar">
+			<a href="#sec-description">Description</a> |
+															<a href="#sec-var-summary">Vars</a> (<a href="#sec-vars">details</a>)
+																	<a href="#sec-method-summary">Methods</a> (<span class="disabled">details</span>)
+						
+		</div>
+		<div class="info-box-body">
+			<A NAME='method_detail'></A>
+<a name="methodPXDatabase" id="PXDatabase"><!-- --></a>
+<div class="evenrow">
+	
+	<div class="method-header">
+		<img src="../media/images/Constructor.png" />
+		<span class="method-title">Constructor PXDatabase</span> (line <span class="line-number">43</span>)
+	</div> 
+	
+	<!-- ========== Info from phpDoc block ========= -->
+<p class="short-description">ëÏÎÓÔÒÕËÔÏÒ ËÌÁÓÓÁ</p>
+	
+	<div class="method-signature">
+		<span class="method-result">PXDatabase</span>
+		<span class="method-name">
+			PXDatabase
+		</span>
+					(<span class="var-type"><a href="../ProximaPortal/PXApplication.html">PXApplication</a></span>&nbsp;<span class="var-name">$app</span>, [<span class="var-type"></span>&nbsp;<span class="var-name">$dbDescriptionName</span> = <span class="var-default">'database'</span>])
+			</div>
+	
+			<ul class="parameters">
+					<li>
+				<span class="var-type"><a href="../ProximaPortal/PXApplication.html">PXApplication</a></span>
+				<span class="var-name">$app</span><span class="var-description">: <a href="../ProximaPortal/PXDatabase.html#var$app">$app</a> reference to PXApplication</span>			</li>
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$dbDescriptionName</span>			</li>
+				</ul>
+		
+			
+	</div>
+<a name="methodAddContentObject" id="AddContentObject"><!-- --></a>
+<div class="oddrow">
+	
+	<div class="method-header">
+		<img src="../media/images/Method.png" />
+		<span class="method-title">AddContentObject</span> (line <span class="line-number">623</span>)
+	</div> 
+	
+	<!-- ========== Info from phpDoc block ========= -->
+<p class="short-description">äÏÂÁ×ÌÑÅÔ ÏÂßÅËÔ × âä.</p>
+<p class="description"><p>ðÅÒÅÄ ÄÏÂÁ×ÌÅÎÉÅÍ ÏÂßÅËÔ ÐÒÅÏÂÒÁÚÕÅÔÓÑ Ë ÎÅÏÂÈÏÄÉÍÏÍÕ storage type.  ðÅÒÅÄ ÄÏÂÁ×ÌÅÎÉÅÍ ÏÂßÅËÔÁ ×ÙÚÙ×ÁÀÔÓÑ ÔÒÉÇÇÅÒÙ. åÓÌÉ ÈÏÔÑ ÂÙ ÏÄÉÎ OnBeforeAddObject  ÔÒÉÇÇÅÒ ×ÅÒÎ£Ô false, ÄÏÂÁ×ÌÅÎÉÅ ÎÅ ÐÒÏÉÚÏÊÄ£Ô.  ðÏÓÌÅ ÕÓÐÅÛÎÏÇÏ ÄÏÂÁ×ÌÅÎÉÑ ÏÂßÅËÔÁ ×ÙÚÙ×ÁÀÔÓÑ ÔÒÉÇÇÅÒÙ OnAddObject.  íÅÔÏÄ ÉÓÐÏÌØÚÕÅÔ PXDatabase::InsertObject ÄÌÑ ÄÏÂÁ×ÌÅÎÉÑ ÏÂßÅËÔÏ×.</p></p>
+	<ul class="tags">
+				<li><span class="field">see:</span> ModifyingQuery</li>
+				<li><span class="field">see:</span> InsertObject</li>
+			</ul>
+	
+	<div class="method-signature">
+		<span class="method-result">void</span>
+		<span class="method-name">
+			AddContentObject
+		</span>
+					(<span class="var-type"><a href="../ProximaPortal/PXTypeDescription.html">PXTypeDescription</a></span>&nbsp;<span class="var-name">$format</span>, <span class="var-type">Array</span>&nbsp;<span class="var-name">$object</span>)
+			</div>
+	
+			<ul class="parameters">
+					<li>
+				<span class="var-type"><a href="../ProximaPortal/PXTypeDescription.html">PXTypeDescription</a></span>
+				<span class="var-name">$format</span>			</li>
+					<li>
+				<span class="var-type">Array</span>
+				<span class="var-name">$object</span><span class="var-description">: array of assoaciative arrays 'db_field_name'=&gt;'value'</span>			</li>
+				</ul>
+		
+			
+	</div>
+<a name="methodAddContentObjects" id="AddContentObjects"><!-- --></a>
+<div class="evenrow">
+	
+	<div class="method-header">
+		<img src="../media/images/Method.png" />
+		<span class="method-title">AddContentObjects</span> (line <span class="line-number">721</span>)
+	</div> 
+	
+	<!-- ========== Info from phpDoc block ========= -->
+<p class="short-description">äÏÂÁ×ÌÑÅÔ ÏÂßÅËÔÙ × âä.</p>
+<p class="description"><p>ðÅÒÅÄ ÄÏÂÁ×ÌÅÎÉÅÍ ÐÒÅÏÂÒÁÚÕÀÔÓÑ Ë ÎÅÏÂÈÏÄÉÍÏÍÕ storage type.  ðÏÓÌÅ ÄÏÂÁ×ÌÅÎÉÑ ÏÂßÅËÔÏ× ÔÒÉÇÇÅÒÙ îå ×ÙÚÙ×ÁÀÔÓÑ.  éÓÐÏÌØÚÕÅÔ PXDatabase::InsertObject ÄÌÑ ÄÏÂÁ×ÌÅÎÉÑ ÏÂßÅËÔÏ×.</p></p>
+	<ul class="tags">
+				<li><span class="field">see:</span> ModifyingQuery</li>
+				<li><span class="field">see:</span> InsertObject</li>
+			</ul>
+	
+	<div class="method-signature">
+		<span class="method-result">void</span>
+		<span class="method-name">
+			AddContentObjects
+		</span>
+					(<span class="var-type"><a href="../ProximaPortal/PXTypeDescription.html">PXTypeDescription</a></span>&nbsp;<span class="var-name">$format</span>, <span class="var-type">Array</span>&nbsp;<span class="var-name">$objectsArray</span>)
+			</div>
+	
+			<ul class="parameters">
+					<li>
+				<span class="var-type"><a href="../ProximaPortal/PXTypeDescription.html">PXTypeDescription</a></span>
+				<span class="var-name">$format</span>			</li>
+					<li>
+				<span class="var-type">Array</span>
+				<span class="var-name">$objectsArray</span><span class="var-description">: array of assoaciative arrays 'db_field_name'=&gt;'value'</span>			</li>
+				</ul>
+		
+			
+	</div>
+<a name="methodcloneContentObject" id="cloneContentObject"><!-- --></a>
+<div class="oddrow">
+	
+	<div class="method-header">
+		<img src="../media/images/Method.png" />
+		<span class="method-title">cloneContentObject</span> (line <span class="line-number">829</span>)
+	</div> 
+	
+	<!-- ========== Info from phpDoc block ========= -->
+	
+	<div class="method-signature">
+		<span class="method-result">void</span>
+		<span class="method-name">
+			cloneContentObject
+		</span>
+					(<span class="var-type"></span>&nbsp;<span class="var-name">&$format</span>, <span class="var-type"></span>&nbsp;<span class="var-name">$donorId</span>)
+			</div>
+	
+			<ul class="parameters">
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">&$format</span>			</li>
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$donorId</span>			</li>
+				</ul>
+		
+			
+	</div>
+<a name="methodDeleteContentObject" id="DeleteContentObject"><!-- --></a>
+<div class="evenrow">
+	
+	<div class="method-header">
+		<img src="../media/images/Method.png" />
+		<span class="method-title">DeleteContentObject</span> (line <span class="line-number">999</span>)
+	</div> 
+	
+	<!-- ========== Info from phpDoc block ========= -->
+<p class="short-description">õÄÁÌÑÅÔ ÏÂßÅËÔ (É ÅÇÏ childrens) ÉÚ âä.</p>
+<p class="description"><p>éÓÐÏÌØÚÕÅÔ PXDatabase::ModifyingQuery ÄÌÑ ÕÄÁÌÅÎÉÑ.  ðÅÒÅÄ É ÐÏÓÌÅ ÕÄÁÌÅÎÉÑ ×ÙÚÙ×ÁÀÔÓÑ ÔÒÉÇÇÅÒÙ. åÓÌÉ ÈÏÔÑ ÂÙ ÏÄÉÎ OnBeforeDeleteObject  ÔÒÉÇÇÅÒ ×ÅÒÎ£Ô false, ÕÄÁÌÅÎÉÅ ÎÅ ÐÒÏÉÚÏÊÄ£Ô.</p></p>
+	
+	<div class="method-signature">
+		<span class="method-result">void</span>
+		<span class="method-name">
+			DeleteContentObject
+		</span>
+					(<span class="var-type"><a href="../ProximaPortal/PXTypeDescription.html">PXTypeDescription</a></span>&nbsp;<span class="var-name">$format</span>, <span class="var-type">Array</span>&nbsp;<span class="var-name">$objectId</span>)
+			</div>
+	
+			<ul class="parameters">
+					<li>
+				<span class="var-type"><a href="../ProximaPortal/PXTypeDescription.html">PXTypeDescription</a></span>
+				<span class="var-name">$format</span>			</li>
+					<li>
+				<span class="var-type">Array</span>
+				<span class="var-name">$objectId</span><span class="var-description">: object id</span>			</li>
+				</ul>
+		
+			
+	</div>
+<a name="methodDownContentObject" id="DownContentObject"><!-- --></a>
+<div class="oddrow">
+	
+	<div class="method-header">
+		<img src="../media/images/Method.png" />
+		<span class="method-title">DownContentObject</span> (line <span class="line-number">1057</span>)
+	</div> 
+	
+	<!-- ========== Info from phpDoc block ========= -->
+<p class="short-description">ïÐÕÓËÁÅÔ ÏÂßÅËÔ × ÓÐÉÓËÅ ÎÁ ÏÄÎÕ ÐÏÚÉÃÉÀ  éÓÐÏÌØÚÕÅÔ PXDatabase::_moveContentObject</p>
+	<ul class="tags">
+				<li><span class="field">see:</span> sys_order</li>
+			</ul>
+	
+	<div class="method-signature">
+		<span class="method-result">void</span>
+		<span class="method-name">
+			DownContentObject
+		</span>
+					(<span class="var-type"><a href="../ProximaPortal/PXTypeDescription.html">PXTypeDescription</a></span>&nbsp;<span class="var-name">$format</span>, <span class="var-type">Array</span>&nbsp;<span class="var-name">$objectId</span>)
+			</div>
+	
+			<ul class="parameters">
+					<li>
+				<span class="var-type"><a href="../ProximaPortal/PXTypeDescription.html">PXTypeDescription</a></span>
+				<span class="var-name">$format</span>			</li>
+					<li>
+				<span class="var-type">Array</span>
+				<span class="var-name">$objectId</span><span class="var-description">: object id</span>			</li>
+				</ul>
+		
+			
+	</div>
+<a name="methodfilterByAccess" id="filterByAccess"><!-- --></a>
+<div class="evenrow">
+	
+	<div class="method-header">
+		<img src="../media/images/Method.png" />
+		<span class="method-title">filterByAccess</span> (line <span class="line-number">1637</span>)
+	</div> 
+	
+	<!-- ========== Info from phpDoc block ========= -->
+	
+	<div class="method-signature">
+		<span class="method-result">void</span>
+		<span class="method-name">
+			filterByAccess
+		</span>
+					(<span class="var-type"></span>&nbsp;<span class="var-name">$what</span>, <span class="var-type"></span>&nbsp;<span class="var-name">$format</span>, <span class="var-type"></span>&nbsp;<span class="var-name">&$table</span>)
+			</div>
+	
+			<ul class="parameters">
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$what</span>			</li>
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$format</span>			</li>
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">&$table</span>			</li>
+				</ul>
+		
+			
+	</div>
+<a name="methodgetAllLinks" id="getAllLinks"><!-- --></a>
+<div class="oddrow">
+	
+	<div class="method-header">
+		<img src="../media/images/Method.png" />
+		<span class="method-title">getAllLinks</span> (line <span class="line-number">1264</span>)
+	</div> 
+	
+	<!-- ========== Info from phpDoc block ========= -->
+	
+	<div class="method-signature">
+		<span class="method-result">void</span>
+		<span class="method-name">
+			getAllLinks
+		</span>
+					(<span class="var-type"></span>&nbsp;<span class="var-name">$reference</span>)
+			</div>
+	
+			<ul class="parameters">
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$reference</span>			</li>
+				</ul>
+		
+			
+	</div>
+<a name="methodGetLinks" id="GetLinks"><!-- --></a>
+<div class="evenrow">
+	
+	<div class="method-header">
+		<img src="../media/images/Method.png" />
+		<span class="method-title">GetLinks</span> (line <span class="line-number">1371</span>)
+	</div> 
+	
+	<!-- ========== Info from phpDoc block ========= -->
+<p class="short-description">éÓÐÏÌØÚÕÅÔ PXDatabase::Query</p>
+	<ul class="tags">
+				<li><span class="field">todo:</span> docme (check params documentation)</li>
+			</ul>
+	
+	<div class="method-signature">
+		<span class="method-result">void</span>
+		<span class="method-name">
+			GetLinks
+		</span>
+					(<span class="var-type">Mixed</span>&nbsp;<span class="var-name">$reference</span>, <span class="var-type"><a href="../ProximaPortal/PXTypeDescription.html">PXTypeDescription</a></span>&nbsp;<span class="var-name">$format</span>, <span class="var-type">Mixed</span>&nbsp;<span class="var-name">$id</span>)
+			</div>
+	
+			<ul class="parameters">
+					<li>
+				<span class="var-type">Mixed</span>
+				<span class="var-name">$reference</span><span class="var-description">: Unknown</span>			</li>
+					<li>
+				<span class="var-type"><a href="../ProximaPortal/PXTypeDescription.html">PXTypeDescription</a></span>
+				<span class="var-name">$format</span>			</li>
+					<li>
+				<span class="var-type">Mixed</span>
+				<span class="var-name">$id</span><span class="var-description">: Unknown</span>			</li>
+				</ul>
+		
+			
+	</div>
+<a name="methodGetLinksCount" id="GetLinksCount"><!-- --></a>
+<div class="oddrow">
+	
+	<div class="method-header">
+		<img src="../media/images/Method.png" />
+		<span class="method-title">GetLinksCount</span> (line <span class="line-number">1385</span>)
+	</div> 
+	
+	<!-- ========== Info from phpDoc block ========= -->
+<p class="short-description">éÓÐÏÌØÚÕÅÔ PXDatabase::Query</p>
+	<ul class="tags">
+				<li><span class="field">todo:</span> docme (check params documentation)</li>
+			</ul>
+	
+	<div class="method-signature">
+		<span class="method-result">void</span>
+		<span class="method-name">
+			GetLinksCount
+		</span>
+					(<span class="var-type">Mixed</span>&nbsp;<span class="var-name">$reference</span>, <span class="var-type"><a href="../ProximaPortal/PXTypeDescription.html">PXTypeDescription</a></span>&nbsp;<span class="var-name">$format</span>, <span class="var-type">Mixed</span>&nbsp;<span class="var-name">$id</span>)
+			</div>
+	
+			<ul class="parameters">
+					<li>
+				<span class="var-type">Mixed</span>
+				<span class="var-name">$reference</span><span class="var-description">: Unknown</span>			</li>
+					<li>
+				<span class="var-type"><a href="../ProximaPortal/PXTypeDescription.html">PXTypeDescription</a></span>
+				<span class="var-name">$format</span>			</li>
+					<li>
+				<span class="var-type">Mixed</span>
+				<span class="var-name">$id</span><span class="var-description">: Unknown</span>			</li>
+				</ul>
+		
+			
+	</div>
+<a name="methodgetLinksLimited" id="getLinksLimited"><!-- --></a>
+<div class="evenrow">
+	
+	<div class="method-header">
+		<img src="../media/images/Method.png" />
+		<span class="method-title">getLinksLimited</span> (line <span class="line-number">1286</span>)
+	</div> 
+	
+	<!-- ========== Info from phpDoc block ========= -->
+<p class="short-description">éÓÐÏÌØÚÕÅÔ PXDatabase::Query</p>
+	<ul class="tags">
+				<li><span class="field">todo:</span> docme (check params documentation)</li>
+			</ul>
+	
+	<div class="method-signature">
+		<span class="method-result">void</span>
+		<span class="method-name">
+			getLinksLimited
+		</span>
+					(<span class="var-type">Mixed</span>&nbsp;<span class="var-name">$reference</span>, <span class="var-type"><a href="../ProximaPortal/PXTypeDescription.html">PXTypeDescription</a></span>&nbsp;<span class="var-name">$format</span>, <span class="var-type">Mixed</span>&nbsp;<span class="var-name">$id</span>, <span class="var-type"></span>&nbsp;<span class="var-name">$limit</span>, <span class="var-type"></span>&nbsp;<span class="var-name">$offset</span>)
+			</div>
+	
+			<ul class="parameters">
+					<li>
+				<span class="var-type">Mixed</span>
+				<span class="var-name">$reference</span><span class="var-description">: Unknown</span>			</li>
+					<li>
+				<span class="var-type"><a href="../ProximaPortal/PXTypeDescription.html">PXTypeDescription</a></span>
+				<span class="var-name">$format</span>			</li>
+					<li>
+				<span class="var-type">Mixed</span>
+				<span class="var-name">$id</span><span class="var-description">: Unknown</span>			</li>
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$limit</span>			</li>
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$offset</span>			</li>
+				</ul>
+		
+			
+	</div>
+<a name="methodGetObjectById" id="GetObjectById"><!-- --></a>
+<div class="oddrow">
+	
+	<div class="method-header">
+		<img src="../media/images/Method.png" />
+		<span class="method-title">GetObjectById</span> (line <span class="line-number">313</span>)
+	</div> 
+	
+	<!-- ========== Info from phpDoc block ========= -->
+<p class="short-description">÷ÏÚ×ÒÁÝÁÅÔ ÍÁÓÓÉ× ÄÁÎÎÙÈ ÉÚ âä ÄÌÑ ÚÁÄÁÎÎÏÇÏ ÔÉÐÁ ÏÂßÅËÔÏ× <a href="../ProximaPortal/PXTypeDescription.html">PXTypeDescription</a>.</p>
+<p class="description"><p>éÓÐÏÌØÚÕÅÔ <a href="../ProximaPortal/PXDatabase.html#method_GetData">PXDatabase::_GetData()</a> ÄÌÑ ÚÁÐÒÏÓÏ×.</p></p>
+	
+	<div class="method-signature">
+		<span class="method-result">Array</span>
+		<span class="method-name">
+			GetObjectById
+		</span>
+					(<span class="var-type"><a href="../ProximaPortal/PXTypeDescription.html">PXTypeDescription</a></span>&nbsp;<span class="var-name">$format</span>, <span class="var-type">Integer</span>&nbsp;<span class="var-name">$id</span>)
+			</div>
+	
+			<ul class="parameters">
+					<li>
+				<span class="var-type"><a href="../ProximaPortal/PXTypeDescription.html">PXTypeDescription</a></span>
+				<span class="var-name">$format</span>			</li>
+					<li>
+				<span class="var-type">Integer</span>
+				<span class="var-name">$id</span>			</li>
+				</ul>
+		
+			
+	</div>
+<a name="methodGetObjects" id="GetObjects"><!-- --></a>
+<div class="evenrow">
+	
+	<div class="method-header">
+		<img src="../media/images/Method.png" />
+		<span class="method-title">GetObjects</span> (line <span class="line-number">362</span>)
+	</div> 
+	
+	<!-- ========== Info from phpDoc block ========= -->
+<p class="short-description">÷ÏÚ×ÒÁÝÁÅÔ ÍÁÓÓÉ× ÄÁÎÎÙÈ ÉÚ âä ÄÌÑ ÚÁÄÁÎÎÏÇÏ ÔÉÐÁ ÏÂßÅËÔÏ× <a href="../ProximaPortal/PXTypeDescription.html">PXTypeDescription</a>.</p>
+<p class="description"><p>éÓÐÏÌØÚÕÅÔ <a href="../ProximaPortal/PXDatabase.html#method_GetData">PXDatabase::_GetData()</a> ÄÌÑ ÚÁÐÒÏÓÏ×</p></p>
+	
+	<div class="method-signature">
+		<span class="method-result">Array</span>
+		<span class="method-name">
+			GetObjects
+		</span>
+					(<span class="var-type"><a href="../ProximaPortal/PXTypeDescription.html">PXTypeDescription</a></span>&nbsp;<span class="var-name">$format</span>, <span class="var-type">String</span>&nbsp;<span class="var-name">$status</span>, [<span class="var-type">Integer</span>&nbsp;<span class="var-name">$mode</span> = <span class="var-default">DB_SELECT_TABLE</span>], [<span class="var-type"></span>&nbsp;<span class="var-name">$order</span> = <span class="var-default">NULL</span>])
+			</div>
+	
+			<ul class="parameters">
+					<li>
+				<span class="var-type"><a href="../ProximaPortal/PXTypeDescription.html">PXTypeDescription</a></span>
+				<span class="var-name">$format</span>			</li>
+					<li>
+				<span class="var-type">String</span>
+				<span class="var-name">$status</span><span class="var-description">: objects status ('TRUE' | 'FALSE')</span>			</li>
+					<li>
+				<span class="var-type">Integer</span>
+				<span class="var-name">$mode</span><span class="var-description">: request mode. Default = <a href="../ProximaPortal/_lib---Database---database.class.inc.html#defineDB_SELECT_TABLE">DB_SELECT_TABLE</a></span>			</li>
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$order</span>			</li>
+				</ul>
+		
+			
+	</div>
+<a name="methodGetObjectsByField" id="GetObjectsByField"><!-- --></a>
+<div class="oddrow">
+	
+	<div class="method-header">
+		<img src="../media/images/Method.png" />
+		<span class="method-title">GetObjectsByField</span> (line <span class="line-number">474</span>)
+	</div> 
+	
+	<!-- ========== Info from phpDoc block ========= -->
+<p class="short-description">÷ÏÚ×ÒÁÝÁÅÔ ÍÁÓÓÉ× ÉÚ âä ÄÌÑ ÚÁÄÁÎÎÏÇÏ ÔÉÐÁ ÏÂßÅËÔÏ× <a href="../ProximaPortal/PXTypeDescription.html">PXTypeDescription</a>.</p>
+<p class="description"><p>éÓÐÏÌØÚÕÅÔ <a href="../ProximaPortal/PXDatabase.html#method_GetData">PXDatabase::_GetData()</a> ÄÌÑ ÚÁÐÒÏÓÏ×.</p></p>
+	
+	<div class="method-signature">
+		<span class="method-result">Array</span>
+		<span class="method-name">
+			GetObjectsByField
+		</span>
+					(<span class="var-type"><a href="../ProximaPortal/PXTypeDescription.html">PXTypeDescription</a></span>&nbsp;<span class="var-name">$format</span>, <span class="var-type">String</span>&nbsp;<span class="var-name">$status</span>, <span class="var-type">String</span>&nbsp;<span class="var-name">$field</span>, <span class="var-type">String</span>&nbsp;<span class="var-name">$value</span>, [<span class="var-type">Integer</span>&nbsp;<span class="var-name">$mode</span> = <span class="var-default">DB_SELECT_TABLE</span>], [<span class="var-type"></span>&nbsp;<span class="var-name">$order</span> = <span class="var-default">NULL</span>])
+			</div>
+	
+			<ul class="parameters">
+					<li>
+				<span class="var-type"><a href="../ProximaPortal/PXTypeDescription.html">PXTypeDescription</a></span>
+				<span class="var-name">$format</span>			</li>
+					<li>
+				<span class="var-type">String</span>
+				<span class="var-name">$status</span><span class="var-description">: objects status ('TRUE' | 'FALSE')</span>			</li>
+					<li>
+				<span class="var-type">String</span>
+				<span class="var-name">$field</span><span class="var-description">: field name</span>			</li>
+					<li>
+				<span class="var-type">String</span>
+				<span class="var-name">$value</span><span class="var-description">: field value</span>			</li>
+					<li>
+				<span class="var-type">Integer</span>
+				<span class="var-name">$mode</span><span class="var-description">: request mode, default = <a href="../ProximaPortal/_lib---Database---database.class.inc.html#defineDB_SELECT_TABLE">DB_SELECT_TABLE</a></span>			</li>
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$order</span>			</li>
+				</ul>
+		
+			
+	</div>
+<a name="methodGetObjectsByFieldLike" id="GetObjectsByFieldLike"><!-- --></a>
+<div class="evenrow">
+	
+	<div class="method-header">
+		<img src="../media/images/Method.png" />
+		<span class="method-title">GetObjectsByFieldLike</span> (line <span class="line-number">524</span>)
+	</div> 
+	
+	<!-- ========== Info from phpDoc block ========= -->
+	<ul class="tags">
+				<li><span class="field">see:</span> <a href="../ProximaPortal/PXDatabase.html#methodGetObjectsByField">PXDatabase::GetObjectsByField()</a></li>
+			</ul>
+	
+	<div class="method-signature">
+		<span class="method-result">void</span>
+		<span class="method-name">
+			GetObjectsByFieldLike
+		</span>
+					(<span class="var-type"></span>&nbsp;<span class="var-name">$format</span>, <span class="var-type"></span>&nbsp;<span class="var-name">$status</span>, <span class="var-type"></span>&nbsp;<span class="var-name">$field</span>, <span class="var-type"></span>&nbsp;<span class="var-name">$value</span>, [<span class="var-type"></span>&nbsp;<span class="var-name">$mode</span> = <span class="var-default">DB_SELECT_TABLE</span>], [<span class="var-type"></span>&nbsp;<span class="var-name">$order</span> = <span class="var-default">NULL</span>])
+			</div>
+	
+			<ul class="parameters">
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$format</span>			</li>
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$status</span>			</li>
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$field</span>			</li>
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$value</span>			</li>
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$mode</span>			</li>
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$order</span>			</li>
+				</ul>
+		
+			
+	</div>
+<a name="methodGetObjectsByFieldLikeLimited" id="GetObjectsByFieldLikeLimited"><!-- --></a>
+<div class="oddrow">
+	
+	<div class="method-header">
+		<img src="../media/images/Method.png" />
+		<span class="method-title">GetObjectsByFieldLikeLimited</span> (line <span class="line-number">532</span>)
+	</div> 
+	
+	<!-- ========== Info from phpDoc block ========= -->
+	<ul class="tags">
+				<li><span class="field">see:</span> <a href="../ProximaPortal/PXDatabase.html#methodGetObjectsByFieldLimited">PXDatabase::GetObjectsByFieldLimited()</a></li>
+			</ul>
+	
+	<div class="method-signature">
+		<span class="method-result">void</span>
+		<span class="method-name">
+			GetObjectsByFieldLikeLimited
+		</span>
+					(<span class="var-type"></span>&nbsp;<span class="var-name">$format</span>, <span class="var-type"></span>&nbsp;<span class="var-name">$status</span>, <span class="var-type"></span>&nbsp;<span class="var-name">$field</span>, <span class="var-type"></span>&nbsp;<span class="var-name">$value</span>, <span class="var-type"></span>&nbsp;<span class="var-name">$limit</span>, <span class="var-type"></span>&nbsp;<span class="var-name">$offset</span>, [<span class="var-type"></span>&nbsp;<span class="var-name">$mode</span> = <span class="var-default">DB_SELECT_TABLE</span>], [<span class="var-type"></span>&nbsp;<span class="var-name">$order</span> = <span class="var-default">NULL</span>])
+			</div>
+	
+			<ul class="parameters">
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$format</span>			</li>
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$status</span>			</li>
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$field</span>			</li>
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$value</span>			</li>
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$limit</span>			</li>
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$offset</span>			</li>
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$mode</span>			</li>
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$order</span>			</li>
+				</ul>
+		
+			
+	</div>
+<a name="methodGetObjectsByFieldLimited" id="GetObjectsByFieldLimited"><!-- --></a>
+<div class="evenrow">
+	
+	<div class="method-header">
+		<img src="../media/images/Method.png" />
+		<span class="method-title">GetObjectsByFieldLimited</span> (line <span class="line-number">503</span>)
+	</div> 
+	
+	<!-- ========== Info from phpDoc block ========= -->
+<p class="short-description">÷ÏÚ×ÒÁÝÁÅÔ ÍÁÓÓÉ× ÉÚ âä ÄÌÑ ÚÁÄÁÎÎÏÇÏ ÔÉÐÁ ÏÂßÅËÔÏ× <a href="../ProximaPortal/PXTypeDescription.html">PXTypeDescription</a>.</p>
+<p class="description"><p>éÓÐÏÌØÚÕÅÔ <a href="../ProximaPortal/PXDatabase.html#method_GetData">PXDatabase::_GetData()</a> ÄÌÑ ÚÁÐÒÏÓÏ×.</p></p>
+	
+	<div class="method-signature">
+		<span class="method-result">Array</span>
+		<span class="method-name">
+			GetObjectsByFieldLimited
+		</span>
+					(<span class="var-type"><a href="../ProximaPortal/PXTypeDescription.html">PXTypeDescription</a></span>&nbsp;<span class="var-name">$format</span>, <span class="var-type">String</span>&nbsp;<span class="var-name">$status</span>, <span class="var-type">String</span>&nbsp;<span class="var-name">$field</span>, <span class="var-type">String</span>&nbsp;<span class="var-name">$value</span>, <span class="var-type">Integer</span>&nbsp;<span class="var-name">$limit</span>, <span class="var-type">Integer</span>&nbsp;<span class="var-name">$offset</span>, [<span class="var-type">Integer</span>&nbsp;<span class="var-name">$mode</span> = <span class="var-default">DB_SELECT_TABLE</span>], [<span class="var-type"></span>&nbsp;<span class="var-name">$order</span> = <span class="var-default">NULL</span>])
+			</div>
+	
+			<ul class="parameters">
+					<li>
+				<span class="var-type"><a href="../ProximaPortal/PXTypeDescription.html">PXTypeDescription</a></span>
+				<span class="var-name">$format</span>			</li>
+					<li>
+				<span class="var-type">String</span>
+				<span class="var-name">$status</span><span class="var-description">: objects status ('TRUE' | 'FALSE')</span>			</li>
+					<li>
+				<span class="var-type">String</span>
+				<span class="var-name">$field</span><span class="var-description">: field name</span>			</li>
+					<li>
+				<span class="var-type">String</span>
+				<span class="var-name">$value</span><span class="var-description">: field value</span>			</li>
+					<li>
+				<span class="var-type">Integer</span>
+				<span class="var-name">$limit</span><span class="var-description">: database SELECT LIMIT value</span>			</li>
+					<li>
+				<span class="var-type">Integer</span>
+				<span class="var-name">$offset</span><span class="var-description">: database SELECT OFFSET value</span>			</li>
+					<li>
+				<span class="var-type">Integer</span>
+				<span class="var-name">$mode</span><span class="var-description">: request mode, default = <a href="../ProximaPortal/_lib---Database---database.class.inc.html#defineDB_SELECT_TABLE">DB_SELECT_TABLE</a></span>			</li>
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$order</span>			</li>
+				</ul>
+		
+			
+	</div>
+<a name="methodGetObjectsByFieldNotEmpty" id="GetObjectsByFieldNotEmpty"><!-- --></a>
+<div class="oddrow">
+	
+	<div class="method-header">
+		<img src="../media/images/Method.png" />
+		<span class="method-title">GetObjectsByFieldNotEmpty</span> (line <span class="line-number">540</span>)
+	</div> 
+	
+	<!-- ========== Info from phpDoc block ========= -->
+	<ul class="tags">
+				<li><span class="field">see:</span> <a href="../ProximaPortal/PXDatabase.html#methodGetObjectsByField">PXDatabase::GetObjectsByField()</a></li>
+			</ul>
+	
+	<div class="method-signature">
+		<span class="method-result">void</span>
+		<span class="method-name">
+			GetObjectsByFieldNotEmpty
+		</span>
+					(<span class="var-type"></span>&nbsp;<span class="var-name">$format</span>, <span class="var-type"></span>&nbsp;<span class="var-name">$status</span>, <span class="var-type"></span>&nbsp;<span class="var-name">$field</span>, [<span class="var-type"></span>&nbsp;<span class="var-name">$mode</span> = <span class="var-default">DB_SELECT_TABLE</span>], [<span class="var-type"></span>&nbsp;<span class="var-name">$order</span> = <span class="var-default">NULL</span>])
+			</div>
+	
+			<ul class="parameters">
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$format</span>			</li>
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$status</span>			</li>
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$field</span>			</li>
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$mode</span>			</li>
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$order</span>			</li>
+				</ul>
+		
+			
+	</div>
+<a name="methodGetObjectsByFieldNotEmptyLimited" id="GetObjectsByFieldNotEmptyLimited"><!-- --></a>
+<div class="evenrow">
+	
+	<div class="method-header">
+		<img src="../media/images/Method.png" />
+		<span class="method-title">GetObjectsByFieldNotEmptyLimited</span> (line <span class="line-number">548</span>)
+	</div> 
+	
+	<!-- ========== Info from phpDoc block ========= -->
+	<ul class="tags">
+				<li><span class="field">see:</span> <a href="../ProximaPortal/PXDatabase.html#methodGetObjectsByFieldLimited">PXDatabase::GetObjectsByFieldLimited()</a></li>
+			</ul>
+	
+	<div class="method-signature">
+		<span class="method-result">void</span>
+		<span class="method-name">
+			GetObjectsByFieldNotEmptyLimited
+		</span>
+					(<span class="var-type"></span>&nbsp;<span class="var-name">$format</span>, <span class="var-type"></span>&nbsp;<span class="var-name">$status</span>, <span class="var-type"></span>&nbsp;<span class="var-name">$field</span>, <span class="var-type"></span>&nbsp;<span class="var-name">$limit</span>, <span class="var-type"></span>&nbsp;<span class="var-name">$offset</span>, [<span class="var-type"></span>&nbsp;<span class="var-name">$mode</span> = <span class="var-default">DB_SELECT_TABLE</span>], [<span class="var-type"></span>&nbsp;<span class="var-name">$order</span> = <span class="var-default">NULL</span>])
+			</div>
+	
+			<ul class="parameters">
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$format</span>			</li>
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$status</span>			</li>
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$field</span>			</li>
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$limit</span>			</li>
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$offset</span>			</li>
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$mode</span>			</li>
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$order</span>			</li>
+				</ul>
+		
+			
+	</div>
+<a name="methodGetObjectsByIdArray" id="GetObjectsByIdArray"><!-- --></a>
+<div class="oddrow">
+	
+	<div class="method-header">
+		<img src="../media/images/Method.png" />
+		<span class="method-title">GetObjectsByIdArray</span> (line <span class="line-number">338</span>)
+	</div> 
+	
+	<!-- ========== Info from phpDoc block ========= -->
+<p class="short-description">÷ÏÚ×ÒÁÝÁÅÔ ÏÂßÅËÔÙ ÉÚ âä ÐÏ ÍÁÓÓÉ×Õ id (Integer)  éÓÐÏÌØÚÕÅÔ NLSQLDatabaseAdapter::Query() ÄÌÑ ÚÁÐÒÏÓÏ×</p>
+	
+	<div class="method-signature">
+		<span class="method-result">Array</span>
+		<span class="method-name">
+			GetObjectsByIdArray
+		</span>
+					(<span class="var-type"><a href="../ProximaPortal/PXTypeDescription.html">PXTypeDescription</a></span>&nbsp;<span class="var-name">$format</span>, <span class="var-type">Array</span>&nbsp;<span class="var-name">$status</span>, <span class="var-type">Integer</span>&nbsp;<span class="var-name">$idArray</span>, [<span class="var-type"></span>&nbsp;<span class="var-name">$mode</span> = <span class="var-default">DB_SELECT_TABLE</span>], [<span class="var-type"></span>&nbsp;<span class="var-name">$order</span> = <span class="var-default">NULL</span>])
+			</div>
+	
+			<ul class="parameters">
+					<li>
+				<span class="var-type"><a href="../ProximaPortal/PXTypeDescription.html">PXTypeDescription</a></span>
+				<span class="var-name">$format</span>			</li>
+					<li>
+				<span class="var-type">Array</span>
+				<span class="var-name">$status</span><span class="var-description">: array of id's</span>			</li>
+					<li>
+				<span class="var-type">Integer</span>
+				<span class="var-name">$idArray</span><span class="var-description">: request mode. Default = <a href="../ProximaPortal/_lib---Database---database.class.inc.html#defineDB_SELECT_TABLE">DB_SELECT_TABLE</a></span>			</li>
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$mode</span>			</li>
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$order</span>			</li>
+				</ul>
+		
+			
+	</div>
+<a name="methodGetObjectsByParent" id="GetObjectsByParent"><!-- --></a>
+<div class="evenrow">
+	
+	<div class="method-header">
+		<img src="../media/images/Method.png" />
+		<span class="method-title">GetObjectsByParent</span> (line <span class="line-number">393</span>)
+	</div> 
+	
+	<!-- ========== Info from phpDoc block ========= -->
+<p class="short-description">÷ÏÚ×ÒÁÝÁÅÔ ÍÁÓÓÉ× ÉÚ âä ÄÌÑ ÚÁÄÁÎÎÏÇÏ ÔÉÐÁ ÏÂßÅËÔÏ× <a href="../ProximaPortal/PXTypeDescription.html">PXTypeDescription</a>.</p>
+<p class="description"><p>éÓÐÏÌØÚÕÅÔ <a href="../ProximaPortal/PXDatabase.html#method_GetData">PXDatabase::_GetData()</a> ÄÌÑ ÚÁÐÒÏÓÏ×.</p></p>
+	
+	<div class="method-signature">
+		<span class="method-result">Array</span>
+		<span class="method-name">
+			GetObjectsByParent
+		</span>
+					(<span class="var-type"><a href="../ProximaPortal/PXTypeDescription.html">PXTypeDescription</a></span>&nbsp;<span class="var-name">$format</span>, <span class="var-type">String</span>&nbsp;<span class="var-name">$status</span>, <span class="var-type">Integer</span>&nbsp;<span class="var-name">$parent</span>, [<span class="var-type">Integer</span>&nbsp;<span class="var-name">$mode</span> = <span class="var-default">DB_SELECT_TABLE</span>], [<span class="var-type"></span>&nbsp;<span class="var-name">$order</span> = <span class="var-default">NULL</span>])
+			</div>
+	
+			<ul class="parameters">
+					<li>
+				<span class="var-type"><a href="../ProximaPortal/PXTypeDescription.html">PXTypeDescription</a></span>
+				<span class="var-name">$format</span>			</li>
+					<li>
+				<span class="var-type">String</span>
+				<span class="var-name">$status</span><span class="var-description">: objects status ('TRUE' | 'FALSE')</span>			</li>
+					<li>
+				<span class="var-type">Integer</span>
+				<span class="var-name">$parent</span><span class="var-description">: parent id (numeric or NULL)</span>			</li>
+					<li>
+				<span class="var-type">Integer</span>
+				<span class="var-name">$mode</span><span class="var-description">: request mode, default = <a href="../ProximaPortal/_lib---Database---database.class.inc.html#defineDB_SELECT_TABLE">DB_SELECT_TABLE</a></span>			</li>
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$order</span>			</li>
+				</ul>
+		
+			
+	</div>
+<a name="methodGetObjectsByParentLimited" id="GetObjectsByParentLimited"><!-- --></a>
+<div class="oddrow">
+	
+	<div class="method-header">
+		<img src="../media/images/Method.png" />
+		<span class="method-title">GetObjectsByParentLimited</span> (line <span class="line-number">419</span>)
+	</div> 
+	
+	<!-- ========== Info from phpDoc block ========= -->
+<p class="short-description">÷ÏÚ×ÒÁÝÁÅÔ ÍÁÓÓÉ× ÉÚ âä ÄÌÑ ÚÁÄÁÎÎÏÇÏ ÔÉÐÁ ÏÂßÅËÔÏ× <a href="../ProximaPortal/PXTypeDescription.html">PXTypeDescription</a>.</p>
+<p class="description"><p>éÓÐÏÌØÚÕÅÔ <a href="../ProximaPortal/PXDatabase.html#method_GetData">PXDatabase::_GetData()</a> ÄÌÑ ÚÁÐÒÏÓÏ×.</p></p>
+	
+	<div class="method-signature">
+		<span class="method-result">Array</span>
+		<span class="method-name">
+			GetObjectsByParentLimited
+		</span>
+					(<span class="var-type"><a href="../ProximaPortal/PXTypeDescription.html">PXTypeDescription</a></span>&nbsp;<span class="var-name">$format</span>, <span class="var-type">String</span>&nbsp;<span class="var-name">$status</span>, <span class="var-type">Integer</span>&nbsp;<span class="var-name">$parent</span>, <span class="var-type">Integer</span>&nbsp;<span class="var-name">$limit</span>, <span class="var-type">Integer</span>&nbsp;<span class="var-name">$offset</span>, [<span class="var-type">Integer</span>&nbsp;<span class="var-name">$mode</span> = <span class="var-default">DB_SELECT_TABLE</span>], [<span class="var-type"></span>&nbsp;<span class="var-name">$order</span> = <span class="var-default">NULL</span>])
+			</div>
+	
+			<ul class="parameters">
+					<li>
+				<span class="var-type"><a href="../ProximaPortal/PXTypeDescription.html">PXTypeDescription</a></span>
+				<span class="var-name">$format</span>			</li>
+					<li>
+				<span class="var-type">String</span>
+				<span class="var-name">$status</span><span class="var-description">: objects status ('TRUE' | 'FALSE')</span>			</li>
+					<li>
+				<span class="var-type">Integer</span>
+				<span class="var-name">$parent</span><span class="var-description">: parent id</span>			</li>
+					<li>
+				<span class="var-type">Integer</span>
+				<span class="var-name">$limit</span><span class="var-description">: database SELECT LIMIT value</span>			</li>
+					<li>
+				<span class="var-type">Integer</span>
+				<span class="var-name">$offset</span><span class="var-description">: database SELECT OFFSET value</span>			</li>
+					<li>
+				<span class="var-type">Integer</span>
+				<span class="var-name">$mode</span><span class="var-description">: request mode, default = <a href="../ProximaPortal/_lib---Database---database.class.inc.html#defineDB_SELECT_TABLE">DB_SELECT_TABLE</a></span>			</li>
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$order</span>			</li>
+				</ul>
+		
+			
+	</div>
+<a name="methodGetObjectsBySearchWord" id="GetObjectsBySearchWord"><!-- --></a>
+<div class="evenrow">
+	
+	<div class="method-header">
+		<img src="../media/images/Method.png" />
+		<span class="method-title">GetObjectsBySearchWord</span> (line <span class="line-number">566</span>)
+	</div> 
+	
+	<!-- ========== Info from phpDoc block ========= -->
+<p class="short-description">÷ÏÚ×ÒÁÝÁÅÔ ÍÁÓÓÉ× ÄÁÎÎÙÈ ÉÚ âä ÄÌÑ ÚÁÄÁÎÎÏÇÏ ÔÉÐÁ ÏÂßÅËÔÏ× <a href="../ProximaPortal/PXTypeDescription.html">PXTypeDescription</a>.</p>
+<p class="description"><p>ðÒÏÉÚ×ÏÄÉÔ ÐÏÉÓË $world ÐÏ ÷óåí ÐÏÌÑÍ ÕËÁÚÁÎÎÙÍ × $format.  éÓÐÏÌØÚÕÅÔ <a href="../ProximaPortal/PXDatabase.html#method_GetData">PXDatabase::_GetData()</a> ÄÌÑ ÚÁÐÒÏÓÏ×.</p></p>
+	
+	<div class="method-signature">
+		<span class="method-result">Array</span>
+		<span class="method-name">
+			GetObjectsBySearchWord
+		</span>
+					(<span class="var-type"><a href="../ProximaPortal/PXTypeDescription.html">PXTypeDescription</a></span>&nbsp;<span class="var-name">$format</span>, <span class="var-type">String</span>&nbsp;<span class="var-name">$status</span>, <span class="var-type">String</span>&nbsp;<span class="var-name">$word</span>, [<span class="var-type">Integer</span>&nbsp;<span class="var-name">$mode</span> = <span class="var-default">DB_SELECT_TABLE</span>], [<span class="var-type"></span>&nbsp;<span class="var-name">$order</span> = <span class="var-default">NULL</span>])
+			</div>
+	
+			<ul class="parameters">
+					<li>
+				<span class="var-type"><a href="../ProximaPortal/PXTypeDescription.html">PXTypeDescription</a></span>
+				<span class="var-name">$format</span>			</li>
+					<li>
+				<span class="var-type">String</span>
+				<span class="var-name">$status</span><span class="var-description">: objects status ('TRUE' | 'FALSE')</span>			</li>
+					<li>
+				<span class="var-type">String</span>
+				<span class="var-name">$word</span><span class="var-description">: search word</span>			</li>
+					<li>
+				<span class="var-type">Integer</span>
+				<span class="var-name">$mode</span><span class="var-description">: request mode, default = <a href="../ProximaPortal/_lib---Database---database.class.inc.html#defineDB_SELECT_TABLE">DB_SELECT_TABLE</a></span>			</li>
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$order</span>			</li>
+				</ul>
+		
+			
+	</div>
+<a name="methodGetObjectsBySearchWordLimited" id="GetObjectsBySearchWordLimited"><!-- --></a>
+<div class="oddrow">
+	
+	<div class="method-header">
+		<img src="../media/images/Method.png" />
+		<span class="method-title">GetObjectsBySearchWordLimited</span> (line <span class="line-number">594</span>)
+	</div> 
+	
+	<!-- ========== Info from phpDoc block ========= -->
+<p class="short-description">÷ÏÚ×ÒÁÝÁÅÔ ÍÁÓÓÉ× ÄÁÎÎÙÈ ÉÚ âä ÄÌÑ ÚÁÄÁÎÎÏÇÏ ÔÉÐÁ ÏÂßÅËÔÏ× <a href="../ProximaPortal/PXTypeDescription.html">PXTypeDescription</a>.</p>
+<p class="description"><p>ðÒÏÉÚ×ÏÄÉÔ ÐÏÉÓË $world ÐÏ ÷óåí ÐÏÌÑÍ ÕËÁÚÁÎÎÙÍ × $format.  éÓÐÏÌØÚÕÅÔ <a href="../ProximaPortal/PXDatabase.html#method_GetData">PXDatabase::_GetData()</a> ÄÌÑ ÚÁÐÒÏÓÏ×.</p></p>
+	
+	<div class="method-signature">
+		<span class="method-result">Array</span>
+		<span class="method-name">
+			GetObjectsBySearchWordLimited
+		</span>
+					(<span class="var-type"><a href="../ProximaPortal/PXTypeDescription.html">PXTypeDescription</a></span>&nbsp;<span class="var-name">$format</span>, <span class="var-type">String</span>&nbsp;<span class="var-name">$status</span>, <span class="var-type">String</span>&nbsp;<span class="var-name">$word</span>, <span class="var-type">Integer</span>&nbsp;<span class="var-name">$limit</span>, <span class="var-type">Integer</span>&nbsp;<span class="var-name">$offset</span>, [<span class="var-type">Integer</span>&nbsp;<span class="var-name">$mode</span> = <span class="var-default">DB_SELECT_TABLE</span>], [<span class="var-type"></span>&nbsp;<span class="var-name">$order</span> = <span class="var-default">NULL</span>])
+			</div>
+	
+			<ul class="parameters">
+					<li>
+				<span class="var-type"><a href="../ProximaPortal/PXTypeDescription.html">PXTypeDescription</a></span>
+				<span class="var-name">$format</span>			</li>
+					<li>
+				<span class="var-type">String</span>
+				<span class="var-name">$status</span><span class="var-description">: objects status ('TRUE' | 'FALSE')</span>			</li>
+					<li>
+				<span class="var-type">String</span>
+				<span class="var-name">$word</span><span class="var-description">: search word</span>			</li>
+					<li>
+				<span class="var-type">Integer</span>
+				<span class="var-name">$limit</span><span class="var-description">: database SELECT LIMIT value</span>			</li>
+					<li>
+				<span class="var-type">Integer</span>
+				<span class="var-name">$offset</span><span class="var-description">: database SELECT OFFSET value</span>			</li>
+					<li>
+				<span class="var-type">Integer</span>
+				<span class="var-name">$mode</span><span class="var-description">: request mode, default = <a href="../ProximaPortal/_lib---Database---database.class.inc.html#defineDB_SELECT_TABLE">DB_SELECT_TABLE</a></span>			</li>
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$order</span>			</li>
+				</ul>
+		
+			
+	</div>
+<a name="methodGetObjectsByWhere" id="GetObjectsByWhere"><!-- --></a>
+<div class="evenrow">
+	
+	<div class="method-header">
+		<img src="../media/images/Method.png" />
+		<span class="method-title">GetObjectsByWhere</span> (line <span class="line-number">438</span>)
+	</div> 
+	
+	<!-- ========== Info from phpDoc block ========= -->
+<p class="short-description">÷ÏÚ×ÒÁÝÁÅÔ ÍÁÓÓÉ× ÉÚ âä ÄÌÑ ÚÁÄÁÎÎÏÇÏ ÔÉÐÁ ÏÂßÅËÔÏ× <a href="../ProximaPortal/PXTypeDescription.html">PXTypeDescription</a>.</p>
+<p class="description"><p>éÓÐÏÌØÚÕÅÔ <a href="../ProximaPortal/PXDatabase.html#method_GetData">PXDatabase::_GetData()</a> ÄÌÑ ÚÁÐÒÏÓÏ×.</p></p>
+	
+	<div class="method-signature">
+		<span class="method-result">Array</span>
+		<span class="method-name">
+			GetObjectsByWhere
+		</span>
+					(<span class="var-type"><a href="../ProximaPortal/PXTypeDescription.html">PXTypeDescription</a></span>&nbsp;<span class="var-name">$format</span>, <span class="var-type">String</span>&nbsp;<span class="var-name">$status</span>, <span class="var-type"></span>&nbsp;<span class="var-name">$whereClause</span>, [<span class="var-type">Integer</span>&nbsp;<span class="var-name">$mode</span> = <span class="var-default">DB_SELECT_TABLE</span>], [<span class="var-type"></span>&nbsp;<span class="var-name">$order</span> = <span class="var-default">NULL</span>], <span class="var-type">String</span>&nbsp;<span class="var-name">$where</span>)
+			</div>
+	
+			<ul class="parameters">
+					<li>
+				<span class="var-type"><a href="../ProximaPortal/PXTypeDescription.html">PXTypeDescription</a></span>
+				<span class="var-name">$format</span>			</li>
+					<li>
+				<span class="var-type">String</span>
+				<span class="var-name">$status</span><span class="var-description">: objects status ('TRUE' | 'FALSE')</span>			</li>
+					<li>
+				<span class="var-type">String</span>
+				<span class="var-name">$where</span><span class="var-description">: sql where</span>			</li>
+					<li>
+				<span class="var-type">Integer</span>
+				<span class="var-name">$mode</span><span class="var-description">: request mode, default = <a href="../ProximaPortal/_lib---Database---database.class.inc.html#defineDB_SELECT_TABLE">DB_SELECT_TABLE</a></span>			</li>
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$whereClause</span>			</li>
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$order</span>			</li>
+				</ul>
+		
+			
+	</div>
+<a name="methodGetObjectsByWhereLimited" id="GetObjectsByWhereLimited"><!-- --></a>
+<div class="oddrow">
+	
+	<div class="method-header">
+		<img src="../media/images/Method.png" />
+		<span class="method-title">GetObjectsByWhereLimited</span> (line <span class="line-number">457</span>)
+	</div> 
+	
+	<!-- ========== Info from phpDoc block ========= -->
+<p class="short-description">÷ÏÚ×ÒÁÝÁÅÔ ÍÁÓÓÉ× ÉÚ âä ÄÌÑ ÚÁÄÁÎÎÏÇÏ ÔÉÐÁ ÏÂßÅËÔÏ× <a href="../ProximaPortal/PXTypeDescription.html">PXTypeDescription</a>.</p>
+<p class="description"><p>éÓÐÏÌØÚÕÅÔ <a href="../ProximaPortal/PXDatabase.html#method_GetData">PXDatabase::_GetData()</a> ÄÌÑ ÚÁÐÒÏÓÏ×.</p></p>
+	
+	<div class="method-signature">
+		<span class="method-result">Array</span>
+		<span class="method-name">
+			GetObjectsByWhereLimited
+		</span>
+					(<span class="var-type"><a href="../ProximaPortal/PXTypeDescription.html">PXTypeDescription</a></span>&nbsp;<span class="var-name">$format</span>, <span class="var-type">String</span>&nbsp;<span class="var-name">$status</span>, <span class="var-type"></span>&nbsp;<span class="var-name">$whereClause</span>, <span class="var-type">Integer</span>&nbsp;<span class="var-name">$limit</span>, <span class="var-type">Integer</span>&nbsp;<span class="var-name">$offset</span>, [<span class="var-type">Integer</span>&nbsp;<span class="var-name">$mode</span> = <span class="var-default">DB_SELECT_TABLE</span>], [<span class="var-type"></span>&nbsp;<span class="var-name">$order</span> = <span class="var-default">NULL</span>], <span class="var-type">String</span>&nbsp;<span class="var-name">$field</span>, <span class="var-type">String</span>&nbsp;<span class="var-name">$value</span>)
+			</div>
+	
+			<ul class="parameters">
+					<li>
+				<span class="var-type"><a href="../ProximaPortal/PXTypeDescription.html">PXTypeDescription</a></span>
+				<span class="var-name">$format</span>			</li>
+					<li>
+				<span class="var-type">String</span>
+				<span class="var-name">$status</span><span class="var-description">: objects status ('TRUE' | 'FALSE')</span>			</li>
+					<li>
+				<span class="var-type">String</span>
+				<span class="var-name">$field</span><span class="var-description">: field name</span>			</li>
+					<li>
+				<span class="var-type">String</span>
+				<span class="var-name">$value</span><span class="var-description">: field value</span>			</li>
+					<li>
+				<span class="var-type">Integer</span>
+				<span class="var-name">$limit</span><span class="var-description">: database SELECT LIMIT value</span>			</li>
+					<li>
+				<span class="var-type">Integer</span>
+				<span class="var-name">$offset</span><span class="var-description">: database SELECT OFFSET value</span>			</li>
+					<li>
+				<span class="var-type">Integer</span>
+				<span class="var-name">$mode</span><span class="var-description">: request mode, default = <a href="../ProximaPortal/_lib---Database---database.class.inc.html#defineDB_SELECT_TABLE">DB_SELECT_TABLE</a></span>			</li>
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$whereClause</span>			</li>
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$order</span>			</li>
+				</ul>
+		
+			
+	</div>
+<a name="methodGetObjectsLimited" id="GetObjectsLimited"><!-- --></a>
+<div class="evenrow">
+	
+	<div class="method-header">
+		<img src="../media/images/Method.png" />
+		<span class="method-title">GetObjectsLimited</span> (line <span class="line-number">378</span>)
+	</div> 
+	
+	<!-- ========== Info from phpDoc block ========= -->
+<p class="short-description">÷ÏÚ×ÒÁÝÁÅÔ ÍÁÓÓÉ× ÄÁÎÎÙÈ ÉÚ âä ÄÌÑ ÚÁÄÁÎÎÏÇÏ ÔÉÐÁ ÏÂßÅËÔÏ× <a href="../ProximaPortal/PXTypeDescription.html">PXTypeDescription</a>.</p>
+<p class="description"><p>éÓÐÏÌØÚÕÅÔ <a href="../ProximaPortal/PXDatabase.html#method_GetData">PXDatabase::_GetData()</a> ÄÌÑ ÚÁÐÒÏÓÏ×.</p></p>
+	
+	<div class="method-signature">
+		<span class="method-result">Array</span>
+		<span class="method-name">
+			GetObjectsLimited
+		</span>
+					(<span class="var-type"><a href="../ProximaPortal/PXTypeDescription.html">PXTypeDescription</a></span>&nbsp;<span class="var-name">$format</span>, <span class="var-type">String</span>&nbsp;<span class="var-name">$status</span>, <span class="var-type">Integer</span>&nbsp;<span class="var-name">$limit</span>, <span class="var-type">Integer</span>&nbsp;<span class="var-name">$offset</span>, [<span class="var-type">Integer</span>&nbsp;<span class="var-name">$mode</span> = <span class="var-default">DB_SELECT_TABLE</span>], [<span class="var-type"></span>&nbsp;<span class="var-name">$order</span> = <span class="var-default">NULL</span>])
+			</div>
+	
+			<ul class="parameters">
+					<li>
+				<span class="var-type"><a href="../ProximaPortal/PXTypeDescription.html">PXTypeDescription</a></span>
+				<span class="var-name">$format</span>			</li>
+					<li>
+				<span class="var-type">String</span>
+				<span class="var-name">$status</span><span class="var-description">: objects status ('TRUE' | 'FALSE')</span>			</li>
+					<li>
+				<span class="var-type">Integer</span>
+				<span class="var-name">$limit</span><span class="var-description">: database SELECT LIMIT value</span>			</li>
+					<li>
+				<span class="var-type">Integer</span>
+				<span class="var-name">$offset</span><span class="var-description">: database SELECT OFFSET value</span>			</li>
+					<li>
+				<span class="var-type">Integer</span>
+				<span class="var-name">$mode</span><span class="var-description">: request mode, default = <a href="../ProximaPortal/_lib---Database---database.class.inc.html#defineDB_SELECT_TABLE">DB_SELECT_TABLE</a></span>			</li>
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$order</span>			</li>
+				</ul>
+		
+			
+	</div>
+<a name="methodLoadDirectoriesAutomatic" id="LoadDirectoriesAutomatic"><!-- --></a>
+<div class="oddrow">
+	
+	<div class="method-header">
+		<img src="../media/images/Method.png" />
+		<span class="method-title">LoadDirectoriesAutomatic</span> (line <span class="line-number">86</span>)
+	</div> 
+	
+	<!-- ========== Info from phpDoc block ========= -->
+<p class="short-description">úÁÇÒÕÖÁÅÔ ËÁÔÁÌÏÇÉ (directories) ÐÏÍÅÞÅÎÎÙÅ × datatypes.xml ËÁË schema=&quot;sql&quot; &amp;&amp; load=&quot;automatic&quot;</p>
+	<ul class="tags">
+				<li><span class="field">see:</span> <a href="../ProximaPortal/PXDatabase.html#methodLoadSQLDirectory">PXDatabase::LoadSQLDirectory()</a></li>
+			</ul>
+	
+	<div class="method-signature">
+		<span class="method-result">void</span>
+		<span class="method-name">
+			LoadDirectoriesAutomatic
+		</span>
+					(<span class="var-type"></span>&nbsp;<span class="var-name">&$directories</span>, <span class="var-type">Array</span>&nbsp;<span class="var-name">$directories</span>)
+			</div>
+	
+			<ul class="parameters">
+					<li>
+				<span class="var-type">Array</span>
+				<span class="var-name">$directories</span><span class="var-description">: reference to PXDirectoryDescription objects array</span>			</li>
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">&$directories</span>			</li>
+				</ul>
+		
+			
+	</div>
+<a name="methodLoadDirectoriesByType" id="LoadDirectoriesByType"><!-- --></a>
+<div class="evenrow">
+	
+	<div class="method-header">
+		<img src="../media/images/Method.png" />
+		<span class="method-title">LoadDirectoriesByType</span> (line <span class="line-number">103</span>)
+	</div> 
+	
+	<!-- ========== Info from phpDoc block ========= -->
+<p class="short-description">úÁÇÒÕÖÁÅÔ ÓÐÒÁ×ÏÞÎÉËÉ (directories)</p>
+	<ul class="tags">
+				<li><span class="field">todo:</span> docme ÐÏÄÒÏÂÎÅÅ</li>
+				<li><span class="field">uses:</span> <a href="../ProximaPortal/PXDatabase.html#methodLoadDirectory">PXDatabase::LoadDirectory()</a></li>
+			</ul>
+	
+	<div class="method-signature">
+		<span class="method-result">void</span>
+		<span class="method-name">
+			LoadDirectoriesByType
+		</span>
+					(<span class="var-type"></span>&nbsp;<span class="var-name">&$format</span>, [<span class="var-type"></span>&nbsp;<span class="var-name">$object</span> = <span class="var-default">NULL</span>], <span class="var-type">Mixed</span>&nbsp;<span class="var-name">$format</span>)
+			</div>
+	
+			<ul class="parameters">
+					<li>
+				<span class="var-type">Mixed</span>
+				<span class="var-name">$format</span>			</li>
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">&$format</span>			</li>
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$object</span>			</li>
+				</ul>
+		
+			
+	</div>
+<a name="methodLoadDirectory" id="LoadDirectory"><!-- --></a>
+<div class="oddrow">
+	
+	<div class="method-header">
+		<img src="../media/images/Method.png" />
+		<span class="method-title">LoadDirectory</span> (line <span class="line-number">122</span>)
+	</div> 
+	
+	<!-- ========== Info from phpDoc block ========= -->
+<p class="short-description">úÁÇÒÕÖÁÅÔ ÓÐÒÁ×ÏÞÎÉË (directories) × ÚÁ×ÉÓÉÍÏÓÔÉ ÏÔ ÔÉÐÁ</p>
+	<ul class="tags">
+				<li><span class="field">usedby:</span> <a href="../ProximaPortal/PXDatabase.html#methodLoadDirectoriesByType">PXDatabase::LoadDirectoriesByType()</a></li>
+				<li><span class="field">uses:</span> <a href="../ProximaPortal/PXDatabase.html#methodLoadSQLDirectory">PXDatabase::LoadSQLDirectory()</a>,  - PXApplication::LoadXMLDirectory</li>
+			</ul>
+	
+	<div class="method-signature">
+		<span class="method-result">void</span>
+		<span class="method-name">
+			LoadDirectory
+		</span>
+					(<span class="var-type"><a href="../ProximaPortal/PXDirectoryDescription.html">PXDirectoryDescription</a></span>&nbsp;<span class="var-name">$directory</span>, <span class="var-type"></span>&nbsp;<span class="var-name">$object</span>, [<span class="var-type"></span>&nbsp;<span class="var-name">$addDefault</span> = <span class="var-default">true</span>], [<span class="var-type"></span>&nbsp;<span class="var-name">$format</span> = <span class="var-default">NULL</span>])
+			</div>
+	
+			<ul class="parameters">
+					<li>
+				<span class="var-type"><a href="../ProximaPortal/PXDirectoryDescription.html">PXDirectoryDescription</a></span>
+				<span class="var-name">$directory</span>			</li>
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$object</span>			</li>
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$addDefault</span>			</li>
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$format</span>			</li>
+				</ul>
+		
+			
+	</div>
+<a name="methodLoadSQLDirectory" id="LoadSQLDirectory"><!-- --></a>
+<div class="evenrow">
+	
+	<div class="method-header">
+		<img src="../media/images/Method.png" />
+		<span class="method-title">LoadSQLDirectory</span> (line <span class="line-number">193</span>)
+	</div> 
+	
+	<!-- ========== Info from phpDoc block ========= -->
+<p class="short-description">úÁÇÒÕÖÁÅÔ ÐÏ ÓÓÙÌËÅ ÓÐÒÁ×ÏÞÎÉË (directory)  ÐÏÍÅÞÅÎÎÙÊ × datatypes.xml ËÁË schema=&quot;sql&quot;  éÓÐÏÌØÚÕÅÔ <a href="../ProximaPortal/PXDatabase.html#method_GetData">PXDatabase::_GetData()</a> ÄÌÑ ÚÁÇÒÕÚËÉ ËÁÔÁÌÏÇÏ× ÉÚ ÂÁÚÙ ÄÁÎÎÙÈ</p>
+	
+	<div class="method-signature">
+		<span class="method-result">void</span>
+		<span class="method-name">
+			LoadSQLDirectory
+		</span>
+					(<span class="var-type"></span>&nbsp;<span class="var-name">&$directory</span>, [<span class="var-type"></span>&nbsp;<span class="var-name">$addDefault</span> = <span class="var-default">true</span>], [<span class="var-type"></span>&nbsp;<span class="var-name">$object</span> = <span class="var-default">NULL</span>], [<span class="var-type"></span>&nbsp;<span class="var-name">$format</span> = <span class="var-default">NULL</span>], <span class="var-type"><a href="../ProximaPortal/PXDirectoryDescription.html">PXDirectoryDescription</a></span>&nbsp;<span class="var-name">$directory</span>)
+			</div>
+	
+			<ul class="parameters">
+					<li>
+				<span class="var-type"><a href="../ProximaPortal/PXDirectoryDescription.html">PXDirectoryDescription</a></span>
+				<span class="var-name">$directory</span>			</li>
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">&$directory</span>			</li>
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$addDefault</span>			</li>
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$object</span>			</li>
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$format</span>			</li>
+				</ul>
+		
+			
+	</div>
+<a name="methodModifyContentObject" id="ModifyContentObject"><!-- --></a>
+<div class="oddrow">
+	
+	<div class="method-header">
+		<img src="../media/images/Method.png" />
+		<span class="method-title">ModifyContentObject</span> (line <span class="line-number">859</span>)
+	</div> 
+	
+	<!-- ========== Info from phpDoc block ========= -->
+<p class="short-description">éÚÍÅÎÑÅÔ ÈÒÁÎÑÝÉÊÓÑ × âä ÏÂßÅËÔ  òÁÂÏÔÁÅÔ ÐÏ ÁÎÁÌÏÇÉÉ Ó <a href="../ProximaPortal/PXDatabase.html#methodAddContentObject">PXDatabase::AddContentObject()</a></p>
+	<ul class="tags">
+				<li><span class="field">see:</span> <a href="../ProximaPortal/PXDatabase.html#methodAddContentObject">PXDatabase::AddContentObject()</a></li>
+			</ul>
+	
+	<div class="method-signature">
+		<span class="method-result">void</span>
+		<span class="method-name">
+			ModifyContentObject
+		</span>
+					(<span class="var-type"><a href="../ProximaPortal/PXTypeDescription.html">PXTypeDescription</a></span>&nbsp;<span class="var-name">$format</span>, <span class="var-type">Array</span>&nbsp;<span class="var-name">$object</span>, [<span class="var-type"></span>&nbsp;<span class="var-name">$skipHidden</span> = <span class="var-default">false</span>])
+			</div>
+	
+			<ul class="parameters">
+					<li>
+				<span class="var-type"><a href="../ProximaPortal/PXTypeDescription.html">PXTypeDescription</a></span>
+				<span class="var-name">$format</span>			</li>
+					<li>
+				<span class="var-type">Array</span>
+				<span class="var-name">$object</span>			</li>
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$skipHidden</span>			</li>
+				</ul>
+		
+			
+	</div>
+<a name="methodModifyLinks" id="ModifyLinks"><!-- --></a>
+<div class="evenrow">
+	
+	<div class="method-header">
+		<img src="../media/images/Method.png" />
+		<span class="method-title">ModifyLinks</span> (line <span class="line-number">1431</span>)
+	</div> 
+	
+	<!-- ========== Info from phpDoc block ========= -->
+<p class="short-description">éÓÐÏÌØÚÕÅÔ PXDatabase::Query</p>
+	<ul class="tags">
+				<li><span class="field">todo:</span> docme (check params documentation)</li>
+			</ul>
+	
+	<div class="method-signature">
+		<span class="method-result">void</span>
+		<span class="method-name">
+			ModifyLinks
+		</span>
+					(<span class="var-type">Mixed</span>&nbsp;<span class="var-name">$reference</span>, <span class="var-type"><a href="../ProximaPortal/PXTypeDescription.html">PXTypeDescription</a></span>&nbsp;<span class="var-name">$format</span>, <span class="var-type">Mixed</span>&nbsp;<span class="var-name">$id</span>, <span class="var-type">Mixed</span>&nbsp;<span class="var-name">$links</span>, [<span class="var-type"></span>&nbsp;<span class="var-name">$deleteAll</span> = <span class="var-default">true</span>])
+			</div>
+	
+			<ul class="parameters">
+					<li>
+				<span class="var-type">Mixed</span>
+				<span class="var-name">$reference</span><span class="var-description">: Unknown</span>			</li>
+					<li>
+				<span class="var-type"><a href="../ProximaPortal/PXTypeDescription.html">PXTypeDescription</a></span>
+				<span class="var-name">$format</span>			</li>
+					<li>
+				<span class="var-type">Mixed</span>
+				<span class="var-name">$id</span><span class="var-description">: Unknown</span>			</li>
+					<li>
+				<span class="var-type">Mixed</span>
+				<span class="var-name">$links</span><span class="var-description">: Unknown</span>			</li>
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$deleteAll</span>			</li>
+				</ul>
+		
+			
+	</div>
+<a name="methodModifyObjectSysVars" id="ModifyObjectSysVars"><!-- --></a>
+<div class="oddrow">
+	
+	<div class="method-header">
+		<img src="../media/images/Method.png" />
+		<span class="method-title">ModifyObjectSysVars</span> (line <span class="line-number">964</span>)
+	</div> 
+	
+	<!-- ========== Info from phpDoc block ========= -->
+<p class="short-description">éÚÍÅÎÑÅÔ ÓÉÓÔÅÍÎÙÅ ÐÁÒÁÍÅÔÒÙ ÏÂßÅËÔÁ ÈÒÁÎÑÝÅÇÏÓÑ × âä ('sys_allowed', 'sys_accessmod', 'sys_accessput')  éÓÐÏÌØÚÕÅÔ PXDatabase::UpdateObjectByID ÄÌÑ ÄÏÓÔÕÐÁ Ë ÏÂßÅËÔÁÍ.</p>
+	<ul class="tags">
+				<li><span class="field">see:</span> <a href="../ProximaPortal/_lib---common.defines.inc.html#defineOBJ_FIELD_CHILDREN">OBJ_FIELD_CHILDREN</a></li>
+			</ul>
+	
+	<div class="method-signature">
+		<span class="method-result">void</span>
+		<span class="method-name">
+			ModifyObjectSysVars
+		</span>
+					(<span class="var-type"><a href="../ProximaPortal/PXTypeDescription.html">PXTypeDescription</a></span>&nbsp;<span class="var-name">$format</span>, <span class="var-type">Array</span>&nbsp;<span class="var-name">$object</span>)
+			</div>
+	
+			<ul class="parameters">
+					<li>
+				<span class="var-type"><a href="../ProximaPortal/PXTypeDescription.html">PXTypeDescription</a></span>
+				<span class="var-name">$format</span>			</li>
+					<li>
+				<span class="var-type">Array</span>
+				<span class="var-name">$object</span>			</li>
+				</ul>
+		
+			
+	</div>
+<a name="methodMoveContentObject" id="MoveContentObject"><!-- --></a>
+<div class="evenrow">
+	
+	<div class="method-header">
+		<img src="../media/images/Method.png" />
+		<span class="method-title">MoveContentObject</span> (line <span class="line-number">1071</span>)
+	</div> 
+	
+	<!-- ========== Info from phpDoc block ========= -->
+<p class="short-description">éÚÍÅÎÑÅÔ ÐÏÚÉÃÉÀ ÏÂßÅËÔ × ÓÐÉÓËÅ ÎÕÖÎÏÅ ËÏÌÉÞÅÓÔ×Ï ÒÁÚ  éÓÐÏÌØÚÕÅÔ PXDatabase::_moveContentObject</p>
+	<ul class="tags">
+				<li><span class="field">see:</span> sys_order</li>
+			</ul>
+	
+	<div class="method-signature">
+		<span class="method-result">void</span>
+		<span class="method-name">
+			MoveContentObject
+		</span>
+					(<span class="var-type"><a href="../ProximaPortal/PXTypeDescription.html">PXTypeDescription</a></span>&nbsp;<span class="var-name">$format</span>, <span class="var-type">Array</span>&nbsp;<span class="var-name">$objectId</span>, [<span class="var-type">Integer</span>&nbsp;<span class="var-name">$shift</span> = <span class="var-default">-1</span>])
+			</div>
+	
+			<ul class="parameters">
+					<li>
+				<span class="var-type"><a href="../ProximaPortal/PXTypeDescription.html">PXTypeDescription</a></span>
+				<span class="var-name">$format</span>			</li>
+					<li>
+				<span class="var-type">Array</span>
+				<span class="var-name">$objectId</span><span class="var-description">: object id</span>			</li>
+					<li>
+				<span class="var-type">Integer</span>
+				<span class="var-name">$shift</span>			</li>
+				</ul>
+		
+			
+	</div>
+<a name="methodParseWhereTemplate" id="ParseWhereTemplate"><!-- --></a>
+<div class="oddrow">
+	
+	<div class="method-header">
+		<img src="../media/images/Method.png" />
+		<span class="method-title">ParseWhereTemplate</span> (line <span class="line-number">146</span>)
+	</div> 
+	
+	<!-- ========== Info from phpDoc block ========= -->
+<p class="short-description">ðÁÒÓÉÔ WHERE × ÓÐÒÁ×ÏÞÎÉËÁÈ</p>
+	<ul class="tags">
+				<li><span class="field">todo:</span> docme ÐÏÄÒÏÂÎÅÅ</li>
+				<li><span class="field">uses:</span> <a href="../ProximaPortal/PXDatabase.html#method_NormalizeObjectAttribute">PXDatabase::_NormalizeObjectAttribute()</a></li>
+				<li><span class="field">uses:</span> MapData</li>
+			</ul>
+	
+	<div class="method-signature">
+		<span class="method-result">void</span>
+		<span class="method-name">
+			ParseWhereTemplate
+		</span>
+					(<span class="var-type">Mixed</span>&nbsp;<span class="var-name">$where</span>, <span class="var-type">Mixed</span>&nbsp;<span class="var-name">$object</span>, <span class="var-type">Mixed</span>&nbsp;<span class="var-name">$format</span>)
+			</div>
+	
+			<ul class="parameters">
+					<li>
+				<span class="var-type">Mixed</span>
+				<span class="var-name">$where</span>			</li>
+					<li>
+				<span class="var-type">Mixed</span>
+				<span class="var-name">$object</span>			</li>
+					<li>
+				<span class="var-type">Mixed</span>
+				<span class="var-name">$format</span>			</li>
+				</ul>
+		
+			
+	</div>
+<a name="methodquery" id="query"><!-- --></a>
+<div class="evenrow">
+	
+	<div class="method-header">
+		<img src="../media/images/Method.png" />
+		<span class="method-title">query</span> (line <span class="line-number">67</span>)
+	</div> 
+	
+	<!-- ========== Info from phpDoc block ========= -->
+<p class="short-description">æÕÎËÕÃÉÑ ÐÅÒÅÇÒÕÖÁÅÔ ÆÕÎËÃÉÀ ÒÏÄÉÔÅÌØÓËÏÇÏ ËÌÁÓÓÁ.</p>
+<p class="description"><p>òÏÄÉÔÅÌØÓËÉÊ query ×ÏÚ×ÒÁÝÁÅÔ ÍÁÓÓÉ× × ÓÌÕÞÁÅ ÕÓÐÅÈÁ É ÏÔÒÉÃÁÔÅÌØÎÏÅ ÃÅÌÏÅ × ÓÌÕÞÁÅ ÎÅÕÓÐÅÈÁ.  üÔÁ ÆÕÎËÃÉÑ ÏÂÒÁÂÁÔÙ×ÁÅÔ ÏÔÒÉÃÁÔÅÌØÎÏÅ ÃÅÌÏÅ É ×ÓÅÇÄÁ ×ÏÚ×ÒÁÝÁÅÔ ÍÁÓÓÉ×</p></p>
+	
+	<div class="method-signature">
+		<span class="method-result">Array</span>
+		<span class="method-name">
+			query
+		</span>
+					(<span class="var-type">String</span>&nbsp;<span class="var-name">$query</span>, [<span class="var-type">Boolean</span>&nbsp;<span class="var-name">$donotusecache</span> = <span class="var-default">false</span>], [<span class="var-type">Array</span>&nbsp;<span class="var-name">$limitpair</span> = <span class="var-default">NULL</span>])
+			</div>
+	
+			<ul class="parameters">
+					<li>
+				<span class="var-type">String</span>
+				<span class="var-name">$query</span><span class="var-description">: SQL-query</span>			</li>
+					<li>
+				<span class="var-type">Boolean</span>
+				<span class="var-name">$donotusecache</span>			</li>
+					<li>
+				<span class="var-type">Array</span>
+				<span class="var-name">$limitpair</span>			</li>
+				</ul>
+		
+			<hr class="separator" />
+		<div class="notes">Redefinition of:</div>
+		<dl>
+			<dt><a href="../ProximaPortal/NLSQLDatabaseAdapter.html#methodquery">NLSQLDatabaseAdapter::query()</a></dt>
+					</dl>
+			
+	</div>
+<a name="methodsetUser" id="setUser"><!-- --></a>
+<div class="oddrow">
+	
+	<div class="method-header">
+		<img src="../media/images/Method.png" />
+		<span class="method-title">setUser</span> (line <span class="line-number">53</span>)
+	</div> 
+	
+	<!-- ========== Info from phpDoc block ========= -->
+	
+	<div class="method-signature">
+		<span class="method-result">void</span>
+		<span class="method-name">
+			setUser
+		</span>
+					(<span class="var-type"></span>&nbsp;<span class="var-name">$user</span>)
+			</div>
+	
+			<ul class="parameters">
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$user</span>			</li>
+				</ul>
+		
+			
+	</div>
+<a name="methodUpContentObject" id="UpContentObject"><!-- --></a>
+<div class="evenrow">
+	
+	<div class="method-header">
+		<img src="../media/images/Method.png" />
+		<span class="method-title">UpContentObject</span> (line <span class="line-number">1044</span>)
+	</div> 
+	
+	<!-- ========== Info from phpDoc block ========= -->
+<p class="short-description">ðÏÄÎÉÍÁÅÔ ÏÂßÅËÔ × ÓÐÉÓËÅ ÎÁ ÏÄÎÕ ÐÏÚÉÃÉÀ  éÓÐÏÌØÚÕÅÔ PXDatabase::_moveContentObject</p>
+	<ul class="tags">
+				<li><span class="field">see:</span> sys_order</li>
+			</ul>
+	
+	<div class="method-signature">
+		<span class="method-result">void</span>
+		<span class="method-name">
+			UpContentObject
+		</span>
+					(<span class="var-type"><a href="../ProximaPortal/PXTypeDescription.html">PXTypeDescription</a></span>&nbsp;<span class="var-name">$format</span>, <span class="var-type">Array</span>&nbsp;<span class="var-name">$objectId</span>)
+			</div>
+	
+			<ul class="parameters">
+					<li>
+				<span class="var-type"><a href="../ProximaPortal/PXTypeDescription.html">PXTypeDescription</a></span>
+				<span class="var-name">$format</span>			</li>
+					<li>
+				<span class="var-type">Array</span>
+				<span class="var-name">$objectId</span><span class="var-description">: object id</span>			</li>
+				</ul>
+		
+			
+	</div>
+<a name="method_createSelector" id="_createSelector"><!-- --></a>
+<div class="oddrow">
+	
+	<div class="method-header">
+		<img src="../media/images/Method.png" />
+		<span class="method-title">_createSelector</span> (line <span class="line-number">281</span>)
+	</div> 
+	
+	<!-- ========== Info from phpDoc block ========= -->
+	<ul class="tags">
+				<li><span class="field">access:</span> protected</li>
+			</ul>
+	
+	<div class="method-signature">
+		<span class="method-result">void</span>
+		<span class="method-name">
+			_createSelector
+		</span>
+					(<span class="var-type"></span>&nbsp;<span class="var-name">$format</span>)
+			</div>
+	
+			<ul class="parameters">
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$format</span>			</li>
+				</ul>
+		
+			
+	</div>
+<a name="method_getCacheIden" id="_getCacheIden"><!-- --></a>
+<div class="evenrow">
+	
+	<div class="method-header">
+		<img src="../media/images/Method.png" />
+		<span class="method-title">_getCacheIden</span> (line <span class="line-number">270</span>)
+	</div> 
+	
+	<!-- ========== Info from phpDoc block ========= -->
+	<ul class="tags">
+				<li><span class="field">access:</span> protected</li>
+			</ul>
+	
+	<div class="method-signature">
+		<span class="method-result">void</span>
+		<span class="method-name">
+			_getCacheIden
+		</span>
+					(<span class="var-type"></span>&nbsp;<span class="var-name">$query</span>, <span class="var-type"></span>&nbsp;<span class="var-name">$mode</span>, <span class="var-type"></span>&nbsp;<span class="var-name">$limit</span>)
+			</div>
+	
+			<ul class="parameters">
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$query</span>			</li>
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$mode</span>			</li>
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$limit</span>			</li>
+				</ul>
+		
+			
+	</div>
+<a name="method_GetData" id="_GetData"><!-- --></a>
+<div class="oddrow">
+	
+	<div class="method-header">
+		<img src="../media/images/Method.png" />
+		<span class="method-title">_GetData</span> (line <span class="line-number">229</span>)
+	</div> 
+	
+	<!-- ========== Info from phpDoc block ========= -->
+<p class="short-description">ëÏÎÓÔÒÕÉÒÕÅÔ É ÉÓÐÏÌÎÑÅÔ ÚÁÐÒÏÓ × âä, ×ÏÚ×ÒÁÝÁÅÔ ÍÁÓÓÉ× Ó ÄÁÎÎÙÍÉ  éÓÐÏÌØÚÕÅÔ NLSQLDatabaseAdapter::Query() ÄÌÑ ÚÁÐÒÏÓÏ×</p>
+	<ul class="tags">
+				<li><span class="field">return:</span> results of NLSQLDatabaseAdapter::Query()</li>
+				<li><span class="field">todo:</span> docme (ÐÒÏ×ÅÒÉÔØ ÐÁÒÁÍÅÔÒÙ)</li>
+				<li><span class="field">access:</span> protected</li>
+			</ul>
+	
+	<div class="method-signature">
+		<span class="method-result">Array|NULL</span>
+		<span class="method-name">
+			_GetData
+		</span>
+					(<span class="var-type"><a href="../ProximaPortal/PXTypeDescription.html">PXTypeDescription</a></span>&nbsp;<span class="var-name">$format</span>, <span class="var-type">Integer</span>&nbsp;<span class="var-name">$mode</span>, [<span class="var-type">String</span>&nbsp;<span class="var-name">$where</span> = <span class="var-default">NULL</span>], [<span class="var-type">Array|NULL</span>&nbsp;<span class="var-name">$limit</span> = <span class="var-default">NULL</span>], [<span class="var-type"></span>&nbsp;<span class="var-name">$order</span> = <span class="var-default">NULL</span>])
+			</div>
+	
+			<ul class="parameters">
+					<li>
+				<span class="var-type"><a href="../ProximaPortal/PXTypeDescription.html">PXTypeDescription</a></span>
+				<span class="var-name">$format</span>			</li>
+					<li>
+				<span class="var-type">Integer</span>
+				<span class="var-name">$mode</span><span class="var-description">: request mode. Default = <a href="../ProximaPortal/_lib---Database---database.class.inc.html#defineDB_SELECT_TABLE">DB_SELECT_TABLE</a></span>			</li>
+					<li>
+				<span class="var-type">String</span>
+				<span class="var-name">$where</span><span class="var-description">: raw SQL WHERE clause</span>			</li>
+					<li>
+				<span class="var-type">Array|NULL</span>
+				<span class="var-name">$limit</span><span class="var-description">: NULL or array(LIMIT,OFFSET)</span>			</li>
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$order</span>			</li>
+				</ul>
+		
+			
+	</div>
+<a name="method_moveContentObject" id="_moveContentObject"><!-- --></a>
+<div class="evenrow">
+	
+	<div class="method-header">
+		<img src="../media/images/Method.png" />
+		<span class="method-title">_moveContentObject</span> (line <span class="line-number">1091</span>)
+	</div> 
+	
+	<!-- ========== Info from phpDoc block ========= -->
+<p class="short-description">éÚÍÅÎÑÅÔ ÐÏÚÉÃÉÀ ÏÂßÅËÔ × ÓÐÉÓËÅ  éÓÐÏÌØÚÕÅÔ PXDatabase::ModifyingQuery</p>
+	<ul class="tags">
+				<li><span class="field">see:</span> sys_order</li>
+			</ul>
+	
+	<div class="method-signature">
+		<span class="method-result">void</span>
+		<span class="method-name">
+			_moveContentObject
+		</span>
+					(<span class="var-type"><a href="../ProximaPortal/PXTypeDescription.html">PXTypeDescription</a></span>&nbsp;<span class="var-name">$format</span>, <span class="var-type">Array</span>&nbsp;<span class="var-name">$objectId</span>, <span class="var-type">String</span>&nbsp;<span class="var-name">$direction</span>)
+			</div>
+	
+			<ul class="parameters">
+					<li>
+				<span class="var-type"><a href="../ProximaPortal/PXTypeDescription.html">PXTypeDescription</a></span>
+				<span class="var-name">$format</span>			</li>
+					<li>
+				<span class="var-type">Array</span>
+				<span class="var-name">$objectId</span><span class="var-description">: object id</span>			</li>
+					<li>
+				<span class="var-type">String</span>
+				<span class="var-name">$direction</span><span class="var-description">: up|down</span>			</li>
+				</ul>
+		
+			
+	</div>
+<a name="method_NormalizeObjectAttribute" id="_NormalizeObjectAttribute"><!-- --></a>
+<div class="oddrow">
+	
+	<div class="method-header">
+		<img src="../media/images/Method.png" />
+		<span class="method-title">_NormalizeObjectAttribute</span> (line <span class="line-number">1157</span>)
+	</div> 
+	
+	<!-- ========== Info from phpDoc block ========= -->
+<p class="short-description">îÏÒÍÁÌÉÚÕÅÔ ÁÔÒÉÂÕÔ ÏÂßÅËÔÁ</p>
+	<ul class="tags">
+				<li><span class="field">usedby:</span> <a href="../ProximaPortal/PXDatabase.html#methodParseWhereTemplate">PXDatabase::ParseWhereTemplate()</a></li>
+			</ul>
+	
+	<div class="method-signature">
+		<span class="method-result">void</span>
+		<span class="method-name">
+			_NormalizeObjectAttribute
+		</span>
+					(<span class="var-type">String</span>&nbsp;<span class="var-name">$k</span>, <span class="var-type">Array</span>&nbsp;<span class="var-name">$object</span>, <span class="var-type"></span>&nbsp;<span class="var-name">$field</span>, <span class="var-type"></span>&nbsp;<span class="var-name">&$dbFields</span>, <span class="var-type"></span>&nbsp;<span class="var-name">&$dbValues</span>, <span class="var-type">String</span>&nbsp;<span class="var-name">$storageType</span>, <span class="var-type">Array</span>&nbsp;<span class="var-name">$dbFields</span>, <span class="var-type">Array</span>&nbsp;<span class="var-name">$dbValues</span>)
+			</div>
+	
+			<ul class="parameters">
+					<li>
+				<span class="var-type">String</span>
+				<span class="var-name">$k</span>			</li>
+					<li>
+				<span class="var-type">Array</span>
+				<span class="var-name">$object</span>			</li>
+					<li>
+				<span class="var-type">String</span>
+				<span class="var-name">$storageType</span>			</li>
+					<li>
+				<span class="var-type">Array</span>
+				<span class="var-name">$dbFields</span>			</li>
+					<li>
+				<span class="var-type">Array</span>
+				<span class="var-name">$dbValues</span>			</li>
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$field</span>			</li>
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">&$dbFields</span>			</li>
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">&$dbValues</span>			</li>
+				</ul>
+		
+			
+	</div>
+<a name="method_NormalizeObjectPathName" id="_NormalizeObjectPathName"><!-- --></a>
+<div class="evenrow">
+	
+	<div class="method-header">
+		<img src="../media/images/Method.png" />
+		<span class="method-title">_NormalizeObjectPathName</span> (line <span class="line-number">1176</span>)
+	</div> 
+	
+	<!-- ========== Info from phpDoc block ========= -->
+<p class="short-description">îÏÒÍÁÌÉÚÕÅÔ PathName ÏÂßÅËÔÁ  éÓÐÏÌØÚÕÅÔ PXDatabase::ModifyingQuery</p>
+	
+	<div class="method-signature">
+		<span class="method-result">void</span>
+		<span class="method-name">
+			_NormalizeObjectPathName
+		</span>
+					(<span class="var-type"><a href="../ProximaPortal/PXTypeDescription.html">PXTypeDescription</a></span>&nbsp;<span class="var-name">$format</span>, <span class="var-type">Array</span>&nbsp;<span class="var-name">$object</span>, <span class="var-type"></span>&nbsp;<span class="var-name">&$pathnames</span>, <span class="var-type">Array</span>&nbsp;<span class="var-name">$pathnames</span>)
+			</div>
+	
+			<ul class="parameters">
+					<li>
+				<span class="var-type"><a href="../ProximaPortal/PXTypeDescription.html">PXTypeDescription</a></span>
+				<span class="var-name">$format</span>			</li>
+					<li>
+				<span class="var-type">Array</span>
+				<span class="var-name">$object</span><span class="var-description">: object id</span>			</li>
+					<li>
+				<span class="var-type">Array</span>
+				<span class="var-name">$pathnames</span>			</li>
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">&$pathnames</span>			</li>
+				</ul>
+		
+			
+	</div>
+<a name="method_NormalizeTable" id="_NormalizeTable"><!-- --></a>
+<div class="oddrow">
+	
+	<div class="method-header">
+		<img src="../media/images/Method.png" />
+		<span class="method-title">_NormalizeTable</span> (line <span class="line-number">1548</span>)
+	</div> 
+	
+	<!-- ========== Info from phpDoc block ========= -->
+<p class="short-description">îÅÔ ÄÏËÕÍÅÎÔÁÃÉÉ</p>
+	<ul class="tags">
+				<li><span class="field">todo:</span> docme (check params documentation)</li>
+				<li><span class="field">access:</span> public</li>
+			</ul>
+	
+	<div class="method-signature">
+		<span class="method-result">void</span>
+		<span class="method-name">
+			_NormalizeTable
+		</span>
+					(<span class="var-type"></span>&nbsp;<span class="var-name">&$table</span>, <span class="var-type"></span>&nbsp;<span class="var-name">$format</span>)
+			</div>
+	
+			<ul class="parameters">
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">&$table</span>			</li>
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$format</span>			</li>
+				</ul>
+		
+			
+	</div>
+<a name="method_PrepareResult" id="_PrepareResult"><!-- --></a>
+<div class="evenrow">
+	
+	<div class="method-header">
+		<img src="../media/images/Method.png" />
+		<span class="method-title">_PrepareResult</span> (line <span class="line-number">1585</span>)
+	</div> 
+	
+	<!-- ========== Info from phpDoc block ========= -->
+<p class="short-description">îÅÔ ÄÏËÕÍÅÎÔÁÃÉÉ</p>
+	<ul class="tags">
+				<li><span class="field">todo:</span> docme (check params documentation)</li>
+				<li><span class="field">access:</span> protected</li>
+			</ul>
+	
+	<div class="method-signature">
+		<span class="method-result">void</span>
+		<span class="method-name">
+			_PrepareResult
+		</span>
+					(<span class="var-type"></span>&nbsp;<span class="var-name">$resTable</span>, <span class="var-type"></span>&nbsp;<span class="var-name">$format</span>, <span class="var-type"></span>&nbsp;<span class="var-name">$mode</span>)
+			</div>
+	
+			<ul class="parameters">
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$resTable</span>			</li>
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$format</span>			</li>
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$mode</span>			</li>
+				</ul>
+		
+			
+	</div>
+							<h4>Inherited Methods</h4>
+				<a name='inherited_methods'><!-- --></a>	
+									<!-- =========== Summary =========== -->
+					<p>Inherited From <span class="classname"><a href="../ProximaPortal/NLSQLDatabaseAdapter.html">NLSQLDatabaseAdapter</a></span></p>
+					<blockquote>
+													<img src="../media/images/Constructor.png" alt=" "/>
+							<span class="method-name"><a href="../ProximaPortal/NLSQLDatabaseAdapter.html#methodNLSQLDatabaseAdapter">NLSQLDatabaseAdapter::NLSQLDatabaseAdapter()</a></span><br>
+													<img src="../media/images/Method.png" alt=" "/>
+							<span class="method-name"><a href="../ProximaPortal/NLSQLDatabaseAdapter.html#methodcacheOff">NLSQLDatabaseAdapter::cacheOff()</a></span><br>
+													<img src="../media/images/Method.png" alt=" "/>
+							<span class="method-name"><a href="../ProximaPortal/NLSQLDatabaseAdapter.html#methodcacheOn">NLSQLDatabaseAdapter::cacheOn()</a></span><br>
+													<img src="../media/images/Method.png" alt=" "/>
+							<span class="method-name"><a href="../ProximaPortal/NLSQLDatabaseAdapter.html#methodClearCache">NLSQLDatabaseAdapter::ClearCache()</a></span><br>
+													<img src="../media/images/Method.png" alt=" "/>
+							<span class="method-name"><a href="../ProximaPortal/NLSQLDatabaseAdapter.html#methodinit">NLSQLDatabaseAdapter::init()</a></span><br>
+													<img src="../media/images/Method.png" alt=" "/>
+							<span class="method-name"><a href="../ProximaPortal/NLSQLDatabaseAdapter.html#methodLIKE">NLSQLDatabaseAdapter::LIKE()</a></span><br>
+													<img src="../media/images/Method.png" alt=" "/>
+							<span class="method-name"><a href="../ProximaPortal/NLSQLDatabaseAdapter.html#methodquery">NLSQLDatabaseAdapter::query()</a></span><br>
+													<img src="../media/images/Method.png" alt=" "/>
+							<span class="method-name"><a href="../ProximaPortal/NLSQLDatabaseAdapter.html#methodsetCache">NLSQLDatabaseAdapter::setCache()</a></span><br>
+													<img src="../media/images/Method.png" alt=" "/>
+							<span class="method-name"><a href="../ProximaPortal/NLSQLDatabaseAdapter.html#methodswitchDatabase">NLSQLDatabaseAdapter::switchDatabase()</a></span><br>
+													<img src="../media/images/Method.png" alt=" "/>
+							<span class="method-name"><a href="../ProximaPortal/NLSQLDatabaseAdapter.html#methodTrueStatusString">NLSQLDatabaseAdapter::TrueStatusString()</a></span><br>
+													<img src="../media/images/Method.png" alt=" "/>
+							<span class="method-name"><a href="../ProximaPortal/NLSQLDatabaseAdapter.html#method__call">NLSQLDatabaseAdapter::__call()</a></span><br>
+													<img src="../media/images/Method.png" alt=" "/>
+							<span class="method-name"><a href="../ProximaPortal/NLSQLDatabaseAdapter.html#method__get">NLSQLDatabaseAdapter::__get()</a></span><br>
+											</blockquote>
+										
+		</div>
+	</div>
+
+	
+	<p class="notes" id="credit">
+		Documentation generated on Wed, 30 Jun 2010 03:04:11 +0400 by <a href="http://www.phpdoc.org" target="_blank">phpDocumentor 1.4.3</a>
+	</p>
+	</div></body>
+</html>

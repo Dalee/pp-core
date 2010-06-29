@@ -1,0 +1,23 @@
+body 
+{ 
+	background: #385A94 url(images/head-bg.gif) 0 0 repeat-x; 
+	margin: 0px; 
+	padding: 0px;
+}
+
+/* Banner (top bar) classes */
+
+.banner {  }
+
+.banner-menu 
+{ 
+	float: right;
+	padding: 0.5em;
+	color:  #ffffff;
+}
+
+.banner-title 
+{ 
+	margin: 0;
+	float:  left;
+}

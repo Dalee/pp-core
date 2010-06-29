@@ -1,0 +1,657 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+  <html xmlns="http://www.w3.org/1999/xhtml">
+		<head>
+			<!-- template designed by Marco Von Ballmoos  -->
+			<title>Docs For Class PXTriggerDatabaseForum</title>
+			<link rel="stylesheet" href="../media/stylesheet.css" />
+						<script src="../media/lib/classTree.js"></script>
+												<script language="javascript" type="text/javascript">
+				var imgPlus = new Image();
+				var imgMinus = new Image();
+				imgPlus.src = "../media/images/plus.png";
+				imgMinus.src = "../media/images/minus.png";
+				
+				function showNode(Node){
+							switch(navigator.family){
+								case 'nn4':
+									// Nav 4.x code fork...
+							var oTable = document.layers["span" + Node];
+							var oImg = document.layers["img" + Node];
+									break;
+								case 'ie4':
+									// IE 4/5 code fork...
+							var oTable = document.all["span" + Node];
+							var oImg = document.all["img" + Node];
+									break;
+								case 'gecko':
+									// Standards Compliant code fork...
+							var oTable = document.getElementById("span" + Node);
+							var oImg = document.getElementById("img" + Node);
+									break;
+							}
+					oImg.src = imgMinus.src;
+					oTable.style.display = "block";
+				}
+				
+				function hideNode(Node){
+							switch(navigator.family){
+								case 'nn4':
+									// Nav 4.x code fork...
+							var oTable = document.layers["span" + Node];
+							var oImg = document.layers["img" + Node];
+									break;
+								case 'ie4':
+									// IE 4/5 code fork...
+							var oTable = document.all["span" + Node];
+							var oImg = document.all["img" + Node];
+									break;
+								case 'gecko':
+									// Standards Compliant code fork...
+							var oTable = document.getElementById("span" + Node);
+							var oImg = document.getElementById("img" + Node);
+									break;
+							}
+					oImg.src = imgPlus.src;
+					oTable.style.display = "none";
+				}
+				
+				function nodeIsVisible(Node){
+							switch(navigator.family){
+								case 'nn4':
+									// Nav 4.x code fork...
+							var oTable = document.layers["span" + Node];
+									break;
+								case 'ie4':
+									// IE 4/5 code fork...
+							var oTable = document.all["span" + Node];
+									break;
+								case 'gecko':
+									// Standards Compliant code fork...
+							var oTable = document.getElementById("span" + Node);
+									break;
+							}
+					return (oTable && oTable.style.display == "block");
+				}
+				
+				function toggleNodeVisibility(Node){
+					if (nodeIsVisible(Node)){
+						hideNode(Node);
+					}else{
+						showNode(Node);
+					}
+				}
+			</script>
+					</head>
+		<body>
+			<div class="page-body">			
+<h2 class="class-name"><img src="../media/images/Class_logo.png"
+														alt=" Class"
+														title=" Class"
+														style="vertical-align: middle"> PXTriggerDatabaseForum</h2>
+
+<a name="sec-description"></a>
+<div class="info-box">
+	<div class="info-box-title">Description</div>
+	<div class="nav-bar">
+					<span class="disabled">Description</span> |
+													<a href="#sec-var-summary">Vars</a> (<a href="#sec-vars">details</a>)
+						|											<a href="#sec-method-summary">Methods</a> (<a href="#sec-methods">details</a>)
+						
+					</div>
+	<div class="info-box-body">
+        		<!-- ========== Info from phpDoc block ========= -->
+		<p class="notes">
+			Located in <a class="field" href="_triggers---database---forum.trigger.inc.html">/triggers/database/forum.trigger.inc</a> (line <span class="field">2</span>)
+		</p>
+		
+				
+		<pre><a href="../ProximaPortal/PXAbstractTrigger.html">PXAbstractTrigger</a>
+   |
+   --<a href="../ProximaPortal/PXAbstractDatabaseTrigger.html">PXAbstractDatabaseTrigger</a>
+      |
+      --PXTriggerDatabaseForum</pre>
+	
+			</div>
+</div>
+
+
+
+	<a name="sec-var-summary"></a>
+	<div class="info-box">
+		<div class="info-box-title">Variable Summary</span></div>
+		<div class="nav-bar">
+			<a href="#sec-description">Description</a> |
+						<span class="disabled">Vars</span> (<a href="#sec-vars">details</a>)
+							| 
+									<a href="#sec-method-summary">Methods</a> (<a href="#sec-methods">details</a>)
+							
+								</div>
+		<div class="info-box-body">
+			<div class="var-summary">
+																																								<div class="var-title">
+					<img src="../media/images/Variable.png" alt=" " />
+					<span class="var-type">mixed</span>
+					<a href="#$dtForums" title="details" class="var-name">$dtForums</a>
+				</div>
+																<div class="var-title">
+					<img src="../media/images/Variable.png" alt=" " />
+					<span class="var-type">mixed</span>
+					<a href="#$dtMessages" title="details" class="var-name">$dtMessages</a>
+				</div>
+																<div class="var-title">
+					<img src="../media/images/Variable.png" alt=" " />
+					<span class="var-type">mixed</span>
+					<a href="#$dtTopics" title="details" class="var-name">$dtTopics</a>
+				</div>
+											</div>
+		</div>
+	</div>
+
+	<a name="sec-method-summary"></a>
+	<div class="info-box">
+		<div class="info-box-title">Method Summary</span></div>
+		<div class="nav-bar">
+			<a href="#sec-description">Description</a> |
+																		<a href="#sec-var-summary">Vars</a> (<a href="#sec-vars">details</a>)
+				 
+				|
+						<span class="disabled">Methods</span> (<a href="#sec-methods">details</a>)
+		</div>
+		<div class="info-box-body">			
+			<div class="method-summary">
+																																																																																							
+				<div class="method-definition">
+					<img src="../media/images/Method.png" alt=" "/>
+											<span class="method-result">void</span>
+										<a href="#OnAddObject" title="details" class="method-name">OnAddObject</a>
+											(<span class="var-type"></span>&nbsp;<span class="var-name">&$db</span>, <span class="var-type"></span>&nbsp;<span class="var-name">&$objId</span>, <span class="var-type"></span>&nbsp;<span class="var-name">&$format</span>, <span class="var-type"></span>&nbsp;<span class="var-name">&$object</span>, <span class="var-type"></span>&nbsp;<span class="var-name">&$dbFields</span>, <span class="var-type"></span>&nbsp;<span class="var-name">&$dbValues</span>)
+									</div>
+															
+				<div class="method-definition">
+					<img src="../media/images/Method.png" alt=" "/>
+											<span class="method-result">void</span>
+										<a href="#OnDeleteObject" title="details" class="method-name">OnDeleteObject</a>
+											(<span class="var-type"></span>&nbsp;<span class="var-name">&$db</span>, <span class="var-type"></span>&nbsp;<span class="var-name">&$objId</span>, <span class="var-type"></span>&nbsp;<span class="var-name">&$format</span>, <span class="var-type"></span>&nbsp;<span class="var-name">&$object</span>)
+									</div>
+															
+				<div class="method-definition">
+					<img src="../media/images/Method.png" alt=" "/>
+											<span class="method-result">void</span>
+										<a href="#OnModifyObject" title="details" class="method-name">OnModifyObject</a>
+											(<span class="var-type"></span>&nbsp;<span class="var-name">&$db</span>, <span class="var-type"></span>&nbsp;<span class="var-name">&$objId</span>, <span class="var-type"></span>&nbsp;<span class="var-name">&$format</span>, <span class="var-type"></span>&nbsp;<span class="var-name">&$object</span>, <span class="var-type"></span>&nbsp;<span class="var-name">&$dbFields</span>, <span class="var-type"></span>&nbsp;<span class="var-name">&$dbValues</span>)
+									</div>
+															
+				<div class="method-definition">
+					<img src="../media/images/Method.png" alt=" "/>
+											<span class="method-result">void</span>
+										<a href="#PXTriggerForum" title="details" class="method-name">PXTriggerForum</a>
+											(<span class="var-type"></span>&nbsp;<span class="var-name">&$settings</span>)
+									</div>
+															
+				<div class="method-definition">
+					<img src="../media/images/Method.png" alt=" "/>
+											<span class="method-result">void</span>
+										<a href="#updateTopic" title="details" class="method-name">updateTopic</a>
+											(<span class="var-type"></span>&nbsp;<span class="var-name">&$db</span>, <span class="var-type"></span>&nbsp;<span class="var-name">$id</span>, [<span class="var-type"></span>&nbsp;<span class="var-name">$transaction</span> = <span class="var-default">true</span>])
+									</div>
+															
+				<div class="method-definition">
+					<img src="../media/images/Method.png" alt=" "/>
+											<span class="method-result">void</span>
+										<a href="#_tranzactionStart" title="details" class="method-name">_tranzactionStart</a>
+											(<span class="var-type"></span>&nbsp;<span class="var-name">$transaction</span>)
+									</div>
+															
+				<div class="method-definition">
+					<img src="../media/images/Method.png" alt=" "/>
+											<span class="method-result">void</span>
+										<a href="#_tranzactionStop" title="details" class="method-name">_tranzactionStop</a>
+											(<span class="var-type"></span>&nbsp;<span class="var-name">$transaction</span>)
+									</div>
+															
+				<div class="method-definition">
+					<img src="../media/images/Method.png" alt=" "/>
+											<span class="method-result">void</span>
+										<a href="#_updateLastTopic" title="details" class="method-name">_updateLastTopic</a>
+											(<span class="var-type"></span>&nbsp;<span class="var-name">$id</span>)
+									</div>
+															
+				<div class="method-definition">
+					<img src="../media/images/Method.png" alt=" "/>
+											<span class="method-result">void</span>
+										<a href="#_updateParentTopic" title="details" class="method-name">_updateParentTopic</a>
+											(<span class="var-type"></span>&nbsp;<span class="var-name">$id</span>)
+									</div>
+											</div>
+		</div>
+	</div>		
+
+	<a name="sec-vars"></a>
+	<div class="info-box">
+		<div class="info-box-title">Variables</div>
+		<div class="nav-bar">
+			<a href="#sec-description">Description</a> |
+										<a href="#sec-var-summary">Vars</a> (<span class="disabled">details</span>)
+						
+			
+										| 
+									<a href="#sec-method-summary">Methods</a> (<a href="#sec-methods">details</a>)
+							
+					</div>
+		<div class="info-box-body">
+			
+<a name="var$dtForums" id="$dtForums"><!-- --></A>
+<div class="evenrow">
+
+	<div class="var-header">
+		<img src="../media/images/Variable.png" />
+		<span class="var-title">
+			<span class="var-type">mixed</span>
+			<span class="var-name">$dtForums</span>
+						(line <span class="line-number">3</span>)
+		</span>
+	</div>
+
+	<!-- ========== Info from phpDoc block ========= -->
+	
+	
+		
+		
+
+</div>
+<a name="var$dtMessages" id="$dtMessages"><!-- --></A>
+<div class="oddrow">
+
+	<div class="var-header">
+		<img src="../media/images/Variable.png" />
+		<span class="var-title">
+			<span class="var-type">mixed</span>
+			<span class="var-name">$dtMessages</span>
+						(line <span class="line-number">5</span>)
+		</span>
+	</div>
+
+	<!-- ========== Info from phpDoc block ========= -->
+	
+	
+		
+		
+
+</div>
+<a name="var$dtTopics" id="$dtTopics"><!-- --></A>
+<div class="evenrow">
+
+	<div class="var-header">
+		<img src="../media/images/Variable.png" />
+		<span class="var-title">
+			<span class="var-type">mixed</span>
+			<span class="var-name">$dtTopics</span>
+						(line <span class="line-number">4</span>)
+		</span>
+	</div>
+
+	<!-- ========== Info from phpDoc block ========= -->
+	
+	
+		
+		
+
+</div>
+						
+		</div>
+	</div>
+	
+	<a name="sec-methods"></a>
+	<div class="info-box">
+		<div class="info-box-title">Methods</div>
+		<div class="nav-bar">
+			<a href="#sec-description">Description</a> |
+															<a href="#sec-var-summary">Vars</a> (<a href="#sec-vars">details</a>)
+																	<a href="#sec-method-summary">Methods</a> (<span class="disabled">details</span>)
+						
+		</div>
+		<div class="info-box-body">
+			<A NAME='method_detail'></A>
+<a name="methodOnAddObject" id="OnAddObject"><!-- --></a>
+<div class="oddrow">
+	
+	<div class="method-header">
+		<img src="../media/images/Method.png" />
+		<span class="method-title">OnAddObject</span> (line <span class="line-number">84</span>)
+	</div> 
+	
+	<!-- ========== Info from phpDoc block ========= -->
+	
+	<div class="method-signature">
+		<span class="method-result">void</span>
+		<span class="method-name">
+			OnAddObject
+		</span>
+					(<span class="var-type"></span>&nbsp;<span class="var-name">&$db</span>, <span class="var-type"></span>&nbsp;<span class="var-name">&$objId</span>, <span class="var-type"></span>&nbsp;<span class="var-name">&$format</span>, <span class="var-type"></span>&nbsp;<span class="var-name">&$object</span>, <span class="var-type"></span>&nbsp;<span class="var-name">&$dbFields</span>, <span class="var-type"></span>&nbsp;<span class="var-name">&$dbValues</span>)
+			</div>
+	
+			<ul class="parameters">
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">&$db</span>			</li>
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">&$objId</span>			</li>
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">&$format</span>			</li>
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">&$object</span>			</li>
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">&$dbFields</span>			</li>
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">&$dbValues</span>			</li>
+				</ul>
+		
+			<hr class="separator" />
+		<div class="notes">Redefinition of:</div>
+		<dl>
+			<dt><a href="../ProximaPortal/PXAbstractDatabaseTrigger.html#methodOnAddObject">PXAbstractDatabaseTrigger::OnAddObject()</a></dt>
+					</dl>
+			
+	</div>
+<a name="methodOnDeleteObject" id="OnDeleteObject"><!-- --></a>
+<div class="evenrow">
+	
+	<div class="method-header">
+		<img src="../media/images/Method.png" />
+		<span class="method-title">OnDeleteObject</span> (line <span class="line-number">104</span>)
+	</div> 
+	
+	<!-- ========== Info from phpDoc block ========= -->
+	
+	<div class="method-signature">
+		<span class="method-result">void</span>
+		<span class="method-name">
+			OnDeleteObject
+		</span>
+					(<span class="var-type"></span>&nbsp;<span class="var-name">&$db</span>, <span class="var-type"></span>&nbsp;<span class="var-name">&$objId</span>, <span class="var-type"></span>&nbsp;<span class="var-name">&$format</span>, <span class="var-type"></span>&nbsp;<span class="var-name">&$object</span>)
+			</div>
+	
+			<ul class="parameters">
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">&$db</span>			</li>
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">&$objId</span>			</li>
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">&$format</span>			</li>
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">&$object</span>			</li>
+				</ul>
+		
+			<hr class="separator" />
+		<div class="notes">Redefinition of:</div>
+		<dl>
+			<dt><a href="../ProximaPortal/PXAbstractDatabaseTrigger.html#methodOnDeleteObject">PXAbstractDatabaseTrigger::OnDeleteObject()</a></dt>
+					</dl>
+			
+	</div>
+<a name="methodOnModifyObject" id="OnModifyObject"><!-- --></a>
+<div class="oddrow">
+	
+	<div class="method-header">
+		<img src="../media/images/Method.png" />
+		<span class="method-title">OnModifyObject</span> (line <span class="line-number">92</span>)
+	</div> 
+	
+	<!-- ========== Info from phpDoc block ========= -->
+	
+	<div class="method-signature">
+		<span class="method-result">void</span>
+		<span class="method-name">
+			OnModifyObject
+		</span>
+					(<span class="var-type"></span>&nbsp;<span class="var-name">&$db</span>, <span class="var-type"></span>&nbsp;<span class="var-name">&$objId</span>, <span class="var-type"></span>&nbsp;<span class="var-name">&$format</span>, <span class="var-type"></span>&nbsp;<span class="var-name">&$object</span>, <span class="var-type"></span>&nbsp;<span class="var-name">&$dbFields</span>, <span class="var-type"></span>&nbsp;<span class="var-name">&$dbValues</span>)
+			</div>
+	
+			<ul class="parameters">
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">&$db</span>			</li>
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">&$objId</span>			</li>
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">&$format</span>			</li>
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">&$object</span>			</li>
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">&$dbFields</span>			</li>
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">&$dbValues</span>			</li>
+				</ul>
+		
+			<hr class="separator" />
+		<div class="notes">Redefinition of:</div>
+		<dl>
+			<dt><a href="../ProximaPortal/PXAbstractDatabaseTrigger.html#methodOnModifyObject">PXAbstractDatabaseTrigger::OnModifyObject()</a></dt>
+					</dl>
+			
+	</div>
+<a name="methodPXTriggerForum" id="PXTriggerForum"><!-- --></a>
+<div class="evenrow">
+	
+	<div class="method-header">
+		<img src="../media/images/Method.png" />
+		<span class="method-title">PXTriggerForum</span> (line <span class="line-number">7</span>)
+	</div> 
+	
+	<!-- ========== Info from phpDoc block ========= -->
+	
+	<div class="method-signature">
+		<span class="method-result">void</span>
+		<span class="method-name">
+			PXTriggerForum
+		</span>
+					(<span class="var-type"></span>&nbsp;<span class="var-name">&$settings</span>)
+			</div>
+	
+			<ul class="parameters">
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">&$settings</span>			</li>
+				</ul>
+		
+			
+	</div>
+<a name="methodupdateTopic" id="updateTopic"><!-- --></a>
+<div class="oddrow">
+	
+	<div class="method-header">
+		<img src="../media/images/Method.png" />
+		<span class="method-title">updateTopic</span> (line <span class="line-number">75</span>)
+	</div> 
+	
+	<!-- ========== Info from phpDoc block ========= -->
+	
+	<div class="method-signature">
+		<span class="method-result">void</span>
+		<span class="method-name">
+			updateTopic
+		</span>
+					(<span class="var-type"></span>&nbsp;<span class="var-name">&$db</span>, <span class="var-type"></span>&nbsp;<span class="var-name">$id</span>, [<span class="var-type"></span>&nbsp;<span class="var-name">$transaction</span> = <span class="var-default">true</span>])
+			</div>
+	
+			<ul class="parameters">
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">&$db</span>			</li>
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$id</span>			</li>
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$transaction</span>			</li>
+				</ul>
+		
+			
+	</div>
+<a name="method_tranzactionStart" id="_tranzactionStart"><!-- --></a>
+<div class="evenrow">
+	
+	<div class="method-header">
+		<img src="../media/images/Method.png" />
+		<span class="method-title">_tranzactionStart</span> (line <span class="line-number">13</span>)
+	</div> 
+	
+	<!-- ========== Info from phpDoc block ========= -->
+	
+	<div class="method-signature">
+		<span class="method-result">void</span>
+		<span class="method-name">
+			_tranzactionStart
+		</span>
+					(<span class="var-type"></span>&nbsp;<span class="var-name">$transaction</span>)
+			</div>
+	
+			<ul class="parameters">
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$transaction</span>			</li>
+				</ul>
+		
+			
+	</div>
+<a name="method_tranzactionStop" id="_tranzactionStop"><!-- --></a>
+<div class="oddrow">
+	
+	<div class="method-header">
+		<img src="../media/images/Method.png" />
+		<span class="method-title">_tranzactionStop</span> (line <span class="line-number">22</span>)
+	</div> 
+	
+	<!-- ========== Info from phpDoc block ========= -->
+	
+	<div class="method-signature">
+		<span class="method-result">void</span>
+		<span class="method-name">
+			_tranzactionStop
+		</span>
+					(<span class="var-type"></span>&nbsp;<span class="var-name">$transaction</span>)
+			</div>
+	
+			<ul class="parameters">
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$transaction</span>			</li>
+				</ul>
+		
+			
+	</div>
+<a name="method_updateLastTopic" id="_updateLastTopic"><!-- --></a>
+<div class="evenrow">
+	
+	<div class="method-header">
+		<img src="../media/images/Method.png" />
+		<span class="method-title">_updateLastTopic</span> (line <span class="line-number">31</span>)
+	</div> 
+	
+	<!-- ========== Info from phpDoc block ========= -->
+	
+	<div class="method-signature">
+		<span class="method-result">void</span>
+		<span class="method-name">
+			_updateLastTopic
+		</span>
+					(<span class="var-type"></span>&nbsp;<span class="var-name">$id</span>)
+			</div>
+	
+			<ul class="parameters">
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$id</span>			</li>
+				</ul>
+		
+			
+	</div>
+<a name="method_updateParentTopic" id="_updateParentTopic"><!-- --></a>
+<div class="oddrow">
+	
+	<div class="method-header">
+		<img src="../media/images/Method.png" />
+		<span class="method-title">_updateParentTopic</span> (line <span class="line-number">50</span>)
+	</div> 
+	
+	<!-- ========== Info from phpDoc block ========= -->
+	
+	<div class="method-signature">
+		<span class="method-result">void</span>
+		<span class="method-name">
+			_updateParentTopic
+		</span>
+					(<span class="var-type"></span>&nbsp;<span class="var-name">$id</span>)
+			</div>
+	
+			<ul class="parameters">
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$id</span>			</li>
+				</ul>
+		
+			
+	</div>
+							<h4>Inherited Methods</h4>
+				<a name='inherited_methods'><!-- --></a>	
+									<!-- =========== Summary =========== -->
+					<p>Inherited From <span class="classname"><a href="../ProximaPortal/PXAbstractDatabaseTrigger.html">PXAbstractDatabaseTrigger</a></span></p>
+					<blockquote>
+													<img src="../media/images/Method.png" alt=" "/>
+							<span class="method-name"><a href="../ProximaPortal/PXAbstractDatabaseTrigger.html#methodOnAddObject">PXAbstractDatabaseTrigger::OnAddObject()</a></span><br>
+													<img src="../media/images/Method.png" alt=" "/>
+							<span class="method-name"><a href="../ProximaPortal/PXAbstractDatabaseTrigger.html#methodOnBeforeAddObject">PXAbstractDatabaseTrigger::OnBeforeAddObject()</a></span><br>
+													<img src="../media/images/Method.png" alt=" "/>
+							<span class="method-name"><a href="../ProximaPortal/PXAbstractDatabaseTrigger.html#methodOnBeforeDeleteObject">PXAbstractDatabaseTrigger::OnBeforeDeleteObject()</a></span><br>
+													<img src="../media/images/Method.png" alt=" "/>
+							<span class="method-name"><a href="../ProximaPortal/PXAbstractDatabaseTrigger.html#methodOnBeforeGetDataBuildQuery">PXAbstractDatabaseTrigger::OnBeforeGetDataBuildQuery()</a></span><br>
+													<img src="../media/images/Method.png" alt=" "/>
+							<span class="method-name"><a href="../ProximaPortal/PXAbstractDatabaseTrigger.html#methodOnBeforeModifyLinks">PXAbstractDatabaseTrigger::OnBeforeModifyLinks()</a></span><br>
+													<img src="../media/images/Method.png" alt=" "/>
+							<span class="method-name"><a href="../ProximaPortal/PXAbstractDatabaseTrigger.html#methodOnBeforeModifyObject">PXAbstractDatabaseTrigger::OnBeforeModifyObject()</a></span><br>
+													<img src="../media/images/Method.png" alt=" "/>
+							<span class="method-name"><a href="../ProximaPortal/PXAbstractDatabaseTrigger.html#methodOnBeforeMoveObject">PXAbstractDatabaseTrigger::OnBeforeMoveObject()</a></span><br>
+													<img src="../media/images/Method.png" alt=" "/>
+							<span class="method-name"><a href="../ProximaPortal/PXAbstractDatabaseTrigger.html#methodOnBeforeNormalizePathBuildQuery">PXAbstractDatabaseTrigger::OnBeforeNormalizePathBuildQuery()</a></span><br>
+													<img src="../media/images/Method.png" alt=" "/>
+							<span class="method-name"><a href="../ProximaPortal/PXAbstractDatabaseTrigger.html#methodOnDeleteObject">PXAbstractDatabaseTrigger::OnDeleteObject()</a></span><br>
+													<img src="../media/images/Method.png" alt=" "/>
+							<span class="method-name"><a href="../ProximaPortal/PXAbstractDatabaseTrigger.html#methodOnGetDataBuildQuery">PXAbstractDatabaseTrigger::OnGetDataBuildQuery()</a></span><br>
+													<img src="../media/images/Method.png" alt=" "/>
+							<span class="method-name"><a href="../ProximaPortal/PXAbstractDatabaseTrigger.html#methodOnModifyLinks">PXAbstractDatabaseTrigger::OnModifyLinks()</a></span><br>
+													<img src="../media/images/Method.png" alt=" "/>
+							<span class="method-name"><a href="../ProximaPortal/PXAbstractDatabaseTrigger.html#methodOnModifyObject">PXAbstractDatabaseTrigger::OnModifyObject()</a></span><br>
+													<img src="../media/images/Method.png" alt=" "/>
+							<span class="method-name"><a href="../ProximaPortal/PXAbstractDatabaseTrigger.html#methodOnMoveObject">PXAbstractDatabaseTrigger::OnMoveObject()</a></span><br>
+											</blockquote>
+									<!-- =========== Summary =========== -->
+					<p>Inherited From <span class="classname"><a href="../ProximaPortal/PXAbstractTrigger.html">PXAbstractTrigger</a></span></p>
+					<blockquote>
+													<img src="../media/images/Constructor.png" alt=" "/>
+							<span class="method-name"><a href="../ProximaPortal/PXAbstractTrigger.html#method__construct">PXAbstractTrigger::__construct()</a></span><br>
+											</blockquote>
+										
+		</div>
+	</div>
+
+	
+	<p class="notes" id="credit">
+		Documentation generated on Wed, 30 Jun 2010 03:04:18 +0400 by <a href="http://www.phpdoc.org" target="_blank">phpDocumentor 1.4.3</a>
+	</p>
+	</div></body>
+</html>

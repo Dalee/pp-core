@@ -1,0 +1,963 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+  <html xmlns="http://www.w3.org/1999/xhtml">
+		<head>
+			<!-- template designed by Marco Von Ballmoos  -->
+			<title>Docs For Class PXRequestBaseTest</title>
+			<link rel="stylesheet" href="../media/stylesheet.css" />
+						<script src="../media/lib/classTree.js"></script>
+												<script language="javascript" type="text/javascript">
+				var imgPlus = new Image();
+				var imgMinus = new Image();
+				imgPlus.src = "../media/images/plus.png";
+				imgMinus.src = "../media/images/minus.png";
+				
+				function showNode(Node){
+							switch(navigator.family){
+								case 'nn4':
+									// Nav 4.x code fork...
+							var oTable = document.layers["span" + Node];
+							var oImg = document.layers["img" + Node];
+									break;
+								case 'ie4':
+									// IE 4/5 code fork...
+							var oTable = document.all["span" + Node];
+							var oImg = document.all["img" + Node];
+									break;
+								case 'gecko':
+									// Standards Compliant code fork...
+							var oTable = document.getElementById("span" + Node);
+							var oImg = document.getElementById("img" + Node);
+									break;
+							}
+					oImg.src = imgMinus.src;
+					oTable.style.display = "block";
+				}
+				
+				function hideNode(Node){
+							switch(navigator.family){
+								case 'nn4':
+									// Nav 4.x code fork...
+							var oTable = document.layers["span" + Node];
+							var oImg = document.layers["img" + Node];
+									break;
+								case 'ie4':
+									// IE 4/5 code fork...
+							var oTable = document.all["span" + Node];
+							var oImg = document.all["img" + Node];
+									break;
+								case 'gecko':
+									// Standards Compliant code fork...
+							var oTable = document.getElementById("span" + Node);
+							var oImg = document.getElementById("img" + Node);
+									break;
+							}
+					oImg.src = imgPlus.src;
+					oTable.style.display = "none";
+				}
+				
+				function nodeIsVisible(Node){
+							switch(navigator.family){
+								case 'nn4':
+									// Nav 4.x code fork...
+							var oTable = document.layers["span" + Node];
+									break;
+								case 'ie4':
+									// IE 4/5 code fork...
+							var oTable = document.all["span" + Node];
+									break;
+								case 'gecko':
+									// Standards Compliant code fork...
+							var oTable = document.getElementById("span" + Node);
+									break;
+							}
+					return (oTable && oTable.style.display == "block");
+				}
+				
+				function toggleNodeVisibility(Node){
+					if (nodeIsVisible(Node)){
+						hideNode(Node);
+					}else{
+						showNode(Node);
+					}
+				}
+			</script>
+					</head>
+		<body>
+			<div class="page-body">			
+<h2 class="class-name"><img src="../media/images/Class_logo.png"
+														alt=" Class"
+														title=" Class"
+														style="vertical-align: middle"> PXRequestBaseTest</h2>
+
+<a name="sec-description"></a>
+<div class="info-box">
+	<div class="info-box-title">Description</div>
+	<div class="nav-bar">
+					<span class="disabled">Description</span> |
+															<a href="#sec-method-summary">Methods</a> (<a href="#sec-methods">details</a>)
+						
+					</div>
+	<div class="info-box-body">
+        		<!-- ========== Info from phpDoc block ========= -->
+		<p class="notes">
+			Located in <a class="field" href="_tests---unit---Request---base_http_test.php.html">/tests/unit/Request/base_http_test.php</a> (line <span class="field">4</span>)
+		</p>
+		
+				
+		<pre>UnitTestCase
+   |
+   --PXRequestBaseTest</pre>
+	
+			</div>
+</div>
+
+
+
+
+	<a name="sec-method-summary"></a>
+	<div class="info-box">
+		<div class="info-box-title">Method Summary</span></div>
+		<div class="nav-bar">
+			<a href="#sec-description">Description</a> |
+												<span class="disabled">Methods</span> (<a href="#sec-methods">details</a>)
+		</div>
+		<div class="info-box-body">			
+			<div class="method-summary">
+																																																																																																																																																																																																																																																							
+				<div class="method-definition">
+					<img src="../media/images/Method.png" alt=" "/>
+											<span class="method-result">void</span>
+										<a href="#setUp" title="details" class="method-name">setUp</a>
+										()
+									</div>
+															
+				<div class="method-definition">
+					<img src="../media/images/Method.png" alt=" "/>
+											<span class="method-result">void</span>
+										<a href="#tearDown" title="details" class="method-name">tearDown</a>
+										()
+									</div>
+															
+				<div class="method-definition">
+					<img src="../media/images/Method.png" alt=" "/>
+											<span class="method-result">void</span>
+										<a href="#test_default_getHttpHost_sould_be_defined" title="details" class="method-name">test_default_getHttpHost_sould_be_defined</a>
+										()
+									</div>
+															
+				<div class="method-definition">
+					<img src="../media/images/Method.png" alt=" "/>
+											<span class="method-result">void</span>
+										<a href="#test_default_getRemoteAddr_sould_be_defined" title="details" class="method-name">test_default_getRemoteAddr_sould_be_defined</a>
+										()
+									</div>
+															
+				<div class="method-definition">
+					<img src="../media/images/Method.png" alt=" "/>
+											<span class="method-result">void</span>
+										<a href="#test_default_HTTPMethod_should_be_GET" title="details" class="method-name">test_default_HTTPMethod_should_be_GET</a>
+										()
+									</div>
+															
+				<div class="method-definition">
+					<img src="../media/images/Method.png" alt=" "/>
+											<span class="method-result">void</span>
+										<a href="#test_default_HTTPReferer_should_be_defined" title="details" class="method-name">test_default_HTTPReferer_should_be_defined</a>
+										()
+									</div>
+															
+				<div class="method-definition">
+					<img src="../media/images/Method.png" alt=" "/>
+											<span class="method-result">void</span>
+										<a href="#test_default_HTTPRequestURI_should_be_defined" title="details" class="method-name">test_default_HTTPRequestURI_should_be_defined</a>
+										()
+									</div>
+															
+				<div class="method-definition">
+					<img src="../media/images/Method.png" alt=" "/>
+											<span class="method-result">void</span>
+										<a href="#test_default_Referer_should_be_set" title="details" class="method-name">test_default_Referer_should_be_set</a>
+										()
+									</div>
+															
+				<div class="method-definition">
+					<img src="../media/images/Method.png" alt=" "/>
+											<span class="method-result">void</span>
+										<a href="#test_getAllCookieData_should_return_values" title="details" class="method-name">test_getAllCookieData_should_return_values</a>
+										()
+									</div>
+															
+				<div class="method-definition">
+					<img src="../media/images/Method.png" alt=" "/>
+											<span class="method-result">void</span>
+										<a href="#test_getAllGetData_should_return_values" title="details" class="method-name">test_getAllGetData_should_return_values</a>
+										()
+									</div>
+															
+				<div class="method-definition">
+					<img src="../media/images/Method.png" alt=" "/>
+											<span class="method-result">void</span>
+										<a href="#test_getAllPostData_should_return_values" title="details" class="method-name">test_getAllPostData_should_return_values</a>
+										()
+									</div>
+															
+				<div class="method-definition">
+					<img src="../media/images/Method.png" alt=" "/>
+											<span class="method-result">void</span>
+										<a href="#test_getCookieVar_should_return_value" title="details" class="method-name">test_getCookieVar_should_return_value</a>
+										()
+									</div>
+															
+				<div class="method-definition">
+					<img src="../media/images/Method.png" alt=" "/>
+											<span class="method-result">void</span>
+										<a href="#test_getGetVar_should_return_value" title="details" class="method-name">test_getGetVar_should_return_value</a>
+										()
+									</div>
+															
+				<div class="method-definition">
+					<img src="../media/images/Method.png" alt=" "/>
+											<span class="method-result">void</span>
+										<a href="#test_getHttpHost_sould_be_overrided" title="details" class="method-name">test_getHttpHost_sould_be_overrided</a>
+										()
+									</div>
+															
+				<div class="method-definition">
+					<img src="../media/images/Method.png" alt=" "/>
+											<span class="method-result">void</span>
+										<a href="#test_getHttpHost_sould_handle_multiple_hosts" title="details" class="method-name">test_getHttpHost_sould_handle_multiple_hosts</a>
+										()
+									</div>
+															
+				<div class="method-definition">
+					<img src="../media/images/Method.png" alt=" "/>
+											<span class="method-result">void</span>
+										<a href="#test_GetPath_should_ignore_index_phtml" title="details" class="method-name">test_GetPath_should_ignore_index_phtml</a>
+										()
+									</div>
+															
+				<div class="method-definition">
+					<img src="../media/images/Method.png" alt=" "/>
+											<span class="method-result">void</span>
+										<a href="#test_GetPath_should_ignore_known_indexes" title="details" class="method-name">test_GetPath_should_ignore_known_indexes</a>
+										()
+									</div>
+															
+				<div class="method-definition">
+					<img src="../media/images/Method.png" alt=" "/>
+											<span class="method-result">void</span>
+										<a href="#test_GetPath_should_not_ignore_other_extensions" title="details" class="method-name">test_GetPath_should_not_ignore_other_extensions</a>
+										()
+									</div>
+															
+				<div class="method-definition">
+					<img src="../media/images/Method.png" alt=" "/>
+											<span class="method-result">void</span>
+										<a href="#test_getPostVar_should_return_value" title="details" class="method-name">test_getPostVar_should_return_value</a>
+										()
+									</div>
+															
+				<div class="method-definition">
+					<img src="../media/images/Method.png" alt=" "/>
+											<span class="method-result">void</span>
+										<a href="#test_getRemoteAddr_sould_be_overrided" title="details" class="method-name">test_getRemoteAddr_sould_be_overrided</a>
+										()
+									</div>
+															
+				<div class="method-definition">
+					<img src="../media/images/Method.png" alt=" "/>
+											<span class="method-result">void</span>
+										<a href="#test_getRemoteAddr_sould_handle_multiple_addreses" title="details" class="method-name">test_getRemoteAddr_sould_handle_multiple_addreses</a>
+										()
+									</div>
+															
+				<div class="method-definition">
+					<img src="../media/images/Method.png" alt=" "/>
+											<span class="method-result">void</span>
+										<a href="#test_getUploadFile_should_return_value" title="details" class="method-name">test_getUploadFile_should_return_value</a>
+										()
+									</div>
+															
+				<div class="method-definition">
+					<img src="../media/images/Method.png" alt=" "/>
+											<span class="method-result">void</span>
+										<a href="#test_GET_HTTPMethod_should_be_GET" title="details" class="method-name">test_GET_HTTPMethod_should_be_GET</a>
+										()
+									</div>
+															
+				<div class="method-definition">
+					<img src="../media/images/Method.png" alt=" "/>
+											<span class="method-result">void</span>
+										<a href="#test_Instance_Should_be_PXRequestBase" title="details" class="method-name">test_Instance_Should_be_PXRequestBase</a>
+										()
+									</div>
+															
+				<div class="method-definition">
+					<img src="../media/images/Method.png" alt=" "/>
+											<span class="method-result">void</span>
+										<a href="#test_isSetVar_with_get_variables" title="details" class="method-name">test_isSetVar_with_get_variables</a>
+										()
+									</div>
+															
+				<div class="method-definition">
+					<img src="../media/images/Method.png" alt=" "/>
+											<span class="method-result">void</span>
+										<a href="#test_isSetVar_with_post_variables" title="details" class="method-name">test_isSetVar_with_post_variables</a>
+										()
+									</div>
+															
+				<div class="method-definition">
+					<img src="../media/images/Method.png" alt=" "/>
+											<span class="method-result">void</span>
+										<a href="#test_POST_HTTPMethod_should_be_POST" title="details" class="method-name">test_POST_HTTPMethod_should_be_POST</a>
+										()
+									</div>
+															
+				<div class="method-definition">
+					<img src="../media/images/Method.png" alt=" "/>
+											<span class="method-result">void</span>
+										<a href="#test_setGetVar_should_success" title="details" class="method-name">test_setGetVar_should_success</a>
+										()
+									</div>
+															
+				<div class="method-definition">
+					<img src="../media/images/Method.png" alt=" "/>
+											<span class="method-result">void</span>
+										<a href="#test_setPostVar_should_success" title="details" class="method-name">test_setPostVar_should_success</a>
+										()
+									</div>
+											</div>
+		</div>
+	</div>		
+
+	
+	<a name="sec-methods"></a>
+	<div class="info-box">
+		<div class="info-box-title">Methods</div>
+		<div class="nav-bar">
+			<a href="#sec-description">Description</a> |
+																<a href="#sec-method-summary">Methods</a> (<span class="disabled">details</span>)
+						
+		</div>
+		<div class="info-box-body">
+			<A NAME='method_detail'></A>
+<a name="methodsetUp" id="setUp"><!-- --></a>
+<div class="evenrow">
+	
+	<div class="method-header">
+		<img src="../media/images/Method.png" />
+		<span class="method-title">setUp</span> (line <span class="line-number">12</span>)
+	</div> 
+	
+	<!-- ========== Info from phpDoc block ========= -->
+	
+	<div class="method-signature">
+		<span class="method-result">void</span>
+		<span class="method-name">
+			setUp
+		</span>
+				()
+			</div>
+	
+		
+			
+	</div>
+<a name="methodtearDown" id="tearDown"><!-- --></a>
+<div class="oddrow">
+	
+	<div class="method-header">
+		<img src="../media/images/Method.png" />
+		<span class="method-title">tearDown</span> (line <span class="line-number">23</span>)
+	</div> 
+	
+	<!-- ========== Info from phpDoc block ========= -->
+	
+	<div class="method-signature">
+		<span class="method-result">void</span>
+		<span class="method-name">
+			tearDown
+		</span>
+				()
+			</div>
+	
+		
+			
+	</div>
+<a name="methodtest_default_getHttpHost_sould_be_defined" id="test_default_getHttpHost_sould_be_defined"><!-- --></a>
+<div class="evenrow">
+	
+	<div class="method-header">
+		<img src="../media/images/Method.png" />
+		<span class="method-title">test_default_getHttpHost_sould_be_defined</span> (line <span class="line-number">105</span>)
+	</div> 
+	
+	<!-- ========== Info from phpDoc block ========= -->
+	
+	<div class="method-signature">
+		<span class="method-result">void</span>
+		<span class="method-name">
+			test_default_getHttpHost_sould_be_defined
+		</span>
+				()
+			</div>
+	
+		
+			
+	</div>
+<a name="methodtest_default_getRemoteAddr_sould_be_defined" id="test_default_getRemoteAddr_sould_be_defined"><!-- --></a>
+<div class="oddrow">
+	
+	<div class="method-header">
+		<img src="../media/images/Method.png" />
+		<span class="method-title">test_default_getRemoteAddr_sould_be_defined</span> (line <span class="line-number">124</span>)
+	</div> 
+	
+	<!-- ========== Info from phpDoc block ========= -->
+	
+	<div class="method-signature">
+		<span class="method-result">void</span>
+		<span class="method-name">
+			test_default_getRemoteAddr_sould_be_defined
+		</span>
+				()
+			</div>
+	
+		
+			
+	</div>
+<a name="methodtest_default_HTTPMethod_should_be_GET" id="test_default_HTTPMethod_should_be_GET"><!-- --></a>
+<div class="evenrow">
+	
+	<div class="method-header">
+		<img src="../media/images/Method.png" />
+		<span class="method-title">test_default_HTTPMethod_should_be_GET</span> (line <span class="line-number">36</span>)
+	</div> 
+	
+	<!-- ========== Info from phpDoc block ========= -->
+	
+	<div class="method-signature">
+		<span class="method-result">void</span>
+		<span class="method-name">
+			test_default_HTTPMethod_should_be_GET
+		</span>
+				()
+			</div>
+	
+		
+			
+	</div>
+<a name="methodtest_default_HTTPReferer_should_be_defined" id="test_default_HTTPReferer_should_be_defined"><!-- --></a>
+<div class="oddrow">
+	
+	<div class="method-header">
+		<img src="../media/images/Method.png" />
+		<span class="method-title">test_default_HTTPReferer_should_be_defined</span> (line <span class="line-number">40</span>)
+	</div> 
+	
+	<!-- ========== Info from phpDoc block ========= -->
+	
+	<div class="method-signature">
+		<span class="method-result">void</span>
+		<span class="method-name">
+			test_default_HTTPReferer_should_be_defined
+		</span>
+				()
+			</div>
+	
+		
+			
+	</div>
+<a name="methodtest_default_HTTPRequestURI_should_be_defined" id="test_default_HTTPRequestURI_should_be_defined"><!-- --></a>
+<div class="evenrow">
+	
+	<div class="method-header">
+		<img src="../media/images/Method.png" />
+		<span class="method-title">test_default_HTTPRequestURI_should_be_defined</span> (line <span class="line-number">50</span>)
+	</div> 
+	
+	<!-- ========== Info from phpDoc block ========= -->
+	
+	<div class="method-signature">
+		<span class="method-result">void</span>
+		<span class="method-name">
+			test_default_HTTPRequestURI_should_be_defined
+		</span>
+				()
+			</div>
+	
+		
+			
+	</div>
+<a name="methodtest_default_Referer_should_be_set" id="test_default_Referer_should_be_set"><!-- --></a>
+<div class="oddrow">
+	
+	<div class="method-header">
+		<img src="../media/images/Method.png" />
+		<span class="method-title">test_default_Referer_should_be_set</span> (line <span class="line-number">45</span>)
+	</div> 
+	
+	<!-- ========== Info from phpDoc block ========= -->
+	
+	<div class="method-signature">
+		<span class="method-result">void</span>
+		<span class="method-name">
+			test_default_Referer_should_be_set
+		</span>
+				()
+			</div>
+	
+		
+			
+	</div>
+<a name="methodtest_getAllCookieData_should_return_values" id="test_getAllCookieData_should_return_values"><!-- --></a>
+<div class="evenrow">
+	
+	<div class="method-header">
+		<img src="../media/images/Method.png" />
+		<span class="method-title">test_getAllCookieData_should_return_values</span> (line <span class="line-number">210</span>)
+	</div> 
+	
+	<!-- ========== Info from phpDoc block ========= -->
+	
+	<div class="method-signature">
+		<span class="method-result">void</span>
+		<span class="method-name">
+			test_getAllCookieData_should_return_values
+		</span>
+				()
+			</div>
+	
+		
+			
+	</div>
+<a name="methodtest_getAllGetData_should_return_values" id="test_getAllGetData_should_return_values"><!-- --></a>
+<div class="oddrow">
+	
+	<div class="method-header">
+		<img src="../media/images/Method.png" />
+		<span class="method-title">test_getAllGetData_should_return_values</span> (line <span class="line-number">149</span>)
+	</div> 
+	
+	<!-- ========== Info from phpDoc block ========= -->
+	
+	<div class="method-signature">
+		<span class="method-result">void</span>
+		<span class="method-name">
+			test_getAllGetData_should_return_values
+		</span>
+				()
+			</div>
+	
+		
+			
+	</div>
+<a name="methodtest_getAllPostData_should_return_values" id="test_getAllPostData_should_return_values"><!-- --></a>
+<div class="evenrow">
+	
+	<div class="method-header">
+		<img src="../media/images/Method.png" />
+		<span class="method-title">test_getAllPostData_should_return_values</span> (line <span class="line-number">179</span>)
+	</div> 
+	
+	<!-- ========== Info from phpDoc block ========= -->
+	
+	<div class="method-signature">
+		<span class="method-result">void</span>
+		<span class="method-name">
+			test_getAllPostData_should_return_values
+		</span>
+				()
+			</div>
+	
+		
+			
+	</div>
+<a name="methodtest_getCookieVar_should_return_value" id="test_getCookieVar_should_return_value"><!-- --></a>
+<div class="oddrow">
+	
+	<div class="method-header">
+		<img src="../media/images/Method.png" />
+		<span class="method-title">test_getCookieVar_should_return_value</span> (line <span class="line-number">204</span>)
+	</div> 
+	
+	<!-- ========== Info from phpDoc block ========= -->
+	
+	<div class="method-signature">
+		<span class="method-result">void</span>
+		<span class="method-name">
+			test_getCookieVar_should_return_value
+		</span>
+				()
+			</div>
+	
+		
+			
+	</div>
+<a name="methodtest_getGetVar_should_return_value" id="test_getGetVar_should_return_value"><!-- --></a>
+<div class="evenrow">
+	
+	<div class="method-header">
+		<img src="../media/images/Method.png" />
+		<span class="method-title">test_getGetVar_should_return_value</span> (line <span class="line-number">143</span>)
+	</div> 
+	
+	<!-- ========== Info from phpDoc block ========= -->
+	
+	<div class="method-signature">
+		<span class="method-result">void</span>
+		<span class="method-name">
+			test_getGetVar_should_return_value
+		</span>
+				()
+			</div>
+	
+		
+			
+	</div>
+<a name="methodtest_getHttpHost_sould_be_overrided" id="test_getHttpHost_sould_be_overrided"><!-- --></a>
+<div class="oddrow">
+	
+	<div class="method-header">
+		<img src="../media/images/Method.png" />
+		<span class="method-title">test_getHttpHost_sould_be_overrided</span> (line <span class="line-number">109</span>)
+	</div> 
+	
+	<!-- ========== Info from phpDoc block ========= -->
+	
+	<div class="method-signature">
+		<span class="method-result">void</span>
+		<span class="method-name">
+			test_getHttpHost_sould_be_overrided
+		</span>
+				()
+			</div>
+	
+		
+			
+	</div>
+<a name="methodtest_getHttpHost_sould_handle_multiple_hosts" id="test_getHttpHost_sould_handle_multiple_hosts"><!-- --></a>
+<div class="evenrow">
+	
+	<div class="method-header">
+		<img src="../media/images/Method.png" />
+		<span class="method-title">test_getHttpHost_sould_handle_multiple_hosts</span> (line <span class="line-number">114</span>)
+	</div> 
+	
+	<!-- ========== Info from phpDoc block ========= -->
+	
+	<div class="method-signature">
+		<span class="method-result">void</span>
+		<span class="method-name">
+			test_getHttpHost_sould_handle_multiple_hosts
+		</span>
+				()
+			</div>
+	
+		
+			
+	</div>
+<a name="methodtest_GetPath_should_ignore_index_phtml" id="test_GetPath_should_ignore_index_phtml"><!-- --></a>
+<div class="oddrow">
+	
+	<div class="method-header">
+		<img src="../media/images/Method.png" />
+		<span class="method-title">test_GetPath_should_ignore_index_phtml</span> (line <span class="line-number">69</span>)
+	</div> 
+	
+	<!-- ========== Info from phpDoc block ========= -->
+	
+	<div class="method-signature">
+		<span class="method-result">void</span>
+		<span class="method-name">
+			test_GetPath_should_ignore_index_phtml
+		</span>
+				()
+			</div>
+	
+		
+			
+	</div>
+<a name="methodtest_GetPath_should_ignore_known_indexes" id="test_GetPath_should_ignore_known_indexes"><!-- --></a>
+<div class="evenrow">
+	
+	<div class="method-header">
+		<img src="../media/images/Method.png" />
+		<span class="method-title">test_GetPath_should_ignore_known_indexes</span> (line <span class="line-number">75</span>)
+	</div> 
+	
+	<!-- ========== Info from phpDoc block ========= -->
+	
+	<div class="method-signature">
+		<span class="method-result">void</span>
+		<span class="method-name">
+			test_GetPath_should_ignore_known_indexes
+		</span>
+				()
+			</div>
+	
+		
+			
+	</div>
+<a name="methodtest_GetPath_should_not_ignore_other_extensions" id="test_GetPath_should_not_ignore_other_extensions"><!-- --></a>
+<div class="oddrow">
+	
+	<div class="method-header">
+		<img src="../media/images/Method.png" />
+		<span class="method-title">test_GetPath_should_not_ignore_other_extensions</span> (line <span class="line-number">92</span>)
+	</div> 
+	
+	<!-- ========== Info from phpDoc block ========= -->
+	
+	<div class="method-signature">
+		<span class="method-result">void</span>
+		<span class="method-name">
+			test_GetPath_should_not_ignore_other_extensions
+		</span>
+				()
+			</div>
+	
+		
+			
+	</div>
+<a name="methodtest_getPostVar_should_return_value" id="test_getPostVar_should_return_value"><!-- --></a>
+<div class="evenrow">
+	
+	<div class="method-header">
+		<img src="../media/images/Method.png" />
+		<span class="method-title">test_getPostVar_should_return_value</span> (line <span class="line-number">173</span>)
+	</div> 
+	
+	<!-- ========== Info from phpDoc block ========= -->
+	
+	<div class="method-signature">
+		<span class="method-result">void</span>
+		<span class="method-name">
+			test_getPostVar_should_return_value
+		</span>
+				()
+			</div>
+	
+		
+			
+	</div>
+<a name="methodtest_getRemoteAddr_sould_be_overrided" id="test_getRemoteAddr_sould_be_overrided"><!-- --></a>
+<div class="oddrow">
+	
+	<div class="method-header">
+		<img src="../media/images/Method.png" />
+		<span class="method-title">test_getRemoteAddr_sould_be_overrided</span> (line <span class="line-number">128</span>)
+	</div> 
+	
+	<!-- ========== Info from phpDoc block ========= -->
+	
+	<div class="method-signature">
+		<span class="method-result">void</span>
+		<span class="method-name">
+			test_getRemoteAddr_sould_be_overrided
+		</span>
+				()
+			</div>
+	
+		
+			
+	</div>
+<a name="methodtest_getRemoteAddr_sould_handle_multiple_addreses" id="test_getRemoteAddr_sould_handle_multiple_addreses"><!-- --></a>
+<div class="evenrow">
+	
+	<div class="method-header">
+		<img src="../media/images/Method.png" />
+		<span class="method-title">test_getRemoteAddr_sould_handle_multiple_addreses</span> (line <span class="line-number">133</span>)
+	</div> 
+	
+	<!-- ========== Info from phpDoc block ========= -->
+	
+	<div class="method-signature">
+		<span class="method-result">void</span>
+		<span class="method-name">
+			test_getRemoteAddr_sould_handle_multiple_addreses
+		</span>
+				()
+			</div>
+	
+		
+			
+	</div>
+<a name="methodtest_getUploadFile_should_return_value" id="test_getUploadFile_should_return_value"><!-- --></a>
+<div class="oddrow">
+	
+	<div class="method-header">
+		<img src="../media/images/Method.png" />
+		<span class="method-title">test_getUploadFile_should_return_value</span> (line <span class="line-number">233</span>)
+	</div> 
+	
+	<!-- ========== Info from phpDoc block ========= -->
+	
+	<div class="method-signature">
+		<span class="method-result">void</span>
+		<span class="method-name">
+			test_getUploadFile_should_return_value
+		</span>
+				()
+			</div>
+	
+		
+			
+	</div>
+<a name="methodtest_GET_HTTPMethod_should_be_GET" id="test_GET_HTTPMethod_should_be_GET"><!-- --></a>
+<div class="evenrow">
+	
+	<div class="method-header">
+		<img src="../media/images/Method.png" />
+		<span class="method-title">test_GET_HTTPMethod_should_be_GET</span> (line <span class="line-number">54</span>)
+	</div> 
+	
+	<!-- ========== Info from phpDoc block ========= -->
+	
+	<div class="method-signature">
+		<span class="method-result">void</span>
+		<span class="method-name">
+			test_GET_HTTPMethod_should_be_GET
+		</span>
+				()
+			</div>
+	
+		
+			
+	</div>
+<a name="methodtest_Instance_Should_be_PXRequestBase" id="test_Instance_Should_be_PXRequestBase"><!-- --></a>
+<div class="oddrow">
+	
+	<div class="method-header">
+		<img src="../media/images/Method.png" />
+		<span class="method-title">test_Instance_Should_be_PXRequestBase</span> (line <span class="line-number">31</span>)
+	</div> 
+	
+	<!-- ========== Info from phpDoc block ========= -->
+	
+	<div class="method-signature">
+		<span class="method-result">void</span>
+		<span class="method-name">
+			test_Instance_Should_be_PXRequestBase
+		</span>
+				()
+			</div>
+	
+		
+			
+	</div>
+<a name="methodtest_isSetVar_with_get_variables" id="test_isSetVar_with_get_variables"><!-- --></a>
+<div class="evenrow">
+	
+	<div class="method-header">
+		<img src="../media/images/Method.png" />
+		<span class="method-title">test_isSetVar_with_get_variables</span> (line <span class="line-number">154</span>)
+	</div> 
+	
+	<!-- ========== Info from phpDoc block ========= -->
+	
+	<div class="method-signature">
+		<span class="method-result">void</span>
+		<span class="method-name">
+			test_isSetVar_with_get_variables
+		</span>
+				()
+			</div>
+	
+		
+			
+	</div>
+<a name="methodtest_isSetVar_with_post_variables" id="test_isSetVar_with_post_variables"><!-- --></a>
+<div class="oddrow">
+	
+	<div class="method-header">
+		<img src="../media/images/Method.png" />
+		<span class="method-title">test_isSetVar_with_post_variables</span> (line <span class="line-number">183</span>)
+	</div> 
+	
+	<!-- ========== Info from phpDoc block ========= -->
+	
+	<div class="method-signature">
+		<span class="method-result">void</span>
+		<span class="method-name">
+			test_isSetVar_with_post_variables
+		</span>
+				()
+			</div>
+	
+		
+			
+	</div>
+<a name="methodtest_POST_HTTPMethod_should_be_POST" id="test_POST_HTTPMethod_should_be_POST"><!-- --></a>
+<div class="evenrow">
+	
+	<div class="method-header">
+		<img src="../media/images/Method.png" />
+		<span class="method-title">test_POST_HTTPMethod_should_be_POST</span> (line <span class="line-number">59</span>)
+	</div> 
+	
+	<!-- ========== Info from phpDoc block ========= -->
+	
+	<div class="method-signature">
+		<span class="method-result">void</span>
+		<span class="method-name">
+			test_POST_HTTPMethod_should_be_POST
+		</span>
+				()
+			</div>
+	
+		
+			
+	</div>
+<a name="methodtest_setGetVar_should_success" id="test_setGetVar_should_success"><!-- --></a>
+<div class="oddrow">
+	
+	<div class="method-header">
+		<img src="../media/images/Method.png" />
+		<span class="method-title">test_setGetVar_should_success</span> (line <span class="line-number">160</span>)
+	</div> 
+	
+	<!-- ========== Info from phpDoc block ========= -->
+	
+	<div class="method-signature">
+		<span class="method-result">void</span>
+		<span class="method-name">
+			test_setGetVar_should_success
+		</span>
+				()
+			</div>
+	
+		
+			
+	</div>
+<a name="methodtest_setPostVar_should_success" id="test_setPostVar_should_success"><!-- --></a>
+<div class="evenrow">
+	
+	<div class="method-header">
+		<img src="../media/images/Method.png" />
+		<span class="method-title">test_setPostVar_should_success</span> (line <span class="line-number">190</span>)
+	</div> 
+	
+	<!-- ========== Info from phpDoc block ========= -->
+	
+	<div class="method-signature">
+		<span class="method-result">void</span>
+		<span class="method-name">
+			test_setPostVar_should_success
+		</span>
+				()
+			</div>
+	
+		
+			
+	</div>
+						
+		</div>
+	</div>
+
+	
+	<p class="notes" id="credit">
+		Documentation generated on Wed, 30 Jun 2010 03:04:08 +0400 by <a href="http://www.phpdoc.org" target="_blank">phpDocumentor 1.4.3</a>
+	</p>
+	</div></body>
+</html>

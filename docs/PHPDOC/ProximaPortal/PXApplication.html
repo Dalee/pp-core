@@ -1,0 +1,967 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+  <html xmlns="http://www.w3.org/1999/xhtml">
+		<head>
+			<!-- template designed by Marco Von Ballmoos  -->
+			<title>Docs For Class PXApplication</title>
+			<link rel="stylesheet" href="../media/stylesheet.css" />
+						<script src="../media/lib/classTree.js"></script>
+												<script language="javascript" type="text/javascript">
+				var imgPlus = new Image();
+				var imgMinus = new Image();
+				imgPlus.src = "../media/images/plus.png";
+				imgMinus.src = "../media/images/minus.png";
+				
+				function showNode(Node){
+							switch(navigator.family){
+								case 'nn4':
+									// Nav 4.x code fork...
+							var oTable = document.layers["span" + Node];
+							var oImg = document.layers["img" + Node];
+									break;
+								case 'ie4':
+									// IE 4/5 code fork...
+							var oTable = document.all["span" + Node];
+							var oImg = document.all["img" + Node];
+									break;
+								case 'gecko':
+									// Standards Compliant code fork...
+							var oTable = document.getElementById("span" + Node);
+							var oImg = document.getElementById("img" + Node);
+									break;
+							}
+					oImg.src = imgMinus.src;
+					oTable.style.display = "block";
+				}
+				
+				function hideNode(Node){
+							switch(navigator.family){
+								case 'nn4':
+									// Nav 4.x code fork...
+							var oTable = document.layers["span" + Node];
+							var oImg = document.layers["img" + Node];
+									break;
+								case 'ie4':
+									// IE 4/5 code fork...
+							var oTable = document.all["span" + Node];
+							var oImg = document.all["img" + Node];
+									break;
+								case 'gecko':
+									// Standards Compliant code fork...
+							var oTable = document.getElementById("span" + Node);
+							var oImg = document.getElementById("img" + Node);
+									break;
+							}
+					oImg.src = imgPlus.src;
+					oTable.style.display = "none";
+				}
+				
+				function nodeIsVisible(Node){
+							switch(navigator.family){
+								case 'nn4':
+									// Nav 4.x code fork...
+							var oTable = document.layers["span" + Node];
+									break;
+								case 'ie4':
+									// IE 4/5 code fork...
+							var oTable = document.all["span" + Node];
+									break;
+								case 'gecko':
+									// Standards Compliant code fork...
+							var oTable = document.getElementById("span" + Node);
+									break;
+							}
+					return (oTable && oTable.style.display == "block");
+				}
+				
+				function toggleNodeVisibility(Node){
+					if (nodeIsVisible(Node)){
+						hideNode(Node);
+					}else{
+						showNode(Node);
+					}
+				}
+			</script>
+					</head>
+		<body>
+			<div class="page-body">			
+<h2 class="class-name"><img src="../media/images/Class_logo.png"
+														alt=" Class"
+														title=" Class"
+														style="vertical-align: middle"> PXApplication</h2>
+
+<a name="sec-description"></a>
+<div class="info-box">
+	<div class="info-box-title">Description</div>
+	<div class="nav-bar">
+					<span class="disabled">Description</span> |
+													<a href="#sec-var-summary">Vars</a> (<a href="#sec-vars">details</a>)
+						|											<a href="#sec-method-summary">Methods</a> (<a href="#sec-methods">details</a>)
+						
+					</div>
+	<div class="info-box-body">
+        		<!-- ========== Info from phpDoc block ========= -->
+<p class="short-description">PXApplication - ÇÌÁ×ÎÙÊ ËÌÁÓÓ.</p>
+		<p class="notes">
+			Located in <a class="field" href="_lib---Config---application.class.inc.html">/lib/Config/application.class.inc</a> (line <span class="field">23</span>)
+		</p>
+		
+				
+		<pre></pre>
+	
+			</div>
+</div>
+
+
+
+	<a name="sec-var-summary"></a>
+	<div class="info-box">
+		<div class="info-box-title">Variable Summary</span></div>
+		<div class="nav-bar">
+			<a href="#sec-description">Description</a> |
+						<span class="disabled">Vars</span> (<a href="#sec-vars">details</a>)
+							| 
+									<a href="#sec-method-summary">Methods</a> (<a href="#sec-methods">details</a>)
+							
+								</div>
+		<div class="info-box-body">
+			<div class="var-summary">
+																																																																																																																								<div class="var-title">
+					<img src="../media/images/Variable.png" alt=" " />
+					<span class="var-type">Array</span>
+					<a href="#$authrules" title="details" class="var-name">$authrules</a>
+				</div>
+																<div class="var-title">
+					<img src="../media/images/Variable.png" alt=" " />
+					<span class="var-type">Array</span>
+					<a href="#$bindingsQueue" title="details" class="var-name">$bindingsQueue</a>
+				</div>
+																<div class="var-title">
+					<img src="../media/images/Variable.png" alt=" " />
+					<span class="var-type">Array</span>
+					<a href="#$dbDescription" title="details" class="var-name">$dbDescription</a>
+				</div>
+																<div class="var-title">
+					<img src="../media/images/Variable.png" alt=" " />
+					<span class="var-type">Array</span>
+					<a href="#$directory" title="details" class="var-name">$directory</a>
+				</div>
+																<div class="var-title">
+					<img src="../media/images/Variable.png" alt=" " />
+					<span class="var-type">Object</span>
+					<a href="#$engine" title="details" class="var-name">$engine</a>
+				</div>
+																<div class="var-title">
+					<img src="../media/images/Variable.png" alt=" " />
+					<span class="var-type">Array</span>
+					<a href="#$langTree" title="details" class="var-name">$langTree</a>
+				</div>
+																<div class="var-title">
+					<img src="../media/images/Variable.png" alt=" " />
+					<span class="var-type">Array</span>
+					<a href="#$modules" title="details" class="var-name">$modules</a>
+				</div>
+																<div class="var-title">
+					<img src="../media/images/Variable.png" alt=" " />
+					<span class="var-type">Array</span>
+					<a href="#$plugins" title="details" class="var-name">$plugins</a>
+				</div>
+																<div class="var-title">
+					<img src="../media/images/Variable.png" alt=" " />
+					<span class="var-type">Array</span>
+					<a href="#$properties" title="details" class="var-name">$properties</a>
+				</div>
+																<div class="var-title">
+					<img src="../media/images/Variable.png" alt=" " />
+					<span class="var-type">Array</span>
+					<a href="#$references" title="details" class="var-name">$references</a>
+				</div>
+																<div class="var-title">
+					<img src="../media/images/Variable.png" alt=" " />
+					<span class="var-type">Array</span>
+					<a href="#$reinitialize" title="details" class="var-name">$reinitialize</a>
+				</div>
+																<div class="var-title">
+					<img src="../media/images/Variable.png" alt=" " />
+					<span class="var-type">Object</span>
+					<a href="#$triggers" title="details" class="var-name">$triggers</a>
+				</div>
+																<div class="var-title">
+					<img src="../media/images/Variable.png" alt=" " />
+					<span class="var-type">Array</span>
+					<a href="#$types" title="details" class="var-name">$types</a>
+				</div>
+											</div>
+		</div>
+	</div>
+
+	<a name="sec-method-summary"></a>
+	<div class="info-box">
+		<div class="info-box-title">Method Summary</span></div>
+		<div class="nav-bar">
+			<a href="#sec-description">Description</a> |
+																		<a href="#sec-var-summary">Vars</a> (<a href="#sec-vars">details</a>)
+				 
+				|
+						<span class="disabled">Methods</span> (<a href="#sec-methods">details</a>)
+		</div>
+		<div class="info-box-body">			
+			<div class="method-summary">
+																																											
+				<div class="method-definition">
+					<img src="../media/images/StaticMethod.png" alt=" "/>
+					static 						<span class="method-result">void</span>
+										<a href="#getInstance" title="details" class="method-name">getInstance</a>
+											(<span class="var-type"></span>&nbsp;<span class="var-name">$engineObject</span>)
+									</div>
+																																																																											
+				<div class="method-definition">
+					<img src="../media/images/Method.png" alt=" "/>
+											<span class="method-result">void</span>
+										<a href="#fillPlugins" title="details" class="method-name">fillPlugins</a>
+											(<span class="var-type"></span>&nbsp;<span class="var-name">$fileName</span>)
+									</div>
+															
+				<div class="method-definition">
+					<img src="../media/images/Method.png" alt=" "/>
+											<span class="method-result">Array</span>
+										<a href="#getAllowedChilds" title="details" class="method-name">getAllowedChilds</a>
+											(<span class="var-type">NULL</span>&nbsp;<span class="var-name">$formatName</span>, <span class="var-type"></span>&nbsp;<span class="var-name">&$object</span>, <span class="var-type">Object|Array</span>&nbsp;<span class="var-name">$object</span>)
+									</div>
+															
+				<div class="method-definition">
+					<img src="../media/images/Method.png" alt=" "/>
+											<span class="method-result">Array</span>
+										<a href="#getAllowedChildsKeys" title="details" class="method-name">getAllowedChildsKeys</a>
+											(<span class="var-type">NULL</span>&nbsp;<span class="var-name">$formatName</span>, <span class="var-type">Object|Array</span>&nbsp;<span class="var-name">&$object</span>)
+									</div>
+															
+				<div class="method-definition">
+					<img src="../media/images/Method.png" alt=" "/>
+											<span class="method-result">Array</span>
+										<a href="#getAvailableModules" title="details" class="method-name">getAvailableModules</a>
+											(<span class="var-type">Integer</span>&nbsp;<span class="var-name">$level</span>)
+									</div>
+																							
+				<div class="method-definition">
+					<img src="../media/images/Method.png" alt=" "/>
+											<span class="method-result">void</span>
+										<a href="#getProperty" title="details" class="method-name">getProperty</a>
+											(<span class="var-type">String</span>&nbsp;<span class="var-name">$k</span>, [<span class="var-type">String</span>&nbsp;<span class="var-name">$defaultValue</span> = <span class="var-default">NULL</span>])
+									</div>
+															
+				<div class="method-definition">
+					<img src="../media/images/Method.png" alt=" "/>
+											<span class="method-result">void</span>
+										<a href="#initContentObject" title="details" class="method-name">initContentObject</a>
+											(<span class="var-type"></span>&nbsp;<span class="var-name">$formatName</span>)
+									</div>
+															
+				<div class="method-definition">
+					<img src="../media/images/Method.png" alt=" "/>
+											<span class="method-result">void</span>
+										<a href="#initObject" title="details" class="method-name">initObject</a>
+											(<span class="var-type"></span>&nbsp;<span class="var-name">$formatName</span>)
+									</div>
+															
+				<div class="method-definition">
+					<img src="../media/images/Method.png" alt=" "/>
+											<span class="method-result">void</span>
+										<a href="#LoadXMLDirectory" title="details" class="method-name">LoadXMLDirectory</a>
+											(<span class="var-type"></span>&nbsp;<span class="var-name">&$directory</span>, [<span class="var-type"></span>&nbsp;<span class="var-name">$addDefault</span> = <span class="var-default">true</span>], <span class="var-type"><a href="../ProximaPortal/PXDirectoryDescription.html">PXDirectoryDescription</a></span>&nbsp;<span class="var-name">$directory</span>)
+									</div>
+															
+				<div class="method-definition">
+					<img src="../media/images/Method.png" alt=" "/>
+											<span class="method-result">void</span>
+										<a href="#registerTrigger" title="details" class="method-name">registerTrigger</a>
+											(<span class="var-type">String</span>&nbsp;<span class="var-name">$type</span>, <span class="var-type"></span>&nbsp;<span class="var-name">$args</span>)
+									</div>
+															
+				<div class="method-definition">
+					<img src="../media/images/Method.png" alt=" "/>
+											<span class="method-result">void</span>
+										<a href="#setModules" title="details" class="method-name">setModules</a>
+											(<span class="var-type"></span>&nbsp;<span class="var-name">$module</span>)
+									</div>
+															
+				<div class="method-definition">
+					<img src="../media/images/Method.png" alt=" "/>
+											<span class="method-result">void</span>
+										<a href="#__wakeup" title="details" class="method-name">__wakeup</a>
+										()
+									</div>
+											</div>
+		</div>
+	</div>		
+
+	<a name="sec-vars"></a>
+	<div class="info-box">
+		<div class="info-box-title">Variables</div>
+		<div class="nav-bar">
+			<a href="#sec-description">Description</a> |
+										<a href="#sec-var-summary">Vars</a> (<span class="disabled">details</span>)
+						
+			
+										| 
+									<a href="#sec-method-summary">Methods</a> (<a href="#sec-methods">details</a>)
+							
+					</div>
+		<div class="info-box-body">
+			
+<a name="var$authrules" id="$authrules"><!-- --></A>
+<div class="oddrow">
+
+	<div class="var-header">
+		<img src="../media/images/Variable.png" />
+		<span class="var-title">
+			<span class="var-type">Array</span>
+			<span class="var-name">$authrules</span>
+						(line <span class="line-number">77</span>)
+		</span>
+	</div>
+
+	<!-- ========== Info from phpDoc block ========= -->
+<p class="short-description">ÍÁÓÓÉ× ÐÒÁ×ÉÌ Á×ÔÏÒÉÚÁÃÉÉ ÉÚ etc/auth.ini</p>
+	
+	
+		
+		
+
+</div>
+<a name="var$bindingsQueue" id="$bindingsQueue"><!-- --></A>
+<div class="evenrow">
+
+	<div class="var-header">
+		<img src="../media/images/Variable.png" />
+		<span class="var-title">
+			<span class="var-type">Array</span>
+			<span class="var-name">$bindingsQueue</span>
+						(line <span class="line-number">89</span>)
+		</span>
+	</div>
+
+	<!-- ========== Info from phpDoc block ========= -->
+<p class="short-description">ÂÉÎÄÉÎÇÉ ÍÏÄÕÌÅÊ ÉÚ etc/modules.xml modules/bindings</p>
+	
+	
+		
+		
+
+</div>
+<a name="var$dbDescription" id="$dbDescription"><!-- --></A>
+<div class="oddrow">
+
+	<div class="var-header">
+		<img src="../media/images/Variable.png" />
+		<span class="var-title">
+			<span class="var-type">Array</span>
+			<span class="var-name">$dbDescription</span>
+						(line <span class="line-number">29</span>)
+		</span>
+	</div>
+
+	<!-- ========== Info from phpDoc block ========= -->
+<p class="short-description">ÍÁÓÓÉ× ËÏÎÎÅËÔÏÒÏ× Ë ÂÁÚÅ ÄÁÎÎÙÈ</p>
+	
+	
+		
+		
+
+</div>
+<a name="var$directory" id="$directory"><!-- --></A>
+<div class="evenrow">
+
+	<div class="var-header">
+		<img src="../media/images/Variable.png" />
+		<span class="var-title">
+			<span class="var-type">Array</span>
+			<span class="var-name">$directory</span>
+			 = <span class="var-default">array()</span>			(line <span class="line-number">83</span>)
+		</span>
+	</div>
+
+	<!-- ========== Info from phpDoc block ========= -->
+<p class="short-description">ÍÁÓÓÉ× ÏÐÉÓÁÎÉÊ ËÁÔÁÌÏÇÏ× ÉÚ etc/datatypes.xml</p>
+	
+	
+		
+		
+
+</div>
+<a name="var$engine" id="$engine"><!-- --></A>
+<div class="oddrow">
+
+	<div class="var-header">
+		<img src="../media/images/Variable.png" />
+		<span class="var-title">
+			<span class="var-type">Object</span>
+			<span class="var-name">$engine</span>
+						(line <span class="line-number">95</span>)
+		</span>
+	</div>
+
+	<!-- ========== Info from phpDoc block ========= -->
+<p class="short-description">ÜËÚÅÍÐÌÑÒ ËÌÁÓÓÁ Engine</p>
+	<ul class="tags">
+				<li><span class="field">access:</span> public</li>
+			</ul>
+	
+	
+		
+		
+
+</div>
+<a name="var$langTree" id="$langTree"><!-- --></A>
+<div class="evenrow">
+
+	<div class="var-header">
+		<img src="../media/images/Variable.png" />
+		<span class="var-title">
+			<span class="var-type">Array</span>
+			<span class="var-name">$langTree</span>
+			 = <span class="var-default">array()</span>			(line <span class="line-number">71</span>)
+		</span>
+	</div>
+
+	<!-- ========== Info from phpDoc block ========= -->
+<p class="short-description">ÍÁÓÓÉ× ÑÚÙËÏ×ÙÈ ÎÁÓÔÒÏÅË ÉÚ (site|local|libpp)/etc/lang.yaml (ÓÕÍÍÁÒÎÙÊ)</p>
+	
+	
+		
+		
+
+</div>
+<a name="var$modules" id="$modules"><!-- --></A>
+<div class="oddrow">
+
+	<div class="var-header">
+		<img src="../media/images/Variable.png" />
+		<span class="var-title">
+			<span class="var-type">Array</span>
+			<span class="var-name">$modules</span>
+						(line <span class="line-number">53</span>)
+		</span>
+	</div>
+
+	<!-- ========== Info from phpDoc block ========= -->
+<p class="short-description">ÍÁÓÓÉ× ÍÏÄÕÌÅÊ <a href="../ProximaPortal/PXModuleDescription.html">PXModuleDescription</a></p>
+	
+	
+		
+		
+
+</div>
+<a name="var$plugins" id="$plugins"><!-- --></A>
+<div class="evenrow">
+
+	<div class="var-header">
+		<img src="../media/images/Variable.png" />
+		<span class="var-title">
+			<span class="var-type">Array</span>
+			<span class="var-name">$plugins</span>
+			 = <span class="var-default"> null</span>			(line <span class="line-number">59</span>)
+		</span>
+	</div>
+
+	<!-- ========== Info from phpDoc block ========= -->
+<p class="short-description">ÍÁÓÓÉ× ÐÌÁÇÉÎÏ×</p>
+	
+	
+		
+		
+
+</div>
+<a name="var$properties" id="$properties"><!-- --></A>
+<div class="oddrow">
+
+	<div class="var-header">
+		<img src="../media/images/Variable.png" />
+		<span class="var-title">
+			<span class="var-type">Array</span>
+			<span class="var-name">$properties</span>
+						(line <span class="line-number">65</span>)
+		</span>
+	</div>
+
+	<!-- ========== Info from phpDoc block ========= -->
+<p class="short-description">ÍÁÓÓÉ× ÎÁÓÔÒÏÅË ÉÚ etc/properties.ini</p>
+	
+	
+		
+		
+
+</div>
+<a name="var$references" id="$references"><!-- --></A>
+<div class="evenrow">
+
+	<div class="var-header">
+		<img src="../media/images/Variable.png" />
+		<span class="var-title">
+			<span class="var-type">Array</span>
+			<span class="var-name">$references</span>
+						(line <span class="line-number">41</span>)
+		</span>
+	</div>
+
+	<!-- ========== Info from phpDoc block ========= -->
+<p class="short-description">ÍÁÓÓÉ× ÓÓÙÌÏË ÍÅÖÄÕ datatypes <a href="../ProximaPortal/PXRefDescription.html">PXRefDescription</a></p>
+	
+	
+		
+		
+
+</div>
+<a name="var$reinitialize" id="$reinitialize"><!-- --></A>
+<div class="oddrow">
+
+	<div class="var-header">
+		<img src="../media/images/Variable.png" />
+		<span class="var-title">
+			<span class="var-type">Array</span>
+			<span class="var-name">$reinitialize</span>
+			 = <span class="var-default">array()</span>			(line <span class="line-number">102</span>)
+		</span>
+	</div>
+
+	<!-- ========== Info from phpDoc block ========= -->
+<p class="short-description">ÍÁÓÓÉ× ÎÁÚ×ÁÎÉÊ ÐÏÌÅÊ, ÞØÉ ÏÂßÅËÔÙ ÔÒÅÂÕÀÔ ÉÎÉÃÉÁÌÉÚÁÃÉÉ ÐÒÉ ÚÁÇÒÕÚËÅ ÉÚ ËÜÛÁ.</p>
+<p class="description"><p>Description ÏÂßÅËÔÁ ÄÏÌÖÅÎ ÒÅÁÌÉÚÏ×Ù×ÁÔØ ÍÅÔÏÄ initialize</p></p>
+	<ul class="tags">
+				<li><span class="field">access:</span> protected</li>
+			</ul>
+	
+	
+		
+		
+
+</div>
+<a name="var$triggers" id="$triggers"><!-- --></A>
+<div class="evenrow">
+
+	<div class="var-header">
+		<img src="../media/images/Variable.png" />
+		<span class="var-title">
+			<span class="var-type">Object</span>
+			<span class="var-name">$triggers</span>
+			 = <span class="var-default"> null</span>			(line <span class="line-number">47</span>)
+		</span>
+	</div>
+
+	<!-- ========== Info from phpDoc block ========= -->
+<p class="short-description">ËÏÎÔÅÊÎÅÒ c ÔÒÉÇÇÅÒÁÍÉ <a href="../ProximaPortal/PXTriggersList.html">PXTriggersList</a></p>
+	
+	
+		
+		
+
+</div>
+<a name="var$types" id="$types"><!-- --></A>
+<div class="oddrow">
+
+	<div class="var-header">
+		<img src="../media/images/Variable.png" />
+		<span class="var-title">
+			<span class="var-type">Array</span>
+			<span class="var-name">$types</span>
+			 = <span class="var-default">array()</span>			(line <span class="line-number">35</span>)
+		</span>
+	</div>
+
+	<!-- ========== Info from phpDoc block ========= -->
+<p class="short-description">ÍÁÓÓÉ× ÏÐÉÓÁÎÉÊ datatypes <a href="../ProximaPortal/PXTypeDescription.html">PXTypeDescription</a></p>
+	
+	
+		
+		
+
+</div>
+						
+		</div>
+	</div>
+	
+	<a name="sec-methods"></a>
+	<div class="info-box">
+		<div class="info-box-title">Methods</div>
+		<div class="nav-bar">
+			<a href="#sec-description">Description</a> |
+															<a href="#sec-var-summary">Vars</a> (<a href="#sec-vars">details</a>)
+																	<a href="#sec-method-summary">Methods</a> (<span class="disabled">details</span>)
+						
+		</div>
+		<div class="info-box-body">
+			<A NAME='method_detail'></A>
+<a name="methodgetInstance" id="getInstance"><!-- --></a>
+<div class="evenrow">
+	
+	<div class="method-header">
+		<img src="../media/images/StaticMethod.png" />
+		<span class="method-title">static getInstance</span> (line <span class="line-number">108</span>)
+	</div> 
+	
+	<!-- ========== Info from phpDoc block ========= -->
+<p class="short-description">Singleton array with caching.</p>
+	<ul class="tags">
+				<li><span class="field">access:</span> public</li>
+			</ul>
+	
+	<div class="method-signature">
+		static <span class="method-result">void</span>
+		<span class="method-name">
+			getInstance
+		</span>
+					(<span class="var-type"></span>&nbsp;<span class="var-name">$engineObject</span>)
+			</div>
+	
+			<ul class="parameters">
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$engineObject</span>			</li>
+				</ul>
+		
+			
+	</div>
+<a name="methodfillPlugins" id="fillPlugins"><!-- --></a>
+<div class="oddrow">
+	
+	<div class="method-header">
+		<img src="../media/images/Method.png" />
+		<span class="method-title">fillPlugins</span> (line <span class="line-number">466</span>)
+	</div> 
+	
+	<!-- ========== Info from phpDoc block ========= -->
+	
+	<div class="method-signature">
+		<span class="method-result">void</span>
+		<span class="method-name">
+			fillPlugins
+		</span>
+					(<span class="var-type"></span>&nbsp;<span class="var-name">$fileName</span>)
+			</div>
+	
+			<ul class="parameters">
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$fileName</span>			</li>
+				</ul>
+		
+			
+	</div>
+<a name="methodgetAllowedChilds" id="getAllowedChilds"><!-- --></a>
+<div class="evenrow">
+	
+	<div class="method-header">
+		<img src="../media/images/Method.png" />
+		<span class="method-title">getAllowedChilds</span> (line <span class="line-number">248</span>)
+	</div> 
+	
+	<!-- ========== Info from phpDoc block ========= -->
+<p class="short-description">÷ÏÚ×ÒÁÝÁÅÔ ÁÓÓÏÃÉÁÔÉ×ÎÙÊ ÍÁÓÓÉ× ÒÁÚÒÅÛÅÎÎÙÈ ÄÅÔÅÊ.</p>
+	<ul class="tags">
+				<li><span class="field">return:</span> ÍÁÓÓÉ× ÒÁÚÒÅÛÅÎÎÙÈ ÄÅÔÅÊ ÉÌÉ ÐÕÓÔÏÊ ÍÁÓÓÉ×</li>
+				<li><span class="field">access:</span> public</li>
+				<li><span class="field">usedby:</span> <a href="../ProximaPortal/PXApplication.html#methodgetAllowedChildsKeys">PXApplication::getAllowedChildsKeys()</a></li>
+			</ul>
+	
+	<div class="method-signature">
+		<span class="method-result">Array</span>
+		<span class="method-name">
+			getAllowedChilds
+		</span>
+					(<span class="var-type">NULL</span>&nbsp;<span class="var-name">$formatName</span>, <span class="var-type"></span>&nbsp;<span class="var-name">&$object</span>, <span class="var-type">Object|Array</span>&nbsp;<span class="var-name">$object</span>)
+			</div>
+	
+			<ul class="parameters">
+					<li>
+				<span class="var-type">NULL</span>
+				<span class="var-name">$formatName</span><span class="var-description">: ÎÅ ÉÓÐÏÌØÚÕÅÔÓÑ</span>			</li>
+					<li>
+				<span class="var-type">Object|Array</span>
+				<span class="var-name">$object</span><span class="var-description">: ÏÂßÅËÔ ÄÌÑ ËÏÔÏÒÏÇÏ ÉÓËÁÔØ ÄÅÔÅÊ</span>			</li>
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">&$object</span>			</li>
+				</ul>
+		
+			
+	</div>
+<a name="methodgetAllowedChildsKeys" id="getAllowedChildsKeys"><!-- --></a>
+<div class="oddrow">
+	
+	<div class="method-header">
+		<img src="../media/images/Method.png" />
+		<span class="method-title">getAllowedChildsKeys</span> (line <span class="line-number">265</span>)
+	</div> 
+	
+	<!-- ========== Info from phpDoc block ========= -->
+<p class="short-description">÷ÏÚ×ÒÁÝÁÅÔ ÍÁÓÓÉ× ÎÁÉÍÅÎÏ×ÁÎÉÊ ÒÁÚÒÅÛÅÎÎÙÈ ÆÏÒÍÁÔÏ× ÄÏÞÅÒÎÉÈ ÏÂßÅËÔÏ×.</p>
+	<ul class="tags">
+				<li><span class="field">return:</span> ÍÁÓÓÉ× ÎÁÉÍÅÎÏ×ÁÎÉÊ ÒÁÚÒÅÛÅÎÎÙÈ ÄÅÔÅÊ ÉÌÉ ÐÕÓÔÏÊ ÍÁÓÓÉ×</li>
+				<li><span class="field">access:</span> public</li>
+				<li><span class="field">uses:</span> <a href="../ProximaPortal/PXApplication.html#methodgetAllowedChilds">PXApplication::getAllowedChilds()</a></li>
+			</ul>
+	
+	<div class="method-signature">
+		<span class="method-result">Array</span>
+		<span class="method-name">
+			getAllowedChildsKeys
+		</span>
+					(<span class="var-type">NULL</span>&nbsp;<span class="var-name">$formatName</span>, <span class="var-type">Object|Array</span>&nbsp;<span class="var-name">&$object</span>)
+			</div>
+	
+			<ul class="parameters">
+					<li>
+				<span class="var-type">NULL</span>
+				<span class="var-name">$formatName</span><span class="var-description">: ÎÅ ÉÓÐÏÌØÚÕÅÔÓÑ</span>			</li>
+					<li>
+				<span class="var-type">Object|Array</span>
+				<span class="var-name">&$object</span><span class="var-description">: ÏÂßÅËÔ ÄÌÑ ËÏÔÏÒÏÇÏ ÉÓËÁÔØ ÄÅÔÅÊ</span>			</li>
+				</ul>
+		
+			
+	</div>
+<a name="methodgetAvailableModules" id="getAvailableModules"><!-- --></a>
+<div class="evenrow">
+	
+	<div class="method-header">
+		<img src="../media/images/Method.png" />
+		<span class="method-title">getAvailableModules</span> (line <span class="line-number">237</span>)
+	</div> 
+	
+	<!-- ========== Info from phpDoc block ========= -->
+<p class="short-description">÷ÏÚ×ÒÁÝÁÅÔ ÁÓÓÏÃÉÁÔÉ×ÎÙÊ ÍÁÓÓÉ× ÄÏÓÔÕÐÎÙÈ ÍÏÄÕÌÅÊ.</p>
+	<ul class="tags">
+				<li><span class="field">return:</span> ÍÁÓÓÉ× ÉÚ ÜÌÅÍÅÎÔÏ× 'module_name' =&gt; $module</li>
+				<li><span class="field">access:</span> public</li>
+			</ul>
+	
+	<div class="method-signature">
+		<span class="method-result">Array</span>
+		<span class="method-name">
+			getAvailableModules
+		</span>
+					(<span class="var-type">Integer</span>&nbsp;<span class="var-name">$level</span>)
+			</div>
+	
+			<ul class="parameters">
+					<li>
+				<span class="var-type">Integer</span>
+				<span class="var-name">$level</span><span class="var-description">: ÎÁÚ×ÁÎÉÅ ÔÅËÕÝÅÇÏ ÒÁÚÄÅÌÁ</span>			</li>
+				</ul>
+		
+			
+	</div>
+<a name="methodgetProperty" id="getProperty"><!-- --></a>
+<div class="oddrow">
+	
+	<div class="method-header">
+		<img src="../media/images/Method.png" />
+		<span class="method-title">getProperty</span> (line <span class="line-number">227</span>)
+	</div> 
+	
+	<!-- ========== Info from phpDoc block ========= -->
+<p class="short-description">÷ÏÚ×ÒÁÝÁÅÔ ÜÌÅÍÅÎÔ ÉÚ (properties) ÐÏ ËÌÀÞÕ ÉÌÉ ÚÎÁÞÅÎÉÅ ÐÏ ÕÍÏÌÞÁÎÉÀ.</p>
+	<ul class="tags">
+				<li><span class="field">access:</span> public</li>
+			</ul>
+	
+	<div class="method-signature">
+		<span class="method-result">void</span>
+		<span class="method-name">
+			getProperty
+		</span>
+					(<span class="var-type">String</span>&nbsp;<span class="var-name">$k</span>, [<span class="var-type">String</span>&nbsp;<span class="var-name">$defaultValue</span> = <span class="var-default">NULL</span>])
+			</div>
+	
+			<ul class="parameters">
+					<li>
+				<span class="var-type">String</span>
+				<span class="var-name">$k</span><span class="var-description">: ËÌÀÞ</span>			</li>
+					<li>
+				<span class="var-type">String</span>
+				<span class="var-name">$defaultValue</span><span class="var-description">: - ×ÏÚ×ÒÁÝÁÅÍÏÅ ÚÎÁÞÅÎÉÅ ÐÏ ÕÍÏÌÞÁÎÉÀ</span>			</li>
+				</ul>
+		
+			
+	</div>
+<a name="methodinitContentObject" id="initContentObject"><!-- --></a>
+<div class="evenrow">
+	
+	<div class="method-header">
+		<img src="../media/images/Method.png" />
+		<span class="method-title">initContentObject</span> (line <span class="line-number">272</span>)
+	</div> 
+	
+	<!-- ========== Info from phpDoc block ========= -->
+	<ul class="tags">
+				<li><span class="field">access:</span> public</li>
+			</ul>
+	
+	<div class="method-signature">
+		<span class="method-result">void</span>
+		<span class="method-name">
+			initContentObject
+		</span>
+					(<span class="var-type"></span>&nbsp;<span class="var-name">$formatName</span>)
+			</div>
+	
+			<ul class="parameters">
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$formatName</span>			</li>
+				</ul>
+		
+			
+	</div>
+<a name="methodinitObject" id="initObject"><!-- --></a>
+<div class="oddrow">
+	
+	<div class="method-header">
+		<img src="../media/images/Method.png" />
+		<span class="method-title">initObject</span> (line <span class="line-number">282</span>)
+	</div> 
+	
+	<!-- ========== Info from phpDoc block ========= -->
+	<ul class="tags">
+				<li><span class="field">access:</span> public</li>
+			</ul>
+	
+	<div class="method-signature">
+		<span class="method-result">void</span>
+		<span class="method-name">
+			initObject
+		</span>
+					(<span class="var-type"></span>&nbsp;<span class="var-name">$formatName</span>)
+			</div>
+	
+			<ul class="parameters">
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$formatName</span>			</li>
+				</ul>
+		
+			
+	</div>
+<a name="methodLoadXMLDirectory" id="LoadXMLDirectory"><!-- --></a>
+<div class="evenrow">
+	
+	<div class="method-header">
+		<img src="../media/images/Method.png" />
+		<span class="method-title">LoadXMLDirectory</span> (line <span class="line-number">360</span>)
+	</div> 
+	
+	<!-- ========== Info from phpDoc block ========= -->
+<p class="short-description">úÁÇÒÕÖÁÅÔ ÓÐÒÁ×ÏÞÎÉË (directory) ÐÏ ÓÓÙÌËÅ  éÓÐÏÌØÚÕÅÔ <a href="../ProximaPortal/PXDatabase.html#method_GetData">PXDatabase::_GetData()</a> ÄÌÑ ÚÁÇÒÕÚËÉ ËÁÔÁÌÏÇÏ× ÉÚ ÂÁÚÙ ÄÁÎÎÙÈ</p>
+	<ul class="tags">
+				<li><span class="field">access:</span> public</li>
+			</ul>
+	
+	<div class="method-signature">
+		<span class="method-result">void</span>
+		<span class="method-name">
+			LoadXMLDirectory
+		</span>
+					(<span class="var-type"></span>&nbsp;<span class="var-name">&$directory</span>, [<span class="var-type"></span>&nbsp;<span class="var-name">$addDefault</span> = <span class="var-default">true</span>], <span class="var-type"><a href="../ProximaPortal/PXDirectoryDescription.html">PXDirectoryDescription</a></span>&nbsp;<span class="var-name">$directory</span>)
+			</div>
+	
+			<ul class="parameters">
+					<li>
+				<span class="var-type"><a href="../ProximaPortal/PXDirectoryDescription.html">PXDirectoryDescription</a></span>
+				<span class="var-name">$directory</span>			</li>
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">&$directory</span>			</li>
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$addDefault</span>			</li>
+				</ul>
+		
+			
+	</div>
+<a name="methodregisterTrigger" id="registerTrigger"><!-- --></a>
+<div class="oddrow">
+	
+	<div class="method-header">
+		<img src="../media/images/Method.png" />
+		<span class="method-title">registerTrigger</span> (line <span class="line-number">541</span>)
+	</div> 
+	
+	<!-- ========== Info from phpDoc block ========= -->
+<p class="short-description">ðÏÌØÚÏ×ÁÔÅÌØÓËÁÑ ÆÕÎËÃÉÑ ÄÌÑ ÒÅÇÉÓÔÒÁÃÉÉ ÔÒÉÇÇÅÒÏ× ÎÅ ÞÅÒÅÚ ËÏÎÆÉÇ triggers.xml, Á × ÐÒÏÃÅÓÓÅ ÒÁÂÏÔÙ ÓÉÓÔÅÍÙ</p>
+	
+	<div class="method-signature">
+		<span class="method-result">void</span>
+		<span class="method-name">
+			registerTrigger
+		</span>
+					(<span class="var-type">String</span>&nbsp;<span class="var-name">$type</span>, <span class="var-type"></span>&nbsp;<span class="var-name">$args</span>)
+			</div>
+	
+			<ul class="parameters">
+					<li>
+				<span class="var-type">String</span>
+				<span class="var-name">$type</span><span class="var-description">: - ÔÉÐ ÔÒÉÇÇÅÒÁ</span>			</li>
+					<li>
+				<span class="var-type">Array</span>
+				<span class="var-name">$args</span><span class="var-description">: - ÍÁÓÓÉ× Ó ÐÁÒÁÍÅÔÒÁÍÉ ÔÒÉÇÇÅÒÁ, ÉÍÑ =&gt; ÚÎÁÞÅÎÉÅ</span>			</li>
+				</ul>
+		
+			
+	</div>
+<a name="methodsetModules" id="setModules"><!-- --></a>
+<div class="evenrow">
+	
+	<div class="method-header">
+		<img src="../media/images/Method.png" />
+		<span class="method-title">setModules</span> (line <span class="line-number">458</span>)
+	</div> 
+	
+	<!-- ========== Info from phpDoc block ========= -->
+	
+	<div class="method-signature">
+		<span class="method-result">void</span>
+		<span class="method-name">
+			setModules
+		</span>
+					(<span class="var-type"></span>&nbsp;<span class="var-name">$module</span>)
+			</div>
+	
+			<ul class="parameters">
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$module</span>			</li>
+				</ul>
+		
+			
+	</div>
+<a name="method__wakeup" id="__wakeup"><!-- --></a>
+<div class="oddrow">
+	
+	<div class="method-header">
+		<img src="../media/images/Method.png" />
+		<span class="method-title">__wakeup</span> (line <span class="line-number">684</span>)
+	</div> 
+	
+	<!-- ========== Info from phpDoc block ========= -->
+	
+	<div class="method-signature">
+		<span class="method-result">void</span>
+		<span class="method-name">
+			__wakeup
+		</span>
+				()
+			</div>
+	
+		
+			
+	</div>
+						
+		</div>
+	</div>
+
+	
+	<p class="notes" id="credit">
+		Documentation generated on Wed, 30 Jun 2010 03:04:07 +0400 by <a href="http://www.phpdoc.org" target="_blank">phpDocumentor 1.4.3</a>
+	</p>
+	</div></body>
+</html>

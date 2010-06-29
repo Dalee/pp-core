@@ -1,0 +1,1232 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+  <html xmlns="http://www.w3.org/1999/xhtml">
+		<head>
+			<!-- template designed by Marco Von Ballmoos  -->
+			<title>Docs For Class PXAdminHTMLLayout</title>
+			<link rel="stylesheet" href="../media/stylesheet.css" />
+						<script src="../media/lib/classTree.js"></script>
+												<script language="javascript" type="text/javascript">
+				var imgPlus = new Image();
+				var imgMinus = new Image();
+				imgPlus.src = "../media/images/plus.png";
+				imgMinus.src = "../media/images/minus.png";
+				
+				function showNode(Node){
+							switch(navigator.family){
+								case 'nn4':
+									// Nav 4.x code fork...
+							var oTable = document.layers["span" + Node];
+							var oImg = document.layers["img" + Node];
+									break;
+								case 'ie4':
+									// IE 4/5 code fork...
+							var oTable = document.all["span" + Node];
+							var oImg = document.all["img" + Node];
+									break;
+								case 'gecko':
+									// Standards Compliant code fork...
+							var oTable = document.getElementById("span" + Node);
+							var oImg = document.getElementById("img" + Node);
+									break;
+							}
+					oImg.src = imgMinus.src;
+					oTable.style.display = "block";
+				}
+				
+				function hideNode(Node){
+							switch(navigator.family){
+								case 'nn4':
+									// Nav 4.x code fork...
+							var oTable = document.layers["span" + Node];
+							var oImg = document.layers["img" + Node];
+									break;
+								case 'ie4':
+									// IE 4/5 code fork...
+							var oTable = document.all["span" + Node];
+							var oImg = document.all["img" + Node];
+									break;
+								case 'gecko':
+									// Standards Compliant code fork...
+							var oTable = document.getElementById("span" + Node);
+							var oImg = document.getElementById("img" + Node);
+									break;
+							}
+					oImg.src = imgPlus.src;
+					oTable.style.display = "none";
+				}
+				
+				function nodeIsVisible(Node){
+							switch(navigator.family){
+								case 'nn4':
+									// Nav 4.x code fork...
+							var oTable = document.layers["span" + Node];
+									break;
+								case 'ie4':
+									// IE 4/5 code fork...
+							var oTable = document.all["span" + Node];
+									break;
+								case 'gecko':
+									// Standards Compliant code fork...
+							var oTable = document.getElementById("span" + Node);
+									break;
+							}
+					return (oTable && oTable.style.display == "block");
+				}
+				
+				function toggleNodeVisibility(Node){
+					if (nodeIsVisible(Node)){
+						hideNode(Node);
+					}else{
+						showNode(Node);
+					}
+				}
+			</script>
+					</head>
+		<body>
+			<div class="page-body">			
+<h2 class="class-name"><img src="../media/images/Class_logo.png"
+														alt=" Class"
+														title=" Class"
+														style="vertical-align: middle"> PXAdminHTMLLayout</h2>
+
+<a name="sec-description"></a>
+<div class="info-box">
+	<div class="info-box-title">Description</div>
+	<div class="nav-bar">
+					<span class="disabled">Description</span> |
+													<a href="#sec-var-summary">Vars</a> (<a href="#sec-vars">details</a>)
+						|											<a href="#sec-method-summary">Methods</a> (<a href="#sec-methods">details</a>)
+						
+					</div>
+	<div class="info-box-body">
+        		<!-- ========== Info from phpDoc block ========= -->
+		<p class="notes">
+			Located in <a class="field" href="_lib---HTML---Admin---layout.class.inc.html">/lib/HTML/Admin/layout.class.inc</a> (line <span class="field">2</span>)
+		</p>
+		
+				
+		<pre><a href="../ProximaPortal/NLAbstractLayout.html">NLAbstractLayout</a>
+   |
+   --PXAdminHTMLLayout</pre>
+	
+			</div>
+</div>
+
+
+
+	<a name="sec-var-summary"></a>
+	<div class="info-box">
+		<div class="info-box-title">Variable Summary</span></div>
+		<div class="nav-bar">
+			<a href="#sec-description">Description</a> |
+						<span class="disabled">Vars</span> (<a href="#sec-vars">details</a>)
+							| 
+									<a href="#sec-method-summary">Methods</a> (<a href="#sec-methods">details</a>)
+							
+								</div>
+		<div class="info-box-body">
+			<div class="var-summary">
+																																								<div class="var-title">
+					<img src="../media/images/Variable.png" alt=" " />
+					<span class="var-type">mixed</span>
+					<a href="#$types" title="details" class="var-name">$types</a>
+				</div>
+																<div class="var-title">
+					<img src="../media/images/Variable.png" alt=" " />
+					<span class="var-type">mixed</span>
+					<a href="#$_scripts" title="details" class="var-name">$_scripts</a>
+				</div>
+																<div class="var-title">
+					<img src="../media/images/Variable.png" alt=" " />
+					<span class="var-type">mixed</span>
+					<a href="#$_scriptsTemplates" title="details" class="var-name">$_scriptsTemplates</a>
+				</div>
+											</div>
+		</div>
+	</div>
+
+	<a name="sec-method-summary"></a>
+	<div class="info-box">
+		<div class="info-box-title">Method Summary</span></div>
+		<div class="nav-bar">
+			<a href="#sec-description">Description</a> |
+																		<a href="#sec-var-summary">Vars</a> (<a href="#sec-vars">details</a>)
+				 
+				|
+						<span class="disabled">Methods</span> (<a href="#sec-methods">details</a>)
+		</div>
+		<div class="info-box-body">			
+			<div class="method-summary">
+																																																																																																																																																																																															
+				<div class="method-definition">
+					<img src="../media/images/Constructor.png" alt=" "/>
+											<span class="method-result">PXAdminHTMLLayout</span>
+										<a href="#PXAdminHTMLLayout" title="details" class="method-name">PXAdminHTMLLayout</a>
+											(<span class="var-type"></span>&nbsp;<span class="var-name">$outerLayout</span>, <span class="var-type"></span>&nbsp;<span class="var-name">$types</span>)
+									</div>
+															
+				<div class="method-definition">
+					<img src="../media/images/Method.png" alt=" "/>
+											<span class="method-result">void</span>
+										<a href="#appendControls" title="details" class="method-name">appendControls</a>
+											(<span class="var-type"></span>&nbsp;<span class="var-name">$label</span>, <span class="var-type"></span>&nbsp;<span class="var-name">$selectedSid</span>, <span class="var-type"></span>&nbsp;<span class="var-name">$allowedFormats</span>)
+									</div>
+															
+				<div class="method-definition">
+					<img src="../media/images/Method.png" alt=" "/>
+											<span class="method-result">void</span>
+										<a href="#appendTable" title="details" class="method-name">appendTable</a>
+											(<span class="var-type"></span>&nbsp;<span class="var-name">$label</span>, <span class="var-type"></span>&nbsp;<span class="var-name">$objectFormat</span>, <span class="var-type"></span>&nbsp;<span class="var-name">$table</span>, [<span class="var-type"></span>&nbsp;<span class="var-name">$selected</span> = <span class="var-default">NULL</span>], [<span class="var-type"></span>&nbsp;<span class="var-name">$varToTitle</span> = <span class="var-default">NULL</span>], [<span class="var-type"></span>&nbsp;<span class="var-name">$page</span> = <span class="var-default">1</span>], [<span class="var-type"></span>&nbsp;<span class="var-name">$objectsOnPage</span> = <span class="var-default">0</span>], [<span class="var-type"></span>&nbsp;<span class="var-name">$count</span> = <span class="var-default">0</span>], [<span class="var-type"></span>&nbsp;<span class="var-name">$withLinks</span> = <span class="var-default">TRUE</span>], [<span class="var-type"></span>&nbsp;<span class="var-name">$parentPathname</span> = <span class="var-default">NULL</span>])
+									</div>
+															
+				<div class="method-definition">
+					<img src="../media/images/Method.png" alt=" "/>
+											<span class="method-result">void</span>
+										<a href="#appendTableAsTree" title="details" class="method-name">appendTableAsTree</a>
+											(<span class="var-type"></span>&nbsp;<span class="var-name">$label</span>, <span class="var-type"></span>&nbsp;<span class="var-name">$objectFormat</span>, <span class="var-type"></span>&nbsp;<span class="var-name">$tree</span>, <span class="var-type"></span>&nbsp;<span class="var-name">$selected</span>, <span class="var-type"></span>&nbsp;<span class="var-name">$leafsToOpen</span>)
+									</div>
+															
+				<div class="method-definition">
+					<img src="../media/images/Method.png" alt=" "/>
+											<span class="method-result">void</span>
+										<a href="#appendTree" title="details" class="method-name">appendTree</a>
+											(<span class="var-type"></span>&nbsp;<span class="var-name">$label</span>, <span class="var-type"></span>&nbsp;<span class="var-name">$objectFormat</span>, <span class="var-type"></span>&nbsp;<span class="var-name">$tree</span>, <span class="var-type"></span>&nbsp;<span class="var-name">$selectedSid</span>, <span class="var-type"></span>&nbsp;<span class="var-name">$leafsToOpen</span>)
+									</div>
+															
+				<div class="method-definition">
+					<img src="../media/images/Method.png" alt=" "/>
+											<span class="method-result">void</span>
+										<a href="#appendUserTable" title="details" class="method-name">appendUserTable</a>
+											(<span class="var-type"></span>&nbsp;<span class="var-name">$label</span>, <span class="var-type"></span>&nbsp;<span class="var-name">$objectFormat</span>, <span class="var-type"></span>&nbsp;<span class="var-name">$title</span>, <span class="var-type"></span>&nbsp;<span class="var-name">$table</span>, <span class="var-type"></span>&nbsp;<span class="var-name">&$userClassName</span>, <span class="var-type"></span>&nbsp;<span class="var-name">$userFuncName</span>, [<span class="var-type"></span>&nbsp;<span class="var-name">$page</span> = <span class="var-default">1</span>], [<span class="var-type"></span>&nbsp;<span class="var-name">$objectsOnPage</span> = <span class="var-default">0</span>], [<span class="var-type"></span>&nbsp;<span class="var-name">$count</span> = <span class="var-default">0</span>])
+									</div>
+															
+				<div class="method-definition">
+					<img src="../media/images/Method.png" alt=" "/>
+											<span class="method-result">void</span>
+										<a href="#assignContentControls" title="details" class="method-name">assignContentControls</a>
+											(<span class="var-type"></span>&nbsp;<span class="var-name">$label</span>, <span class="var-type"></span>&nbsp;<span class="var-name">$selectedSid</span>, <span class="var-type"></span>&nbsp;<span class="var-name">$allowedFormats</span>)
+									</div>
+															
+				<div class="method-definition">
+					<img src="../media/images/Method.png" alt=" "/>
+											<span class="method-result">void</span>
+										<a href="#assignContextMenu" title="details" class="method-name">assignContextMenu</a>
+											(<span class="var-type"></span>&nbsp;<span class="var-name">$label</span>, <span class="var-type"></span>&nbsp;<span class="var-name">$selectedSid</span>, <span class="var-type"></span>&nbsp;<span class="var-name">$allowedFormats</span>)
+									</div>
+															
+				<div class="method-definition">
+					<img src="../media/images/Method.png" alt=" "/>
+											<span class="method-result">void</span>
+										<a href="#assignControls" title="details" class="method-name">assignControls</a>
+											(<span class="var-type"></span>&nbsp;<span class="var-name">$label</span>, <span class="var-type"></span>&nbsp;<span class="var-name">$selectedSid</span>, <span class="var-type"></span>&nbsp;<span class="var-name">$allowedFormats</span>)
+									</div>
+															
+				<div class="method-definition">
+					<img src="../media/images/Method.png" alt=" "/>
+											<span class="method-result">void</span>
+										<a href="#assignCSS" title="details" class="method-name">assignCSS</a>
+											(<span class="var-type"></span>&nbsp;<span class="var-name">$pathToScript</span>)
+									</div>
+															
+				<div class="method-definition">
+					<img src="../media/images/Method.png" alt=" "/>
+											<span class="method-result">void</span>
+										<a href="#assignError" title="details" class="method-name">assignError</a>
+											(<span class="var-type"></span>&nbsp;<span class="var-name">$label</span>, <span class="var-type"></span>&nbsp;<span class="var-name">$errorText</span>)
+									</div>
+															
+				<div class="method-definition">
+					<img src="../media/images/Method.png" alt=" "/>
+											<span class="method-result">void</span>
+										<a href="#assignInlineCSS" title="details" class="method-name">assignInlineCSS</a>
+											(<span class="var-type"></span>&nbsp;<span class="var-name">$scriptBody</span>)
+									</div>
+															
+				<div class="method-definition">
+					<img src="../media/images/Method.png" alt=" "/>
+											<span class="method-result">void</span>
+										<a href="#assignInlineJS" title="details" class="method-name">assignInlineJS</a>
+											(<span class="var-type"></span>&nbsp;<span class="var-name">$scriptBody</span>, [<span class="var-type"></span>&nbsp;<span class="var-name">$uniq</span> = <span class="var-default">true</span>])
+									</div>
+															
+				<div class="method-definition">
+					<img src="../media/images/Method.png" alt=" "/>
+											<span class="method-result">void</span>
+										<a href="#assignJS" title="details" class="method-name">assignJS</a>
+											(<span class="var-type"></span>&nbsp;<span class="var-name">$pathToScript</span>)
+									</div>
+															
+				<div class="method-definition">
+					<img src="../media/images/Method.png" alt=" "/>
+											<span class="method-result">void</span>
+										<a href="#assignKeyValueList" title="details" class="method-name">assignKeyValueList</a>
+											(<span class="var-type"></span>&nbsp;<span class="var-name">$label</span>, <span class="var-type"></span>&nbsp;<span class="var-name">$list</span>, <span class="var-type"></span>&nbsp;<span class="var-name">$selected</span>, [<span class="var-type"></span>&nbsp;<span class="var-name">$varName</span> = <span class="var-default">'sid'</span>])
+									</div>
+															
+				<div class="method-definition">
+					<img src="../media/images/Method.png" alt=" "/>
+											<span class="method-result">void</span>
+										<a href="#assignTitle" title="details" class="method-name">assignTitle</a>
+											([<span class="var-type"></span>&nbsp;<span class="var-name">$title</span> = <span class="var-default">NULL</span>])
+									</div>
+															
+				<div class="method-definition">
+					<img src="../media/images/Method.png" alt=" "/>
+											<span class="method-result">void</span>
+										<a href="#assignTree" title="details" class="method-name">assignTree</a>
+											(<span class="var-type"></span>&nbsp;<span class="var-name">$label</span>, <span class="var-type"></span>&nbsp;<span class="var-name">$objectFormat</span>, <span class="var-type"></span>&nbsp;<span class="var-name">$tree</span>, <span class="var-type"></span>&nbsp;<span class="var-name">$selectedSid</span>, <span class="var-type"></span>&nbsp;<span class="var-name">$leafsToOpen</span>)
+									</div>
+															
+				<div class="method-definition">
+					<img src="../media/images/Method.png" alt=" "/>
+											<span class="method-result">void</span>
+										<a href="#assignVersion" title="details" class="method-name">assignVersion</a>
+										()
+									</div>
+															
+				<div class="method-definition">
+					<img src="../media/images/Method.png" alt=" "/>
+											<span class="method-result">void</span>
+										<a href="#setApp" title="details" class="method-name">setApp</a>
+										()
+									</div>
+															
+				<div class="method-definition">
+					<img src="../media/images/Method.png" alt=" "/>
+											<span class="method-result">void</span>
+										<a href="#_makeTree" title="details" class="method-name">_makeTree</a>
+											(<span class="var-type"></span>&nbsp;<span class="var-name">&$objectFormat</span>, <span class="var-type"></span>&nbsp;<span class="var-name">&$tree</span>, <span class="var-type"></span>&nbsp;<span class="var-name">$selectedSid</span>, <span class="var-type"></span>&nbsp;<span class="var-name">$leafsToOpen</span>)
+									</div>
+															
+				<div class="method-definition">
+					<img src="../media/images/Method.png" alt=" "/>
+											<span class="method-result">void</span>
+										<a href="#_makeTreePart" title="details" class="method-name">_makeTreePart</a>
+											(<span class="var-type"></span>&nbsp;<span class="var-name">&$tree</span>, <span class="var-type"></span>&nbsp;<span class="var-name">&$objectFormat</span>, <span class="var-type"></span>&nbsp;<span class="var-name">$id</span>, <span class="var-type"></span>&nbsp;<span class="var-name">$leafsToOpen</span>, <span class="var-type"></span>&nbsp;<span class="var-name">$selectedSid</span>, [<span class="var-type"></span>&nbsp;<span class="var-name">$level</span> = <span class="var-default">0</span>], [<span class="var-type"></span>&nbsp;<span class="var-name">$parent</span> = <span class="var-default">0</span>], [<span class="var-type"></span>&nbsp;<span class="var-name">$leafImgs</span> = <span class="var-default">array()</span>], [<span class="var-type"></span>&nbsp;<span class="var-name">$leafAlias</span> = <span class="var-default">array()</span>])
+									</div>
+															
+				<div class="method-definition">
+					<img src="../media/images/Method.png" alt=" "/>
+											<span class="method-result">void</span>
+										<a href="#_renderScript" title="details" class="method-name">_renderScript</a>
+											(<span class="var-type"></span>&nbsp;<span class="var-name">$body</span>, <span class="var-type"></span>&nbsp;<span class="var-name">$template</span>, <span class="var-type"></span>&nbsp;<span class="var-name">$singleton</span>)
+									</div>
+											</div>
+		</div>
+	</div>		
+
+	<a name="sec-vars"></a>
+	<div class="info-box">
+		<div class="info-box-title">Variables</div>
+		<div class="nav-bar">
+			<a href="#sec-description">Description</a> |
+										<a href="#sec-var-summary">Vars</a> (<span class="disabled">details</span>)
+						
+			
+										| 
+									<a href="#sec-method-summary">Methods</a> (<a href="#sec-methods">details</a>)
+							
+					</div>
+		<div class="info-box-body">
+			
+<a name="var$types" id="$types"><!-- --></A>
+<div class="evenrow">
+
+	<div class="var-header">
+		<img src="../media/images/Variable.png" />
+		<span class="var-title">
+			<span class="var-type">mixed</span>
+			<span class="var-name">$types</span>
+						(line <span class="line-number">3</span>)
+		</span>
+	</div>
+
+	<!-- ========== Info from phpDoc block ========= -->
+	
+	
+		
+		
+
+</div>
+<a name="var$_scripts" id="$_scripts"><!-- --></A>
+<div class="oddrow">
+
+	<div class="var-header">
+		<img src="../media/images/Variable.png" />
+		<span class="var-title">
+			<span class="var-type">mixed</span>
+			<span class="var-name">$_scripts</span>
+			 = <span class="var-default">array()</span>			(line <span class="line-number">5</span>)
+		</span>
+	</div>
+
+	<!-- ========== Info from phpDoc block ========= -->
+	
+	
+		
+		
+
+</div>
+<a name="var$_scriptsTemplates" id="$_scriptsTemplates"><!-- --></A>
+<div class="evenrow">
+
+	<div class="var-header">
+		<img src="../media/images/Variable.png" />
+		<span class="var-title">
+			<span class="var-type">mixed</span>
+			<span class="var-name">$_scriptsTemplates</span>
+			 = <span class="var-default">array(<br />		':css' =&gt; array(<br />			':area'  =&gt; 'OUTER.FORMBEGIN',<br />			':proto' =&gt; '&lt;link rel=&quot;stylesheet&quot; href=&quot;%s&quot; type=&quot;text/css&quot; /&gt;'<br />		),':js'=&gt;array(':area'=&gt;'OUTER.FORMEND',':proto'=&gt;'&lt;script src=&quot;%s&quot; type=&quot;text/javascript&quot;&gt;&lt;/script&gt;'),':inline_js'=&gt;array(':area'=&gt;'OUTER.FORMEND',':proto'=&gt;&quot;&lt;script type=\&quot;text/javascript\&quot;&gt;\n%s\n&lt;/script&gt;&quot;),':inline_css'=&gt;array(':area'=&gt;'OUTER.FORMBEGIN',':proto'=&gt;&quot;&lt;style type=\&quot;text/css\&quot;&gt;\n%s\n&lt;/style&gt;&quot;))</span>			(line <span class="line-number">8</span>)
+		</span>
+	</div>
+
+	<!-- ========== Info from phpDoc block ========= -->
+	
+	
+		
+		
+
+</div>
+							<h4>Inherited Variables</h4>
+				<A NAME='inherited_vars'><!-- --></A>
+									<p>Inherited from <span class="classname"><a href="../ProximaPortal/NLAbstractLayout.html">NLAbstractLayout</a></span></p>
+					<blockquote>
+													<img src="../media/images/Variable.png" />
+							<span class="var-title">
+								<span class="var-name"><a href="../ProximaPortal/NLAbstractLayout.html#var$blocks">NLAbstractLayout::$blocks</a></span><br>
+							</span>
+													<img src="../media/images/Variable.png" />
+							<span class="var-title">
+								<span class="var-name"><a href="../ProximaPortal/NLAbstractLayout.html#var$getData">NLAbstractLayout::$getData</a></span><br>
+							</span>
+													<img src="../media/images/Variable.png" />
+							<span class="var-title">
+								<span class="var-name"><a href="../ProximaPortal/NLAbstractLayout.html#var$html">NLAbstractLayout::$html</a></span><br>
+							</span>
+													<img src="../media/images/Variable.png" />
+							<span class="var-title">
+								<span class="var-name"><a href="../ProximaPortal/NLAbstractLayout.html#var$labels">NLAbstractLayout::$labels</a></span><br>
+							</span>
+													<img src="../media/images/Variable.png" />
+							<span class="var-title">
+								<span class="var-name"><a href="../ProximaPortal/NLAbstractLayout.html#var$outerLayout">NLAbstractLayout::$outerLayout</a></span><br>
+							</span>
+											</blockquote> 
+										
+		</div>
+	</div>
+	
+	<a name="sec-methods"></a>
+	<div class="info-box">
+		<div class="info-box-title">Methods</div>
+		<div class="nav-bar">
+			<a href="#sec-description">Description</a> |
+															<a href="#sec-var-summary">Vars</a> (<a href="#sec-vars">details</a>)
+																	<a href="#sec-method-summary">Methods</a> (<span class="disabled">details</span>)
+						
+		</div>
+		<div class="info-box-body">
+			<A NAME='method_detail'></A>
+<a name="methodPXAdminHTMLLayout" id="PXAdminHTMLLayout"><!-- --></a>
+<div class="oddrow">
+	
+	<div class="method-header">
+		<img src="../media/images/Constructor.png" />
+		<span class="method-title">Constructor PXAdminHTMLLayout</span> (line <span class="line-number">28</span>)
+	</div> 
+	
+	<!-- ========== Info from phpDoc block ========= -->
+	
+	<div class="method-signature">
+		<span class="method-result">PXAdminHTMLLayout</span>
+		<span class="method-name">
+			PXAdminHTMLLayout
+		</span>
+					(<span class="var-type"></span>&nbsp;<span class="var-name">$outerLayout</span>, <span class="var-type"></span>&nbsp;<span class="var-name">$types</span>)
+			</div>
+	
+			<ul class="parameters">
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$outerLayout</span>			</li>
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$types</span>			</li>
+				</ul>
+		
+			
+	</div>
+<a name="methodappendControls" id="appendControls"><!-- --></a>
+<div class="evenrow">
+	
+	<div class="method-header">
+		<img src="../media/images/Method.png" />
+		<span class="method-title">appendControls</span> (line <span class="line-number">187</span>)
+	</div> 
+	
+	<!-- ========== Info from phpDoc block ========= -->
+	
+	<div class="method-signature">
+		<span class="method-result">void</span>
+		<span class="method-name">
+			appendControls
+		</span>
+					(<span class="var-type"></span>&nbsp;<span class="var-name">$label</span>, <span class="var-type"></span>&nbsp;<span class="var-name">$selectedSid</span>, <span class="var-type"></span>&nbsp;<span class="var-name">$allowedFormats</span>)
+			</div>
+	
+			<ul class="parameters">
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$label</span>			</li>
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$selectedSid</span>			</li>
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$allowedFormats</span>			</li>
+				</ul>
+		
+			
+	</div>
+<a name="methodappendTable" id="appendTable"><!-- --></a>
+<div class="oddrow">
+	
+	<div class="method-header">
+		<img src="../media/images/Method.png" />
+		<span class="method-title">appendTable</span> (line <span class="line-number">229</span>)
+	</div> 
+	
+	<!-- ========== Info from phpDoc block ========= -->
+	
+	<div class="method-signature">
+		<span class="method-result">void</span>
+		<span class="method-name">
+			appendTable
+		</span>
+					(<span class="var-type"></span>&nbsp;<span class="var-name">$label</span>, <span class="var-type"></span>&nbsp;<span class="var-name">$objectFormat</span>, <span class="var-type"></span>&nbsp;<span class="var-name">$table</span>, [<span class="var-type"></span>&nbsp;<span class="var-name">$selected</span> = <span class="var-default">NULL</span>], [<span class="var-type"></span>&nbsp;<span class="var-name">$varToTitle</span> = <span class="var-default">NULL</span>], [<span class="var-type"></span>&nbsp;<span class="var-name">$page</span> = <span class="var-default">1</span>], [<span class="var-type"></span>&nbsp;<span class="var-name">$objectsOnPage</span> = <span class="var-default">0</span>], [<span class="var-type"></span>&nbsp;<span class="var-name">$count</span> = <span class="var-default">0</span>], [<span class="var-type"></span>&nbsp;<span class="var-name">$withLinks</span> = <span class="var-default">TRUE</span>], [<span class="var-type"></span>&nbsp;<span class="var-name">$parentPathname</span> = <span class="var-default">NULL</span>])
+			</div>
+	
+			<ul class="parameters">
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$label</span>			</li>
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$objectFormat</span>			</li>
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$table</span>			</li>
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$selected</span>			</li>
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$varToTitle</span>			</li>
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$page</span>			</li>
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$objectsOnPage</span>			</li>
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$count</span>			</li>
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$withLinks</span>			</li>
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$parentPathname</span>			</li>
+				</ul>
+		
+			
+	</div>
+<a name="methodappendTableAsTree" id="appendTableAsTree"><!-- --></a>
+<div class="evenrow">
+	
+	<div class="method-header">
+		<img src="../media/images/Method.png" />
+		<span class="method-title">appendTableAsTree</span> (line <span class="line-number">215</span>)
+	</div> 
+	
+	<!-- ========== Info from phpDoc block ========= -->
+	
+	<div class="method-signature">
+		<span class="method-result">void</span>
+		<span class="method-name">
+			appendTableAsTree
+		</span>
+					(<span class="var-type"></span>&nbsp;<span class="var-name">$label</span>, <span class="var-type"></span>&nbsp;<span class="var-name">$objectFormat</span>, <span class="var-type"></span>&nbsp;<span class="var-name">$tree</span>, <span class="var-type"></span>&nbsp;<span class="var-name">$selected</span>, <span class="var-type"></span>&nbsp;<span class="var-name">$leafsToOpen</span>)
+			</div>
+	
+			<ul class="parameters">
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$label</span>			</li>
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$objectFormat</span>			</li>
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$tree</span>			</li>
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$selected</span>			</li>
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$leafsToOpen</span>			</li>
+				</ul>
+		
+			
+	</div>
+<a name="methodappendTree" id="appendTree"><!-- --></a>
+<div class="oddrow">
+	
+	<div class="method-header">
+		<img src="../media/images/Method.png" />
+		<span class="method-title">appendTree</span> (line <span class="line-number">61</span>)
+	</div> 
+	
+	<!-- ========== Info from phpDoc block ========= -->
+	
+	<div class="method-signature">
+		<span class="method-result">void</span>
+		<span class="method-name">
+			appendTree
+		</span>
+					(<span class="var-type"></span>&nbsp;<span class="var-name">$label</span>, <span class="var-type"></span>&nbsp;<span class="var-name">$objectFormat</span>, <span class="var-type"></span>&nbsp;<span class="var-name">$tree</span>, <span class="var-type"></span>&nbsp;<span class="var-name">$selectedSid</span>, <span class="var-type"></span>&nbsp;<span class="var-name">$leafsToOpen</span>)
+			</div>
+	
+			<ul class="parameters">
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$label</span>			</li>
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$objectFormat</span>			</li>
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$tree</span>			</li>
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$selectedSid</span>			</li>
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$leafsToOpen</span>			</li>
+				</ul>
+		
+			
+	</div>
+<a name="methodappendUserTable" id="appendUserTable"><!-- --></a>
+<div class="evenrow">
+	
+	<div class="method-header">
+		<img src="../media/images/Method.png" />
+		<span class="method-title">appendUserTable</span> (line <span class="line-number">236</span>)
+	</div> 
+	
+	<!-- ========== Info from phpDoc block ========= -->
+	
+	<div class="method-signature">
+		<span class="method-result">void</span>
+		<span class="method-name">
+			appendUserTable
+		</span>
+					(<span class="var-type"></span>&nbsp;<span class="var-name">$label</span>, <span class="var-type"></span>&nbsp;<span class="var-name">$objectFormat</span>, <span class="var-type"></span>&nbsp;<span class="var-name">$title</span>, <span class="var-type"></span>&nbsp;<span class="var-name">$table</span>, <span class="var-type"></span>&nbsp;<span class="var-name">&$userClassName</span>, <span class="var-type"></span>&nbsp;<span class="var-name">$userFuncName</span>, [<span class="var-type"></span>&nbsp;<span class="var-name">$page</span> = <span class="var-default">1</span>], [<span class="var-type"></span>&nbsp;<span class="var-name">$objectsOnPage</span> = <span class="var-default">0</span>], [<span class="var-type"></span>&nbsp;<span class="var-name">$count</span> = <span class="var-default">0</span>])
+			</div>
+	
+			<ul class="parameters">
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$label</span>			</li>
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$objectFormat</span>			</li>
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$title</span>			</li>
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$table</span>			</li>
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">&$userClassName</span>			</li>
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$userFuncName</span>			</li>
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$page</span>			</li>
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$objectsOnPage</span>			</li>
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$count</span>			</li>
+				</ul>
+		
+			
+	</div>
+<a name="methodassignContentControls" id="assignContentControls"><!-- --></a>
+<div class="oddrow">
+	
+	<div class="method-header">
+		<img src="../media/images/Method.png" />
+		<span class="method-title">assignContentControls</span> (line <span class="line-number">177</span>)
+	</div> 
+	
+	<!-- ========== Info from phpDoc block ========= -->
+	
+	<div class="method-signature">
+		<span class="method-result">void</span>
+		<span class="method-name">
+			assignContentControls
+		</span>
+					(<span class="var-type"></span>&nbsp;<span class="var-name">$label</span>, <span class="var-type"></span>&nbsp;<span class="var-name">$selectedSid</span>, <span class="var-type"></span>&nbsp;<span class="var-name">$allowedFormats</span>)
+			</div>
+	
+			<ul class="parameters">
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$label</span>			</li>
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$selectedSid</span>			</li>
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$allowedFormats</span>			</li>
+				</ul>
+		
+			
+	</div>
+<a name="methodassignContextMenu" id="assignContextMenu"><!-- --></a>
+<div class="evenrow">
+	
+	<div class="method-header">
+		<img src="../media/images/Method.png" />
+		<span class="method-title">assignContextMenu</span> (line <span class="line-number">197</span>)
+	</div> 
+	
+	<!-- ========== Info from phpDoc block ========= -->
+	
+	<div class="method-signature">
+		<span class="method-result">void</span>
+		<span class="method-name">
+			assignContextMenu
+		</span>
+					(<span class="var-type"></span>&nbsp;<span class="var-name">$label</span>, <span class="var-type"></span>&nbsp;<span class="var-name">$selectedSid</span>, <span class="var-type"></span>&nbsp;<span class="var-name">$allowedFormats</span>)
+			</div>
+	
+			<ul class="parameters">
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$label</span>			</li>
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$selectedSid</span>			</li>
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$allowedFormats</span>			</li>
+				</ul>
+		
+			
+	</div>
+<a name="methodassignControls" id="assignControls"><!-- --></a>
+<div class="oddrow">
+	
+	<div class="method-header">
+		<img src="../media/images/Method.png" />
+		<span class="method-title">assignControls</span> (line <span class="line-number">181</span>)
+	</div> 
+	
+	<!-- ========== Info from phpDoc block ========= -->
+	
+	<div class="method-signature">
+		<span class="method-result">void</span>
+		<span class="method-name">
+			assignControls
+		</span>
+					(<span class="var-type"></span>&nbsp;<span class="var-name">$label</span>, <span class="var-type"></span>&nbsp;<span class="var-name">$selectedSid</span>, <span class="var-type"></span>&nbsp;<span class="var-name">$allowedFormats</span>)
+			</div>
+	
+			<ul class="parameters">
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$label</span>			</li>
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$selectedSid</span>			</li>
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$allowedFormats</span>			</li>
+				</ul>
+		
+			
+	</div>
+<a name="methodassignCSS" id="assignCSS"><!-- --></a>
+<div class="evenrow">
+	
+	<div class="method-header">
+		<img src="../media/images/Method.png" />
+		<span class="method-title">assignCSS</span> (line <span class="line-number">314</span>)
+	</div> 
+	
+	<!-- ========== Info from phpDoc block ========= -->
+	
+	<div class="method-signature">
+		<span class="method-result">void</span>
+		<span class="method-name">
+			assignCSS
+		</span>
+					(<span class="var-type"></span>&nbsp;<span class="var-name">$pathToScript</span>)
+			</div>
+	
+			<ul class="parameters">
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$pathToScript</span>			</li>
+				</ul>
+		
+			
+	</div>
+<a name="methodassignError" id="assignError"><!-- --></a>
+<div class="oddrow">
+	
+	<div class="method-header">
+		<img src="../media/images/Method.png" />
+		<span class="method-title">assignError</span> (line <span class="line-number">52</span>)
+	</div> 
+	
+	<!-- ========== Info from phpDoc block ========= -->
+	
+	<div class="method-signature">
+		<span class="method-result">void</span>
+		<span class="method-name">
+			assignError
+		</span>
+					(<span class="var-type"></span>&nbsp;<span class="var-name">$label</span>, <span class="var-type"></span>&nbsp;<span class="var-name">$errorText</span>)
+			</div>
+	
+			<ul class="parameters">
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$label</span>			</li>
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$errorText</span>			</li>
+				</ul>
+		
+			
+	</div>
+<a name="methodassignInlineCSS" id="assignInlineCSS"><!-- --></a>
+<div class="evenrow">
+	
+	<div class="method-header">
+		<img src="../media/images/Method.png" />
+		<span class="method-title">assignInlineCSS</span> (line <span class="line-number">318</span>)
+	</div> 
+	
+	<!-- ========== Info from phpDoc block ========= -->
+	
+	<div class="method-signature">
+		<span class="method-result">void</span>
+		<span class="method-name">
+			assignInlineCSS
+		</span>
+					(<span class="var-type"></span>&nbsp;<span class="var-name">$scriptBody</span>)
+			</div>
+	
+			<ul class="parameters">
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$scriptBody</span>			</li>
+				</ul>
+		
+			
+	</div>
+<a name="methodassignInlineJS" id="assignInlineJS"><!-- --></a>
+<div class="oddrow">
+	
+	<div class="method-header">
+		<img src="../media/images/Method.png" />
+		<span class="method-title">assignInlineJS</span> (line <span class="line-number">310</span>)
+	</div> 
+	
+	<!-- ========== Info from phpDoc block ========= -->
+	
+	<div class="method-signature">
+		<span class="method-result">void</span>
+		<span class="method-name">
+			assignInlineJS
+		</span>
+					(<span class="var-type"></span>&nbsp;<span class="var-name">$scriptBody</span>, [<span class="var-type"></span>&nbsp;<span class="var-name">$uniq</span> = <span class="var-default">true</span>])
+			</div>
+	
+			<ul class="parameters">
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$scriptBody</span>			</li>
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$uniq</span>			</li>
+				</ul>
+		
+			
+	</div>
+<a name="methodassignJS" id="assignJS"><!-- --></a>
+<div class="evenrow">
+	
+	<div class="method-header">
+		<img src="../media/images/Method.png" />
+		<span class="method-title">assignJS</span> (line <span class="line-number">306</span>)
+	</div> 
+	
+	<!-- ========== Info from phpDoc block ========= -->
+	
+	<div class="method-signature">
+		<span class="method-result">void</span>
+		<span class="method-name">
+			assignJS
+		</span>
+					(<span class="var-type"></span>&nbsp;<span class="var-name">$pathToScript</span>)
+			</div>
+	
+			<ul class="parameters">
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$pathToScript</span>			</li>
+				</ul>
+		
+			
+	</div>
+<a name="methodassignKeyValueList" id="assignKeyValueList"><!-- --></a>
+<div class="oddrow">
+	
+	<div class="method-header">
+		<img src="../media/images/Method.png" />
+		<span class="method-title">assignKeyValueList</span> (line <span class="line-number">302</span>)
+	</div> 
+	
+	<!-- ========== Info from phpDoc block ========= -->
+	
+	<div class="method-signature">
+		<span class="method-result">void</span>
+		<span class="method-name">
+			assignKeyValueList
+		</span>
+					(<span class="var-type"></span>&nbsp;<span class="var-name">$label</span>, <span class="var-type"></span>&nbsp;<span class="var-name">$list</span>, <span class="var-type"></span>&nbsp;<span class="var-name">$selected</span>, [<span class="var-type"></span>&nbsp;<span class="var-name">$varName</span> = <span class="var-default">'sid'</span>])
+			</div>
+	
+			<ul class="parameters">
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$label</span>			</li>
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$list</span>			</li>
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$selected</span>			</li>
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$varName</span>			</li>
+				</ul>
+		
+			<hr class="separator" />
+		<div class="notes">Redefinition of:</div>
+		<dl>
+			<dt><a href="../ProximaPortal/NLAbstractLayout.html#methodassignKeyValueList">NLAbstractLayout::assignKeyValueList()</a></dt>
+					</dl>
+			
+	</div>
+<a name="methodassignTitle" id="assignTitle"><!-- --></a>
+<div class="evenrow">
+	
+	<div class="method-header">
+		<img src="../media/images/Method.png" />
+		<span class="method-title">assignTitle</span> (line <span class="line-number">47</span>)
+	</div> 
+	
+	<!-- ========== Info from phpDoc block ========= -->
+	
+	<div class="method-signature">
+		<span class="method-result">void</span>
+		<span class="method-name">
+			assignTitle
+		</span>
+					([<span class="var-type"></span>&nbsp;<span class="var-name">$title</span> = <span class="var-default">NULL</span>])
+			</div>
+	
+			<ul class="parameters">
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$title</span>			</li>
+				</ul>
+		
+			
+	</div>
+<a name="methodassignTree" id="assignTree"><!-- --></a>
+<div class="oddrow">
+	
+	<div class="method-header">
+		<img src="../media/images/Method.png" />
+		<span class="method-title">assignTree</span> (line <span class="line-number">56</span>)
+	</div> 
+	
+	<!-- ========== Info from phpDoc block ========= -->
+	
+	<div class="method-signature">
+		<span class="method-result">void</span>
+		<span class="method-name">
+			assignTree
+		</span>
+					(<span class="var-type"></span>&nbsp;<span class="var-name">$label</span>, <span class="var-type"></span>&nbsp;<span class="var-name">$objectFormat</span>, <span class="var-type"></span>&nbsp;<span class="var-name">$tree</span>, <span class="var-type"></span>&nbsp;<span class="var-name">$selectedSid</span>, <span class="var-type"></span>&nbsp;<span class="var-name">$leafsToOpen</span>)
+			</div>
+	
+			<ul class="parameters">
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$label</span>			</li>
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$objectFormat</span>			</li>
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$tree</span>			</li>
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$selectedSid</span>			</li>
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$leafsToOpen</span>			</li>
+				</ul>
+		
+			
+	</div>
+<a name="methodassignVersion" id="assignVersion"><!-- --></a>
+<div class="evenrow">
+	
+	<div class="method-header">
+		<img src="../media/images/Method.png" />
+		<span class="method-title">assignVersion</span> (line <span class="line-number">39</span>)
+	</div> 
+	
+	<!-- ========== Info from phpDoc block ========= -->
+	
+	<div class="method-signature">
+		<span class="method-result">void</span>
+		<span class="method-name">
+			assignVersion
+		</span>
+				()
+			</div>
+	
+		
+			
+	</div>
+<a name="methodsetApp" id="setApp"><!-- --></a>
+<div class="oddrow">
+	
+	<div class="method-header">
+		<img src="../media/images/Method.png" />
+		<span class="method-title">setApp</span> (line <span class="line-number">43</span>)
+	</div> 
+	
+	<!-- ========== Info from phpDoc block ========= -->
+	
+	<div class="method-signature">
+		<span class="method-result">void</span>
+		<span class="method-name">
+			setApp
+		</span>
+				()
+			</div>
+	
+		
+			
+	</div>
+<a name="method_makeTree" id="_makeTree"><!-- --></a>
+<div class="evenrow">
+	
+	<div class="method-header">
+		<img src="../media/images/Method.png" />
+		<span class="method-title">_makeTree</span> (line <span class="line-number">66</span>)
+	</div> 
+	
+	<!-- ========== Info from phpDoc block ========= -->
+	
+	<div class="method-signature">
+		<span class="method-result">void</span>
+		<span class="method-name">
+			_makeTree
+		</span>
+					(<span class="var-type"></span>&nbsp;<span class="var-name">&$objectFormat</span>, <span class="var-type"></span>&nbsp;<span class="var-name">&$tree</span>, <span class="var-type"></span>&nbsp;<span class="var-name">$selectedSid</span>, <span class="var-type"></span>&nbsp;<span class="var-name">$leafsToOpen</span>)
+			</div>
+	
+			<ul class="parameters">
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">&$objectFormat</span>			</li>
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">&$tree</span>			</li>
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$selectedSid</span>			</li>
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$leafsToOpen</span>			</li>
+				</ul>
+		
+			
+	</div>
+<a name="method_makeTreePart" id="_makeTreePart"><!-- --></a>
+<div class="oddrow">
+	
+	<div class="method-header">
+		<img src="../media/images/Method.png" />
+		<span class="method-title">_makeTreePart</span> (line <span class="line-number">78</span>)
+	</div> 
+	
+	<!-- ========== Info from phpDoc block ========= -->
+	
+	<div class="method-signature">
+		<span class="method-result">void</span>
+		<span class="method-name">
+			_makeTreePart
+		</span>
+					(<span class="var-type"></span>&nbsp;<span class="var-name">&$tree</span>, <span class="var-type"></span>&nbsp;<span class="var-name">&$objectFormat</span>, <span class="var-type"></span>&nbsp;<span class="var-name">$id</span>, <span class="var-type"></span>&nbsp;<span class="var-name">$leafsToOpen</span>, <span class="var-type"></span>&nbsp;<span class="var-name">$selectedSid</span>, [<span class="var-type"></span>&nbsp;<span class="var-name">$level</span> = <span class="var-default">0</span>], [<span class="var-type"></span>&nbsp;<span class="var-name">$parent</span> = <span class="var-default">0</span>], [<span class="var-type"></span>&nbsp;<span class="var-name">$leafImgs</span> = <span class="var-default">array()</span>], [<span class="var-type"></span>&nbsp;<span class="var-name">$leafAlias</span> = <span class="var-default">array()</span>])
+			</div>
+	
+			<ul class="parameters">
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">&$tree</span>			</li>
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">&$objectFormat</span>			</li>
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$id</span>			</li>
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$leafsToOpen</span>			</li>
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$selectedSid</span>			</li>
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$level</span>			</li>
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$parent</span>			</li>
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$leafImgs</span>			</li>
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$leafAlias</span>			</li>
+				</ul>
+		
+			
+	</div>
+<a name="method_renderScript" id="_renderScript"><!-- --></a>
+<div class="evenrow">
+	
+	<div class="method-header">
+		<img src="../media/images/Method.png" />
+		<span class="method-title">_renderScript</span> (line <span class="line-number">322</span>)
+	</div> 
+	
+	<!-- ========== Info from phpDoc block ========= -->
+	
+	<div class="method-signature">
+		<span class="method-result">void</span>
+		<span class="method-name">
+			_renderScript
+		</span>
+					(<span class="var-type"></span>&nbsp;<span class="var-name">$body</span>, <span class="var-type"></span>&nbsp;<span class="var-name">$template</span>, <span class="var-type"></span>&nbsp;<span class="var-name">$singleton</span>)
+			</div>
+	
+			<ul class="parameters">
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$body</span>			</li>
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$template</span>			</li>
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$singleton</span>			</li>
+				</ul>
+		
+			
+	</div>
+							<h4>Inherited Methods</h4>
+				<a name='inherited_methods'><!-- --></a>	
+									<!-- =========== Summary =========== -->
+					<p>Inherited From <span class="classname"><a href="../ProximaPortal/NLAbstractLayout.html">NLAbstractLayout</a></span></p>
+					<blockquote>
+													<img src="../media/images/Constructor.png" alt=" "/>
+							<span class="method-name"><a href="../ProximaPortal/NLAbstractLayout.html#methodNLAbstractLayout">NLAbstractLayout::NLAbstractLayout()</a></span><br>
+													<img src="../media/images/Method.png" alt=" "/>
+							<span class="method-name"><a href="../ProximaPortal/NLAbstractLayout.html#methodadd">NLAbstractLayout::add()</a></span><br>
+													<img src="../media/images/Method.png" alt=" "/>
+							<span class="method-name"><a href="../ProximaPortal/NLAbstractLayout.html#methodappend">NLAbstractLayout::append()</a></span><br>
+													<img src="../media/images/Method.png" alt=" "/>
+							<span class="method-name"><a href="../ProximaPortal/NLAbstractLayout.html#methodassign">NLAbstractLayout::assign()</a></span><br>
+													<img src="../media/images/Method.png" alt=" "/>
+							<span class="method-name"><a href="../ProximaPortal/NLAbstractLayout.html#methodassignKeyValueList">NLAbstractLayout::assignKeyValueList()</a></span><br>
+													<img src="../media/images/Method.png" alt=" "/>
+							<span class="method-name"><a href="../ProximaPortal/NLAbstractLayout.html#methodbuildHref">NLAbstractLayout::buildHref()</a></span><br>
+													<img src="../media/images/Method.png" alt=" "/>
+							<span class="method-name"><a href="../ProximaPortal/NLAbstractLayout.html#methodclear">NLAbstractLayout::clear()</a></span><br>
+													<img src="../media/images/Method.png" alt=" "/>
+							<span class="method-name"><a href="../ProximaPortal/NLAbstractLayout.html#methodclearGetVar">NLAbstractLayout::clearGetVar()</a></span><br>
+													<img src="../media/images/Method.png" alt=" "/>
+							<span class="method-name"><a href="../ProximaPortal/NLAbstractLayout.html#methodflush">NLAbstractLayout::flush()</a></span><br>
+													<img src="../media/images/Method.png" alt=" "/>
+							<span class="method-name"><a href="../ProximaPortal/NLAbstractLayout.html#methodhtml">NLAbstractLayout::html()</a></span><br>
+													<img src="../media/images/Method.png" alt=" "/>
+							<span class="method-name"><a href="../ProximaPortal/NLAbstractLayout.html#methodset">NLAbstractLayout::set()</a></span><br>
+													<img src="../media/images/Method.png" alt=" "/>
+							<span class="method-name"><a href="../ProximaPortal/NLAbstractLayout.html#methodsetGetVarToSave">NLAbstractLayout::setGetVarToSave()</a></span><br>
+													<img src="../media/images/Method.png" alt=" "/>
+							<span class="method-name"><a href="../ProximaPortal/NLAbstractLayout.html#methodsetInnerLayout">NLAbstractLayout::setInnerLayout()</a></span><br>
+													<img src="../media/images/Method.png" alt=" "/>
+							<span class="method-name"><a href="../ProximaPortal/NLAbstractLayout.html#methodsetLoginForm">NLAbstractLayout::setLoginForm()</a></span><br>
+													<img src="../media/images/Method.png" alt=" "/>
+							<span class="method-name"><a href="../ProximaPortal/NLAbstractLayout.html#methodsetLogoutForm">NLAbstractLayout::setLogoutForm()</a></span><br>
+													<img src="../media/images/Method.png" alt=" "/>
+							<span class="method-name"><a href="../ProximaPortal/NLAbstractLayout.html#methodsetMenu">NLAbstractLayout::setMenu()</a></span><br>
+													<img src="../media/images/Method.png" alt=" "/>
+							<span class="method-name"><a href="../ProximaPortal/NLAbstractLayout.html#methodsetOneColumn">NLAbstractLayout::setOneColumn()</a></span><br>
+													<img src="../media/images/Method.png" alt=" "/>
+							<span class="method-name"><a href="../ProximaPortal/NLAbstractLayout.html#methodsetOuterForm">NLAbstractLayout::setOuterForm()</a></span><br>
+													<img src="../media/images/Method.png" alt=" "/>
+							<span class="method-name"><a href="../ProximaPortal/NLAbstractLayout.html#methodsetOuterLayout">NLAbstractLayout::setOuterLayout()</a></span><br>
+													<img src="../media/images/Method.png" alt=" "/>
+							<span class="method-name"><a href="../ProximaPortal/NLAbstractLayout.html#methodsetOuterLogo">NLAbstractLayout::setOuterLogo()</a></span><br>
+													<img src="../media/images/Method.png" alt=" "/>
+							<span class="method-name"><a href="../ProximaPortal/NLAbstractLayout.html#methodsetSimpleInnerLayout">NLAbstractLayout::setSimpleInnerLayout()</a></span><br>
+													<img src="../media/images/Method.png" alt=" "/>
+							<span class="method-name"><a href="../ProximaPortal/NLAbstractLayout.html#methodsetThreeColumns">NLAbstractLayout::setThreeColumns()</a></span><br>
+													<img src="../media/images/Method.png" alt=" "/>
+							<span class="method-name"><a href="../ProximaPortal/NLAbstractLayout.html#methodsetTwoColumns">NLAbstractLayout::setTwoColumns()</a></span><br>
+													<img src="../media/images/Method.png" alt=" "/>
+							<span class="method-name"><a href="../ProximaPortal/NLAbstractLayout.html#methodtemplate">NLAbstractLayout::template()</a></span><br>
+													<img src="../media/images/Method.png" alt=" "/>
+							<span class="method-name"><a href="../ProximaPortal/NLAbstractLayout.html#method_arrayToAttrs">NLAbstractLayout::_arrayToAttrs()</a></span><br>
+													<img src="../media/images/Method.png" alt=" "/>
+							<span class="method-name"><a href="../ProximaPortal/NLAbstractLayout.html#method_buildHref">NLAbstractLayout::_buildHref()</a></span><br>
+											</blockquote>
+										
+		</div>
+	</div>
+
+	
+	<p class="notes" id="credit">
+		Documentation generated on Wed, 30 Jun 2010 03:04:23 +0400 by <a href="http://www.phpdoc.org" target="_blank">phpDocumentor 1.4.3</a>
+	</p>
+	</div></body>
+</html>

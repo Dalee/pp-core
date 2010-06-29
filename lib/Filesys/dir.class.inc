@@ -11,7 +11,7 @@
 
 /**
  * Directory manipulation class.
- * @package Dalee
+ * @package ProximaPortal
  * @subpackage Filesys
  */
 class NLDir {
