@@ -10,10 +10,12 @@ function __autoload($className) {
 
 	if(file_exists($f)) {
 		require_once  $f;
-	} else {
+	} 
+
+	/*else {
 		@unlinkDir(BASEPATH . "/tmp/cache/config");
 		@unlink(BASEPATH . "/tmp/cache/loader");
-	}
+	}*/
 }
 
 class PXLoader {
