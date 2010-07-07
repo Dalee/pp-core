@@ -88,5 +88,17 @@ class PXStorageTypeAbstractFile extends PXStorageType {
 	function notInDb($field, $object, $param=NULL) {
 		return true;
 	}
+	
+	function copyFile($field, $src, $dest) {
+		if (count($field->storageTypeArgs) > 1) {
+			
+			$width  = $field->storageTypeArgs[0];
+			$height = $field->storageTypeArgs[1];
+			GDImageResize($src, $dest, $width, $height);
+			
+		} else {
+			copy($src, $dest);
+		}
+	}
 }
 ?>

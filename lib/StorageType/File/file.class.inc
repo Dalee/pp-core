@@ -39,7 +39,8 @@ class PXStorageTypeFile extends PXStorageTypeAbstractFile {
 							unlink($basedir.$entry);
 						}
 					}
-					copy($fileArray['tmp_name'], $basedir.$filename);
+					$this->copyFile($field, $fileArray['tmp_name'], $basedir.$filename);
+					
 					$invalidateCache = true;
 				}
 			}
