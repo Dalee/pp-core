@@ -68,7 +68,7 @@ class PXStorageTypeFilesarray extends PXStorageTypeAbstractFile {
 			}
 
 			if(!is_null($filename)) {
-				copy($fileArray['tmp_name'][0], $filename);
+				$this->copyFile($field, $fileArray['tmp_name'][0], $filename);
 				$invalidateCache = true;
 			}
 		}
@@ -86,7 +86,7 @@ class PXStorageTypeFilesarray extends PXStorageTypeAbstractFile {
 			foreach ($_FILES[$varName.'_edit']['name'] as $k=>$v) {
 				if (file_exists($basedir.'/'.$k) && isset($v) && strlen($v)) {
 					unlink($basedir.'/'.$k);
-					copy($_FILES[$varName.'_edit']['tmp_name'][$k], $basedir.'/'._TranslitFilename($v));
+					$this->copyFile($field, $_FILES[$varName.'_edit']['tmp_name'][$k], $basedir.'/'._TranslitFilename($v));
 					$invalidateCache = true;
 				}
 			}
