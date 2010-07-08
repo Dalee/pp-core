@@ -1,5 +1,4 @@
 <?php
-
 class PXMultiRegions {
 	private $db;
 	private $request;
@@ -74,21 +73,39 @@ class PXMultiRegions {
 
 	function getUserRid(){
 		static $id;
+
 		if(!isset($id)) {
 			$host = preg_replace("#:\d{2,5}$#",'',$this->request->getHttpHost());
 			$id   = 0;
+
 			foreach($this->getRegionsData() as $region){
 				if(!empty($region['url']) && $region['status']){
 					$region['url'] = str_replace(' ', '', $region['url']);
 					$regions       = explode(',', $region['url']);
+
 					if(in_array($host, $regions)){
 						$id = $region['id'];
 						break;
+
+					} else {
+						foreach ($regions as $k => $r) {
+							if (strstr($r, '*')) {
+								$mask = str_replace('.', '\.', $r);
+								$mask = str_replace('*', '[a-z0-9]+', $mask);
+								
+								if (preg_match('/'.$mask.'/i', $host)) {
+									$id = $region['id'];
+									break;
+								}
+							}
+						}
 					}
+
 				}
 			}
 		}
-		return $id;
+
+	return $id;
 	}
 
 	function getAdminRid(){
