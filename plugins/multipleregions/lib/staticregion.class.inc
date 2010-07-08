@@ -177,7 +177,7 @@ class PXCorpRegions {
 			$file = end($path);
 		}
 
-		if (!count(PXRegistry::getDb()->getObjects(PXRegistry::getDb()->types['struct'], $sidFrom))) {
+		if (!count(PXRegistry::getDb()->getObjectById(PXRegistry::getDb()->types['struct'], $sidFrom))) {
 			$sidFrom = PXRegistry::getDb()->getObjectsByWhere(PXRegistry::getDb()->types['struct'], true, "type = 'root'");
 			$sidFrom = key($sidFrom);
 		}
@@ -189,8 +189,8 @@ class PXCorpRegions {
 			if (self::isRidInTree($sid, $regionId)) {
 				$findSid = false;
 			} else {
-				$s      = PXRegistry::getDb()->getObjects(PXRegistry::getDb()->types['struct'], $sid);
-				$parent = PXRegistry::getDb()->getObjects(PXRegistry::getDb()->types['struct'], $s['parent']);
+				$s      = PXRegistry::getDb()->getObjectById(PXRegistry::getDb()->types['struct'], $sid);
+				$parent = PXRegistry::getDb()->getObjectById(PXRegistry::getDb()->types['struct'], $s['parent']);
 				$sid    = $parent['id'];
 			}
 		} while ($findSid);
