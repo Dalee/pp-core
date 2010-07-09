@@ -143,15 +143,15 @@ class PXCorpRegions {
 					$intersection['url']   = $urls[$k];
 				}
 			}
-			
+
 			$newHost = $intersection['url'];
-			
+
 			if (strstr($newHost, '*')) {
 				$tmpNewHost     = array_reverse(explode('.', $newHost));
 				$tmpCurrentHost = array_reverse($currentHost);
 				
 				foreach ($tmpNewHost as $k => $v) {
-					if ($v == '*' && isset($tmpCurrentHost[$k])) {
+					if ($v == '*') {
 						$tmpNewHost[$k] = $tmpCurrentHost[$k];
 					}
 				}
