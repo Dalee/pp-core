@@ -151,11 +151,11 @@ class PXCorpRegions {
 				$tmpCurrentHost = array_reverse($currentHost);
 				
 				foreach ($tmpNewHost as $k => $v) {
-					if ($v == '*') {
+					if ($v == '*' && isset($tmpCurrentHost[$k])) {
 						$tmpNewHost[$k] = $tmpCurrentHost[$k];
 					}
 				}
-				
+
 				$newHost = implode('.', array_reverse($tmpNewHost));
 			}
 		}
