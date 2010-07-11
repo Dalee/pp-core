@@ -133,7 +133,7 @@ class PXFieldDescription {
 
 	function _getType($type, $baseClass) {
 		$inputClass  = $baseClass.ucfirst(strtolower($type));
-		$autoload    = ($this->app->engineClass != PX_ENGINE_USER) && $baseClass == "PXDisplayType";
+		$autoload    = ($this->app->engine->engineClass() != PX_ENGINE_USER) && $baseClass == "PXDisplayType";
 
 		return class_exists($inputClass, $autoload) ? $inputClass : $baseClass;
 	}
