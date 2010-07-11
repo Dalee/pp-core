@@ -24,8 +24,9 @@ class PXFieldDescription {
 	var $comments        = '';
 	var $groupName       = NULL;
 
-	public function __construct($nodeattrs, &$app, $type) {
+	public function __construct($nodeattrs, $app, $type) {
 		$this->typeDescription = $type;
+		$this->app = $app;
 
 		foreach ($nodeattrs as $node) {
 			$name  = $node->name;
@@ -132,7 +133,9 @@ class PXFieldDescription {
 
 	function _getType($type, $baseClass) {
 		$inputClass  = $baseClass.ucfirst(strtolower($type));
-		return class_exists($inputClass) ? $inputClass : $baseClass;
+		$autoload    = ($this->app->engineClass != PX_ENGINE_USER) && $baseClass == "PXDisplayType";
+
+		return class_exists($inputClass, $autoload) ? $inputClass : $baseClass;
 	}
 }
 ?>
