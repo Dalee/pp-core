@@ -482,8 +482,8 @@ class PXApplication {
 			$plugin = new PXPluginDescription();
 			$plugin->setAttrs($domPlugin->attributes());
 
-			if($params = @$domPlugin->param) {
-				$plugin->setParams($params);
+			if($domPlugin->param) {
+				$plugin->setParams($domPlugin->param);
 			}
 
 			$this->plugins[$plugin->getName()] = $plugin;
@@ -679,6 +679,10 @@ class PXApplication {
 			BASEPATH.'/site/etc/',
 			BASEPATH.'/local/etc/',
 			BASEPATH.'/libpp/etc/');
+	}
+
+	function isAdminEngine() {
+		return $this->engine->engineClass() == PX_ENGINE_ADMIN;
 	}
 
 	function __wakeup() {

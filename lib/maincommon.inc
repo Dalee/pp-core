@@ -48,4 +48,6 @@ require_once 'XML/xml.class.inc';
 require_once 'XML/XSLT/classes.inc';
 
 
+spl_autoload_register(array('PXAbstractPlugin', 'autoload'));
+
 ?>

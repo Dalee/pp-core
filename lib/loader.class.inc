@@ -1,21 +1,5 @@
 <?
 
-function __autoload($className) {
-	if(!true) {
-		d2(PXLoader::getInstance()->load_map);
-		d2($className);
-	}
-
-	$f = PXLoader::find($className);
-
-	if(file_exists($f)) {
-		require_once  $f;
-	} else {
-		@unlinkDir(BASEPATH . "/tmp/cache/config");
-		@unlink(BASEPATH . "/tmp/cache/loader");
-	}
-}
-
 class PXLoader {
 	private $path = "";
 	private static $inst =  null;
@@ -32,7 +16,7 @@ class PXLoader {
 
 		foreach($this->load_map as $k=>$v) {
 			if(!(!file_exists($v) && $not_exists[] = array($k, $v))) {
-				!(class_exists($k) or interface_exists($k)) && $not_exists[] = array($k, "class not exist");
+				!(class_exists($k, false) or interface_exists($k, false)) && $not_exists[] = array($k, "class not exist");
 			}
 		}
 

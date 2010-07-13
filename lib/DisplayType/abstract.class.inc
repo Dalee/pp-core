@@ -151,14 +151,18 @@ class PXDisplayType {
 
 
 	protected function getSubDirectoryIfExists($field, $object, $value) {
-		$_ = "";
+		$temp = "";
+		$app  = PXRegistry::getApp();
 
-		if($directory = @PXRegistry::getApp()->directory[$field->source]) {
-			$dir_object = $directory->values[$object[$field->name]];
-			$_ =  (string) @$dir_object[$directory->displayField];
+		if(isset($app->directory[$field->source])) {
+			$directory = $app->directory[$field->source];
+			$dirObject = $directory->values[$object[$field->name]];
+
+			$temp = isset($dirObject[$directory->displayField]) 
+				? $dirObject[$directory->displayField] : '';
 		}
 
-		return strlen($_) ? $_ : $value;
+		return strlen($temp) ? $temp : $value;
 	}
 }
 ?>
