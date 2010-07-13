@@ -95,8 +95,9 @@ class PXModuleAcl extends PXModule {
 
 
 		//set save buttons
-		PXAdminForm::LeftControls();
-		PXAdminForm::RightControls();
+		$form = new PXAdminForm(null, null);
+		$form->LeftControls();
+		$form->RightControls();
 
 		$_ = '';
 		$_ .= NLAbstractHTMLForm::buildHidden('id', $rId);
