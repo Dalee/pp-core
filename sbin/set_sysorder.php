@@ -11,8 +11,7 @@
 
 	foreach ($app->types as $tableName => $type) {
 		WorkProgress();
-		
-		@$db->query('UPDATE ' . $tableName . ' set sys_order = id WHERE sys_order IS NULL');
+		$db->query('UPDATE ' . $tableName . ' set sys_order = id WHERE sys_order IS NULL');
 	}
 	WorkProgress(true);
 
