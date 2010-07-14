@@ -530,7 +530,12 @@ class PXApplication {
 		$trigger = new PXTriggerDescription();
 		$trigger->setAttrs($attributes);
 		$trigger->setType($type);
-		$this->triggers[$trigger->getType()][$trigger->getName()] = $trigger;
+
+		if(!isset($this->triggers[$type])) {
+			$this->triggers[$type] = array();
+		}
+
+		$this->triggers[$type][$trigger->getName()] = $trigger;
 	}
 	
 	/**
