@@ -24,7 +24,7 @@ class PXVersion extends PXAdminWidget {
 
 	function html_leftcontrols() {
 		if($this->is_version_object()) {
-			$html[] = NLAbstractHTMLForm::BuildHidden('version', $this->object['sys_version']);
+			$html[] = NLAbstractHTMLForm::BuildHidden('sys_original', $this->object['sys_original']);
 			$html[] = NLAbstractHTMLForm::BuildSubmit('Принять версию');
 			
 			return join($html);

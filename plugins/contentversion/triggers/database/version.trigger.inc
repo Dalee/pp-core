@@ -1,79 +1,60 @@
 <?php
 class PXTriggerDatabaseVersion extends PXAbstractDatabaseTrigger {
 	function OnBeforeAddObject(&$db, &$newId, &$format, &$object, &$dbFields, &$dbValues) {
-		if(!isset($format->fields['noversion'])) {
-			$dbFields[] = 'sys_version';
-			$dbValues[] =  isset($object['sys_version']) ? $object['sys_version'] : null;
-			$dbFields[] = 'sys_modifyer';
-			$dbValues[] =  isset($object['sys_modifyer']) ? $object['sys_modifyer'] : '';
-			$dbFields[] = 'sys_original';
-			$dbValues[] = '';
-		}
-
+		$this->fillVersionFields($object, $dbFields, $dbValues);
 		return true;
-	}
-
-	function OnAddObject(&$db, &$newId, &$format, &$object, &$dbFields, &$dbValues) {
-		if(!isset($format->fields['noversion'])) {
-			$db->ModifyingQuery(sprintf("UPDATE %s SET sys_original = %s WHERE id = %d", $format->id,  (isset($object['sys_original']) ? $object['sys_original'] : 'id'), $newId));
-		}
 	}
 
 	function OnBeforeGetDataBuildQuery($db, $format, &$mode, &$selector, &$where, &$order, &$limit) {
 		$app    = PXRegistry::getApp();
-		$plugin = $app->plugins['contentversion']->getPlugin($app);
+		$plugin = $app->plugins['contentversion'];
 
-		if(!isset($format->fields['noversion'])) {
-			if($mode != DB_SELECT_COUNT) {
-				$selector .= ', '.$format->id.'.sys_original, '.$format->id.'.sys_modifyer, '.$format->id.'.sys_version';
-			}
+		if(isset($format->fields['noversion'])) {
+			return;
+		}
 
-			if(strpos($where, $format->id.'.id') === false && !$plugin->description->params['no_modify_query']) {
-				$where = strlen($where) ? "$where AND sys_version IS NULL" : "sys_version IS NULL";
-			}
+		if($mode != DB_SELECT_COUNT) {
+			$selector .= ', '.$format->id.'.sys_original, '.$format->id.'.sys_modifyer, '.$format->id.'.sys_version';
+		}
+
+		if(strpos($where, $format->id.'.id') === false && !$plugin->params['no_modify_query']) {
+			$where = strlen($where) ? "$where AND sys_version IS NULL" : "sys_version IS NULL";
 		}
 	}
 
-	function OnBeforeDeleteObject(&$db, &$objId, &$format, &$objectInDB){
-		if(isset($objectInDB['sys_version'])) {
-			return false;
-		}
-		if(!isset($format->fields['noversion'])) {
-			$objId = null;
+	function OnBeforeDeleteObject(&$db, &$objId, &$format, &$objectInDB) {
+		if(isset($format->fields['noversion'])) {
+			return true;
 		}
 		
-		if(!isset($format->fields['noversion'])) {
-			$action = PXRegistry::getRequest()->getAction();
-			return PXRegistry::getApp()->plugins['contentversion']->getPlugin(PXRegistry::getApp())->invoke($action, $format->id, $objectInDB);
+		if(!isset($object['sys_version'])) {
+			PXContentVersion::deleteOriginal($format, $objId);
 		}
-		
-		return true;
+
+		return false;
 	}
 
 	function OnBeforeModifyObject(&$db, &$objId, &$format, &$object, &$dbFields, &$dbValues, &$objectInDB) {
-		$version = @$object['i_am_version'];
-
-		if($version) {
+		if(isset(PXRegistry::getApp()->plugins['contentversion']->params['skip_trigger'])) {
 			return true;
 		}
 
-		if(isset($objectInDB['sys_version'])) {
-			PXRegistry::getApp()->plugins['contentversion']->getPlugin(PXRegistry::getApp())->version = true;
-			return false;
-		}
+		$this->fillVersionFields($object, $dbFields, $dbValues);
 
-		if(!isset($format->fields['noversion'])) {
-			$action = PXRegistry::getRequest()->getAction();
-			return PXRegistry::getApp()->plugins['contentversion']->getPlugin(PXRegistry::getApp())->invoke($action, $format->id, $objectInDB, $version);
-		}
+		$version = !$this->isVersion($object)
+			? new PXContentVersion($format,   $object, $objectInDB)  # create new version
+			: PXContentVersion::find($format, $object, $objectInDB); # back to version
 
-		return true;
+		$version->save();
+
+		return false;
 	}
 
 	function OnBeforeMoveObject(&$db, &$objectId, &$format, &$objectInDB){
 		if(isset($objectInDB['sys_version'])) {
 			return false;
 		}
+
 		return true;
 	}
 
@@ -86,6 +67,23 @@ class PXTriggerDatabaseVersion extends PXAbstractDatabaseTrigger {
 
 		strlen($table['exWhere']) && $table['exWhere'] .= " and ";
 		$table['exWhere'] .=  $w;
+	}
+	
+	
+	private function fillVersionFields($object, &$dbFields, &$dbValues) {
+		if($this->isVersion($object)) {
+			$dbFields[] = 'sys_version';
+			$dbFields[] = 'sys_modifyer';
+			$dbFields[] = 'sys_original';
+
+			$dbValues[] = $object['sys_version'];
+			$dbValues[] = $object['sys_modifyer'];
+			$dbValues[] = $object['sys_original'];
+		}
+	}
+	
+	private function isVersion($object) {
+		return isset($object['sys_version']) && !PXRegistry::getRequest()->getVar('version');
 	}
 }
 ?>

@@ -23,10 +23,10 @@ class PXAbstractPlugin {
 
 	function loadTrigger($className) {
 		$path = strtr(strtolower($className), array(
-			"pxtrigger"=> "triggers/", 
-			"database" => "database/",
-			"storage"  => "storage/",
-			"system"   => "system/"));
+			"pxtrigger"    => "triggers/", 
+			"database"     => "database/",
+			"storagetype"  => "storagetype/",
+			"system"       => "system/"));
 
 		require_once $this->path . "/" . $path . ".trigger.inc";
 
