@@ -376,14 +376,22 @@ DIV.button-light, INPUT.button-light {
 	behavior: url(css/button-light.htc)
 }
 
-a.button-exit {
+a.button-exit, span.current-user {
 	text-decoration: none;
 	color: #FFFFFF;
 	display: block;
 	border: 1px solid #385A94;
 	padding: 5px;
 	margin: 8px;
-	behavior: url(css/button-exit.htc)
+	behavior: url(css/button-exit.htc);
+}
+
+span.current-user {
+	background: url(../i/icon/user.jpeg) 0 6px no-repeat;
+	padding-left: 20px;
+	margin-bottom: 0;
+	padding-bottom: 0;
+	font-weight: bold;
 }
 
 a.tabs {

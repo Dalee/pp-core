@@ -73,6 +73,10 @@ abstract class PXUser {
 	function checkAuth() {
 	}
 
+	function getTitle() {
+		return $this->auth->getTitle();
+	}
+
 	function getAuthMethods($req_auth_method = null) {
 		$authmethods = null;
 

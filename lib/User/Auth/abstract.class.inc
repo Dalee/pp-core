@@ -2,7 +2,7 @@
 class PXAuthInterface {
 	var $login;
 	var $passwd;
-	
+
 	function PXAuth(&$app, &$request, &$user, &$db, $authParams) {
 	}
 
@@ -13,6 +13,10 @@ class PXAuthInterface {
 		$user->data   = $uArray;
 
 		$this->passwd = $user->passwd = $uArray['passwd'];
+	}
+
+	function getTitle() {
+		return PXRegistry::getUser()->login;
 	}
 
 	protected function findUser() {

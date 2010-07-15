@@ -143,6 +143,7 @@ class NLAbstractLayout {
 	function setLogoutForm($href) {
 		$this->assign('OUTER.EXIT',  $this->template('form-logout.tmpl'));
 		$this->assign('LOGOUT.HREF', $href);
+		$this->assign('USER.TITLE', PXRegistry::getUser()->getTitle());
 	}
 
 	function setLoginForm($formAction, $formMethod, $namesArray, $valuesArray) {
