@@ -39,9 +39,12 @@ class PXTriggerDatabaseVersion extends PXAbstractDatabaseTrigger {
 			return true;
 		}
 
-		$this->fillVersionFields($object, $dbFields, $dbValues);
+		if(isset($object['is_version'])) {
+			$this->fillVersionFields($object, $dbFields, $dbValues);
+			return true;
+		}
 
-		$version = !$this->isVersion($object)
+		$version = !$this->isVersion($object) && !PXRegistry::getRequest()->getVar('version')
 			? new PXContentVersion($format,   $object, $objectInDB)  # create new version
 			: PXContentVersion::find($format, $object, $objectInDB); # back to version
 
@@ -83,7 +86,7 @@ class PXTriggerDatabaseVersion extends PXAbstractDatabaseTrigger {
 	}
 	
 	private function isVersion($object) {
-		return isset($object['sys_version']) && !PXRegistry::getRequest()->getVar('version');
+		return isset($object['sys_version']);
 	}
 }
 ?>

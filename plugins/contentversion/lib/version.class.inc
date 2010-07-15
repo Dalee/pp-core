@@ -86,7 +86,15 @@ class PXContentVersion {
 
 	private function createNewVersion() {
 		$o = $this->objectInDb;
-		
+
+		##no create version for status and sys fields change
+		##TODO: write me
+		$diff = array_diff($o, $this->object);
+
+		if(empty($diff)) {
+			return;
+		}
+
 		$lastVersion = $this->getLastVersion();
 			
 		$o['sys_original'] = $o['id'];
@@ -98,7 +106,7 @@ class PXContentVersion {
 		//$this->proccedFiles($o['sys_original'], $id, $lastVersion);
 	}
 
-	#TODO: WRITE ME
+	#TODO: WRITE ME/*{{{*/
 	private function proccedFiles($from, $to, $lastVersion) {
 		$notDbFields = array_filter($this->type->fields, array($this, "filterFields"));
 		$typeDir = BASEPATH . "/site/htdocs/ai/{$this->type->id}/";
@@ -114,10 +122,10 @@ class PXContentVersion {
 		/*if(file_exists($typeDir . $o['id'])) {
 			copyr($typeDir . "/" . $o['sys_original']  . "/" . $k, $typeDir . "/" . $id . "/" . $k);
 		}*/
-	}
+	}/*}}}*/
 
 	private function getLastVersion() {
-		$sql = sprintf("select id, max(sys_version) from %s where sys_original = '%s' group by id", 
+		$sql = sprintf("select id, max(sys_version) from %s where sys_original = '%s' group by id order by id desc", 
 			$this->type->id, $this->original['id']);
 
 		$max = pos($this->db->query($sql));
