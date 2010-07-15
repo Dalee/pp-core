@@ -34,7 +34,7 @@ class PXDisplayTypeMultiRegions extends PXDisplayType {
 
 	private function _buildStatic($field, $value, $values) {
 		foreach($value as $k=>$v) {
-			$value[$k] = $values[$v];
+			$value[$k] = preg_replace('/^=+/', '', $values[$v]);
 		}
 
 		return implode(", ", $value);

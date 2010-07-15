@@ -1139,3 +1139,12 @@ ul.topmenu li.current b {
 body.objects ul.list {
 	margin-left: 3px;
 }
+
+
+
+span.multipleregions-choose-region,
+span.multipleregions-current-region {
+	color: white;
+	display: block;
+	margin-bottom:  5px;
+}
