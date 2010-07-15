@@ -7,25 +7,41 @@ class PXDisplayTypeMultiRegions extends PXDisplayType {
 		$regions = PXMultiRegions::getInstance();
 		$value   = !empty($object[$field->name]) ? $object[$field->name] : (array)$regions->getRid();
 		$values  = $regions->getRegionsAsDirectory();
+
 		if(!$values){
 			return;
 		}
-		
+
 		$values[self::MAGIC] = '- נץגליכןקבפר קן קףוט עוחיןמבט -';
 		$values[null]        = '- עוחיןמ מו מבתמב‏ומ -';
-		
+
+		$user = PXRegistry::getUser();
+
+		if($user->can('manage_region')){
+			return $this->_buildSelector($field, $value, $values);
+		} else {
+			return $this->_buildStatic($field, $value, $values);
+		}
+	}
+
+	private function _buildSelector($field, $value, $values) {
 		$regionSelector = new PXInputDropDown($field->name . '[]', $value, $values);
 		$regionSelector->setMultiple(true);
 		$regionSelector->setSize(sizeof($values));
-		
+
 		return $regionSelector->html();
 	}
-	
-	function buildRow($field, $object, $param=NULL){
-		$user = PXRegistry::getUser();
-		if(!$user->can('manage_region')){
-			return false;
+
+	private function _buildStatic($field, $value, $values) {
+		foreach($value as $k=>$v) {
+			$value[$k] = $values[$v];
 		}
+
+		return implode(", ", $value);
+	}
+
+	function buildRow($field, $object, $param=NULL){
+
 		return parent::buildRow($field, $object, $param);
 	}
 	
@@ -35,6 +51,7 @@ class PXDisplayTypeMultiRegions extends PXDisplayType {
 		if(!$regions){
 			return $regionsData;
 		}
+
 		switch(true){
 			case in_array(self::MAGIC, $regionsData):
 				$regionsData = array_merge(array_keys($regions->getList()), array(self::MAGIC));
@@ -42,6 +59,7 @@ class PXDisplayTypeMultiRegions extends PXDisplayType {
 			case $regions->parentField && sizeof($regionsData):
 				$regionsData = $regions->getTree()->GetDescendantsOrSelf($regionsData);
 		}
+
 		return $regionsData;
 	}
 }
