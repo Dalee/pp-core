@@ -17,7 +17,7 @@ class PXTriggerDatabaseVersion extends PXAbstractDatabaseTrigger {
 			$selector .= ', '.$format->id.'.sys_original, '.$format->id.'.sys_modifyer, '.$format->id.'.sys_version';
 		}
 
-		if(strpos($where, $format->id.'.id') === false && !$plugin->params['no_modify_query']) {
+		if(strpos($where, $format->id.'.id') === false && !isset($plugin->params['no_modify_query'])) {
 			$where = strlen($where) ? "$where AND sys_version IS NULL" : "sys_version IS NULL";
 		}
 	}

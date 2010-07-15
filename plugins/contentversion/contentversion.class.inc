@@ -8,10 +8,6 @@ class PXPluginContentVersion extends PXAbstractPlugin {
 			-> load("PXVersionsData",   "data.class.inc")
 			-> load("PXVersionsTable",  "table.class.inc")
 			-> load("PXVersionsTab",    "tab.class.inc");
-		
-		require_once ($this->path . "/triggers/database/version.trigger.inc");
-		require_once ($this->path . "/triggers/system/version.trigger.inc");
-		require_once ($this->path . "/triggers/storagetype/version.trigger.inc");
 
 		$this->loadTrigger("PXTriggerDatabaseVersion");
 		$this->loadTrigger("PXTriggerStoragetypeVersion");
