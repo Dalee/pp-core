@@ -158,6 +158,7 @@ class PXTreeObjects implements PXContentObjectsInterface, ArrayAccess, Iterator 
 				if($this->hasCurrent()) {
 					return $this->__getLeaf($this->tree->leafs[$this->currentId]);
 				} else {
+					PXRegistry::getResponse()->notFound();
 					return new PXStructLeaf404();
 				}
 				break;
