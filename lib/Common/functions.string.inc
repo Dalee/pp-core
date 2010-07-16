@@ -838,6 +838,10 @@ function myconv($from, $to, $string, $be_quiet = false) {
 		unset($res);
 	}
 
+	if($from == $to) {
+		return $string;
+	}
+
 	// check if string can be converted from $from encoding to ucs-2be
 	ini_set('track_errors', true);
 	$php_errormsg = false;
