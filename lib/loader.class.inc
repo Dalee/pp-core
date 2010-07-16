@@ -11,25 +11,7 @@ class PXLoader {
 		$this->setPath($path);
 	}
 
-	private function global_check() {
-		$not_exists = array();
-
-		foreach($this->load_map as $k=>$v) {
-			if(!(!file_exists($v) && $not_exists[] = array($k, $v))) {
-				!(class_exists($k, false) or interface_exists($k, false)) && $not_exists[] = array($k, "class not exist");
-			}
-		}
-
-		if(!empty($not_exists)) {
-			FatalError(sprintf("<pre>%s</pre>", var_export($not_exists, true)));
-		}
-	}
-
 	function __destruct() {
-		if(file_exists(BASEPATH . "/site/var/development")) {
-			$this->global_check();
-		}
-
 		$o = self::$inst;
 
 		$diff = array_diff($o->load_map, $o->cached_map);
