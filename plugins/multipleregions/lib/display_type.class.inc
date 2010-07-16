@@ -33,8 +33,16 @@ class PXDisplayTypeMultiRegions extends PXDisplayType {
 	}
 
 	private function _buildStatic($field, $value, $values) {
+		if(in_array(self::MAGIC, $value)) {
+			return $values[self::MAGIC];
+		}
+
 		foreach($value as $k=>$v) {
-			$value[$k] = preg_replace('/^=+/', '', $values[$v]);
+			if(isset($values[$v])) {
+				$value[$k] = preg_replace('/^=+/', '', $values[$v]);
+			} else {
+				unset($value[$k]);
+			}
 		}
 
 		return implode(", ", $value);
