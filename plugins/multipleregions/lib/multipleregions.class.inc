@@ -2,6 +2,7 @@
 class PXMultiRegions {
 	private $db;
 	private $request;
+	private $user;
 	private $rid;
 	private $context;
 	private static $self;
@@ -11,6 +12,7 @@ class PXMultiRegions {
 	private function __construct(){
 		$this->db      = PXRegistry::getDb();
 		$this->request = PXRegistry::getRequest();
+		$this->user    = PXRegistry::getUser();
 	}
 	
 	function getInstance($context = NULL){ //context: ENUM {"user", "admin"}
@@ -100,7 +102,6 @@ class PXMultiRegions {
 							}
 						}
 					}
-
 				}
 			}
 		}
@@ -117,10 +118,30 @@ class PXMultiRegions {
 					break;
 				}
 			default:
-				$id = $_SESSION['__current_region'] = $this->getUserRid();
+				$id = $_SESSION['__current_region'] = $this->getRidFromLogin();
+		}
+
+		return $id;
+	}
+	
+	function getRidFromLogin() {
+		$regions = $this->db->query('SELECT objectid FROM acl_objects WHERE sgroupid IN ('.implode(',', $this->user->groups).') AND objectid IS NOT null');
+		$rIds = array();
+		
+		foreach ($regions as $k => $r) {
+			$rIds[] = $r['objectid'];
 		}
 		
-		return $id;
+		$urlRegion = $this->getUserRid();
+
+		switch (count($rIds)) {
+			case 0:
+				return $urlRegion;
+			case 1:
+				return current($rIds);
+			default:
+				return (!in_array($urlRegion, $rIds) ? current($rIds) : $urlRegion);
+		}
 	}
 
 	function getRid(){
