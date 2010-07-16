@@ -45,7 +45,7 @@ class PXTabbedMenuRegionChanger extends PXAdminWidget {
 			</div>
 
 			<script type="text/javascript">
-				document.getElementById("region_selector").firstChild.elements["{$varName}"].onchange = function() {
+				document.getElementById('region_selector').getElementsByTagName('form')[0].elements["{$varName}"].onchange = function() {
 					this.form.submit();
 					return true;
 				}
