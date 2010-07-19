@@ -460,6 +460,14 @@ class PXDatabase extends NLSQLDatabaseAdapter {
 	}
 
 
+	function getObjectsByFields($format, $status, $fields, $mode=DB_SELECT_TABLE, $order=NULL) {
+		return $this->getObjectsByField($format, $status, $fields, null, $mode, $order);
+	}
+
+	function getObjectsByFieldsLimited($format, $status, $fields, $limit, $offset, $mode=DB_SELECT_TABLE, $order=NULL) {
+		return $this->getObjectsByFieldLimited($format, $status, $fields, null, $limit, $offset, $mode, $order);
+	}
+
 	/**
 	 * Возвращает массив из БД для заданного типа объектов {@link PXTypeDescription}.
 	 * Использует {@link PXDatabase::_GetData()} для запросов.

@@ -33,6 +33,10 @@ class NLSQLDatabaseAdapter {
 	}
 
 	function __call($method, $args) {
+		if(!method_exists($this->dbDriver, $method)) {
+			FatalError('Undefined method '.$method .' in '.get_class($this->dbDriver));
+		}
+
 		return call_user_func_array(array($this->dbDriver, $method), $args);
 	}
 
