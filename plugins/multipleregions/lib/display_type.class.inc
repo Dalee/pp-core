@@ -3,9 +3,7 @@
 class PXDisplayTypeMultiRegions extends PXDisplayType {
 	const MAGIC = -1;
 
-	function buildInput($field, $object, $param=NULL) {
-		$regions = PXMultiRegions::getInstance();
-		$value   = !empty($object[$field->name]) ? $object[$field->name] : (array)$regions->getRid();
+	private function _getValues($regions) {
 		$values  = $regions->getRegionsAsDirectory();
 
 		if(!$values){
@@ -15,9 +13,24 @@ class PXDisplayTypeMultiRegions extends PXDisplayType {
 		$values[self::MAGIC] = '- נץגליכןקבפר קן קףוט עוחיןמבט -';
 		$values[null]        = '- עוחיןמ מו מבתמב‏ומ -';
 
-		$user = PXRegistry::getUser();
+		return $values;
+	}
+	private function _getValue($regions, $object, $field) {
+		return !empty($object[$field->name]) ? $object[$field->name] : (array)$regions->getRid();
+	}
 
-		if($user->can('manage_region')){
+
+	function buildInput($field, $object, $param=NULL) {
+		$regions = PXMultiRegions::getInstance();
+		$values = $this->_getValues($regions);
+
+		if(!is_array($values)) {
+			return;
+		}
+
+		$value   = $this->_getValue($regions, $object, $field);
+
+		if(PXRegistry::getUser()->can('manage_region')){
 			return $this->_buildSelector($field, $value, $values);
 		} else {
 			return $this->_buildStatic($field, $value, $values);
@@ -48,11 +61,6 @@ class PXDisplayTypeMultiRegions extends PXDisplayType {
 		return implode(", ", $value);
 	}
 
-	function buildRow($field, $object, $param=NULL){
-
-		return parent::buildRow($field, $object, $param);
-	}
-	
 	function getFromRequest($field, $object, $param=NULL) {
 		$regionsData = max(array(), $param['request']->getVar($field->name));
 		$regions     = PXMultiRegions::getInstance()->getRegionsAsDirectory(false);
@@ -69,6 +77,18 @@ class PXDisplayTypeMultiRegions extends PXDisplayType {
 		}
 
 		return $regionsData;
+	}
+
+	function buildCell($field, $object, $param=NULL) {
+		$regions = PXMultiRegions::getInstance();
+		$values = $this->_getValues($regions);
+
+		if(!is_array($values)) {
+			return;
+		}
+
+		$value   = $this->_getValue($regions, $object, $field);
+		return  $this->_buildStatic($field, $value, $values);
 	}
 }
 
