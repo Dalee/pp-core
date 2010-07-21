@@ -74,8 +74,11 @@ class PXCorpRegions {
 	}
 	
 	static function isRidInTree($sid, $rid) {
-		$data = PXRegistry::getDb()->Query('SELECT * FROM struct WHERE id = '.$sid.' AND sys_regions @> ARRAY['.$rid.']');
-		
+		$where = array('id = '.$sid);
+		if(isset(PXRegistry::getApp()->types['struct']->fields['sys_regions'])) {
+			$where[] = 'sys_regions @> ARRAY['.$rid.']';
+		}
+		$data = PXRegistry::getDb()->Query('SELECT * FROM struct WHERE '. implode(' AND ', $where));
 		return count($data);
 	}
 	
@@ -176,7 +179,6 @@ class PXCorpRegions {
 		if (strpos(end($path), '.html')) {
 			$file = end($path);
 		}
-
 		if (!count(PXRegistry::getDb()->getObjectById(PXRegistry::getDb()->types['struct'], $sidFrom))) {
 			$sidFrom = PXRegistry::getDb()->getObjectsByWhere(PXRegistry::getDb()->types['struct'], true, "type = 'root'");
 			$sidFrom = key($sidFrom);
