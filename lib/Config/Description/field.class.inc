@@ -46,7 +46,7 @@ class PXFieldDescription {
 					break;
 
 				case 'displaytype':
-					$this->setDisplayType(utf8_decode($value));
+					$this->setDisplayType($node, $fieldNode);
 					break;
 
 				case 'handler':
@@ -113,27 +113,18 @@ class PXFieldDescription {
 		}
 	}
 
-	function setDisplayType($string) {
-		$this->displayTypeArgs = explode("|", $string);
+	function setDisplayType($attrNode, $fieldNode) {
+		list($cls, $name, $args) = PXDisplayType::parseConfig($attrNode, $fieldNode, $this);
 
-		$displayType = $this->_getType($this->displayTypeArgs[0], 'PXDisplayType');
-		$this->displayType = new $displayType($this, $this->displayTypeArgs[0]);
-
-		array_shift($this->displayTypeArgs);
+		$this->displayTypeArgs = $args;
+		$this->displayType = new $cls($this, $name);
 	}
 
 	function setStorageType($attrNode, $fieldNode) {
-		list($cls, $name, $args) = PXStorageType::parseConfig($attrNode, $fieldNode);
+		list($cls, $name, $args) = PXStorageType::parseConfig($attrNode, $fieldNode, $this);
 
 		$this->storageTypeArgs = $args;
 		$this->storageType = new $cls($this, $name);
-	}
-
-	function _getType($type, $baseClass) {
-		$inputClass  = $baseClass.ucfirst(strtolower($type));
-		$autoload    = ($this->app->engine->engineClass() != PX_ENGINE_USER) && $baseClass == "PXDisplayType";
-
-		return class_exists($inputClass, $autoload) ? $inputClass : $baseClass;
 	}
 }
 ?>

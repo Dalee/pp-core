@@ -149,7 +149,6 @@ class PXDisplayType {
 		return $field->displayType->name.' - '.$value;
 	}
 
-
 	protected function getSubDirectoryIfExists($field, $object, $value) {
 		$temp = "";
 		$app  = PXRegistry::getApp();
@@ -158,11 +157,36 @@ class PXDisplayType {
 			$directory = $app->directory[$field->source];
 			$dirObject = $directory->values[$object[$field->name]];
 
-			$temp = isset($dirObject[$directory->displayField]) 
-				? $dirObject[$directory->displayField] : '';
+			$temp = isset($dirObject[$directory->displayField]) ? $dirObject[$directory->displayField] : '';
 		}
 
 		return strlen($temp) ? $temp : $value;
 	}
+
+	static protected
+	function parseConfigArguments($attrNode, $fieldNode) {
+		$args = explode("|", utf8_decode($attrNode->value));
+		$name = $args[0];
+
+		array_shift($args);
+
+		return $args;
+	}
+
+	static public
+	function parseConfig($attrNode, $fieldNode, $type) {
+		$name = preg_replace('/\|.+$/', '', $attrNode->value);
+
+		$baseClass = 'PXDisplayType';
+
+		$autoload = $type->app->engine->engineClass() != PX_ENGINE_USER;
+		$inputClass  = $baseClass.ucfirst(strtolower($name));
+		$cls = class_exists($inputClass, $autoload) ? $inputClass : $baseClass;
+
+		$args = call_user_func(array($cls, 'parseConfigArguments'), $attrNode, $fieldNode);
+
+		return array($cls, $name, $args);
+	}
+
 }
 ?>
