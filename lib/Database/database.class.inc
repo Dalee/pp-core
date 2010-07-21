@@ -227,7 +227,6 @@ class PXDatabase extends NLSQLDatabaseAdapter {
 	 * @return Array|NULL           results of {@link NLSQLDatabaseAdapter::Query()}
 	 */
 	protected function _GetData($format, $mode, $where=NULL, $limit=NULL, $order=NULL) {
-
 		PXProfiler::begin('GET DATA: ' . $format->id . '[' . $where . ']-[' . 
 		                  (is_array($limit) ? implode('.', $limit) : '') . ']-[' . $order . ']');
 
@@ -286,7 +285,7 @@ class PXDatabase extends NLSQLDatabaseAdapter {
 				continue;
 			}
 
-			$selector .= $format->id.'.'.$this->mapFields($k).', ';
+			$selector .= $v->storageType->createSelector($v, null, $p).', ';
 		}
 
 		if (count($format->childs)) {

@@ -24,11 +24,11 @@ class PXFieldDescription {
 	var $comments        = '';
 	var $groupName       = NULL;
 
-	public function __construct($nodeattrs, $app, $type) {
+	public function __construct($fieldNode, $app, $type) {
 		$this->typeDescription = $type;
 		$this->app = $app;
 
-		foreach ($nodeattrs as $node) {
+		foreach ($fieldNode->attributes() as $node) {
 			$name  = $node->name;
 			$value = $node->value;
 
@@ -42,7 +42,7 @@ class PXFieldDescription {
 					break;
 
 				case 'storagetype':
-					$this->setStorageType($value);
+					$this->setStorageType($node, $fieldNode);
 					break;
 
 				case 'displaytype':
@@ -122,13 +122,11 @@ class PXFieldDescription {
 		array_shift($this->displayTypeArgs);
 	}
 
-	function setStorageType($string) {
-		$this->storageTypeArgs = explode("|", $string);
+	function setStorageType($attrNode, $fieldNode) {
+		list($cls, $name, $args) = PXStorageType::parseConfig($attrNode, $fieldNode);
 
-		$storageType = $this->_getType($this->storageTypeArgs[0], 'PXStorageType');
-		$this->storageType = new $storageType($this, $this->storageTypeArgs[0]);
-
-		array_shift($this->storageTypeArgs);
+		$this->storageTypeArgs = $args;
+		$this->storageType = new $cls($this, $name);
 	}
 
 	function _getType($type, $baseClass) {

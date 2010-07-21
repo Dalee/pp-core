@@ -125,7 +125,7 @@ class PXTypeDescription {
 					continue;
 				}
 
-				$field = new PXFieldDescription($fieldNode->attributes(), $app, $type);
+				$field = new PXFieldDescription($fieldNode, $app, $type);
 
 				if(is_null($field->storageType)) {
 					$field->setStorageType('string');

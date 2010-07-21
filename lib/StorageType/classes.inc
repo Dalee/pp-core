@@ -22,4 +22,6 @@ require_once 'File/flashsarray.class.inc';
 
 require_once 'virtual.class.inc';
 require_once 'session_st.class.inc';
+
+require_once 'sql.class.inc';
 ?>

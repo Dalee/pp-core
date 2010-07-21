@@ -88,7 +88,7 @@ class PXStorageTypeAbstractFile extends PXStorageType {
 	function notInDb($field, $object, $param=NULL) {
 		return true;
 	}
-	
+
 	function copyFile($field, $src, $dest) {
 		if (count($field->storageTypeArgs) > 1) {
 			
