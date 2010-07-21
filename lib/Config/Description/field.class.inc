@@ -28,12 +28,6 @@ class PXFieldDescription {
 		$this->typeDescription = $type;
 		$this->app = $app;
 
-		if(!method_exists($fieldNode, 'attributes')) {
-			d2($type, false);
-			d2($fieldNode);
-			d2(pxtrace());
-		}
-
 		foreach ($fieldNode->attributes() as $node) {
 			$name  = $node->name;
 			$value = $node->value;
