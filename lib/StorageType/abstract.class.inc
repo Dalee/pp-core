@@ -197,14 +197,18 @@ class PXStorageType {
 	}
 
 	static public
-	function parseConfig($attrNode, $fieldNode) {
-		$name = preg_replace('/\|.+$/', '', $attrNode->value);
-
+	function getClassByName($name) {
 		$baseClass = 'PXStorageType';
 
 		$inputClass  = $baseClass.ucfirst(strtolower($name));
-		$cls = class_exists($inputClass) ? $inputClass : $baseClass;
+		return class_exists($inputClass) ? $inputClass : $baseClass;
+	}
 
+	static public
+	function parseConfig($attrNode, $fieldNode) {
+		$name = preg_replace('/\|.+$/', '', $attrNode->value);
+
+		$cls = self::getClassByName($name);
 		$args = call_user_func(array($cls, 'parseConfigArguments'), $attrNode, $fieldNode);
 
 		return array($cls, $name, $args);

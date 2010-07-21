@@ -28,6 +28,12 @@ class PXFieldDescription {
 		$this->typeDescription = $type;
 		$this->app = $app;
 
+		if(!method_exists($fieldNode, 'attributes')) {
+			d2($type, false);
+			d2($fieldNode);
+			d2(pxtrace());
+		}
+
 		foreach ($fieldNode->attributes() as $node) {
 			$name  = $node->name;
 			$value = $node->value;
@@ -42,11 +48,11 @@ class PXFieldDescription {
 					break;
 
 				case 'storagetype':
-					$this->setStorageType($node, $fieldNode);
+					$this->setParsedStorageType($node, $fieldNode);
 					break;
 
 				case 'displaytype':
-					$this->setDisplayType($node, $fieldNode);
+					$this->setParsedDisplayType($node, $fieldNode);
 					break;
 
 				case 'handler':
@@ -78,6 +84,7 @@ class PXFieldDescription {
 					break;
 			}
 		}
+
 	}
 
 	function getGroupName($node) {
@@ -113,16 +120,25 @@ class PXFieldDescription {
 		}
 	}
 
-	function setDisplayType($attrNode, $fieldNode) {
+	function setDisplayType($name) {
+		$cls = PXDisplayType::getClassByName($name, $this);
+		$this->displayType = new $cls($this, $name);
+	}
+
+	function setParsedDisplayType($attrNode, $fieldNode) {
 		list($cls, $name, $args) = PXDisplayType::parseConfig($attrNode, $fieldNode, $this);
 
 		$this->displayTypeArgs = $args;
 		$this->displayType = new $cls($this, $name);
 	}
 
-	function setStorageType($attrNode, $fieldNode) {
-		list($cls, $name, $args) = PXStorageType::parseConfig($attrNode, $fieldNode, $this);
+	function setStorageType($name) {
+		$cls = PXStorageType::getClassByName($name, $this);
+		$this->storageType = new $cls($this, $name);
+	}
 
+	function setParsedStorageType($attrNode, $fieldNode) {
+		list($cls, $name, $args) = PXStorageType::parseConfig($attrNode, $fieldNode, $this);
 		$this->storageTypeArgs = $args;
 		$this->storageType = new $cls($this, $name);
 	}

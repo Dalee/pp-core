@@ -72,7 +72,7 @@ class PXRefDescription {
 			foreach ($nodes as $node) {
 				switch ($node->nodeName()) {
 					case 'attribute':
-						$field     = new PXFieldDescription($node->attributes(), $app, $ref);
+						$field     = new PXFieldDescription($node, $app, $ref);
 						if(is_null($field->storageType)) {
 							$field->setStorageType('string');
 						}

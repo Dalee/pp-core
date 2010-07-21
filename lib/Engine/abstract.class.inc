@@ -43,6 +43,7 @@ abstract class PXEngine {
 	}
 
 	protected function initApplication() {
+
 		foreach($this->initOrder as $var){
 			if(!is_array($this->$var) || empty($this->{$var}['factory'])){
 				continue;
@@ -50,11 +51,14 @@ abstract class PXEngine {
 
 			class_exists($this->{$var}['factory']) or FatalError("Factory class '{$this->{$var}['factory']}' for '{$var}' is not exists !");
 
-			if($initHelper = (!empty($this->{$var}['helper']) && method_exists($this, 'init'.ucfirst($var)) ? 'init'.ucfirst($var) : false)){
+			$initHelper = (!empty($this->{$var}['helper']) && method_exists($this, 'init'.ucfirst($var)) ? 'init'.ucfirst($var) : false);
+
+			if($initHelper){
 				$this->$initHelper($this->{$var}['factory']);
 			} else {
 				$this->$var = new $this->{$var}['factory'];
 			}
+
 		}
 	}
 

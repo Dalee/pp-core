@@ -49,6 +49,11 @@ function unlinkDir($source) {
 
 	// Loop through the folder
 	$dir = dir($source);
+
+	if($dir == false) {
+		return;
+	}
+
 	while (false !== $entry = $dir->read()) {
 		// Skip pointers
 		if ($entry == '.' || $entry == '..') {

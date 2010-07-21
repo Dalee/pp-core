@@ -137,7 +137,6 @@ class PXApplication {
 	 */
 	private function __construct($engineClass, $engineObject) {
 		$this->engine = $engineObject;
-
 		$this->fillDBDescription(self::parseIniFile($this->findConfigFile('database.ini')));
 		$this->fillTriggers($this->findConfigFile('triggers.xml', false));
 
