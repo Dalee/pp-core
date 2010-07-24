@@ -8,7 +8,7 @@ class PXAuthSecure extends PXAuthInterface {
 		$this->_proceedAuth($uArray);
 	}
 
-	private function _proceedAuth($uArray) {
+	protected function _proceedAuth($uArray) {
 		if(!(count($uArray) && strlen($this->passwd))) {
 			return;
 		}
@@ -28,7 +28,7 @@ class PXAuthSecure extends PXAuthInterface {
 
 		return $tmp;
 	}
-	
+
 	function passwdToDB($passwd){
 		return md5($passwd);
 	}
