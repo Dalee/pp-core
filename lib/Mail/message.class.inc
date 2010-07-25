@@ -36,6 +36,7 @@ class NLMailMessage {
 		$this->charset          = 'koi8-r';
 		$this->_validateEmails  = true;
 		$this->_checkMailFields = array('fromEmail', 'replyEmail', 'bccEmail', 'ccEmail', 'toEmail');
+		$this->needAttachFiles  = false;
 	}
  
 	function setCharset($charset) {
@@ -135,6 +136,7 @@ class NLMailMessage {
  
 		$this->_checkEmails();
 		$this->_strip();
+		$this->_sendImagesAsAttaches();
  
 		$this->addHeaders = $this->_writeSmtpHeaders();
  
@@ -352,6 +354,39 @@ class NLMailMessage {
  
 	function validateEmails($flag) {
 		$this->_validateEmails = (bool)$flag;
+	}
+
+	function setSendImagesAsAttaches() {
+		$this->needAttachFiles = true;
+	}
+
+	private
+	function _sendImagesAsAttaches() {
+		if(!$this->needAttachFiles) {
+			return;
+		}
+
+		$text = $this->body;
+		preg_match_all("/(?:<(img|td|link|script)[^>]+(src|background|href))=\"(.+?)\"/", $text, $images);
+
+		if(!isset($images[3])) {
+			return;
+		}
+
+		foreach($images[3] as $i){
+			if(strpos($i, '&d=audit') !== false) {
+				continue;
+			}
+
+			$tmpFile = tempnam('/tmp', 'mailImagesAttach');
+			copy($i, $tmpFile);
+
+			$src = $this->addFile($tmpFile, basename($i), mime_content_type($tmpFile));
+
+			$text = str_replace($i, $src, $text);
+		}
+
+		$this->body = $text;
 	}
 }
 ?>
