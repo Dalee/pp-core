@@ -69,7 +69,6 @@ class PXPublicRegionObjectCloner {
 		}
 
 		unset($regionsIds[-1]);
-		var_dump($regionsIds);
 
 		return (array) $regionsIds;
 	}
