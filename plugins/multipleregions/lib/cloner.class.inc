@@ -83,6 +83,8 @@ class PXPublicRegionObjectCloner {
 			}
 		}
 
+		$this->object['redir'] = $this->nid;
+
 		$this->setDbValue('sys_regions', PXMultiRegions::regToString(array_keys($regionsIds)));
 	}
 
