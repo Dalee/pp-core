@@ -5,7 +5,7 @@ class PXDisplayTypeMultiRegions extends PXDisplayType {
 
 	private function getNotInLocation($field, $object) {
 		$r = PXRegistry::getDB()->query("select id, sys_regions 
-			from {$field->typeDescription->id} where pathname = '{$object['pathname']}' and id <> '{$object['id']}'");
+			from {$field->typeDescription->id} where reflex_id = '{$object['id']}'");
 
 		$_ = array();
 
