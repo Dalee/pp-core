@@ -28,58 +28,57 @@ class PXFieldDescription {
 		$this->typeDescription = $type;
 		$this->app = $app;
 
-		if(is_object($fieldNode)) {
-			foreach ($fieldNode->attributes() as $node) {
-				$name  = $node->name;
-				$value = $node->value;
+		foreach ($fieldNode->attributes() as $node) {
+			$name  = $node->name;
+			$value = $node->value;
 
-				switch ($name) {
-					case 'name':
-						$this->name = $value;
-						break;
+			switch ($name) {
+				case 'name':
+					$this->name = $value;
+					break;
 
-					case 'description':
-						$this->description = utf8_decode($value);
-						break;
+				case 'description':
+					$this->description = utf8_decode($value);
+					break;
 
-					case 'storagetype':
-						$this->setParsedStorageType($node, $fieldNode);
-						break;
+				case 'storagetype':
+					$this->setParsedStorageType($node, $fieldNode);
+					break;
 
-					case 'displaytype':
-						$this->setParsedDisplayType($node, $fieldNode);
-						break;
+				case 'displaytype':
+					$this->setParsedDisplayType($node, $fieldNode);
+					break;
 
-					case 'handler':
-						$this->handler = $value;
-						break;
+				case 'handler':
+					$this->handler = $value;
+					break;
 
-					case 'listed':
-						$listed = strtoupper($value);
-						$this->listed = $listed == 'TRUE' ? true : false;
-						break;
+				case 'listed':
+					$listed = strtoupper($value);
+					$this->listed = $listed == 'TRUE' ? true : false;
+					break;
 
-					case 'defaultvalue':
-						$this->defaultValue = utf8_decode($value);
-						break;
+				case 'defaultvalue':
+					$this->defaultValue = utf8_decode($value);
+					break;
 
-					case 'source':
-						$app->directory[$value] = new PXDirectoryDescription($value);
-						$this->values =& $app->directory[$value];
-						$this->source =  $value;
-						break;
+				case 'source':
+					$app->directory[$value] = new PXDirectoryDescription($value);
+					$this->values =& $app->directory[$value];
+					$this->source =  $value;
+					break;
 
-					case 'noindex': 
-						$noindex = strtoupper($value); 
-						$this->noindex = $noindex == 'TRUE' ? true : false;
-						break;
+				case 'noindex': 
+					$noindex = strtoupper($value); 
+					$this->noindex = $noindex == 'TRUE' ? true : false;
+					break;
 
-					default:
-						d2("Unknown attr name: " . $name . ' line: '. __LINE__);
-						break;
-				}
+				default:
+					d2("Unknown attr name: " . $name . ' line: '. __LINE__);
+					break;
 			}
 		}
+
 	}
 
 	function getGroupName($node) {

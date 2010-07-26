@@ -5,10 +5,8 @@ class PXTriggerDatabaseMultipleregions extends PXAbstractDatabaseTrigger {
 		$regions = $this->getRegions();
 
 		if(isset($object['copy'])) {
-			$this->simpleSetDbValues('sys_regions', PXMultiRegions::regToString($object['sys_regions']), $dbFields, $dbValues);
+			$this->simpleSetDbValues('sys_regions', array(), $dbFields, $dbValues);
 			$this->simpleSetDbValues('reflex_id', $object['reflex_id'], $dbFields, $dbValues);
-
-			return true;
 		}
 
 		$regions->addRegionByDefault($format, $dbFields, $dbValues);
@@ -39,21 +37,31 @@ class PXTriggerDatabaseMultipleregions extends PXAbstractDatabaseTrigger {
 	function OnBeforeModifyObject(&$db, $objId, &$format, &$object, &$dbFields, &$dbValues, &$objectInDB) {
 		$regions = $this->getRegions();
 		$rid = $regions->getRid();
+		
+		$p1 = false;
 
-		if($rid) {
-			$cloner = 
-				new PXPublicRegionObjectCloner($format, $object, $objectInDB, $dbFields, $dbValues, $rid, $this);
+		if(isset($objectInDB['sys_regions'])) {
+			$p1  = $regions->isInRegion('-1', $objectInDB['sys_regions']) 
+				|| ($regions->isCurrentInSet($objectInDB['sys_regions'])
+					&& $objectInDB['sys_regions'] != array($rid));
+		}
 
-			if($cloner->isValidObject($regions)) {
-				$cloner->cloneObject($regions->getRegionsAsDirectory());
-				$object['redir'] = $cloner->nid;
-				return true;
+		if($rid && $p1) {
+			if(isset($objectInDB['deny_region_edit']) && !empty($objectInDB['deny_region_edit'])) {
+				$this->fireError('Только федеральное редактирование!');
 			}
+
+			$cloner = 
+				new PXPublicRegionObjectCloner($format, $object, $objectInDB, $dbFields, $dbValues, $rid);
+			$cloner->cloneObject();
+
+			$object['redir'] = $cloner->nid;
+			return true;
 		}
 
 		$permit = $regions->checkRegionAccess($format, $objectInDB) && $regions->checkRegionAccessToParent($format, $objectInDB);
 
-		if($permit) {
+		if($permit){
 			$regions->addRegionByDefault($format, $dbFields, $dbValues);
 		} else {
 			$this->fireError();
@@ -70,18 +78,6 @@ class PXTriggerDatabaseMultipleregions extends PXAbstractDatabaseTrigger {
 
 	function OnBeforeDeleteObject(&$db, &$objId, &$format, &$objectInDB) {
 		$regions = $this->getRegions();
-		$rid     = $regions->getRid();
-
-		if($rid) {
-			$cloner = 
-				new PXPublicRegionObjectCloner($format, $object = null, $objectInDB, $dbFields = null, $dbValues = null, $rid, $this);
-		
-			if($cloner->isValidObject($regions)) {
-				$cloner->deleteObject();
-				return false;
-			}
-		}
-
 		$permit = $regions->checkRegionAccess($format, $objectInDB) && $regions->checkRegionAccessToParent($format, $objectInDB);
 
 		if(!$permit){
@@ -101,26 +97,12 @@ class PXTriggerDatabaseMultipleregions extends PXAbstractDatabaseTrigger {
 	function OnModifyLinks(&$db, &$objId, &$formatId, &$links) { // simple
 	}
 
-	function OnBeforeMoveObject(&$db, $objId, &$format, &$objectInDB) {
+	function OnBeforeMoveObject(&$db, &$objId, &$format, &$objectInDB) {
 		$regions = $this->getRegions();
-		$rid     = $regions->getRid();
-
-		/*if($rid) {
-			$cloner = 
-				new PXPublicRegionObjectCloner($format, $objId, $objectInDB, $dbFields = null, $dbValues = null, $rid, $this);
-
-			if($cloner->isValidObject($regions)) {
-				$cloner->cloneObject();
-				return false;
-			}
-		}*/
-
 		$permit  = $regions->checkRegionAccess($format, $objectInDB);
-
 		if(!$permit){
 			$this->fireError();
 		}
-
 		return $permit;
 	}
 
@@ -132,24 +114,16 @@ class PXTriggerDatabaseMultipleregions extends PXAbstractDatabaseTrigger {
 			&& !PXRegistry::getHKCU()->get("parentdrop") 
 			&& !PXRegistry::getHKCU()->get("mod")
 			&& !PXRegistry::getHKCU()->get("add")) {
-				$sys_r = PXRegistry::getRequest()->getVar('sys_regions');
-
-				if(isset($sys_r['rid']) && !strlen($sys_r['rid'])) {
-					$regionFilter = array_flip(array_keys($regions->getRegionsAsDirectory()));
-					unset($regionFilter[""]);
-					$regionFilter = array_flip($regionFilter);
-					$regionFilter = join(" or ", 
-						array_map("sprintf", array_fill(0, count($regionFilter), " sys_regions @> '{%s}'"), $regionFilter));
-				} else {
-					$regionFilter = $regions->findByRegion();
-				}
-
+				$regionFilter = $regions->findByRegion();
 				$where = strlen($where) ? "($where) AND $regionFilter" : $regionFilter;
 
 				if($mode != DB_SELECT_COUNT) {
 					$selector .= ", reflex_id";
 				}
-			}
+
+		}
+
+		// d2($where);
 	}
 
 	function reflexer($db, $regions, $where, $format) {
@@ -167,7 +141,7 @@ class PXTriggerDatabaseMultipleregions extends PXAbstractDatabaseTrigger {
 		$rid            = $regions->getRid();
 		$oldWhere       = $where = preg_replace("#\s+#", " ", $where);
 		$dest           = $userRegistry->get('dest');
-		$types          = PXRegistry::getApp()->types;
+		$types 			= PXRegistry::getApp()->types;
 
 		$isRegObj       = $regions->isRegionalObject($format);
 		$isParentRegObj = isset($types[$format->parent]) ? $regions->isRegionalObject($types[$format->parent]) : false;
@@ -245,7 +219,7 @@ class PXTriggerDatabaseMultipleregions extends PXAbstractDatabaseTrigger {
 
 	function OnBeforeNormalizePathBuildQuery($objectFormat, $exObjectFormat, &$table, $object) {
 		$regions = $this->getRegions();
-
+		
 		if($regions->isRegionalObject($objectFormat) && $regions->isRegionalObject($exObjectFormat)) {
 			$regionFilter = $regions->findByRegion();
 
