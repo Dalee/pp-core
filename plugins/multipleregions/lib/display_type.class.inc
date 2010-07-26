@@ -2,6 +2,7 @@
 
 class PXDisplayTypeMultiRegions extends PXDisplayType {
 	const MAGIC = -1;
+	private $singleObject = false;
 
 	private function getNotInLocation($field, $object) {
 		$r = PXRegistry::getDB()->query("select id, sys_regions 
@@ -26,24 +27,28 @@ class PXDisplayTypeMultiRegions extends PXDisplayType {
 
 	private function _getValues($field, $object, $regions) {
 		$notInLocation = $this->getNotInLocation($field, $object);
-		$values  = $regions->getRegionsAsDirectory(true, $notInLocation);
+		$values  = $regions->getRegionsAsDirectory(true/*, $notInLocation*/);
 
-		if(!$values){
+		if(count($values) == 1) {
+			$this->singleObject = true;
+		}
+
+		if(!$values) {
 			return;
 		}
 
+		$values[null]        = '- עוחיןמ מו מבתמב‏ומ -';
+		
 		if(!strlen($notInLocation)) {
 			$values[self::MAGIC] = '- נץגליכןקבפר קן קףוט עוחיןמבט -';
 		}
 
-		$values[null]        = '- עוחיןמ מו מבתמב‏ומ -';
-
 		return $values;
 	}
+
 	private function _getValue($regions, $object, $field) {
 		return !empty($object[$field->name]) ? $object[$field->name] : (array)$regions->getRid();
 	}
-
 
 	function buildInput($field, $object, $param=NULL) {
 		$regions = PXMultiRegions::getInstance();
@@ -55,7 +60,7 @@ class PXDisplayTypeMultiRegions extends PXDisplayType {
 
 		$value   = $this->_getValue($regions, $object, $field);
 
-		if(PXRegistry::getUser()->can('manage_region')){
+		if(!$this->singleObject) {
 			return $this->_buildSelector($field, $value, $values);
 		} else {
 			return $this->_buildStatic($field, $value, $values);

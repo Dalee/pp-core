@@ -6,12 +6,16 @@ class PXPublicRegionObjectCloner {
 
 	function __construct($format, &$object = null, &$objectInDB, &$dbFields = null, &$dbValues = null, $rid, $trigger) {
 		$this->format      = $format;
+	
 		$this->object      =& $object;
+	
 		$this->objectInDB  =& $objectInDB;
+	
 		$this->dbFields    =& $dbFields;
 		$this->dbValues    =& $dbValues;
+	
 		$this->rid         = $rid;
-		$this->oid         = $object['id'];
+		$this->oid         = $objectInDB['id'];
 
 		$this->trigger     = $trigger;
 
@@ -21,10 +25,13 @@ class PXPublicRegionObjectCloner {
 	}
 
 	public function isValidObject($regions) {
-		return isset($this->objectInDB['sys_regions']) 
-				&& $regions->isInRegion('-1', $this->objectInDB['sys_regions']) 
-					|| ($regions->isCurrentInSet($this->objectInDB['sys_regions']) 
-						&& $this->objectInDB['sys_regions'] != array($this->rid));
+		if(isset($this->objectInDB['sys_regions'])) {
+				return $regions->isInRegion('-1', $this->objectInDB['sys_regions']);
+					/* ($regions->isCurrentInSet($this->objectInDB['sys_regions']) 
+					&& $this->objectInDB['sys_regions'] != array($this->rid))*/
+		}
+
+		return false;
 	}
 
 	private function isDenyEditValidate() {
@@ -33,9 +40,9 @@ class PXPublicRegionObjectCloner {
 		}
 	}
 
-	public function cloneObject() {
+	public function cloneObject($to) {
 		$this->isDenyEditValidate();
-		$this->copyMainObject();
+		$this->copyMainObject($to);
 	}
 
 	public function deleteObject() {
@@ -44,32 +51,50 @@ class PXPublicRegionObjectCloner {
 		$tmp = $this->deletePublicAndSelfReg();
 
 		$this->db->modifyingQuery(sprintf("UPDATE %s  SET sys_regions = '%s' where id = '%s'", 
-			$this->format->id, PXMultiRegions::regToString((array) array_flip($tmp)), $this->objectInDB['id']));
+			$this->format->id, PXMultiRegions::regToString((array) array_flip($tmp)), $this->oid));
 	}
 
-	private function deletePublicAndSelfReg() {
+	public function moveObject() {
+		$this->isDenyEditValidate();
+		$tmp = $this->deletePublicAndSelfReg();
+	}
+
+	private function deletePublicAndSelfReg($to) {
 		$regionsIds = array_flip($this->objectInDB['sys_regions']);
 
-		unset($regionsIds[-1]);
-		unset($regionsIds[$this->rid]);
+		foreach($to as $id) {
+			if(isset($regionsIds[$id])) {
+				unset($regionsIds[$id]);
+			}
+		}
 
-		return $regionsIds;
+		unset($regionsIds[-1]);
+		var_dump($regionsIds);
+
+		return (array) $regionsIds;
 	}
 
-	private function copyMainObject() {
+	private function copyMainObject($to) {
 		$object = $this->object;
 
-		$object['reflex_id'] = $object['id'];
-		$object['sys_regions'] = array();
-		$object['copy'] = 1;
-	
-		$this->nid = $object['id'] = $this->db->cloneContentObject($this->format, $object, $status=true);
+		if(!is_array($object)) {
+			$object = $this->db->getObjectById($this->format, $object);
+		}
 
-		$this->normalizeMainObject();
+		$to = array_flip(array_keys($to));
+		unset($to[""]);
+		$to = array_flip($to);
+
+		$object['reflex_id'] = $this->oid;
+		$object['sys_regions'] = $to;
+		$object['copy'] = 1;
+
+		$this->nid = $object['id'] = $this->db->cloneContentObject($this->format, $object, $status=true);
+		$this->normalizeMainObject($to);
 	}
 
-	private function normalizeMainObject() {
-		$regionsIds = $this->deletePublicAndSelfReg();
+	private function normalizeMainObject($to) {
+		$regionsIds = $this->deletePublicAndSelfReg($to);
 
 		$this->dbFields = array();
 		$this->dbValues = array();
@@ -77,13 +102,13 @@ class PXPublicRegionObjectCloner {
 		foreach($this->objectInDB as $k => $i) {
 			if(isset($this->object[$k])) {
 				$params = array("db" => &$this->db, "dbFields" => &$this->dbFields, "dbValues" => &$this->dbValues);
-					
+
+				if(!isset($this->format->fields[$k])) continue;
+	
 				$r = $this->format->fields[$k]
 					->storageType->normalizeObjectAttribute($this->format->fields[$k], $this->objectInDB, $params);
 			}
 		}
-
-		$this->object['redir'] = $this->nid;
 
 		$this->setDbValue('sys_regions', PXMultiRegions::regToString(array_keys($regionsIds)));
 	}
