@@ -3,14 +3,39 @@
 class PXDisplayTypeMultiRegions extends PXDisplayType {
 	const MAGIC = -1;
 
-	private function _getValues($regions) {
-		$values  = $regions->getRegionsAsDirectory();
+	private function getNotInLocation($field, $object) {
+		$r = PXRegistry::getDB()->query("select id, sys_regions 
+			from {$field->typeDescription->id} where pathname = '{$object['pathname']}' and id <> '{$object['id']}'");
+
+		$_ = array();
+
+		if(!empty($r)) {
+			foreach($r as $i) {
+				$_ = array_merge($_, PXMultiRegions::regToArray($i['sys_regions']));
+			}
+		}
+
+		$location = null;
+
+		if(!empty($_)) {
+			$location = sprintf(" id not in (%s)", join(",", $_));
+		}
+
+		return $location;
+	}
+
+	private function _getValues($field, $object, $regions) {
+		$notInLocation = $this->getNotInLocation($field, $object);
+		$values  = $regions->getRegionsAsDirectory(true, $notInLocation);
 
 		if(!$values){
 			return;
 		}
 
-		$values[self::MAGIC] = '- נץגליכןקבפר קן קףוט עוחיןמבט -';
+		if(!strlen($notInLocation)) {
+			$values[self::MAGIC] = '- נץגליכןקבפר קן קףוט עוחיןמבט -';
+		}
+
 		$values[null]        = '- עוחיןמ מו מבתמב‏ומ -';
 
 		return $values;
@@ -22,7 +47,7 @@ class PXDisplayTypeMultiRegions extends PXDisplayType {
 
 	function buildInput($field, $object, $param=NULL) {
 		$regions = PXMultiRegions::getInstance();
-		$values = $this->_getValues($regions);
+		$values = $this->_getValues($field, $object, $regions);
 
 		if(!is_array($values)) {
 			return;
@@ -81,7 +106,7 @@ class PXDisplayTypeMultiRegions extends PXDisplayType {
 
 	function buildCell($field, $object, $param=NULL) {
 		$regions = PXMultiRegions::getInstance();
-		$values = $this->_getValues($regions);
+		$values = $this->_getValues($field, $object, $regions);
 
 		if(!is_array($values)) {
 			return;

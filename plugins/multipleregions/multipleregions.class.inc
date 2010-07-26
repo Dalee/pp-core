@@ -7,12 +7,14 @@ class PXPluginMultiRegions extends PXAbstractPlugin {
 		PXLoader::getInstance($this->path . "/lib")
 			-> load("PXMultiregions",            "multipleregions.class.inc")
 			-> load("PXTabbedMenuRegionChanger", "widget.class.inc")
-			-> load("PXDisplayTypeMultiRegions", "display_type.class.inc");
+			-> load("PXDisplayTypeMultiRegions", "display_type.class.inc")
+			-> load("PXStorageTypeRegionUrl",    "storage_type.class.inc");
 
 		$this->loadTrigger("PXTriggerDatabaseMultipleregions");
 		$this->loadTrigger("PXTriggerSystemMultipleregions");
 
 		if ($app->isAdminEngine()) {
+			require_once $this->path . '/lib/cloner.class.inc';
 			require_once $this->path . '/lib/storage_type.class.inc';
 			require_once $this->path . '/decorators.php';
 		}

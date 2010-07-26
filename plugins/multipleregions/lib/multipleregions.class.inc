@@ -34,11 +34,14 @@ class PXMultiRegions {
 		return $regions_data;
 	}
 
-	function getRegionsAsDirectory($only_values = true){
+	function getRegionsAsDirectory($only_values = true, $location=null) {
 		$regions_directory = null;
+
 		if($regions_directory = @$this->db->app->directory[self::REGION_MARK]){
+			$regions_directory->location  = $location;
 			$regions_directory->loaded or $this->db->LoadDirectory($regions_directory, null, false);
 		}
+		
 		if($only_values && $regions_directory)
 			$regions_directory = $regions_directory->parentField ? $regions_directory->getTree()->getPlainTree(null) : $regions_directory->getList();
 		
@@ -190,7 +193,7 @@ class PXMultiRegions {
 		return $user->can('manage_region');
 	}
 
-	function isRegionalObject($format){
+	static function isRegionalObject($format){
 		return isset($format->fields[PXMultiRegions::REGION_MARK]);
 	}
 
@@ -213,7 +216,9 @@ class PXMultiRegions {
 	function checkRegionAccessToParent($format, $object){
 		if(isset($object['parent'])){
 			$parentFormat = $this->db->types[$format->parent];
+
 			$parent = $this->db->GetObjectById($parentFormat, $object['parent']);
+
 			if($this->isRegionalObject($parentFormat) && $parentFormat->id !== 'struct' && sizeof($parent)){ //check access to parent object if we try to add/modify/delete subcontent objects only
 				return $this->checkRegionAccess($parentFormat, $parent);
 			}
@@ -225,11 +230,21 @@ class PXMultiRegions {
 		if($this->isRegionalObject($format) && !$this->isFederal()){
 			$user = PXRegistry::getUser();
 			
-			if(count($object[self::REGION_MARK]) != 1 || $this->rid != $object[self::REGION_MARK][0] || !$user->can('manage_region', null, array('id' => $this->rid))){
-				return false;
+			if(count($object[self::REGION_MARK]) != 1 
+				|| $this->rid != $object[self::REGION_MARK][0] 
+				|| !$user->can('manage_region', null, array('id' => $this->rid))) {
+					return false;
 			}
 		}
+
 		return true;
 	}
+	
+	static function regToArray($regString) {
+		return explode(",", strtr($regString, array("{" => "", "}" => "")));
+	}
 
+	static function regToString($regArray) {
+		return sprintf("{%s}", join(",", $regArray));
+	}
 }

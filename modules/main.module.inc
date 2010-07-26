@@ -6,6 +6,7 @@ class PXModuleMain extends PXModule {
 	function __construct($area, $settings) {
 		parent::__construct($area, $settings);
 		$this->rootFormatId    = $settings['rootFormat'];
+
 		$this->objectsLoadMode = array(
 			PP_CHILDREN_FETCH_NONE     => 'none',
 			PP_CHILDREN_FETCH_SELECTED => 'selected',

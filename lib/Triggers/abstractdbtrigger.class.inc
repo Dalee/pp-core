@@ -48,6 +48,9 @@ abstract class PXAbstractDatabaseTrigger extends PXAbstractTrigger {
 	
 	function OnBeforeNormalizePathBuildQuery($objectFormat, $exObjectFormat, &$table, $object=null) {
 	}
+
+	function OnBeforeBuildTree($db, $format, &$table, $parentName) {
+	}
 }
 
 ?>

@@ -636,7 +636,10 @@ class PXDatabase extends NLSQLDatabaseAdapter {
 		}
 
 		if (isset($format->fields['parent']) && $object['parent']) {
-			$parent = $this->GetObjectById($this->types[$format->parent], $object['parent']);
+			PXRegistry::getHKCU()->set("add", 1);
+				$parent = $this->GetObjectById($this->types[$format->parent], $object['parent']);
+			PXRegistry::getHKCU()->set("add", 0);
+
 			if (!count($parent)) {
 				$errString = 'Попытка добавить объект в несуществующий раздел';
 				$audit->error($errString, $format->parent .'/'. $object['parent']);
@@ -833,14 +836,18 @@ class PXDatabase extends NLSQLDatabaseAdapter {
 	}
 
 
-	function cloneContentObject(&$format, $donorId) {
+	function cloneContentObject(&$format, $objectData, $status=false) {
 		$audit =& PXAuditLogger::getLogger($this->app, $this);
 
-		$donorObject = $this->getObjectById($format, $donorId);
+		if(is_array($objectData) && isset($objectData['id']) && is_numeric($objectData['id']) && $objectData['id'] > 0) {
+			$donorObject = $objectData;
+		} else {
+			$donorObject = $this->getObjectById($format, $objectData);
+		}
 
-		$object = $donorObject;
-		$object['id'] = null;
-		$object['status'] = false;
+		$object           = $donorObject;
+		$object['id']     = null;
+		$object['status'] = $status;
 
 		$object['id'] = $this->addContentObject($format, $object);
 
@@ -883,12 +890,17 @@ class PXDatabase extends NLSQLDatabaseAdapter {
 			FatalError($errString);
 		}
 		if (isset($format->fields['parent']) && $object['parent']) {
-			$parentObject = $this->GetObjectById($this->types[$format->parent], $object['parent']);
+
+			PXRegistry::getHKCU()->set("mod", 1);
+				$parentObject = $this->GetObjectById($this->types[$format->parent], $object['parent']);
+			PXRegistry::getHKCU()->set("mod", 0);
+
 			if (!count($parentObject)) {
 				$errString = 'Попытка переместить объект в несуществующий раздел';
 				$audit->error($errString, $format->id .'/'.$object['id']);
 				FatalError($errString);
 			}
+			
 			if ($format->id != $format->parent && !in_array($format->id, $this->app->GetAllowedChildsKeys($format->parent, $parentObject))) {
 				$errString = 'Объект данного типа не может быть перемещен в данный раздел';
 				$audit->error($errString, $format->id .'/'.$object['id']);
@@ -1590,6 +1602,8 @@ SQL;
 	 * @todo docme (check params documentation)
 	 */
 	protected function _PrepareResult($resTable, $format, $mode) {
+
+
 		switch ($mode) {
 			case DB_SELECT_TABLE:
 				PXProfiler::begin('PREPARE: '.$format->id.' ['.sizeof($resTable).'x'.sizeof($format->fields).']');
@@ -1627,6 +1641,11 @@ SQL;
 				PXProfiler::begin('TREE: '.$format->id.' ['.sizeof($newTable).']');
 
 				$parentRefName = !isset($format->fields['pid']) ? 'parent' : 'pid';
+
+				foreach($this->triggers as $t) {
+					$t->getTrigger()->OnBeforeBuildTree($this, $format, $newTable, $parentRefName);
+				}
+
 				$newTree = new NLTree($newTable, 'id', $parentRefName, 'title', $mode == DB_SELECT_FULL_TREE);
 
 				PXProfiler::end();
