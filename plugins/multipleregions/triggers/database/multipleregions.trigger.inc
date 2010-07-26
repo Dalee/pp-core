@@ -37,26 +37,15 @@ class PXTriggerDatabaseMultipleregions extends PXAbstractDatabaseTrigger {
 	function OnBeforeModifyObject(&$db, $objId, &$format, &$object, &$dbFields, &$dbValues, &$objectInDB) {
 		$regions = $this->getRegions();
 		$rid = $regions->getRid();
-		
-		$p1 = false;
 
-		if(isset($objectInDB['sys_regions'])) {
-			$p1  = $regions->isInRegion('-1', $objectInDB['sys_regions']) 
-				|| ($regions->isCurrentInSet($objectInDB['sys_regions'])
-					&& $objectInDB['sys_regions'] != array($rid));
-		}
-
-		if($rid && $p1) {
-			if(isset($objectInDB['deny_region_edit']) && !empty($objectInDB['deny_region_edit'])) {
-				$this->fireError('Только федеральное редактирование!');
-			}
-
+		if($rid) {
 			$cloner = 
-				new PXPublicRegionObjectCloner($format, $object, $objectInDB, $dbFields, $dbValues, $rid);
-			$cloner->cloneObject();
+				new PXPublicRegionObjectCloner($format, $object, $objectInDB, $dbFields, $dbValues, $rid, $this);
 
-			$object['redir'] = $cloner->nid;
-			return true;
+			if($cloner->isValidObject($regions)) {
+				$cloner->cloneObject();
+				return true;
+			}
 		}
 
 		$permit = $regions->checkRegionAccess($format, $objectInDB) && $regions->checkRegionAccessToParent($format, $objectInDB);
@@ -78,6 +67,18 @@ class PXTriggerDatabaseMultipleregions extends PXAbstractDatabaseTrigger {
 
 	function OnBeforeDeleteObject(&$db, &$objId, &$format, &$objectInDB) {
 		$regions = $this->getRegions();
+		$rid     = $regions->getRid();
+
+		if($rid) {
+			$cloner = 
+				new PXPublicRegionObjectCloner($format, $object = null, $objectInDB, $dbFields = null, $dbValues = null, $rid, $this);
+		
+			if($cloner->isValidObject($regions)) {
+				$cloner->deleteObject();
+				return false;
+			}
+		}
+
 		$permit = $regions->checkRegionAccess($format, $objectInDB) && $regions->checkRegionAccessToParent($format, $objectInDB);
 
 		if(!$permit){
