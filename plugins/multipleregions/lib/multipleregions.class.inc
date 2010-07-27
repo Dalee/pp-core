@@ -59,6 +59,8 @@ class PXMultiRegions {
 			}
 		}
 
+		unset(self::$regionsDirectory->values[null]);
+
 		return self::$regionsDirectory;
 	}/*}}}*/
 
@@ -288,8 +290,13 @@ class PXMultiRegions {
 			return true;
 		}
 
-		$orig  = array_flip($object[self::REGION_MARK]); 
-		$count = count($allowed = array_flip(array_keys($this->loadDirectory()->values)));
+		$orig  = array_flip($object[self::REGION_MARK]);
+		$allowed = array_flip(array_keys($this->loadDirectory()->values));
+
+		#fixme clean up database!
+		unset($orig["NULL"]);
+
+		$count = count($allowed);
 		$merge = $orig + $allowed;
 
 		return $count == count($merge);
