@@ -17,8 +17,15 @@ $r = array_map("pos", $r);
 
 foreach($r as $i) {
 	$db->transactionBegin();
-	Label($i);
-	$db->modifyingQuery(sprintf("ALTER TABLE %s ADD sys_reflex_id INT, ADD deny_region_edit BOOL", $i));
+		$db->modifyingQuery(sprintf("ALTER TABLE %s DROP reflex_id", $i));
+	$db->transactionCommit();
+	
+	$db->transactionBegin();
+	$db->modifyingQuery(sprintf("ALTER TABLE %s ADD sys_reflex_id INT", $i));
+	$db->transactionCommit();
+	
+	$db->transactionBegin();
+		$db->modifyingQuery(sprintf("ALTER TABLE %s ADD deny_region_edit BOOL", $i));
 	$db->transactionCommit();
 }
 
