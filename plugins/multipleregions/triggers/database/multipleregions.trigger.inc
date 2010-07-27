@@ -7,7 +7,7 @@ class PXTriggerDatabaseMultipleregions extends PXAbstractDatabaseTrigger {
 		$permit = $regions->checkRegionAccess($format, $object) && $regions->checkRegionAccessToParent($format, $object);
 
 		if($permit) {
-			$reflex_field = PXPublicRegionObjectCloner::REFLEX_ID;
+			$reflex_field = PXPublicRegionObjectCloner::REFLEX_FIELD;
 
 			if(isset($object[$reflex_field])) {
 				$this->simpleSetDbValues($reflex_field, $object[$reflex_field], $dbFields, $dbValues);
@@ -93,16 +93,16 @@ class PXTriggerDatabaseMultipleregions extends PXAbstractDatabaseTrigger {
 
 	function OnBeforeMoveObject(&$db, $objId, &$format, &$objectInDB) {
 		$regions = $this->getRegions();
-		$rid     = $regions->getRid();
 
+		#fixme
 		$permit = $regions->checkRegionAccess($format, $objectInDB) && $regions->checkRegionAccessToParent($format, $objectInDB);
 
 		if(!$permit && $regions->isRegionalObject($format)) {
 			$cloner = 
-				new PXPublicRegionObjectCloner($format, $objId, $objectInDB, $dbFields = null, $dbValues = null, $rid, $this);
+				new PXPublicRegionObjectCloner($format, $objId, $objectInDB, $dbFields = null, $dbValues = null, $this);
 
 			$cloner->moveObject(array_keys($regions->loadDirectory()->values));
-		} else {
+		} elseif(!$permit) {
 			$this->fireError();
 		}
 

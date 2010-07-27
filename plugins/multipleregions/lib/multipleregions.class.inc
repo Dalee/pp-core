@@ -208,7 +208,9 @@ class PXMultiRegions {
 	}
 
 	function findByRegion(){
-		$sqlFilter = sprintf(" sys_regions && '{%s}' ", join(",", array_keys($this->loadDirectory()->values)));
+		$sqlFilter = sprintf(" sys_regions && '{%s}' ", 
+			join(",", array_flip($this->exceptNull(array_flip(array_keys($this->loadDirectory()->values))))));
+
 		return empty($this->rid) ? $sqlFilter : $this->db->inArray(self::REGION_MARK, $this->rid);
 	}
 
