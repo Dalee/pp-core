@@ -76,15 +76,18 @@ class PXMultiRegions {
 			}
 		}
 
-		if(count($regionsDirectory->values) == 1) {
+		if(count($regionsDirectory->values) ==-1) {
 			$region = pos($regionsDirectory->values);
 			$this->singleObject = true;
 			return array($region['id'] => $region['title']);
 		}
 
-		$regionsDirectory = $regionsDirectory->parentField 
-			? $regionsDirectory->getTree()->getPlainTree(null) 
-			: $regionsDirectory->getList();
+		if($regionsDirectory->parentField) {
+			$regionsTree = $regionsDirectory->getTree();
+			$regionsDirectory = !empty($regionsTree) ? $regionsTree->getPlainTree(null) : array();
+		} else {
+			$regionsDirectory = $regionsDirectory->getList();
+		}
 
 		return $regionsDirectory;
 	}/*}}}*/
