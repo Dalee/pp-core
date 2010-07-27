@@ -71,7 +71,8 @@ class PXPublicRegionObjectCloner {
 		$object[self::REFLEX_FIELD] = $this->oid;
 		$object[PXMultiRegions::REGION_MARK] = $allowedRegions;
 
-		$this->nid = $object['id'] = $this->db->cloneContentObject($this->format, $object, !empty($object['status']));
+		#fixme!!!
+		$this->nid = $object['id'] = @$this->db->cloneContentObject($this->format, $object, !empty($object['status']));
 
 		#fixme ripped cloneContentObject
 		foreach ($this->format->fields as $k => $v) {
