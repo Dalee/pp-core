@@ -67,21 +67,21 @@ class PXMultiRegions {
 	function getRegionsAsDirectory($only_values = true, $location=null) {/*{{{*/
 		$regionsDirectory = $this->loadDirectory();
 
-		#fixme
 		#delete already cloned regions
-		/*if($location && is_array($location)) {
+		if($location && is_array($location)) {
 			$location = array_flip($location);
 			foreach($regionsDirectory->values as $id => $region) {
 				if(isset($location[$id])) {
 					unset($regionsDirectory->values[$id]);
 				}
 			}
-		}*/
+		}
 
-		#fixme
-		if(count($regionsDirectory->values) <= 1) {
+		if(count($regionsDirectory->values) == 1) {
+			$region = pos($regionsDirectory->values);
 			$this->singleObject = true;
-			return array($this->rid => $regionsDirectory[$this->rid]['title']);
+
+			return $region;
 		}
 
 		$regionsDirectory = $regionsDirectory->parentField 

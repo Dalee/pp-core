@@ -1,8 +1,6 @@
 <?php
 
 class PXDisplayTypeMultiRegions extends PXDisplayType {
-	const MAGIC = -1;
-
 	private $singleObject = false;
 
 	private function getNotInLocation($field, $object) {
@@ -34,7 +32,7 @@ class PXDisplayTypeMultiRegions extends PXDisplayType {
 			return;
 		}
 
-		$values[self::MAGIC] = '- ðõâìéëï÷áôø ÷ï ÷óåè òåçéïîáè -';
+		$values[PXMultiRegions::MAGIC] = '- ðõâìéëï÷áôø ÷ï ÷óåè òåçéïîáè -';
 		
 		#fixme it is ugly
 		unset($values[null]);
@@ -72,8 +70,8 @@ class PXDisplayTypeMultiRegions extends PXDisplayType {
 	}
 
 	private function _buildStatic($field, $value, $values) {
-		if(in_array(self::MAGIC, $value)) {
-			return $values[self::MAGIC];
+		if(in_array(PXMultiRegions::MAGIC, $value)) {
+			return $values[PXMultiRegions::MAGIC];
 		}
 
 		foreach($value as $k=>$v) {
@@ -96,7 +94,7 @@ class PXDisplayTypeMultiRegions extends PXDisplayType {
 		}
 
 		switch(true){
-			case in_array(self::MAGIC, $regionsData):
+			case in_array(PXMultiRegions::MAGIC, $regionsData):
 				$regionsData = array_keys($regions->getList());
 				break;
 			case $regions->parentField && sizeof($regionsData):

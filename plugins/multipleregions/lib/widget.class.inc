@@ -19,10 +19,7 @@ class PXTabbedMenuRegionChanger extends PXAdminWidget {
 	}
 
 	private function _static($regions, $regionsData) {
-		$rId = $regions->getRid();
-
-		$curReg = isset($regionsData[$rId]) ? $regionsData[$rId] : 'не определен';
-		return '<span class="multipleregions-current-region">Текущий регион <strong>'.$curReg.'</strong></span>';
+		return '<span class="multipleregions-current-region">Текущий регион <strong>'.$regionsData['title'].'</strong></span>';
 	}
 
 	private function _selector($regions, $regionsData) {
