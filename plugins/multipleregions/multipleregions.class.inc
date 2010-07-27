@@ -3,6 +3,7 @@
 class PXPluginMultiRegions extends PXAbstractPlugin {
 	function initialize($app) {
 		require_once $this->path . '/lib/staticregion.class.inc';
+		require_once $this->path . '/lib/cloner.class.inc';
 
 		PXLoader::getInstance($this->path . "/lib")
 			-> load("PXMultiregions",            "multipleregions.class.inc")
@@ -14,7 +15,6 @@ class PXPluginMultiRegions extends PXAbstractPlugin {
 		$this->loadTrigger("PXTriggerSystemMultipleregions");
 
 		if ($app->isAdminEngine()) {
-			require_once $this->path . '/lib/cloner.class.inc';
 			require_once $this->path . '/lib/storage_type.class.inc';
 			require_once $this->path . '/decorators.php';
 		}
