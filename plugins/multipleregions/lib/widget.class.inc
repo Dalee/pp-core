@@ -19,7 +19,7 @@ class PXTabbedMenuRegionChanger extends PXAdminWidget {
 	}
 
 	private function _static($regions, $regionsData) {
-		return '<span class="multipleregions-current-region">Текущий регион <strong>'.$regionsData['title'].'</strong></span>';
+		return '<span class="multipleregions-current-region">Текущий регион <strong>'.pos($regionsData).'</strong></span>';
 	}
 
 	private function _selector($regions, $regionsData) {
@@ -27,6 +27,7 @@ class PXTabbedMenuRegionChanger extends PXAdminWidget {
 
 		$varName           = PXMultiRegions::REGION_MARK . '[rid]';
 		$regionsData[null] = '- ПОКАЗАТЬ ВСЕ РЕГИОНЫ -';
+
 		$regionSelector    = new PXInputDropDown($varName, $regions->getRid(), $regionsData);
 
 		$selectorHtml      = $regionSelector->html();

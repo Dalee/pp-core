@@ -22,10 +22,12 @@ class PXDisplayTypeMultiRegions extends PXDisplayType {
 
 	private function _getValues($field, $object, $regions) {
 		$notInLocation = $this->getNotInLocation($field, $object);
+
 		$values  = $regions->getRegionsAsDirectory(true, $notInLocation);
 
 		if(count($values) == 1) {
 			$this->singleObject = true;
+			return $values;
 		}
 
 		if(!$values) {
@@ -63,6 +65,7 @@ class PXDisplayTypeMultiRegions extends PXDisplayType {
 
 	private function _buildSelector($field, $value, $values) {
 		$regionSelector = new PXInputDropDown($field->name . '[]', $value, $values);
+
 		$regionSelector->setMultiple(true);
 		$regionSelector->setSize(sizeof($values));
 

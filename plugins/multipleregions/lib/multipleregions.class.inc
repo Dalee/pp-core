@@ -60,7 +60,6 @@ class PXMultiRegions {
 		}
 
 		unset(self::$regionsDirectory->values[null]);
-
 		return self::$regionsDirectory;
 	}/*}}}*/
 
@@ -80,8 +79,7 @@ class PXMultiRegions {
 		if(count($regionsDirectory->values) == 1) {
 			$region = pos($regionsDirectory->values);
 			$this->singleObject = true;
-
-			return $region;
+			return array($region['id'] => $region['title']);
 		}
 
 		$regionsDirectory = $regionsDirectory->parentField 

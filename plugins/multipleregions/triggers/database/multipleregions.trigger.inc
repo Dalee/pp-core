@@ -215,7 +215,9 @@ class PXTriggerDatabaseMultipleregions extends PXAbstractDatabaseTrigger {
 	function OnBeforeNormalizePathBuildQuery($objectFormat, $exObjectFormat, &$table, $object) {
 		$regions = $this->getRegions();
 
-		if($regions->isRegionalObject($objectFormat) && $regions->isRegionalObject($exObjectFormat)) {
+		$permit = $regions->checkRegionAccess($objectFormat, $object);
+
+		if($permit && $regions->isRegionalObject($objectFormat) && $regions->isRegionalObject($exObjectFormat)) {
 			$regionFilter = $regions->findByRegion($object[PXMultiRegions::REGION_MARK]);
 
 			if(strlen($table['exWhere'])) {
@@ -223,6 +225,8 @@ class PXTriggerDatabaseMultipleregions extends PXAbstractDatabaseTrigger {
 			}
 
 			$table['exWhere'] .= $regionFilter;
+		} elseif(!$permit) {
+			$this->fireError();
 		}
 	}
 
