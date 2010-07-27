@@ -5,48 +5,89 @@ class PXMultiRegions {
 	private $user;
 	private $rid;
 	private $context;
+
 	private static $self;
+	private static $regionsData;
+	private static $regionsDirectory;
+	private static $isFederal;
+
+	public $singleObject = false;
 
 	const REGION_MARK = 'sys_regions';
+	const MAGIC       = -1;
 
-	private function __construct(){
+	private function __construct(){/*{{{*/
 		$this->db      = PXRegistry::getDb();
 		$this->request = PXRegistry::getRequest();
 		$this->user    = PXRegistry::getUser();
-	}
-	
-	function getInstance($context = NULL){ //context: ENUM {"user", "admin"}
+
+		$this->format  = PXRegistry::getApp()->types[self::REGION_MARK];
+	}/*}}}*/
+
+	function getInstance($context = NULL){ //context: ENUM {"user", "admin"}/*{{{*/
 		if(empty(self::$self)){
 			$klass = __CLASS__;
 			self::$self = new $klass();
 		}
+
 		if($context){
 			self::$self->context = $context;
 		}
+
 		return self::$self;
-	}
+	}/*}}}*/
 
-	function getRegionsData(){
-		static $regions_data;
-		if(!isset($regions_data)){
-			$regions_data = $this->db->getObjects($this->db->types[self::REGION_MARK], true);
+	function getRegionsData(){/*{{{*/
+		if(!isset(self::$regionsData)){
+			self::$regionsData = $this->db->getObjects($this->db->types[self::REGION_MARK], true);
 		}
-		return $regions_data;
-	}
 
-	function getRegionsAsDirectory($only_values = true, $location=null) {
-		$regions_directory = null;
+		return self::$regionsData;
+	}/*}}}*/
 
-		if($regions_directory = @$this->db->app->directory[self::REGION_MARK]){
-			$regions_directory->location  = $location;
-			$regions_directory->loaded or $this->db->LoadDirectory($regions_directory, null, false);
+	function loadDirectory() {/*{{{*/
+		if(self::$regionsDirectory) {
+			return self::$regionsDirectory;
 		}
-		
-		if($only_values && $regions_directory)
-			$regions_directory = $regions_directory->parentField ? $regions_directory->getTree()->getPlainTree(null) : $regions_directory->getList();
-		
-		return $regions_directory;
-	}
+
+		self::$regionsDirectory = PXRegistry::getApp()->directory[self::REGION_MARK];
+		self::$regionsDirectory->loaded or $this->db->LoadDirectory(self::$regionsDirectory, null, false);
+
+		foreach(self::$regionsDirectory->values as $id => $r) {
+			if(!$this->user->can('manage_region', $this->format, $r)) {
+				unset(self::$regionsDirectory->values[$id]);
+			}
+		}
+
+		return self::$regionsDirectory;
+	}/*}}}*/
+
+	function getRegionsAsDirectory($only_values = true, $location=null) {/*{{{*/
+		$regionsDirectory = $this->loadDirectory();
+
+		#fixme
+		#delete already cloned regions
+		/*if($location && is_array($location)) {
+			$location = array_flip($location);
+			foreach($regionsDirectory->values as $id => $region) {
+				if(isset($location[$id])) {
+					unset($regionsDirectory->values[$id]);
+				}
+			}
+		}*/
+
+		#fixme
+		if(count($regionsDirectory->values) <= 1) {
+			$this->singleObject = true;
+			return array($this->rid => $regionsDirectory[$this->rid]['title']);
+		}
+
+		$regionsDirectory = $regionsDirectory->parentField 
+			? $regionsDirectory->getTree()->getPlainTree(null) 
+			: $regionsDirectory->getList();
+
+		return $regionsDirectory;
+	}/*}}}*/
 
 	function getMyRegionData(){
 		$regions = $this->getRegionsData();
@@ -109,34 +150,33 @@ class PXMultiRegions {
 			}
 		}
 
-	return $id;
+		return $id;
 	}
 
-	function getAdminRid(){
-		switch(true){
-			case $this->isFederal():
-				$this->setAdminRidFromRequest();
-				if(isset($_SESSION['__current_region'])){
-					$id = $_SESSION['__current_region'];
-					break;
-				}
-			default:
-				$id = $_SESSION['__current_region'] = $this->getRidFromLogin();
+	function getAdminRid() {
+		$id = null;
+		$this->setAdminRidFromRequest();
+
+		if(isset($_SESSION['__current_region'])){
+			$id = $_SESSION['__current_region'];
+		}
+
+		if(!$id && intval($id)) {
+			$id = $_SESSION['__current_region'] = $this->getRidFromLogin();
 		}
 
 		return $id;
 	}
 	
 	function getRidFromLogin() {
-		$regions = $this->db->query('SELECT objectid FROM acl_objects WHERE sgroupid IN ('.implode(',', $this->user->groups).') AND objectid IS NOT null');
-		$rIds = array();
-		
+		$regions = $this->db->query('SELECT objectid, objectparent FROM acl_objects 
+			WHERE sgroupid IN ('.implode(',', $this->user->groups).') AND objectid IS NOT null');
+
 		foreach ($regions as $k => $r) {
 			$rIds[] = $r['objectid'];
 		}
-		
-		$urlRegion = $this->getUserRid();
 
+		$urlRegion = $this->getUserRid();
 		switch (count($rIds)) {
 			case 0:
 				return $urlRegion;
@@ -153,20 +193,28 @@ class PXMultiRegions {
 
 	private function setAdminRidFromRequest(){
 		$this->_doSession();
+
 		if($this->request->isSetVar(self::REGION_MARK)){
 			$rid = $this->request->getVar(self::REGION_MARK);
+
 			if(isset($rid['rid'])){
 				$_SESSION['__current_region'] = $rid['rid'];
 			}
 		}
 	}
-	
-	function setRid(){
+
+	function setRid() {
 		$this->rid = $this->context == 'user' ? $this->getUserRid() : $this->getAdminRid();
 	}
 
 	function findByRegion(){
-		return empty($this->rid) ? $this->db->TrueStatusString() : $this->db->inArray(self::REGION_MARK, $this->rid);
+		$sqlFilter = sprintf(" sys_regions && '{%s}' ", join(",", array_keys($this->loadDirectory()->values)));
+		return empty($this->rid) ? $sqlFilter : $this->db->inArray(self::REGION_MARK, $this->rid);
+	}
+
+	function exceptNull($array) {
+		unset($array[""]);
+		return $array;
 	}
 
 	function isCurrentInSet($list){
@@ -188,24 +236,30 @@ class PXMultiRegions {
 	}
 
 	//For triggers
-	function isFederal(){
-		$user = PXRegistry::getUser();
-		return $user->can('manage_region');
+	function isFederal() {
+		if(self::$isFederal) {
+			return self::$isFederal;
+		}
+
+		return self::$isFederal = $this->user->can('manage_region', $this->format);
 	}
 
 	static function isRegionalObject($format){
 		return isset($format->fields[PXMultiRegions::REGION_MARK]);
 	}
 
+	#fixme
 	function addRegionByDefault($format, &$dbFields, &$dbValues){
 		if($this->isRegionalObject($format)){
+			$allowedRegions = array_keys($this->loadDirectory()->values);
 			$key = array_flip($dbFields);
 
-			if(!$this->isFederal()){
-				$reg = '{'.$this->rid.'}';
-			} else {
-				$reg = empty($dbValues[$key[self::REGION_MARK]]) ? '{'.$this->rid.'}' : $dbValues[$key[self::REGION_MARK]];
-			}
+			$toArray = 
+				PXMultiRegions::regToArray($dbValues[$key[self::REGION_MARK]]);
+
+			$reg = empty($toArray) || empty($toArray[0])
+				? PXMultiRegions::regToString($allowedRegions)
+				: $dbValues[$key[self::REGION_MARK]];
 
 			$dbValues[$key[self::REGION_MARK]] = $reg;
 		}
@@ -223,23 +277,23 @@ class PXMultiRegions {
 				return $this->checkRegionAccess($parentFormat, $parent);
 			}
 		}
+
 		return true;
 	}
 
-	function checkRegionAccess($format, $object){
-		if($this->isRegionalObject($format) && !$this->isFederal()){
-			$user = PXRegistry::getUser();
-			
-			if(count($object[self::REGION_MARK]) != 1 
-				|| $this->rid != $object[self::REGION_MARK][0] 
-				|| !$user->can('manage_region', null, array('id' => $this->rid))) {
-					return false;
-			}
+	function checkRegionAccess($format, $object) {
+		if(!$this->isRegionalObject($format)) {
+			return true;
 		}
 
-		return true;
+		$orig  = array_flip($object[self::REGION_MARK]); 
+		$count = count($allowed = array_flip(array_keys($this->loadDirectory()->values)));
+		$merge = $orig + $allowed;
+
+		return $count == count($merge);
 	}
-	
+
+	#todo: move to helper
 	static function regToArray($regString) {
 		return explode(",", strtr($regString, array("{" => "", "}" => "")));
 	}

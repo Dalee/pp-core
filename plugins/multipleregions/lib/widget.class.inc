@@ -5,15 +5,13 @@ class PXTabbedMenuRegionChanger extends PXAdminWidget {
 			isset(PXRegistry::getApp()->types[PXMultiRegions::REGION_MARK]) && //FIXME: in the future this behaviour will be managed via plugins abstraction
 			PXRegistry::getLayout()->outerLayout === 'index'
 		){
-			$regions = PXMultiRegions::getInstance();
+			$regions     = PXMultiRegions::getInstance();
 			$regionsData = $regions->getRegionsAsDirectory();
 
-			if($regionsData){
-				if(PXRegistry::getUser()->can('manage_region')) {
-					return $this->_selector($regions, $regionsData);
-				} else {
-					return $this->_static($regions, $regionsData);
-				}
+			if(!$regions->singleObject) {
+				return $this->_selector($regions, $regionsData);
+			} else {
+				return $this->_static($regions, $regionsData);
 			}
 		}
 
@@ -22,6 +20,7 @@ class PXTabbedMenuRegionChanger extends PXAdminWidget {
 
 	private function _static($regions, $regionsData) {
 		$rId = $regions->getRid();
+
 		$curReg = isset($regionsData[$rId]) ? $regionsData[$rId] : 'не определен';
 		return '<span class="multipleregions-current-region">Текущий регион <strong>'.$curReg.'</strong></span>';
 	}

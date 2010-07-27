@@ -636,9 +636,7 @@ class PXDatabase extends NLSQLDatabaseAdapter {
 		}
 
 		if (isset($format->fields['parent']) && $object['parent']) {
-			PXRegistry::getHKCU()->set("add", 1);
-				$parent = $this->GetObjectById($this->types[$format->parent], $object['parent']);
-			PXRegistry::getHKCU()->set("add", 0);
+			$parent = $this->GetObjectById($this->types[$format->parent], $object['parent']);
 
 			if (!count($parent)) {
 				$errString = 'Попытка добавить объект в несуществующий раздел';

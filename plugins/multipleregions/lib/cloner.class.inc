@@ -4,55 +4,73 @@ class PXPublicRegionObjectCloner {
 	public $db;
 	public $app;
 
-	function __construct($format, &$object, &$objectInDB, &$dbFields, &$dbValues, $rid) {
+	const REFLEX_FIELD = 'sys_reflex_id';
+
+	function __construct($format, &$object = null, &$objectInDB, &$dbFields = null, &$dbValues = null, $trigger) {
 		$this->format      = $format;
 		$this->object      =& $object;
 		$this->objectInDB  =& $objectInDB;
 		$this->dbFields    =& $dbFields;
 		$this->dbValues    =& $dbValues;
-		$this->rid         = $rid;
-		$this->oid         = $object['id'];
-
+		$this->oid         = $objectInDB['id'];
+		$this->trigger     = $trigger;
 		$this->childTypes  = $format->childTypes();
 
 		PXRegistry::assignToObject($this);
 	}
 
-	public function cloneObject() {
-		$this->copyMainObject();
-	}
+	private function isDenyEditValidate() {/*{{{*/
+		if(isset($this->objectInDB['deny_region_edit']) && !empty($this->objectInDB['deny_region_edit'])) {
+			$this->trigger->fireError('Только федеральное редактирование!');
+		}
+	}/*}}}*/
 
-	private function copyMainObject() {
-		$object = $this->object;
+	public function cloneObject($allowedRegions) {/*{{{*/
+		$this->isDenyEditValidate();
 
-		$object['reflex_id'] = $object['id'];
-		$object['sys_regions'] = array();
-		$object['copy'] = 1;
-	
-		$this->nid = $object['id'] = $this->db->cloneContentObject($this->format, $object, $status=true);
+		$allowedRegions = array_keys($allowedRegions);
 
-		$this->normalizeMainObject();
-	}
-	
-	private function normalizeMainObject() {
-		$regionsIds = array_flip($this->objectInDB['sys_regions']);
+		$this->db->transactionBegin();
+			$this->substractRegions($allowedRegions);
+			$this->copyMainObject($allowedRegions);
+		$this->db->transactionCommit();
 
-		unset($regionsIds[-1]);
-		unset($regionsIds[$this->rid]);
+		return $this->nid;
+	}/*}}}*/
 
-		$this->dbFields = array();
-		$this->dbValues = array();
+	private function substractRegions($allowedRegions) {
+		$regionsIds = array_flip($this->objectInDB[PXMultiRegions::REGION_MARK]);
 
-		foreach($this->objectInDB as $k => $i) {
-			if(isset($this->object[$k])) {
-				$params = array("db" => &$this->db, "dbFields" => &$this->dbFields, "dbValues" => &$this->dbValues);
-					
-				$r = $this->format->fields[$k]
-					->storageType->normalizeObjectAttribute($this->format->fields[$k], $this->objectInDB, $params);
+		foreach($allowedRegions as $id) {
+			if(isset($regionsIds[$id])) {
+				unset($regionsIds[$id]);
 			}
 		}
 
-		$this->setDbValue('sys_regions', PXMultiRegions::regToString(array_keys($regionsIds)));
+		$this->db->modifyingQuery($s = sprintf("UPDATE %s set %s = '%s' where id = '%s'", 
+			$this->format->id, PXMultiRegions::REGION_MARK, PXMultiRegions::regToString(array_flip($regionsIds)), $this->oid));
+	}
+
+	public function deleteObject($allowedRegions) {
+		$this->isDenyEditValidate();
+		$this->substractRegions($allowedRegions);
+	}
+
+	public function moveObject($allowedRegions) {
+		$this->cloneObject($allowedRegions);
+	}
+
+	private function copyMainObject($allowedRegions) {
+		$object = $this->object;
+
+		if(!is_array($object)) {
+			$object = $this->db->getObjectById($this->format, $object);
+		}
+
+		$object[self::REFLEX_FIELD] = $this->oid;
+		$object[PXMultiRegions::REGION_MARK] = $allowedRegions;
+
+		$this->nid = $object['id'] = $this->db->cloneContentObject($this->format, $object, !empty($object['status']));
 	}
 
 	private function setDbValue($key, $value) {
