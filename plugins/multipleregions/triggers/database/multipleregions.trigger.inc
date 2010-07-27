@@ -216,7 +216,7 @@ class PXTriggerDatabaseMultipleregions extends PXAbstractDatabaseTrigger {
 		$regions = $this->getRegions();
 
 		if($regions->isRegionalObject($objectFormat) && $regions->isRegionalObject($exObjectFormat)) {
-			$regionFilter = $regions->findByRegion();
+			$regionFilter = $regions->findByRegion($object[PXMultiRegions::REGION_MARK]);
 
 			if(strlen($table['exWhere'])) {
 				$table['exWhere'] .=  " AND ";

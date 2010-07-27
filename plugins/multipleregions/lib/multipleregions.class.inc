@@ -209,10 +209,12 @@ class PXMultiRegions {
 		$this->rid = $this->context == 'user' ? $this->getUserRid() : $this->getAdminRid();
 	}
 
-	function findByRegion(){
-		$sqlFilter = sprintf(" sys_regions && '{%s}' ", 
-			join(",", array_flip($this->exceptNull(array_flip(array_keys($this->loadDirectory()->values))))));
+	function findByRegion($regionsList=null) {
+		$conditionArray = $regionsList
+			? $regionsList
+			: array_keys($this->loadDirectory()->values);
 
+		$sqlFilter = sprintf(" sys_regions && '%s' ", PXMultiRegions::regToString($conditionArray));
 		return empty($this->rid) ? $sqlFilter : $this->db->inArray(self::REGION_MARK, $this->rid);
 	}
 
@@ -305,10 +307,10 @@ class PXMultiRegions {
 
 	#todo: move to helper
 	static function regToArray($regString) {
-		return explode(",", strtr($regString, array("{" => "", "}" => "")));
+		return array_filter(explode(",", strtr($regString, array("{" => "", "}" => ""))), "is_numeric");
 	}
 
 	static function regToString($regArray) {
-		return sprintf("{%s}", join(",", $regArray));
+		return sprintf("{%s}", join(",", array_filter($regArray, "is_numeric")));
 	}
 }
