@@ -191,8 +191,14 @@ class PXMultiRegions {
 		if($this->request->isSetVar(self::REGION_MARK)){
 			$rid = $this->request->getVar(self::REGION_MARK);
 
-			if(isset($rid['rid'])){
-				$_SESSION['__current_region'] = $rid['rid'];
+			if(!isset($rid['rid'])) {
+				return;
+			}
+
+			$rid = $rid['rid'];
+
+			if((is_numeric($rid) /*&& $this->inAllowed($rid)*/) || $rid === '') {
+				$_SESSION['__current_region'] = $rid;
 			}
 		}
 	}
@@ -301,5 +307,16 @@ class PXMultiRegions {
 
 	static function regToString($regArray) {
 		return sprintf("{%s}", join(",", array_filter($regArray, "is_numeric")));
+	}
+
+	#fixme!! load directory broken
+	function getAllowedRegionsIds() {
+		$tmp = $this->loadDirectory()->values;
+		return array_flip(array_keys($tmp));
+	}
+
+	function inAllowed($rid) {
+		$list = $this->getAllowedRegionsIds();
+		return isset($list[$rid]);
 	}
 }
