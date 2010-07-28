@@ -83,7 +83,7 @@ class PXMultiRegions {
 		}
 
 		if($regionsDirectory->parentField) {
-			$regionsTree = $regionsDirectory->getTree();
+			$regionsTree = $regionsDirectory->getTree(true);
 			$regionsDirectory = !empty($regionsTree) ? $regionsTree->getPlainTree(null) : array();
 		} else {
 			$regionsDirectory = $regionsDirectory->getList();
@@ -163,30 +163,22 @@ class PXMultiRegions {
 			$id = $_SESSION['__current_region'];
 		}
 
-		if(!$id && intval($id)) {
+		if(is_null($id)) {
 			$id = $_SESSION['__current_region'] = $this->getRidFromLogin();
 		}
 
 		return $id;
 	}
-	// FIXME !
+
 	function getRidFromLogin() {
-		$regions = $this->db->query('SELECT objectid, objectparent FROM acl_objects 
-			WHERE sgroupid IN ('.implode(',', $this->user->groups).') AND objectid IS NOT null');
+		$urlRegionId = $this->getUserRid();
+		$regionsDirectoryIds = array_keys($this->loadDirectory()->values);
 
-		foreach ($regions as $k => $r) {
-			$rIds[] = $r['objectid'];
-		}
+		if(!empty($regionsDirectoryIds) && in_array($urlRegionId, $regionsDirectoryIds)) {
+			return $urlRegionId;
+		} 
 
-		$urlRegion = $this->getUserRid();
-		switch (count($rIds)) {
-			case 0:
-				return $urlRegion;
-			case 1:
-				return current($rIds);
-			default:
-				return (!in_array($urlRegion, $rIds) ? current($rIds) : $urlRegion);
-		}
+		return "";
 	}
 
 	function getRid(){
@@ -216,12 +208,6 @@ class PXMultiRegions {
 
 		$sqlFilter = sprintf(" sys_regions && '%s' ", PXMultiRegions::regToString($conditionArray));
 		return empty($this->rid) ? $sqlFilter : $this->db->inArray(self::REGION_MARK, $this->rid);
-	}
-
-	// REMOVEME
-	function exceptNull($array) {
-		unset($array[""]);
-		return $array;
 	}
 
 	function isCurrentInSet($list){

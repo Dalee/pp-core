@@ -28,7 +28,7 @@ class PXTriggerDatabaseMultipleregions extends PXAbstractDatabaseTrigger {
 			$refl  = @array_flip(GetColFromTableWithIndexs($table, PXPublicRegionObjectCloner::REFLEX_FIELD));
 
 			foreach($table as $id => $t)  {
-				if(isset($refl[$t['parent']])) {
+				if(isset($t['parent']) && isset($refl[$t['parent']])) {
 					$table[$id]['parent'] = $refl[$t['parent']];
 				}
 			}
