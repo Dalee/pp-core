@@ -61,18 +61,12 @@ class PXPublicRegionObjectCloner {
 	}
 
 	private function copyMainObject($allowedRegions) {
-		$object = $this->objectInDB;
-
-		if(!is_array($object)) {
-			$object = $this->db->getObjectById($this->format, $object);
-		}
-
-		$object[self::REFLEX_FIELD] = $this->oid;
-		$object[PXMultiRegions::REGION_MARK] = $allowedRegions;
-
 		#create clone
 		$this->nid = $this->object['id'] = 
-			$this->db->cloneContentObject($this->format, $object, !empty($object['status']));
+			$this->db->cloneContentObject($this->format, $this->objectInDB, !empty($this->objectInDB['status']));
+
+		$this->object[self::REFLEX_FIELD] = $this->oid;
+		$this->object[PXMultiRegions::REGION_MARK] = $allowedRegions;
 
 		#set user modify
 		$this->db->modifyContentObject($this->format, $this->object);
