@@ -888,11 +888,7 @@ class PXDatabase extends NLSQLDatabaseAdapter {
 			FatalError($errString);
 		}
 		if (isset($format->fields['parent']) && $object['parent']) {
-
-			PXRegistry::getHKCU()->set("mod", 1);
-				$parentObject = $this->GetObjectById($this->types[$format->parent], $object['parent']);
-			PXRegistry::getHKCU()->set("mod", 0);
-
+			$parentObject = $this->GetObjectById($this->types[$format->parent], $object['parent']);
 			if (!count($parentObject)) {
 				$errString = 'Попытка переместить объект в несуществующий раздел';
 				$audit->error($errString, $format->id .'/'.$object['id']);

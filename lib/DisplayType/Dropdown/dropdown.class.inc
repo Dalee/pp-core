@@ -35,9 +35,7 @@ class PXDisplayTypeDropdown extends PXDisplayType {
 		$db  = PXRegistry::getDb();
 		$app = PXRegistry::getApp();
 
-		PXRegistry::getHKCU()->set("parentdrop", 1);
 		$r = $db->getObjects($app->types[$parentFormat], NULL, DB_SELECT_FULL_TREE); 
-		PXRegistry::getHKCU()->set("parentdrop", 0);
 
 		return $r;
 	}
