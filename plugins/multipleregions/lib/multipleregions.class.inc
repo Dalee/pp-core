@@ -76,7 +76,7 @@ class PXMultiRegions {
 			}
 		}
 
-		if(count($regionsDirectory->values) ==-1) {
+		if(count($regionsDirectory->values) == 1) {
 			$region = pos($regionsDirectory->values);
 			$this->singleObject = true;
 			return array($region['id'] => $region['title']);
@@ -135,7 +135,6 @@ class PXMultiRegions {
 					if(in_array($host, $regions)){
 						$id = $region['id'];
 						break;
-
 					} else {
 						foreach ($regions as $k => $r) {
 							if (strstr($r, '*')) {
@@ -144,7 +143,7 @@ class PXMultiRegions {
 								
 								if (preg_match('/'.$mask.'/i', $host)) {
 									$id = $region['id'];
-									break;
+									break(2);
 								}
 							}
 						}
@@ -170,7 +169,7 @@ class PXMultiRegions {
 
 		return $id;
 	}
-	
+	// FIXME !
 	function getRidFromLogin() {
 		$regions = $this->db->query('SELECT objectid, objectparent FROM acl_objects 
 			WHERE sgroupid IN ('.implode(',', $this->user->groups).') AND objectid IS NOT null');
@@ -219,6 +218,7 @@ class PXMultiRegions {
 		return empty($this->rid) ? $sqlFilter : $this->db->inArray(self::REGION_MARK, $this->rid);
 	}
 
+	// REMOVEME
 	function exceptNull($array) {
 		unset($array[""]);
 		return $array;
