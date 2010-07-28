@@ -7,7 +7,7 @@ class PXMultiRegions {
 	private $context;
 
 	private static $self;
-	private static $regionsData;
+	private static $regionsData = array();
 	private static $regionsDirectory;
 	private static $isFederal;
 
@@ -37,12 +37,12 @@ class PXMultiRegions {
 		return self::$self;
 	}/*}}}*/
 
-	function getRegionsData(){/*{{{*/
-		if(!isset(self::$regionsData)){
-			self::$regionsData = $this->db->getObjects($this->db->types[self::REGION_MARK], true);
+	function getRegionsData($asTree = false){/*{{{*/
+		if(!isset(self::$regionsData[!!$asTree])){
+			self::$regionsData[!!$asTree] = $this->db->getObjects($this->db->types[self::REGION_MARK], true, $asTree ? DB_SELECT_TREE : DB_SELECT_TABLE);
 		}
 
-		return self::$regionsData;
+		return self::$regionsData[!!$asTree];
 	}/*}}}*/
 
 	function loadDirectory() {/*{{{*/
@@ -83,8 +83,10 @@ class PXMultiRegions {
 		}
 
 		if($regionsDirectory->parentField) {
-			$regionsTree = $regionsDirectory->getTree(true);
-			$regionsDirectory = !empty($regionsTree) ? $regionsTree->getPlainTree(null) : array();
+			$regionsDirectory = $regionsDirectory->getTree(true);
+			if($only_values){
+				$regionsDirectory = !empty($regionsDirectory) ? $regionsDirectory->getPlainTree(null) : array();
+			}
 		} else {
 			$regionsDirectory = $regionsDirectory->getList();
 		}
