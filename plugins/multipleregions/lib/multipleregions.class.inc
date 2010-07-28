@@ -50,7 +50,7 @@ class PXMultiRegions {
 			return self::$regionsDirectory;
 		}
 
-		self::$regionsDirectory = PXRegistry::getApp()->directory[self::REGION_MARK];
+		self::$regionsDirectory = clone PXRegistry::getApp()->directory[self::REGION_MARK];
 		self::$regionsDirectory->loaded or $this->db->LoadDirectory(self::$regionsDirectory, null, false);
 
 		foreach(self::$regionsDirectory->values as $id => $r) {
@@ -199,7 +199,7 @@ class PXMultiRegions {
 
 			$rid = $rid['rid'];
 
-			if((is_numeric($rid) /*&& $this->inAllowed($rid)*/) || $rid === '') {
+			if((is_numeric($rid) && $this->inAllowed($rid)) || $rid === '') {
 				$_SESSION['__current_region'] = $rid;
 			}
 		}
