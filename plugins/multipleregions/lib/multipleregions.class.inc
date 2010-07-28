@@ -201,6 +201,7 @@ class PXMultiRegions {
 		$this->rid = $this->context == 'user' ? $this->getUserRid() : $this->getAdminRid();
 	}
 
+	#FIXME: move sqlFilter into database method, like db->inArray()
 	function findByRegion($regionsList=null) {
 		$conditionArray = $regionsList
 			? $regionsList
