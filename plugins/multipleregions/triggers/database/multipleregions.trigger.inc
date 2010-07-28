@@ -48,8 +48,11 @@ class PXTriggerDatabaseMultipleregions extends PXAbstractDatabaseTrigger {
 
 			$nid = $cloner->cloneObject($regions->loadDirectory()->values);
 
-			$request = PXRegistry::getRequest();
-			PXResponse::getInstance()->redirect("popup.phtml?area={$request->getArea()}&format={$format->id}&id={$nid}&action=main");
+			#fixme popup?! check location
+			if(PXRegistry::getApp()->isAdminEngine()) {
+				$request = PXRegistry::getRequest();
+				PXResponse::getInstance()->redirect("popup.phtml?area={$request->getArea()}&format={$format->id}&id={$nid}&action=main");
+			}
 		}
 
 		if($permit) {
@@ -234,7 +237,11 @@ class PXTriggerDatabaseMultipleregions extends PXAbstractDatabaseTrigger {
 		return PXMultiRegions::getInstance();
 	}
 
-	function fireError($message='Доступ к этому объекту/действию запрещен !'){
+	function fireError($message='Доступ к этому объекту/действию запрещен !') {
+		if(!PXRegistry::getApp()->isAdminEngine()) {
+			return;
+		}
+
 		$request  = PXRegistry::getRequest();
 		$returnTo = $request->GetHttpReferer();
 		

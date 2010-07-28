@@ -35,11 +35,11 @@ class PXDirectoryDescription {
 		return $retArray;
 	}
 
-	function GetTree() {
+	function GetTree($saveOrphans=false) {
 		$retArray = array();
 
 		if (count($this->values) && $this->parentField !== false) {
-			$retArray = new NLTree($this->values, 'id', $this->parentField, 'title');
+			$retArray = new NLTree($this->values, 'id', $this->parentField, 'title', $saveOrphans);
 		}
 
 		return $retArray;
