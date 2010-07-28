@@ -299,6 +299,7 @@ class PXMultiRegions {
 		#fixme clean up database!
 		unset($orig["NULL"]);
 		unset($orig[-1]);
+		unset($orig[0]);
 
 		$count = count($allowed);
 		$merge = $orig + $allowed;
