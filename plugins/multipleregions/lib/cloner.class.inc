@@ -61,8 +61,7 @@ class PXPublicRegionObjectCloner {
 	}
 
 	private function copyMainObject($allowedRegions) {
-		$donorObject = $this->objectInDB;
-		$object = $this->object;
+		$object = $this->objectInDB;
 
 		if(!is_array($object)) {
 			$object = $this->db->getObjectById($this->format, $object);
@@ -71,14 +70,12 @@ class PXPublicRegionObjectCloner {
 		$object[self::REFLEX_FIELD] = $this->oid;
 		$object[PXMultiRegions::REGION_MARK] = $allowedRegions;
 
-		#fixme!!!
-		$this->nid = $object['id'] = @$this->db->cloneContentObject($this->format, $object, !empty($object['status']));
+		#create clone
+		$this->nid = $this->object['id'] = 
+			$this->db->cloneContentObject($this->format, $object, !empty($object['status']));
 
-		#fixme ripped cloneContentObject
-		foreach ($this->format->fields as $k => $v) {
-			$p = array('donor'=> $donorObject, 'format'=> $this->format->id);
-			$v->storageType->cloneFile($v, $object, $p);
-		}
+		#set user modify
+		$this->db->modifyContentObject($this->format, $this->object);
 	}
 
 	private function setDbValue($key, $value) {

@@ -64,6 +64,9 @@ class PXDisplayTypeMultiRegions extends PXDisplayType {
 	}
 
 	private function _buildSelector($field, $value, $values) {
+		#delete not allowed value
+		$value = array_intersect($value, array_keys($values));
+
 		$regionSelector = new PXInputDropDown($field->name . '[]', $value, $values);
 
 		$regionSelector->setMultiple(true);
