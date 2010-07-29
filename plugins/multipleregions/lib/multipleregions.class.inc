@@ -215,7 +215,7 @@ class PXMultiRegions {
 			? $regionsList
 			: $this->getAllowedRegionsIds();
 
-		return empty($this->rid) ? $this->db->intersectArray(PXMultiRegions::REGION_MARK, $conditionArray) : $this->db->inArray(self::REGION_MARK, $this->rid);
+		return empty($this->rid) ? $this->db->intersectIntArray(PXMultiRegions::REGION_MARK, $conditionArray) : $this->db->inArray(self::REGION_MARK, $this->rid);
 	}
 
 	function isCurrentInSet($list){
@@ -285,13 +285,15 @@ class PXMultiRegions {
 			return true;
 		}
 
-		$orig  = array_flip($object[self::REGION_MARK]);
-		$allowed = array_flip($this->getAllowedRegionsIds());
+		$regionsData = $this->getRegionsData();
+		$orig        = array_flip($object[self::REGION_MARK]);
+		$allowed     = array_flip($this->getAllowedRegionsIds());
 
-		#fixme clean up database!
-		unset($orig["NULL"]);
-		unset($orig[-1]);
-		unset($orig[0]);
+		foreach($orig as $id => $tmp) {
+			if(!isset($regionsData[$id])) {
+				unset($orig[$id]);
+			}
+		}
 
 		$count = count($allowed);
 		$merge = $orig + $allowed;
