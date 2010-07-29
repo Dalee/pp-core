@@ -76,7 +76,6 @@ class PXPublicRegionObjectCloner {
 
 		if(isset($findClonedParent['id'])) {
 			$objectInDB['parent'] = $findClonedParent['id'];
-			$objectInDB[PXMultipleRegionsReflexer::REFLEX_FIELD] = null;
 		}
 
 		#create clone
