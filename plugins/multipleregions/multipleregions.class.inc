@@ -5,8 +5,10 @@ class PXPluginMultiRegions extends PXAbstractPlugin {
 		require_once $this->path . '/lib/staticregion.class.inc';
 		require_once $this->path . '/lib/cloner.class.inc';
 
+		require_once $this->path . '/lib/helper.class.inc';
+		require_once $this->path . '/lib/multipleregions.class.inc';
+
 		PXLoader::getInstance($this->path . "/lib")
-			-> load("PXMultiregions",            "multipleregions.class.inc")
 			-> load("PXTabbedMenuRegionChanger", "widget.class.inc")
 			-> load("PXDisplayTypeMultiRegions", "display_type.class.inc")
 			-> load("PXStorageTypeRegionUrl",    "storage_type.class.inc");

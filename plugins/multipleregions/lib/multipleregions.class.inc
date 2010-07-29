@@ -94,7 +94,7 @@ class PXMultiRegions {
 		return $regionsDirectory;
 	}/*}}}*/
 
-	function getMyRegionData(){
+	function getMyRegionData(){/*{{{*/
 		$regions = $this->getRegionsData();
 		$my_region = array();
 
@@ -105,9 +105,9 @@ class PXMultiRegions {
 			}
 		}
 		return $my_region;
-	}
+	}/*}}}*/
 
-	function getRegionUrl($rid){
+	function getRegionUrl($rid){/*{{{*/
 		foreach($this->getRegionsData() as $val){
 			if($rid == $val['id']){
 				$tmp_url = $val['url'];
@@ -120,9 +120,9 @@ class PXMultiRegions {
 		$urls = explode(',', $tmp_url);
 
 		return reset($urls);
-	}
+	}/*}}}*/
 
-	function getUserRid(){
+	function getUserRid(){/*{{{*/
 		static $id;
 
 		if(!isset($id)) {
@@ -155,7 +155,7 @@ class PXMultiRegions {
 		}
 
 		return $id;
-	}
+	}/*}}}*/
 
 	function getAdminRid() {
 		$id = null;
@@ -174,7 +174,7 @@ class PXMultiRegions {
 
 	function getRidFromLogin() {
 		$urlRegionId = $this->getUserRid();
-		$regionsDirectoryIds = array_keys($this->loadDirectory()->values);
+		$regionsDirectoryIds = $this->getAllowedRegionsIds();
 
 		if(!empty($regionsDirectoryIds) && in_array($urlRegionId, $regionsDirectoryIds)) {
 			return $urlRegionId;
@@ -213,10 +213,9 @@ class PXMultiRegions {
 	function findByRegion($regionsList=null) {
 		$conditionArray = $regionsList
 			? $regionsList
-			: array_keys($this->loadDirectory()->values);
+			: $this->getAllowedRegionsIds();
 
-		$sqlFilter = sprintf(" sys_regions && '%s' ", PXMultiRegions::regToString($conditionArray));
-		return empty($this->rid) ? $sqlFilter : $this->db->inArray(self::REGION_MARK, $this->rid);
+		return empty($this->rid) ? $this->db->intersectArray(PXMultiRegions::REGION_MARK, $conditionArray) : $this->db->inArray(self::REGION_MARK, $this->rid);
 	}
 
 	function isCurrentInSet($list){
@@ -253,20 +252,18 @@ class PXMultiRegions {
 	#fixme
 	function addRegionByDefault($format, &$dbFields, &$dbValues){
 		if($this->isRegionalObject($format)){
-			$allowedRegions = array_keys($this->loadDirectory()->values);
+			$allowedRegionsIds = $this->getAllowedRegionsIds();
 			$key = array_flip($dbFields);
 
-			$toArray = 
-				PXMultiRegions::regToArray($dbValues[$key[self::REGION_MARK]]);
+			$toArray =
+				PXMultipleRegionsHelper::toArray($dbValues[$key[self::REGION_MARK]]);
 
 			$reg = empty($toArray) || empty($toArray[0])
-				? PXMultiRegions::regToString($allowedRegions)
+				? PXMultipleRegionsHelper::toString($allowedRegionsIds)
 				: $dbValues[$key[self::REGION_MARK]];
 
 			$dbValues[$key[self::REGION_MARK]] = $reg;
 		}
-
-		//TODO: Add general mask for suser
 	}
 
 	function checkRegionAccessToParent($format, $object){
@@ -289,7 +286,7 @@ class PXMultiRegions {
 		}
 
 		$orig  = array_flip($object[self::REGION_MARK]);
-		$allowed = array_flip(array_keys($this->loadDirectory()->values));
+		$allowed = array_flip($this->getAllowedRegionsIds());
 
 		#fixme clean up database!
 		unset($orig["NULL"]);
@@ -302,23 +299,12 @@ class PXMultiRegions {
 		return $count == count($merge);
 	}
 
-	#todo: move to helper
-	static function regToArray($regString) {
-		return array_filter(explode(",", strtr($regString, array("{" => "", "}" => ""))), "is_numeric");
-	}
-
-	static function regToString($regArray) {
-		return sprintf("{%s}", join(",", array_filter($regArray, "is_numeric")));
-	}
-
-	#fixme!! load directory broken
 	function getAllowedRegionsIds() {
-		$tmp = $this->loadDirectory()->values;
-		return array_flip(array_keys($tmp));
+		return array_keys($this->loadDirectory()->values);
 	}
 
 	function inAllowed($rid) {
-		$list = $this->getAllowedRegionsIds();
+		$list = array_flip($this->getAllowedRegionsIds());
 		return isset($list[$rid]);
 	}
 }

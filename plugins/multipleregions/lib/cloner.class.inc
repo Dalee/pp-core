@@ -19,52 +19,50 @@ class PXPublicRegionObjectCloner {
 		PXRegistry::assignToObject($this);
 	}
 
-	private function isDenyEditValidate() {/*{{{*/
-		if(isset($this->objectInDB['deny_region_edit']) && !empty($this->objectInDB['deny_region_edit'])) {
-			$this->trigger->fireError('Только федеральное редактирование!');
-		}
-	}/*}}}*/
-
-	public function cloneObject($allowedRegions) {/*{{{*/
+	public function cloneObject($allowedRegionsIds) {/*{{{*/
 		$this->isDenyEditValidate();
 
-		$allowedRegions = array_keys($allowedRegions);
-
 		$this->db->transactionBegin();
-			$this->substractRegions($allowedRegions);
-			$this->copyMainObject($allowedRegions);
+			$this->substractRegions($allowedRegionsIds);
+			$this->copyMainObject($allowedRegionsIds);
 		$this->db->transactionCommit();
 
 		return $this->nid;
 	}/*}}}*/
 
-	private function substractRegions($allowedRegions) {
+	private function substractRegions($allowedRegionsIds) {
 		$regionsIds = array_flip($this->objectInDB[PXMultiRegions::REGION_MARK]);
 
-		foreach($allowedRegions as $id) {
+		foreach($allowedRegionsIds as $id) {
 			if(isset($regionsIds[$id])) {
 				unset($regionsIds[$id]);
 			}
 		}
 
-		$this->db->modifyingQuery($s = sprintf("UPDATE %s set %s = '%s' where id = '%s'", 
-			$this->format->id, PXMultiRegions::REGION_MARK, PXMultiRegions::regToString(array_flip($regionsIds)), $this->oid));
+		$this->db->modifyingQuery(
+			sprintf("UPDATE %s set %s = '%s' where id = '%s'", 
+				$this->format->id, 
+				PXMultiRegions::REGION_MARK, 
+				PXMultipleRegionsHelper::toString(array_flip($regionsIds)),
+				$this->oid
+			)
+		);
 	}
 
-	public function deleteObject($allowedRegions) {
+	public function deleteObject($allowedRegionsIds) {
 		$this->isDenyEditValidate();
-		$this->substractRegions($allowedRegions);
+		$this->substractRegions($allowedRegionsIds);
 	}
 
-	public function moveObject($allowedRegions) {
-		$this->cloneObject($allowedRegions);
+	public function moveObject($allowedRegionsIds) {
+		$this->cloneObject($allowedRegionsIds);
 	}
 
-	private function copyMainObject($allowedRegions) {
+	private function copyMainObject($allowedRegionsIds) {
 		$objectInDB = $this->objectInDB;
 
 		$objectInDB[self::REFLEX_FIELD] = $this->oid;
-		$objectInDB[PXMultiRegions::REGION_MARK] = $allowedRegions;
+		$objectInDB[PXMultiRegions::REGION_MARK] = $allowedRegionsIds;
 
 		#create clone
 		$this->nid = $this->object['id'] = 
@@ -84,6 +82,12 @@ class PXPublicRegionObjectCloner {
 			$this->dbValues[$keys[$key]] = $value;
 		}
 	}
+	
+	private function isDenyEditValidate() {/*{{{*/
+		if(isset($this->objectInDB['deny_region_edit']) && !empty($this->objectInDB['deny_region_edit'])) {
+			$this->trigger->fireError('Только федеральное редактирование!');
+		}
+	}/*}}}*/
 }
 
 ?>

@@ -41,12 +41,10 @@ class PXTriggerDatabaseMultipleregions extends PXAbstractDatabaseTrigger {
 		$permit = $regions->checkRegionAccess($format, $objectInDB) && $regions->checkRegionAccessToParent($format, $objectInDB);
 
 		if(!$permit && $regions->isRegionalObject($format)) {
-			$regionsDirectory = $regions->loadDirectory();
-
 			$cloner = 
 				new PXPublicRegionObjectCloner($format, $object, $objectInDB, $dbFields, $dbValues, $this);
 
-			$nid = $cloner->cloneObject($regions->loadDirectory()->values);
+			$nid = $cloner->cloneObject($regions->getAllowedRegionsIds());
 
 			#fixme popup?! check location
 			if(PXRegistry::getApp()->isAdminEngine()) {
@@ -76,7 +74,7 @@ class PXTriggerDatabaseMultipleregions extends PXAbstractDatabaseTrigger {
 			$cloner = 
 				new PXPublicRegionObjectCloner($format, $object = null, $objectInDB, $dbFields = null, $dbValues = null, $this);
 
-			$cloner->deleteObject(array_keys($regions->loadDirectory()->values));
+			$cloner->deleteObject($regions->getAllowedRegionsIds());
 		} elseif(!$permit) {
 			$this->fireError();
 		}
@@ -104,7 +102,7 @@ class PXTriggerDatabaseMultipleregions extends PXAbstractDatabaseTrigger {
 			$cloner = 
 				new PXPublicRegionObjectCloner($format, $objId, $objectInDB, $dbFields = null, $dbValues = null, $this);
 
-			$cloner->moveObject(array_keys($regions->loadDirectory()->values));
+			$cloner->moveObject($regions->getAllowedRegionsIds());
 		} elseif(!$permit) {
 			$this->fireError();
 		}
