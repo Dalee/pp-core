@@ -1,5 +1,7 @@
 <?php
 class PXCorpRegions {
+	private static $fullTree;
+	
 	static function isFederalRegion($id = NULL) {
 		if (is_null($id)) {
 			$id = PXMultiRegions::getUserRid();
@@ -74,14 +76,18 @@ class PXCorpRegions {
 	}
 	
 	static function isRidInTree($sid, $rid) {
-		$where = array('id = '.$sid);
-		if(isset(PXRegistry::getApp()->types['struct']->fields['sys_regions'])) {
-			$where[] = 'sys_regions @> ARRAY['.$rid.']';
+		if (!self::$fullTree) {
+			self::initFullTree();
 		}
-		$data = PXRegistry::getDb()->Query('SELECT * FROM struct WHERE '. implode(' AND ', $where));
-		return count($data);
+
+		if (isset(self::$fullTree->leafs[$sid])) {
+			$regions = explode(',', preg_replace('/({|})/', '', self::$fullTree->leafs[$sid]->content['sys_regions']));
+			return in_array($rid, $regions);
+		}
+
+		return false;
 	}
-	
+
 	static function isObjectInRegion($objType, $pathName, $rid) {
 		$db = PXRegistry::getDb();
 		$obj = array();
@@ -195,7 +201,7 @@ class PXCorpRegions {
 		$sid = $sidFrom;
 
 		foreach ($ancestors as $a) {
-			if (self::isRidInTree($sid, $regionId)) {
+			if (self::isRidInTree($a, $regionId)) {
 				$sid = $a;
 				break;
 			}
@@ -222,6 +228,13 @@ class PXCorpRegions {
 	
 	static function regionExists($id) {
 		return array_key_exists($id, self::getAllData());
+	}
+	
+	static function initFullTree() {
+		if(empty(self::$fullTree)){
+			$treeTable      = PXRegistry::getDb()->Query('SELECT * FROM struct');
+			self::$fullTree = new NLTree($treeTable);
+		}
 	}
 }
 ?>
