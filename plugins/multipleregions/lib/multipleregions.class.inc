@@ -45,6 +45,7 @@ class PXMultiRegions {
 		return self::$regionsData[!!$asTree];
 	}/*}}}*/
 
+	#fixme rewrite -> load normal objects
 	function loadDirectory() {/*{{{*/
 		if(self::$regionsDirectory) {
 			return self::$regionsDirectory;
@@ -209,7 +210,6 @@ class PXMultiRegions {
 		$this->rid = $this->context == 'user' ? $this->getUserRid() : $this->getAdminRid();
 	}
 
-	#FIXME: move sqlFilter into database method, like db->inArray()
 	function findByRegion($regionsList=null) {
 		$conditionArray = $regionsList
 			? $regionsList

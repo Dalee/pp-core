@@ -7,6 +7,7 @@ class PXPluginMultiRegions extends PXAbstractPlugin {
 
 		require_once $this->path . '/lib/helper.class.inc';
 		require_once $this->path . '/lib/multipleregions.class.inc';
+		require_once $this->path . '/lib/reflexer.class.inc';
 
 		PXLoader::getInstance($this->path . "/lib")
 			-> load("PXTabbedMenuRegionChanger", "widget.class.inc")

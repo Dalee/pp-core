@@ -68,12 +68,14 @@ class PXDisplayTypeMultiRegions extends PXDisplayType {
 		#delete not allowed value
 		$value = array_intersect($value, array_keys($values));
 
-		$regionSelector = new PXInputDropDown($field->name . '[]', $value, $values);
+		$html[] = new PXInputHidden($field->name . "_objectform", true);
 
+		$regionSelector = new PXInputDropDown($field->name . '[]', $value, $values);
 		$regionSelector->setMultiple(true);
 		$regionSelector->setSize(sizeof($values));
+		$html[] = $regionSelector;
 
-		return $regionSelector->html();
+		return join($html);
 	}
 
 	private function _buildStatic($field, $value, $values) {
