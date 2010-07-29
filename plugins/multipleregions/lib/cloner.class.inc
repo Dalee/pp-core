@@ -4,7 +4,8 @@ class PXPublicRegionObjectCloner {
 	public $db;
 	public $app;
 
-	const REFLEX_FIELD = 'sys_reflex_id';
+	const REFLEX_FIELD    = 'sys_reflex_id';
+	const DENY_EDIT_FIELD = 'deny_region_edit';
 
 	function __construct($format, &$object = null, &$objectInDB, &$dbFields = null, &$dbValues = null, $trigger) {
 		$this->format      = $format;
@@ -82,9 +83,9 @@ class PXPublicRegionObjectCloner {
 			$this->dbValues[$keys[$key]] = $value;
 		}
 	}
-	
+
 	private function isDenyEditValidate() {/*{{{*/
-		if(isset($this->objectInDB['deny_region_edit']) && !empty($this->objectInDB['deny_region_edit'])) {
+		if(isset($this->objectInDB[self::DENY_EDIT_FIELD]) && !empty($this->objectInDB[self::DENY_EDIT_FIELD])) {
 			$this->trigger->fireError('Только федеральное редактирование!');
 		}
 	}/*}}}*/
