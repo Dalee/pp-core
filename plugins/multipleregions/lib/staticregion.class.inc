@@ -119,7 +119,7 @@ class PXCorpRegions {
 	static function findUrl($host, $regionId) {
 		$regionData = self::getRegionData($regionId);
 		$urls       = explode(',', $regionData['url']);
-		
+
 		$engVersion = '';
 		$newHost    = '';
 
@@ -137,6 +137,11 @@ class PXCorpRegions {
 			);
 			
 			foreach ($urls as $k => $url) {
+				//FIXME
+				if (preg_match('/^('.$engPrfx.'\.|pda\.|m\.)/', $url)) {
+					continue;
+				}
+
 				$posibleHost = explode('.', $url);
 				$currentHost = explode('.', $host);
 
@@ -179,26 +184,24 @@ class PXCorpRegions {
 		if (strpos(end($path), '.html')) {
 			$file = end($path);
 		}
-		if (!count(PXRegistry::getDb()->getObjectById(PXRegistry::getDb()->types['struct'], $sidFrom))) {
-			$sidFrom = PXRegistry::getDb()->getObjectsByWhere(PXRegistry::getDb()->types['struct'], true, "type = 'root'");
-			$sidFrom = key($sidFrom);
+
+		$ancestors = $tree->GetAncestors($sidFrom);
+		array_unshift($ancestors, $sidFrom);
+
+		if (!count($tree->getFullPath($sidFrom))) {
+			$sidFrom = $ancestors[count($ancestors)-2];
 		}
 
-		$findSid = true;
-		$sid     = $sidFrom;
+		$sid = $sidFrom;
 
-		do {
+		foreach ($ancestors as $a) {
 			if (self::isRidInTree($sid, $regionId)) {
-				$findSid = false;
-			} else {
-				$s      = PXRegistry::getDb()->getObjectById(PXRegistry::getDb()->types['struct'], $sid);
-				$parent = PXRegistry::getDb()->getObjectById(PXRegistry::getDb()->types['struct'], $s['parent']);
-				$sid    = $parent['id'];
+				$sid = $a;
+				break;
 			}
-		} while ($findSid);
-		
+		}
+
 		if ($sid == $sidFrom && $file) {
-		
 			$allowed = $tree->leafs[$sid]->content['allowed'];
 			$obj = array();
 
