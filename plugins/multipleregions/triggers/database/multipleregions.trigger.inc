@@ -118,9 +118,6 @@ class PXTriggerDatabaseMultipleregions extends PXAbstractDatabaseTrigger {
 			$where    = $reflexer->getWhere();
 		}
 
-		# FIXME!!!
-		# For the region. When trying to clone an object whose parents had already been cloned.
-		# There is an error "attempt to add the object to a nonexistent section" because of the filter regions
 		if($regions->isRegionalObject($format)) {
 			$regionFilter = $regions->findByRegion();
 			$where = strlen($where) ? "($where) AND $regionFilter" : $regionFilter;
