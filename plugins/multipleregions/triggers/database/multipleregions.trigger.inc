@@ -50,12 +50,14 @@ class PXTriggerDatabaseMultipleregions extends PXAbstractDatabaseTrigger {
 		
 			if(PXRegistry::getApp()->isAdminEngine() && $request->issetVar(PXMultiRegions::REGION_MARK . "_objectform")) {
 				PXResponse::getInstance()->redirect("popup.phtml?area={$request->getArea()}&format={$format->id}&id={$nid}&action=main");
+			} else {
+				$hasBeenCloned = true; //if not redirected to popup after clone, do not fire error !
 			}
 		}
 
 		if($permit) {
 			$regions->addRegionByDefault($format, $dbFields, $dbValues);
-		} else {
+		} elseif(empty($hasBeenCloned)){
 			$this->fireError();
 		}
 
@@ -74,7 +76,7 @@ class PXTriggerDatabaseMultipleregions extends PXAbstractDatabaseTrigger {
 			$cloner = 
 				new PXPublicRegionObjectCloner($format, $object = null, $objectInDB, $dbFields = null, $dbValues = null, $this);
 
-			$cloner->deleteObject($regions->getAllowedRegionsIds());
+			$cloner->deleteObject($regions->getAllowedRegionsIds()); //FIXME, i am broken in multioperations !
 		} elseif(!$permit) {
 			$this->fireError();
 		}
