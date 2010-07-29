@@ -4,7 +4,7 @@ class PXDisplayTypeMultiRegions extends PXDisplayType {
 	private $singleObject = false;
 
 	private function getNotInLocation($field, $object) {
-		$reflex_field = PXPublicRegionObjectCloner::REFLEX_FIELD;
+		$reflex_field  = PXMultipleRegionsReflexer::REFLEX_FIELD;
 		$regions_field = PXMultiRegions::REGION_MARK;
 
 		$result = PXRegistry::getDB()->query("select id, {$regions_field} 

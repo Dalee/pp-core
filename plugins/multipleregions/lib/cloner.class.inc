@@ -3,8 +3,7 @@
 class PXPublicRegionObjectCloner {
 	public $db;
 	public $app;
-
-	const REFLEX_FIELD    = 'sys_reflex_id';
+	
 	const DENY_EDIT_FIELD = 'deny_region_edit';
 
 	function __construct($format, &$object = null, &$objectInDB, &$dbFields = null, &$dbValues = null, $trigger) {
@@ -62,7 +61,7 @@ class PXPublicRegionObjectCloner {
 	private function copyMainObject($allowedRegionsIds) {
 		$objectInDB = $this->objectInDB;
 
-		$objectInDB[self::REFLEX_FIELD] = $this->oid;
+		$objectInDB[PXMultipleRegionsReflexer::REFLEX_FIELD] = $this->oid;
 		$objectInDB[PXMultiRegions::REGION_MARK] = $allowedRegionsIds;
 
 		$findClonedParent = $this->db->query(
@@ -77,7 +76,7 @@ class PXPublicRegionObjectCloner {
 
 		if(isset($findClonedParent['id'])) {
 			$objectInDB['parent'] = $findClonedParent['id'];
-			$objectInDB[self::REFLEX_FIELD] = null;
+			$objectInDB[PXMultipleRegionsReflexer::REFLEX_FIELD] = null;
 		}
 
 		#create clone

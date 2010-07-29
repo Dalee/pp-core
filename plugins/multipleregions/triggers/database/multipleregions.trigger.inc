@@ -7,7 +7,7 @@ class PXTriggerDatabaseMultipleregions extends PXAbstractDatabaseTrigger {
 		$permit = $regions->checkRegionAccess($format, $object) && $regions->checkRegionAccessToParent($format, $object);
 
 		if($permit) {
-			$reflex_field = PXPublicRegionObjectCloner::REFLEX_FIELD;
+			$reflex_field = PXMultipleRegionsReflexer::REFLEX_FIELD;
 
 			if(isset($object[$reflex_field])) {
 				$this->simpleSetDbValues($reflex_field, $object[$reflex_field], $dbFields, $dbValues);
@@ -25,7 +25,7 @@ class PXTriggerDatabaseMultipleregions extends PXAbstractDatabaseTrigger {
 		$regions = $this->getRegions();
 
 		if(!$regions->isFederal()) {
-			$refl  = @array_flip(GetColFromTableWithIndexs($table, PXPublicRegionObjectCloner::REFLEX_FIELD));
+			$refl  = @array_flip(GetColFromTableWithIndexs($table, PXMultipleRegionsReflexer::REFLEX_FIELD));
 
 			foreach($table as $id => $t)  {
 				if(isset($t['parent']) && isset($refl[$t['parent']])) {
@@ -123,7 +123,7 @@ class PXTriggerDatabaseMultipleregions extends PXAbstractDatabaseTrigger {
 			$where = strlen($where) ? "($where) AND $regionFilter" : $regionFilter;
 
 			if($mode != DB_SELECT_COUNT) {
-				$reflex_field = PXPublicRegionObjectCloner::REFLEX_FIELD;
+				$reflex_field = PXMultipleRegionsReflexer::REFLEX_FIELD;
 				$selector .= ", {$reflex_field}";
 			}
 		}
