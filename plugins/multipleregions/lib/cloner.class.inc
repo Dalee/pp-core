@@ -64,18 +64,20 @@ class PXPublicRegionObjectCloner {
 		$objectInDB[PXMultipleRegionsReflexer::REFLEX_FIELD] = $this->oid;
 		$objectInDB[PXMultiRegions::REGION_MARK] = $allowedRegionsIds;
 
-		$findClonedParent = $this->db->query(
-			sprintf("select id from %s where %s = '%s'",
-				$this->format->id, 
-				PXMultipleRegionsReflexer::REFLEX_FIELD,
-				$objectInDB['parent']
-			)
-		);
+		if(isset($objectInDB['parent'])) {
+			$findClonedParent = $this->db->query(
+				sprintf("select id from %s where %s = '%s'",
+					$this->format->id, 
+					PXMultipleRegionsReflexer::REFLEX_FIELD,
+					$objectInDB['parent']
+				)
+			);
 
-		$findClonedParent = pos((array) $findClonedParent);
+			$findClonedParent = pos((array) $findClonedParent);
 
-		if(isset($findClonedParent['id'])) {
-			$objectInDB['parent'] = $findClonedParent['id'];
+			if(isset($findClonedParent['id'])) {
+				$objectInDB['parent'] = $findClonedParent['id'];
+			}
 		}
 
 		#create clone
