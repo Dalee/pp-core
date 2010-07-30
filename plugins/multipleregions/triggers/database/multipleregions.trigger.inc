@@ -4,6 +4,16 @@ class PXTriggerDatabaseMultipleregions extends PXAbstractDatabaseTrigger {
 	function OnBeforeAddObject(&$db, &$objId, &$format, &$object, &$dbFields, &$dbValues) {
 		$regions = $this->getRegions();
 
+		$isRegionalObject  = $regions->isRegionalObject($format);
+		$allowedRegionsIds = $regions->getAllowedRegionsIds();
+
+		$rid = $regions->getRid();
+
+		if($isRegionalObject && empty($allowedRegionsIds) && $rid) {
+			$this->simpleSetDbValues(PXMultiRegions::REGION_MARK, "{{$rid}}", $dbFields, $dbValues);
+			return true;
+		}
+
 		$permit = $regions->checkRegionAccess($format, $object) && $regions->checkRegionAccessToParent($format, $object);
 
 		if($permit) {
@@ -38,13 +48,22 @@ class PXTriggerDatabaseMultipleregions extends PXAbstractDatabaseTrigger {
 	function OnBeforeModifyObject(&$db, $objId, &$format, &$object, &$dbFields, &$dbValues, &$objectInDB) {/*{{{*/
 		$regions = $this->getRegions();
 
+		$isRegionalObject  = $regions->isRegionalObject($format);
+		$allowedRegionsIds = $regions->getAllowedRegionsIds();
+		$regions_field = PXMultipleRegionsReflexer::REGION_MARK;
+
+		if($isRegionalObject && empty($allowedRegionsIds)) {
+			$this->simpleSetDbValues(PXMultiRegions::REGION_MARK, $objectInDB[$regions_field], $dbFields, $dbValues);
+			return true;
+		}
+
 		$permit = $regions->checkRegionAccess($format, $objectInDB) && $regions->checkRegionAccessToParent($format, $objectInDB);
 
-		if(!$permit && $regions->isRegionalObject($format)) {
+		if(!$permit && $isRegionalObject) {
 			$cloner = 
 				new PXPublicRegionObjectCloner($format, $object, $objectInDB, $dbFields, $dbValues, $this);
 
-			$nid = $cloner->cloneObject($regions->getAllowedRegionsIds());
+			$nid = $cloner->cloneObject($allowedRegionsIds);
 
 			$request = PXRegistry::getRequest();
 		
@@ -62,7 +81,7 @@ class PXTriggerDatabaseMultipleregions extends PXAbstractDatabaseTrigger {
 		}
 
 		return $permit;
-	}/*}}}*/
+ 	}/*}}}*/
 
 	function OnModifyObject(&$db, &$objId, &$format, &$object, &$dbFields, &$dbValues, &$objectInDB) {/*{{{*/
 	}/*}}}*/
