@@ -4,7 +4,10 @@ class PXDisplayTypeMultiRegions extends PXDisplayType {
 	private $singleObject = false;
 
 	private function _getValues($field, $object, $regions) {
-		$cutOutRegions = PXMultiRegions::getCutOutRegions($field->typeDescription, $object['id']);
+		$cutOutRegions = isset($object['id']) && intval($object['id']) > 0 
+			? PXMultiRegions::getCutOutRegions($field->typeDescription, $object['id'])
+			: null;
+
 		$values  = $regions->getRegionsAsDirectory(true, $cutOutRegions);
 
 		if(count($values) == 1) {
