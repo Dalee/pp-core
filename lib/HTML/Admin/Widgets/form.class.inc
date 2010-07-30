@@ -218,6 +218,7 @@ class PXAdminForm extends PXAdminComplexWidget {
 			$html[] = isset($this->object['ownerlogin'])   ? '<dt>Владелец:</dt><dd>'.$this->object['ownerlogin'].'</dd>'                  : '';
 			$html[] = '</dl>';
 		}
+
 		return join($html);
 	}
 

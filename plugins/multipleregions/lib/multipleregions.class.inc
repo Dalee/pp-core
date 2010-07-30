@@ -64,15 +64,14 @@ class PXMultiRegions {
 		return self::$regionsDirectory;
 	}/*}}}*/
 
-	function getRegionsAsDirectory($only_values = true, $cutOutRegions=null) {/*{{{*/
+	function getRegionsAsDirectory($only_values = true, $location=null) {/*{{{*/
 		$regionsDirectory = $this->loadDirectory();
 
 		#delete already cloned regions
-		if($cutOutRegions && is_array($cutOutRegions)) {
-			$cutOutRegions = array_flip($cutOutRegions);
-
+		if($location && is_array($location)) {
+			$location = array_flip($location);
 			foreach($regionsDirectory->values as $id => $region) {
-				if(isset($cutOutRegions[$id])) {
+				if(isset($location[$id])) {
 					unset($regionsDirectory->values[$id]);
 				}
 			}
@@ -251,7 +250,7 @@ class PXMultiRegions {
 	}
 
 	#fixme
-	function addRegionByDefault($format, &$dbFields, &$dbValues, $modifiedObjectId=null) {
+	function addRegionByDefault($format, &$dbFields, &$dbValues){
 		if($this->isRegionalObject($format)){
 			$allowedRegionsIds = $this->getAllowedRegionsIds();
 			$key = array_flip($dbFields);
@@ -262,14 +261,6 @@ class PXMultiRegions {
 			$reg = empty($toArray) || empty($toArray[0])
 				? PXMultipleRegionsHelper::toString($allowedRegionsIds)
 				: $dbValues[$key[self::REGION_MARK]];
-
-			if($modifiedObjectId && is_numeric($modifiedObjectId)) {
-				$cutOutRegions = $this->getCutOutRegions($format, $modifiedObjectId);
-				$regArray      = PXMultipleRegionsHelper::toArray($reg);
-				$regArray      = array_diff($regArray, $cutOutRegions);
-
-				$reg           = PXMultipleRegionsHelper::toString($regArray);
-			}
 
 			$dbValues[$key[self::REGION_MARK]] = $reg;
 		}
@@ -317,25 +308,5 @@ class PXMultiRegions {
 	function inAllowed($rid) {
 		$list = array_flip($this->getAllowedRegionsIds());
 		return isset($list[$rid]);
-	}
-
-	public static function getCutOutRegions($format, $objectId) {
-		$reflex_field  = PXMultipleRegionsReflexer::REFLEX_FIELD;
-		$regions_field = self::REGION_MARK;
-
-		$result = PXRegistry::getDB()->query("select id, {$regions_field} 
-			from {$format->id} where {$reflex_field} = '{$objectId}'");
-
-		$tmp = array();
-
-		if(!empty($result)) {
-			foreach($result as $i) {
-				if(isset($i[$regions_field])) {
-					$tmp = array_merge($tmp, PXMultipleRegionsHelper::toArray($i[$regions_field]));
-				}
-			}
-		}
-
-		return $tmp;
 	}
 }

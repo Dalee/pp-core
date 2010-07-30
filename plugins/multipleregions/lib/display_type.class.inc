@@ -3,12 +3,28 @@
 class PXDisplayTypeMultiRegions extends PXDisplayType {
 	private $singleObject = false;
 
-	private function _getValues($field, $object, $regions) {
-		$cutOutRegions = isset($object['id']) && intval($object['id']) > 0 
-			? PXMultiRegions::getCutOutRegions($field->typeDescription, $object['id'])
-			: null;
+	private function getNotInLocation($field, $object) {
+		$reflex_field  = PXMultipleRegionsReflexer::REFLEX_FIELD;
+		$regions_field = PXMultiRegions::REGION_MARK;
 
-		$values  = $regions->getRegionsAsDirectory(true, $cutOutRegions);
+		$result = PXRegistry::getDB()->query("select id, {$regions_field} 
+			from {$field->typeDescription->id} where {$reflex_field} = '{$object['id']}'");
+
+		$tmp = array();
+
+		if(!empty($result)) {
+			foreach($result as $i) {
+				$tmp = array_merge($tmp, PXMultipleRegionsHelper::toArray($i[$regions_field]));
+			}
+		}
+
+		return $tmp;
+	}
+
+	private function _getValues($field, $object, $regions) {
+		$notInLocation = $this->getNotInLocation($field, $object);
+
+		$values  = $regions->getRegionsAsDirectory(true, $notInLocation);
 
 		if(count($values) == 1) {
 			$this->singleObject = true;
