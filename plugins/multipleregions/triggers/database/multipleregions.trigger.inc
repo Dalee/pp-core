@@ -56,7 +56,7 @@ class PXTriggerDatabaseMultipleregions extends PXAbstractDatabaseTrigger {
 		}
 
 		if($permit) {
-			$regions->addRegionByDefault($format, $dbFields, $dbValues);
+			$regions->addRegionByDefault($format, $dbFields, $dbValues, $objId);
 		} elseif(empty($hasBeenCloned)){
 			$this->fireError();
 		}
