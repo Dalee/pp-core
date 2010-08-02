@@ -87,7 +87,7 @@ class PXModuleFile extends PXModule {
 			$this->layout->assign('INNER.'.$tab['cell'].'.0', $listing->html());
 
 			if ($listing->writable()) {
-				$this->layout->assign('INNER.'.$tab['cell'].'.1', $this->_uploadForm($this->area, $lDir, $rDir, $tab['side'], FALSE, 'file'));
+				$this->layout->assign('INNER.'.$tab['cell'].'.1', $this->_uploadForm($this->area, $lDir, $rDir, $tab['side'], FALSE, $this->area));
 			}
 
 			unset($listing);
@@ -245,7 +245,7 @@ HTML;
 		$rDir         = $request->getVar('rdir');
 
 		$outSide      = $request->getVar('outside');
-		$this->redir  = ($outSide !== 'file' ? 'popup.phtml?action='.$outSide.'&name='.$request->getVar('name').'&' : 'index.phtml?');
+		$this->redir  = ($outSide !== $this->area ? 'popup.phtml?action='.$outSide.'&name='.$request->getVar('name').'&' : 'index.phtml?');
 		$this->redir .= 'area='.$this->area.'&ldir='.$lDir.'&rdir='.$rDir;
 
 		$this->catalog     = BASEPATH.($rSide != 'r' ? $lDir : $rDir).'/';
