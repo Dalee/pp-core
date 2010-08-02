@@ -57,32 +57,29 @@ class PXDisplayTypeMultiRegions extends PXDisplayType {
 
 		$value  = $this->_getValue($regions, $object, $field);
 
+		$html[] = new PXInputHidden($field->name . "_objectform", true);
+
 		if(!$this->singleObject) {
-			return $this->_buildSelector($field, $value, $values);
+			$html[] = $this->_buildSelector($field, $value, $values);
 		} else {
-			return $this->_buildStatic($field, $value, $values);
+			$html[] = $this->_buildStatic($field, $value, $values);
 		}
+
+		return join($html);
 	}
 
 	private function _buildSelector($field, $value, $values) {
 		#delete not allowed value
 		$value = array_intersect($value, array_keys($values));
 
-		$html[] = new PXInputHidden($field->name . "_objectform", true);
-
 		$regionSelector = new PXInputDropDown($field->name . '[]', $value, $values);
 		$regionSelector->setMultiple(true);
 		$regionSelector->setSize(sizeof($values));
-		$html[] = $regionSelector;
 
-		return join($html);
+		return $regionSelector->html();
 	}
 
 	private function _buildStatic($field, $value, $values) {
-		if(in_array(PXMultiRegions::MAGIC, $value)) {
-			return $values[PXMultiRegions::MAGIC];
-		}
-
 		foreach($value as $k=>$v) {
 			if(isset($values[$v])) {
 				$value[$k] = preg_replace('/^=+/', '', $values[$v]);
