@@ -162,7 +162,7 @@ class PXMultiRegions {
 		$id = null;
 		$this->setAdminRidFromRequest();
 
-		if(isset($_SESSION['__current_region'])){
+		if(isset($_SESSION['__current_region']) && $this->inAllowed($_SESSION['__current_region'])) {
 			$id = $_SESSION['__current_region'];
 		}
 
@@ -175,11 +175,10 @@ class PXMultiRegions {
 
 	function getRidFromLogin() {
 		$urlRegionId = $this->getUserRid();
-		$regionsDirectoryIds = $this->getAllowedRegionsIds();
 
-		if(!empty($regionsDirectoryIds) && in_array($urlRegionId, $regionsDirectoryIds)) {
+		if($this->inAllowed($urlRegionId)) {
 			return $urlRegionId;
-		} 
+		}
 
 		return "";
 	}
