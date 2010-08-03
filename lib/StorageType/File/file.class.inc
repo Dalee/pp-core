@@ -8,9 +8,10 @@
  * storageType file
  */
 class PXStorageTypeFile extends PXStorageTypeAbstractFile {
+	//FIXME: make me static
 	function proceedFile($field, &$object, &$param) {
 		$fileArray       = &$object[$field->name];
-		$ai              = parent::ai($field, $object, $param['format']);;
+		$ai              = parent::ai($field, $object, $param['format']);
 		$basedir         = HTDOCS_PATH . $ai;
 		$filename        = null;
 		$invalidateCache = false;
@@ -39,8 +40,8 @@ class PXStorageTypeFile extends PXStorageTypeAbstractFile {
 							unlink($basedir.$entry);
 						}
 					}
-					$this->copyFile($field, $fileArray['tmp_name'], $basedir.$filename);
-					
+					parent::copyFile($field, $fileArray['tmp_name'], $basedir.$filename);
+
 					$invalidateCache = true;
 				}
 			}
