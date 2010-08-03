@@ -21,6 +21,14 @@ class PXTriggerDatabaseMultipleregions extends PXAbstractDatabaseTrigger {
 
 			if(isset($object[$reflex_field])) {
 				$this->simpleSetDbValues($reflex_field, $object[$reflex_field], $dbFields, $dbValues);
+
+				if(isset($object['allowed']) && is_array($object['allowed'])) {
+					$this->simpleSetDbValues('allowed',  serialize($object['allowed']), $dbFields, $dbValues);
+				}
+
+				if(isset($object['sys_order']) && is_numeric($object['sys_order']) && $object['sys_order'] > 0) {
+					$this->simpleSetDbValues('sys_order',   $object['sys_order'], $dbFields, $dbValues);
+				}
 			}
 
 			$regions->addRegionByDefault($format, $dbFields, $dbValues);
