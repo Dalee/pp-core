@@ -162,7 +162,12 @@ class PXMultiRegions {
 		$id = null;
 		$this->setAdminRidFromRequest();
 
-		if(isset($_SESSION['__current_region']) && $this->inAllowed($_SESSION['__current_region'])) {
+		#previous same checks in the setAdminRidFromRequest are nessesary
+		if(
+			isset($_SESSION['__current_region'])
+			&& $this->inAllowed($_SESSION['__current_region']) // region in session allowed for current user
+			|| $_SESSION['__current_region'] === ''            // or region in session is empty string (show all regions)
+		) {
 			$id = $_SESSION['__current_region'];
 		}
 
@@ -190,7 +195,7 @@ class PXMultiRegions {
 	private function setAdminRidFromRequest(){
 		$this->_doSession();
 
-		if($this->request->isSetVar(self::REGION_MARK)){
+		if($this->request->isSetVar(self::REGION_MARK)) {
 			$rid = $this->request->getVar(self::REGION_MARK);
 
 			if(!isset($rid['rid'])) {
