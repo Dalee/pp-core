@@ -451,7 +451,7 @@ HTML;
 		$html[] = '<dl class="allowed">'."\n";
  
 		foreach ($this->childTypes as $k=>$v) {
-			$quantity = (isset($this->childCounts[$k])) ? $this->childCounts[$k] : 0;
+			$quantity = (isset($this->childCount[$k])) ? $this->childCount[$k] : 0;
  
 			if (!in_array($k, $this->format->childs)) {
 				continue;
