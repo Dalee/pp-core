@@ -77,6 +77,7 @@ class PXModuleObjects extends PXModule {
 
 		$table = new PXAdminTable($objects, $this->app->types[$format], $this->layout->getData);
 		$table->setPager($currentPage, $onPage, $count);
+
 		$table->loadDropdownValues($this->db);
 
 		if($children) {
@@ -172,6 +173,8 @@ class PXModuleObjects extends PXModule {
 		foreach ($this->datatype->allowedChildTypes($object) as $allowedFormat=>$childType) {
 			$counts[$allowedFormat] = $this->db->getObjectsByParent($childType, NULL, $object['id'], DB_SELECT_COUNT);
 		}
+
+		$this->db->LoadDirectoriesByType($this->datatype, $object); 
 
 		$form = new PXAdminForm($object, $this->datatype);
 		$form->disable = $this->popupCheckAccess($object);
