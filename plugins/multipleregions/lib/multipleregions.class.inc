@@ -165,8 +165,8 @@ class PXMultiRegions {
 		#previous same checks in the setAdminRidFromRequest are nessesary
 		if(
 			isset($_SESSION['__current_region'])
-			&& $this->inAllowed($_SESSION['__current_region']) // region in session allowed for current user
-			|| $_SESSION['__current_region'] === ''            // or region in session is empty string (show all regions)
+			&& ($this->inAllowed($_SESSION['__current_region']) // region in session allowed for current user
+			|| $_SESSION['__current_region'] === '')            // or region in session is empty string (show all regions)
 		) {
 			$id = $_SESSION['__current_region'];
 		}
