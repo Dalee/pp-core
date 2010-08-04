@@ -23,7 +23,7 @@ function SortRussianByTitle($a, $b) {
 }
 
 
-function GetFromArray(&$array, $index, $default=NULL) {
+function GetFromArray($array, $index, $default=NULL) {
 	if (isset($array[$index])) {
 		return $array[$index];
 	} else {

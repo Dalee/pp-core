@@ -205,26 +205,27 @@ class PXModuleAcl extends PXModule {
 	function _moveRule($rId, $direction) {
 		$db = $this->db;
 
-		$objectInDB = $db->query('SELECT sys_order, id FROM '.$this->sqlTable.' WHERE id = '.$rId);
+		$objectInDB = $db->query(sprintf('SELECT sys_order, id FROM %s WHERE id = %d', $this->sqlTable, $rId));
 
 		if(sizeof($objectInDB) !== 1) {
 			FatalError('Правило с id = '.$rId.' не найдено');
 		}
 		$objectInDB = current($objectInDB);
 
-		$limit = array(1, 0);
-		$where = 'sys_order '.($direction == 'down' ? '>' : '<'   ).' '.$objectInDB['sys_order'];
-		$order = 'sys_order '.($direction == 'down' ? ''  : 'DESC');
-		$query = 'SELECT sys_order, id FROM '.$this->sqlTable.' WHERE '.$where.' ORDER BY '.$order.' ';
+		$limit  = array(1, 0);
+		$where  = sprintf("sys_order %s %d AND objectrule = '%s'", GetFromArray(array('<','>'), $direction == 'down'), (int)$objectInDB['sys_order'], $this->objectRule);
+		$order  = 'sys_order '.($direction == 'down' ? ''  : 'DESC');
+		$query  = sprintf('SELECT sys_order, id FROM %s WHERE %s ORDER BY %s ', $this->sqlTable, $where, $order);
 
 		$nearObject = $db->query($query, false, $limit);
 
 		if (sizeof($nearObject)) {
 			$nearObject = current($nearObject);
+			$moveQuery  = "UPDATE {$this->sqlTable} SET sys_order = %d WHERE id = %d";
 
 			$db->transactionBegin();
-			$db->modifyingQuery('UPDATE '.$this->sqlTable.' SET sys_order = '.$objectInDB['sys_order'].' WHERE id = '.$nearObject['id']);
-			$db->modifyingQuery('UPDATE '.$this->sqlTable.' SET sys_order = '.$nearObject['sys_order'].' WHERE id = '.$objectInDB['id']);
+			$db->modifyingQuery(sprintf($moveQuery, $objectInDB['sys_order'], $nearObject['id']));
+			$db->modifyingQuery(sprintf($moveQuery, $nearObject['sys_order'], $objectInDB['id']));
 			$db->transactionCommit();
 		}
 	}
