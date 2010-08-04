@@ -401,7 +401,7 @@ HTML;
  
 			if (isset($prev)) {
 				$html .= '<A href="'.$this->layout->_BuildHref($formatTo->id.'_page', $prev).'">';
-				$html .= '<IMG src="i/icon/left.gif" width="4" height="7" border="0" hspace="4" alt="Ð¡Ñ‚Ñ€Ð°Ð½Ð¸Ñ†Ð° '.$prev.'">';
+				$html .= '<IMG src="i/icon/left.gif" width="4" height="7" border="0" hspace="4" alt="óÔÒÁÎÉÃÁ '.$prev.'">';
 				$html .= '</A>';
 			}
  
@@ -412,12 +412,12 @@ HTML;
 					$html .= ' class="selected"';
 				}
  
-				$html .= ' href="'.$this->layout->_BuildHref($formatTo->id.'_page', $i).'" title="Ð¡Ñ‚Ñ€Ð°Ð½Ð¸Ñ†Ð° '.$i.'">'.$i.'</A>';
+				$html .= ' href="'.$this->layout->_BuildHref($formatTo->id.'_page', $i).'" title="óÔÒÁÎÉÃÁ '.$i.'">'.$i.'</A>';
 			}
  
 			if (isset($next) && $next > 0) {
-				$html .= '<A href="'.$his->layout->_BuildHref($formatTo->id.'_page', $next).'">';
-				$html .= '<IMG src="i/icon/right.gif" width="4" height="7" border="0" hspace="4" alt="Ð¡Ñ‚Ñ€Ð°Ð½Ð¸Ñ†Ð° '.$next.'">';
+				$html .= '<A href="'.$this->layout->_BuildHref($formatTo->id.'_page', $next).'">';
+				$html .= '<IMG src="i/icon/right.gif" width="4" height="7" border="0" hspace="4" alt="óÔÒÁÎÉÃÁ '.$next.'">';
 				$html .= '</A>';
 			}
  
