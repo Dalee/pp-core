@@ -4,7 +4,7 @@ class PXUserCron extends PXUser {
 		return 'GOD';
 	}
 
-	function can($what, $format, $object) {
+	function can($what, $format = NULL, $object = NULL) {
 		return true;
 	}
 }
