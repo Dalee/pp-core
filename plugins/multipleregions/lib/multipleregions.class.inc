@@ -143,8 +143,8 @@ class PXMultiRegions {
 							if (strstr($r, '*')) {
 								$mask = str_replace('.', '\.', $r);
 								$mask = str_replace('*', '[a-z0-9]+', $mask);
-								
-								if (preg_match('/'.$mask.'/i', $host)) {
+
+								if (preg_match('/^'.$mask.'$/i', $host)) {
 									$id = $region['id'];
 									break(2);
 								}
