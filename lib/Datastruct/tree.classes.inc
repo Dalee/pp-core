@@ -31,6 +31,14 @@ class NLLeaf {
 			return null;
 		}
 	}
+
+	function getDescendants($level=null) {
+		return $this->tree->getDescendants($this->id, $level);
+	}
+
+	function createpath() {
+		return createPathByParentId($this->tree, $this->id);
+	}
 }
 
 /**
