@@ -1,6 +1,7 @@
 <?php
 
 class PXDisplayTypeMultiRegions extends PXDisplayType {
+	static $scriptsIncluded = false;
 	private $singleObject = false;
 
 	private function getNotInLocation($field, $object) {
@@ -119,7 +120,20 @@ class PXDisplayTypeMultiRegions extends PXDisplayType {
 		}
 
 		$value   = $this->_getValue($regions, $object, $field);
-		return  $this->_buildStatic($field, $value, $values);
+		$html    = $this->_buildStatic($field, $value, $values);
+		$res = '';
+
+		if(!self::$scriptsIncluded){
+			$layout = & PXRegistry::getLayout();
+
+			$layout->assignCSS("/css/admin/bubble.css");
+			$layout->assignJS("/js/admin/bubble.js");
+
+			self::$scriptsIncluded = true;
+		}
+
+		$res .= "<div class=\"fullBrief\">" . $html . "</div>" . substr($html, 0, 50) . "...";
+		return $res;
 	}
 }
 
