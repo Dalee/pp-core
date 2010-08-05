@@ -124,7 +124,7 @@ class PXDisplayTypeMultiRegions extends PXDisplayType {
 		$res = '';
 
 		if(!self::$scriptsIncluded){
-			$layout = & PXRegistry::getLayout();
+			$layout = PXRegistry::getLayout();
 
 			$layout->assignCSS("/css/admin/bubble.css");
 			$layout->assignJS("/js/admin/bubble.js");
