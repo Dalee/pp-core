@@ -177,24 +177,28 @@ class PXCorpRegions {
 		$newHost = (strlen($newHost) ? $newHost : $host);
 		return $engVersion . trim($newHost);
 	}
-	
+
 	static function switchRegion($tree, $fullPath, $regionId, $sidFrom) {
 		if (!self::regionExists($regionId)) {
 			return $fullPath;
 		}
-		
+
 		$fullPath = str_replace('http://', '', $fullPath);
 		$path     = explode('/', $fullPath);
 		$file     = '';
+
+/*
+		FIXME !!!
 
 		if (strpos(end($path), '.html')) {
 			$file = end($path);
 		}
 
-		$ancestors = $tree->GetAncestors($sidFrom);
+		$ancestors = $tree->getAncestors($sidFrom);
+
 		array_unshift($ancestors, $sidFrom);
 
-		if (!count($tree->getFullPath($sidFrom))) {
+		if (!count($tree->getFullPath($sidFrom)) && isset($ancestors[count($ancestors)-2])) {
 			$sidFrom = $ancestors[count($ancestors)-2];
 		}
 
@@ -219,11 +223,12 @@ class PXCorpRegions {
 				$file = '';
 			}
 		}
-		
-		$localPath = createPathByParentId($tree, $sid);
+
+		$localPath = '/'.createSomePathByParentId($tree, $sid, 'pathname', '/', true, false);
+*/
 		$host = self::findUrl($path[0], $regionId);
 
-		return 'http://'.$host.$localPath.$file;
+		return 'http://'.$host;
 	}
 	
 	static function regionExists($id) {
