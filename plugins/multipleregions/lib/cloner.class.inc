@@ -20,7 +20,7 @@ class PXPublicRegionObjectCloner {
 	}
 
 	public function cloneObject($allowedRegionsIds) {/*{{{*/
-		$this->isDenyEditValidate();
+		$this->denyEditValidate();
 
 		$this->db->transactionBegin();
 			$this->substractRegions($allowedRegionsIds);
@@ -50,7 +50,7 @@ class PXPublicRegionObjectCloner {
 	}
 
 	public function deleteObject($allowedRegionsIds) {
-		$this->isDenyEditValidate();
+		$this->denyEditValidate();
 		$this->substractRegions($allowedRegionsIds);
 	}
 
@@ -61,30 +61,34 @@ class PXPublicRegionObjectCloner {
 	private function copyMainObject($allowedRegionsIds) {
 		$objectInDB = $this->objectInDB;
 
-		$objectInDB[PXMultipleRegionsReflexer::REFLEX_FIELD] = $this->oid;
-		$objectInDB[PXMultiRegions::REGION_MARK] = $allowedRegionsIds;
+		$reflex_field  = PXMultipleRegionsReflexer::REFLEX_FIELD;
+		$regions_field = PXMultiRegions::REGION_MARK;
+
+		$objectInDB[$reflex_field] = $this->oid;
+		$objectInDB[$regions_field] = $allowedRegionsIds;
 
 		if(isset($objectInDB['parent'])) {
 			$findClonedParent = $this->db->query(
 				sprintf("select id from %s where %s = '%s'",
 					$this->format->id, 
-					PXMultipleRegionsReflexer::REFLEX_FIELD,
+					$reflex_field,
 					$objectInDB['parent']
 				)
 			);
 
-			$findClonedParent = pos((array) $findClonedParent);
+			$findClonedParent = (array) pos($findClonedParent);
 
 			if(isset($findClonedParent['id'])) {
-				$objectInDB['parent'] = $findClonedParent['id'];
+				$this->object['parent'] = $objectInDB['parent'] = $findClonedParent['id'];
 			}
 		}
 
-		#create clone
 		$this->nid = $this->object['id'] = 
 			$this->db->cloneContentObject($this->format, $objectInDB, !empty($this->objectInDB['status']));
 
-		#set user modify
+		$this->object[$regions_field] =
+			array_intersect($this->object[$regions_field], $allowedRegionsIds);
+
 		$this->db->modifyContentObject($this->format, $this->object);
 	}
 
@@ -99,11 +103,11 @@ class PXPublicRegionObjectCloner {
 		}
 	}
 
-	private function isDenyEditValidate() {/*{{{*/
+	private function denyEditValidate() {
 		if(isset($this->objectInDB[self::DENY_EDIT_FIELD]) && !empty($this->objectInDB[self::DENY_EDIT_FIELD])) {
 			$this->trigger->fireError('Только федеральное редактирование!');
 		}
-	}/*}}}*/
+	}
 }
 
 ?>

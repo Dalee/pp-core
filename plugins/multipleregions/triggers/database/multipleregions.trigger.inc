@@ -39,7 +39,7 @@ class PXTriggerDatabaseMultipleregions extends PXAbstractDatabaseTrigger {
 		return $permit;
 	}
 
-	function OnBeforeBuildTree($db, $format, &$table, $parentName) {/*{{{*/
+	function OnBeforeBuildTree($db, $format, &$table, $parentName) {
 		$regions = $this->getRegions();
 
 		if(!$regions->isFederal()) {
@@ -51,9 +51,9 @@ class PXTriggerDatabaseMultipleregions extends PXAbstractDatabaseTrigger {
 				}
 			}
 		}
-	}/*}}}*/
+	}
 
-	function OnBeforeModifyObject(&$db, $objId, &$format, &$object, &$dbFields, &$dbValues, &$objectInDB) {/*{{{*/
+	function OnBeforeModifyObject(&$db, $objId, &$format, &$object, &$dbFields, &$dbValues, &$objectInDB) {
 		$regions = $this->getRegions();
 
 		$isRegionalObject  = $regions->isRegionalObject($format);
@@ -74,8 +74,8 @@ class PXTriggerDatabaseMultipleregions extends PXAbstractDatabaseTrigger {
 			$nid = $cloner->cloneObject($allowedRegionsIds);
 
 			$request = PXRegistry::getRequest();
-		
-			if(PXRegistry::getApp()->isAdminEngine() && $request->issetVar(PXMultiRegions::REGION_MARK . "_objectform")) {
+
+			if($this->isObjectForm()) {
 				PXResponse::getInstance()->redirect("popup.phtml?area={$request->getArea()}&format={$format->id}&id={$nid}&action=main");
 			} else {
 				$hasBeenCloned = true; //if not redirected to popup after clone, do not fire error !
@@ -83,18 +83,15 @@ class PXTriggerDatabaseMultipleregions extends PXAbstractDatabaseTrigger {
 		}
 
 		if($permit) {
-			$regions->addRegionByDefault($format, $dbFields, $dbValues);
+			$regions->addRegionByDefault($format, $dbFields, $dbValues, $object);
 		} elseif(empty($hasBeenCloned)){
 			$this->fireError();
 		}
 
 		return $permit;
- 	}/*}}}*/
+	}
 
-	function OnModifyObject(&$db, &$objId, &$format, &$object, &$dbFields, &$dbValues, &$objectInDB) {/*{{{*/
-	}/*}}}*/
-
-	function OnBeforeDeleteObject(&$db, &$objId, &$format, &$objectInDB) {/*{{{*/
+	function OnBeforeDeleteObject(&$db, &$objId, &$format, &$objectInDB) {
 		$regions = $this->getRegions();
 
 		$permit = $regions->checkRegionAccess($format, $objectInDB) && $regions->checkRegionAccessToParent($format, $objectInDB);
@@ -109,7 +106,7 @@ class PXTriggerDatabaseMultipleregions extends PXAbstractDatabaseTrigger {
 		}
 
 		return $permit;
-	}/*}}}*/
+	}
 
 	function OnDeleteObject(&$db, &$objId, &$format, &$objectInDB) {
 	}
@@ -149,22 +146,42 @@ class PXTriggerDatabaseMultipleregions extends PXAbstractDatabaseTrigger {
 
 		if($regions->isRegionalObject($format)) {
 			$regionFilter = $regions->findByRegion();
+
 			$where = strlen($where) ? "($where) AND $regionFilter" : $regionFilter;
 
 			if($mode != DB_SELECT_COUNT) {
 				$reflex_field = PXMultipleRegionsReflexer::REFLEX_FIELD;
 				$selector .= ", {$reflex_field}";
 			}
+
+			preg_match(sprintf("#%s\.id = [^0-9]*?([0-9]+)#", $format->id) , $where, $m);
+
+			if(isset($m[1])) {
+				$where = 
+					sprintf("(%s) or %s.%s = '%s'", $where, $format->id, PXMultipleRegionsReflexer::REFLEX_FIELD, $m[1]);
+			}
 		}
+	}
+
+	function isObjectForm() {
+		return PXRegistry::getApp()->isAdminEngine() && PXRegistry::getRequest()->issetVar(PXMultiRegions::REGION_MARK . "_objectform");
 	}
 
 	function OnBeforeNormalizePathBuildQuery($objectFormat, $exObjectFormat, &$table, $object) {
 		$regions = $this->getRegions();
 
-		$permit = $regions->checkRegionAccess($objectFormat, $object);
+		$regionsField = PXMultiRegions::REGION_MARK;
+		$isRegionalObject = $regions->isRegionalObject($objectFormat);
 
-		if($permit && $regions->isRegionalObject($objectFormat) && $regions->isRegionalObject($exObjectFormat)) {
-			$regionFilter = $regions->findByRegion($object[PXMultiRegions::REGION_MARK]);
+		if(!$this->isObjectForm() && $isRegionalObject) {
+			$object[$regionsField] = 
+				array_intersect($object[$regionsField], $regions->getAllowedRegionsIds());
+		}
+
+		$permit = $regions->checkRegionAccess($objectFormat, $object) || !$this->isObjectForm();
+
+		if($permit && $isRegionalObject && $regions->isRegionalObject($exObjectFormat)) {
+			$regionFilter = $regions->findByRegion($object[$regionsField]);
 
 			if(strlen($table['exWhere'])) {
 				$table['exWhere'] .=  " AND ";

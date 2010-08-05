@@ -5,52 +5,52 @@ class PXProfiler {
 	var $_isMemoryProfile;
 	var $_enabled;
 
-	function &getInstance() {
-		static $object;
+	private static $object;
 
-		if (!isset($object)) {
-			$object = new PXProfiler();
-			$object->_isMemoryProfile = function_exists('memory_get_usage');
-			$object->_enabled = defined("PROFILER") ? PROFILER : false;
+	public static function getInstance() {
+		if (!isset(self::$object)) {
+			self::$object = new PXProfiler();
+			self::$object->_isMemoryProfile = function_exists('memory_get_usage');
+			self::$object->_enabled = defined("PROFILER") ? PROFILER : false;
 		}
 
-		return $object;
+		return self::$object;
 	}
 
-	function on(){
-		$_ = & PXProfiler::getInstance();
+	public static function on(){
+		$_ = PXProfiler::getInstance();
 		$_->_enabled = true;
 	}
 	
-	function off(){
-		$_ = & PXProfiler::getInstance();
+	public static function off(){
+		$_ = PXProfiler::getInstance();
 		$_->_enabled = false;
 	}
 
-	function Disabled() {
-		$_ = & PXProfiler::getInstance();
+	public static function Disabled() {
+		$_ = PXProfiler::getInstance();
 		return !$_->_enabled;
 	}
 
-	function begin($label) {
+	public static function begin($label) {
 		if(PXProfiler::Disabled()) {
 			return;
 		}
 
 		static $call_counter = 0;
-		$self = & PXProfiler::getInstance();
+		$self = PXProfiler::getInstance();
 
 		$cls = $self->_isMemoryProfile ? 'PXProfilerStructWithMemory' : 'PXProfilerStruct';
 
 		$self->enq(new $cls($label, $self->stackSize(), $call_counter++));
 	}
 
-	function end() {
+	public static function end() {
 		if (PXProfiler::Disabled()) {
 			return;
 		}
 
-		$self = & PXProfiler::getInstance();
+		$self = PXProfiler::getInstance();
 		if($self->stackSize() == 0) {
 			return;
 		}
@@ -73,7 +73,7 @@ class PXProfiler {
 			return array();
 		}
 
-		$self = & PXProfiler::getInstance();
+		$self = PXProfiler::getInstance();
 		while ($self->stackSize() > 0){
 			PXProfiler::end();
 		}
@@ -84,12 +84,12 @@ class PXProfiler {
 		return $collection;
 	}
 
-	function toString() {
+	public static function toString() {
 		$collection = PXProfiler::finalize();
 		array_walk($collection, create_function('&$item', '$item = $item->toString();'));
 
 		$result = '';
-		$self   = & PXProfiler::getInstance();
+		$self   = PXProfiler::getInstance();
 
 		if($self->_isMemoryProfile) {
 			$result .= sprintf('%16s%16s', 'MemoryStart(Kb)', 'MemoryDelta(Kb)');

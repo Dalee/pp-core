@@ -64,14 +64,16 @@ class PXMultiRegions {
 		return self::$regionsDirectory;
 	}/*}}}*/
 
-	function getRegionsAsDirectory($only_values = true, $location=null) {/*{{{*/
-		$regionsDirectory = $this->loadDirectory();
+	function getRegionsAsDirectory($only_values = true, $cutOutRegions=null) {/*{{{*/
+		#fixme!! temporary
+		$regionsDirectory = clone $this->loadDirectory();
 
 		#delete already cloned regions
-		if($location && is_array($location)) {
-			$location = array_flip($location);
+		if($cutOutRegions && is_array($cutOutRegions)) {
+			$cutOutRegions = array_flip($cutOutRegions);
+
 			foreach($regionsDirectory->values as $id => $region) {
-				if(isset($location[$id])) {
+				if(isset($cutOutRegions[$id])) {
 					unset($regionsDirectory->values[$id]);
 				}
 			}
@@ -219,7 +221,9 @@ class PXMultiRegions {
 			? $regionsList
 			: $this->getAllowedRegionsIds();
 
-		return empty($this->rid) ? $this->db->intersectIntArray(PXMultiRegions::REGION_MARK, $conditionArray) : $this->db->inArray(self::REGION_MARK, $this->rid);
+		return empty($this->rid) 
+			? $this->db->intersectIntArray(PXMultiRegions::REGION_MARK, $conditionArray) 
+			: $this->db->inArray(self::REGION_MARK, $this->rid);
 	}
 
 	function isCurrentInSet($list){
@@ -254,7 +258,7 @@ class PXMultiRegions {
 	}
 
 	#fixme
-	function addRegionByDefault($format, &$dbFields, &$dbValues){
+	function addRegionByDefault($format, &$dbFields, &$dbValues, $modifiedObject=null) {
 		if($this->isRegionalObject($format)){
 			$allowedRegionsIds = $this->getAllowedRegionsIds();
 			$key = array_flip($dbFields);
@@ -265,6 +269,14 @@ class PXMultiRegions {
 			$reg = empty($toArray) || empty($toArray[0])
 				? PXMultipleRegionsHelper::toString($allowedRegionsIds)
 				: $dbValues[$key[self::REGION_MARK]];
+
+			if($modifiedObject) {
+				$cutOutRegions = $this->getCutOutRegions($format, $modifiedObject);
+				$regArray      = PXMultipleRegionsHelper::toArray($reg);
+				$regArray      = array_diff($regArray, $cutOutRegions);
+
+				$reg           = PXMultipleRegionsHelper::toString($regArray);
+			}
 
 			$dbValues[$key[self::REGION_MARK]] = $reg;
 		}
@@ -312,5 +324,37 @@ class PXMultiRegions {
 	function inAllowed($rid) {
 		$list = array_flip($this->getAllowedRegionsIds());
 		return isset($list[$rid]);
+	}
+
+	public static function getCutOutRegions($format, $object) {
+		$reflex_field  = PXMultipleRegionsReflexer::REFLEX_FIELD;
+		$regions_field = self::REGION_MARK;
+
+		$params = array(
+			"pattern"         => "select id, %s from %s where %s = '%s'",
+			"region_field"    => $regions_field,
+			"format"          => $format->id,
+			"condition_field" => $reflex_field,
+			"condition_value" => $object['id']
+		);
+
+		if(isset($object[$reflex_field])) {
+			$params["condition_field"] = "id";
+			$params["condition_value"] = $object[$reflex_field];
+		}
+
+		$result = PXRegistry::getDB()->query(call_user_func_array("sprintf", $params));
+
+		$tmp = array();
+
+		if(!empty($result)) {
+			foreach($result as $i) {
+				if(isset($i[$regions_field])) {
+					$tmp = array_merge($tmp, PXMultipleRegionsHelper::toArray($i[$regions_field]));
+				}
+			}
+		}
+
+		return $tmp;
 	}
 }

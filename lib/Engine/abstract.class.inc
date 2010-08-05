@@ -63,7 +63,7 @@ abstract class PXEngine {
 	}
 
 	protected function initApp($klass){
-		$this->app =& PXApplication::getInstance($this); //$klass::getInstance(...) available since php 5.3.0 only
+		$this->app = PXApplication::getInstance($this); //$klass::getInstance(...) available since php 5.3.0 only
 	}
 
 	protected function initDb($klass){
