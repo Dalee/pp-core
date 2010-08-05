@@ -132,7 +132,19 @@ class PXDisplayTypeMultiRegions extends PXDisplayType {
 			self::$scriptsIncluded = true;
 		}
 
-		$res .= "<div class=\"fullBrief\">" . $html . "</div>" . substr($html, 0, 50) . "...";
+		$regionTitles = explode(",", $html);
+		$regionTitlesCount = count($regionTitles);
+
+		if($regionTitlesCount > 2) {
+			$res .= sprintf("<div class='fullBrief'>%s</div>%s + еще %s регионов",
+				$html,
+				join(", ", array_slice($regionTitles, 0, 2)),
+				$regionTitlesCount - 2
+			);
+		} else {
+			$res .= $html;
+		}
+
 		return $res;
 	}
 }
