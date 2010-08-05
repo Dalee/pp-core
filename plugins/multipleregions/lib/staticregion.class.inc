@@ -80,7 +80,7 @@ class PXCorpRegions {
 			self::initFullTree();
 		}
 
-		if (isset(self::$fullTree->leafs[$sid])) {
+		if (isset(self::$fullTree->leafs[$sid]) && !self::$fullTree->leafs[$sid]->isRoot()) {
 			$regions = explode(',', preg_replace('/({|})/', '', self::$fullTree->leafs[$sid]->content['sys_regions']));
 			return in_array($rid, $regions);
 		}

@@ -39,6 +39,10 @@ class NLLeaf {
 	function createpath() {
 		return createPathByParentId($this->tree, $this->id);
 	}
+
+	function isRoot() {
+		return $this->id == $this->tree->getRoot()->id;
+	}
 }
 
 /**
@@ -75,6 +79,10 @@ class NLTree {
 
 		$this->_fillLeafs($table);
 		$this->_fillLevel(0, 0);
+	}
+
+	function getRoot() {
+		return $this->leafs[0];
 	}
 
 	function _fillLeafs(&$table) {
