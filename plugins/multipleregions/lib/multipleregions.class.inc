@@ -326,7 +326,7 @@ class PXMultiRegions {
 		return isset($list[$rid]);
 	}
 
-	public static function getCutOutRegions($format, $object) {
+	public function getCutOutRegions($format, $object) {
 		$reflex_field  = PXMultipleRegionsReflexer::REFLEX_FIELD;
 		$regions_field = self::REGION_MARK;
 

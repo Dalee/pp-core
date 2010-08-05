@@ -6,7 +6,7 @@ class PXDisplayTypeMultiRegions extends PXDisplayTypeBubbleText {
 
 	private function _getValues($field, $object, $regions) {
 		$cutOutRegions = isset($object['id']) && intval($object['id']) > 0 
-			? PXMultiRegions::getCutOutRegions($field->typeDescription, $object)
+			? $regions->getCutOutRegions($field->typeDescription, $object)
 			: null;
 
 		$values  = $regions->getRegionsAsDirectory(true, $cutOutRegions);
@@ -88,8 +88,6 @@ class PXDisplayTypeMultiRegions extends PXDisplayTypeBubbleText {
 			case in_array(PXMultiRegions::MAGIC, $regionsData):
 				$regionsData = array_keys($regions->getList());
 				break;
-			case $regions->parentField && sizeof($regionsData):
-				$regionsData = $regions->getTree()->GetDescendantsOrSelf($regionsData);
 		}
 
 		return $regionsData;
