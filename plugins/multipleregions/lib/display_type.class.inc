@@ -1,6 +1,6 @@
 <?php
 
-class PXDisplayTypeMultiRegions extends PXDisplayType {
+class PXDisplayTypeMultiRegions extends PXDisplayTypeBubbleText {
 	static $scriptsIncluded = false;
 	private $singleObject = false;
 
@@ -121,34 +121,25 @@ class PXDisplayTypeMultiRegions extends PXDisplayType {
 
 		$value   = $this->_getValue($regions, $object, $field);
 		$html    = $this->_buildStatic($field, $value, $values);
-		$res = '';
-
-		if(!self::$scriptsIncluded){
-			$layout = PXRegistry::getLayout();
-
-			$layout->assignCSS("/css/admin/bubble.css");
-			$layout->assignJS("/js/admin/bubble.js");
-
-			self::$scriptsIncluded = true;
-		}
 
 		$regionTitles = explode(",", $html);
 		$regionTitlesCount = count($regionTitles);
 
 		if($regionTitlesCount > 2) {
-			$res .= sprintf("<div class='fullBrief'>%s</div>%s + еще %s регионов",
-				$html,
+			$this->bubbleTextShortContent = sprintf(
+				"%s + еще %s регионов",
 				join(", ", array_slice($regionTitles, 0, 2)),
 				$regionTitlesCount - 2
 			);
-		} else {
-			$res .= $html;
+
+			$this->bubbleTextFullContent = $html;
+
+			return parent::buildCell($field, $object, $param);
 		}
 
-		return $res;
+		return $html;
 	}
 }
-
 /**
  * Таблица URL регионов
  *

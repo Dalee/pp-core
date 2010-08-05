@@ -35,4 +35,6 @@ require_once 'richedit.class.inc';
 require_once 'table.class.inc';
 require_once 'tableStatic.class.inc';
 require_once 'ipAddr.class.inc';
+
+require_once 'bubbleText.class.inc';
 ?>
