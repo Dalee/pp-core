@@ -154,12 +154,13 @@ class PXTriggerDatabaseMultipleregions extends PXAbstractDatabaseTrigger {
 				$selector .= ", {$format->id}.{$reflex_field}";
 			}
 
-			preg_match(sprintf("#%s\.id = [^0-9]*?([0-9]+)#", $format->id) , $where, $m);
+			preg_match(sprintf("#%s\.(id|parent) = [^0-9]*?([0-9]+)#", $format->id) , $where, $m);
 
-			if(isset($m[1])) {
+			#fixme it is not correct
+			/*if(isset($m[2])) {
 				$where = 
-					sprintf("(%s) or %s.%s = '%s'", $where, $format->id, PXMultipleRegionsReflexer::REFLEX_FIELD, $m[1]);
-			}
+					sprintf("(%s) or %s.%s = '%s'", $where, $format->id, PXMultipleRegionsReflexer::REFLEX_FIELD, $m[2]);
+			}*/
 		}
 	}
 
