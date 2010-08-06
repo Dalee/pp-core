@@ -56,14 +56,18 @@ class ObjectChecker {
 		if ((bool) $format->parent && isset($object['parent']) && is_numeric($object['parent']) && $object['parent'] > 0) {
 			$pKey = $format->parent . $object['parent'];
 
-			if (!array_key_exists($pKey, $this->acl->parents)) {
-				$this->_loadParent($format, $object, $pKey);
+			$parentFormat = $this->acl->db->types[$this->acl->db->types[$format->id]->parent];
+
+			if((bool)$parentFormat->parent) {
+				if (!array_key_exists($pKey, $this->acl->parents)) {
+					$this->_loadParent($format, $object, $pKey);
+				}
+
+				$object['parent'] = $this->acl->parents[$pKey];
+			} else {
 			}
 
-			$object['parent'] = $this->acl->parents[$pKey];
-			$format = $this->acl->db->types[$this->acl->db->types[$format->id]->parent];
-
-			return $this->_checkGroup($what, $format, $object);
+			return $this->_checkGroup($what, $parentFormat, $object);
 		 }
 	}
 

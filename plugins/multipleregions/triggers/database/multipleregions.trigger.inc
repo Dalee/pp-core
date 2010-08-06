@@ -1,5 +1,4 @@
-<?
-
+<?php
 class PXTriggerDatabaseMultipleregions extends PXAbstractDatabaseTrigger {
 	function OnBeforeAddObject(&$db, &$objId, &$format, &$object, &$dbFields, &$dbValues) {
 		$regions = $this->getRegions();

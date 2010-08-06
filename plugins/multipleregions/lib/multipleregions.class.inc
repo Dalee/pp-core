@@ -312,10 +312,7 @@ class PXMultiRegions {
 			}
 		}
 
-		$count = count($allowed);
-		$merge = $orig + $allowed;
-
-		return $count == count($merge);
+		return count($allowed) == count($orig + $allowed);
 	}
 
 	function getAllowedRegionsIds() {

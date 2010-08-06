@@ -435,6 +435,9 @@ class PXDatabase extends NLSQLDatabaseAdapter {
 	 * @return Array
 	 */
 	function GetObjectsByWhere($format, $status, $whereClause, $mode=DB_SELECT_TABLE, $order=NULL) {
+		if(is_array($whereClause)) {
+			$whereClause = implode(' AND ', $whereClause);
+		}
 		if (!is_null($status)) $whereClause .= ' AND '.$format->id.'.status='.$this->TrueStatusString($status);
 		return $this->_GetData($format, $mode, $whereClause, null, $order);
 	}
@@ -454,6 +457,9 @@ class PXDatabase extends NLSQLDatabaseAdapter {
 	 * @return Array
 	 */
 	function GetObjectsByWhereLimited($format, $status, $whereClause, $limit, $offset, $mode=DB_SELECT_TABLE, $order=NULL) {
+		if(is_array($whereClause)) {
+			$whereClause = implode(' AND ', $whereClause);
+		}
 		if (!is_null($status)) $whereClause .= ' AND '.$format->id.'.status='.$this->TrueStatusString($status);
 		return $this->_GetData($format, $mode, $whereClause, array($limit, $offset), $order);
 	}
@@ -697,7 +703,10 @@ class PXDatabase extends NLSQLDatabaseAdapter {
 		$newId = 0;
 		foreach ($this->triggers as $t){
 			$permitAdd = $t->getTrigger()->OnBeforeAddObject($this, $newId, $format, $object, $dbFields, $dbValues);
-			if(!$permitAdd) break;
+
+			if(!$permitAdd) {
+				break;
+			}
 		}
 
 		if($permitAdd){
@@ -717,8 +726,9 @@ class PXDatabase extends NLSQLDatabaseAdapter {
 			
 			$object['sys_order'] = $newId;
 
-			foreach ($this->triggers as $t)
+			foreach ($this->triggers as $t) {
 				$t->getTrigger()->OnAddObject($this, $newId, $format, $object, $dbFields, $dbValues);
+			}
 
 			$audit->info('Объект добавлен', $format->id .'/'. $newId);
 		}
