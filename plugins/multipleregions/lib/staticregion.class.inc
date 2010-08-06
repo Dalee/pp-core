@@ -11,6 +11,12 @@ class PXCorpRegions {
 
 		return isset($r[0]) ? $r[0]['federal'] == 't' : 'f';
 	}
+
+	static function getFederalHost($host) {
+		$fId = PXRegistry::getDb()->query('SELECT id FROM sys_regions WHERE federal LIMIT 1');
+
+		return self::findUrl($host, $fId[0]['id']);
+	}
 	
 	static function getRegionId($type = 'user') {
 		$r = PXMultiRegions::getInstance();
