@@ -144,7 +144,7 @@ class PXTriggerDatabaseMultipleregions extends PXAbstractDatabaseTrigger {
 
 		if($regions->isRegionalObject($format)) {
 			$parentObject = $db->getObjectsByFieldLimited(
-				PXRegistry::getApp()->types[$format->parent], true,
+				PXRegistry::getApp()->types[$format->parent], null,
 				PXMultipleRegionsReflexer::REFLEX_FIELD, $object['parent'], 1, 0);
 
 			if(!empty($parentObject)) {
