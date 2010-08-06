@@ -55,7 +55,7 @@ abstract class PXAbstractDatabaseTrigger extends PXAbstractTrigger {
 	# return true if parent founded
 	#        false if not founded
 	# for disable return null (nothing)
-	function onBeforeCheckForParent($db, $format, &$object) {
+	function onBeforeCheckForParent($db, $format, &$object, &$parentObject) {
 	}
 }
 
