@@ -636,14 +636,27 @@ class PXDatabase extends NLSQLDatabaseAdapter {
 		}
 
 		if (isset($format->fields['parent']) && $object['parent']) {
-			$parent = $this->GetObjectById($this->types[$format->parent], $object['parent']);
+			$permitCheck = null;
+			$parentObject = null;
 
-			if (!count($parent)) {
-				$errString = 'Попытка добавить объект в несуществующий раздел';
-				$audit->error($errString, $format->parent .'/'. $object['parent']);
-				FatalError($errString);
+			foreach ($this->triggers as $t) {
+				$permitCheck = $t->getTrigger()->OnBeforeCheckForParent($this, $format, $object, $parentObject);
+				if($permitCheck !== null) break;
 			}
-			if ($format->id != $format->parent && !in_array($format->id, $this->app->GetAllowedChildsKeys($format->parent, $parent))) {
+
+			if($permitCheck !== true) {
+				if($permitCheck === null) {
+					$parentObject = $this->GetObjectById($this->types[$format->parent], $object['parent']);
+				}
+
+				if($permitCheck === false || !count($parentObject)) {
+					$errString = 'Попытка переместить объект в несуществующий раздел';
+					$audit->error($errString, $format->id .'/'.$object['id']);
+					FatalError($errString);
+				}
+			}
+
+			if ($format->id != $format->parent && !in_array($format->id, $this->app->GetAllowedChildsKeys($format->parent, $parentObject))) {
 				$errString = 'Объект данного типа не может быть добавлен в данный раздел';
 				$audit->error($errString, $format->parent .'/'. $object['parent']);
 				FatalError($errString);
@@ -888,13 +901,26 @@ class PXDatabase extends NLSQLDatabaseAdapter {
 			FatalError($errString);
 		}
 		if (isset($format->fields['parent']) && $object['parent']) {
-			$parentObject = $this->GetObjectById($this->types[$format->parent], $object['parent']);
-			if (!count($parentObject)) {
-				$errString = 'Попытка переместить объект в несуществующий раздел';
-				$audit->error($errString, $format->id .'/'.$object['id']);
-				FatalError($errString);
+			$permitCheck = null;
+			$parentObject = null;
+
+			foreach ($this->triggers as $t) {
+				$permitCheck = $t->getTrigger()->OnBeforeCheckForParent($this, $format, $object, $parentObject);
+				if($permitCheck !== null) break;
 			}
-			
+
+			if($permitCheck !== true) {
+				if($permitCheck === null) {
+					$parentObject = $this->GetObjectById($this->types[$format->parent], $object['parent']);
+				}
+
+				if(!count($parentObject)) {
+					$errString = 'Попытка переместить объект в несуществующий раздел';
+					$audit->error($errString, $format->id .'/'.$object['id']);
+					FatalError($errString);
+				}
+			}
+
 			if ($format->id != $format->parent && !in_array($format->id, $this->app->GetAllowedChildsKeys($format->parent, $parentObject))) {
 				$errString = 'Объект данного типа не может быть перемещен в данный раздел';
 				$audit->error($errString, $format->id .'/'.$object['id']);

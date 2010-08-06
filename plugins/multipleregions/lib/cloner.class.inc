@@ -70,7 +70,7 @@ class PXPublicRegionObjectCloner {
 		if(isset($objectInDB['parent'])) {
 			$findClonedParent = $this->db->query(
 				sprintf("select id from %s where %s = '%s'",
-					$this->format->id, 
+					$this->format->parent, 
 					$reflex_field,
 					$objectInDB['parent']
 				)

@@ -26,9 +26,11 @@ class PXTriggerDatabaseMultipleregions extends PXAbstractDatabaseTrigger {
 					$this->simpleSetDbValues('allowed',  serialize($object['allowed']), $dbFields, $dbValues);
 				}
 
+				#fixme sys_order is down
 				if(isset($object['sys_order']) && is_numeric($object['sys_order']) && $object['sys_order'] > 0) {
-					$this->simpleSetDbValues('sys_order',   $object['sys_order'], $dbFields, $dbValues);
+					$this->simpleSetDbValues('sys_order', $object['sys_order'], $dbFields, $dbValues);
 				}
+				
 			}
 
 			$regions->addRegionByDefault($format, $dbFields, $dbValues);
@@ -136,6 +138,25 @@ class PXTriggerDatabaseMultipleregions extends PXAbstractDatabaseTrigger {
 		return $permit;
 	}
 
+	#todo cache sql-queries
+	function onBeforeCheckForParent($db, $format, &$object, &$parentObject) {
+		$regions = $this->getRegions();
+
+		if($regions->isRegionalObject($format)) {
+			$parentObject = $db->getObjectsByFieldLimited(
+				PXRegistry::getApp()->types[$format->parent], true,
+				PXMultipleRegionsReflexer::REFLEX_FIELD, $object['parent'], 1, 0);
+
+			if(!empty($parentObject)) {
+				$parentObject = pos($parentObject);
+				return true;
+			}
+		}
+
+		#standart answer
+		return null;
+	}
+
 	function OnBeforeGetDataBuildQuery($db, $format, &$mode, &$selector, &$where, &$order, &$limit){
 		$regions = $this->getRegions();
 
@@ -146,21 +167,12 @@ class PXTriggerDatabaseMultipleregions extends PXAbstractDatabaseTrigger {
 
 		if($regions->isRegionalObject($format)) {
 			$regionFilter = $regions->findByRegion();
-
 			$where = strlen($where) ? "($where) AND $regionFilter" : $regionFilter;
 
 			if($mode != DB_SELECT_COUNT) {
 				$reflex_field = PXMultipleRegionsReflexer::REFLEX_FIELD;
 				$selector .= ", {$format->id}.{$reflex_field}";
 			}
-
-			preg_match(sprintf("#%s\.(id|parent) = [^0-9]*?([0-9]+)#", $format->id) , $where, $m);
-
-			#fixme it is not correct
-			/*if(isset($m[2])) {
-				$where = 
-					sprintf("(%s) or %s.%s = '%s'", $where, $format->id, PXMultipleRegionsReflexer::REFLEX_FIELD, $m[2]);
-			}*/
 		}
 	}
 
