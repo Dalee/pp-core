@@ -272,6 +272,7 @@ class PXMultiRegions {
 
 			if($modifiedObject) {
 				$cutOutRegions = $this->getCutOutRegions($format, $modifiedObject);
+
 				$regArray      = PXMultipleRegionsHelper::toArray($reg);
 				$regArray      = array_diff($regArray, $cutOutRegions);
 
@@ -330,31 +331,47 @@ class PXMultiRegions {
 		$reflex_field  = PXMultipleRegionsReflexer::REFLEX_FIELD;
 		$regions_field = self::REGION_MARK;
 
+		$getReflexId = 
+			$this->db->query("select {$reflex_field} from {$format->id} where id = '{$object['id']}'");
+
+		$getReflexId = (array) pos($getReflexId);
+		$object[$reflex_field] = !empty($getReflexId) ? pos($getReflexId) : null;
+
+		$pattern = '
+			SELECT id, %1$s
+				FROM %2$s
+				WHERE %3$s = \'%4$s\'
+				UNION
+			SELECT id, %1$s
+				FROM %2$s
+				WHERE id = \'%4$s\'';
+
 		$params = array(
-			"pattern"         => "select id, %s from %s where %s = '%s'",
-			"region_field"    => $regions_field,
+			"pattern"         => $pattern,
+			"regions"         => $regions_field,
 			"format"          => $format->id,
 			"condition_field" => $reflex_field,
-			"condition_value" => $object['id']
+			"condition_value" => isset($object[$reflex_field]) ? $object[$reflex_field] : $object['id']
 		);
 
-		if(isset($object[$reflex_field])) {
-			$params["condition_field"] = "id";
-			$params["condition_value"] = $object[$reflex_field];
-		}
+		$sql = call_user_func_array("sprintf", $params);
 
-		$result = PXRegistry::getDB()->query(call_user_func_array("sprintf", $params));
+		$result = $this->db->query($sql);
+		$result = array_combine(getColFromTable($result, 'id'), $result);
+
+		unset($result[$object['id']]);
+
+		$cutOut = array_map(
+			array("PXMultipleRegionsHelper", "toArray"), 
+			getColFromTable($result, $regions_field)
+		);
 
 		$tmp = array();
-
-		if(!empty($result)) {
-			foreach($result as $i) {
-				if(isset($i[$regions_field])) {
-					$tmp = array_merge($tmp, PXMultipleRegionsHelper::toArray($i[$regions_field]));
-				}
-			}
+		foreach($cutOut as $i) {
+			$tmp = array_merge($tmp, $i);
 		}
+		$cutOut = $tmp;
 
-		return $tmp;
+		return $cutOut;
 	}
 }

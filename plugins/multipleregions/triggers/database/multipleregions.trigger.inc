@@ -151,7 +151,7 @@ class PXTriggerDatabaseMultipleregions extends PXAbstractDatabaseTrigger {
 
 			if($mode != DB_SELECT_COUNT) {
 				$reflex_field = PXMultipleRegionsReflexer::REFLEX_FIELD;
-				$selector .= ", {$reflex_field}";
+				$selector .= ", {$format->id}.{$reflex_field}";
 			}
 
 			preg_match(sprintf("#%s\.id = [^0-9]*?([0-9]+)#", $format->id) , $where, $m);
