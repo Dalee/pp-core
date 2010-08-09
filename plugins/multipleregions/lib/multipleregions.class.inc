@@ -289,6 +289,7 @@ class PXMultiRegions {
 
 			$parent = $this->db->GetObjectById($parentFormat, $object['parent']);
 
+			# probably parent is hidden by regional filter
 			if (!count($parent)) {
 				return false;
 			}
