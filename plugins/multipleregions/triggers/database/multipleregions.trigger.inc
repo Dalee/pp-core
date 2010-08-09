@@ -152,7 +152,6 @@ class PXTriggerDatabaseMultipleregions extends PXAbstractDatabaseTrigger {
 			$parentObject = $db->GetObjectById($types[$format->parent], $object['parent']);
 
 			if (!empty($parentObject)) {
-				$parentObject = $parentObject;
 				return true;
 			}
 
