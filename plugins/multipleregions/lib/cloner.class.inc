@@ -72,7 +72,7 @@ class PXPublicRegionObjectCloner {
 		$objectInDB[$reflex_field] = $this->oid;
 		$objectInDB[$regions_field] = $allowedRegionsIds;
 
-		if(isset($objectInDB['parent']) && $this->parentFormat) {
+		if (isset($objectInDB['parent']) && $this->parentFormat) {
 			$findClonedParent = $this->db->getObjectsByField($this->parentFormat,
 				null, $reflex_field, $objectInDB['parent']);
 
@@ -90,6 +90,11 @@ class PXPublicRegionObjectCloner {
 
 		$this->object[$regions_field] =
 			array_intersect($this->object[$regions_field], $allowedRegionsIds);
+
+		# set parent(donor) sys_order
+		if (isset($objectInDB['sys_order'])) {
+			$this->object['sys_order'] = $objectInDB['sys_order'];
+		}
 
 		$this->db->modifyContentObject($this->format, $this->object);
 	}

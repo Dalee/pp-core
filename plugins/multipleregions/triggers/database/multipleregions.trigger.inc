@@ -24,12 +24,6 @@ class PXTriggerDatabaseMultipleregions extends PXAbstractDatabaseTrigger {
 				if(isset($object['allowed']) && is_array($object['allowed'])) {
 					$this->simpleSetDbValues('allowed',  serialize($object['allowed']), $dbFields, $dbValues);
 				}
-
-				#fixme sys_order is down
-				if(isset($object['sys_order']) && is_numeric($object['sys_order']) && $object['sys_order'] > 0) {
-					$this->simpleSetDbValues('sys_order', $object['sys_order'], $dbFields, $dbValues);
-				}
-				
 			}
 
 			$regions->addRegionByDefault($format, $dbFields, $dbValues);
@@ -84,6 +78,10 @@ class PXTriggerDatabaseMultipleregions extends PXAbstractDatabaseTrigger {
 		}
 
 		if($permit) {
+			if(isset($object['sys_order']) && is_numeric($object['sys_order']) && $object['sys_order'] > 0) {
+				$this->simpleSetDbValues('sys_order', $object['sys_order'], $dbFields, $dbValues);
+			}
+
 			$regions->addRegionByDefault($format, $dbFields, $dbValues, $object);
 		} elseif(empty($hasBeenCloned)){
 			$this->fireError();
