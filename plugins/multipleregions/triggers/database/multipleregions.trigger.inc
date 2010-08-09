@@ -139,26 +139,43 @@ class PXTriggerDatabaseMultipleregions extends PXAbstractDatabaseTrigger {
 
 	#todo cache sql-queries
 	function onBeforeCheckForParent($db, $format, &$object, &$parentObject) {
-		$regions = $this->getRegions();
 
-		if($regions->isRegionalObject($format) 
-			&& $regions->isRegionalObject(PXRegistry::getApp()->types[$format->parent])
-		) {
+		$regions = $this->getRegions();
+		$types   = PXRegistry::getApp()->types;
+
+		if (!isset($types[$format->parent])) {
+			return null;
+		}
+
+		if ($regions->isRegionalObject($types[$format->parent])) {
+			# find original parent
+			$parentObject = $db->GetObjectById($types[$format->parent], $object['parent']);
+
+			if (!empty($parentObject)) {
+				$parentObject = $parentObject;
+				return true;
+			}
+
+			# find reflected parent
 			$parentObject = $db->getObjectsByFieldLimited(
 				PXRegistry::getApp()->types[$format->parent], null,
 				PXMultipleRegionsReflexer::REFLEX_FIELD, $object['parent'], 1, 0);
 
 			if(!empty($parentObject)) {
-				$parentObject = pos($parentObject);
+				$parentObject = reset($parentObject);
 				return true;
 			}
+
+			# not founded parent. Fatal Error
+			return false;
 		}
 
-		#standart answer
+		#standart answer for skip.
 		return null;
 	}
 
 	function OnBeforeGetDataBuildQuery($db, $format, &$mode, &$selector, &$where, &$order, &$limit){
+
 		$regions = $this->getRegions();
 
 		if(strlen($where)) {

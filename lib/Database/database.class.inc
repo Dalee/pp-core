@@ -635,39 +635,16 @@ class PXDatabase extends NLSQLDatabaseAdapter {
 	 */
 	function AddContentObject($format, $object) {
 		$audit = PXAuditLogger::getLogger($this->app, $this);
+
 		if (!$this->user->can('write', $format, $object)) {
 			$errString = 'Отказано в доступе при попытке создать объект типа <em>'.$format->id.'</em>';
 			$audit->error($errString, $format->id .'/0');
 			FatalError($errString);
 		}
 
-		if (isset($format->fields['parent']) && $object['parent']) {
-			$permitCheck = null;
-			$parentObject = null;
+		$this->checkForParent($format, $object);
 
-			foreach ($this->triggers as $t) {
-				$permitCheck = $t->getTrigger()->OnBeforeCheckForParent($this, $format, $object, $parentObject);
-				if($permitCheck !== null) break;
-			}
 
-			if($permitCheck !== true) {
-				if($permitCheck === null) {
-					$parentObject = $this->GetObjectById($this->types[$format->parent], $object['parent']);
-				}
-
-				if($permitCheck === false || !count($parentObject)) {
-					$errString = 'Попытка переместить объект в несуществующий раздел';
-					$audit->error($errString, $format->id .'/'.$object['id']);
-					FatalError($errString);
-				}
-			}
-
-			if ($format->id != $format->parent && !in_array($format->id, $this->app->GetAllowedChildsKeys($format->parent, $parentObject))) {
-				$errString = 'Объект данного типа не может быть добавлен в данный раздел';
-				$audit->error($errString, $format->parent .'/'. $object['parent']);
-				FatalError($errString);
-			}
-		}
 		$dbFields = array();
 		$dbValues = array();
 		foreach ($format->fields as $k=>$v) {
@@ -910,33 +887,8 @@ class PXDatabase extends NLSQLDatabaseAdapter {
 			$audit->error($errString, $format->parent .'/'. $object['parent']);
 			FatalError($errString);
 		}
-		if (isset($format->fields['parent']) && $object['parent']) {
-			$permitCheck = null;
-			$parentObject = null;
 
-			foreach ($this->triggers as $t) {
-				$permitCheck = $t->getTrigger()->OnBeforeCheckForParent($this, $format, $object, $parentObject);
-				if($permitCheck !== null) break;
-			}
-
-			if($permitCheck !== true) {
-				if($permitCheck === null) {
-					$parentObject = $this->GetObjectById($this->types[$format->parent], $object['parent']);
-				}
-
-				if(!count($parentObject)) {
-					$errString = 'Попытка переместить объект в несуществующий раздел';
-					$audit->error($errString, $format->id .'/'.$object['id']);
-					FatalError($errString);
-				}
-			}
-
-			if ($format->id != $format->parent && !in_array($format->id, $this->app->GetAllowedChildsKeys($format->parent, $parentObject))) {
-				$errString = 'Объект данного типа не может быть перемещен в данный раздел';
-				$audit->error($errString, $format->id .'/'.$object['id']);
-				FatalError($errString);
-			}
-		}
+		$this->checkForParent($format, $object);
 
 		$dbFields = array();
 		$dbValues = array();
@@ -1708,6 +1660,40 @@ SQL;
 			}
 
 			$table = new NLTree($plainTable, $table->_idField, $table->_parentField, $table->_titleField, $table->saveOrphans);
+		}
+	}
+
+	private function checkForParent($format, &$object) {
+		if (!(isset($format->fields['parent']) && $object['parent'])) {
+			return;
+		}
+		
+		$audit = PXAuditLogger::getLogger($this->app, $this);
+
+		$permitCheck = null;
+		$parentObject = null;
+
+		foreach ($this->triggers as $t) {
+			$permitCheck = $t->getTrigger()->OnBeforeCheckForParent($this, $format, $object, $parentObject);
+			if($permitCheck !== null) break;
+		}
+
+		if ($permitCheck !== true) {
+			if ($permitCheck === null) {
+				$parentObject = $this->GetObjectById($this->types[$format->parent], $object['parent']);
+			}
+
+			if ($permitCheck === false || !count($parentObject)) {
+				$errString = 'Попытка переместить объект в несуществующий раздел';
+				$audit->error($errString, $format->id .'/'.$object['id']);
+				FatalError($errString);
+			}
+		}
+
+		if ($format->id != $format->parent && !in_array($format->id, $this->app->GetAllowedChildsKeys($format->parent, $parentObject))) {
+			$errString = 'Объект данного типа не может быть добавлен в данный раздел';
+			$audit->error($errString, $format->parent .'/'. $object['parent']);
+			FatalError($errString);
 		}
 	}
 }
