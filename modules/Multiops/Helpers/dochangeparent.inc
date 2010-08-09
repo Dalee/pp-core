@@ -12,6 +12,6 @@
 			$this->db->ModifyContentObject($dtype, $object);
 		}
 	} else {
-		$RESULT['iserror'] = (object)array('notice' => 'Недопустимый родитель объекта');
+		$RESULT = PXEngineJSON::toError('Недопустимый родитель объекта');
 	}
 ?>

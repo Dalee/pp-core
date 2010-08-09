@@ -99,7 +99,7 @@ class PXTriggerDatabaseMultipleregions extends PXAbstractDatabaseTrigger {
 			$cloner = 
 				new PXPublicRegionObjectCloner($format, $object = null, $objectInDB, $dbFields = null, $dbValues = null, $this);
 
-			$cloner->deleteObject($regions->getAllowedRegionsIds()); //FIXME, i am broken in multioperations !
+			$cloner->deleteObject($regions->getAllowedRegionsIds());
 		} elseif(!$permit) {
 			$this->fireError();
 		}
@@ -227,23 +227,32 @@ class PXTriggerDatabaseMultipleregions extends PXAbstractDatabaseTrigger {
 
 	function fireError($message='Доступ к этому объекту/действию запрещен !') {
 		$app = PXRegistry::getApp();
-		if(!($app->isAdminEngine() && !$app->isEngineInstanceof("AdminJSON"))) {
+		if(!$app->isAdminEngine()) {
 			return;
 		}
 
 		$request  = PXRegistry::getRequest();
+		$response = PXResponse::getInstance();
 		$returnTo = $request->GetHttpReferer();
 		
 		if(empty($returnTo)){
 			$returnTo = '/admin';
 		}
-
-		echo <<<JS
-			<script type="text/javascript">
-				alert('{$message}');
-				window.location.href = '{$returnTo}';
-			</script>
-JS;
+		
+		$response->dontCache();
+		
+		if($app->isEngineInstanceof("AdminJSON")){
+			$response->setContentType('text/javascript');
+			$response->send(json_encode(PXEngineJSON::toError($message, "encode to utf8")));
+		} else {
+			$response->send(<<<JS
+				<script type="text/javascript">
+					alert('{$message}');
+					window.location.href = '{$returnTo}';
+				</script>
+JS
+			);
+		}
 		exit;
 	}
 	

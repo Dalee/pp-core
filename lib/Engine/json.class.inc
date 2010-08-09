@@ -1,7 +1,7 @@
 <?php
 class PXEngineJSON extends PXEngine {
 	var $result;
-
+	
 	function __construct(){
 		parent::profilerStart();
 		parent::__construct();
@@ -19,7 +19,7 @@ class PXEngineJSON extends PXEngine {
 	}
 
 	function sendJson() {
-		$encodedResult = $this->jsonEncodeCyr($this->result);
+		$encodedResult = self::jsonEncodeCyr($this->result);
 		$response =& PXResponse::getInstance();
 		$response->setContentType('text/javascript');
 		$response->send(json_encode($encodedResult));
@@ -30,12 +30,12 @@ class PXEngineJSON extends PXEngine {
 		return $module->userJson();
 	}
 	
-	function jsonEncodeCyr($object) {
+	public static function jsonEncodeCyr($object) {
 		if (is_array($object)) {
 			$encoded = array();
 
 			foreach ($object as $k => $v) {
-				$encoded[$this->jsonEncodeCyr($k)] = $this->jsonEncodeCyr($v);
+				$encoded[self::jsonEncodeCyr($k)] = self::jsonEncodeCyr($v);
 			}
 			$object = $encoded;
 
@@ -43,7 +43,7 @@ class PXEngineJSON extends PXEngine {
 			$vars = get_object_vars($object);
 
 			foreach ($vars as $m => $v) {
-				$object->$m = $this->jsonEncodeCyr($v);
+				$object->$m = self::jsonEncodeCyr($v);
 			}
 
 		} elseif (is_string($object)) {
@@ -51,6 +51,20 @@ class PXEngineJSON extends PXEngine {
 		}
 
 		return $object;
+	}
+	
+	// Common data encoders for library methods standardization
+	
+	public static function toError($value, $koi82utf8 = false){
+		return self::toObject('iserror', $value, $koi82utf8);
+	}
+	
+	public static function toSuccess($value, $koi82utf8 = false){
+		return self::toObject('isok', $value, $koi82utf8);
+	}
+	
+	protected static function toObject($key, $value, $encode){
+		return (object)array($key => (object)array('notice' => $encode ? self::jsonEncodeCyr($value) : $value));
 	}
 }
 ?>

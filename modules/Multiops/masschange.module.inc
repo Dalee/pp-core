@@ -42,8 +42,8 @@
 			}
 			
 			private function route($res){
-				if(isset($res['redirect'])){
-					$this->response->redirect($res['redirect']);
+				if(isset($res->redirect)){
+					$this->response->redirect($res->redirect);
 				}
 				
 				return (object)$res;

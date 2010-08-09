@@ -13,6 +13,6 @@
 			$this->db->ModifyContentObject($dtype, $object);
 		}
 	} else {
-		$RESULT['iserror'] = (object)array('notice' => 'Недопустимый статус объекта');
+		$RESULT = PXEngineJSON::toError('Недопустимый статус объекта');
 	}
 ?>
