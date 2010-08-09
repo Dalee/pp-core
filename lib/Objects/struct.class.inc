@@ -85,6 +85,7 @@ class PXStructLeaf implements Iterator {
 
 class PXStructLeaf404 extends PXStructLeaf {
 	function __construct() {
+		$this->id = -1;
 	}
 
 	function __get($key) {
