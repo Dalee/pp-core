@@ -13,6 +13,8 @@ final class PXMultipleRegionsReflexer {
 	static $parentType = null;
 	static $reflexId   = null;
 
+	static $undef      = null;
+
 	const REFLEX_FIELD = 'sys_reflex_id';
 
 	public function __construct($regions, $where, $format) {
@@ -65,6 +67,17 @@ final class PXMultipleRegionsReflexer {
 		# or saved TypeParent == currentTypeParent
 		if(!isset($m[2]) || $reflexId == $m[2] || ($reflexId && self::$parentType == $this->format->parent)) {
 			return;
+		}
+
+		if($this->app->isAdminEngine() && PXRegistry::getLayout()->outerLayout === 'index') {
+			if(!self::$undef) {
+				$_SESSION['last_q'] = array();
+				self::$undef = true;
+			}
+			
+			$_SESSION['last_q'][$this->format->id] = $m[2];
+		} else {
+			d2($_SESSION);
 		}
 
 		$result = $this->db->query(

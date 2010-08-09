@@ -6,8 +6,11 @@ class PXPublicRegionObjectCloner {
 	
 	const DENY_EDIT_FIELD = 'deny_region_edit';
 
+	private $parentFormat = null;
+
 	function __construct($format, &$object = null, &$objectInDB, &$dbFields = null, &$dbValues = null, $trigger) {
 		$this->format      = $format;
+
 		$this->object      =& $object;
 		$this->objectInDB  =& $objectInDB;
 		$this->dbFields    =& $dbFields;
@@ -17,6 +20,10 @@ class PXPublicRegionObjectCloner {
 		$this->childTypes  = $format->childTypes();
 
 		PXRegistry::assignToObject($this);
+
+		if(isset($this->app->types[$format->parent])) {
+			$this->parentFormat = $this->app->types[$format->parent];
+		}
 	}
 
 	public function cloneObject($allowedRegionsIds) {/*{{{*/
@@ -67,18 +74,15 @@ class PXPublicRegionObjectCloner {
 		$objectInDB[$reflex_field] = $this->oid;
 		$objectInDB[$regions_field] = $allowedRegionsIds;
 
-		if(isset($objectInDB['parent'])) {
-			$findClonedParent = $this->db->query(
-				sprintf("select id from %s where %s = '%s'",
-					$this->format->parent, 
-					$reflex_field,
-					$objectInDB['parent']
-				)
-			);
+		if (isset($objectInDB['parent']) && $this->parentFormat) {
+			$findClonedParent = $this->db->getObjectsByField($this->parentFormat,
+				null, $reflex_field, $objectInDB['parent']);
 
-			$findClonedParent = (array) pos($findClonedParent);
+			if (!empty($findClonedParent)) {
+				$findClonedParent = reset($findClonedParent);
+			}
 
-			if(isset($findClonedParent['id'])) {
+			if (isset($findClonedParent['id'])) {
 				$this->object['parent'] = $objectInDB['parent'] = $findClonedParent['id'];
 			}
 		}
