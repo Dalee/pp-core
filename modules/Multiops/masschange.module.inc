@@ -4,14 +4,14 @@
 			$helper;
 		
 		public 
-			function adminAction(){
+			function adminJson(){
 				$this->settings['helpers'] = @array_merge((array)$this->settings['helpers'], array(dirname(__FILE__) . '/Helpers/'));
 				$this->helper->objectType  = $this->request->getVar('format');
 				$this->helper->operation   = preg_replace("#[^a-z0-9_-]#i", '', $this->request->getVar('handler'));
 				$this->helper->options     = $this->request->getVar('options');
 				
 				if(!empty($this->helper->options)){
-					$this->helper->options = $this->getJSON()->unserialize($this->helper->options);
+					$this->helper->options = json_decode($this->helper->options);
 				}
 				
 				$this->helper->options   = is_object($this->helper->options) ? $this->helper->options : null;
@@ -37,23 +37,16 @@
 						break;
 					}
 				}
+				
 				return $this->route($RESULT);
 			}
 			
-			private function getJSON(){
-				require_once 'JSON/json.class.inc';
-				static $instance;
-				
-				return $instance ? $instance : new JSON;
-			}
-		
 			private function route($res){
 				if(isset($res['redirect'])){
-					return $res['redirect'];
+					$this->response->redirect($res['redirect']);
 				}
 				
-				$this->response->send($this->getJSON()->serialize((object)$res));
-				exit;
+				return (object)$res;
 			}
 	}
 ?>

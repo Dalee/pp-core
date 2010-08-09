@@ -66,7 +66,7 @@ $(function(/*Common multiple bottom controls*/) {
 			
 			if(!(_doWhat && obType && obArray.length && (_withHelper != 'true' || _options || EIactivateContextHelper(this)) && (!_confirm || confirm(_confirm)))) return _rearm(this)
 			
-			makeCall('post', 'action.phtml', {area: 'masschange', action: null, handler: _doWhat, options: _options, format: obType, 'objects[]': obArray})
+			makeCall('post', 'json.phtml', {area: 'masschange', action: null, handler: _doWhat, options: _options, format: obType, 'objects[]': obArray})
 			return _rearm(this)
 		})
 	})
