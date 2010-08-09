@@ -289,7 +289,11 @@ class PXMultiRegions {
 
 			$parent = $this->db->GetObjectById($parentFormat, $object['parent']);
 
-			if($this->isRegionalObject($parentFormat) && $parentFormat->id !== 'struct' && sizeof($parent)){ //check access to parent object if we try to add/modify/delete subcontent objects only
+			if (!count($parent)) {
+				return false;
+			}
+
+			if ($this->isRegionalObject($parentFormat) && $parentFormat->id !== 'struct') { //check access to parent object if we try to add/modify/delete subcontent objects only
 				return $this->checkRegionAccess($parentFormat, $parent);
 			}
 		}
@@ -298,7 +302,7 @@ class PXMultiRegions {
 	}
 
 	function checkRegionAccess($format, $object) {
-		if(!$this->isRegionalObject($format)) {
+		if (!$this->isRegionalObject($format)) {
 			return true;
 		}
 
