@@ -319,6 +319,10 @@ class PXMultiRegions {
 		return array_keys($this->loadDirectory()->values);
 	}
 
+	function getCountAllowedRegions() {
+		return count($this->getAllowedRegionsIds());
+	}
+
 	function inAllowed($rid) {
 		$list = array_flip($this->getAllowedRegionsIds());
 		return isset($list[$rid]);

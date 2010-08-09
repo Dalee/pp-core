@@ -107,15 +107,20 @@ class PXDisplayTypeMultiRegions extends PXDisplayTypeBubbleText {
 		$regionTitles = explode(",", $html);
 		$regionTitlesCount = count($regionTitles);
 
+
 		if($regionTitlesCount > 2) {
-			$this->bubbleTextShortContent = sprintf(
-				"%s + еще %s регионов",
-				join(", ", array_slice($regionTitles, 0, 2)),
-				$regionTitlesCount - 2
-			);
+
+			if($regionTitlesCount == $regions->getCountAllowedRegions()) {
+				$this->bubbleTextShortContent = 'все регионы';
+			} else {
+				$this->bubbleTextShortContent = sprintf(
+					"%s + еще %s регионов",
+					join(", ", array_slice($regionTitles, 0, 2)),
+					$regionTitlesCount - 2
+				);
+			}
 
 			$this->bubbleTextFullContent = $html;
-
 			return parent::buildCell($field, $object, $param);
 		}
 
