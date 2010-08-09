@@ -226,7 +226,8 @@ class PXTriggerDatabaseMultipleregions extends PXAbstractDatabaseTrigger {
 	}
 
 	function fireError($message='Доступ к этому объекту/действию запрещен !') {
-		if(!PXRegistry::getApp()->isAdminEngine()) {
+		$app = PXRegistry::getApp();
+		if(!($app->isAdminEngine() && !$app->isEngineInstanceof("AdminJSON"))) {
 			return;
 		}
 

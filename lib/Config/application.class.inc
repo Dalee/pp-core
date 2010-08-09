@@ -689,6 +689,11 @@ class PXApplication {
 		return $this->engine->engineClass() == PX_ENGINE_ADMIN;
 	}
 
+	function isEngineInstanceof($engineName) {
+		$engineName = 'PxEngine' . $engineName;
+		return $this->engine instanceof $engineName;
+	}
+
 	function __wakeup() {
 		foreach($this->reinitialize as $name=>$bool) {
 			foreach((array) $this->{$name} as $o) {
