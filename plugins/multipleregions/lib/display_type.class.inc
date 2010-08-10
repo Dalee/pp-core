@@ -1,8 +1,9 @@
 <?php
 
 class PXDisplayTypeMultiRegions extends PXDisplayTypeBubbleText {
-	static $scriptsIncluded = false;
-	private $singleObject = false;
+	static $scriptsIncluded   = false;
+	private static $chooseAll = '- ðõâìéëï÷áôø ÷ï ÷óåè òåçéïîáè -';
+	private $singleObject     = false;
 
 	private function _getValues($field, $object, $regions) {
 		$cutOutRegions = isset($object['id']) && intval($object['id']) > 0 
@@ -20,7 +21,7 @@ class PXDisplayTypeMultiRegions extends PXDisplayTypeBubbleText {
 			return;
 		}
 
-		$values[PXMultiRegions::MAGIC] = '- ðõâìéëï÷áôø ÷ï ÷óåè òåçéïîáè -';
+		$values[PXMultiRegions::MAGIC] = self::$chooseAll;
 		
 		#fixme it is ugly
 		unset($values[null]);
@@ -96,21 +97,25 @@ class PXDisplayTypeMultiRegions extends PXDisplayTypeBubbleText {
 	function buildCell($field, $object, $param=NULL) {
 		$regions = PXMultiRegions::getInstance();
 		$values = $this->_getValues($field, $object, $regions);
+		static $allRegionsIds;
 
 		if(!is_array($values)) {
 			return;
 		}
 
-		$value   = $this->_getValue($regions, $object, $field);
-		$html    = $this->_buildStatic($field, $value, $values);
+		if(is_null($allRegionsIds)){
+			$allRegionsIds = array_keys($regions->getRegionsData());
+		}
+		$value      = array_intersect($allRegionsIds, $this->_getValue($regions, $object, $field));
+		$html       = $this->_buildStatic($field, $value, $values);
 
-		$regionTitles = explode(",", $html);
+		$regionTitles      = explode(",", $html);
 		$regionTitlesCount = count($regionTitles);
+		$countAllowed      = $regions->getCountAllowedRegions();
+		$moreThanOne       = $regionTitlesCount > 2;
 
-
-		if($regionTitlesCount > 2) {
-
-			if($regionTitlesCount == $regions->getCountAllowedRegions()) {
+		if($moreThanOne) {
+			if($regionTitlesCount == $countAllowed) {
 				$this->bubbleTextShortContent = '×ÓÅ ÒÅÇÉÏÎÙ';
 			} else {
 				$this->bubbleTextShortContent = sprintf(
@@ -119,12 +124,14 @@ class PXDisplayTypeMultiRegions extends PXDisplayTypeBubbleText {
 					$regionTitlesCount - 2
 				);
 			}
-
-			$this->bubbleTextFullContent = $html;
-			return parent::buildCell($field, $object, $param);
+			$this->bubbleTextFullContent  = $html;
 		}
 
-		return $html;
+		if(count($value) > $regionTitlesCount){
+			$html = $this->bubbleTextShortContent = sprintf('<b>%s</b>', $moreThanOne ? $this->bubbleTextShortContent : $html);
+		}
+
+		return $moreThanOne ? parent::buildCell($field, $object, $param) : $html;
 	}
 }
 /**
