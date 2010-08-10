@@ -136,7 +136,7 @@ class PXCorpRegions {
 		$newHost    = '';
 
 		if (count($urls)) {
-			$engPrfx = PXRegistry::getApp()->getProperty('ENGLISH_HOST_PREFIX', 'english');
+			$engPrfx = PXRegistry::getApp()->getProperty('ENGLISH_HOST_PREFIX', 'english').'.';
 			
 			if (strstr($host, $engPrfx)) {
 				$host = str_replace($engPrfx, '', $host);
@@ -150,7 +150,7 @@ class PXCorpRegions {
 			
 			foreach ($urls as $k => $url) {
 				//FIXME
-				if (preg_match('/^('.$engPrfx.'\.|pda\.|m\.)/', $url)) {
+				if (preg_match('/^('.str_replace('.', '\.', $engPrfx).'|pda\.|m\.)/', $url)) {
 					continue;
 				}
 
