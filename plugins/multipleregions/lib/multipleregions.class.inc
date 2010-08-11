@@ -7,10 +7,7 @@ class PXMultiRegions {
 	private $context;
 
 	private static $self;
-
-	private static $regionsData    = array();
-	private static $allowedRegions = array();
-
+	private static $regionsData = array();
 	private static $regionsDirectory;
 	private static $isFederal;
 
@@ -18,8 +15,6 @@ class PXMultiRegions {
 
 	const REGION_MARK = 'sys_regions';
 	const MAGIC       = -1;
-	const MANAGE_REGION_MARK = 'manage_region';
-	const DISPLAY_FIELD = 'title';
 
 	private function __construct(){/*{{{*/
 		$this->db      = PXRegistry::getDb();
@@ -50,59 +45,56 @@ class PXMultiRegions {
 		return self::$regionsData[!!$asTree];
 	}/*}}}*/
 
-	function getAllowedRegions() {/*{{{*/
-		if (self::$allowedRegions) {
-			return self::$allowedRegions;
+	#fixme rewrite -> load normal objects
+	function loadDirectory() {/*{{{*/
+		if(self::$regionsDirectory) {
+			return self::$regionsDirectory;
 		}
 
-		self::$allowedRegions = $this->getRegionsData();
+		self::$regionsDirectory = clone PXRegistry::getApp()->directory[self::REGION_MARK];
+		self::$regionsDirectory->loaded or $this->db->LoadDirectory(self::$regionsDirectory, null, false);
 
-		foreach (self::$allowedRegions as $id => $object) {
-			if (!$this->user->can(self::MANAGE_REGION_MARK, $this->format, $object)) {
-				unset(self::$allowedRegions[$id]);
+		foreach(self::$regionsDirectory->values as $id => $r) {
+			if(!$this->user->can('manage_region', $this->format, $r)) {
+				unset(self::$regionsDirectory->values[$id]);
 			}
 		}
 
-		unset(self::$allowedRegions[null]);
-		return self::$allowedRegions;
-	}/*}}}*/
-
-	#fixme remove me
-	function loadDirectory() {
-		return $this->getAllowedRegions();
-	}
-
-	function substractCloned($regions, $cutOut=array()) {/*{{{*/
-		return array_diff_key($regions, array_flip($cutOut));
-	}/*}}}*/
-
-	function hasParent() {/*{{{*/
-		return !empty($this->format->parent) && isset($this->format->fields['parent']);
+		unset(self::$regionsDirectory->values[null]);
+		return self::$regionsDirectory;
 	}/*}}}*/
 
 	function getRegionsAsDirectory($only_values = true, $cutOutRegions=null) {/*{{{*/
-		$regions = $this->loadDirectory();
+		#fixme!! temporary
+		$regionsDirectory = clone $this->loadDirectory();
 
-		if ($cutOutRegions) {
-			$regions = $this->substractCloned($regions, $cutOutRegions);
+		#delete already cloned regions
+		if($cutOutRegions && is_array($cutOutRegions)) {
+			$cutOutRegions = array_flip($cutOutRegions);
+
+			foreach($regionsDirectory->values as $id => $region) {
+				if(isset($cutOutRegions[$id])) {
+					unset($regionsDirectory->values[$id]);
+				}
+			}
 		}
 
-		if(count($regions) == 1) {
+		if(count($regionsDirectory->values) == 1) {
+			$region = pos($regionsDirectory->values);
 			$this->singleObject = true;
-			return $regions;
+			return array($region['id'] => $region['title']);
 		}
 
-		if ($this->hasParent()) {
-			$regions = new NLTree($regions, 'id', 'parent', self::DISPLAY_FIELD, $saveOrphans=true);
-
-			if ($only_values) {
-				$regions = !empty($regions) ? $regions->getPlainTree(null) : array();
+		if($regionsDirectory->parentField) {
+			$regionsDirectory = $regionsDirectory->getTree(true);
+			if($only_values){
+				$regionsDirectory = !empty($regionsDirectory) ? $regionsDirectory->getPlainTree(null) : array();
 			}
 		} else {
-			$regions = getColFromTableWithIndexes($regions, self::DISPLAY_FIELD);
+			$regionsDirectory = $regionsDirectory->getList();
 		}
 
-		return $regions;
+		return $regionsDirectory;
 	}/*}}}*/
 
 	function getMyRegionData(){/*{{{*/
@@ -168,12 +160,12 @@ class PXMultiRegions {
 		return $id;
 	}/*}}}*/
 
-	function getAdminRid() {/*{{{*/
+	function getAdminRid() {
 		$id = null;
 		$this->setAdminRidFromRequest();
 
 		#previous same checks in the setAdminRidFromRequest are nessesary
-		if (
+		if(
 			isset($_SESSION['__current_region'])
 			&& ($this->inAllowed($_SESSION['__current_region']) // region in session allowed for current user
 			|| $_SESSION['__current_region'] === '')            // or region in session is empty string (show all regions)
@@ -181,14 +173,14 @@ class PXMultiRegions {
 			$id = $_SESSION['__current_region'];
 		}
 
-		if (is_null($id)) {
+		if(is_null($id)) {
 			$id = $_SESSION['__current_region'] = $this->getRidFromLogin();
 		}
 
 		return $id;
-	}/*}}}*/
+	}
 
-	function getRidFromLogin() {/*{{{*/
+	function getRidFromLogin() {
 		$urlRegionId = $this->getUserRid();
 
 		if($this->inAllowed($urlRegionId)) {
@@ -196,35 +188,35 @@ class PXMultiRegions {
 		}
 
 		return "";
-	}/*}}}*/
+	}
 
-	function getRid(){/*{{{*/
+	function getRid(){
 		return $this->rid;
-	}/*}}}*/
+	}
 
-	private function setAdminRidFromRequest(){/*{{{*/
+	private function setAdminRidFromRequest(){
 		$this->_doSession();
 
-		if ($this->request->isSetVar(self::REGION_MARK)) {
+		if($this->request->isSetVar(self::REGION_MARK)) {
 			$rid = $this->request->getVar(self::REGION_MARK);
 
-			if (!isset($rid['rid'])) {
+			if(!isset($rid['rid'])) {
 				return;
 			}
 
 			$rid = $rid['rid'];
 
-			if ((is_numeric($rid) && $this->inAllowed($rid)) || $rid === '') {
+			if((is_numeric($rid) && $this->inAllowed($rid)) || $rid === '') {
 				$_SESSION['__current_region'] = $rid;
 			}
 		}
-	}/*}}}*/
+	}
 
-	function setRid() {/*{{{*/
+	function setRid() {
 		$this->rid = $this->context == 'user' ? $this->getUserRid() : $this->getAdminRid();
-	}/*}}}*/
+	}
 
-	function findByRegion($regionsList=null) {/*{{{*/
+	function findByRegion($regionsList=null) {
 		$conditionArray = $regionsList
 			? $regionsList
 			: $this->getAllowedRegionsIds();
@@ -232,34 +224,34 @@ class PXMultiRegions {
 		return empty($this->rid) 
 			? $this->db->intersectIntArray(PXMultiRegions::REGION_MARK, $conditionArray) 
 			: $this->db->inArray(self::REGION_MARK, $this->rid);
-	}/*}}}*/
+	}
 
-	function isCurrentInSet($list){/*{{{*/
+	function isCurrentInSet($list){
 		return empty($this->rid) || $this->isInRegion($this->rid, $list);
-	}/*}}}*/
+	}
 
-	function isInRegion($rid, $list){/*{{{*/
+	function isInRegion($rid, $list){
 		return (is_array($list) && in_array($rid, $list, true));
-	}/*}}}*/
+	}
 
-	function _doSession(){ //TODO: rewrite me plz, i'am ugly/*{{{*/
-		if (!isset($_SESSION)) {
+	function _doSession(){ //TODO: rewrite me plz, i'am ugly
+		if(!isset($_SESSION)){
 			session_name(self::REGION_MARK);
 			ini_set('session.use_cookies',      1);
 			ini_set('session.use_only_cookies', 1);
 			ini_set('session.use_trans_sid',    0);
 			session_start();
 		}
-	}/*}}}*/
+	}
 
 	//For triggers
-	function isFederal() {/*{{{*/
+	function isFederal() {
 		if(self::$isFederal) {
 			return self::$isFederal;
 		}
 
 		return self::$isFederal = $this->user->can('manage_region', $this->format);
-	}/*}}}*/
+	}
 
 	static function isRegionalObject($format){
 		return isset($format->fields[PXMultiRegions::REGION_MARK]);
@@ -267,7 +259,7 @@ class PXMultiRegions {
 
 	#fixme
 	function addRegionByDefault($format, &$dbFields, &$dbValues, $modifiedObject=null) {
-		if ($this->isRegionalObject($format)) {
+		if($this->isRegionalObject($format)){
 			$allowedRegionsIds = $this->getAllowedRegionsIds();
 			$key = array_flip($dbFields);
 
@@ -278,7 +270,7 @@ class PXMultiRegions {
 				? PXMultipleRegionsHelper::toString($allowedRegionsIds)
 				: $dbValues[$key[self::REGION_MARK]];
 
-			if ($modifiedObject) {
+			if($modifiedObject) {
 				$cutOutRegions = $this->getCutOutRegions($format, $modifiedObject);
 
 				$regArray      = PXMultipleRegionsHelper::toArray($reg);
@@ -291,8 +283,8 @@ class PXMultiRegions {
 		}
 	}
 
-	function checkRegionAccessToParent($format, $object) {
-		if (isset($object['parent'])) {
+	function checkRegionAccessToParent($format, $object){
+		if(isset($object['parent'])){
 			$parentFormat = $this->db->types[$format->parent];
 
 			$parent = $this->db->GetObjectById($parentFormat, $object['parent']);
@@ -302,8 +294,6 @@ class PXMultiRegions {
 				return false;
 			}
 
-			# fixme check struct condition.
-			# cloned object can delete not regional contents.
 			if ($this->isRegionalObject($parentFormat) && $parentFormat->id !== 'struct') { //check access to parent object if we try to add/modify/delete subcontent objects only
 				return $this->checkRegionAccess($parentFormat, $parent);
 			}
@@ -321,8 +311,8 @@ class PXMultiRegions {
 		$orig        = array_flip($object[self::REGION_MARK]);
 		$allowed     = array_flip($this->getAllowedRegionsIds());
 
-		foreach ($orig as $id => $tmp) {
-			if (!isset($regionsData[$id])) {
+		foreach($orig as $id => $tmp) {
+			if(!isset($regionsData[$id])) {
 				unset($orig[$id]);
 			}
 		}
@@ -331,7 +321,7 @@ class PXMultiRegions {
 	}
 
 	function getAllowedRegionsIds() {
-		return array_keys($this->loadDirectory());
+		return array_keys($this->loadDirectory()->values);
 	}
 
 	function getCountAllowedRegions() {
@@ -339,22 +329,19 @@ class PXMultiRegions {
 	}
 
 	function inAllowed($rid) {
-		$regions = $this->getAllowedRegions();
-		return isset($regions[$rid]);
+		$list = array_flip($this->getAllowedRegionsIds());
+		return isset($list[$rid]);
 	}
 
 	public function getCutOutRegions($format, $object) {
-		$reflex_field          = PXMultipleRegionsReflexer::REFLEX_FIELD;
-		$regions_field         = self::REGION_MARK;
-
-		$object[$reflex_field] = null;
+		$reflex_field  = PXMultipleRegionsReflexer::REFLEX_FIELD;
+		$regions_field = self::REGION_MARK;
 
 		$getReflexId = 
-			$this->db->query($s = "select {$reflex_field} from {$format->id} where id = '{$object['id']}'");
+			$this->db->query("select {$reflex_field} from {$format->id} where id = '{$object['id']}'");
 
-		if (!empty($getReflexId)) {
-			$object[$reflex_field] = reset(reset($getReflexId));
-		}
+		$getReflexId = (array) pos($getReflexId);
+		$object[$reflex_field] = !empty($getReflexId) ? pos($getReflexId) : null;
 
 		$pattern = '
 			SELECT id, %1$s
@@ -386,7 +373,7 @@ class PXMultiRegions {
 		);
 
 		$tmp = array();
-		foreach ($cutOut as $i) {
+		foreach($cutOut as $i) {
 			$tmp = array_merge($tmp, $i);
 		}
 		$cutOut = $tmp;

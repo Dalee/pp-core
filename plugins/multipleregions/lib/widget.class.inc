@@ -11,15 +11,15 @@ class PXTabbedMenuRegionChanger extends PXAdminWidget {
 			if(!$regions->singleObject) {
 				return $this->_selector($regions, $regionsData);
 			} else {
-				return $this->_static(reset($regionsData));
+				return $this->_static($regions, $regionsData);
 			}
 		}
 
 		return '';
 	}
 
-	private function _static($regionsData) {
-		return '<span class="multipleregions-current-region">Текущий регион <strong>'. $regionsData[PXMultiRegions::DISPLAY_FIELD].'</strong></span>';
+	private function _static($regions, $regionsData) {
+		return '<span class="multipleregions-current-region">Текущий регион <strong>'.pos($regionsData).'</strong></span>';
 	}
 
 	private function _selector($regions, $regionsData) {

@@ -1,34 +1,27 @@
 <?php
 class PXTriggerDatabaseMultipleregions extends PXAbstractDatabaseTrigger {
-	private $isRegionalCloning  = false;
-	private $parentObject = null;
-
 	function OnBeforeAddObject(&$db, &$objId, &$format, &$object, &$dbFields, &$dbValues) {
 		$regions = $this->getRegions();
 
 		$isRegionalObject  = $regions->isRegionalObject($format);
 		$allowedRegionsIds = $regions->getAllowedRegionsIds();
+
 		$rid = $regions->getRid();
 
-		if (!$this->isRegionalCloning && $this->parentObject && !$isRegionalObject) {
-			$this->simpleSetDbValues('parent', $this->parentObject['id'], $dbFields, $dbValues);
-			return true;
-		}
-
-		if ($isRegionalObject && empty($allowedRegionsIds) && $rid) {
+		if($isRegionalObject && empty($allowedRegionsIds) && $rid) {
 			$this->simpleSetDbValues(PXMultiRegions::REGION_MARK, "{{$rid}}", $dbFields, $dbValues);
 			return true;
 		}
 
 		$permit = $regions->checkRegionAccess($format, $object) && $regions->checkRegionAccessToParent($format, $object);
 
-		if ($permit) {
+		if($permit) {
 			$reflex_field = PXMultipleRegionsReflexer::REFLEX_FIELD;
 
-			if (isset($object[$reflex_field])) {
+			if(isset($object[$reflex_field])) {
 				$this->simpleSetDbValues($reflex_field, $object[$reflex_field], $dbFields, $dbValues);
 
-				if (isset($object['allowed']) && is_array($object['allowed'])) {
+				if(isset($object['allowed']) && is_array($object['allowed'])) {
 					$this->simpleSetDbValues('allowed',  serialize($object['allowed']), $dbFields, $dbValues);
 				}
 			}
@@ -70,12 +63,10 @@ class PXTriggerDatabaseMultipleregions extends PXAbstractDatabaseTrigger {
 		$permit = $regions->checkRegionAccess($format, $objectInDB) && $regions->checkRegionAccessToParent($format, $objectInDB);
 
 		if(!$permit && $isRegionalObject) {
-			$this->isRegionalCloning = true; //flag initalize regional clone
-				$cloner = 
-					new PXPublicRegionObjectCloner($format, $object, $objectInDB, $dbFields, $dbValues, $this);
+			$cloner = 
+				new PXPublicRegionObjectCloner($format, $object, $objectInDB, $dbFields, $dbValues, $this);
 
-				$nid = $cloner->cloneObject($allowedRegionsIds);
-			$this->isRegionalCloning = null;
+			$nid = $cloner->cloneObject($allowedRegionsIds);
 
 			$request = PXRegistry::getRequest();
 
@@ -86,32 +77,17 @@ class PXTriggerDatabaseMultipleregions extends PXAbstractDatabaseTrigger {
 			}
 		}
 
-		if ($isRegionalObject) {
-			if ($permit) {
-				if(isset($object['sys_order']) && is_numeric($object['sys_order']) && $object['sys_order'] > 0) {
-					$this->simpleSetDbValues('sys_order', $object['sys_order'], $dbFields, $dbValues);
-				}
-				
-				$regions->addRegionByDefault($format, $dbFields, $dbValues, $object);
-			} elseif (empty($hasBeenCloned)) {
-				$this->fireError();
+		if($permit) {
+			if(isset($object['sys_order']) && is_numeric($object['sys_order']) && $object['sys_order'] > 0) {
+				$this->simpleSetDbValues('sys_order', $object['sys_order'], $dbFields, $dbValues);
 			}
+
+			$regions->addRegionByDefault($format, $dbFields, $dbValues, $object);
+		} elseif(empty($hasBeenCloned)){
+			$this->fireError();
 		}
 
 		return $permit;
-	}
-
-	function onBeforeCloneObject($db, $format, &$object, $donor) {
-		$regions = $this->getRegions();
-		$isRegionalObject  = $regions->isRegionalObject($format);
-
-		// When cloning regional facilities through standard cloning purify the regional field
-		if($isRegionalObject && !$this->isRegionalCloning) {
-			$object[PXMultipleRegionsReflexer::REFLEX_FIELD] = null;
-			$object[PXMultiRegions::REGION_MARK] = array();
-		}
-
-		return true;
 	}
 
 	function OnBeforeDeleteObject(&$db, &$objId, &$format, &$objectInDB) {
@@ -183,7 +159,7 @@ class PXTriggerDatabaseMultipleregions extends PXAbstractDatabaseTrigger {
 				PXMultipleRegionsReflexer::REFLEX_FIELD, $object['parent'], 1, 0);
 
 			if(!empty($parentObject)) {
-				$this->parentObject = $parentObject = reset($parentObject);
+				$parentObject = reset($parentObject);
 				return true;
 			}
 
@@ -244,7 +220,6 @@ class PXTriggerDatabaseMultipleregions extends PXAbstractDatabaseTrigger {
 			$this->fireError();
 		}
 	}
-
 
 	function getRegions(){
 		return PXMultiRegions::getInstance();

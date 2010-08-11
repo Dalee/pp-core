@@ -24,7 +24,8 @@ class PXDirectoryDescription {
 		$this->parentField = false;
 	}
 
-	function getList() {
+	public
+	function GetList() {
 		$retArray = array();
 
 		foreach ($this->values as $v) {
