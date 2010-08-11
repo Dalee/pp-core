@@ -54,11 +54,15 @@ class PXDisplayTypeMultiRegions extends PXDisplayTypeBubbleText {
 		return join($html);
 	}
 
+	function setDefaultValue($value) {
+		return empty($value) ? PXMultiRegions::MAGIC : $value;
+	}
+
 	private function _buildSelector($field, $value, $values) {
 		#delete not allowed value
 		$value = array_intersect($value, array_keys($values));
 
-		$regionSelector = new PXInputDropDown($field->name . '[]', $value, $values);
+		$regionSelector = new PXInputDropDown($field->name . '[]', $this->setDefaultValue($value), $values);
 		$regionSelector->setMultiple(true);
 		$regionSelector->setSize(sizeof($values));
 
@@ -66,15 +70,7 @@ class PXDisplayTypeMultiRegions extends PXDisplayTypeBubbleText {
 	}
 
 	private function _buildStatic($field, $value, $values) {
-		foreach($value as $k=>$v) {
-			if(isset($values[$v])) {
-				$value[$k] = preg_replace('/^=+/', '', $values[$v]);
-			} else {
-				unset($value[$k]);
-			}
-		}
-
-		return implode(", ", $value);
+		return implode(", ", getColFromTable($values, PXMultiRegions::DISPLAY_FIELD));
 	}
 
 	function getFromRequest($field, $object, $param=NULL) {
@@ -87,7 +83,7 @@ class PXDisplayTypeMultiRegions extends PXDisplayTypeBubbleText {
 
 		switch(true){
 			case in_array(PXMultiRegions::MAGIC, $regionsData):
-				$regionsData = array_keys($regions->getList());
+				$regionsData = array_keys($regions);
 				break;
 		}
 

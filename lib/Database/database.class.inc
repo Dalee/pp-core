@@ -700,7 +700,7 @@ class PXDatabase extends NLSQLDatabaseAdapter {
 				$p = array('id'=>$newId, 'format'=>$format->id);
 				$v->storageType->proceedFile($v, $object, $p);
 			}
-			
+
 			$object['sys_order'] = $newId;
 
 			foreach ($this->triggers as $t) {
@@ -846,6 +846,16 @@ class PXDatabase extends NLSQLDatabaseAdapter {
 		$object           = $donorObject;
 		$object['id']     = null;
 		$object['status'] = $status;
+
+		$permitClonely = true;
+		foreach ($this->triggers as $t){
+			$permitClonely = $t->getTrigger()->onBeforeCloneObject($this, $format, $object, $donorObject);
+			if(!$permitClonely) break;
+		}
+
+		if(!$permitClonely) {
+			return false;
+		}
 
 		$object['id'] = $this->addContentObject($format, $object);
 
