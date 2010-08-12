@@ -234,13 +234,11 @@ class PXTriggerDatabaseMultipleregions extends PXAbstractDatabaseTrigger {
 	}
 
 	function OnBeforeNormalizePathBuildQuery($objectFormat, $exObjectFormat, &$table, $object) {
-		$regions          = $this->getRegions();
-		$regionsField     = PXMultiRegions::REGION_MARK;
-		$isRegionalObject = $regions->isRegionalObject($objectFormat);
+		$regions      = $this->getRegions();
+		$regionsField = PXMultiRegions::REGION_MARK;
 
-		if ($isRegionalObject && $regions->isRegionalObject($exObjectFormat)) {
-			$object[$regionsField] = array();
-
+		if ($regions->isRegionalObject($objectFormat) && $regions->isRegionalObject($exObjectFormat)) {
+			//TODO: check me again, carefully !
 			if (empty($object[$regionsField]) && isset($object['id'])) {
 				$object = PXRegistry::getDB()->getObjectById($objectFormat, $object['id']);
 			}
