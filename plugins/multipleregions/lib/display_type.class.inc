@@ -85,16 +85,11 @@ class PXDisplayTypeMultiRegions extends PXDisplayTypeBubbleText {
 
 	function getFromRequest($field, $object, $param=NULL) {
 		$regionsData = max(array(), $param['request']->getVar($field->name));
-		$regions     = PXMultiRegions::getInstance()->loadDirectory();
+		$regions     = PXMultiRegions::getInstance();
 
-		if(!$regions) {
-			return $regionsData;
-		}
-
-		switch(true){
-			case in_array(PXMultiRegions::MAGIC, $regionsData):
-				$regionsData = array_keys($regions);
-				break;
+		if (in_array(PXMultiRegions::MAGIC, $regionsData)) {
+			$regionsData = array_keys($regions->getRegionsAsDirectory(true, 
+				$regions->getCutOutRegions($field->typeDescription, $object)));
 		}
 
 		return $regionsData;

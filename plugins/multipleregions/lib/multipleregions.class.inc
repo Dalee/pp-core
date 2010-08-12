@@ -376,8 +376,11 @@ class PXMultiRegions {
 			"condition_value" => isset($object[$reflex_field]) ? $object[$reflex_field] : $object['id']
 		);
 
-		$sql = call_user_func_array("sprintf", $params);
+		if (!$params['condition_value']) {
+			return array();
+		}
 
+		$sql = call_user_func_array("sprintf", $params);
 		$result = $this->db->query($sql);
 		$result = array_combine(getColFromTable($result, 'id'), $result);
 

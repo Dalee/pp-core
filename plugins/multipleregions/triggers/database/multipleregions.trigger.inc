@@ -211,7 +211,6 @@ class PXTriggerDatabaseMultipleregions extends PXAbstractDatabaseTrigger {
 	}
 
 	function OnBeforeGetDataBuildQuery($db, $format, &$mode, &$selector, &$where, &$order, &$limit){
-
 		$regions = $this->getRegions();
 
 		if(strlen($where)) {
@@ -248,6 +247,10 @@ class PXTriggerDatabaseMultipleregions extends PXAbstractDatabaseTrigger {
 		$permit = $regions->checkRegionAccess($objectFormat, $object) || !$this->isObjectForm();
 
 		if($permit && $isRegionalObject && $regions->isRegionalObject($exObjectFormat)) {
+			if (empty($object[$regionsField])) {
+				$object = PXRegistry::getDB()->getObjectById($objectFormat, $object['id']);
+			}
+
 			$regionFilter = $regions->findByRegion($object[$regionsField]);
 
 			if(strlen($table['exWhere'])) {
