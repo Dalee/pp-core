@@ -25,6 +25,11 @@ class NLLeaf {
 	function parent($level=1) {
 		$ancestors = $this->getAncestors();
 
+		if($level < 0) {
+			$level = -$level + 1;
+			$ancestors = array_reverse($ancestors);
+		}
+
 		if(isset($ancestors[$level - 1])) {
 			return $ancestors[$level - 1];
 		} else {
