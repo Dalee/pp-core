@@ -94,7 +94,10 @@ abstract class NLAbstractSQLDatabase {
 		return $this->_searchMethod("LIKE", $condition, $percs);
 	}
 
-	function inArray($arrayField, $value){
+	function inArray($arrayField, $value, $sane = false){
+	}
+
+	function intersectIntArray($arrayField, $values){
 	}
 
 	function _searchMethod($meth, $condition, $percs){
