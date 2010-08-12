@@ -1,9 +1,12 @@
 <?php
 
 class PXDisplayTypeMultiRegions extends PXDisplayTypeBubbleText {
-	static $scriptsIncluded   = false;
-	private static $chooseAll = '- ðõâìéëï÷áôø ÷ï ÷óåè òåçéïîáè -';
-	private $singleObject     = false;
+	static  $scriptsIncluded     = false;
+
+	private static $countInCell  = 2;
+	private static $chooseAll    = '- ðõâìéëï÷áôø ÷ï ÷óåè òåçéïîáè -';
+
+	private $singleObject        = false;
 
 	private function _getValues($field, $object, $regions) {
 		$cutOutRegions = isset($object['id']) && intval($object['id']) > 0 
@@ -12,17 +15,17 @@ class PXDisplayTypeMultiRegions extends PXDisplayTypeBubbleText {
 
 		$values  = $regions->getRegionsAsDirectory(true, $cutOutRegions);
 
-		if(count($values) == 1) {
+		if (!$values) {
+			return;
+		}
+
+		if (count($values) == 1) {
 			$this->singleObject = true;
 			return $values;
 		}
 
-		if(!$values) {
-			return;
-		}
-
 		$values[PXMultiRegions::MAGIC] = self::$chooseAll;
-		
+
 		#fixme it is ugly
 		unset($values[null]);
 
@@ -54,11 +57,15 @@ class PXDisplayTypeMultiRegions extends PXDisplayTypeBubbleText {
 		return join($html);
 	}
 
+	function setDefaultValue($value) {
+		return empty($value) ? PXMultiRegions::MAGIC : $value;
+	}
+
 	private function _buildSelector($field, $value, $values) {
 		#delete not allowed value
 		$value = array_intersect($value, array_keys($values));
 
-		$regionSelector = new PXInputDropDown($field->name . '[]', $value, $values);
+		$regionSelector = new PXInputDropDown($field->name . '[]', $this->setDefaultValue($value), $values);
 		$regionSelector->setMultiple(true);
 		$regionSelector->setSize(sizeof($values));
 
@@ -66,15 +73,14 @@ class PXDisplayTypeMultiRegions extends PXDisplayTypeBubbleText {
 	}
 
 	private function _buildStatic($field, $value, $values) {
-		foreach($value as $k=>$v) {
-			if(isset($values[$v])) {
-				$value[$k] = preg_replace('/^=+/', '', $values[$v]);
-			} else {
-				unset($value[$k]);
-			}
+		$tmp = array();
+
+		foreach($value as $v) {
+			if(!isset($values[$v])) continue;
+			$tmp[$v] = strtr($values[$v], array("=" => ""));
 		}
 
-		return implode(", ", $value);
+		return implode(", ", empty($tmp) ? $values : $tmp);
 	}
 
 	function getFromRequest($field, $object, $param=NULL) {
@@ -87,7 +93,7 @@ class PXDisplayTypeMultiRegions extends PXDisplayTypeBubbleText {
 
 		switch(true){
 			case in_array(PXMultiRegions::MAGIC, $regionsData):
-				$regionsData = array_keys($regions->getList());
+				$regionsData = array_keys($regions);
 				break;
 		}
 
@@ -97,6 +103,7 @@ class PXDisplayTypeMultiRegions extends PXDisplayTypeBubbleText {
 	function buildCell($field, $object, $param=NULL) {
 		$regions = PXMultiRegions::getInstance();
 		$values = $this->_getValues($field, $object, $regions);
+
 		static $allRegionsIds;
 
 		if(!is_array($values)) {
@@ -106,24 +113,31 @@ class PXDisplayTypeMultiRegions extends PXDisplayTypeBubbleText {
 		if(is_null($allRegionsIds)){
 			$allRegionsIds = array_keys($regions->getRegionsData());
 		}
+
 		$value      = array_intersect($allRegionsIds, $this->_getValue($regions, $object, $field));
 		$html       = $this->_buildStatic($field, $value, $values);
 
-		$regionTitles      = explode(",", $html);
-		$regionTitlesCount = count($regionTitles);
-		$countAllowed      = $regions->getCountAllowedRegions();
-		$moreThanOne       = $regionTitlesCount > 2;
+		$regionTitles       = explode(",", $html);
+		$regionTitlesCount  = count($regionTitles);
+		$countAllowed       = $regions->getCountAllowedRegions();
+		$moreThanOne        = $regionTitlesCount > 2;
 
-		if($moreThanOne) {
-			if($regionTitlesCount == $countAllowed) {
+		if ($moreThanOne) {
+			$diff = array_diff($regions->getAllowedRegionsIds(), $object[PXMultiRegions::REGION_MARK]);
+
+			if (empty($diff)) {
 				$this->bubbleTextShortContent = '×ÓÅ ÒÅÇÉÏÎÙ';
 			} else {
+				$substractShortViewCount = $regionTitlesCount - self::$countInCell;
+
 				$this->bubbleTextShortContent = sprintf(
-					"%s + ÅÝÅ %s ÒÅÇÉÏÎÏ×",
-					join(", ", array_slice($regionTitles, 0, 2)),
-					$regionTitlesCount - 2
+					"%s + ÅÝÅ %s ÒÅÇÉÏ%s",
+					join(", ", array_slice($regionTitles, 0, self::$countInCell)),
+					$substractShortViewCount,
+					NumericEndingsRussian($substractShortViewCount, "Î", "ÎÁ", "ÎÏ×")
 				);
 			}
+
 			$this->bubbleTextFullContent  = $html;
 		}
 

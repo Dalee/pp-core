@@ -8,27 +8,33 @@ class PXTabbedMenuRegionChanger extends PXAdminWidget {
 			$regions     = PXMultiRegions::getInstance();
 			$regionsData = $regions->getRegionsAsDirectory();
 
-			if(!$regions->singleObject) {
-				return $this->_selector($regions, $regionsData);
-			} else {
-				return $this->_static($regions, $regionsData);
+			if (empty($regionsData)) {
+				return;
 			}
+
+			unset($regionsData[null]);
+
+			if(count($regionsData) == 1) {
+				return $this->_static($regionsData);
+			}
+
+			return $this->_selector($regions->getRid(), $regionsData);
 		}
 
 		return '';
 	}
 
-	private function _static($regions, $regionsData) {
-		return '<span class="multipleregions-current-region">Текущий регион <strong>'.pos($regionsData).'</strong></span>';
+	private function _static($regionsData) {
+		return '<span class="multipleregions-current-region">Текущий регион <strong>'. reset($regionsData) .'</strong></span>';
 	}
 
-	private function _selector($regions, $regionsData) {
+	private function _selector($rid, $regionsData) {
 		$uri = PXRegistry::getRequest()->GetRequestUri();
 
 		$varName           = PXMultiRegions::REGION_MARK . '[rid]';
 		$regionsData[null] = '- ПОКАЗАТЬ ВСЕ РЕГИОНЫ -';
 
-		$regionSelector    = new PXInputDropDown($varName, $regions->getRid(), $regionsData);
+		$regionSelector    = new PXInputDropDown($varName, $rid, $regionsData);
 
 		$selectorHtml      = $regionSelector->html();
 

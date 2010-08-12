@@ -57,6 +57,10 @@ abstract class PXAbstractDatabaseTrigger extends PXAbstractTrigger {
 	# for disable return null (nothing)
 	function onBeforeCheckForParent($db, $format, &$object, &$parentObject) {
 	}
+
+	function onBeforeCloneObject($db, $format, &$object, $donor) {
+		return true;
+	}
 }
 
 ?>
