@@ -5,7 +5,7 @@ class PXUserAuthorized extends PXUser {
 	 * which provide "ANY" logic, so we can check multiple rules until first will be allowed
 	*/
 	function can($what, $format = NULL, $object = NULL) {
-		$can = true;
+		$can = false; //ACL system is restrictive by default
 		
 		if($object === NULL){
 			$object = array('id'=>NULL,'parent'=>NULL);
