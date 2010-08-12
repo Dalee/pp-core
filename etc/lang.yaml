@@ -89,9 +89,17 @@ module_acl_rules:
 			rus: Просмотр/Чтение
 			eng: View/Read
 		write:
-			rus: Изменение/Запись
-			eng: Change/Write
-			
+			rus: Полный доступ на запись
+			eng: Full write access
+		add:
+			rus: Добавление
+			eng: Add
+		modify:
+			rus: Изменение существующих
+			eng: Modification
+		delete:
+			rus: Удаление
+			eng: Delete
 		linkto:
 			rus: Создание связи
 			eng: Make reference

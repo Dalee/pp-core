@@ -1,11 +1,23 @@
 <?php
 class PXUserAuthorized extends PXUser {
+	/**
+	 * @param Mixed $what single rule or array of rules for special behaviour,
+	 * which provide "ANY" logic, so we can check multiple rules until first will be allowed
+	*/
 	function can($what, $format = NULL, $object = NULL) {
+		$can = true;
+		
 		if($object === NULL){
 			$object = array('id'=>NULL,'parent'=>NULL);
 		}
 
-		return $this->acl->check($what, $format, $object);
+		foreach((array)$what as $rule){
+			if($can = $this->acl->check($rule, $format, $object)){
+				break; //check given rules for current user until first return true, "ANY" logic realization
+			}
+		}
+
+		return $can;
 	}
 
 	function checkAuth() {

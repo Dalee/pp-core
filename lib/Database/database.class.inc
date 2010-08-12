@@ -636,7 +636,7 @@ class PXDatabase extends NLSQLDatabaseAdapter {
 	function AddContentObject($format, $object) {
 		$audit = PXAuditLogger::getLogger($this->app, $this);
 
-		if (!$this->user->can('write', $format, $object)) {
+		if (!$this->user->can(array('write', 'add'), $format, $object)) {
 			$errString = 'Отказано в доступе при попытке создать объект типа <em>'.$format->id.'</em>';
 			$audit->error($errString, $format->id .'/0');
 			FatalError($errString);
@@ -749,7 +749,7 @@ class PXDatabase extends NLSQLDatabaseAdapter {
 					FatalError('Объект данного типа не может быть добавлен в данный раздел');
 				}
 
-				if (!$this->user->can('write', $format, array('id' => 0, 'parent' => $parentId))) {
+				if (!$this->user->can(array('write', 'add'), $format, array('id' => 0, 'parent' => $parentId))) {
 					$errString = 'Отказано в доступе при попытке создать объект типа <em>'.$format->id.'</em>';
 					$audit->error($errString, $format->id .'/0');
 					FatalError($errString);
@@ -870,7 +870,7 @@ class PXDatabase extends NLSQLDatabaseAdapter {
 	 */
 	function ModifyContentObject($format, $object, $skipHidden = false) {
 		$audit = PXAuditLogger::getLogger($this->app, $this);
-		if (!$this->user->can('write', $format, $object)) {
+		if (!$this->user->can(array('write', 'modify'), $format, $object)) {
 			$errString = 'Отказано в доступе при попытке модифицировать объект типа <em>'.$format->id.'</em>';
 			$audit->error($errString, $format->parent .'/'. $object['parent']);
 			FatalError($errString);
@@ -882,7 +882,8 @@ class PXDatabase extends NLSQLDatabaseAdapter {
 			$audit->error($errString, $format->id .'/'.$object['id']);
 			FatalError($errString);
 		}
-		if (!$this->user->can('write', $format, $objectInDB)) {
+
+		if (!$this->user->can(array('write', 'modify'), $format, $objectInDB)) {
 			$errString = 'Отказано в доступе при попытке модифицировать объект типа <em>'.$format->id.'</em>';
 			$audit->error($errString, $format->parent .'/'. $object['parent']);
 			FatalError($errString);
@@ -966,7 +967,7 @@ class PXDatabase extends NLSQLDatabaseAdapter {
 		$audit = PXAuditLogger::getLogger($this->app, $this);
 		$objectInDB = $this->GetObjectById($format, $object['id']);
 		if (!count($objectInDB)) FatalError('Попытка модифицировать отсутствующий объект');
-		if (!$this->user->can('write', $format, $object)) {
+		if (!$this->user->can(array('write', 'modify'), $format, $object)) {
 			$errString = 'Отказано в доступе при попытке модифицировать объект типа <em>'.$format->id.'</em>';
 			$audit->error($errString, $format->parent .'/'. $object['parent']);
 			FatalError($errString);
@@ -1001,7 +1002,7 @@ class PXDatabase extends NLSQLDatabaseAdapter {
 		$audit = PXAuditLogger::getLogger($this->app, $this);
 		$objectInDB = $this->GetObjectById($format, $objectId);
 		if (!count($objectInDB)) FatalError('Попытка удалить отсутствующий объект');
-		if (!$this->user->can('write', $format, $objectInDB)) {
+		if (!$this->user->can(array('write', 'delete'), $format, $objectInDB)) {
 			$errString = 'Отказано в доступе при попытке удалить объект типа <em>'.$format->id.'</em>';
 			$audit->error($errString, $format->parent .'/'. $objectInDB['id']);
 			FatalError($errString);
@@ -1095,7 +1096,7 @@ class PXDatabase extends NLSQLDatabaseAdapter {
 		$objectInDB = $this->GetObjectById($format, $objectId);
 		if (!count($objectInDB)) FatalError('Попытка модифицировать отсутствующий объект');
 
-		if (!$this->user->can('write', $format, $objectInDB)) {
+		if (!$this->user->can(array('write', 'modify'), $format, $objectInDB)) {
 			$errString = 'Отказано в доступе при попытке модифицировать объект типа <em>'.$format->id.'</em>';
 			$audit->error($errString, $format->id .'/'. $objectInDB['id']);
 			FatalError($errString);
@@ -1440,7 +1441,7 @@ SQL;
 		$objectInDB = $this->GetObjectById($this->types[$format], $id);
 		if (!count($objectInDB)) FatalError('Попытка модифицировать отсутствующий объект');
 
-		if (!$this->user->can('write', $this->types[$format], $objectInDB)) {
+		if (!$this->user->can(array('write', 'modify'), $this->types[$format], $objectInDB)) {
 			$errString = 'Отказано в доступе при попытке модифицировать объект типа <em>'.$format.'</em>';
 			$audit->error($errString, $format .'/'. $objectInDB['id']);
 			FatalError($errString);
@@ -1451,7 +1452,7 @@ SQL;
 		}
 		$objectsToLink = $this->GetObjectsByIdArray($this->types[$linkedFormat], NULL, $tmp);
 		foreach ($objectsToLink as $objectToLink) {
-			if (!$this->user->can('write', $this->types[$linkedFormat], $objectToLink) && !$this->user->can('linkto', $this->types[$linkedFormat], $objectToLink)) {
+			if (!$this->user->can(array('write', 'modify'), $this->types[$linkedFormat], $objectToLink) && !$this->user->can('linkto', $this->types[$linkedFormat], $objectToLink)) {
 				$errString = 'Отказано в доступе при попытке привязать объект типа <em>'.$linkedFormat.'</em> к объекту типа <em>'.$format.'</em>';
 				$audit->error($errString, $linkedFormat .'/'. $objectToLink['id']);
 				FatalError($errString);
