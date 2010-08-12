@@ -234,32 +234,27 @@ class PXTriggerDatabaseMultipleregions extends PXAbstractDatabaseTrigger {
 	}
 
 	function OnBeforeNormalizePathBuildQuery($objectFormat, $exObjectFormat, &$table, $object) {
-		$regions = $this->getRegions();
-
-		$regionsField = PXMultiRegions::REGION_MARK;
+		$regions          = $this->getRegions();
+		$regionsField     = PXMultiRegions::REGION_MARK;
 		$isRegionalObject = $regions->isRegionalObject($objectFormat);
 
-		if(!$this->isObjectForm() && $isRegionalObject) {
-			$object[$regionsField] = 
-				array_intersect($object[$regionsField], $regions->getAllowedRegionsIds());
-		}
+		if ($isRegionalObject && $regions->isRegionalObject($exObjectFormat)) {
+			$object[$regionsField] = array();
 
-		$permit = $regions->checkRegionAccess($objectFormat, $object) || !$this->isObjectForm();
-
-		if($permit && $isRegionalObject && $regions->isRegionalObject($exObjectFormat)) {
-			if (empty($object[$regionsField])) {
+			if (empty($object[$regionsField]) && isset($object['id'])) {
 				$object = PXRegistry::getDB()->getObjectById($objectFormat, $object['id']);
 			}
 
+			$object[$regionsField] =
+				array_intersect($object[$regionsField], $regions->getAllowedRegionsIds());
+
 			$regionFilter = $regions->findByRegion($object[$regionsField]);
 
-			if(strlen($table['exWhere'])) {
+			if (strlen($table['exWhere'])) {
 				$table['exWhere'] .=  " AND ";
 			}
 
 			$table['exWhere'] .= $regionFilter;
-		} elseif(!$permit) {
-			$this->fireError();
 		}
 	}
 
