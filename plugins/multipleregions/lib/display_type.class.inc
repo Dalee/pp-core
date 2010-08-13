@@ -127,7 +127,7 @@ class PXDisplayTypeMultiRegions extends PXDisplayTypeBubbleText {
 		}
 
 		if ($isShowBubble) {
-			$this->bubbleTextFullContent = join(", ", $inObject);
+			$this->bubbleTextFullContent = join(", ", array_intersect_key($allowedRegions, $inObject));
 			$this->bubbleTextShortContent = $result;
 		}
 
