@@ -1,19 +1,16 @@
 <?php
 
 class PXDisplayTypeMultiRegions extends PXDisplayTypeBubbleText {
-	static  $scriptsIncluded     = false;
 
-	private static $countInCell  = 2;
-	private static $chooseAll    = '- ðõâìéëï÷áôø ÷ï ÷óåè òåçéïîáè -';
-
-	private $singleObject        = false;
+	static $scriptsIncluded = false;
+	private static $countInCell = 2;
+	private static $chooseAll = '- ðõâìéëï÷áôø ÷ï ÷óåè òåçéïîáè -';
+	private $singleObject = false;
 
 	private function _getValues($field, $object, $regions) {
-		$cutOutRegions = isset($object['id']) && intval($object['id']) > 0 
-			? $regions->getCutOutRegions($field->typeDescription, $object)
-			: null;
+		$cutOutRegions = isset($object['id']) && intval($object['id']) > 0 ? $regions->getCutOutRegions($field->typeDescription, $object) : null;
 
-		$values  = $regions->getRegionsAsDirectory(true, $cutOutRegions);
+		$values = $regions->getRegionsAsDirectory(true, $cutOutRegions);
 
 		if (!$values) {
 			return;
@@ -33,22 +30,22 @@ class PXDisplayTypeMultiRegions extends PXDisplayTypeBubbleText {
 	}
 
 	private function _getValue($regions, $object, $field) {
-		return !empty($object[$field->name]) ? $object[$field->name] : (array)$regions->getRid();
+		return!empty($object[$field->name]) ? $object[$field->name] : (array) $regions->getRid();
 	}
 
 	function buildInput($field, $object, $param=NULL) {
 		$regions = PXMultiRegions::getInstance();
 		$values = $this->_getValues($field, $object, $regions);
 
-		if(!is_array($values)) {
+		if (!is_array($values)) {
 			return;
 		}
 
-		$value  = $this->_getValue($regions, $object, $field);
+		$value = $this->_getValue($regions, $object, $field);
 
 		$html[] = new PXInputHidden($field->name . "_objectform", true);
 
-		if(!$this->singleObject) {
+		if (!$this->singleObject) {
 			$html[] = $this->_buildSelector($field, $value, $values);
 		} else {
 			$html[] = $this->_buildStatic($field, $value, $values);
@@ -73,23 +70,16 @@ class PXDisplayTypeMultiRegions extends PXDisplayTypeBubbleText {
 	}
 
 	private function _buildStatic($field, $value, $values) {
-		$tmp = array();
-
-		foreach($value as $v) {
-			if(!isset($values[$v])) continue;
-			$tmp[$v] = strtr($values[$v], array("=" => ""));
-		}
-
-		return implode(", ", empty($tmp) ? $values : $tmp);
+		return implode(", ", $values);
 	}
 
 	function getFromRequest($field, $object, $param=NULL) {
 		$regionsData = max(array(), $param['request']->getVar($field->name));
-		$regions     = PXMultiRegions::getInstance();
+		$regions = PXMultiRegions::getInstance();
 
 		if (in_array(PXMultiRegions::MAGIC, $regionsData)) {
-			$regionsData = array_keys($regions->getRegionsAsDirectory(true, 
-				$regions->getCutOutRegions($field->typeDescription, $object)));
+			$regionsData = array_keys($regions->getRegionsAsDirectory(true,
+									$regions->getCutOutRegions($field->typeDescription, $object)));
 		}
 
 		return $regionsData;
@@ -99,70 +89,74 @@ class PXDisplayTypeMultiRegions extends PXDisplayTypeBubbleText {
 		$regions = PXMultiRegions::getInstance();
 		$values = $this->_getValues($field, $object, $regions);
 
-		static $allRegionsIds;
+		$allowedRegions = GetColFromTableWithIndexs(
+						$regions->getAllowedRegions(), 'title');
 
-		if(!is_array($values)) {
-			return;
-		}
+		$inObject = GetColFromTableWithIndexs(
+						array_intersect_key($regions->getRegionsData(),
+								array_flip($object[$field->name])), "title");
 
-		if(is_null($allRegionsIds)){
-			$allRegionsIds = array_keys($regions->getRegionsData());
-		}
+		$diff = array_diff_key($allowedRegions, $inObject);
 
-		$value      = array_intersect($allRegionsIds, $this->_getValue($regions, $object, $field));
-		$html       = $this->_buildStatic($field, $value, $values);
+		$allowedRegionsCount = count($allowedRegions);
+		$inObjectCount = count($inObject);
 
-		$regionTitles       = explode(",", $html);
-		$regionTitlesCount  = count($regionTitles);
-		$countAllowed       = $regions->getCountAllowedRegions();
-		$moreThanOne        = $regionTitlesCount > 2;
+		$isShowBubble = false;
+		$result = "";
 
-		if ($moreThanOne) {
-			$diff = array_diff($regions->getAllowedRegionsIds(), $object[PXMultiRegions::REGION_MARK]);
+		if ($allowedRegionsCount == 1) {
+			$result = reset($allowedRegions);
+		} elseif (empty($diff)) {
+			$result = "×ÓÅ ÒÅÇÉÏÎÙ";
+			$isShowBubble = true;
+		} else {
+			if ($inObjectCount > self::$countInCell) {
+				$result = sprintf("%s + ÅÝÅ %s ÒÅÇÉÏ%s",
+								join(", ", array_slice($inObject, 0, self::$countInCell)),
+								$inObjectCount - self::$countInCell,
+								NumericEndingsRussian($inObjectCount - self::$countInCell, "Î", "ÎÁ", "ÎÏ×"));
 
-			if (empty($diff)) {
-				$this->bubbleTextShortContent = '×ÓÅ ÒÅÇÉÏÎÙ';
+				$isShowBubble = true;
 			} else {
-				$substractShortViewCount = $regionTitlesCount - self::$countInCell;
-
-				$this->bubbleTextShortContent = sprintf(
-					"%s + ÅÝÅ %s ÒÅÇÉÏ%s",
-					join(", ", array_slice($regionTitles, 0, self::$countInCell)),
-					$substractShortViewCount,
-					NumericEndingsRussian($substractShortViewCount, "Î", "ÎÁ", "ÎÏ×")
-				);
+				$result = join(",", $inObject);
 			}
-
-			$this->bubbleTextFullContent  = $html;
 		}
 
-		if(count($value) > $regionTitlesCount){
-			$html = $this->bubbleTextShortContent = sprintf('<b>%s</b>', $moreThanOne ? $this->bubbleTextShortContent : $html);
+		if ($inObjectCount > $allowedRegionsCount) {
+			$result = sprintf("<b>%s</b>", $result);
 		}
 
-		return $moreThanOne ? parent::buildCell($field, $object, $param) : $html;
+		if ($isShowBubble) {
+			$this->bubbleTextFullContent = join(", ", $inObject);
+			$this->bubbleTextShortContent = $result;
+		}
+
+		return $isShowBubble ? parent::buildCell($field, $object, $param) : $result;
 	}
+
 }
+
 /**
  * ôÁÂÌÉÃÁ URL ÒÅÇÉÏÎÏ×
  *
  * storageType regionurl
  * displayType URLTABLE
  */
-
 class PXDisplayTypeUrltable extends PXDisplayTypeTable {
+
 	function buildInput($field, $object, $param=NULL) {
-		$value  = isset($object[$field->name]) ? explode(',', trim($object[$field->name])) : array();
+		$value = isset($object[$field->name]) ? explode(',', trim($object[$field->name])) : array();
 		foreach ($value as $k => $v) {
-			$value[$k] = (array)$v;
+			$value[$k] = (array) $v;
 		}
 
 		$height = 0;
-		$cols   = '1';
+		$cols = '1';
 		$header = array();
 
 		return NLAbstractHTMLForm::BuildTableByCols($field->name, $value, $cols, $height, $header);
 	}
+
 }
-	
+
 ?>

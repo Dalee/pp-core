@@ -3,7 +3,6 @@ class PXTriggerDatabaseMultipleregions extends PXAbstractDatabaseTrigger {
 	private $isRegionalCloning  = false;
 	private $parentObject = null;
 
-
 	function OnBeforeAddObject(&$db, &$objId, &$format, &$object, &$dbFields, &$dbValues) {
 		$regions = $this->getRegions();
 
@@ -46,10 +45,10 @@ class PXTriggerDatabaseMultipleregions extends PXAbstractDatabaseTrigger {
 	function OnBeforeBuildTree($db, $format, &$table, $parentName) {
 		$regions = $this->getRegions();
 
-		if(!$regions->isFederal()) {
+		if (!$regions->isFederal()) {
 			$refl  = @array_flip(GetColFromTableWithIndexs($table, PXMultipleRegionsReflexer::REFLEX_FIELD));
 
-			foreach($table as $id => $t)  {
+			foreach ($table as $id => $t)  {
 				if(isset($t['parent']) && isset($refl[$t['parent']])) {
 					$table[$id]['parent'] = $refl[$t['parent']];
 				}
@@ -85,6 +84,7 @@ class PXTriggerDatabaseMultipleregions extends PXAbstractDatabaseTrigger {
 					new PXPublicRegionObjectCloner($format, $object, $objectInDB, $dbFields, $dbValues, $this);
 
 				$nid = $cloner->cloneObject($allowedRegionsIds);
+
 			$this->isRegionalCloning = null;
 
 			$request = PXRegistry::getRequest();
