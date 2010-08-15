@@ -12,6 +12,9 @@ class PXDisplayTypeMultiRegions extends PXDisplayTypeBubbleText {
 
 		$values = $regions->getRegionsAsDirectory(true, $cutOutRegions);
 
+		#fixme it is ugly
+		unset($values[null]);
+
 		if (!$values) {
 			return;
 		}
@@ -22,9 +25,6 @@ class PXDisplayTypeMultiRegions extends PXDisplayTypeBubbleText {
 		}
 
 		$values[PXMultiRegions::MAGIC] = self::$chooseAll;
-
-		#fixme it is ugly
-		unset($values[null]);
 
 		return $values;
 	}
