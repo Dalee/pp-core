@@ -122,8 +122,6 @@ class PXAdminForm extends PXAdminComplexWidget {
 		$html[] =  $content;
 		$html[] =  join($this->blocks[self::AFTER_CONTENT]);
 
-		$this->setControls();
-
 		$this->layout->append('OUTER.CONTENT', join($html));
 	}
 
@@ -209,7 +207,7 @@ class PXAdminForm extends PXAdminComplexWidget {
 			}
 			$groupViewer = new $viewKlass($k, $v, $this->format, $this->object);
 			$html[] = $groupViewer->html();
-		}
+	}
 
 		if (isset($this->object['sys_created']) || isset($this->object['sys_modified']) || isset($this->object['ownerlogin'])) {
 			$html[] = '<dl class="sysinfo">';
