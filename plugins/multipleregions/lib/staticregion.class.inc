@@ -235,7 +235,7 @@ class PXCorpRegions {
 
 		$host = self::findUrl($path[0], $regionId);
 
-		#fixme!!! п╣я│п╩п╦ я│я┌я─п╟п╫п╦я├я▀ п╫п╣я┌ п╡ я─п╣пЁп╦п╬п╫п╣ п╡п╣я─п╫п╣я┌я│я▐ 404
+		#fixme!!! если страницы нет в регионе вернется 404
 		array_shift($path);
 		return sprintf('http://%s/%s', $host, join("/", $path));
 	}
