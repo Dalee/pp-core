@@ -232,9 +232,12 @@ class PXCorpRegions {
 
 		$localPath = '/'.createSomePathByParentId($tree, $sid, 'pathname', '/', true, false);
 */
+
 		$host = self::findUrl($path[0], $regionId);
 
-		return 'http://'.$host;
+		#fixme!!! если страницы нет в регионе вернется 404
+		array_shift($path);
+		return sprintf('http://%s/%s', $host, join("/", $path));
 	}
 	
 	static function regionExists($id) {
