@@ -59,11 +59,9 @@ class ObjectChecker {
 			$parentFormat = $this->acl->db->types[$this->acl->db->types[$format->id]->parent];
 
 			if((bool)$parentFormat->parent) {
-				if (!array_key_exists($pKey, $this->acl->parents)) {
-					$this->_loadParent($format, $object, $pKey);
-				}
-
-				$object['parent'] = $this->acl->parents[$pKey];
+				$this->_loadParent($format, $object, $pKey);
+				
+				$object['parent'] = isset($this->acl->parents[$pKey]) ? $this->acl->parents[$pKey] : null;
 			} else {
 			}
 
@@ -72,6 +70,10 @@ class ObjectChecker {
 	}
 
 	private function _loadParent($format, $object, $pKey) {
+		if(isset($this->acl->parents[$pKey])){
+			return;
+		}
+		
 		$tmpParents = $this->acl->db->query('SELECT parent FROM '.$format->parent.' WHERE id = '.$object['parent']);
 
 		if(count($tmpParents)) {
