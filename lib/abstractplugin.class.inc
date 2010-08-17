@@ -42,7 +42,7 @@ class PXAbstractPlugin {
 
 		$f = PXLoader::find($className);
 
-		if(strstr("plugins", $f)) {
+		if(!strstr("/plugins/", $f)) {
 			return;
 		}
 
