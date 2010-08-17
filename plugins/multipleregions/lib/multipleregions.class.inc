@@ -14,10 +14,10 @@ class PXMultiRegions {
 	private static $regionsDirectory;
 	private static $isFederal;
 
-	const REGION_MARK = 'sys_regions';
-	const MAGIC       = -1;
+	const REGION_MARK        = 'sys_regions';
+	const MAGIC              = -1;
 	const MANAGE_REGION_MARK = 'manage_region';
-	const DISPLAY_FIELD = 'title';
+	const DISPLAY_FIELD      = 'title';
 
 	private function __construct(){/*{{{*/
 		$this->db      = PXRegistry::getDb();
@@ -49,19 +49,11 @@ class PXMultiRegions {
 	}/*}}}*/
 
 	function getAllowedRegions() {/*{{{*/
-		if (self::$allowedRegions) {
-			return self::$allowedRegions;
+		if (!self::$allowedRegions) {
+			self::$allowedRegions = $this->getRegionsData();
+			$this->db->filterByAccess(self::MANAGE_REGION_MARK, $this->format, self::$allowedRegions);
 		}
-
-		self::$allowedRegions = $this->getRegionsData();
-
-		foreach (self::$allowedRegions as $id => $object) {
-			if (!$this->user->can(self::MANAGE_REGION_MARK, $this->format, $object)) {
-				unset(self::$allowedRegions[$id]);
-			}
-		}
-
-		unset(self::$allowedRegions[null]);
+		
 		return self::$allowedRegions;
 	}/*}}}*/
 
@@ -258,7 +250,7 @@ class PXMultiRegions {
 			return self::$isFederal;
 		}
 
-		return self::$isFederal = $this->user->can('manage_region', $this->format);
+		return self::$isFederal = $this->user->can(self::MANAGE_REGION_MARK, $this->format);
 	}/*}}}*/
 
 	static function isRegionalObject($format){
