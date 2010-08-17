@@ -239,8 +239,12 @@ class PXTriggerDatabaseMultipleregions extends PXAbstractDatabaseTrigger {
 
 		if ($regions->isRegionalObject($objectFormat) && $regions->isRegionalObject($exObjectFormat)) {
 			//TODO: check me again, carefully !
-			if (empty($object[$regionsField]) && isset($object['id'])) {
+			if (isset($object[$regionsField]) && empty($object[$regionsField]) && isset($object['id'])) {
 				$object = PXRegistry::getDB()->getObjectById($objectFormat, $object['id']);
+			}
+
+			if (!isset($object[$regionsField])) {
+				$object[$regionsField] = array();
 			}
 
 			$object[$regionsField] =
