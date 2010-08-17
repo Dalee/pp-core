@@ -137,26 +137,29 @@ class PXMultiRegions {
 			$host = preg_replace("#:\d{2,5}$#",'',$this->request->getHttpHost());
 			$id   = 0;
 
-			foreach($this->getRegionsData() as $region){
-				if(!empty($region['url']) && $region['status']){
-					$region['url'] = str_replace(' ', '', $region['url']);
-					$regions       = explode(',', $region['url']);
+			foreach ($this->getRegionsData() as $region) {
+				if(empty($region['url'])) {
+					continue;
+				}
 
-					if(in_array($host, $regions)){
+				$region['url'] = str_replace(' ', '', $region['url']);
+				$regions       = explode(',', $region['url']);
+
+				if (in_array($host, $regions)) {
+					$id = $region['id'];
+					break;
+				}
+
+				foreach ($regions as $k => $r) {
+					if (!strstr($r, '*')) {
+						continue;
+					}
+
+					$mask = strtr($r, array('.' => '\.', '*' => '[a-z0-9\-]+'));
+
+					if (preg_match('#^'.$mask.'$#i', $host)) {
 						$id = $region['id'];
-						break;
-					} else {
-						foreach ($regions as $k => $r) {
-							if (strstr($r, '*')) {
-								$mask = str_replace('.', '\.', $r);
-								$mask = str_replace('*', '[a-z0-9]+', $mask);
-
-								if (preg_match('/^'.$mask.'$/i', $host)) {
-									$id = $region['id'];
-									break(2);
-								}
-							}
-						}
+						break(2);
 					}
 				}
 			}
