@@ -19,7 +19,7 @@ class NLMSSQLDatabase extends NLAbstractSQLDatabase {
 	function Connect() {
 		if (!$this->connected) {
 			$this->connection = mssql_connect(
-				$this->connectArray['host'] . (!empty($this->connectArray['port']) ? ",".$this->connectArray['port'] : ''),
+				$this->connectArray['host'] . (!empty($this->connectArray['port']) ? ":".$this->connectArray['port'] : ''),
 				$this->connectArray['user'],
 				$this->connectArray['password'],
 				true
