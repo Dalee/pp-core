@@ -15,7 +15,10 @@ class PXModuleDescription {
 	const EMPTY_DESCRIPTION = '---';
 
 	public function getModule() {
-		$this->load();
+		if (!class_exists($this->class, false)) {
+			$this->load();
+		}
+
 		return new $this->class($this->name, $this->settings, $this);
 	}
 
@@ -50,21 +53,30 @@ class PXModuleDescription {
 	}
 
 	function getPathToClass($type = 'module') {
-		$file = strtolower(substr($this->class, 8)).".{$type}.inc";
+		$file = sprintf(
+			"%s.%s.inc",
+			str_replace('pxmodule', '', strtolower($this->class)),
+			$type
+		);
 
-		if(strlen($this->package) > 0) {
-			$package = str_replace(".","/",$this->package);
-			$packageLengthWithoutSlashes = strlen(str_replace("/","",$package));
-			$file = $package."/".strtolower(substr($file,$packageLengthWithoutSlashes));
+		if (strlen($this->package) > 0) {
+			$package = str_replace(".", "/", $this->package);
+			$packageLengthWithoutSlashes = strlen(str_replace("/", "", $package));
+			$file = sprintf("%s/%s", $package, strtolower(substr($file, $packageLengthWithoutSlashes)));
 		}
 
-		$file = $type.'s/'.$file;
+		$file = sprintf("%ss/%s", $type, $file);
 
-		if (file_exists(BASEPATH.'/local/'.$file)) {
-			return BASEPATH.'/local/'.$file;
+		$findBy = array(
+			"local",
+			"libpp");
 
-		} elseif (file_exists(BASEPATH.'/libpp/'.$file)) {
-			return BASEPATH.'/libpp/'.$file;
+		foreach ($findBy as $folder) {
+			$requiredPath = sprintf("%s/%s/%s", BASEPATH, $folder, $file);
+
+			if (file_exists($requiredPath)) {
+				return $requiredPath;
+			}
 		}
 	}
 
@@ -72,7 +84,7 @@ class PXModuleDescription {
 		$path    = array();
 		$package = $dom->xpath("/modules//module[@name='".$this->getName()."']/ancestor::package/@folder");
 
-		if($package) {
+		if ($package) {
 			$tmp = $package;
 			foreach($tmp  as $pack) {
 				$path[] = $pack->nodeValue();

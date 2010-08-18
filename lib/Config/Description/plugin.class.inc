@@ -4,39 +4,66 @@ class PXPluginDescription {
 	private $class    = null;
 	private $instance = NULL;
 	private $app;
+
 	public  $params   = array();
+	public  $modules  = array();
+	public  $triggers = array();
 
 	public function initialize($app) {
 		$this->getPlugin($app);
 	}
 
 	public function getPlugin($app) {
-		if($this->instance) {
+		if ($this->instance) {
 			return $this->instance;
 		}
+
 		$this->load();
 		return ($this->instance = new $this->class($app, $this));
 	}
 
 	function setAttrs($attrs) {
-		foreach($attrs as $item) {
+		foreach ($attrs as $item) {
 			$this->{$item->name} = utf8_decode($item->value);
 		}
 	}
 
 	function setParams($params) {
-		is_object($params) && $params = array($params);
+		if (is_object($params)) {
+			$params = array($params);
+		}
 
-		foreach($params as $p) {
+		foreach ($params as $p) {
 			$ps = $p->attributes();
 			$this->params[$ps[0]->value] = $ps[1]->value;
 		}
 	}
 
+	function setComponent($type, $field, $dom) {
+		$objects = $dom->getChildObjects();
+
+		if (empty($objects)) {
+			return;
+		}
+
+		foreach ($objects->{$type} as $o) {
+			$v = reset($o);
+			$this->{$field}[$v] = $v;
+		}
+	}
+
+	function setModules($modules) {
+		$this->setComponent('module', 'modules', $modules);
+	}
+
+	function setTriggers($triggers) {
+		$this->setComponent('trigger', 'triggers', $triggers);
+	}
+
 	function load() {
 		$file = $this->getPathToPlugin();
 
-		if(is_string($file)) {
+		if (is_string($file)) {
 			require_once($file);
 		}
 	}

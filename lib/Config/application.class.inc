@@ -481,8 +481,16 @@ class PXApplication {
 			$plugin = new PXPluginDescription();
 			$plugin->setAttrs($domPlugin->attributes());
 
-			if($domPlugin->param) {
+			if ($domPlugin->param) {
 				$plugin->setParams($domPlugin->param);
+			}
+
+			if ($domPlugin->modules) {
+				$plugin->setModules($domPlugin->modules);
+			}
+
+			if ($domPlugin->triggers) {
+				$plugin->setTriggers($domPlugin->triggers);
 			}
 
 			$this->plugins[$plugin->getName()] = $plugin;
@@ -536,7 +544,7 @@ class PXApplication {
 
 		$this->triggers[$type][$trigger->getName()] = $trigger;
 	}
-	
+
 	/**
 	 * Пользовательская функция для регистрации триггеров не через конфиг triggers.xml, а в процессе работы системы
 	 * @param  String   $type - тип триггера
@@ -546,8 +554,8 @@ class PXApplication {
 		foreach($args as $name => &$value){
 			$value = PXml::attributePrototype($name, $value); //XML style attributes compatibility
 		}
-		$this->setTrigger($args, $type);
 
+		$this->setTrigger($args, $type);
 		return $this;
 	}
 	

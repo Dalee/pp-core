@@ -1,4 +1,5 @@
 <?php
+
 require_once 'acl.module.inc';
 
 class PXModuleMAcl extends PXModuleAcl {
@@ -12,13 +13,15 @@ class PXModuleMAcl extends PXModuleAcl {
 		$actions = array('default' => PXModule::getAclModuleActions());
 
 		foreach($this->app->modules as $name => $module) {
-			$path = $module->getPathToClass();
+			if (!class_exists($module->class, false)) {
+				$path = $module->getPathToClass();
 
-			if(!strlen($path) && !file_exists($path)) {
-				FatalError('Can\'t find file with '.$name.' module');
+				if(!strlen($path) && !file_exists($path)) {
+					FatalError(sprintf("Can't find file with '%s' module", $name));
+				}
+
+				require_once $path;
 			}
-
-			require_once $path;
 
 			$actions[$module->name] = call_user_func(array($module->class, 'getAclModuleActions'));
 		}

@@ -13,6 +13,5 @@ DENY_REGION_EDIT_COLUMN='deny_region_edit bool';
 for i in $SQL_RESULT 
 do
 	echo $i;
-	res=`echo -n "ALTER TABLE $i ADD $REFLEX_COLUMN;" | $PSQL 2>&1`
-	res=`echo -n "ALTER TABLE $i ADD $DENY_REGION_EDIT_COLUMN;" | $PSQL 2>&1`
+	res=`echo -n "ALTER TABLE $i ADD $REFLEX_COLUMN, ADD $DENY_REGION_EDIT_COLUMN;" | $PSQL 2>&1`
 done;

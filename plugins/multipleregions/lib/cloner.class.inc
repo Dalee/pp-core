@@ -97,6 +97,31 @@ class PXPublicRegionObjectCloner {
 		}
 
 		$this->db->modifyContentObject($this->format, $this->object);
+		$this->cloneReferences();
+	}
+
+	private function cloneReferences() {
+		if (!$this->app->references) {
+			return;
+		}
+
+		foreach ($this->app->references as $k => $ref) {
+			if ($ref->to != $this->format->id && $ref->from != $this->format->id) {
+				continue;
+			}
+
+			$references = $this->db->getLinks($ref, $this->format->id, $this->oid);
+
+			if (empty($references)) {
+				continue;
+			}
+
+			foreach ($references as &$v) {
+				$v['on'] = true;
+			}
+
+			$this->db->modifyLinks($ref, $this->format->id, $this->nid, $references);
+		}
 	}
 
 	private function setDbValue($key, $value) {
