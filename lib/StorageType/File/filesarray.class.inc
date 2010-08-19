@@ -41,7 +41,7 @@ class PXStorageTypeFilesarray extends PXStorageTypeAbstractFile {
 
 	function proceedFile($field, &$object, &$param) {
 		$varName         = $field->name;
-		$ai              = parent::ai($field, $object, $param['format']);;
+		$ai              = parent::ai($field, $object, $param['format']);
 		$basedir         = HTDOCS_PATH . $ai;
 		$fileArray       = &$object[$varName];
 		$allowed         = isset($param['allowed']) ? $param['allowed'] : NULL;
