@@ -142,7 +142,8 @@ class PXResponse {
 	
 	function send($content=null) {
 		if(!headers_sent()) {
-			header('HTTP/1.1 '.$this->status);
+			// FIXME
+			// header('HTTP/1.1 '.$this->status);
 
 			if(is_string($content)) {
 				$this->setLength(strlen($content));
