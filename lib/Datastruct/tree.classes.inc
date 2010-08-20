@@ -45,8 +45,16 @@ class NLLeaf {
 		return createPathByParentId($this->tree, $this->id);
 	}
 
+	function createpathWithoutRoot() {
+		return createSomePathByParentId($this->tree, $this->id, 'pathname', '/', true, false);
+	}
+
 	function isRoot() {
 		return $this->id == $this->tree->getRoot()->id;
+	}
+
+	function tearOff() {
+		unset($this->tree->leafs[$this->id]);
 	}
 }
 
