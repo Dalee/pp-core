@@ -9,6 +9,7 @@ class PXPluginMultiRegions extends PXAbstractPlugin {
 		$this->load("lib/reflexer.class.inc");
 
 		$this->loadDisplayType("multiregions");
+		$this->loadDisplayType("urltable");
 		$this->loadStorageType("regionurl");
 
 		$this->loadTrigger("database/multipleregions");
