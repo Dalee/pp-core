@@ -148,7 +148,6 @@ class PXCorpRegions {
 				'count' => 0,
 				'url'   => 0
 			);
-			
 			foreach ($urls as $k => $url) {
 				//FIXME
 				if (preg_match('/^('.str_replace('.', '\.', $engPrfx).'|pda\.|m\.)/', $url)) {
@@ -158,10 +157,10 @@ class PXCorpRegions {
 				$posibleHost = explode('.', $url);
 				$currentHost = explode('.', $host);
 
-				$count = count(array_intersect($posibleHost, $currentHost)); d2($count);
+				$count = count(array_intersect($posibleHost, $currentHost));
 				if ($count > $intersection['count']) {
 					$intersection['count'] = $count;
-					$intersection['url']   = $urls[$k];d2($urls[$k]);
+					$intersection['url']   = $urls[$k];
 				}
 			}
 
