@@ -47,6 +47,7 @@ class PXCorpRegions {
 	
 	static function getAllRegionsObjects($tree, $objType, $where) {
 		$tmp     = PXRegistry::getDb()->Query('SELECT * FROM ' . $objType . ' WHERE '. $where);
+		$host    = PXRegistry::getRequest()->getHttpHost();
 		$rData   = self::getAllData();
 		$objects = array();
 
@@ -58,7 +59,7 @@ class PXCorpRegions {
 	
 				foreach ($rData as $val) {
 					if(in_array($val['id'], $obj[self::getField()])) {
-						$obj['fullpath'] = 'http://' . trim(current(explode(',', $val['url']))) . createPathByParentId($tree, $obj['parent']) . $obj['pathname'];
+						$obj['fullpath'] = 'http://' . self::findUrl($host, $val['id']) . createPathByParentId($tree, $obj['parent']) . $obj['pathname'];
 						break;
 					}
 				}
@@ -157,10 +158,10 @@ class PXCorpRegions {
 				$posibleHost = explode('.', $url);
 				$currentHost = explode('.', $host);
 
-				$count = count(array_intersect($posibleHost, $currentHost));
+				$count = count(array_intersect($posibleHost, $currentHost)); d2($count);
 				if ($count > $intersection['count']) {
 					$intersection['count'] = $count;
-					$intersection['url']   = $urls[$k];
+					$intersection['url']   = $urls[$k];d2($urls[$k]);
 				}
 			}
 
