@@ -6,23 +6,25 @@ if [ "$1" == "-h" ]; then
 	exit;
 fi
 
+if [ "$1" == "-rb" ]; then
+	echo "Remove bak up files";
+	rm ./local/modules/*.module.inc.backup;
+	exit;
+fi;
+
 for file in `find ./local/modules/ -name '*.module.inc'`
 do
-	if [ "$1" == "-rb" ]; then
-		rm $file.backup;
-	else
-		echo $file
-		echo "created backup file $file.backup"
+	echo $file
+	echo "created backup file $file.backup"
 
-		echo
+	echo
 
-		cp $file $file.backup
+	cp $file $file.backup
 
-		sed -i -r 's/function\s+(user|admin)(Action|Index|Popup)\([^\)]+\)/function \1\2()/' $file
-		sed -i -r 's/\$(app|db|user|request|layout|response|objects|tree)(->|\[)/$this->\1\2/' $file
-		sed -i -r 's/\$currentSid/$this->tree->current-id/' $file
-		sed -i -r 's/\$this->tree->leafs\[\$this->tree->current->id\]/$this->tree->current/' $file
-	fi;
+	sed -i -r 's/function\s+(user|admin)(Action|Index|Popup)\([^\)]+\)/function \1\2()/' $file
+	sed -i -r 's/\$(app|db|user|request|layout|response|objects|tree)(->|\[)/$this->\1\2/' $file
+	sed -i -r 's/\$currentSid/$this->tree->current-id/' $file
+	sed -i -r 's/\$this->tree->leafs\[\$this->tree->current->id\]/$this->tree->current/' $file
 done
 
 if [ "$1" != "-rb" ]; then
