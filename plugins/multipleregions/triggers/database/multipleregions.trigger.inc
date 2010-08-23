@@ -64,8 +64,10 @@ class PXTriggerDatabaseMultipleregions extends PXAbstractDatabaseTrigger {
 		$allowedRegionsIds = $regions->getAllowedRegionsIds();
 		$regions_field = PXMultiRegions::REGION_MARK;
 
-		if($isRegionalObject && empty($allowedRegionsIds)) {
-			$this->simpleSetDbValues(PXMultiRegions::REGION_MARK, $objectInDB[$regions_field], $dbFields, $dbValues);
+		if ($isRegionalObject && empty($allowedRegionsIds)) {
+			$this->simpleSetDbValues(PXMultiRegions::REGION_MARK, 
+				PXMultipleRegionsHelper::toString($objectInDB[$regions_field]), $dbFields, $dbValues);
+
 			return true;
 		}
 

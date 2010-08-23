@@ -180,9 +180,8 @@ class NLPGSQLDatabase extends NLAbstractSQLDatabase {
 		return $table;
 	}
 
-
 	function InsertObject($table, $fields, $values) {
-		$query = "INSERT INTO {$table} (\"".implode('", "', $fields)."\") VALUES (".implode(', ', array_map(array(&$this, '__mapInsertData'), $values)).")";
+		$query = "INSERT INTO {$table} (\"".implode('", "', $fields)."\") VALUES (".implode(', ', array_map(array($this, '__mapInsertData'), $values)).")";
 		$id    = $this->modifyingQuery($query, $table, 'id');
 		return $id;
 	}
@@ -211,7 +210,7 @@ class NLPGSQLDatabase extends NLAbstractSQLDatabase {
 	}
 
 	function UpdateObjectById($table, $objectId, $fields, $values) {
-		$query = "UPDATE {$table} SET ".implode(', ', array_map(array(&$this, '__mapUpdateData'), $fields, $values))." WHERE id={$objectId}";
+		$query = "UPDATE {$table} SET ".implode(', ', array_map(array($this, '__mapUpdateData'), $fields, $values))." WHERE id={$objectId}";
 		return $this->ModifyingQuery($query);
 		return NULL;
 	}
