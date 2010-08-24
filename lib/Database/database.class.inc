@@ -1471,7 +1471,7 @@ SQL;
 
 		$permitModifyLinks = true;
 		foreach ($this->triggers as $t){
-			$permitModifyLinks = $t->getTrigger()->OnBeforeModifyLinks($this, $id, $format, $links, $linkedFormat);
+			$permitModifyLinks = $t->getTrigger()->OnBeforeModifyLinks($this, $id, $format, $links, $linkedFormat, $objectInDB, $reference);
 			if(!$permitModifyLinks) break;
 		}
 

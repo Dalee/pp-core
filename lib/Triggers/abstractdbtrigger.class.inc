@@ -28,7 +28,7 @@ abstract class PXAbstractDatabaseTrigger extends PXAbstractTrigger {
 		return true;
 	}
 	
-	function OnModifyLinks(&$db, &$objId, $formatId, &$arLinks, $linkedFormat) { // simple
+	function OnModifyLinks(&$db, &$objId, $formatId, &$arLinks, $linkedFormat, &$objectInDB, $reference) { // simple
 	}
 	
 	function OnBeforeMoveObject(&$db, &$objectId, &$format, &$objectInDB){

@@ -7,12 +7,10 @@ class PXPublicRegionObjectCloner {
 	const DENY_EDIT_FIELD = 'deny_region_edit';
 	private $parentFormat  = null;
 
-	function __construct($format, &$object = null, &$objectInDB, &$dbFields = null, &$dbValues = null, $trigger) {
+	function __construct($format, &$object = null, &$objectInDB, $trigger) {
 		$this->format      = $format;
 		$this->object      =& $object;
 		$this->objectInDB  =& $objectInDB;
-		$this->dbFields    =& $dbFields;
-		$this->dbValues    =& $dbValues;
 		$this->oid         = $objectInDB['id'];
 		$this->trigger     = $trigger;
 		$this->childTypes  = $format->childTypes();
@@ -121,17 +119,6 @@ class PXPublicRegionObjectCloner {
 			}
 
 			$this->db->modifyLinks($ref, $this->format->id, $this->nid, $references);
-		}
-	}
-
-	private function setDbValue($key, $value) {
-		$keys = array_flip($this->dbFields);
-
-		if(!isset($keys[$key])) {
-			$this->dbFields[] = $key;
-			$this->dbValues[] = $value;
-		} else {
-			$this->dbValues[$keys[$key]] = $value;
 		}
 	}
 

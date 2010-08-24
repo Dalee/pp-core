@@ -75,7 +75,7 @@ class PXTriggerDatabaseMultipleregions extends PXAbstractDatabaseTrigger {
 
 		// клонирование возможно только из админики
 		// рекурсивное клонирование заперещено
-		if(!$permit && $isRegionalObject && PXRegistry::getApp()->isAdminEngine()) {
+		if (!$permit && $isRegionalObject && PXRegistry::getApp()->isAdminEngine()) {
 
 			if ($this->isRegionalCloning) {
 				FatalError("Recusive clone detected!");
@@ -83,7 +83,7 @@ class PXTriggerDatabaseMultipleregions extends PXAbstractDatabaseTrigger {
 
 			$this->isRegionalCloning = true; //flag initalize regional clone
 				$cloner = 
-					new PXPublicRegionObjectCloner($format, $object, $objectInDB, $dbFields, $dbValues, $this);
+					new PXPublicRegionObjectCloner($format, $object, $objectInDB, $this);
 
 				$nid = $cloner->cloneObject($allowedRegionsIds);
 
@@ -138,7 +138,7 @@ class PXTriggerDatabaseMultipleregions extends PXAbstractDatabaseTrigger {
 
 		if(!$permit && $regions->isRegionalObject($format)) {
 			$cloner = 
-				new PXPublicRegionObjectCloner($format, $object = null, $objectInDB, $dbFields = null, $dbValues = null, $this);
+				new PXPublicRegionObjectCloner($format, $object = null, $objectInDB, $this);
 
 			$cloner->deleteObject($regions->getAllowedRegionsIds());
 		} elseif(!$permit) {
@@ -151,8 +151,47 @@ class PXTriggerDatabaseMultipleregions extends PXAbstractDatabaseTrigger {
 	function OnDeleteObject(&$db, &$objId, &$format, &$objectInDB) {
 	}
 
-	function OnBeforeModifyLinks(&$db, &$objId, &$formatId, &$links) {
-		return true;
+	# fixme remove duplicate code
+	function OnBeforeModifyLinks(&$db, &$objId, &$formatId, &$links, $linkedFormat, &$objectInDB, $reference) {
+		$regions = $this->getRegions();
+		$format = PXRegistry::getApp()->types[$formatId];
+
+		$isRegionalObject  = $regions->isRegionalObject($format);
+		$allowedRegionsIds = $regions->getAllowedRegionsIds();
+		$regions_field = PXMultiRegions::REGION_MARK;
+
+		if ($isRegionalObject && empty($allowedRegionsIds)) {
+			$this->simpleSetDbValues(PXMultiRegions::REGION_MARK, 
+				PXMultipleRegionsHelper::toString($objectInDB[$regions_field]), $dbFields, $dbValues);
+
+			return true;
+		}
+
+		$permit = $regions->checkRegionAccess($format, $objectInDB) && $regions->checkRegionAccessToParent($format, $objectInDB);
+
+		// клонирование возможно только из админики
+		// рекурсивное клонирование заперещено
+		if (!$permit && $isRegionalObject && PXRegistry::getApp()->isAdminEngine()) {
+
+			if ($this->isRegionalCloning) {
+				FatalError("Recusive clone detected!");
+			}
+
+			$this->isRegionalCloning = true; //flag initalize regional clone
+				$cloner = 
+					new PXPublicRegionObjectCloner($format, $objectInDB, $objectInDB, $this);
+
+				$nid = $cloner->cloneObject($allowedRegionsIds);
+
+			$this->isRegionalCloning = null;
+
+			$db->modifyLinks($reference, $format->id, $nid, $links);
+
+			$request = PXRegistry::getRequest();
+			PXResponse::getInstance()->redirect("popup.phtml?area={$request->getArea()}&format={$format->id}&id={$nid}&action=links");
+		}
+
+		return $permit;
 	}
 
 	function OnModifyLinks(&$db, &$objId, &$formatId, &$links) { // simple
@@ -166,7 +205,7 @@ class PXTriggerDatabaseMultipleregions extends PXAbstractDatabaseTrigger {
 
 		if(!$permit && $regions->isRegionalObject($format)) {
 			$cloner = 
-				new PXPublicRegionObjectCloner($format, $objId, $objectInDB, $dbFields = null, $dbValues = null, $this);
+				new PXPublicRegionObjectCloner($format, $objId, $objectInDB, $this);
 
 			$cloner->moveObject($regions->getAllowedRegionsIds());
 		} elseif(!$permit) {
