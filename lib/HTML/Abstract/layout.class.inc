@@ -89,8 +89,9 @@ class NLAbstractLayout {
 		$this->setSimpleInnerLayout(array('100%'), array('100%', ''));
 	}
 
-	function setTwoColumns() {
-		$this->setSimpleInnerLayout(array('25%', '75%'), array('100%', ''));
+	function setTwoColumns($equalWidth=false) {
+		$widths = $equalWidth ? array('50%', '50%') : array('25%', '75%');
+		$this->setSimpleInnerLayout($widths, array('100%', ''));
 	}
 
 	function setThreeColumns() {

@@ -38,9 +38,10 @@ require_once('HTML/Admin/Widgets/Control/close.class.inc');
 require_once('HTML/Admin/Widgets/Control/reset.class.inc');
 
 require_once('HTML/Admin/Widgets/pager.class.inc');
-require_once('HTML/Admin/Widgets/table.class.inc');
 require_once('HTML/Admin/Widgets/list.class.inc');
+require_once('HTML/Admin/Widgets/table.class.inc');
 require_once('HTML/Admin/Widgets/tablesimple.class.inc');
+require_once('HTML/Admin/Widgets/tableObjects.class.inc');
 require_once('HTML/Admin/Widgets/form.class.inc');
 
 require_once('HTML/Admin/Widgets/menuTabbed.class.inc');
