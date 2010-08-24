@@ -152,7 +152,12 @@ class PXTreeObjects implements PXContentObjectsInterface, ArrayAccess, Iterator 
 	function __get($key) {
 		switch($key) {
 			case 'root':
-				return new PXStructLeaf($this->tree->leafs[$this->rootId], $this);
+				if($this->rootId !== -1) {
+					return new PXStructLeaf($this->tree->leafs[$this->rootId], $this);
+				} else {
+					PXRegistry::getResponse()->notFound();
+					return new PXStructLeaf404();
+				}
 				break;
 
 			case 'current':
