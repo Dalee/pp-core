@@ -24,11 +24,12 @@ $ARGV = $_SERVER['argv'];
 
 function show_usage_and_exit() {
 	$opts = array(
-		"-l                            list users",  
+		"-l                            list users", 
+		"-f                            list groups",
 		"-g                            get auth type",
 		"-p <login> <password>         change password",
 		"-s <login>                    show login details",
-		"-a <login> <access> <pass>    add login",
+		"-a <login> <pass> <group_id>  add login",
 		"-d <login>                    disable account", 
 		"-e <login>                    enable account"
 	);
@@ -77,6 +78,10 @@ function get_user_by_login($login){
 	return current(PXRegistry::getDb()->getObjectsByWhere(PXRegistry::getApp()->types['suser'], NULL, "title = '" . $login . "'"));
 }
 
+function get_group_by_id($group_id) {
+	return current(PXRegistry::getDb()->getObjectsByWhere(PXRegistry::getApp()->types['sgroup'], NULL, "id = '" . $group_id . "'"));
+}
+
 function get_encoded_password($pass){
 	$authtype = get_auth_method();
 	require_once(BASEPATH . '/libpp/lib/User/Auth/classes.inc');
@@ -91,7 +96,7 @@ if (count($ARGV) < 2) {
 # $options = getopt("lp:s:a:d:e:", 
 #                    array("list", "password:","show:","add:","disable:","enable:"));
 
-$options = getopt("lgp:s:a:d:e:");
+$options = getopt("lfgp:s:a:d:e:");
 
 if(empty($options)){
 	show_usage_and_exit();
@@ -104,6 +109,21 @@ $db  = PXRegistry::getDb();
 
 foreach($options as $option => $value) {
 	switch($option) {
+		case 'f':
+			$groups = $db->getObjects($app->types['sgroup'], NULL);
+			$format = "%10s\t%20s\t%25s\t%10s\n";
+			
+			printf($format, "group_id", "title", "modified", "status");
+			printf(str_repeat("--", 42) . "\n");
+			
+			foreach($groups as $group) {
+				printf($format, $group['id'], $group['title'], $group['sys_modified'], $group['status']);
+			}
+			
+			printf("\n");
+			success();
+			break;
+	
 		case 'l':
 			$users = $db->getObjects($app->types['suser'], NULL);
 			$format = "%25s\t%5s\t%10s\t%15s\n";
@@ -166,8 +186,13 @@ foreach($options as $option => $value) {
 
 			// check for args
 			if(!isset($ARGV[2])) $errors[] = 'login';
-			if(!isset($ARGV[3])) $errors[] = 'access';
-			if(!isset($ARGV[4])) $errors[] = 'pass';
+			if(!isset($ARGV[3])) $errors[] = 'pass';
+			if(!isset($ARGV[4])) $errors[] = 'group_id';
+			
+			$login  = $ARGV[2];
+			$passwd = $ARGV[3];
+			$group_id = intval($ARGV[4]);
+
 
 			if($errors){
 				missed_param($errors);
@@ -175,16 +200,20 @@ foreach($options as $option => $value) {
 				//check for correct args
 				$errors = '';
 
-				if(!isValidLogin($ARGV[2])) {
+				if(!isValidLogin($login)) {
 					$errors .= "Login must be from 2 to 16 symbols and contain only alphabetical, digits, \".\", \"-\", and \"_\"\n";
 				}
 
-				if(!isValidPasswd($ARGV[4])) {
+				if(!isValidPasswd($passwd)) {
 					$errors .= "Password must be from 3 to 16 symbols and contain only alphabetical, digits, \".\", \"-\", and \"_\"\n";
 				}
+				
+				$check = get_group_by_id($group_id);
+				if(!$check) {
+					$errors .= sprintf("Group id %d does not exists\n", $group_id);
+				}
 
-				$check = get_user_by_login($ARGV[2]);
-
+				$check = get_user_by_login($login);
 				if($check) {
 					$errors .= "User <{$ARGV[2]}> already exists\n";
 				}
@@ -193,16 +222,12 @@ foreach($options as $option => $value) {
 					incorrect_param($errors);
 				}
 
-				$login  = $ARGV[2];
-				$passwd = $ARGV[4];
-				$access = intval($ARGV[3]);
 
 				$blank = $app->initContentObject('suser');
-
 				$blank['title']  = $login;
 				$blank['passwd'] = get_encoded_password($passwd);
-				$blank['access'] = $access;
 				$blank['status'] = true;
+				$blank['parent'] = $group_id;
 				$db->addContentObject($app->types['suser'], $blank);
 				success("User <{$login}> added successfully\n");
 			}
