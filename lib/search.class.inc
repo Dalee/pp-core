@@ -233,26 +233,36 @@ SQL;
 
 		if($this->withIndexField) {
 			if ($this->app->dbDescription['database']->dbtype == 'mssql') {
-				$_indexField = "[index] = '1' AND";
+				$_indexField = "[index] = '1'";
 			} else {
-				$_indexField = "index = '1' AND";
+				$_indexField = "index = '1'";
 			}
-		} else {
-			$_indexField = '';
 		}
 
-		foreach($dtypes as $k => $v) {
+		foreach ($dtypes as $k => $v) {
 			if (!count($v)) {
 				continue;
 			}
 
-			if(isset($parents) && is_array($parents) && sizeof($parents) && isset($this->app->types[$k]->fields['parent'])) {
-				$withParents = true;
-			} else {
-				$withParents = false;
+			$withParents = isset($parents) && is_array($parents) && sizeof($parents) && isset($this->app->types[$k]->fields['parent']);
+
+			$where = array();
+			$where[] = sprintf("id IN ('%s')", join("','", array_keys($v)));
+
+			if (!empty($_indexField)) {
+				$where[] = $_indexField;
 			}
 
-			$tmp = $this->db->Query("SELECT * FROM {$k} WHERE id IN (".join(',', array_keys($v)).") AND {$_indexField} status = '1'".(!$withParents ? '' : " AND parent IN (".join(',', array_values($tmpJoin)).")"));
+			$where[] = "status = '1'";
+
+			if ($withParents) {
+				$where[] = sprintf("parent IN ('%s')", join("','", array_values($tmpJoin)));
+			}
+
+			// hook for additional where parts
+			$this->beforeSearch($k, $where);
+
+			$tmp = $this->db->Query(sprintf("SELECT * FROM {$k} WHERE %s", join(" AND ", $where)));
 
 			foreach($tmp as $row) {
 				$key =  $k.' '.$row['id'];
@@ -276,6 +286,11 @@ SQL;
 
 	function getSearchCount() {
 		return $this->searchCount;
+	}
+
+	//triggers
+
+	function beforeSearch($formatid, &$where) {
 	}
 }
 ?>
