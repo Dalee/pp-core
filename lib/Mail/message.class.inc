@@ -106,7 +106,7 @@ class NLMailMessage {
 		}
  
 		foreach($variables as $k=>$v) {
-			$text = str_replace('%'.strtoupper($k).'%', $v, $text);
+			$text = str_replace('%'.strtoupper($k).'%', (string)$v, $text);
 		}
  
 		$text = preg_replace("/\%.*?\%/si", '', $text);
