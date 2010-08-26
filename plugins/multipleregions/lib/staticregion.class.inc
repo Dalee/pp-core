@@ -1,7 +1,7 @@
 <?php
 class PXCorpRegions {
 	private static $fullTree;
-	
+
 	static function isFederalRegion($id = NULL) {
 		if (is_null($id)) {
 			$id = PXMultiRegions::getUserRid();
@@ -17,7 +17,7 @@ class PXCorpRegions {
 
 		return self::findUrl($host, $fId[0]['id']);
 	}
-	
+
 	static function getRegionId($type = 'user') {
 		$r = PXMultiRegions::getInstance();
 
@@ -27,11 +27,11 @@ class PXCorpRegions {
 			return $r->getAdminRid();
 		}
 	}
-	
+
 	static function getAllData() {
 		return PXMultiRegions::getRegionsData();
 	}
-	
+
 	static function getRegionData($id = NULL) {
 		if ($id == NULL) {
 			$r = PXMultiRegions::getInstance();
@@ -40,11 +40,11 @@ class PXCorpRegions {
 			return PXRegistry::getDb()->getObjectById(PXRegistry::getApp()->types['sys_regions'], $id);
 		}
 	}
-	
+
 	static function getField() {
 		return PXMultiRegions::REGION_MARK;
 	}
-	
+
 	static function getAllRegionsObjects($tree, $objType, $where) {
 		$tmp     = PXRegistry::getDb()->Query('SELECT * FROM ' . $objType . ' WHERE '. $where);
 		$host    = PXRegistry::getRequest()->getHttpHost();
@@ -70,7 +70,7 @@ class PXCorpRegions {
 				
 		return $objects;
 	}
-	
+
 	static function whereRegion($type){
 		$rid = self::getRegionId($type);
 		
@@ -81,7 +81,7 @@ class PXCorpRegions {
 		}
 		return $where;
 	}
-	
+
 	static function isRidInTree($sid, $rid) {
 		if (!self::$fullTree) {
 			self::initFullTree();
@@ -111,7 +111,7 @@ class PXCorpRegions {
 		
 		return $obj;
 	}
-	
+
 	static function getAllUrls() {
 		$urls    = array();
 		$regions = PXRegistry::getDb()->getObjects(PXRegistry::getDb()->types['sys_regions'], true);
@@ -128,7 +128,7 @@ class PXCorpRegions {
 		
 		return $urls;
 	}
-	
+
 	static function findUrl($host, $regionId) {
 		$regionData = self::getRegionData($regionId);
 		$urls       = explode(',', $regionData['url']);
@@ -239,11 +239,11 @@ class PXCorpRegions {
 		array_shift($path);
 		return sprintf('http://%s/%s', $host, join("/", $path));
 	}
-	
+
 	static function regionExists($id) {
 		return array_key_exists($id, self::getAllData());
 	}
-	
+
 	static function initFullTree() {
 		if(empty(self::$fullTree)){
 			$treeTable      = PXRegistry::getDb()->Query('SELECT * FROM struct');
