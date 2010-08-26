@@ -157,6 +157,12 @@ class PXMultiRegions {
 			}
 		}
 
+		// если регион не был определен для пользовательской части выставляем первый
+		// ситуация когда нет региона ошибочна.
+		if ($id < 1) {
+			return reset(array_keys($this->getRegionsData()));
+		}
+
 		return $id;
 	}/*}}}*/
 
