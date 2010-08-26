@@ -21,7 +21,7 @@ function question() {
 	
 	$answer = trim(fread(STDIN, 80));
 
-	if(!in_array($answer, array("y", "n"))) {
+	if(!in_array($answer, array("y", "n", true))) {
 		question();
 	} elseif($answer === 'n') {
 		Label("Aborted");

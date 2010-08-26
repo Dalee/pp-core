@@ -1,5 +1,7 @@
 <?php
 class PXMultiRegions {
+	private $disabled = false;
+	
 	private $db;
 	private $request;
 	private $user;
@@ -222,7 +224,19 @@ class PXMultiRegions {
 		$this->rid = $this->context == 'user' ? $this->getUserRid() : $this->getAdminRid();
 	}/*}}}*/
 
+	function disable() {
+		$this->disabled = true;
+	}
+
+	function enable() {
+		$this->disabled = false;
+	}
+
 	function findByRegion($regionsList=null) {/*{{{*/
+		if ($this->disabled) {
+			return "1 = 1";
+		}
+
 		$conditionArray = $regionsList
 			? $regionsList
 			: $this->getAllowedRegionsIds();

@@ -60,14 +60,23 @@ class PXTriggerDatabaseAbstractAdvert extends PXAbstractDatabaseTrigger {
 			}
 		}
 	}
-	
+
+	protected function getBannersById($id) {
+		return $this->db->GetObjectsByIdArray($this->dtBanner, TRUE, array_keys($this->db->GetLinks($this->refName, $this->dtPlace->id, $id)));
+	}
+
+	protected function getPlacesById($id) {
+		return $this->db->GetObjectsByIdArray($this->dtPlace, TRUE, array_keys($this->db->GetLinks($this->refName, $this->dtBanner->id, $id)));
+	}
+
 	function adbanner($object) {
 		$name = $this->path."/adv_b".$object['id'].".dat";
 
 		$this->normalizeFiles($object);
 		$this->_writeCache($name, implode("\n", $this->writeBanner($object)) . "\n", $object['status']);
 
-		$places  = $this->db->GetObjectsByIdArray($this->dtPlace, TRUE, array_keys($this->db->GetLinks($this->refName, $this->dtBanner->id, $object['id'])));
+		$places  = $this->getPlacesById($object['id']);
+
 		foreach ($places as $place) {
 			$this->adplace($place);
 		}
@@ -77,7 +86,8 @@ class PXTriggerDatabaseAbstractAdvert extends PXAbstractDatabaseTrigger {
 		$name =$this->path."/adv_p".$object['id'].".dat";
 		$text = $object['id']."\n";
 		$text .= $object['type']."\n";
-		$attached = $this->db->GetObjectsByIdArray($this->dtBanner, TRUE, array_keys($this->db->GetLinks($this->refName, $this->dtPlace->id, $object['id'])));
+
+		$attached = $this->getBannersById($object['id']);
 
 		foreach ($attached as $k=>$v) {
 			if($v['status']) {
