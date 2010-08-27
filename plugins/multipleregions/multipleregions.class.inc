@@ -1,5 +1,4 @@
 <?php
-
 class PXPluginMultiRegions extends PXAbstractPlugin {
 	function initialize($app) {
 		$this->load("lib/staticregion.class.inc");
@@ -9,6 +8,7 @@ class PXPluginMultiRegions extends PXAbstractPlugin {
 		$this->load("lib/reflexer.class.inc");
 
 		$this->loadDisplayType("multiregions");
+		$this->loadDisplayType("multiregions_static");
 		$this->loadDisplayType("urltable");
 		$this->loadStorageType("regionurl");
 
@@ -19,5 +19,4 @@ class PXPluginMultiRegions extends PXAbstractPlugin {
 		$this->loadOnlyInAdmin("decorators.php");
 	}
 }
-
 ?>

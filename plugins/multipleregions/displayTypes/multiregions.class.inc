@@ -7,7 +7,7 @@ class PXDisplayTypeMultiRegions extends PXDisplayTypeBubbleText {
 	private static $chooseAll = '- ı‚ÏÈÎÔ˜·Ù¯ ˜Ô ˜ÛÂË ÚÂÁÈÔÓ·Ë -';
 	private $singleObject = false;
 
-	private function _getValues($field, $object, $regions) {
+	protected function _getValues($field, $object, $regions) {
 		$cutOutRegions = isset($object['id']) && intval($object['id']) > 0 ? $regions->getCutOutRegions($field->typeDescription, $object) : null;
 
 		$values = $regions->getRegionsAsDirectory(true, $cutOutRegions);
@@ -29,7 +29,7 @@ class PXDisplayTypeMultiRegions extends PXDisplayTypeBubbleText {
 		return $values;
 	}
 
-	private function _getValue($regions, $object, $field) {
+	protected function _getValue($regions, $object, $field) {
 		return!empty($object[$field->name]) ? $object[$field->name] : (array) $regions->getRid();
 	}
 
@@ -69,7 +69,7 @@ class PXDisplayTypeMultiRegions extends PXDisplayTypeBubbleText {
 		return $regionSelector->html();
 	}
 
-	private function _buildStatic($field, $value, $values) {
+	protected function _buildStatic($field, $value, $values) {
 		return implode(", ", $values);
 	}
 
@@ -78,8 +78,12 @@ class PXDisplayTypeMultiRegions extends PXDisplayTypeBubbleText {
 		$regions = PXMultiRegions::getInstance();
 
 		if (in_array(PXMultiRegions::MAGIC, $regionsData)) {
-			$regionsData = array_keys($regions->getRegionsAsDirectory(true,
-									$regions->getCutOutRegions($field->typeDescription, $object)));
+			$regionsData = array_keys(
+				$regions->getRegionsAsDirectory(
+					true,
+					$regions->getCutOutRegions($field->typeDescription, $object)
+				)
+			);
 		}
 
 		return $regionsData;
@@ -90,11 +94,18 @@ class PXDisplayTypeMultiRegions extends PXDisplayTypeBubbleText {
 		$values = $this->_getValues($field, $object, $regions);
 
 		$allowedRegions = GetColFromTableWithIndexs(
-						$regions->getAllowedRegions(), 'title');
+			$regions->getAllowedRegions(),
+			'title'
+		);
 
 		$inObject = GetColFromTableWithIndexs(
-						array_intersect_key($regions->getRegionsData(),
-								array_flip($object[$field->name])), "title");
+			array_intersect_key(
+				$regions->getRegionsData(),
+				array_flip($object[$field->name])
+			),
+
+			"title"
+		);
 
 		$diff = array_diff_key($allowedRegions, $inObject);
 
@@ -111,10 +122,12 @@ class PXDisplayTypeMultiRegions extends PXDisplayTypeBubbleText {
 			$isShowBubble = true;
 		} else {
 			if ($inObjectCount > self::$countInCell) {
-				$result = sprintf("%s + ≈›≈ %s “≈«…œ%s",
-								join(", ", array_slice($inObject, 0, self::$countInCell)),
-								$inObjectCount - self::$countInCell,
-								NumericEndingsRussian($inObjectCount - self::$countInCell, "Œ", "Œ¡", "Œœ◊"));
+				$result = sprintf(
+					"%s + ≈›≈ %s “≈«…œ%s",
+					join(", ", array_slice($inObject, 0, self::$countInCell)),
+					$inObjectCount - self::$countInCell,
+					NumericEndingsRussian($inObjectCount - self::$countInCell, "Œ", "Œ¡", "Œœ◊")
+				);
 
 				$isShowBubble = true;
 			} else {
