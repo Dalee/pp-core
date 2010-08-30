@@ -278,7 +278,7 @@ class PXAdminTable extends PXAdminComplexWidget {
 			$html .= '<div class="empty">&#8212;</DIV>';
 		}//if
 		
-		$html .= '<div';
+		$html .= '</div>';
 		
 		return $html;
 	}
