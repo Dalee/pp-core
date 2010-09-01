@@ -31,7 +31,22 @@ if($jobName) {
 		echo "\n";
 
 		foreach($cronModule->jobs as $jobName => $j) {
-			echo "\t".str_pad($jobName, 25).str_pad($j['rule']->asString, 25).$j['job']->name."\n";
+			$stat = $cronModule->getStat($j);
+
+			$_ = array(
+				"\t",
+				str_pad($jobName,             25),
+				str_pad($j['rule']->asString, 25),
+				str_pad($j['job']->name,      25),
+				strftime('%Y-%m-%d %H:%M', $stat['start']),
+				"\t",
+				strftime('%Y-%m-%d %H:%M', $stat['end']),
+				"\t",
+				$stat['result']['note'],
+				"\n"
+			);
+
+			echo implode('', $_);
 		}
 		
 		echo "\n";

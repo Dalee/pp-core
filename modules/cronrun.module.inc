@@ -204,9 +204,8 @@ class PXModuleCronRun extends PXModule {
 		);
 	}
 
-	function adminIndex() {
-		$layout = $this->layout;
-		
+	private
+	function _loadStat() {
 		$fp = @fopen(BASEPATH.'/site/var/cron.results', 'r');
 
 		if ($fp) {
@@ -221,6 +220,28 @@ class PXModuleCronRun extends PXModule {
 		} else {
 			$cronStat = array();
 		}
+
+		return $cronStat;
+	}
+
+	function getStat($job) {
+		static $cronStat;
+
+		if(is_null($cronStat)) {
+			$cronStat = $this->_loadStat();
+		}
+
+		if (isset($cronStat[$job['jobhash']])) {
+			$t = $cronStat[$job['jobhash']];
+		} else {
+			$t = NULL;
+		}
+
+		return $t;
+	}
+
+	function adminIndex() {
+		$layout = $this->layout;
 
 		$layout->setOneColumn();
 		$layout->assign('INNER.0.1', '<a href="?area='.$this->area.'&t='.time().'" class="reload">Обновить</a>');
@@ -240,11 +261,8 @@ class PXModuleCronRun extends PXModule {
 			$_['rule'] = $k['rule']->asString;
 			$_['name'] = $k['job']->name;
 
-			if (isset($cronStat[$k['jobhash']])) {
-				$t = $cronStat[$k['jobhash']];
-			} else {
-				$t = NULL;
-			}
+
+			$t = $this->getStat($k);
 
 			if (!is_null($t)) {
 				$diff = $t['end']-$t['start'];
