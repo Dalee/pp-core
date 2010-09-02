@@ -148,6 +148,7 @@ class PXCorpRegions {
 				'count' => 0,
 				'url'   => 0
 			);
+
 			foreach ($urls as $k => $url) {
 				//FIXME
 				if (preg_match('/^('.str_replace('.', '\.', $engPrfx).'|pda\.|m\.)/', $url)) {
@@ -169,10 +170,10 @@ class PXCorpRegions {
 			if (strstr($newHost, '*')) {
 				$tmpNewHost     = array_reverse(explode('.', $newHost));
 				$tmpCurrentHost = array_reverse($currentHost);
-				
+
 				foreach ($tmpNewHost as $k => $v) {
 					if ($v == '*') {
-						$tmpNewHost[$k] = $tmpCurrentHost[$k];
+						$tmpNewHost[$k] = join(".", array_reverse(array_slice($tmpCurrentHost, $k)));
 					}
 				}
 
@@ -191,6 +192,7 @@ class PXCorpRegions {
 
 		$fullPath = str_replace('http://', '', $fullPath);
 		$path     = explode('/', $fullPath);
+
 		$file     = '';
 
 /*
@@ -237,6 +239,7 @@ class PXCorpRegions {
 
 		#fixme!!! если страницы нет в регионе вернется 404
 		array_shift($path);
+
 		return sprintf('http://%s/%s', $host, join("/", $path));
 	}
 

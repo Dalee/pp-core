@@ -132,7 +132,7 @@ class PXMultiRegions {
 			$id   = 0;
 
 			foreach ($this->getRegionsData() as $region) {
-				if(empty($region['url'])) {
+				if (empty($region['url'])) {
 					continue;
 				}
 
@@ -149,7 +149,7 @@ class PXMultiRegions {
 						continue;
 					}
 
-					$mask = strtr($r, array('.' => '\.', '*' => '[a-z0-9\-]+'));
+					$mask = strtr($r, array('.' => '\.', '*' => '[a-z0-9\-\.]+'));
 
 					if (preg_match('#^'.$mask.'$#i', $host)) {
 						$id = $region['id'];
