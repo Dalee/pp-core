@@ -149,7 +149,7 @@ class PXMultiRegions {
 						continue;
 					}
 
-					$mask = strtr($r, array('.' => '\.', '*' => '[a-z0-9\-\.]+'));
+					$mask = strtr($r, array('.' => '\.', '*' => '[a-z0-9\-]+'));
 
 					if (preg_match('#^'.$mask.'$#i', $host)) {
 						$id = $region['id'];
