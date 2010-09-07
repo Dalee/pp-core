@@ -281,10 +281,14 @@ class PXMultiRegions {
 	function addRegionByDefault($format, &$dbFields, &$dbValues, $modifiedObject=null) {
 		if ($this->isRegionalObject($format)) {
 			$allowedRegionsIds = $this->getAllowedRegionsIds();
-			$key = array_flip($dbFields);
 
-			$toArray =
-				PXMultipleRegionsHelper::toArray($dbValues[$key[self::REGION_MARK]]);
+			$key = array_flip($dbFields);
+			$toArray = array();
+
+			if(isset($key[self::REGION_MARK]) && isset($dbValues[$key[self::REGION_MARK]])) {
+				$toArray =
+					PXMultipleRegionsHelper::toArray($dbValues[$key[self::REGION_MARK]]);
+			}
 
 			$reg = empty($toArray) || empty($toArray[0])
 				? PXMultipleRegionsHelper::toString($allowedRegionsIds)
@@ -299,7 +303,7 @@ class PXMultiRegions {
 				$reg           = PXMultipleRegionsHelper::toString($regArray);
 			}
 
-			$dbValues[$key[self::REGION_MARK]] = $reg;
+			PXTriggerDatabaseMultipleregions::simpleSetDbValues(self::REGION_MARK, $reg, $dbFields, $dbValues);
 		}
 	}
 
