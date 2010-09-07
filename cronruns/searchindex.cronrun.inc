@@ -14,6 +14,7 @@ class PXCronRunSearchIndex extends PXAbstractCronRun {
 	function _reindex($reloadFlag = false, $quietFlag = false, $withIndexField = true) {
 		ini_set('display_errors', 0);
 		if(isset($_SERVER['argv'][2]) && _StrToLower($_SERVER['argv'][2]) === 'full') {
+			ini_set('memory_limit','-1'); //FIXME: this indexer must be completely rewritten, in full index mode it devour memory like a hungry Hulk :)
 			$reloadFlag = true;
 		}
 
