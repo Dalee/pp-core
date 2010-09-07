@@ -29,7 +29,7 @@ class PXMultiRegions {
 		$this->format  = PXRegistry::getApp()->types[self::REGION_MARK];
 	}/*}}}*/
 
-	function getInstance($context = NULL){ //context: ENUM {"user", "admin"}/*{{{*/
+	function getInstance($context = NULL){ //context: ENUM {"user", "admin", "script"}/*{{{*/
 		if(empty(self::$self)){
 			$klass = __CLASS__;
 			self::$self = new $klass();
@@ -221,7 +221,18 @@ class PXMultiRegions {
 	}/*}}}*/
 
 	function setRid() {/*{{{*/
-		$this->rid = $this->context == 'user' ? $this->getUserRid() : $this->getAdminRid();
+		switch($this->context) {
+			case 'user':
+				$this->rid = $this->getUserRid();
+				break;
+			case 'admin':
+				$this->rid = $this->getAdminRid();
+				break;
+			case 'script':
+				$this->rid = '';
+				$this->disable();
+				break;
+		}
 	}/*}}}*/
 
 	function disable() {

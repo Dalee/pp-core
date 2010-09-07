@@ -13,5 +13,9 @@ class PXEngineSbin extends PXEngine {
 
 	function runModules() {
 	}
+	
+	public function engineClass(){
+		return PX_ENGINE_SBIN;
+	}
 }
 ?>

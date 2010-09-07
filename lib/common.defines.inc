@@ -139,6 +139,7 @@ define('P_RIGHT', 2);
 
 define('PX_ENGINE_USER',  1);
 define('PX_ENGINE_ADMIN', 2);
+define('PX_ENGINE_SBIN',  3);
 
 if (!IS_WIN) {
 	$system_user = posix_getpwnam(SYSTEM_USER);
