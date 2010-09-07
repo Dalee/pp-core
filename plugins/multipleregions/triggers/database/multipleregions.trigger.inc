@@ -11,12 +11,12 @@ class PXTriggerDatabaseMultipleregions extends PXAbstractDatabaseTrigger {
 		$rid = $regions->getRid();
 
 		if (!$this->isRegionalCloning && $this->parentObject && !$isRegionalObject) {
-			self::simpleSetDbValues('parent', $this->parentObject['id'], $dbFields, $dbValues);
+			PXMultipleRegionsHelper::simpleSetDbValues('parent', $this->parentObject['id'], $dbFields, $dbValues);
 			return true;
 		}
 
 		if ($isRegionalObject && empty($allowedRegionsIds) && $rid) {
-			self::simpleSetDbValues(PXMultiRegions::REGION_MARK, "{{$rid}}", $dbFields, $dbValues);
+			PXMultipleRegionsHelper::simpleSetDbValues(PXMultiRegions::REGION_MARK, "{{$rid}}", $dbFields, $dbValues);
 			return true;
 		}
 
@@ -26,10 +26,10 @@ class PXTriggerDatabaseMultipleregions extends PXAbstractDatabaseTrigger {
 			$reflex_field = PXMultipleRegionsReflexer::REFLEX_FIELD;
 
 			if (isset($object[$reflex_field])) {
-				self::simpleSetDbValues($reflex_field, $object[$reflex_field], $dbFields, $dbValues);
+				PXMultipleRegionsHelper::simpleSetDbValues($reflex_field, $object[$reflex_field], $dbFields, $dbValues);
 
 				if (isset($object['allowed']) && is_array($object['allowed'])) {
-					self::simpleSetDbValues('allowed',  serialize($object['allowed']), $dbFields, $dbValues);
+					PXMultipleRegionsHelper::simpleSetDbValues('allowed',  serialize($object['allowed']), $dbFields, $dbValues);
 				}
 			}
 
@@ -65,7 +65,7 @@ class PXTriggerDatabaseMultipleregions extends PXAbstractDatabaseTrigger {
 		$regions_field = PXMultiRegions::REGION_MARK;
 
 		if ($isRegionalObject && empty($allowedRegionsIds)) {
-			self::simpleSetDbValues(PXMultiRegions::REGION_MARK, 
+			PXMultipleRegionsHelper::simpleSetDbValues(PXMultiRegions::REGION_MARK, 
 				PXMultipleRegionsHelper::toString($objectInDB[$regions_field]), $dbFields, $dbValues);
 
 			return true;
@@ -101,7 +101,7 @@ class PXTriggerDatabaseMultipleregions extends PXAbstractDatabaseTrigger {
 		if ($isRegionalObject) {
 			if ($permit) {
 				if($this->isRegionalCloning && isset($object['sys_order']) && is_numeric($object['sys_order']) && $object['sys_order'] > 0) {
-					self::simpleSetDbValues('sys_order', $object['sys_order'], $dbFields, $dbValues);
+					PXMultipleRegionsHelper::simpleSetDbValues('sys_order', $object['sys_order'], $dbFields, $dbValues);
 				}
 
 				$regions->addRegionByDefault($format, $dbFields, $dbValues, $object);
@@ -161,7 +161,7 @@ class PXTriggerDatabaseMultipleregions extends PXAbstractDatabaseTrigger {
 		$regions_field = PXMultiRegions::REGION_MARK;
 
 		if ($isRegionalObject && empty($allowedRegionsIds)) {
-			self::simpleSetDbValues(PXMultiRegions::REGION_MARK, 
+			PXMultipleRegionsHelper::simpleSetDbValues(PXMultiRegions::REGION_MARK, 
 				PXMultipleRegionsHelper::toString($objectInDB[$regions_field]), $dbFields, $dbValues);
 
 			return true;
@@ -336,16 +336,6 @@ JS
 		}
 		exit;
 	}
-	
-	public static function simpleSetDbValues($key ,$value, &$dbFields, &$dbValues) {
-		$keys = array_flip($dbFields);
-
-		if(!isset($keys[$key])) {
-			$dbFields[] = $key;
-			$dbValues[] = $value;
-		} else {
-			$dbValues[$keys[$key]] = $value;
-		}
-	}
 }
+
 ?>

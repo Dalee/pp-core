@@ -303,7 +303,7 @@ class PXMultiRegions {
 				$reg           = PXMultipleRegionsHelper::toString($regArray);
 			}
 
-			PXTriggerDatabaseMultipleregions::simpleSetDbValues(self::REGION_MARK, $reg, $dbFields, $dbValues);
+			PXMultipleRegionsHelper::simpleSetDbValues(self::REGION_MARK, $reg, $dbFields, $dbValues);
 		}
 	}
 

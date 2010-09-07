@@ -13,6 +13,17 @@ class PXMultipleRegionsHelper {
 		return array_flip(array_flip($regArray));
 	}
 
+	public static function simpleSetDbValues($key ,$value, &$dbFields, &$dbValues) {
+		$keys = array_flip($dbFields);
+
+		if(!isset($keys[$key])) {
+			$dbFields[] = $key;
+			$dbValues[] = $value;
+		} else {
+			$dbValues[$keys[$key]] = $value;
+		}
+	}
+
 	static function switchRegion($host, $rid) {
 		$regions     = PXMultiRegions::getInstance();
 		$regionsData = $regions->getRegionsData();
