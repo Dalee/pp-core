@@ -6,7 +6,6 @@
  * displayType URLTABLE
  */
 class PXDisplayTypeUrltable extends PXDisplayTypeTable {
-
 	function buildInput($field, $object, $param=NULL) {
 		$value = isset($object[$field->name]) ? explode(',', trim($object[$field->name])) : array();
 		foreach ($value as $k => $v) {
@@ -20,6 +19,9 @@ class PXDisplayTypeUrltable extends PXDisplayTypeTable {
 		return NLAbstractHTMLForm::BuildTableByCols($field->name, $value, $cols, $height, $header);
 	}
 
+	function buildCell($field, $object, $param=NULL) {
+		return str_replace(',', "<br/>", $object[$field->name]);
+	}
 }
 
 ?>
