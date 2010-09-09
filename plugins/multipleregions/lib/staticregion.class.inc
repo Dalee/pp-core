@@ -173,7 +173,7 @@ class PXCorpRegions {
 
 				foreach ($tmpNewHost as $k => $v) {
 					if ($v == '*') {
-						$tmpNewHost[$k] = join(".", array_reverse(array_slice($tmpCurrentHost, $k)));
+						$tmpNewHost[$k] = $tmpCurrentHost[$k];
 					}
 				}
 
