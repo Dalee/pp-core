@@ -208,9 +208,17 @@ class NLAbstractHTMLForm {
 		return $file->html();
 	}
 
-	function BuildDropDown($name, $value, $values) {
+	function BuildDropDown($name, $value, $values, $multiple=false, $size=null) {
 		$dropdown = new PXInputDropDown($name, $value, $values);
 		$dropdown->setDisabled(NLAbstractHTMLForm::_DisabledStatus());
+		
+		$dropdown->setMultiple($multiple);
+
+		if ($size) {
+			$dropdown->setSize((int) $size);
+		}
+
+
 		return $dropdown->html();
 	}
 	

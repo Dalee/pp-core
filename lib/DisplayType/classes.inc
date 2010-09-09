@@ -18,6 +18,7 @@ require_once 'File/flashsArray.class.inc';
 require_once 'File/linkToFile.class.inc';
 
 require_once 'Dropdown/dropdown.class.inc';
+require_once 'Dropdown/multiDropdown.class.inc';
 require_once 'Dropdown/parentDropdown.class.inc';
 require_once 'Dropdown/selfParentDropdown.class.inc';
 require_once 'Dropdown/treeDropdown.class.inc';
