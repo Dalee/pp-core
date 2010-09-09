@@ -44,14 +44,16 @@ class PXTriggerDatabaseMultipleregions extends PXAbstractDatabaseTrigger {
 
 	function OnBeforeBuildTree($db, $format, &$table, $parentName) {
 		$regions = $this->getRegions();
+		
+		if($regions->isFederal() && !$regions->getRid()){ //Federal redactors can see original tree without reflex inserts when choosing "Show all regions"
+			return;
+		}
 
-		if (!$regions->isFederal()) {
-			$refl  = @array_flip(GetColFromTableWithIndexs($table, PXMultipleRegionsReflexer::REFLEX_FIELD));
+		$refl  = @array_flip(GetColFromTableWithIndexs($table, PXMultipleRegionsReflexer::REFLEX_FIELD));
 
-			foreach ($table as $id => $t)  {
-				if(isset($t['parent']) && isset($refl[$t['parent']])) {
-					$table[$id]['parent'] = $refl[$t['parent']];
-				}
+		foreach ($table as $id => $t)  {
+			if(isset($t['parent']) && isset($refl[$t['parent']])) {
+				$table[$id]['parent'] = $refl[$t['parent']];
 			}
 		}
 	}
