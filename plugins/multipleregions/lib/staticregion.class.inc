@@ -185,7 +185,7 @@ class PXCorpRegions {
 		return $engVersion . trim($newHost);
 	}
 
-	static function switchRegion($tree, $fullPath, $regionId, $sidFrom) {
+	static function switchRegion($tree, $fullPath, $regionId, $sidFrom = null) {
 		if (!self::regionExists($regionId)) {
 			return $fullPath;
 		}
