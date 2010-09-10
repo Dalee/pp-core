@@ -236,7 +236,7 @@ class PXModuleAdvert extends PXModule {
 			//ÏÔÄÁÅÍ csv ÆÁÊÌ
 			case 'csv':
 				$response =& PXResponse::getInstance();
-				$response->downloadFile('stat_'.$id.'_'.$year.'_'.$month.'.csv', 'image/png');
+				$response->downloadFile('stat_'.$id.'_'.$year.'_'.$month.'.csv', 'text/csv');
 				$response->send();
 
 				$sql = <<<SQL
