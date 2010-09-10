@@ -12,7 +12,7 @@ class PXRequest {
 	
 	protected $rootPathsList = array( 
 		'index.html', 
-	        'index.shtml', 
+		'index.shtml', 
 		'index.phtml', 
 		'index.php', 
 		'index.php3', 
