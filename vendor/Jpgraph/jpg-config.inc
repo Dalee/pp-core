@@ -66,7 +66,9 @@ DEFINE("CSIMCACHE_HTTP_DIR","csimcache/");
 DEFINE('CHINESE_TTF_FONT','bkai00mp.ttf');
 
 // Where ttf fonts located
-DEFINE('TTF_DIR', realpath(dirname(__FILE__)).'/fonts/');
+if(!defined('TTF_DIR')) {
+	DEFINE('TTF_DIR', realpath(dirname(__FILE__)).'/fonts/');
+}
 
 // Special unicode cyrillic language support
 DEFINE("LANGUAGE_CYRILLIC", true);

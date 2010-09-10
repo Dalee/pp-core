@@ -232,6 +232,7 @@ class JpGraphError {
     }
     function Raise($aMsg,$aHalt=true){
 	GLOBAL $__jpg_err;
+
 	$tmp = new $__jpg_err;
 	$tmp->Raise($aMsg,$aHalt);
     }
@@ -246,6 +247,8 @@ if( USE_IMAGE_ERROR_HANDLER ) {
 else {
     $__jpg_err = "JpGraphErrObject"; 
 }
+
+JpGraphError::Install($__jpg_err);
 
 //
 // Make GD sanity check
