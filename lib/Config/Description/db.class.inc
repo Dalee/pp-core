@@ -54,14 +54,15 @@ class NLDBDescription {
 	}
 
 	function GetPgsqlConnectString() {
-		$connectionString = '';
+		$connection = array();
 
 		foreach(array("host", "port", "user", "password", "dbname") as $field) {
-			$k = ($field == "password") ? "passwd" : $field;
-			$connectionString .= ($this->$field) ? " {$k} =  {$this->$field} " : "";
+			if ($this->$field) {
+				$connection[] =  sprintf("%s=%s", $field, $this->$field);
+			}
 		}
-	
-		return trim($connectionString);
+
+		 return trim(join(" ", $connection));
 	}
 
 	function GetMssqlConnectArray() {
