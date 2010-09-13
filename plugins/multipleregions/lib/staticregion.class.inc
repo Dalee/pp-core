@@ -28,6 +28,10 @@ class PXCorpRegions {
 		}
 	}
 
+	static function getRidByHost($hostname){
+		return PXMultiRegions::getInstance()->getUserRid($hostname);
+	}
+
 	static function getAllData() {
 		return PXMultiRegions::getRegionsData();
 	}

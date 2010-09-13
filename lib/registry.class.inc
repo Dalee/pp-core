@@ -10,6 +10,7 @@ final class PXRegistry {
 	private $response;
 	private $user;
 	private $layout;
+	private $userRegistry;
 
 	private function __construct(){
 		$this->userRegistry = new PXRegistryUSER();
