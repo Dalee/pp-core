@@ -124,11 +124,11 @@ class PXMultiRegions {
 		return reset($urls);
 	}/*}}}*/
 
-	function getUserRid(){/*{{{*/
+	function getUserRid($forHost = ''){/*{{{*/
 		static $id;
 
 		if(!isset($id)) {
-			$host = preg_replace("#:\d{2,5}$#",'',$this->request->getHttpHost());
+			$host = preg_replace("#:\d{2,5}$#", '', strlen($forHost) ? $forHost : $this->request->getHttpHost());
 			$id   = 0;
 
 			foreach ($this->getRegionsData() as $region) {
