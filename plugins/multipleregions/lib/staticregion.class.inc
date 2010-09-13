@@ -7,13 +7,13 @@ class PXCorpRegions {
 			$id = PXMultiRegions::getUserRid();
 		}
 		
-		$r  = PXRegistry::getDb()->query('SELECT federal FROM sys_regions WHERE id = '. $id . 'LIMIT 1');
+		$r = PXRegistry::getDb()->query(sprintf('SELECT federal FROM %s WHERE id = %d LIMIT 1', self::getField(), (int)$id));
 
 		return isset($r[0]) ? $r[0]['federal'] == 't' : 'f';
 	}
 
 	static function getFederalHost($host) {
-		$fId = PXRegistry::getDb()->query('SELECT id FROM sys_regions WHERE federal LIMIT 1');
+		$fId = PXRegistry::getDb()->query(sprintf('SELECT id FROM %s WHERE federal LIMIT 1', self::getField()));
 
 		return self::findUrl($host, $fId[0]['id']);
 	}
@@ -37,7 +37,7 @@ class PXCorpRegions {
 			$r = PXMultiRegions::getInstance();
 			return $r->getMyRegionData();
 		} else {
-			return PXRegistry::getDb()->getObjectById(PXRegistry::getApp()->types['sys_regions'], $id);
+			return PXRegistry::getDb()->getObjectById(PXRegistry::getApp()->types[self::getField()], $id);
 		}
 	}
 
@@ -46,7 +46,7 @@ class PXCorpRegions {
 	}
 
 	static function getAllRegionsObjects($tree, $objType, $where) {
-		$tmp     = PXRegistry::getDb()->Query('SELECT * FROM ' . $objType . ' WHERE '. $where);
+		$tmp     = PXRegistry::getDb()->Query('SELECT * FROM ' . $objType . ' WHERE '. $where); //FIXME ! It is safe query ???
 		$host    = PXRegistry::getRequest()->getHttpHost();
 		$rData   = self::getAllData();
 		$objects = array();
@@ -71,11 +71,11 @@ class PXCorpRegions {
 		return $objects;
 	}
 
-	static function whereRegion($type){
+	static function whereRegion($type){ //FIXME ! Possible wrong behaviour ! See PXMultiRegions::findByRegion()
 		$rid = self::getRegionId($type);
 		
 		if($rid != 0){
-			$where = PXRegistry::getDb()->inArray('sys_regions', $rid);
+			$where = PXRegistry::getDb()->inArray(self::getField(), $rid);
 		} else {
 			$where = PXRegistry::getDb()->TrueStatusString();
 		}
@@ -88,7 +88,7 @@ class PXCorpRegions {
 		}
 
 		if (isset(self::$fullTree->leafs[$sid]) && !self::$fullTree->leafs[$sid]->isRoot()) {
-			$regions = explode(',', preg_replace('/({|})/', '', self::$fullTree->leafs[$sid]->content['sys_regions']));
+			$regions = explode(',', preg_replace('/({|})/', '', self::$fullTree->leafs[$sid]->content[self::getField()]));
 			return in_array($rid, $regions);
 		}
 
@@ -100,13 +100,13 @@ class PXCorpRegions {
 		$obj = array();
 
 		if (isset($db->types[$objType]) && isset($db->types[$objType]->fields['pathname'])) {
-			$regionWhere = '';
+			$regionWhere = array(sprintf("pathname = '%s'", $pathName)); //FIXME ! It is safe query ?
 			
-			if (isset($db->types[$objType]->fields['sys_regions'])) {
-				$regionWhere = " AND sys_regions @> ARRAY[".$rid."]";
+			if (isset($db->types[$objType]->fields[self::getField()])) {
+				$regionWhere[] = $db->inArray(self::getField(), $rid);
 			}
 
-			$obj = $db->query("SELECT * FROM ".$objType." WHERE pathname = '".$pathName."'".$regionWhere);
+			$obj = $db->query(sprintf("SELECT * FROM %s WHERE %s", $objType, join(' AND ', $regionWhere)));
 		}
 		
 		return $obj;
@@ -114,7 +114,7 @@ class PXCorpRegions {
 
 	static function getAllUrls() {
 		$urls    = array();
-		$regions = PXRegistry::getDb()->getObjects(PXRegistry::getDb()->types['sys_regions'], true);
+		$regions = PXRegistry::getDb()->getObjects(PXRegistry::getDb()->types[self::getField()], true);
 		
 		if (!count($regions)) {
 			return $urls;
@@ -252,6 +252,12 @@ class PXCorpRegions {
 			$treeTable      = PXRegistry::getDb()->Query('SELECT * FROM struct');
 			self::$fullTree = new NLTree($treeTable);
 		}
+	}
+
+	static function initRegionTree($id) {
+		$db = PXRegistry::getDb();
+		$treeTable = $db->query(sprintf("SELECT * FROM struct WHERE %s", $db->inArray(self::getField(), $id)));
+		return new NLTree($treeTable);
 	}
 }
 ?>
