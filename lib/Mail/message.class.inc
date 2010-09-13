@@ -367,7 +367,7 @@ class NLMailMessage {
 		}
 
 		$text = $this->body;
-		preg_match_all("/(?:<(img|td|link|script)[^>]+(src|background|href))=\"(.+?)\"/", $text, $images);
+		preg_match_all("/(?:<(img|td|link)[^>]+(src|background|href))=\"(.+?)\"/", $text, $images);
 
 		if(!isset($images[3])) {
 			return;
