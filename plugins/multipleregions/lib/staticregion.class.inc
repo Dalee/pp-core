@@ -155,10 +155,10 @@ class PXCorpRegions {
 					continue;
 				}
 
-				$posibleHost = explode('.', $url);
-				$currentHost = explode('.', $host);
+				$possibleHost = explode('.', $url);
+				$currentHost  = explode('.', $host);
 
-				$count = count(array_intersect($posibleHost, $currentHost));
+				$count = count(array_intersect($possibleHost, $currentHost));
 				if ($count > $intersection['count']) {
 					$intersection['count'] = $count;
 					$intersection['url']   = $urls[$k];
