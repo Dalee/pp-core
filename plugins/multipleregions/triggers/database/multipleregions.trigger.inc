@@ -207,7 +207,7 @@ class PXTriggerDatabaseMultipleregions extends PXAbstractDatabaseTrigger {
 
 		if(!$permit && $regions->isRegionalObject($format)) {
 			$cloner = 
-				new PXPublicRegionObjectCloner($format, $objId, $objectInDB, $this);
+				new PXPublicRegionObjectCloner($format, $objectInDB, $objectInDB, $this);
 
 			$cloner->moveObject($regions->getAllowedRegionsIds());
 		} elseif(!$permit) {
