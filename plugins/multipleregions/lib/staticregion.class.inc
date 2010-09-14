@@ -2,9 +2,13 @@
 class PXCorpRegions {
 	private static $fullTree;
 
+	static function multi() {
+		return PXMultiRegions::getInstance();
+	}
+
 	static function isFederalRegion($id = NULL) {
 		if (is_null($id)) {
-			$id = PXMultiRegions::getUserRid();
+			$id = self::multi()->getUserRid();
 		}
 		
 		$r = PXRegistry::getDb()->query(sprintf('SELECT federal FROM %s WHERE id = %d LIMIT 1', self::getField(), (int)$id));
@@ -29,11 +33,11 @@ class PXCorpRegions {
 	}
 
 	static function getRidByHost($hostname){
-		return PXMultiRegions::getInstance()->getUserRid($hostname);
+		return self::multi()->getUserRid($hostname);
 	}
 
 	static function getAllData() {
-		return PXMultiRegions::getRegionsData();
+		return self::multi()->getRegionsData();
 	}
 
 	static function getRegionData($id = NULL) {
