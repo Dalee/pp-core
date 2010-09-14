@@ -238,6 +238,7 @@ class PXTreeObjects implements PXContentObjectsInterface, ArrayAccess, Iterator 
 		// находим нужный корень и правим его pathname
 		foreach($this->tree->levels[1] as $_rootId) {
 			if($this->tree->leafs[$_rootId]->content['pathname'] === $hostAlias) {
+				$this->tree->leafs[$_rootId]->content['__pathname'] = $this->tree->leafs[$_rootId]->content['pathname'];
 				$this->tree->leafs[$_rootId]->content['pathname'] = $host;
 				break;
 			}
