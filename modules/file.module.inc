@@ -227,8 +227,8 @@ HTML;
 			$form   = new PXAdminForm($object, null);
 
 			$this->layout->assign('OUTER.TITLE', 'Редактирование файла &laquo;'.$this->mFile.'&raquo;');
-			$this->layout->assign('OUTER.LEFTCONTROLS',  $form->leftControls());
-			$this->layout->assign('OUTER.RIGHTCONTROLS', $form->rightControls());
+			$form->leftControls();
+			$form->rightControls();
 
 			return $form->editTextFileForm($this->mFile, $this->catalog);
 
