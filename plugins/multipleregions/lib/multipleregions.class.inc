@@ -27,7 +27,7 @@ class PXMultiRegions {
 		$this->user    = PXRegistry::getUser();
 
 		$this->format  = PXRegistry::getApp()->types[self::REGION_MARK];
-	}/*}}}*/
+	}/*}}}*/ 
 
 	function getInstance($context = NULL){ //context: ENUM {"user", "admin", "script"}/*{{{*/
 		if(empty(self::$self)){
@@ -96,17 +96,16 @@ class PXMultiRegions {
 		return $regions;
 	}/*}}}*/
 
-	function getMyRegionData(){/*{{{*/
-		$regions = $this->getRegionsData();
-		$my_region = array();
+	private function isValidRid() {
+		return is_numeric($this->rid) && $this->rid > 0;
+	}
 
-		foreach($regions as $region){
-			if($region['id'] == $this->rid){
-				$my_region = $region;
-				break;
-			}
+	public function getMyRegionData(){/*{{{*/
+		if (!$this->isValidRid()) {
+			return array();
 		}
-		return $my_region;
+
+		return $this->db->getObjectById($this->format, $this->rid);
 	}/*}}}*/
 
 	function getRegionUrl($rid){/*{{{*/
