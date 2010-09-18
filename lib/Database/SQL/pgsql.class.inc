@@ -319,5 +319,11 @@ class NLPGSQLDatabase extends NLAbstractSQLDatabase {
 			$this->escapeString($arrayField), 
 			join(",", array_filter($values, "is_numeric")));
 	}
+
+	function vacuumTable($tableName) {
+		$this->query("VACUUM ".$tableName, true);
+		$this->query("VACUUM ANALYZE ".$tableName, true);
+	}
+
 }
 ?>

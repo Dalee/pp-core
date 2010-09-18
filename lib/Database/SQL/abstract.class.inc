@@ -12,16 +12,16 @@ abstract class NLAbstractSQLDatabase {
 	}
 
 	function setCache($cacheType) {
-		
 		switch(true){
 			case $cacheType === "1":
 				$cacheType = 'file';
 				break;
+
 			case !$cacheType:
 				$cacheType = 'null';
 				break;
 		}
-		
+
 		$this->cache = ObjectCache::get($cacheType, 'database');
 	}
 
@@ -75,6 +75,9 @@ abstract class NLAbstractSQLDatabase {
 
 	function exportDateTime($value) {
 		return $value;
+	}
+
+	function vacuumTable($tableName) {
 	}
 
 	function tableExists() {
