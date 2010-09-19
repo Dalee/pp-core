@@ -14,6 +14,7 @@ class PXPluginMultiRegions extends PXAbstractPlugin {
 
 		$this->loadTrigger("database/multipleregions");
 		$this->loadTrigger("system/multipleregions");
+		$this->loadTrigger("search/multipleregions");
 
 		$this->loadOnlyInAdmin("lib/widget.class.inc");
 		$this->loadOnlyInAdmin("decorators.php");

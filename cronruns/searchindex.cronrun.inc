@@ -45,13 +45,13 @@ class PXCronRunSearchIndex extends PXAbstractCronRun {
 		return array($totalr, $totalt);
 	}
 
-	function whereQuery() {
-		$where = array();
+	function whereQuery($where) {
 		$where[] = $this->db->__mapUpdateData('status', '1');
 
 		if($this->withIndexField) {
 			$where[] = $this->db->__mapUpdateData('index', '1');
 		}
+
 		return implode(' AND ', $where);
 	}
 
@@ -68,11 +68,13 @@ class PXCronRunSearchIndex extends PXAbstractCronRun {
 			WorkProgress();
 			$expired[$k] = array();
 
-			$tmp = $this->db->query("SELECT id, ".join(", ", array_keys($v))." FROM {$k} WHERE ".$this->whereQuery(), true);
+			$tmp = $this->db->query($this->selectQuery($k, $v), true);
 
 			foreach($tmp as $i => $row) {
 				foreach($row as $rk => $rv) {
-					if ($rk === 'id') continue;
+					if ($rk === 'id') {
+						continue;
+					}
 
 					$row[$rk] = _StrToLower($rv);
 				}
@@ -89,6 +91,18 @@ class PXCronRunSearchIndex extends PXAbstractCronRun {
 		$this->vacuum();
 
 		return $expired;
+	}
+
+	function selectQuery($table, $cols, $where=array()) {
+		$cols = array_keys($cols);
+
+		foreach(PXRegistry::getApp()->triggers['search'] as $t) {
+			$t->getTrigger()->onIndexCronGetSelectCols($table, $cols);
+		}
+
+		$cols = join(", ", $cols);
+
+		return "SELECT id, {$cols} FROM {$table} WHERE ".$this->whereQuery($where);
 	}
 
 	function indexUpdates() {
@@ -156,7 +170,9 @@ class PXCronRunSearchIndex extends PXAbstractCronRun {
 
 		foreach ($this->search->config as $k => $v) {
 			WorkProgress();
-			if (!isset($acts['U'][$k]) || !count($acts['U'][$k])) continue;
+			if (!isset($acts['U'][$k]) || !count($acts['U'][$k])) {
+				continue;
+			}
 
 			$expired[$k] = array();
 
@@ -167,7 +183,7 @@ class PXCronRunSearchIndex extends PXAbstractCronRun {
 				$toSelect[$row][$kk] = $vv;
 				$count++;
 
-				if($count >= 500) {
+				if($count >= 500) { // mssql hack
 					$count = 0;
 					$row++;
 				}
@@ -175,14 +191,18 @@ class PXCronRunSearchIndex extends PXAbstractCronRun {
 
 			$tmp = array();
 			foreach($toSelect as $selKeys) {
-				$q = "SELECT id, ".join(", ", array_keys($v))." FROM {$k} WHERE ".$this->whereQuery();
-				$q = $q." AND id IN (".join(',', array_keys($selKeys[$k])).")";
+				$where = array("id IN (".join(',', array_keys($selKeys[$k])).")");
+				$q = $this->selectQuery($k, $v, $where);
+
 				$tmp = array_merge($tmp, $this->db->query($q, true));
 			}
 
 			foreach($tmp as $i => $row) {
 				foreach($row as $rk => $rv) {
-					if ($rk === 'id') continue;
+					if ($rk === 'id') {
+						continue;
+					}
+
 					$row[$rk] = _StrToLower($rv);
 				}
 
@@ -229,7 +249,18 @@ class PXCronRunSearchIndex extends PXAbstractCronRun {
 				}
 
 				foreach ($totalWeights as $stem => $weight) {
-					$stemsWeights[] = array($stem, $row['id'], $dt, $weight);
+					$stemW = array(
+						'stem'      => $stem,
+						'did'       => $row['id'],
+						'dtype'     => $dt,
+						'weightsum' => $weight
+					);
+
+					foreach(PXRegistry::getApp()->triggers['search'] as $t) {
+						$t->getTrigger()->onIndexCronStemWeight($dt, $stemW, $row);
+					}
+
+					$stemsWeights[] = $stemW;
 				}
 			}
 		}
@@ -242,7 +273,9 @@ class PXCronRunSearchIndex extends PXAbstractCronRun {
 		if ($total > 0) {
 			$this->label("copy rec ($total})");
 
-			$isOK = $this->db->modifyingCopy('sitesearch', array('stem', 'did', 'dtype', 'weightsum'), $stemsWeights);
+			$cols = array_keys(current($stemsWeights));
+
+			$isOK = $this->db->modifyingCopy('sitesearch', $cols, $stemsWeights);
 
 			if($isOK !== true){
 				$this->label('Error while saving index !');

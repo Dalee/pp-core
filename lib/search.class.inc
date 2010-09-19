@@ -168,16 +168,25 @@ class PXSearch {
 
 		$totalwords = count($stemsArray);
 
-		$where = " stem IN (".join(',', array_map(array($this, 'escapeString'), $stemsArray)).")";
+		$where = array("stem IN (".join(',', array_map(array($this, 'escapeString'), $stemsArray)).")");
 
 		if(isset($allowTypes) && is_array($allowTypes)) {
 			$allowTypes = array_flip($allowTypes);
-			$where .= " AND dtype IN (".join(',', array_map(array($this, 'escapeString'), $allowTypes)).")";
+			$where[] = "dtype IN (".join(',', array_map(array($this, 'escapeString'), $allowTypes)).")";
 		}
+
+		foreach(PXRegistry::getApp()->triggers->search as $t) {
+			$t->getTrigger()->onBeforeSearchStems($this->config, $where);
+		}
+
+		$where = implode(' AND ', $where);
 
 		$sql = <<<SQL
 			SELECT 
-				did, dtype, count(*) as words, sum(weightsum) as sum
+				did,
+				dtype,
+				count(*) as words,
+				sum(weightsum) as sum
 			FROM
 				sitesearch
 			WHERE
@@ -207,7 +216,7 @@ SQL;
 		} else {
 			$limitpair = null;
 		}
-	
+
 		$tmp = $this->db->query($sql, false, $limitpair);
 
 		$tmpres = array();
@@ -259,8 +268,9 @@ SQL;
 				$where[] = sprintf("parent IN ('%s')", join("','", array_values($tmpJoin)));
 			}
 
-			// hook for additional where parts
-			$this->beforeSearch($k, $where);
+			foreach(PXRegistry::getApp()->triggers->search as $t) {
+				$t->getTrigger()->onBeforeSearchObjects($k, $where);
+			}
 
 			$tmp = $this->db->Query(sprintf("SELECT * FROM {$k} WHERE %s", join(" AND ", $where)));
 
@@ -286,11 +296,6 @@ SQL;
 
 	function getSearchCount() {
 		return $this->searchCount;
-	}
-
-	//triggers
-
-	function beforeSearch($formatid, &$where) {
 	}
 }
 ?>

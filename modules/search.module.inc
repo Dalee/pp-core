@@ -2,10 +2,6 @@
 class PXModuleSearch extends PXModule {
 	var $word;
 
-	function __construct($area, $settings) {
-		parent::__construct($area, $settings);
-	}
-	
 	function userIndex() {
 		if(!$query = $this->getSearchText()) {
 			return;
@@ -13,18 +9,17 @@ class PXModuleSearch extends PXModule {
 		$chapters = $this->getChapters();
 		$this->objects['search'] = $this->search($query, $chapters);
 	}
-	
-	
+
 	function getSearchText() {
 		$query = trim($this->request->getVar('text'));
 		if(!strlen($query)) {
 			return '';
 		}
-		
+
 		$this->layout->assign('text', $query);
 		return $query; 
 	}
-	
+
 	function getChapters() {
 		$chapters = null;
 		
@@ -43,7 +38,7 @@ class PXModuleSearch extends PXModule {
 		} 
 		return $chapters;
 	}
-	
+
 	function search($query, $chapters) {
 		$per_page    = $this->app->getProperty('SEARCH_PER_PAGE', DEFAULT_CHILDREN_PER_PAGE);
 		$currentPage = $this->request->getVar('page', 1);

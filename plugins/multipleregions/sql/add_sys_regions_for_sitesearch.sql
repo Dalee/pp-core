@@ -1,0 +1,1 @@
+ALTER TABLE sitesearch ADD sys_regions INT[];
