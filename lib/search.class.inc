@@ -25,7 +25,7 @@ class PXSearch {
 
 	var $withIndexField;
 
-	function PXSearch($withIndexField = true) {
+	function __construct($withIndexField = true) {
 		$this->app = PXRegistry::getApp();
 		$this->db  = PXRegistry::getDB();
 		$this->withIndexField = $withIndexField;
@@ -51,7 +51,27 @@ class PXSearch {
 		}
 	}
 
-	function Finish() {
+	function doSearch($query, $parents = NULL, $allowTypes=NULL, $limit = NULL, $page = NULL) {
+		$this->parents = $parents;
+
+		$stemsArray = $this->_getStemsArray($query);
+		if (!count($stemsArray)) {
+			return array();
+		}
+
+		$sql = $this->_getStemsSQL($stemsArray, $allowTypes);
+		$this->searchCount = $this->_searchCount($sql);
+
+		if(!$this->searchCount) {
+			return array();
+		}
+
+		list($dtypes, $tmpres) = $this->_loadStems($sql, $limit, $page);
+
+		return $this->searchObjects($dtypes, $tmpres);
+	}
+
+	function finish() {
 		if(is_resource($this->dbah)) {
 			dba_close($this->dbah);
 		}
@@ -146,29 +166,11 @@ class PXSearch {
 		return "'".$this->db->escapeString($word)."'";
 	}
 
-	function doSearch($query, $parents = NULL, $allowTypes=NULL, $limit = NULL, $page = NULL) {
-		preg_match_all("/\w+/s", _StrToLower(_yo2ye($query)), $tmp);
-
-		$stemsArray = array_unique($this->getStemsByArray(array_unique($tmp[0])));
-		if (!count($stemsArray)) {
-			return array();
-		}
-
-		if (!is_null($parents)) {
-			$tmpParents = array();
-			$tmpJoin    = array();
-
-			foreach ($parents as $k => $v) {
-				foreach($v as $i) {
-					$tmpParents[$i] = $k;
-					$tmpJoin[] = $i;
-				}
-			}
-		}
-
-		$totalwords = count($stemsArray);
-
-		$where = array("stem IN (".join(',', array_map(array($this, 'escapeString'), $stemsArray)).")");
+	private
+	function _getStemsSQL($stemsArray, $allowTypes) {
+		$where = array(
+			"stem IN (".join(',', array_map(array($this, 'escapeString'), $stemsArray)).")"
+		);
 
 		if(isset($allowTypes) && is_array($allowTypes)) {
 			$allowTypes = array_flip($allowTypes);
@@ -180,8 +182,9 @@ class PXSearch {
 		}
 
 		$where = implode(' AND ', $where);
+		$totalwords = count($stemsArray);
 
-		$sql = <<<SQL
+		return <<<SQL
 			SELECT 
 				did,
 				dtype,
@@ -199,25 +202,34 @@ class PXSearch {
 				words DESC, sum DESC
 SQL;
 
+	}
 
+	private
+	function _searchCount($sql) {
 		$tmp = $this->db->Query("SELECT count(*) FROM (" . $sql . ") AS tmp");
 
 		if (!isset($tmp[0]['count'])) {
-			return array();
+			return 0;
 		}
 
-		$this->searchCount = $tmp[0]['count'];
+		return $tmp[0]['count'];
+	}
 
+	private
+	function _getLimitPair($limit, $page) {
 		if($limit && $page) {
-			$limitpair = array(
+			return array(
 				$limit,
 				$limit * ($page - 1)
 			);
 		} else {
-			$limitpair = null;
+			return null;
 		}
+	}
 
-		$tmp = $this->db->query($sql, false, $limitpair);
+	private
+	function _loadStems($sql, $limit, $page) {
+		$tmp = $this->db->query($sql, false, $this->_getLimitPair($limit, $page));
 
 		$tmpres = array();
 		$dtypes = array();
@@ -238,13 +250,31 @@ SQL;
 			$dtypes[$v['dtype']][$v['did']] = true;
 		}
 
+		return array($dtypes, $tmpres);
+	}
+
+	private
+	function _getStemsArray($query) {
+		preg_match_all("/\w+/s", _StrToLower(_yo2ye($query)), $tmp);
+		return array_unique($this->getStemsByArray(array_unique($tmp[0])));
+	}
+
+	function _withParents($type) {
+		return isset($this->parents) && is_array($this->parents) && sizeof($this->parents) && isset($this->app->types[$type]->fields['parent']);
+	}
+
+	function searchObjects($dtypes, $tmpres) {
 		$result = array();
 
-		if($this->withIndexField) {
-			if ($this->app->dbDescription['database']->dbtype == 'mssql') {
-				$_indexField = "[index] = '1'";
-			} else {
-				$_indexField = "index = '1'";
+		if (!is_null($this->parents)) {
+			$tmpParents = array();
+			$tmpJoin    = array();
+
+			foreach ($this->parents as $k => $v) {
+				foreach($v as $i) {
+					$tmpParents[$i] = $k;
+					$tmpJoin[] = $i;
+				}
 			}
 		}
 
@@ -253,18 +283,16 @@ SQL;
 				continue;
 			}
 
-			$withParents = isset($parents) && is_array($parents) && sizeof($parents) && isset($this->app->types[$k]->fields['parent']);
-
 			$where = array();
 			$where[] = sprintf("id IN ('%s')", join("','", array_keys($v)));
 
-			if (!empty($_indexField)) {
-				$where[] = $_indexField;
+			if($this->withIndexField) {
+				$where[] = $this->db->__mapUpdateData('index', '1');
 			}
 
 			$where[] = "status = '1'";
 
-			if ($withParents) {
+			if ($this->_withParents($k)) {
 				$where[] = sprintf("parent IN ('%s')", join("','", array_values($tmpJoin)));
 			}
 
@@ -284,7 +312,7 @@ SQL;
 				$result[$key] = $tmpres[$key];
 				$result[$key]['data'] = $row;
 
-				if ($withParents) {
+				if ($this->_withParents($k)) {
 					$result[$key]['ancestor'] = $tmpParents[$row['parent']];
 				}
 			}
