@@ -24,6 +24,28 @@ class PXMultipleRegionsHelper {
 		}
 	}
 
+	// for tree bubbling
+	public static function getVarRecursive($field, $rid=null, $data=null) {
+		if (!$data) {
+			$regions = PXMultiRegions::getInstance();
+			$data = $regions->getRegionsData(true);
+
+			if (!$rid) {
+				$rid = $regions->getRid();
+			}
+		}
+
+		if (!isset($data->leafs[$rid])) {
+			return;
+		}
+
+		if (empty($data->leafs[$rid]->content[$field]) && ($parent = $data->leafs[$rid]->parent())) {
+			return self::getVarRecursive($field, $parent, $data);
+		}
+
+		return $data->leafs[$rid]->content[$field];
+	}
+
 	static function switchRegion($host, $rid) {
 		$regions     = PXMultiRegions::getInstance();
 		$regionsData = $regions->getRegionsData();
