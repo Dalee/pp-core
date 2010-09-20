@@ -138,6 +138,8 @@ class PXCorpRegions {
 	}
 
 	static function findUrl($host, $regionId) {
+		$host = strtolower($host);
+
 		$regionData = self::getRegionData($regionId);
 		$urls       = explode(',', $regionData['url']);
 
