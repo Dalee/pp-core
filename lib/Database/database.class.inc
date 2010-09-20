@@ -976,12 +976,21 @@ class PXDatabase extends NLSQLDatabaseAdapter {
 	function ModifyObjectSysVars($format, $object) {
 		$audit = PXAuditLogger::getLogger($this->app, $this);
 		$objectInDB = $this->GetObjectById($format, $object['id']);
-		if (!count($objectInDB)) FatalError('Попытка модифицировать отсутствующий объект');
+		
+		if (!count($objectInDB)) {
+			FatalError('Попытка модифицировать отсутствующий объект');
+		}
+		
+		if(isset($objectInDB['parent']) && !isset($object['parent'])){
+			$object['parent'] = $objectInDB['parent'];
+		}
+		
 		if (!$this->user->can(array('write', 'modify'), $format, $object)) {
 			$errString = 'Отказано в доступе при попытке модифицировать объект типа <em>'.$format->id.'</em>';
-			$audit->error($errString, $format->parent .'/'. $object['parent']);
+			$audit->error($errString, $format->parent .'/'. (isset($object['parent']) ? $object['parent'] : ''));
 			FatalError($errString);
 		}
+		
 		$dbFields = array();
 		$dbValues = array();
 		if (isset($object[OBJ_FIELD_CHILDREN])) {

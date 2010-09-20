@@ -86,11 +86,6 @@ class PXAdminForm extends PXAdminComplexWidget {
 		$this->decorate();
 		$this->layout->setOuterForm('action.phtml', 'POST', 'multipart/form-data');
 
-		$this->setMenu();
-		$this->setControls();
-
-		$this->showTitle();
-
 		$html[] =  join($this->blocks[self::BEFORE_CONTENT]);
 
 		switch ($this->action) {
@@ -114,6 +109,10 @@ class PXAdminForm extends PXAdminComplexWidget {
 				$content = $this->auditlogForm();
 				break;
 		}
+		
+		$this->setMenu();
+		$this->setControls();
+		$this->showTitle();
 		
 		if (strlen($_ = join($this->blocks[self::CONTENT]))) {
 			$content = $_;
@@ -235,6 +234,8 @@ HTML;
 
 	private function auditlogForm() {
 		require_once BASEPATH . '/libpp/lib/Logger/Audit/wrapper.class.inc';
+		
+		$this->disable = true; // restrict modify object from audit log view, because it is wrong behaviour
 
 		$audit_wrapper = new PXAdminAuditWrapper();
 		$audit_wrapper->frame =  "OUTER.CONTENT";
@@ -345,8 +346,9 @@ HTML;
 				}
 				$html .= '</tr>';
 				$iteration++;
-			} while(!is_null($links[$v['id']] = & $links[$v['id']]['next'])); 		}
- 
+			} while(!is_null($links[$v['id']] = & $links[$v['id']]['next']));
+		}
+
 		if(isset($object2JS)){
 			$js = '<script type="text/javascript">';
 			$js .= "possibleNewRows['{$reference->name}'] = {";

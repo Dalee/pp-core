@@ -333,7 +333,7 @@ class PXModuleObjects extends PXModule {
 
 		$action = $this->_route();
 		switch ($action) {
-			default:
+			default: //FIXME: default main action it is right behaviour ?
 			case 'main':
 				$this->actionMain();
 				break;
@@ -372,6 +372,10 @@ class PXModuleObjects extends PXModule {
 
 			case 'links':
 				$this->actionModifyLinks();
+				break;
+
+			case 'auditlog':
+				//do nothing. FIXME: make actions configurable (like in multioperations module), not statically written here !
 				break;
 		}
 		return $this->nextLocation;

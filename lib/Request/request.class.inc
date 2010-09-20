@@ -328,7 +328,8 @@ class PXRequest {
 		if ($this->postData->_IsSet(OBJ_FIELD_CHILDREN) || in_array(OBJ_FIELD_CHILDREN, $neededVars)) {
 			$object[OBJ_FIELD_CHILDREN] = $this->postData->_getArrayVar(OBJ_FIELD_CHILDREN);
 		}
-
+		
+		//FIXME ! Obsoleted ?
 		if ($this->postData->_IsSet('sys_accessmod')) {
 			$object['sys_accessmod'] = $this->postData->_getNumericVar('sys_accessmod');
 		}
