@@ -35,12 +35,12 @@ class PXTriggerSearchMultipleregions extends PXAbstractSearchTrigger {
 
 		$subWhere = array();
 
-		if(sizeof($types[true])) { // has multiregional types
+		if(isset($types[true]) && sizeof($types[true])) { // has multiregional types
 			$rTypes = array_map(array(PXREgistry::getDB(), 'mapData'), $types[true]);
 			$subWhere[] = "(".$this->regions()->findByRegion()." AND dtype IN (".implode(',', $rTypes)."))";
 		}
 
-		if(sizeof($types[false])) { // has multiregional types
+		if(isset($types[false]) && sizeof($types[false])) { // has multiregional types
 			$rTypes = array_map(array(PXREgistry::getDB(), 'mapData'), $types[false]);
 			$subWhere[] = "dtype IN (".implode(',', $rTypes).")";
 		}
