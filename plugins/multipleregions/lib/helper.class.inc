@@ -24,6 +24,34 @@ class PXMultipleRegionsHelper {
 		}
 	}
 
+	public static function createDirectoryTree($id=null, $fieldname = 'shortname', $delim = '/~', $tree=null) {
+		$regions = PXMultiRegions::getInstance();
+
+		if (!$tree) {
+			$tree = $regions->getRegionsData(true);
+		}
+
+		if(!$id) {
+			$id = $regions->getRid();
+		}
+
+		if (isset($tree->leafs[$id]) && isset($tree->leafs[$id]->content[$fieldname])) {
+			$path = $tree->leafs[$id]->content[$fieldname];
+		} else {
+			$path = '';
+		}
+
+		if (isset($tree->leafs[$id]->parent) && $tree->leafs[$id]->parent) {
+			return self::createDirectoryTree($tree->leafs[$id]->parent, $fieldname, "/~", $tree) . $delim . $path;
+		}
+
+		return $delim . $path;
+	}
+
+	function createSingleDirectory($allRegionsData, $regionId, $fieldname = 'shortname', $delim = '/~'){
+		return isset($allRegionsData[$regionId]) && isset($allRegionsData[$regionId][$fieldname]) ? $delim . $allRegionsData[$regionId][$fieldname] : '';
+	}
+
 	// for tree bubbling
 	public static function getVarRecursive($field, $rid=null, $data=null) {
 		if (!$data) {
