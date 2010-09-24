@@ -83,7 +83,7 @@ class PXCronRunSearchIndex extends PXAbstractCronRun {
 	function selectQuery($table, $cols, $where=array()) {
 		$cols = array_keys($cols);
 
-		foreach(PXRegistry::getApp()->triggers['search'] as $t) {
+		foreach(PXRegistry::getApp()->triggers->search as $t) {
 			$t->getTrigger()->onIndexCronGetSelectCols($table, $cols);
 		}
 
@@ -223,7 +223,7 @@ class PXCronRunSearchIndex extends PXAbstractCronRun {
 				$row[$rk] = _StrToLower($rv);
 			}
 
-			foreach(PXRegistry::getApp()->triggers['search'] as $t) {
+			foreach(PXRegistry::getApp()->triggers->search as $t) {
 				$permIndex = $t->getTrigger()->onIndexCronCanIndexRow($type, $row, $tree);
 
 				if(!$permIndex) {
@@ -277,7 +277,7 @@ class PXCronRunSearchIndex extends PXAbstractCronRun {
 						'weightsum' => $weight
 					);
 
-					foreach(PXRegistry::getApp()->triggers['search'] as $t) {
+					foreach(PXRegistry::getApp()->triggers->search as $t) {
 						$t->getTrigger()->onIndexCronStemWeight($dt, $stemW, $row);
 					}
 
