@@ -105,11 +105,7 @@ class PXMultiRegions {
 			return array();
 		}
 
-		$data = $this->getRegionsData();
-
-		return isset($data[$this->rid])
-			? $data[$this->rid]
-			: array();
+		return $this->db->getObjectById($this->format, $this->rid);
 	}/*}}}*/
 
 	function getRegionUrl($rid){/*{{{*/
