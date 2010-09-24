@@ -35,8 +35,28 @@ class PXModuleSearch extends PXModule {
 			if(!sizeof($chapters)) {
 				$chapters[$this->tree->root->id] = $this->tree->GetDescendantsOrSelf(array($this->tree->root->id));
 			}
-		} 
+		}
+
 		return $chapters;
+	}
+
+	private
+	function fixParentLevel(&$res) {
+		foreach($res as $k=>$v) {
+			$parentType = $this->app->types[$v['dtype']]->parent;
+
+			if($parentType !== 'struct') {
+				$parentObj = $this->db->getObjectById($this->app->types[$parentType], $v['data']['parent']);
+
+				$res[$k]['data']['parent'] = $parentObj['parent'];
+
+				if(isset($parentObj['pathname'])) {
+					$path = isset($v['data']['pathname']) ? '?part='.$v['data']['pathname'] : '';
+
+					$res[$k]['data']['pathname'] = $parentObj['pathname'].$path;
+				}
+			}
+		}
 	}
 
 	function search($query, $chapters) {
@@ -45,6 +65,9 @@ class PXModuleSearch extends PXModule {
 
 		$search = new PXSearch($this->app, $this->db);
 		$res = $search->doSearch($query, $chapters, null, $per_page, $currentPage);
+
+		$this->fixParentLevel($res);
+
 		$search->Finish();
 
 		$this->layout->assign('FP_SEARCH_TOTAL',        $search->getSearchCount());

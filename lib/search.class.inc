@@ -300,13 +300,17 @@ SQL;
 				$t->getTrigger()->onBeforeSearchObjects($k, $where);
 			}
 
-			$tmp = $this->db->Query(sprintf("SELECT * FROM {$k} WHERE %s", join(" AND ", $where)));
+			$tmp = $this->db->getObjectsByWhere($this->app->types[$k], true, $where);
 
 			foreach($tmp as $row) {
 				$key =  $k.' '.$row['id'];
 
 				if(!isset($tmpres[$key])) {
 					continue;
+				}
+
+				foreach(PXRegistry::getApp()->triggers->search as $t) {
+					$t->getTrigger()->onAfterSearchObjects($k, $row);
 				}
 
 				$result[$key] = $tmpres[$key];

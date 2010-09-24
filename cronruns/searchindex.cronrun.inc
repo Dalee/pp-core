@@ -27,7 +27,6 @@ class PXCronRunSearchIndex extends PXAbstractCronRun {
 	function _reindex($reloadFlag = false, $quietFlag = false, $withIndexField = true) {
 		$this->_init($reloadFlag, $quietFlag, $withIndexField);
 
-		$this->label("start");
 		$this->label("loading data");
 
 		$expired = $this->reloadFlag ? $this->reIndexFull() : $this->indexUpdates();
@@ -35,8 +34,6 @@ class PXCronRunSearchIndex extends PXAbstractCronRun {
 		$stemsWeights = array();
 		$totalr = $this->calcStemsWeight($expired, $stemsWeights);
 		$totalt = $this->newRecords($stemsWeights);
-
-		$this->_deleteNonExistents();
 
 		$this->vacuum();
 
@@ -70,17 +67,7 @@ class PXCronRunSearchIndex extends PXAbstractCronRun {
 
 			$tmp = $this->db->query($this->selectQuery($k, $v), true);
 
-			foreach($tmp as $i => $row) {
-				foreach($row as $rk => $rv) {
-					if ($rk === 'id') {
-						continue;
-					}
-
-					$row[$rk] = _StrToLower($rv);
-				}
-
-				$expired[$k][$i] = $row;
-			}
+			$this->_fillExpired($expired, $k, $tmp);
 		}
 
 		WorkProgress(true);
@@ -197,21 +184,55 @@ class PXCronRunSearchIndex extends PXAbstractCronRun {
 				$tmp = array_merge($tmp, $this->db->query($q, true));
 			}
 
-			foreach($tmp as $i => $row) {
-				foreach($row as $rk => $rv) {
-					if ($rk === 'id') {
-						continue;
-					}
-
-					$row[$rk] = _StrToLower($rv);
-				}
-
-				$expired[$k][$i] = $row;
-			}
+			$this->_fillExpired($expired, $k, $tmp);
 		}
 		WorkProgress(true);
 
 		return $expired;
+	}
+
+	private
+	function notStructDescendant($type) {
+		$parent = $this->db->types[$type]->parent;
+
+		while($parent !== null) {
+			if($parent == 'struct') {
+				return false;
+			}
+
+			$parent = $this->db->types[$parent]->parent;
+		}
+
+		return true;
+	}
+
+	function _fillExpired(&$expired, $type, $rows) {
+		$tree = $this->db->getObjects($this->db->types['struct'], true, DB_SELECT_TREE);
+
+		if($this->notStructDescendant($type)) {
+			$this->label('skip '.$type);
+			return;
+		}
+
+		foreach($rows as $i => $row) {
+			foreach($row as $rk => $rv) {
+				if ($rk === 'id') {
+					continue;
+				}
+
+				$row[$rk] = _StrToLower($rv);
+			}
+
+			foreach(PXRegistry::getApp()->triggers['search'] as $t) {
+				$permIndex = $t->getTrigger()->onIndexCronCanIndexRow($type, $row, $tree);
+
+				if(!$permIndex) {
+					continue(2);
+				}
+			}
+
+			$expired[$type][$i] = $row;
+		}
 	}
 
 	function calcStemsWeight($expired, &$stemsWeights) {
@@ -271,7 +292,7 @@ class PXCronRunSearchIndex extends PXAbstractCronRun {
 	function newRecords($stemsWeights) {
 		$total = count($stemsWeights);
 		if ($total > 0) {
-			$this->label("copy rec ($total})");
+			$this->label("copy rec ({$total})");
 
 			$cols = array_keys(current($stemsWeights));
 
@@ -290,53 +311,6 @@ class PXCronRunSearchIndex extends PXAbstractCronRun {
 		$this->db->vacuumTable("sitesearch");
 		$this->db->clearCache();
 
-	}
-
-	function _deleteNonExistents() {
-		$tree = $this->db->getObjects($this->db->types['struct'], true, DB_SELECT_TREE);
-
-		$sitesearch = $this->db->query("SELECT did, dtype FROM sitesearch");
-
-		$idsForDelete = array();
-
-		$tmp = array();
-		foreach($sitesearch as $row) {
-			WorkProgress();
-			$tmp[$row['dtype']][] = $row['did'];
-		}
-		WorkProgress(true);
-
-		foreach($tmp as $dtype => $ids) {
-			WorkProgress();
-			$ids = array_unique($ids);
-
-			if (!isset($this->db->types[$dtype]->fields['parent'])) {
-				$idsForDelete[$dtype] = $ids;
-
-			} else {
-				$actualObjects = $this->db->query("SELECT id, parent FROM " . $dtype ."  WHERE id IN (" . implode(',', $ids) . ") AND status=true");
-
-				foreach($actualObjects as $k => $tmpId) {
-					if(!isset($tree->leafs[$tmpId['parent']])) {
-						unset($actualObjects[$k]);
-					}
-				}
-
-				$diff = array_diff($ids, GetColFromTable($actualObjects, 'id'));
-				if (!empty($diff)) {
-					$idsForDelete[$dtype] = $diff;
-				}
-			}
-		}
-
-		WorkProgress(true);
-
-		foreach($idsForDelete as $dtype => $ids) {
-			$this->delete(array(
-				"dtype ='{$dtype}'",
-				"did IN (" . implode(',', $ids) . ")"
-			));
-		}
 	}
 
 	function delete($where = null) {
