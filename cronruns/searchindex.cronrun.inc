@@ -1,6 +1,8 @@
 <?php
 class PXCronRunSearchIndex extends PXAbstractCronRun {
-	var $name = 'Индексация данных для поиска';
+	function __construct() {	
+		$this->name = 'Индексация данных для поиска';
+	}
 
 	function Run(&$app, &$db, &$tree, $matchedTime, $matchedRule) {
 		$this->db = $db;
