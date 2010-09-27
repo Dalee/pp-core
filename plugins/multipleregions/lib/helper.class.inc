@@ -52,7 +52,7 @@ class PXMultipleRegionsHelper {
 		return isset($allRegionsData[$regionId]) && isset($allRegionsData[$regionId][$fieldname]) ? $delim . $allRegionsData[$regionId][$fieldname] : '';
 	}
 
-	// for tree bubbling
+	/*{{{{ for tree bubbling */
 	public static function getVarRecursive($field, $rid=null, $data=null) {
 		if (!$data) {
 			$regions = PXMultiRegions::getInstance();
@@ -73,6 +73,31 @@ class PXMultipleRegionsHelper {
 
 		return $data->leafs[$rid]->content[$field];
 	}
+
+	public static function getTreeVar($field, $rid=null, $regions=null) {
+		if(!$rid) {
+			$rInst = PXMultiRegions::getInstance();
+			$rid = $rInst->getRid();
+		}
+
+		if(empty($regions)) {
+			$rInst = PXMultiRegions::getInstance();
+			$regions = $rInst->getRegionsData(true);
+		}
+
+		$fields = array();
+		if (!isset($regions->leafs[$rid])) {
+			return;
+		}
+
+		$fields[$rid] = $regions->leafs[$rid]->content[$field];
+		if($parent = $regions->leafs[$rid]->parent) {
+			$fields = array_merge($fields, self::getTreeVar($field, $parent, $regions));
+		}
+
+		return $fields;
+	}
+	/* }}}} */
 
 	static function switchRegion($host, $rid) {
 		$regions     = PXMultiRegions::getInstance();
