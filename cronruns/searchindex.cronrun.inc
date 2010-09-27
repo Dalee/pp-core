@@ -319,7 +319,11 @@ class PXCronRunSearchIndex extends PXAbstractCronRun {
 		$sql = 'DELETE FROM sitesearch';
 
 		if(is_array($where)) {
-			$sql .= ' WHERE '.implode(' AND ', $where);
+			$where = implode(' AND ', $where);
+		}
+
+		if(is_string($where)) {
+			$sql .= ' WHERE '.$where;
 		}
 
 		$this->db->query($sql);
