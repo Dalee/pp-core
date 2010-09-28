@@ -156,43 +156,42 @@ class PXCorpRegions {
 
 			$intersection = array(
 				'count' => 0,
-				'url'   => 0
+				'url'   => null
 			);
-
+			
+			$currentHost  = array_reverse(explode('.', $host));
+			
 			foreach ($urls as $k => $url) {
 				//FIXME
 				if (preg_match('/^('.str_replace('.', '\.', $engPrfx).'|pda\.|m\.)/', $url)) {
 					continue;
 				}
 
-				$possibleHost = explode('.', $url);
-				$currentHost  = explode('.', $host);
-
-				$count = count(array_intersect($possibleHost, $currentHost));
-				if ($count > $intersection['count']) {
+				$possibleHost = array_reverse(explode('.', $url));
+				$count        = 0;
+				
+				foreach($possibleHost as $k => &$v) {
+					if(isset($currentHost[$k]) && ($currentHost[$k] === $v || $v === '*')){
+						$count++;
+						$v = $currentHost[$k];
+					} else {
+						break;
+					}
+				}
+				
+				$possibleHost = join('.', array_reverse($possibleHost));
+				
+				if ($count > $intersection['count'] && !strstr($possibleHost, '*')) {
 					$intersection['count'] = $count;
-					$intersection['url']   = $urls[$k];
+					$intersection['url']   = $possibleHost;
 				}
 			}
 
 			$newHost = $intersection['url'];
-
-			if (strstr($newHost, '*')) {
-				$tmpNewHost     = array_reverse(explode('.', $newHost));
-				$tmpCurrentHost = array_reverse($currentHost);
-
-				foreach ($tmpNewHost as $k => $v) {
-					if ($v == '*') {
-						$tmpNewHost[$k] = $tmpCurrentHost[$k];
-					}
-				}
-
-				$newHost = implode('.', array_reverse($tmpNewHost));
-			}
 		}
 
-		$newHost = (strlen($newHost) ? $newHost : $host);
-		return $engVersion . trim($newHost);
+		$newHost = strlen($newHost) ? $newHost : $host;
+		return $engVersion . $newHost;
 	}
 
 	static function switchRegion($tree, $fullPath, $regionId, $sidFrom = null) {
