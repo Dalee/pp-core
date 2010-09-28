@@ -143,17 +143,17 @@ class PXCorpRegions {
 		$regionData = self::getRegionData($regionId);
 		$urls       = explode(',', $regionData['url']);
 
-		$engVersion = '';
-		$newHost    = '';
+		$langVersion = '';
+		$newHost     = '';
+		//TODO: for multilanguages there must be an ENUM
+		$langPrefix  = PXRegistry::getApp()->getProperty('ENGLISH_HOST_PREFIX', 'english');
 
 		if (count($urls)) {
-			$engPrfx = PXRegistry::getApp()->getProperty('ENGLISH_HOST_PREFIX', 'english').'.';
-			
-			if (strstr($host, $engPrfx)) {
-				$host = str_replace($engPrfx, '', $host);
-				$engVersion = $engPrfx;
+			if (self::isLangHost($host)) {
+				$host        = str_replace($langPrefix . '.', '', $host);
+				$langVersion = $langPrefix . '.';
 			}
-
+			
 			$intersection = array(
 				'count' => 0,
 				'url'   => null
@@ -162,8 +162,8 @@ class PXCorpRegions {
 			$currentHost  = array_reverse(explode('.', $host));
 			
 			foreach ($urls as $k => $url) {
-				//FIXME
-				if (preg_match('/^('.str_replace('.', '\.', $engPrfx).'|pda\.|m\.)/', $url)) {
+				//FIXME! WTF IS HERE ???
+				if (preg_match(sprintf('/^(%s\.|pda\.|m\.)/', $langPrefix), $url)) {
 					continue;
 				}
 
@@ -191,7 +191,7 @@ class PXCorpRegions {
 		}
 
 		$newHost = strlen($newHost) ? $newHost : $host;
-		return $engVersion . $newHost;
+		return $langVersion . $newHost;
 	}
 
 	static function switchRegion($tree, $fullPath, $regionId, $sidFrom = null) {
@@ -201,55 +201,21 @@ class PXCorpRegions {
 
 		$fullPath = str_replace('http://', '', $fullPath);
 		$path     = explode('/', $fullPath);
-
-		$file     = '';
-
-/*
-		FIXME !!!
-
-		if (strpos(end($path), '.html')) {
-			$file = end($path);
+		
+		if(empty($tree)) {
+			$tree = self::initRegionTree($regionId);
 		}
-
-		$ancestors = $tree->getAncestors($sidFrom);
-
-		array_unshift($ancestors, $sidFrom);
-
-		if (!count($tree->getFullPath($sidFrom)) && isset($ancestors[count($ancestors)-2])) {
-			$sidFrom = $ancestors[count($ancestors)-2];
-		}
-
-		$sid = $sidFrom;
-
-		foreach ($ancestors as $a) {
-			if (self::isRidInTree($a, $regionId)) {
-				$sid = $a;
-				break;
-			}
-		}
-
-		if ($sid == $sidFrom && $file) {
-			$allowed = $tree->leafs[$sid]->content['allowed'];
-			$obj = array();
-
-			foreach ($allowed as $k => $v) {
-				$obj = self::isObjectInRegion($k, $file, $regionId);
-			}
-
-			if (!count($obj)) {
-				$file = '';
-			}
-		}
-
-		$localPath = '/'.createSomePathByParentId($tree, $sid, 'pathname', '/', true, false);
-*/
-
+		
 		$host = self::findUrl($path[0], $regionId);
+		
+		array_shift($path); //remove URL
+		array_unshift($path, self::isLangHost($host) ? 'en' : 'default'); //TODO: change this root finding method !
+		
+		$path = $tree->getIdArrayByPath(OBJ_FIELD_PATHNAME, $path);
+		while(($sid = array_pop($path)) < 0);
+		$path = createSomePathByParentId($tree, $sid, OBJ_FIELD_PATHNAME, '/', true, false);
 
-		#fixme!!! если страницы нет в регионе вернется 404
-		array_shift($path);
-
-		return sprintf('http://%s/%s', $host, join("/", $path));
+		return sprintf('http://%s/%s', $host, $path);
 	}
 
 	static function regionExists($id) {
@@ -267,6 +233,12 @@ class PXCorpRegions {
 		$db = PXRegistry::getDb();
 		$treeTable = $db->query(sprintf("SELECT * FROM struct WHERE %s", $db->inArray(self::getField(), $id)));
 		return new NLTree($treeTable);
+	}
+
+	static function isLangHost($host) {
+		//TODO: for multiple languages there must be EMUN with site languages
+		$langPrefix = PXRegistry::getApp()->getProperty('ENGLISH_HOST_PREFIX', 'english');
+		return strstr($host, $langPrefix . '.') ? $langPrefix : '';
 	}
 }
 ?>

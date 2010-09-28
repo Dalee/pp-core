@@ -123,6 +123,7 @@ define('ENUM_ALLOWED_PATHNAMES', serialize(array(
 
 define('OBJ_FIELD_CHILDREN',         'allowed');
 define('OBJ_FIELD_ORDER',            'sys_order');
+define('OBJ_FIELD_PATHNAME',         'pathname');
 
 define('PP_CHILDREN_FETCH_ALL',      1);
 define('PP_CHILDREN_FETCH_SELECTED', 2);
