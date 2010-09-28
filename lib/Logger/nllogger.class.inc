@@ -268,8 +268,8 @@ class SQLAppender extends Appender {
 				array_map(array($this->db, 'EscapeString'), (array)$message)
 			);
 
-			//false -- do not cache query
-			$r = $this->db->ModifyingQuery($msg);
+			//4th argument is false -- do not flush cache !
+			$r = $this->db->ModifyingQuery($msg, null, null, false);
 
 			if ($r < 0) {
 				trigger_error('Logger error - can\'t write to database', E_USER_ERROR);
