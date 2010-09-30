@@ -13,7 +13,7 @@ class PXAdminTreeObjects extends PXAdminObjects {
 	}
 
 	function getControlParent() {
-		return $this->tree->getRoot()->id;
+		return is_null($this->controlParent) ? $this->tree->getRoot()->id : $this->controlParent;
 	}
 
 	function createSubWidget() {

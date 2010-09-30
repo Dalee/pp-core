@@ -3,6 +3,7 @@ abstract class PXAdminObjects extends PXAdminWidget implements IPXAdminObjects {
 	protected $format;
 	protected $isShowCaption = true;
 	protected $count = 0;
+	protected $controlParent;
 
 	function __construct($format) {
 		if(is_string($format)) {
@@ -18,6 +19,11 @@ abstract class PXAdminObjects extends PXAdminWidget implements IPXAdminObjects {
 	}
 
 	abstract protected function createSubWidget();
+
+	public
+	function setControlParent($id) {
+		$this->controlParent = $id;
+	}
 
 	public
 	function showCaption() {

@@ -13,7 +13,10 @@ class PXAdminTableObjects extends PXAdminObjects  {
 	}
 
 	function getControlParent() {
-		if(!is_null($this->format->parent)) {
+		if(!is_null($this->controlParent)) {
+			$parent = $this->controlParent;
+
+		} else if(!is_null($this->format->parent)) {
 			$parent = current(GetColFromTable($this->objects, 'parent'));
 
 		} else {

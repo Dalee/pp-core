@@ -186,12 +186,12 @@ class PXModuleMain extends PXModule {
 		$hTree->showChildren('sid');
 
 		if ($rqSid != null && $hTree->has($rqSid)) {
+			$hTree->setControlParent($rqSid);
 			$hTree->setSelected($rqSid);
 
 			$parentObject = $hTree->get($rqSid);
 
 			$layout->assignTitle('раздел &laquo;'.$parentObject['title'].'&raquo;');
-
 
 			$cidType   = null;
 			$cidObject = null;
@@ -211,8 +211,9 @@ class PXModuleMain extends PXModule {
 						$objects =  new PXAdminTableObjects($childFormat, $rqSid, 'ByParent');
 					}
 
-					$objects->addToParent('INNER.1.0');
 					$objects->showChildren('cid');
+					$objects->setControlParent($rqSid);
+					$objects->addToParent('INNER.1.0');
 
 					if ($rqCid && $childFormat == $request->getCtype()) {
 						$layout->setGetVarToSave('ctype', $request->getCtype());
@@ -239,6 +240,7 @@ class PXModuleMain extends PXModule {
 								$subObjects =  new PXAdminTableObjects($childFormat, $rqCid, 'ByParent');
 							}
 
+							$subObjects->setControlParent($rqCid);
 							$subObjects->addToParent('INNER.2.0');
 						}
 
