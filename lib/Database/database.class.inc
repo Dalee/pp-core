@@ -471,7 +471,7 @@ class PXDatabase extends NLSQLDatabaseAdapter {
 	 * @return Array
 	 */
 	function getObjectsByWhere($format, $status, $whereClause, $mode=DB_SELECT_TABLE, $order=NULL) {
-		return $this->getObjectsByWhereLimited($format, $status, $whereClause, null, null, $modeE, $order);
+		return $this->getObjectsByWhereLimited($format, $status, $whereClause, null, null, $mode, $order);
 	}
 	function getObjectsByWhereLimited($format, $status, $whereClause, $limit, $offset, $mode=DB_SELECT_TABLE, $order=NULL) {
 		if(is_array($whereClause)) {
