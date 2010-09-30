@@ -1148,3 +1148,9 @@ span.multipleregions-current-region {
 	display: block;
 	margin-bottom:  5px;
 }
+
+form.simple {
+	padding: 1em;
+	background-color: #385A94;
+	color: #ffffff;
+}
