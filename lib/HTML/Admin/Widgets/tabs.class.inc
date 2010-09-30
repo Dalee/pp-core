@@ -24,8 +24,7 @@ class PXWidgetTabs extends PXAdminComplexWidget {
 	function html() {
 		$this->decorate();
 
-		$current = call_user_func_array(array(PXRegistry::getRequest(), "get" . ucfirst($this->varName)), array());
-		!$current && $current = 'main';
+		$current = $this->selected || PXRegistry::getRequest()->getVar($this->varName) || 'main';
 
 		$html[] = "<ul class='topmenu'>";
 		$html[]  = join($this->blocks[self::PREPEND]);

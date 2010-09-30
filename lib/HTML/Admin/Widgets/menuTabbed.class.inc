@@ -11,9 +11,10 @@ class PXWidgetMenuTabbed extends PXAdminComplexWidget {
 	public $selected;
 
 	public $blocks = array(
-			self::BEFORE_TABS => array(),
-			self::TABS        => array(),
-			self::AFTER_TABS  => array());
+		self::BEFORE_TABS => array(),
+		self::TABS        => array(),
+		self::AFTER_TABS  => array()
+	);
 
 	function html() {
 		$this->decorate();

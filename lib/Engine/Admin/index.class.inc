@@ -15,6 +15,7 @@ class PXEngineAdminIndex extends PXEngineAdmin {
 
 	function initMenu() {
 		$menuItems = array();
+
 		foreach ($this->modules as $module) {
 			// check modules acl rules
 			if (PXRegistry::getUser()->can('viewmenu', $module)) {
@@ -36,7 +37,6 @@ class PXEngineAdminIndex extends PXEngineAdmin {
 
 	function fillLayout($area) {
 		$this->layout->setLogoutForm('?area=exit');
-
 		$this->layout->setMenu($this->menu, $area, 'area', false);
 
 		$this->layout->setTwoColumns();
