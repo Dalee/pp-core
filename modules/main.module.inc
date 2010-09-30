@@ -181,7 +181,6 @@ class PXModuleMain extends PXModule {
 		$rqCid = $request->getCid();
 
 		$hTree = new PXAdminTreeObjects($this->rootFormat);
-		$hTree->addToParent('INNER.0.0');
 		$hTree->hideCaption();
 		$hTree->showChildren('sid');
 
@@ -259,6 +258,8 @@ class PXModuleMain extends PXModule {
 		} else {
 			$layout->assign('INNER.1.0', '<H2>Выберите раздел</H2>');
 		}
+
+		$hTree->addToParent('INNER.0.0');
 	}
 
 	function _loadContent(&$format, $status, $param, $value, $flag = DB_SELECT_TABLE, $order = NULL){
