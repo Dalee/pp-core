@@ -117,6 +117,7 @@ function Popup(url, width, height) {
 
 	g = window.open(url, '', 'width='+width+', height='+height+',toolbar=no,status=no,location=no,menubar=no,resizable=yes,scrollbars=yes');
 	g.focus();
+	false;
 }
 
 function AdminPopup(area, format, id, action, width, height) {
@@ -347,7 +348,7 @@ function ContextEdit(id, status, format, title, alias, level, up, down) {
 	ret += '<div class="hr"></div>';
 
 	if (alias.length) {
-		ret += '<a class="alias" href="../'+alias+'" target="_blank">Показать на сайте</a>';
+		ret += '<a class="alias" href="'+alias+'" target="_blank">Показать на сайте</a>';
 	} else {
 		ret += '<span class="alias">Показать на сайте</span>';
 	}

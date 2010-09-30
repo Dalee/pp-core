@@ -30,7 +30,7 @@ class PXDisplayTypeMultiRegions extends PXDisplayTypeBubbleText {
 	}
 
 	protected function _getValue($regions, $object, $field) {
-		return!empty($object[$field->name]) ? $object[$field->name] : (array) $regions->getRid();
+		return !empty($object[$field->name]) ? $object[$field->name] : (array) $regions->getRid();
 	}
 
 	function buildInput($field, $object, $param=NULL) {
@@ -90,8 +90,19 @@ class PXDisplayTypeMultiRegions extends PXDisplayTypeBubbleText {
 	}
 
 	function buildCell($field, $object, $param=NULL) {
+		list($result, $isShowBubble, $allowedRegions, $inObject) = $this->collapse($field, $object);
+
+		if ($isShowBubble) {
+			$this->bubbleTextFullContent = join(", ", array_intersect_key($allowedRegions, $inObject));
+			$this->bubbleTextShortContent = $result;
+		}
+
+		return $isShowBubble ? parent::buildCell($field, $object, $param) : $result;
+	}
+
+	private
+	function collapse($field, $object) {
 		$regions = PXMultiRegions::getInstance();
-		$values = $this->_getValues($field, $object, $regions);
 
 		$allowedRegions = GetColFromTableWithIndexs(
 			$regions->getAllowedRegions(),
@@ -117,9 +128,11 @@ class PXDisplayTypeMultiRegions extends PXDisplayTypeBubbleText {
 
 		if ($allowedRegionsCount == 1) {
 			$result = reset($allowedRegions);
+
 		} elseif (empty($diff)) {
 			$result = "все регионы";
 			$isShowBubble = true;
+
 		} else {
 			if ($inObjectCount > self::$countInCell) {
 				$result = sprintf(
@@ -130,8 +143,9 @@ class PXDisplayTypeMultiRegions extends PXDisplayTypeBubbleText {
 				);
 
 				$isShowBubble = true;
+
 			} else {
-				$result = join(",", $inObject);
+				$result = join(", ", $inObject);
 			}
 		}
 
@@ -139,13 +153,13 @@ class PXDisplayTypeMultiRegions extends PXDisplayTypeBubbleText {
 			$result = sprintf("<b>%s</b>", $result);
 		}
 
-		if ($isShowBubble) {
-			$this->bubbleTextFullContent = join(", ", array_intersect_key($allowedRegions, $inObject));
-			$this->bubbleTextShortContent = $result;
-		}
-
-		return $isShowBubble ? parent::buildCell($field, $object, $param) : $result;
+		return array($result, $isShowBubble, $allowedRegions, $inObject);
 	}
 
+	function buildTreeHover($field, $object, $param=NULL) {
+		list($result, $isShowBubble, $allowedRegions, $inObject) = $this->collapse($field, $object);
+
+		return $result;
+	}
 }
 ?>

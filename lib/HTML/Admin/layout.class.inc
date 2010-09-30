@@ -53,127 +53,6 @@ class PXAdminHTMLLayout extends NLAbstractLayout {
 		$this->assign($label, '<p class="error">'.$errorText.'</p>');
 	}
 
-	function assignTree($label, $objectFormat, $tree, $selectedSid, $leafsToOpen) {
-		$html = $this->_makeTree($objectFormat, $tree, $selectedSid, $leafsToOpen);
-		$this->assign($label, $html);
-	}
-
-	function appendTree($label, $objectFormat, $tree, $selectedSid, $leafsToOpen) {
-		$html = $this->_makeTree($objectFormat, $tree, $selectedSid, $leafsToOpen);
-		$this->append($label, $html);
-	}
-
-	function _makeTree(&$objectFormat, &$tree, $selectedSid, $leafsToOpen) {
-		// Добавляем в массив "расхлопывающихся" листьев всех предков выбранного
-		$tmpId = $selectedSid;
-		while (isset($tree->leafs[$tmpId]->parent)) {
-			$tmpId = $tree->leafs[$tmpId]->parent;
-			$leafsToOpen[] = $tmpId;
-		}
-
-		// Рекурсивно генерируем дерево
-		return '<div class="tree">'.$this->_makeTreePart($tree, $objectFormat, 0, $leafsToOpen, $selectedSid).'</div>';
-	}
-
-	function _makeTreePart(&$tree, &$objectFormat, $id, $leafsToOpen, $selectedSid, $level=0, $parent=0, $leafImgs=array(), $leafAlias=array()) {
-		$html  = '';
-		$leafs = $tree->leafs[$id]->children;
-		$first = reset($leafs);
-		$last  = end($leafs);
-
-		foreach ($leafs as $leaf) {
-			$haveSysOrder = strpos($objectFormat->order, 'sys_order') !== false;
-			$up           = (int)($haveSysOrder && $leaf != $first);
-			$down         = (int)($haveSysOrder && $leaf != $last);
-
-			if ($level) {
-				$leafAlias[$leaf] = (isset($objectFormat->fields['pathname'])) ? $tree->leafs[$leaf]->content['pathname'] : NULL;
-			}
-
-			$menuTitle = str_replace('"', '', str_replace("'", '', strip_tags($tree->leafs[$leaf]->title)));
-			$context = 'Context(event, \'edit\', '.$leaf.', '.(int)($tree->leafs[$leaf]->content['status']).', \''.$objectFormat->id.'\',  \''.$menuTitle.'\', \''.implode('/', $leafAlias).'/'.'\', '.$level.', '.$up.', '.$down.'); return false;';
-			$html .= '<div oncontextmenu="'.$context.'" id="leafId'.$leaf.'" style="';
-
-			if ($leaf == $selectedSid) {
-				$html .= 'background-color:#385A94;';
-			} else {
-				$html .= 'background-color:#FFFFFF;';
-			}
-
-			if (!in_array($parent, $leafsToOpen) && $level > 1) {
-				$html .= ' display: none;';
-			}
-
-			$html .= '">';
-
-			if ($level) {
-				foreach ($leafImgs as $i) {
-					$html .= '<img src="i/tree/'.$i.'.gif">';
-				}
-
-				if (sizeof($tree->leafs[$leaf]->children)) {
-					if (!in_array($leaf, $leafsToOpen)) {
-						$cLeafImg = 'close';
-					} else {
-						$cLeafImg = 'open';
-					}
-				} else {
-					$cLeafImg = 'void';
-				}
-
-				if ($leaf == $last) {
-					$cLeafImg .= '-last';
-				}
-
-				if ($leaf == $last) {
-					$leafI = 'v';
-				} else {
-					$leafI = 'tree';
-				}
-
-				$leafImgs[$leaf] = $leafI;
-
-				if (!is_numeric(strpos($cLeafImg, 'void'))) $html .= '<a href="javascript:hideShowLeaf(\''.$leaf.'\');">';
-				$html .= '<img src="i/tree/'.$cLeafImg.'.gif" id="leafImg'.$leaf.'">';
-				if (!is_numeric(strpos($cLeafImg, 'void'))) $html .= '</a>';
-			}
-
-			$leafImg = 'leaf';
-			if ($level == 0) {
-				$leafImg .= (!sizeof($tree->leafs[$leaf]->children)) ? '-0' : '-1';
-			} else {
-				$leafImg .= (!sizeof($tree->leafs[$leaf]->children)) ? '-l' : '';
-			}
-
-			$html .= '<img onClick="'.$context.'" class="cursor" src="i/tree/'.$leafImg.'.gif" alt="Изменить раздел &laquo;'.$menuTitle.'&raquo;">';
-			$html .= '<a href="javascript:EditContent(\''.$objectFormat->id.'\', \''.$leaf.'\')"><img src="i/tree/edit.gif" alt="Изменить раздел &laquo;'.$menuTitle.'&raquo;"></a>';
-
-			if ($objectFormat->childs) {
-				$varName = (isset($objectFormat->makeTreeWithSid)) ? 'sid' : 'cid'; //hack for main module
-				$html .= '<a href="'.$this->_buildHref($varName, $leaf).'">';
-			}
-			if ($tree->leafs[$leaf]->content['status'] == false) $html .= '<strike>';
-			$html .= '<span onClick="ContextHide();"';
-			if ($leaf == $selectedSid) $html .= ' style="color:#FFFFFF;"';
-			if (isset($objectFormat->fields['pathname'])) $html .= ' title="'.$tree->leafs[$leaf]->content['pathname'].'"';
-			$html .= '>';
-			$html .= strip_tags($tree->leafs[$leaf]->title);
-			$html .= '</span>';
-			if ($tree->leafs[$leaf]->content['status'] == false) $html .= '</strike>';
-			if ($objectFormat->childs) {
-				$html .= '</a>';
-			}
-
-			next($leafs);
-
-			$html .= $this->_makeTreePart($tree, $objectFormat, $leaf, $leafsToOpen, $selectedSid, $level+1, $leaf, $leafImgs, $leafAlias);
-			$html .= '</div>';
-			unset($leafImgs[$leaf]);
-			unset($leafAlias[$leaf]);
-		}
-		return $html;
-	}
-
 	function assignContentControls($label, $selectedSid, $allowedFormats) {
 		FatalError("please use PXAdminHTMLLayout::AssignControls");
 	}
@@ -182,7 +61,6 @@ class PXAdminHTMLLayout extends NLAbstractLayout {
 		$this->clear($label);
 		$this->appendControls($label, $selectedSid, $allowedFormats);
 	}
-
 
 	function appendControls($label, $selectedSid, $allowedFormats) {
 		foreach ($allowedFormats as $format) {
@@ -212,26 +90,15 @@ class PXAdminHTMLLayout extends NLAbstractLayout {
 		$this->assign($label, $html);
 	}
 
-	function appendTableAsTree($label, $objectFormat, $tree, $selected, $leafsToOpen) {
-		$html = '<H2>'.$this->types[$objectFormat]->title.' ('.(count($tree->leafs)-1).') [<A href="'.$this->_buildHref($objectFormat.'_view', 'plain').'">список</A>]</H2>';
-		if (count($tree->leafs) > 1) {
-			$html .= '<TABLE width="100%" border="0" cellpadding="2" cellspacing="1" style="border: 1px solid '.TABLECOLOR2.'" class="objects-table">';
-			$html .= '<TR><TD>';
-			$html .= $this->_MakeTree($this->types[$objectFormat], $tree, $selected, $leafsToOpen);
-			$html .= '</TD></TR>';
-			$html .= '</TABLE>';
-		} else {
-			$html .= '<DIV style="padding:2px; font-weight:bold;"><IMG src="i/v.gif" border="0" width="11" height="11" alt="" align="absmiddle" hspace="3">&#8212;</DIV>';
-		}
-		$this->Append($label, $html);
-	}
-
 	function appendTable($label, $objectFormat, $table, $selected = NULL, $varToTitle = NULL, $page=1, $objectsOnPage=0, $count=0, $withLinks=TRUE, $parentPathname=NULL) {
 		$htmltable = new PXAdminTable($table, $this->types[$objectFormat], $this->getData);
-		$htmltable->setPager($page, $objectsOnPage, $count);
-		$this->append($label, $htmltable->getTable());
-	}
+		$htmltable->setCaption($this->types[$objectFormat]->title . '(' . $count . ')');
 
+		$pager = new PxAdminPager($page, $objectsOnPage, $count, $this->types[$objectFormat], $this->getData);
+		$htmltable->setPosition($pager->getPosition());
+
+		$this->append($label, $htmltable->html().$pager->html());
+	}
 
 	function appendUserTable($label, $objectFormat, $title, $table, &$userClassName, $userFuncName, $page=1, $objectsOnPage=0, $count=0) {
 		$this->Append($label, '<H2>'.$title.' ('.$count.')</H2>');
@@ -320,9 +187,31 @@ class PXAdminHTMLLayout extends NLAbstractLayout {
 	}
 
 	function _renderScript($body, $template, $singleton){
-		if(!strlen($body) || ($singleton && isset($this->_scripts[$hash = md5($body)]))) return false;
+		if(!strlen($body) || ($singleton && isset($this->_scripts[$hash = md5($body)]))) {
+			return false;
+		}
+
 		$this->append($this->_scriptsTemplates[$template][':area'], sprintf($this->_scriptsTemplates[$template][':proto'], $body));
+
 		return $singleton ? ($this->_scripts[$hash] = true) : true;
 	}
+
+
+	public
+	function notSetAllowedChilds($label, $format, $id) {
+		$format = PXRegistry::getTypes($format);
+
+		$this->assign($label, <<<HTML
+			<h2>Для добавления в раздел информации необходимо указать разрешенные форматы</h2>
+
+			<ul>
+				<li>
+					<a href="javascript:EditContent('{$format->id}', '{$id}', 'children')">Разрешенные форматы раздела</a>
+				</li>
+			</ul>
+HTML
+		);
+	}
 }
+
 ?>

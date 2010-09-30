@@ -5,6 +5,10 @@
  * @package ProximaPortal
  * @subpackage HTML
  */
+define("MASK_FIRST_PAGE", 1);
+define("MASK_LAST_PAGE",  2);
+define("MASK_NO_MOVE",    3);
+
 class PXAdminTable extends PXAdminComplexWidget {
 	var $data;
 	var $dtype;
@@ -12,17 +16,16 @@ class PXAdminTable extends PXAdminComplexWidget {
 
 	var $titleKey;
 
-	var $parentPathname;
+	var $parentPathnames;
 	var $tree;
 
 	var $controls;                  //custom controls array
 	var $showDefaultControls;       //where to show (or not to show) default main and edit controls : ENUM { 'before' , 'after', false }
 
-	var $selectedRow;
+	var $position;
+	var $caption;
 
-	var $currentPage;
-	var $rowsPerPage;
-	var $rowsCount;
+	var $selectedRow;
 	var $showChildObjects;
 	var $childLink;
 	
@@ -45,86 +48,36 @@ class PXAdminTable extends PXAdminComplexWidget {
 		$this->currentOrder        = isset($getData[$this->dtype->id.'_order']) ? $getData[$this->dtype->id.'_order'] : $this->dtype->order;
 
 		$this->titleKey            = ($titleKey) ? $titleKey : 'title';
-
 		$this->controls            = array();
 		$this->showDefaultControls = 'before';
 
 		$this->selectedRow         = NULL;
 		$this->selectedType        = NULL;
 
-		$this->currentPage         = 0;
-		$this->rowsPerPage         = 0;
-		$this->rowsCount           = 0;
-		$this->showChildObjects    = false;
-		$this->childLink           = NULL;
-		
 		$this->blocks              = array( //set up available subwidgets areas
 			self::BEFORE_CONTENT => array(),
 			self::AFTER_CONTENT  => array()
 		);
+
+		$this->position = MASK_NO_MOVE; //перемещение не возможно
+		$this->caption = '';
 	}
 
-	function loadDropdownValues($db) {
-		foreach($this->dtype->fields as $k => $field) {
-			if($field->listed && strlen($field->source) && !sizeof(@$field->values->values)) {
-				switch($field->values->schema) {
-					case 'xml':
-						PXRegistry::getApp()->loadXMLDirectory($field->values, true);
-						break;
-
-					case 'sql':
-						$app = PXRegistry::getApp();
-
-						if(!@$source_type = $app->types[$app->directory[$field->source]->source]) {
-							FatalError('Не описана директория для типа данных '.$field->source);
-						}
-
-						$idsArray = GetColFromTable($this->data, $field->name);
-
-						if(!sizeof($idsArray)) {
-							break;
-						}
-
-						$directory = $app->directory[$field->source];
-						$directory->location = $source_type->id.'.id IN ('.implode(',', $idsArray).')';
-
-						$db->LoadSQLDirectory($directory, true, array(), $this->dtype);
-						break;
-				}
-			}
-		}
-	}
-
-
-	/**
-	 * Настройка постраничного вывода.
-	 *
-	 * @param Integer $currentPage - номер текущ. стр
-	 * @param Integer $rowsPerPage - строк на 1 странице
-	 * @param Integer $rowsCount   - кол - во строк
-	 */
-	function setPager($currentPage, $rowsPerPage, $rowsCount) {
-
-		$this->currentPage = $currentPage;
-		$this->rowsPerPage = $rowsPerPage;
-		$this->rowsCount   = $rowsCount;
-		
-		$this->append(new PXAdminPager($this->currentPage, $this->rowsPerPage, $this->rowsCount, $this->dtype->id, $this->getData), self::AFTER_CONTENT);
-
+	function loadDropdownValues() {
+		PXRegistry::getDb()->loadDropdownValuesForListedFields($this->dtype, $this->data);
 	}
 
 	function showDefaultControls($show = 'before') {
 		$this->showDefaultControls = $show;
 	}
 
-	function setParentPathName($pathname) {
-		$this->parentPathname = $pathname;
+	function setParentPathNames(array $pathnames) {
+		$this->parentPathnames = $pathnames;
 	}
 
 	function setShowChildObjects($show=false) {
 		$this->showChildObjects = $show;
 	}
-
 
 	/**
 	 * Устанавливает указатель и подсветку на строку с выбранным id.
@@ -142,41 +95,26 @@ class PXAdminTable extends PXAdminComplexWidget {
 		$this->childLink = $link;
 	}
 
-	function html() {
-		return $this->getTable();
-	}
-
 	/**
 	 * Возвращает таблицу.
 	 * @return String - html table
 	 */
-	function getTable() {
+	function html() {
 		$this->decorate();
-		
-		$html  = '';
-		
-		$html .= '<div class="table_wrapper">';
-		
-		$html .= '<h2>'.$this->dtype->title;
-		if ($this->rowsCount != 0) {
-			$html .= '&nbsp;(' .$this->rowsCount .')';
-		}
 
-		if ($this->dtype->struct == 'tree') {
-			$html .= '[<a href="'.$this->_buildHref($this->dtype->id.'_view', 'tree').'">дерево</a>]';
-		}
+		$html = '<div class="table_wrapper">';
 
-		$html .= '</h2>';
-
+		$html .= $this->htmlCaption();
 		if (count($this->data)) {
 			$html .= join($this->blocks[self::BEFORE_CONTENT]);
-			
+
 			$html .= '<table class="objects">';
+
 
 			//<!-- table header
 			$html .= '<thead><tr>';
 			$_icons = 2 + count($this->controls) + (($this->dtype->childs && $this->showChildObjects) ? 1 : 0);
-			$html .= '<th class="c'.(($_icons > 2) ? $_icons : '').'"><a href="'.$this->_BuildHref($this->dtype->id.'_order', $this->dtype->order).'" title="Порядок сортировки по умолчанию"><img src="i/icon/order.gif" width="7" height="8" alt=""></a></th>';
+			$html .= '<th class="c'.(($_icons > 2) ? $_icons : '').'"><a href="'.$this->_buildHref($this->dtype->id.'_order', $this->dtype->order).'" title="Порядок сортировки по умолчанию"><img src="i/icon/order.gif" width="7" height="8" alt=""></a></th>';
 
 			foreach ($this->dtype->fields as $field) {
 				if ($field->listed) {
@@ -198,8 +136,8 @@ class PXAdminTable extends PXAdminComplexWidget {
 
 			$rowPos = 0;
 			foreach ($this->data as $rowKey=>$row){
-				$up    = ($rowPos == 0 && $this->currentPage == 1) || !is_numeric(strpos($this->dtype->order, 'sys_order')) ? 0 : 1;
-				$down  = ($rowPos == sizeof($this->data)-1 && $this->rowsCount <= $this->currentPage * $this->rowsPerPage) || !is_numeric(strpos($this->dtype->order, 'sys_order')) ? 0 : 1;
+				$up    = $this->isFirstOnPage($rowPos) || !is_numeric(strpos($this->dtype->order, 'sys_order')) ? 0 : 1;
+				$down  = $this->isLastOnPage($rowPos) || !is_numeric(strpos($this->dtype->order, 'sys_order')) ? 0 : 1;
 
 				if (isset($row[$this->titleKey])) {
 					$menuTitle = (strlen($row[$this->titleKey]) > 10) ? trim(substr($row[$this->titleKey], 0, 10)).'&hellip;' : $row[$this->titleKey];
@@ -209,7 +147,7 @@ class PXAdminTable extends PXAdminComplexWidget {
 					$menuTitle = '';
 				}
 
-				$alias = isset($row['pathname']) && strlen($row['pathname']) ? $this->_buildShowOnSiteLink($row) : '';
+				$alias = $this->_buildShowOnSiteLink($row);
 
 				if (in_array($this->showDefaultControls, array('before', 'after'))) {
 					$meths = array('before' => 'insertControl', 'after' => 'appendControl');
@@ -275,6 +213,7 @@ class PXAdminTable extends PXAdminComplexWidget {
 
 			$html .= join($this->blocks[self::AFTER_CONTENT]);
 		} else {
+
 			$html .= '<div class="empty">&#8212;</DIV>';
 		}//if
 		
@@ -288,8 +227,10 @@ class PXAdminTable extends PXAdminComplexWidget {
 	 * @see _addControl
 	 */
 	function appendControl($name, $template, $context = NULL ) {
-		if (!isset($this->controls[$name]))
+		if (!isset($this->controls[$name])) {
 			$this->controls[$name]=array();
+		}
+
 		$this->_addControl($name, $template, $context);
 	}
 
@@ -298,8 +239,10 @@ class PXAdminTable extends PXAdminComplexWidget {
 	 * @see _addControl
 	 */
 	function insertControl($name, $template, $context = NULL ) {
-		if (!isset($this->controls[$name]))
+		if (!isset($this->controls[$name])) {
 			$this->controls = array($name=>NULL) + $this->controls;
+		}
+
 		$this->_addControl($name, $template, $context);
 	}
 
@@ -388,63 +331,6 @@ class PXAdminTable extends PXAdminComplexWidget {
 	}
 
 	/**
-	 * Вывод html навигации по страницам.
-	 *
-	 * @return String - сформированный html с постраничной навигацией.
-	 */
-	function _buildPager() {
-
-		$html = '';
-
-		if ($this->rowsCount > $this->rowsPerPage && $this->rowsPerPage > 0) {
-
-			$html .= '<div class="perpage">';
-
-			$allPages = ceil($this->rowsCount/$this->rowsPerPage)+1;
-			$start	= (ceil($this->currentPage/10)-1)*10+1;
-			$max	  = $start + 10;
-
-			if ($max > $allPages) {
-				$max = $allPages;
-			}
-
-			if ($this->currentPage > 10) {
-				$prev = (ceil($start/10)-1)*10; //-9
-			}
-
-			$last = $allPages - $start - 10;
-
-			if ($last > 0) {
-				$next = (ceil($start/10)-1)*10 + 11;
-			}
-
-			if (isset($prev)) {
-				$html .= '<a href="'.$this->_BuildHref($this->dtype->id.'_page', $prev).'">';
-				$html .= '<img src="i/icon/left.gif" width="4" height="7" border="0" hspace="4" alt="Страница '.$prev.'">';
-				$html .= '</a>';
-			}
-
-			for ($i=$start; $i<$max; $i++) {
-				$html .= '<a';
-
-				if ($i == $this->currentPage)
-					$html .= ' class="selected"';
-
-				$html .= ' href="'.$this->_BuildHref($this->dtype->id.'_page', $i).'" title="Страница '.$i.'">'.$i.'</a>';
-			}
-
-			if (isset($next) && $next > 0) {
-				$html .= '<a href="'.$this->_BuildHref($this->dtype->id.'_page', $next).'">';
-				$html .= '<img src="i/icon/right.gif" width="4" height="7" border="0" hspace="4" alt="Страница '.$next.'">';
-				$html .= '</a>';
-			}
-
-			$html .= '</div>';
-		}
-		return $html;
-	}
-
-	/**
 	 * Строит ячейку таблицы по заданному display type.
 	 *
 	 * @param Array $object - данные
@@ -482,7 +368,7 @@ class PXAdminTable extends PXAdminComplexWidget {
 		$href = substr($href, 0, -1);
 		return $href;
 	}
-	
+
 	function _addToUrl(&$href, $k, $v) {
 		foreach ($this->getData as $gdK => $gdV)
 			if ($k != $gdK && isset($gdV))
@@ -490,20 +376,64 @@ class PXAdminTable extends PXAdminComplexWidget {
 
 		$href .= $k.'='.urlencode($v).'&';
 	}
-	
+
 	function setSiteTree($tree){
 		$this->tree = $tree;
 	}
-	
+
 	function _buildShowOnSiteLink($row){
+		if(!isset($row['pathname']) || !strlen($row['pathname'])) {
+			return '';
+		}
+
 		switch(true){
-			case isset($this->parentPathname):
-				 return $this->parentPathname.$row['pathname'];
+			case isset($this->parentPathnames):
+				$pathname = isset($row['parent']) ? $this->parentPathnames[$row['parent']] : '';
+
+				if($this->dtype->parent == 'struct') {
+					return $pathname.$row['pathname'];
+				} else {
+					return $pathname.'?part='.$row['pathname'];
+				}
+
 			case isset($this->tree) && isset($row['parent']) && $row['parent'] > 0:
 				return $this->tree->getFullPathString($row['parent']) . $row['pathname'];
+
 			default:
 				return '';
 		}
 	}
-}
+
+	function setPosition ($position) {
+		$this->position = $position;
+	}
+
+	function isFirstOnPage ($row) {
+		return $row == 0 && ($this->position & MASK_FIRST_PAGE) ? true : false;
+	}
+
+	function isLastOnPage ($row) {
+		return $row == sizeof($this->data)-1 && $this->position & MASK_LAST_PAGE ? true : false;
+	}
+
+	function setCaption($text) {
+		$this->caption = $text;
+	}
+
+	function htmlCaption() {
+		if (!strlen($this->caption )) {
+			return '';
+		}
+
+		$html = '';
+		$html .= '<h2>'.$this->caption;
+
+		if ($this->dtype->struct == 'tree') {
+			$html .= '[<a href="'.$this->_buildHref($this->dtype->id.'_view', 'tree').'">дерево</a>]';
+		}
+
+		$html .= '</h2>';
+		return $html;
+	}
+}//class
 ?>

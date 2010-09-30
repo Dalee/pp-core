@@ -131,6 +131,37 @@ class PXDatabase extends NLSQLDatabaseAdapter {
 		}
 	}
 
+
+	function loadDropdownValuesForListedFields($format, $objects) {
+		foreach($format->fields as $k => $field) {
+			if($field->listed && strlen($field->source) && !sizeof(@$field->values->values)) {
+				switch($field->values->schema) {
+					case 'xml':
+						$this->app->loadXMLDirectory($field->values, true);
+						break;
+
+					case 'sql':
+						if(!@$source_type = $this->app->types[$this->app->directory[$field->source]->source]) {
+							FatalError('Не описана директория для типа данных '.$field->source);
+						}
+
+						$idsArray = GetColFromTable($objects, $field->name);
+
+						if(!sizeof($idsArray)) {
+							break;
+						}
+
+						$directory = $this->app->directory[$field->source];
+						$directory->location = $source_type->id.'.id IN ('.implode(',', $idsArray).')';
+
+						$this->LoadSQLDirectory($directory, true, array(), $format);
+						break;
+				}
+			}
+		}
+	}
+
+
 	/**
 	 * Парсит WHERE в справочниках
 	 *
@@ -196,21 +227,22 @@ class PXDatabase extends NLSQLDatabaseAdapter {
 		$location = $this->ParseWhereTemplate($location, $object, $format);
 		$format = clone $this->types[$directory->source];
         
-	        /*
-	         * fixme: check this code please
-	         * looks like it's totally wrong!
-	        */
+		/*
+		 * fixme: check this code please
+		 * looks like it's totally wrong!
+		 */
 
 		foreach($format->fields as $field) {
 			if (in_array($field->name,array('pid','parent'))) {
 				$directory->parentField = !isset($format->fields['pid']) ? 'parent' : 'pid';
 			}
-			if(!$field->listed && !in_array($field->name,array('id',$directory->parentField))) {
+
+			if(!$field->listed && !in_array($field->name,array('id', $directory->parentField))) {
 				unset($format->fields[$field->name]);
 			}
 		}
 
-		$directory->values = $this->_GetData($format, DB_SELECT_TABLE, $location);
+		$directory->values = $this->_GetData($format, null, DB_SELECT_TABLE, $location);
 		$directory->SetLoaded($addDefault);
 	}
 
@@ -226,9 +258,12 @@ class PXDatabase extends NLSQLDatabaseAdapter {
 	 * @param Array|NULL $limit     NULL or array(LIMIT,OFFSET)
 	 * @return Array|NULL           results of {@link NLSQLDatabaseAdapter::Query()}
 	 */
-	protected function _GetData($format, $mode, $where=NULL, $limit=NULL, $order=NULL) {
-		PXProfiler::begin('GET DATA: ' . $format->id . '[' . $where . ']-[' . 
-		                  (is_array($limit) ? implode('.', $limit) : '') . ']-[' . $order . ']');
+	private function _GetData($format, $status, $mode, $where=NULL, $limit=NULL, $order=NULL) {
+		if(is_array($limit) && (is_null($limit[0]) || is_null($limit[1]))) {
+			$limit = 1;
+		}
+		PXProfiler::begin('GET DATA: ' . $format->id . '[' . $status . ', ' . $where . ']-[' .  (is_array($limit) ? implode('.', $limit) : '') . ']-[' . $order . ']');
+		$where = $this->joinWhere($format, $status, $where);
 
 		$order_by = null;
 
@@ -243,7 +278,7 @@ class PXDatabase extends NLSQLDatabaseAdapter {
 		foreach ($this->triggers as $t){
 			$t->getTrigger()->OnBeforeGetDataBuildQuery($this, $format, $mode, $selector, $where, $order_by, $limit);
 		}
-		
+
 		$query = 'SELECT ' . $selector . ' FROM ' . $format->id;
 
 		if (!is_null($where))    $query .= ' WHERE ' . $where;
@@ -264,6 +299,32 @@ class PXDatabase extends NLSQLDatabaseAdapter {
 
 		PXProfiler::end();
 		return $data;
+	}
+
+	private
+	function joinWhere($format, $status, $where=null) {
+		$w = array();
+		if(!is_null($status)) {
+			$w[] = $format->id.'.status='.$this->trueStatusString($status);
+		}
+
+		if(!is_null($where)) {
+			switch(true) {
+				case is_string($where):
+					$w[] = $where;
+					break;
+
+				case is_array($where):
+					$w = array_merge($w, $where);
+					break;
+			}
+		}
+
+		if(!sizeof($w)) {
+			return null;
+		}
+
+		return  implode(' AND ', $w);
 	}
 
 	protected function _getCacheIden($query, $mode, $limit) {
@@ -309,14 +370,16 @@ class PXDatabase extends NLSQLDatabaseAdapter {
 	 * @param Integer $id
 	 * @return Array
 	 */
-	function GetObjectById($format, $id) {
+	function getObjectById($format, $id) {
 		if (empty($id)) {
 			return array();
 		}
 		if (!is_numeric($id)) {
 			FatalError('Попытка SQL-Injection!');
 		}
-		$data = $this->_GetData($format, DB_SELECT_TABLE, $format->id.'.id = '.$id);
+
+		$data = $this->_GetData($format, null, DB_SELECT_TABLE, $format->id.'.id = '.$id);
+
 		if (count($data)) {
 			return reset($data);
 		} else {
@@ -334,16 +397,18 @@ class PXDatabase extends NLSQLDatabaseAdapter {
 	 * @param Integer $idArray      request mode. Default = {@link DB_SELECT_TABLE}
 	 * @return Array
 	 */
-	function GetObjectsByIdArray($format, $status, $idArray, $mode=DB_SELECT_TABLE, $order=NULL) {
+	function getObjectsByIdArray($format, $status, $idArray, $mode=DB_SELECT_TABLE, $order=NULL) {
 		foreach ($idArray as $id) {
 			if (!is_numeric($id)) {
 				FatalError('Попытка SQL-Injection!');
 			}
 		}
+
 		if (count($idArray)) {
 			$whereClause = $format->id.'.id IN ('.implode(', ', $idArray).')';
-			$whereClause .= !is_null($status) ? ' AND '.$format->id.'.status='.$this->TrueStatusString($status) : NULL;
-			return $this->_GetData($format, $mode, $whereClause, null, $order);
+
+			return $this->_GetData($format, $status, $mode, $whereClause, null, $order);
+
 		} else {
 			return $mode === DB_SELECT_TABLE ? array() : 0;
 		}
@@ -358,25 +423,11 @@ class PXDatabase extends NLSQLDatabaseAdapter {
 	 * @param Integer $mode             request mode. Default = {@link DB_SELECT_TABLE}
 	 * @return Array
 	 */
-	function GetObjects($format, $status, $mode=DB_SELECT_TABLE, $order=NULL) {
-		$whereClause = !is_null($status) ? $format->id.'.status='.$this->TrueStatusString($status) : NULL;
-		return $this->_GetData($format, $mode, $whereClause, null, $order);
+	function getObjects($format, $status, $mode=DB_SELECT_TABLE, $order=NULL) {
+		return $this->getObjectsLimited($format, $status, null, null, $mode, $order);
 	}
-
-	/**
-	 * Возвращает массив данных из БД для заданного типа объектов {@link PXTypeDescription}.
-	 * Использует {@link PXDatabase::_GetData()} для запросов.
-	 *
-	 * @param PXTypeDescription $format
-	 * @param String $status    objects status ('TRUE' | 'FALSE')
-	 * @param Integer $limit    database SELECT LIMIT value
-	 * @param Integer $offset   database SELECT OFFSET value
-	 * @param Integer $mode     request mode, default = {@link DB_SELECT_TABLE}
-	 * @return Array
-	 */
-	function GetObjectsLimited($format, $status, $limit, $offset, $mode=DB_SELECT_TABLE, $order=NULL) {
-		$whereClause = !is_null($status) ? $format->id.'.status='.$this->TrueStatusString($status) : NULL;
-		return $this->_GetData($format, $mode, $whereClause, array($limit, $offset), $order);
+	function getObjectsLimited($format, $status, $limit, $offset, $mode=DB_SELECT_TABLE, $order=NULL) {
+		return $this->_GetData($format, $status, $mode, null, array($limit, $offset), $order);
 	}
 
 	/**
@@ -389,39 +440,24 @@ class PXDatabase extends NLSQLDatabaseAdapter {
 	 * @param Integer $mode     request mode, default = {@link DB_SELECT_TABLE}
 	 * @return Array
 	 */
-	function GetObjectsByParent($format, $status, $parent, $mode=DB_SELECT_TABLE, $order=NULL) {
+	function getObjectsByParent($format, $status, $parent, $mode=DB_SELECT_TABLE, $order=NULL) {
+		return $this->getObjectsByParentLimited($format, $status, $parent, null, null, $mode, $order);
+	}
+	function getObjectsByParentLimited($format, $status, $parent, $limit, $offset, $mode=DB_SELECT_TABLE, $order=NULL) {
 		if (is_numeric($parent)) {
 			$whereClause = $format->id.'.parent = '.$parent;
+
 		} elseif (is_null($parent)) {
 			$whereClause = $format->id.'.parent IS NULL';
+
 		} elseif (is_array($parent)) {
 			$whereClause = $format->id.'.parent IN ('.implode(',', $parent).')';
+
 		} else {
 			FatalError('Попытка SQL-Injection!');
 		}
-		if (!is_null($status)) $whereClause .= ' AND '.$format->id.'.status='.$this->TrueStatusString($status);
-		return $this->_GetData($format, $mode, $whereClause, null, $order);
-	}
 
-	/**
-	 * Возвращает массив из БД для заданного типа объектов {@link PXTypeDescription}.
-	 * Использует {@link PXDatabase::_GetData()} для запросов.
-	 *
-	 * @param PXTypeDescription $format
-	 * @param String $status    objects status ('TRUE' | 'FALSE')
-	 * @param Integer $parent   parent id
-	 * @param Integer $limit    database SELECT LIMIT value
-	 * @param Integer $offset   database SELECT OFFSET value
-	 * @param Integer $mode     request mode, default = {@link DB_SELECT_TABLE}
-	 * @return Array
-	 */
-	function GetObjectsByParentLimited($format, $status, $parent, $limit, $offset, $mode=DB_SELECT_TABLE, $order=NULL) {
-		if (!is_numeric($parent)) {
-			FatalError('Попытка SQL-Injection!');
-		}
-		$whereClause = $format->id.'.parent = '.$parent;
-		if (!is_null($status)) $whereClause .= ' AND '.$format->id.'.status='.$this->TrueStatusString($status);
-		return $this->_GetData($format, $mode, $whereClause, array($limit, $offset), $order);
+		return $this->_GetData($format, $status, $mode, $whereClause, array($limit, $offset), $order);
 	}
 
 	/**
@@ -434,16 +470,18 @@ class PXDatabase extends NLSQLDatabaseAdapter {
 	 * @param Integer $mode     request mode, default = {@link DB_SELECT_TABLE}
 	 * @return Array
 	 */
-	function GetObjectsByWhere($format, $status, $whereClause, $mode=DB_SELECT_TABLE, $order=NULL) {
+	function getObjectsByWhere($format, $status, $whereClause, $mode=DB_SELECT_TABLE, $order=NULL) {
+		return $this->getObjectsByWhereLimited($format, $status, $whereClause, null, null, $modeE, $order);
+	}
+	function getObjectsByWhereLimited($format, $status, $whereClause, $limit, $offset, $mode=DB_SELECT_TABLE, $order=NULL) {
 		if(is_array($whereClause)) {
 			$whereClause = implode(' AND ', $whereClause);
 		}
-		if (!is_null($status)) $whereClause .= ' AND '.$format->id.'.status='.$this->TrueStatusString($status);
-		return $this->_GetData($format, $mode, $whereClause, null, $order);
+		return $this->_GetData($format, $status, $mode, $whereClause, array($limit, $offset), $order);
 	}
 
-	/**
 
+	/**
 	 * Возвращает массив из БД для заданного типа объектов {@link PXTypeDescription}.
 	 * Использует {@link PXDatabase::_GetData()} для запросов.
 	 *
@@ -451,20 +489,9 @@ class PXDatabase extends NLSQLDatabaseAdapter {
 	 * @param String $status    objects status ('TRUE' | 'FALSE')
 	 * @param String $field     field name
 	 * @param String $value     field value
-	 * @param Integer $limit    database SELECT LIMIT value
-	 * @param Integer $offset   database SELECT OFFSET value
 	 * @param Integer $mode     request mode, default = {@link DB_SELECT_TABLE}
 	 * @return Array
 	 */
-	function GetObjectsByWhereLimited($format, $status, $whereClause, $limit, $offset, $mode=DB_SELECT_TABLE, $order=NULL) {
-		if(is_array($whereClause)) {
-			$whereClause = implode(' AND ', $whereClause);
-		}
-		if (!is_null($status)) $whereClause .= ' AND '.$format->id.'.status='.$this->TrueStatusString($status);
-		return $this->_GetData($format, $mode, $whereClause, array($limit, $offset), $order);
-	}
-
-
 	function getObjectsByFields($format, $status, $fields, $mode=DB_SELECT_TABLE, $order=NULL) {
 		return $this->getObjectsByField($format, $status, $fields, null, $mode, $order);
 	}
@@ -472,48 +499,10 @@ class PXDatabase extends NLSQLDatabaseAdapter {
 	function getObjectsByFieldsLimited($format, $status, $fields, $limit, $offset, $mode=DB_SELECT_TABLE, $order=NULL) {
 		return $this->getObjectsByFieldLimited($format, $status, $fields, null, $limit, $offset, $mode, $order);
 	}
-
-	/**
-	 * Возвращает массив из БД для заданного типа объектов {@link PXTypeDescription}.
-	 * Использует {@link PXDatabase::_GetData()} для запросов.
-	 *
-	 * @param PXTypeDescription $format
-	 * @param String $status    objects status ('TRUE' | 'FALSE')
-	 * @param String $field     field name
-	 * @param String $value     field value
-	 * @param Integer $mode     request mode, default = {@link DB_SELECT_TABLE}
-	 * @return Array
-	 */
-	function GetObjectsByField($format, $status, $field, $value, $mode=DB_SELECT_TABLE, $order=NULL) {
-		$value = $this->EscapeString($value);
-		if (is_array($field)) {
-			$whereClause = array();
-			foreach ($field as $k => $v) {
-				$v = $this->EscapeString($v);
-				$whereClause[] = $format->id.'.'.$k.' = '."'".$v."'";
-			}
-			$whereClause = implode($whereClause, ' AND ');
-		} else {
-			$whereClause = $format->id.'.'.$field.' = '."'".$value."'";
-		}
-		if (!is_null($status)) $whereClause .= ' AND '.$format->id.'.status='.$this->TrueStatusString($status);
-		return $this->_GetData($format, $mode, $whereClause, null, $order);
+	function getObjectsByField($format, $status, $field, $value, $mode=DB_SELECT_TABLE, $order=NULL) {
+		return $this->getObjectsByFieldLimited($format, $status, $field, $value, null, null, $mode, $order);
 	}
-
-	/**
-	 * Возвращает массив из БД для заданного типа объектов {@link PXTypeDescription}.
-	 * Использует {@link PXDatabase::_GetData()} для запросов.
-	 *
-	 * @param PXTypeDescription $format
-	 * @param String $status    objects status ('TRUE' | 'FALSE')
-	 * @param String $field     field name
-	 * @param String $value     field value
-	 * @param Integer $limit    database SELECT LIMIT value
-	 * @param Integer $offset   database SELECT OFFSET value
-	 * @param Integer $mode     request mode, default = {@link DB_SELECT_TABLE}
-	 * @return Array
-	 */
-	function GetObjectsByFieldLimited($format, $status, $field, $value, $limit, $offset, $mode=DB_SELECT_TABLE, $order=NULL) {
+	function getObjectsByFieldLimited($format, $status, $field, $value, $limit, $offset, $mode=DB_SELECT_TABLE, $order=NULL) {
 		$value = $this->EscapeString($value);
 		if (is_array($field)) {
 			$whereClause = array();
@@ -526,43 +515,28 @@ class PXDatabase extends NLSQLDatabaseAdapter {
 			$whereClause = $format->id.'.'.$field.' = '."'".$value."'";
 		}
 
-		if (!is_null($status)) {
-			$whereClause .= ' AND '.$format->id.'.status='.$this->TrueStatusString($status);
-		}
-
-		return $this->_GetData($format, $mode, $whereClause, array($limit, $offset), $order);
+		return $this->_GetData($format, $status, $mode, $whereClause, array($limit, $offset), $order);
 	}
 
-	/** @see GetObjectsByField */
-	function GetObjectsByFieldLike($format, $status, $field, $value, $mode=DB_SELECT_TABLE, $order=NULL) {
-		$field = $this->EscapeString($field);
-		$whereClause = $format->id.'.'.$field.$this->LIKE($value);
-		if (!is_null($status)) $whereClause .= ' AND '.$format->id.'.status='.$this->TrueStatusString($status);
-		return $this->_GetData($format, $mode, $whereClause, null, $order);
+	/** @see getObjectsByField */
+	function getObjectsByFieldLike($format, $status, $field, $value, $mode=DB_SELECT_TABLE, $order=NULL) {
+		return $this->getObjectsByFieldLikeLimited($format, $status, $field, $value, null, null, $mode, $order);
+	}
+	function getObjectsByFieldLikeLimited($format, $status, $field, $value, $limit, $offset, $mode=DB_SELECT_TABLE, $order=NULL) {
+		$field = $this->escapeString($field);
+		$whereClause  = $format->id.'.'.$field.$this->LIKE($value);
+
+		return $this->_GetData($format, $status, $mode, $whereClause, array($limit, $offset), $order);
 	}
 
-	/** @see GetObjectsByFieldLimited */
-	function GetObjectsByFieldLikeLimited($format, $status, $field, $value, $limit, $offset, $mode=DB_SELECT_TABLE, $order=NULL) {
-		$field = $this->EscapeString($field);
-		$whereClause = $format->id.'.'.$field.$this->LIKE($value);
-		if (!is_null($status)) $whereClause .= ' AND '.$format->id.'.status='.$this->TrueStatusString($status);
-		return $this->_GetData($format, $mode, $whereClause, array($limit, $offset), $order);
+	/** @see getObjectsByField */
+	function getObjectsByFieldNotEmpty($format, $status, $field, $mode=DB_SELECT_TABLE, $order=NULL) {
+		return $this->getObjectsByFieldNotEmptyLimited($format, $status, $field, null, null, $mode=DB_SELECT_TABLE, $order=NULL);
 	}
-
-	/** @see GetObjectsByField */
-	function GetObjectsByFieldNotEmpty($format, $status, $field, $mode=DB_SELECT_TABLE, $order=NULL) {
+	function getObjectsByFieldNotEmptyLimited($format, $status, $field, $limit, $offset, $mode=DB_SELECT_TABLE, $order=NULL) {
 		$field = $this->EscapeString($field);
 		$whereClause = 'char_length('.$format->id.'.'.$field.') > 0';
-		if (!is_null($status)) $whereClause .= ' AND '.$format->id.'.status='.$this->TrueStatusString($status);
-		return $this->_GetData($format, $mode, $whereClause, null, $order);
-	}
-
-	/** @see GetObjectsByFieldLimited */
-	function GetObjectsByFieldNotEmptyLimited($format, $status, $field, $limit, $offset, $mode=DB_SELECT_TABLE, $order=NULL) {
-		$field = $this->EscapeString($field);
-		$whereClause = 'char_length('.$format->id.'.'.$field.') > 0';
-		if (!is_null($status)) $whereClause .= ' AND '.$format->id.'.status='.$this->TrueStatusString($status);
-		return $this->_GetData($format, $mode, $whereClause, array($limit, $offset), $order);
+		return $this->_GetData($format, $status, $mode, $whereClause, array($limit, $offset), $order);
 	}
 
 	/**
@@ -576,35 +550,10 @@ class PXDatabase extends NLSQLDatabaseAdapter {
 	 * @param Integer $mode     request mode, default = {@link DB_SELECT_TABLE}
 	 * @return Array
 	 */
-	function GetObjectsBySearchWord($format, $status, $word, $mode=DB_SELECT_TABLE, $order=NULL) {
-		$word = $this->EscapeString($word);
-		$whereClause = '';
-		foreach ($format->fields as $k=>$v) {
-			$p = array('formatId'=>$format->id, 'word'=>$word);
-			$whereClause .= $v->storageType->searchLikeQuery($v, array(), $p);
-		}
-		$whereClause = substr($whereClause, 0, -4);
-		if(!strlen($whereClause)) {
-			return $mode === DB_SELECT_TABLE ? array() : 0;
-		}
-		if (!is_null($status)) $whereClause .= ' AND '.$format->id.'.status='.$this->TrueStatusString($status);
-		return $this->_GetData($format, $mode, $whereClause, null, $order);
+	function getObjectsBySearchWord($format, $status, $word, $mode=DB_SELECT_TABLE, $order=NULL) {
+		return $this->getObjectsBySearchWordLimited($format, $status, $word, null, null, $mode, $order);
 	}
-
-	/**
-	 * Возвращает массив данных из БД для заданного типа объектов {@link PXTypeDescription}.
-	 * Производит поиск $world по ВСЕМ полям указанным в $format.
-	 * Использует {@link PXDatabase::_GetData()} для запросов.
-	 *
-	 * @param PXTypeDescription $format
-	 * @param String $status    objects status ('TRUE' | 'FALSE')
-	 * @param String $word      search word
-	 * @param Integer $limit    database SELECT LIMIT value
-	 * @param Integer $offset   database SELECT OFFSET value
-	 * @param Integer $mode     request mode, default = {@link DB_SELECT_TABLE}
-	 * @return Array
-	 */
-	function GetObjectsBySearchWordLimited($format, $status, $word, $limit, $offset, $mode=DB_SELECT_TABLE, $order=NULL) {
+	function getObjectsBySearchWordLimited($format, $status, $word, $limit, $offset, $mode=DB_SELECT_TABLE, $order=NULL) {
 		$word = $this->EscapeString($word);
 		$whereClause = '';
 		foreach ($format->fields as $k=>$v) {
@@ -615,8 +564,8 @@ class PXDatabase extends NLSQLDatabaseAdapter {
 		if(!strlen($whereClause)) {
 			return $mode === DB_SELECT_TABLE ? array() : 0;
 		}
-		if (!is_null($status)) $whereClause .= ' AND '.$format->id.'.status='.$this->TrueStatusString($status);
-		return $this->_GetData($format, $mode, $whereClause, array($limit, $offset), $order);
+
+		return $this->_GetData($format, $status, $mode, $whereClause, array($limit, $offset), $order);
 	}
 
 	/**
@@ -739,7 +688,7 @@ class PXDatabase extends NLSQLDatabaseAdapter {
 			$parentIds = array_unique(GetColFromTable($objectsArray, 'parent'));
 
 			foreach ($parentIds as $parentId) {
-				$objectInDB = $this->GetObjectById($this->types[$format->parent], $parentId);
+				$objectInDB = $this->getObjectById($this->types[$format->parent], $parentId);
 
 				if (!count($objectInDB)) {
 					FatalError('Попытка добавить объект в несуществующий раздел');
@@ -886,7 +835,7 @@ class PXDatabase extends NLSQLDatabaseAdapter {
 			FatalError($errString);
 		}
 
-		$objectInDB = $this->GetObjectById($format, $object['id']);
+		$objectInDB = $this->getObjectById($format, $object['id']);
 		if (!count($objectInDB)) {
 			$errString = 'Попытка модифицировать отсутствующий объект';
 			$audit->error($errString, $format->id .'/'.$object['id']);
@@ -938,7 +887,7 @@ class PXDatabase extends NLSQLDatabaseAdapter {
 				FatalError($this->GetError());
 			}
 			if ($format->struct == 'tree' && isset($objectInDB['parent']) && $objectInDB['parent'] != $object['parent']) {
-				$childs        = $this->GetObjectsByParent($format, NULL, $objectInDB['parent'], DB_SELECT_TREE);
+				$childs        = $this->getObjectsByParent($format, NULL, $objectInDB['parent'], DB_SELECT_TREE);
 				$objectsToMove = $childs->GetDescendants($object['id']);
 				$query = 'UPDATE '.$format->id.' SET parent='.(is_null($object['parent']) ? 'NULL' : $object['parent']).' WHERE id IN ('.implode(', ', $objectsToMove).')';
 				$this->ModifyingQuery($query);
@@ -975,7 +924,7 @@ class PXDatabase extends NLSQLDatabaseAdapter {
 	 */
 	function ModifyObjectSysVars($format, $object) {
 		$audit = PXAuditLogger::getLogger($this->app, $this);
-		$objectInDB = $this->GetObjectById($format, $object['id']);
+		$objectInDB = $this->getObjectById($format, $object['id']);
 		
 		if (!count($objectInDB)) {
 			FatalError('Попытка модифицировать отсутствующий объект');
@@ -1019,7 +968,7 @@ class PXDatabase extends NLSQLDatabaseAdapter {
 	 */
 	function DeleteContentObject($format, $objectId) {
 		$audit = PXAuditLogger::getLogger($this->app, $this);
-		$objectInDB = $this->GetObjectById($format, $objectId);
+		$objectInDB = $this->getObjectById($format, $objectId);
 		if (!count($objectInDB)) FatalError('Попытка удалить отсутствующий объект');
 		if (!$this->user->can(array('write', 'delete'), $format, $objectInDB)) {
 			$errString = 'Отказано в доступе при попытке удалить объект типа <em>'.$format->id.'</em>';
@@ -1028,7 +977,7 @@ class PXDatabase extends NLSQLDatabaseAdapter {
 		}
 
 		if ($format->struct == 'tree' && isset($format->fields['pid']) && isset($this->types[$format->parent])) {
-			$children        = $this->GetObjectsByParent($format, NULL, $objectInDB['parent'], DB_SELECT_TREE);
+			$children        = $this->getObjectsByParent($format, NULL, $objectInDB['parent'], DB_SELECT_TREE);
 			$objectsToDelete = $children->GetDescendants($objectId);
 		} else {
 			$objectsToDelete = array($objectId);
@@ -1112,7 +1061,7 @@ class PXDatabase extends NLSQLDatabaseAdapter {
 	function _moveContentObject($format, $objectId, $direction) {
 		$audit = PXAuditLogger::getLogger($this->app, $this);
 
-		$objectInDB = $this->GetObjectById($format, $objectId);
+		$objectInDB = $this->getObjectById($format, $objectId);
 		if (!count($objectInDB)) FatalError('Попытка модифицировать отсутствующий объект');
 
 		if (!$this->user->can(array('write', 'modify'), $format, $objectInDB)) {
@@ -1140,7 +1089,7 @@ class PXDatabase extends NLSQLDatabaseAdapter {
 			$where .= (is_null($pid) || !is_numeric($pid)) ? ' IS NULL' : ' = '.$pid;
 		}
 
-		$nearObject = $this->GetObjectsByWhereLimited($format, NULL, $where, 1, 0, DB_SELECT_TABLE, 'sys_order '.($down ? '' : 'DESC'));
+		$nearObject = $this->getObjectsByWhereLimited($format, NULL, $where, 1, 0, DB_SELECT_TABLE, 'sys_order '.($down ? '' : 'DESC'));
 
 		$permitMove = true;
 		foreach ($this->triggers as $t){
@@ -1457,7 +1406,7 @@ SQL;
 
 		$linkedFormat = $reference->getOther($format);
 
-		$objectInDB = $this->GetObjectById($this->types[$format], $id);
+		$objectInDB = $this->getObjectById($this->types[$format], $id);
 		if (!count($objectInDB)) FatalError('Попытка модифицировать отсутствующий объект');
 
 		if (!$this->user->can(array('write', 'modify'), $this->types[$format], $objectInDB)) {
@@ -1469,7 +1418,7 @@ SQL;
 		foreach ($links as $k=>$v) {
 			if (isset($v['on'])) $tmp[] = $k;
 		}
-		$objectsToLink = $this->GetObjectsByIdArray($this->types[$linkedFormat], NULL, $tmp);
+		$objectsToLink = $this->getObjectsByIdArray($this->types[$linkedFormat], NULL, $tmp);
 		foreach ($objectsToLink as $objectToLink) {
 			if (!$this->user->can(array('write', 'modify'), $this->types[$linkedFormat], $objectToLink) && !$this->user->can('linkto', $this->types[$linkedFormat], $objectToLink)) {
 				$errString = 'Отказано в доступе при попытке привязать объект типа <em>'.$linkedFormat.'</em> к объекту типа <em>'.$format.'</em>';
@@ -1604,8 +1553,6 @@ SQL;
 	 * @todo docme (check params documentation)
 	 */
 	protected function _PrepareResult($resTable, $format, $mode) {
-
-
 		switch ($mode) {
 			case DB_SELECT_TABLE:
 				PXProfiler::begin('PREPARE: '.$format->id.' ['.sizeof($resTable).'x'.sizeof($format->fields).']');
@@ -1700,7 +1647,7 @@ SQL;
 
 		if ($permitCheck !== true) {
 			if ($permitCheck === null) {
-				$parentObject = $this->GetObjectById($this->types[$format->parent], $object['parent']);
+				$parentObject = $this->getObjectById($this->types[$format->parent], $object['parent']);
 			}
 
 			if ($permitCheck === false || !count($parentObject)) {

@@ -22,7 +22,7 @@ class PXModuleSearch extends PXModule {
 
 	function getChapters() {
 		$chapters = null;
-		
+
 		if (isset($this->settings['useParent'])) {
 			$t = $this->request->GetVar('ch', array());
 			$chapters = array();
@@ -73,7 +73,7 @@ class PXModuleSearch extends PXModule {
 		$this->layout->assign('FP_SEARCH_TOTAL',        $search->getSearchCount());
 		$this->layout->assign('FP_SEARCH_PER_PAGE',     $per_page);
 		$this->layout->assign('FP_SEARCH_DEFAULT_PAGE', $currentPage);
-		
+
 		return $res;
 	}
 	
@@ -172,20 +172,8 @@ HTML;
 		$count   = $this->db->getObjectsBySearchWord($datatype, NULL, $this->word, DB_SELECT_COUNT);
 
 		if($count) {
-			$onPage    = $this->app->getProperty('CHILDREN_ON_PAGE', 5);
-
-			$currentPage  = $this->request->getVar($datatype->id.'_page', 1);
-			$currentOrder = $this->request->getOrderVar($datatype->id, $datatype->order, $datatype->fields);
-			$this->layout->setGetVarToSave($datatype->id.'_order', $currentOrder);
-
-			$currentPage = $currentPage > ceil($count/$onPage) ? ceil($count/$onPage) : $currentPage;
-
-			$objects = $this->db->getObjectsBySearchWordLimited($datatype, NULL, $this->word, $onPage, $onPage*($currentPage-1), DB_SELECT_TABLE, $currentOrder);
-
-			$table = new PXAdminTable($objects, $datatype, $this->layout->getData);
+			$table = new PXAdminTableObjects($datatype, $this->word, 'BySearchWord');
 			$table->addToParent('INNER.1.0');
-
-			$table->setPager($currentPage, $onPage, $count);
 		}
 
 		return $count;

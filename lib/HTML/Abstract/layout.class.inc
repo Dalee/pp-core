@@ -7,12 +7,11 @@ define('TABLECOLOR2',       '#C9CED6');
 define('TABLECOLOR3',       '#385A94');
 
 class NLAbstractLayout {
-	var $html   = '';
-	var $labels = array();
-	var $blocks = array();
+	private $html   = '';
+	private $labels = array();
 
 	var $getData;
-	
+
 	public $outerLayout;
 
 	function NLAbstractLayout() {
@@ -132,12 +131,12 @@ class NLAbstractLayout {
 
 	function setMenu($menuItems, $current, $getParam='area', $buildHref=true) {
 		$menu = new PXWidgetMenuTabbed;
-	
+
 		$menu->items    = $menuItems;
 		$menu->selected = $current;
 		$menu->varName  = $getParam;
 		$menu->buildHref = $buildHref;
-	
+
 		$this->assign('OUTER.MENU', $menu);
 	}
 
@@ -178,27 +177,8 @@ class NLAbstractLayout {
 
 	// alias for assign
 	function set($label, &$value) {
-		switch(true) {
-			case is_object($value):
-				unset($this->labels[$label]);
-				$this->blocks[$label] = array();
-				$this->blocks[$label][] =& $value;
-				break;
-
-			case is_scalar($value):
-				unset($this->blocks[$label]);
-				$this->labels[$label] = (string)$value;
-				break;
-
-			case is_null($value):
-				unset($this->labels[$label]);
-				unset($this->blocks[$label]);
-				break;
-
-			default:
-				FatalError('Undefined type for layout content '.d3($value));
-				break;
-		}
+		$this->labels[$label] = array();
+		$this->add($label, $value);
 	}
 
 	function assign($label, $value) {
@@ -206,23 +186,24 @@ class NLAbstractLayout {
 		$this->set($label, $refValue);
 	}
 
+	public
+	function isWidget($value) {
+		return is_object($value) && $value instanceof PXAdminWidgetIF;
+	}
+
 	// alias for append
 	function add($label, &$value) {
-		switch(true) {
-			case is_object($value):
-				if(!isset($this->blocks[$label]) || !is_array($this->blocks[$label])) {
-					$this->blocks[$label] = array();
-				}
+		if(!isset($this->labels[$label]) || !is_array($this->labels[$label])) {
+			$this->labels[$label] = array();
+		}
 
-				$this->blocks[$label][] =& $value;
+		switch(true) {
+			case $this->isWidget($value):
+				$this->labels[$label][] =& $value;
 				break;
 
 			case is_scalar($value):
-				if(!isset($this->labels[$label]) || !is_string($this->labels[$label])) {
-					$this->labels[$label] = '';
-				}
-
-				$this->labels[$label] .= (string)$value;
+				$this->labels[$label][] = (string)$value;
 				break;
 
 			case is_null($value):
@@ -252,18 +233,14 @@ class NLAbstractLayout {
 
 	function html() {
 		// widgets to html
-		foreach($this->blocks as $label=>$widgets) {
+		// replace labels to html
+		while(list($label, $widgets) = each($this->labels)) {
 			$html = '';
 
 			foreach($widgets as $w) {
-				$html .= $w->html();
+				$html .= $this->isWidget($w) ? $w->html() : $w;
 			}
 
-			$this->assign($label, $html);
-		}
-
-		// replace labels to html
-		foreach ($this->labels as $label=>$html) {
 			$this->html = str_replace('{'.$label.'}', $html, $this->html);
 		}
 
@@ -297,6 +274,8 @@ class NLAbstractLayout {
 
 	// static
 	function buildHref($key, $value) {
+		$layout =& PXRegistry::getLayout();
+
 		$href = "?";
 
 		$layout =& PXRegistry::getLayout();

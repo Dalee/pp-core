@@ -1,11 +1,13 @@
 <?php
+define("MASK_MIDDLE_PAGE",   0);
+
 class PXAdminPager extends PXAdminWidget {
 	var $_currentPage;
 	var $_rowsPerPage;
 	var $_rowsCount;
 	var $_pagerName;
 	var $_getData;
-	
+
 	/**
 	 * Конструктор класса PXAdminPager.
 	 * Инициализирует поля класса. необходимые для построения постраничной навигации.
@@ -16,17 +18,21 @@ class PXAdminPager extends PXAdminWidget {
 	 * @param Array   $getData - массив с GET переменными, которые надо добавлять в ссылки постраничной навигации, обычно берётся из поля $layout->getData
 	 */
 	function PxAdminPager($cur, $rows = 1, $count = 1, $pager_name = '', $get_data = null){
+		if($pager_name instanceof PXTypeDescription) {
+			$pager_name = $pager_name->id;
+		}
+
 		$this->_currentPage = (int)$cur > 0 ? $cur : '1';
 		$this->_rowsPerPage = $rows;
 		$this->_rowsCount   = $count;
 		$this->_pagerName   = $pager_name;
 		$this->_getData     = $get_data;
 	}
-	
+
 	function html(){
 		return $this->_buildPager();
 	}
-	
+
 	function _buildPager() {
 
 		$html = '';
@@ -62,8 +68,9 @@ class PXAdminPager extends PXAdminWidget {
 			for ($i=$start; $i<$max; $i++) {
 				$html .= '<a';
 
-				if ($i == $this->_currentPage)
+				if ($i == $this->_currentPage) {
 					$html .= ' class="selected"';
+				}
 
 				$html .= ' href="'.$this->_BuildHref($this->_pagerName.'_page', $i).'" title="Страница '.$i.'">'.$i.'</a>';
 			}
@@ -81,16 +88,7 @@ class PXAdminPager extends PXAdminWidget {
 
 	function _buildHref($key, $val = NULL) {
 		$href = "?";
-		if (is_array($key)) {
-			foreach ($key as $k => $v) {
-				foreach ($this->_getData as $gdK => $gdV)
-					if ($k != $gdK && isset($gdV))
-						$href .= $gdK.'='.urlencode($gdV).'&';
-
-				$href .= $k.'='.urlencode($v).'&';
-			}
-
-		} elseif (!is_null($key) && !is_null($val)) {
+		if (!is_null($key) && !is_null($val)) {
 			foreach ($this->_getData as $gdK => $gdV)
 				if ($key != $gdK && isset($gdV))
 					$href .= $gdK.'='.urlencode($gdV).'&';
@@ -102,6 +100,18 @@ class PXAdminPager extends PXAdminWidget {
 		$href = substr($href, 0, -1);
 		return $href;
 	}
-}
 
+	function getPosition () {
+		$pagePosition = MASK_MIDDLE_PAGE;
+
+		if ($this->_currentPage == 1) {
+			$pagePosition = $pagePosition | MASK_FIRST_PAGE;
+		}
+		if ($this->_currentPage >= ceil($this->_rowsCount/$this->_rowsPerPage)) {
+			$pagePosition = $pagePosition | MASK_LAST_PAGE;
+		}
+
+		return $pagePosition;
+	}
+}
 ?>

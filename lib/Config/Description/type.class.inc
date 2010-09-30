@@ -21,6 +21,10 @@ class PXTypeDescription {
 	var $byDefault     = NULL;
 	var $outputHandler = NULL;
 
+	function parentType() {
+		return PXRegistry::getTypes($this->parent);
+	}
+
 	/**
 	 * Возвращает массив типов потомков для переданного формата
 	 */

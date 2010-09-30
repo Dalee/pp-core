@@ -29,16 +29,12 @@ class PXModuleObjects extends PXModule {
 		$format = $this->datatype->id;
 
 		$rView = $this->request->getVar($format.'_view');
-		$this->layout->setGetVarToSave($format.'_view', $rView);
 
 		if ($rView === 'plain' || $this->datatype->struct === 'plain' ) {
 			$this->indexAppendTable();
 		} else {
 			$this->indexAppendTree();
 		}
-
-		$this->layout->assignControls('INNER.1.1', 0, array($format));
-		$this->layout->assignContextMenu('INNER.1.0.CONTEXT', 0, array($format));
 	}
 
 	function indexSetMenu($rSid) {
@@ -55,102 +51,47 @@ class PXModuleObjects extends PXModule {
 	}
 
 	function indexAppendTable() {
-		$this->db->LoadDirectoriesByType($this->datatype);
-		$this->layout->append('INNER.1.0', $this->_createObjectsTable($this->datatype->id, true));
-	}
+		$table = new PXAdminTableObjects($this->datatype);
+		$table->addToParent('INNER.1.0');
 
-	function _createObjectsTable($format, $children = false, $parent = null) {
-		$count       =& $this->_loadObjects(DB_SELECT_COUNT, NULL, NULL, NULL, $format, $parent);
-		$onPage      =  $this->app->getProperty('CHILDREN_ON_PAGE', 20);
-		$currentPage =  $this->request->getVar($format.'_page', 1);
+		$cId  = $this->request->getCid();
+		$table->showChildren('cid');
 
-		$this->layout->setGetVarToSave($format.'_page', $currentPage);
-
-		$currentPage  = $this->request->getVar($format.'_page', 1);
-		$currentOrder = $this->request->GetOrderVar($format, $this->app->types[$format]->order, $this->app->types[$format]->fields);
-
-		$this->layout->setGetVarToSave($format.'_order', $currentOrder);
-
-		$currentPage =  $currentPage > ceil($count/$onPage) ? ceil($count/$onPage) : $currentPage;
-
-		$objects     =& $this->_loadObjects(DB_SELECT_TABLE, $onPage, $onPage*($currentPage-1), $currentOrder, $format, $parent);
-
-		$table = new PXAdminTable($objects, $this->app->types[$format], $this->layout->getData);
-		$table->setPager($currentPage, $onPage, $count);
-
-		$table->loadDropdownValues($this->db);
-
-		if($children) {
-			$cId  = $this->request->GetCid();
-			$table->setSelected($cId, $format);
-			$table->setShowChildObjects(true);
-			$table->setChildLink('cid');
-
-			if($cId) {
-				 $this->indexAppendChild($objects[$cId]);
-			}
+		if($cId) {
+			 $this->indexAppendChild($table->get($cId));
 		}
-
-		return $table->getTable();
 	}
 
 	function indexAppendChild($cidObject) {
 		$format = $this->datatype->id;
+		$rCid = $this->request->getCid();
 
 		$this->layout->setThreeColumns();
-		$this->layout->SetGetVarToSave('cid', $this->request->GetCid());
+		$this->layout->setGetVarToSave('cid', $rCid);
 
 		$allowedChilds = $this->app->GetAllowedChildsKeys($format, $cidObject);
 
 		if (count($allowedChilds)) {
 			foreach ($allowedChilds as $childFormat) {
-				$this->layout->SetGetVarToSave($childFormat.'_page', $this->request->GetVar($childFormat.'_page', 1));
-				$this->layout->SetGetVarToSave($childFormat.'_view', $this->request->GetVar($childFormat.'_view', 'plain'));
-
 				if ($this->app->types[$childFormat]->struct == 'tree' && $this->request->GetVar($childFormat.'_view') != 'plain') {
-					$objects =& $this->_loadObjects(DB_SELECT_TREE, null, null, null, $childFormat, $this->request->GetCid());
-					$this->layout->AppendTableAsTree('INNER.2.0', $childFormat, $objects, $this->request->GetCid(), $this->request->GetLeafStatus());
+					$objects = new PXAdminTreeObjects($childFormat, $rqCid, 'ByParent');
 
 				} else {
-					$table = $this->_createObjectsTable($childFormat, false, $this->request->GetCid());
-					$this->layout->append('INNER.2.0', $table);
+					$objects = new PXAdminTableObjects($childFormat, $rqCid, 'ByParent');
 				}
+
+				$objects->addToParent('INNER.2.0');
 			}
-			$this->layout->AssignContextMenu('INNER.2.0.CONTEXT', $this->request->GetCid(), $allowedChilds);
-			$this->layout->AssignControls('INNER.2.1', $this->request->GetCid(), $allowedChilds);
 
 		} else {
-			$this->layout->Assign('INNER.2.0', '
-			<H2>Для добавления в раздел информации необходимо указать разрешенные форматы</H2>
-			<UL><LI><A href="javascript:EditContent(\''.$format.'\', \''.$this->request->GetCid().'\', \'children\')">Разрешенные форматы раздела</A></LI></UL>
-			');
+			$this->layout->notSetAllowedChilds('INNER.2.0', $format, $rCid);
 		}
 	}
 
 
 	function indexAppendTree() {
-		$objects = & $this->_loadObjects(DB_SELECT_TREE);
-		$this->layout->appendTableAsTree('INNER.1.0', $this->datatype->id, $objects, $this->request->getCid(), $this->request->getLeafStatus());
-	}
-
-	function &_loadObjects($mode, $limit = NULL, $offset = NULL, $order = NULL, $type = NULL, $parent = NULL){
-		$type = ($type == null) ? $this->datatype : $this->app->types[$type];
-
-		if(is_null($limit) && is_null($offset)){
-			if (is_null($parent)) {
-				$objects = $this->db->getObjects($type, NULL, $mode);
-			} else {
-				$objects = $this->db->getObjectsByParent($type, NULL, $parent, $mode);
-			}
-		} else {
-			if (is_null($parent)) {
-				$objects = $this->db->getObjectsLimited($type, NULL, $limit, $offset, $mode, $order);
-			} else {
-				$objects = $this->db->getObjectsByParentLimited($type, NULL, $parent, $limit, $offset, $mode, $order);
-			}
-		}
-
-		return $objects;
+		$objects = new PXAdminTreeObjects($this->datatype);
+		$objects->addToParent('INNER.1.0');
 	}
 
 	function adminPopup() {
@@ -319,12 +260,12 @@ class PXModuleObjects extends PXModule {
 		}
 		return $linksParam;
 	}
-	
+
 	function _getLinksData($dType, $where, $whereAllCount, $onPage, $cPage){
 		$pLinks = $this->db->getObjectsByWhereLimited($dType, NULL, $where, $onPage, $onPage*($cPage-1));
 		$pCount = $this->db->getObjectsByWhere($dType, NULL, $where, DB_SELECT_COUNT);
 		$oCount = $this->db->getObjectsByWhere($dType, NULL, $whereAllCount,  DB_SELECT_COUNT);
-		
+
 		return array($pLinks, $pCount, $oCount);
 	}
 
@@ -439,7 +380,7 @@ class PXModuleObjects extends PXModule {
 		$this->db->deleteContentObject($this->datatype, $this->request->getId());
 		$this->returnToReferer();
 	}
-	
+
 	function applyFiltersToUri($filters){
 		foreach($filters as $dt => $fields){
 			if(is_array($fields) && count($fields) > 0){
@@ -450,11 +391,11 @@ class PXModuleObjects extends PXModule {
 			}
 		}
 	}
-	
+
 	function applyFiltersToWhere($refFilters, $refDatatype){
 		$filterOnWhere = NULL;
 		if(isset($refFilters[$refDatatype->id])    &&
-		   is_array($refFilters[$refDatatype->id]) && 
+		   is_array($refFilters[$refDatatype->id]) &&
 		   count($refFilters[$refDatatype->id]) > 0
 		  ){
 			$applied = 0;
@@ -473,11 +414,11 @@ class PXModuleObjects extends PXModule {
 					$modifiers &= P_LEFT;
 					$filter  = substr($filter, 0, -1);
 				}
-				
-				// build where 
+
+				// build where
 				$filterOnWhere .= $refDatatype->id . '.' .$this->db->escapeString($field).$this->db->LIKE($filter, $modifiers)." AND ";
 			}
-			
+
 			if(!$applied){
 				$filterOnWhere = NULL;
 			} else {
@@ -488,11 +429,11 @@ class PXModuleObjects extends PXModule {
 		}
 		return $filterOnWhere;
 	}
-	
+
 	function appendCharCheck(){
 		$this->nextLocation .= '&charcheck='.urlencode('йцукен');
 	}
-	
+
 	function appendLinksExistFlag(){
 		foreach($this->request->GetAllPostData() as $k => $v){
 			if(is_string($k) && strstr($k, '_exist') == '_exist'){
@@ -500,7 +441,7 @@ class PXModuleObjects extends PXModule {
 			}
 		}
 	}
-	
+
 	function returnToId($id, $action = null) {
 		$this->nextLocation .= '&id='.$id;
 
@@ -545,7 +486,7 @@ class PXModuleObjects extends PXModule {
 			$ll = $this->_makeLinkedListFrom($reference);
 			$this->db->ModifyLinks($reference, $this->datatype->id, $id, $ll, false);
 		}
-		
+
 		if(count($filters = (array)$this->request->GetVar('filters', array()))){
 			$this->applyFiltersToUri($filters);
 			$this->appendCharCheck();

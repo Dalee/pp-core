@@ -134,6 +134,10 @@ class PXDisplayType {
 		return '<span class="error">Вывод поля типа '.$field->displayType->name.' еще не описан</span>';
 	}
 
+	function buildTreeHover($field, $object, $param=NULL) {
+		return '<span class="error">Вывод поля типа '.$field->displayType->name.' еще не описан</span>';
+	}
+
 	/**
 	 * Возвращает html с выводом значения поля объекта в
 	 * таблицах PXAdminTable

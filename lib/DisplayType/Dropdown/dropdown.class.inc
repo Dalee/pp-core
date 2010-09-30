@@ -20,6 +20,11 @@ class PXDisplayTypeDropdown extends PXDisplayType {
 		$value = $object[$field->name];
 		return isset($field->values->values[$value][$displayField]) ? $field->values->values[$value][$displayField] : '';
 	}
+
+	function buildTreeHover($field, $object, $param=NULL) {
+		return $this->buildCell($field, $object, $param);
+	}
+
 	
 	function getFormats(&$param) {
 		$format = '';

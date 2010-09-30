@@ -21,14 +21,13 @@ class PXModuleAdvert extends PXModule {
 
 		$campaigns = $this->adminCampaigns($sid);
 
-		if (is_numeric($sid) && isset($campaigns->leafs[$sid])) {
+		if (is_numeric($sid) && $campaigns->has($sid)) {
 			$this->adminBanners($sid);
 		}
 
 		$this->adminPlaces();
 
 		foreach($this->controls as $dt=>$parents) {
-			$this->layout->appendControls('INNER.'.$parents[2].'.1', $parents[0], array($dt));
 //			$this->layout->appendContextMenu('INNER.0.0.CONTEXT', $parents[1], array($dt));
 		}
 	}
@@ -36,13 +35,9 @@ class PXModuleAdvert extends PXModule {
 	function adminCampaigns($sid) {
 		$dtCampaign =& $this->app->types[$this->dtCampaign];
 
-		$tree = $this->db->getObjects($dtCampaign, NULL, DB_SELECT_TREE);
-		$this->db->filterByAccess('admin', $dtCampaign, $tree);
-
-		$dtCampaign->makeTreeWithSid = true;
-
-		$this->layout->append('INNER.0.0', '<h2>'.$dtCampaign->title.' ('.(sizeof($tree->leafs) - 1).')</h2>');
-		$this->layout->appendTree('INNER.0.0', $dtCampaign, $tree, $sid, $this->request->getLeafStatus());
+		$tree = new PXAdminTreeObjects($dtCampaign);
+		$tree->showChildren('sid');
+		$tree->addToParent('INNER.0.0');
 
 		if ($this->user->can('write', $dtCampaign, array())) {
 			$this->controls[$this->dtCampaign] = array($sid, 0, 0);
@@ -54,21 +49,10 @@ class PXModuleAdvert extends PXModule {
 	function adminBanners($sid) {
 		$dtBanner =&  $this->app->types[$this->dtBanner];
 
-		$this->layout->setGetVarToSave($dtBanner->id.'_page', $this->request->getVar($dtBanner->id.'_page', 1));
-		$currentPage = $this->request->getVar($dtBanner->id.'_page', 1);
-
-		$currentOrder = $this->request->getOrderVar($dtBanner->id, $dtBanner->order, $dtBanner->fields);
-		$this->layout->setGetVarToSave($dtBanner->id.'_order', $currentOrder);
-
-		$objects = $this->db->getObjectsByParentLimited($dtBanner, NULL, $sid, $this->onPage, $this->onPage*($currentPage-1), DB_SELECT_TABLE, $currentOrder);
-		$count   = $this->db->getObjectsByParent($dtBanner, NULL, $sid, DB_SELECT_COUNT);
-
-		$table = new PXAdminTable($objects, $dtBanner, $this->layout->getData);
+		$table = new PXAdminTableObjects($dtBanner, $sid, 'ByParent');
 		$stats = '<a href="javascript:AdminPopup(\''.$this->area.'\',\'{{format}}\',{{id}}, \'monthly\',990,600);"><img border="0" src="i/icon/stat.gif" align="middle" hspace="3" alt="{{title}}"></a>';
+		// FIXME
 		$table->appendControl('stats', $stats);
-		$table->setPager($currentPage, $this->onPage, $count);
-		$table->loadDropdownValues($this->db);
-
 		$table->addToParent('INNER.1.0');
 
 		if ($this->user->can('write', $dtBanner, array('id' => 0, 'parent' => $sid))) {
@@ -80,16 +64,8 @@ class PXModuleAdvert extends PXModule {
 		$dtPlace = $this->app->types[$this->dtPlace];
 
 		if($this->user->can('admin', $dtPlace)) {
-			$currentOrder = $this->request->GetOrderVar($dtPlace->id, $dtPlace->order, $dtPlace->fields);
-			$this->layout->setGetVarToSave($dtPlace->id.'_order', $currentOrder);
-			$this->layout->setGetVarToSave($dtPlace->id.'_page', $this->request->getVar($dtPlace->id.'_page', 1));
-			$currentPage = $this->request->getVar($dtPlace->id.'_page', 1);
-
-			$objects = $this->db->getObjectsLimited($dtPlace, NULL, $this->onPage, $this->onPage*($currentPage-1), DB_SELECT_TABLE, $currentOrder);
-			$this->db->filterByAccess('admin', $dtPlace, $objects);
-
-			$count   = $this->db->getObjects($dtPlace, NULL, DB_SELECT_COUNT);
-			$this->layout->appendTable('INNER.0.0', $dtPlace->id, $objects, null, null, $currentPage, $this->onPage, $count);
+			$table = new PXAdminTableObjects($dtPlace);
+			$table->addToParent('INNER.0.0');
 
 			if ($this->user->can('write', $dtPlace, array())) {
 				$this->controls[$this->dtPlace] = array(0, 0, 0);
@@ -221,7 +197,7 @@ class PXModuleAdvert extends PXModule {
 					$graph->title->Set($bannerTitle);
 
 					$graph->Stroke();
-					
+
 
 					exit; /*<====EXIT !!!*/
 				}//if
@@ -337,161 +313,5 @@ SQL;
 
 		return 'popup.phtml?area=advert&format=adbanner&mode='.$mode.'&id='.$id.'&year='.$year.'&month='.$month;
 	}
-
-	function userIndex() {
-		$layout  = $this->layout;
-		$app     = $this->app;
-		$db      = $this->db;
-		$request = $this->request;
-		
-		$error = 0;
-		$refName = $this->dtBanner.'2'.$this->dtPlace;
-		if ($rqPlaceId = $request->GetVar('p')) {
-			$adPlace = $db->GetObjectById($app->types[$this->dtPlace], $rqPlaceId);
-			$attached = $db->GetLinks($app->references[$refName], $this->dtPlace, $rqPlaceId);
-			if (count($attached)) {
-				$banners = $db->GetObjectsByIdArray($app->types[$this->dtBanner], "TRUE", array_keys($attached));
-			} else {
-				$banners = $db->_GetData($app->types[$this->dtBanner], DB_SELECT_TABLE, "{$this->dtBanner}.type='{$adPlace['type']}' AND {$this->dtBanner}.dynamic = TRUE AND {$this->dtBanner}.status = TRUE");
-			}
-			if (count($banners)) {
-				$distrib = array();
-				foreach ($banners as $banner) {
-					for ($i=0; $i<$banner['weight']; $i++) {
-						$distrib[] = $banner['id'];
-					}
-				}
-				$toShow = $banners[$distrib[array_rand($distrib)]];
-				if ($request->GetVar('d') == 'gif') {
-					setcookie('place'.$request->GetVar('p'), $toShow['id']);
-
-					$response =& PXResponse::getInstance();
-					$response->redirect($toShow['image']['path']);
-
-				} else {
-					$this->ShowAd($request->GetVar('p'), $toShow);
-				}
-				$toShow['shows'] = (is_numeric($toShow['shows'])) ? $toShow['shows']+1 : 1;
-				$db->user->level = 16384;
-				$db->ModifyContentObject($app->types[$this->dtBanner], $toShow);
-			} else {
-				$error = 2; //  ERROR: no banners to show
-			}
-		} else {
-			$error = 1; //  ERROR: no pid
-		}
-		if ($error && DEBUG) {
-			FatalError("Ошибка <STRONG>#{$error}</STRONG> модуля advert");
-		}
-		exit();
-	}
-
-	function _ParseBannerType($string) {
-		return explode("x", $string);
-	}
-
-	function ShowAd($placeId, $toShow) {
-		list($width, $height) = $this->_ParseBannerType($toShow['type']);
-		$link = '/action.phtml?area='.$this->area.'&p='.$placeId.'&b='.$toShow['id'];
-		$escLink = '/action.phtml?area='.$this->area.'%26p='.$placeId.'%26b='.$toShow['id'];
-		if (!empty($toShow['image']['path'])) {
-			if (!empty($toShow['flash']['path'])) {
-				$html = '
-				<SCRIPT language="JavaScript">
-				<!--
-				var plugin = (navigator.mimeTypes && navigator.mimeTypes["application/x-shockwave-flash"]) ? navigator.mimeTypes["application/x-shockwave-flash"].enabledPlugin : 0;
-				if (plugin) {
-					plugin = parseInt(plugin.description.substring(plugin.description.indexOf(".")-1)) >= 5;
-				}
-				else if (navigator.userAgent && navigator.userAgent.indexOf("MSIE")>=0
-						&& (navigator.userAgent.indexOf("Windows 95")>=0 || navigator.userAgent.indexOf("Windows 98")>=0 || navigator.userAgent.indexOf("Windows NT")>=0)) {
-					document.write(\'<SCRIPT LANGUAGE=VBScript\> \n\');
-					document.write(\'on error resume next \n\');
-					document.write(\'plugin = ( IsObject(CreateObject("ShockwaveFlash.ShockwaveFlash.5")))\n\');
-					document.write(\'</SCRIPT\> \n\');
-				}
-				if (plugin) {
-					document.write(\'<OBJECT classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000"\');
-					document.write(\'  codebase="http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=4,0,2,0" \');
-					document.write(\' id="inside" width="'.$width.'" height="'.$height.'">\');
-					document.write(\' <PARAM name="movie" value="'.$toShow['flash']['path'].'?link1='.$escLink.'"> <PARAM name="menu" value="false"> <PARAM name="quality" value="high"> <PARAM name="bgcolor" value="white"><PARAM name="wmode" value="opaque"> \');
-					document.write(\' <EMBED src="'.$toShow['flash']['path'].'?link1='.$escLink.'" menu="false" quality="high" bgcolor="white" wmode="opaque"\');
-					document.write(\' swLiveConnect="false" width="'.$width.'" height="'.$height.'"\');
-					document.write(\' TYPE="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/shockwave/download/index.cgi?P1_Prod_Version=ShockwaveFlash">\');
-					document.write(\' </EMBED>\');
-					document.write(\' </OBJECT>\');
-				} else if (!(navigator.appName && navigator.appName.indexOf("Netscape")>=0 && navigator.appVersion.indexOf("2.")>=0)){
-					document.write(\'<A href="'.$link.'" target="_blank"><IMG src="'.$toShow['image']['path'].'" width="'.$width.'" height="'.$height.'" border="0" alt=""></A>\');
-				}
-				//-->
-				</SCRIPT><NOSCRIPT><A href="'.$link.'" target="_blank"><IMG src="'.$toShow['image']['path'].'" width="'.$width.'" height="'.$height.'" border="0" alt=""></A></NOSCRIPT>
-				';
-			} else {
-				$html  = '<A href="'.$link.'" target="_blank"><IMG src="'.$toShow['image']['path'].'" width="'.$width.'" height="'.$height.'" border="0" alt=""></A>';
-			}
-		} else {
-			if (!empty($toShow['flash']['path'])) {
-				$html = '
-				<SCRIPT language="JavaScript">
-				<!--
-				var plugin = (navigator.mimeTypes && navigator.mimeTypes["application/x-shockwave-flash"]) ? navigator.mimeTypes["application/x-shockwave-flash"].enabledPlugin : 0;
-				if (plugin) {
-					plugin = parseInt(plugin.description.substring(plugin.description.indexOf(".")-1)) >= 5;
-				}
-				else if (navigator.userAgent && navigator.userAgent.indexOf("MSIE")>=0
-						&& (navigator.userAgent.indexOf("Windows 95")>=0 || navigator.userAgent.indexOf("Windows 98")>=0 || navigator.userAgent.indexOf("Windows NT")>=0)) {
-					document.write(\'<SCRIPT LANGUAGE=VBScript\> \n\');
-					document.write(\'on error resume next \n\');
-					document.write(\'plugin = ( IsObject(CreateObject("ShockwaveFlash.ShockwaveFlash.5")))\n\');
-					document.write(\'</SCRIPT\> \n\');
-				}
-				if (plugin) {
-					document.write(\'<OBJECT classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000"\');
-					document.write(\'  codebase="http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=4,0,2,0" \');
-					document.write(\' id="inside" width="'.$width.'" height="'.$height.'">\');
-					document.write(\' <PARAM name="movie" value="'.$toShow['flash']['path'].'?link1='.$escLink.'"> <PARAM NAME=menu VALUE=false> <PARAM NAME=quality VALUE=high> <PARAM NAME=bgcolor VALUE=white> <PARAM name="wmode" value="opaque">\');
-					document.write(\' <EMBED src="'.$toShow['flash']['path'].'?link1='.$escLink.'" menu="false" quality="high" bgcolor="white" wmode="opaque"\');
-					document.write(\' swLiveConnect=FALSE width="'.$width.'" height="'.$height.'"\');
-					document.write(\' TYPE="application/x-shockwave-flash" PLUGINSPAGE="http://www.macromedia.com/shockwave/download/index.cgi?P1_Prod_Version=ShockwaveFlash">\');
-					document.write(\' </EMBED>\');
-					document.write(\' </OBJECT>\');
-				}
-				//-->
-				</SCRIPT>
-				';
-			} else {
-				$html = '';
-			}
-		}
-		echo '<HTML><HEAD><TITLE></TITLE></HEAD><BODY style="margin:0;padding:0;">';
-		echo $html;
-		echo '</BODY></HTML>';
-	}
-
-
-	function userAction() {
-		$app     = $this->app;
-		$db      = $this->db;
-		$request = $this->request;
-		
-		if ($request->GetVar('b')) {
-			$bannerId = $request->GetVar('b');
-		} else {
-			if ($request->GetVar('p')) {
-				$bannerId = $request->GetCookieVar('place'.$request->GetVar('p'));
-			}
-		}
-		if (isset($bannerId) && !empty($bannerId)) {
-			$adBanner = $db->GetObjectById($app->types[$this->dtBanner], $bannerId);
-			$retValue = $adBanner['reference'];
-			$adBanner['clicks'] = (is_numeric($adBanner['clicks'])) ? $adBanner['clicks']+1 : 1;
-			$db->user->level = 16384;
-			$db->ModifyContentObject($app->types[$this->dtBanner], $adBanner);
-		} else {
-			$retValue = '/';
-		}
-		return $retValue;
-	}
-
 }
 ?>

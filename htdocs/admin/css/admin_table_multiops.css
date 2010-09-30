@@ -46,7 +46,8 @@ div.multiple-bottom-controls {
 	margin: 10px 0 20px 10px;
 	position: relative;
 }
-
+div.multiple-bottom-controls {
+}
 div.multiple-bottom-controls a {
 	font-weight: normal;
 	margin-left: 5px;

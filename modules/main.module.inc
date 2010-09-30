@@ -38,7 +38,7 @@ class PXModuleMain extends PXModule {
 
 		// Loading subcontent objects
 		PXProfiler::begin('load subObjects');
-		$this->loadObjects($this->objects, $urlPath, $this->subObjects);
+		$this->loadObjects($this->objects, $urlPart, $this->subObjects);
 		$this->subObjects->getLinks();
 		PXProfiler::end();
 
@@ -86,10 +86,6 @@ class PXModuleMain extends PXModule {
 		return $aliases;
 	}
 
-	function _loadAdminTree() {
-		return $this->db->GetObjects($this->rootFormat, null, DB_SELECT_TREE);
-	}
-	
 	private function loadObjects($object, $pathName, $fillObj) {
 		if (!$object->hasCurrent()) {
 			return;
@@ -176,43 +172,32 @@ class PXModuleMain extends PXModule {
 		}
 
 		$app     = $this->app;
-		$db      = $this->db;
 		$request = $this->request;
 		$layout  = $this->layout;
 
 		$rootFormat = $this->rootFormat = $app->types[$this->rootFormatId];
-		$this->tree = $this->_loadAdminTree();
-		
-		$rqSid      = $request->GetSid();
 
-		if ($rqSid != null && isset($this->tree->leafs[$rqSid])) {
-			$parentObjectPath = $this->tree->getFullPathString($rqSid);
-		}
+		$rqSid = $request->getSid();
+		$rqCid = $request->getCid();
 
-		$db->filterByAccess('admin', $this->rootFormat, $this->tree);
-		$this->rootFormat->makeTreeWithSid = true;
-		$this->_assignAdminTree();
-		unset($this->rootFormat->makeTreeWithSid);
+		$hTree = new PXAdminTreeObjects($this->rootFormat);
+		$hTree->addToParent('INNER.0.0');
+		$hTree->hideCaption();
+		$hTree->showChildren('sid');
 
-		if ($rqSid != null && isset($this->tree->leafs[$rqSid])) {
-			$parentObject = $db->GetObjectByID($this->rootFormat, $rqSid);
+		if ($rqSid != null && $hTree->has($rqSid)) {
+			$hTree->setSelected($rqSid);
 
-			$layout->AssignTitle('раздел &laquo;'.$parentObject['title'].'&raquo;');
+			$parentObject = $hTree->get($rqSid);
 
-			$allowedChilds = $app->getAllowedChildsKeys($this->rootFormat->id, $parentObject);
+			$layout->assignTitle('раздел &laquo;'.$parentObject['title'].'&raquo;');
 
-			$layout->AssignControls('INNER.1.1', $rqSid, $allowedChilds);
-			$layout->AssignContextMenu('INNER.1.0.CONTEXT', $rqSid, $allowedChilds);
 
 			$cidType   = null;
 			$cidObject = null;
-			$onPage    = max(1, $app->GetProperty('CHILDREN_ON_PAGE', 20));
-			if (count($allowedChilds)) {
-				foreach ($allowedChilds as $childFormat) {
-					$layout->SetGetVarToSave($childFormat.'_page', $request->GetVar($childFormat.'_page', 1));
-					$layout->SetGetVarToSave($childFormat.'_view', $request->GetVar($childFormat.'_view', 'plain'));
-				}
 
+			$allowedChilds = $app->getAllowedChildsKeys($this->rootFormat->id, $parentObject);
+			if (count($allowedChilds)) {
 				foreach ($allowedChilds as $childFormat) {
 					if (!isset($app->types[$childFormat])) {
 						$layout->append('INNER.1.0', '<h1 class="error">Формат '.$childFormat.' не описан</h1>');
@@ -220,107 +205,58 @@ class PXModuleMain extends PXModule {
 					}
 
 					if ($app->types[$childFormat]->struct == 'tree' && $request->GetVar($childFormat.'_view') != 'plain') {
-						$objects = $this->_loadContent($app->types[$childFormat], NULL, 'parent', $rqSid, DB_SELECT_TREE);
-						$layout->AppendTableAsTree('INNER.1.0', $childFormat, $objects, $rqSid, $request->GetLeafStatus());
+						$objects = new PXAdminTreeObjects($childFormat, $rqSid, 'ByParent');
 
 					} else {
-						$count   = $this->_loadContent($app->types[$childFormat], NULL, 'parent', $rqSid, DB_SELECT_COUNT);
-						$currentPage  = $request->GetVar($childFormat.'_page', 1);
-						$currentOrder = $request->GetOrderVar($childFormat, $app->types[$childFormat]->order, $app->types[$childFormat]->fields);
-						
-						$layout->SetGetVarToSave($childFormat.'_order', $currentOrder);
-
-						$currentPage = max(1, ($currentPage > ceil($count/$onPage) ? ceil($count/$onPage) : $currentPage));
-
-						$objects = $this->_loadContentLimited($app->types[$childFormat], NULL, 'parent', $rqSid, $onPage, $onPage*($currentPage-1), DB_SELECT_TABLE, $currentOrder);
-
-						$table = new PXAdminTable($objects, $app->types[$childFormat], $layout->getData);
-						$table->loadDropdownValues($db);
-						$table->setPager($currentPage, $onPage, $count);
-						$table->setSelected($request->GetCid(), $request->getCtype());
-						$table->setParentPathName($parentObjectPath);
-						$table->setShowChildObjects(true);
-						$table->setChildLink('cid');
-
-						$layout->append('INNER.1.0', $table->getTable());
+						$objects =  new PXAdminTableObjects($childFormat, $rqSid, 'ByParent');
 					}
 
-					if ($request->GetCid() && $childFormat == $request->getCtype()) {
-						$layout->SetGetVarToSave('ctype', $request->getCtype());
-						$pos = array_search($request->GetCid(), GetColFromTable($objects, 'id')); // FIXME
+					$objects->addToParent('INNER.1.0');
+					$objects->showChildren('cid');
 
-						if (isset($objects[$request->GetCid()])) {
+					if ($rqCid && $childFormat == $request->getCtype()) {
+						$layout->setGetVarToSave('ctype', $request->getCtype());
+
+						if ($objects->has($rqCid)) {
 							$cidType   = $childFormat;
-							$cidObject = $objects[$request->GetCid()];
+							$cidObject = $objects->get($rqCid);
 						}
 					}
 				}
 
-				if ($request->GetCid() && !empty($cidType)) {
-					$layout->SetGetVarToSave('cid', $request->GetCid());
-					$allowedChilds = $app->GetAllowedChildsKeys($cidType, $cidObject);
+				if ($rqCid && !empty($cidType)) {
+					$layout->setGetVarToSave('cid', $rqCid);
+
+					$allowedChilds = $app->getAllowedChildsKeys($cidType, $cidObject);
 					$layout->setThreeColumns();
 
 					if (count($allowedChilds)) {
 						foreach ($allowedChilds as $childFormat) {
-							$layout->SetGetVarToSave($childFormat.'_page', $request->GetVar($childFormat.'_page', 1));
-							$layout->SetGetVarToSave($childFormat.'_view', $request->GetVar($childFormat.'_view', 'plain'));
-						}
-						
-						foreach ($allowedChilds as $childFormat) {
 							if ($app->types[$childFormat]->struct == 'tree' && $request->GetVar($childFormat.'_view') != 'plain') {
-								$objects = $this->_loadContent($app->types[$childFormat], NULL, 'parent', $request->GetCid(), DB_SELECT_TREE);
-								$layout->AppendTableAsTree('INNER.2.0', $childFormat, $objects, $request->GetCid(), $request->GetLeafStatus());
+								$objects = new PXAdminTreeObjects($childFormat, $rqCid, 'ByParent');
+
 							} else {
-								$count   = $this->_loadContent($app->types[$childFormat], NULL, 'parent', $request->GetCid(), DB_SELECT_COUNT);
-								$currentPage  = $request->GetVar($childFormat.'_page', 1);
-								$currentOrder = $request->GetOrderVar($childFormat, $app->types[$childFormat]->order, $app->types[$childFormat]->fields);
-								
-								$layout->SetGetVarToSave($childFormat.'_order', $currentOrder);
-
-								$currentPage = max(1, ($currentPage > ceil($count/$onPage) ? ceil($count/$onPage) : $currentPage));
-
-								$objects = $this->_loadContentLimited($app->types[$childFormat], NULL, 'parent', $request->GetCid(), $onPage, $onPage*($currentPage-1), DB_SELECT_TABLE, $currentOrder);
-
-								$table = new PXAdminTable($objects, $app->types[$childFormat], $layout->getData);
-								$table->loadDropdownValues($db);
-								$table->setPager($currentPage, $onPage, $count);
-								if (isset($cidObject['pathname'])) {
-									$table->setParentPathName($parentObjectPath.$cidObject['pathname'].'?part=');
-								}
-								$layout->append('INNER.2.0', $table->getTable());
+								$subObjects =  new PXAdminTableObjects($childFormat, $rqCid, 'ByParent');
 							}
-						}
 
-						$layout->AssignContextMenu('INNER.2.0.CONTEXT', $request->GetCid(), $allowedChilds);
-						$layout->AssignControls('INNER.2.1', $request->GetCid(), $allowedChilds);
+							$subObjects->addToParent('INNER.2.0');
+						}
 
 					} else {
-						$layout->Assign('INNER.2.0', '
-						<H2>Для добавления в раздел информации необходимо указать разрешенные форматы</H2>
-						<UL><LI><A href="javascript:EditContent(\''.$cidType.'\', \''.$request->GetCid().'\', \'children\')">Разрешенные форматы раздела</A></LI></UL>
-						');
+						$this->layout->notSetAllowedChilds('INNER.2.0', $cidType, $rqCid);
 					}
 				}
+
 			} else {
-				$layout->Assign('INNER.1.0', '
-				<H2>Для добавления в раздел информации необходимо указать разрешенные форматы</H2>
-				<UL><LI><A href="javascript:EditContent(\''.$this->rootFormatId.'\', \''.$rqSid.'\', \'children\')">Разрешенные форматы раздела</A></LI></UL>
-				');
+				$this->layout->notSetAllowedChilds('INNER.1.0', $this->rootFormatId, $rqSid);
 			}
 
 		} elseif ($rqSid != null) {
-			$layout->Assign('INNER.1.0', '<H2 class="error">Раздел '.$rqSid.' не найден</H2>');
+			$layout->assign('INNER.1.0', '<H2 class="error">Раздел '.$rqSid.' не найден</H2>');
 
 		} else {
-			$layout->Assign('INNER.1.0', '<H2>Выберите раздел</H2>');
+			$layout->assign('INNER.1.0', '<H2>Выберите раздел</H2>');
 		}
-	}
-
-	function _assignAdminTree(){
-		$this->layout->AssignTree('INNER.0.0', $this->rootFormat, $this->tree, $this->request->GetSid(), $this->request->GetLeafStatus());
-		$this->layout->AssignControls('INNER.0.1', $this->request->GetSid(), array($this->rootFormatId));
-		$this->layout->AssignContextMenu('INNER.0.0.CONTEXT', 0, array($this->rootFormatId));
 	}
 
 	function _loadContent(&$format, $status, $param, $value, $flag = DB_SELECT_TABLE, $order = NULL){
