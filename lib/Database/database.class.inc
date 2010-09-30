@@ -134,28 +134,14 @@ class PXDatabase extends NLSQLDatabaseAdapter {
 
 	function loadDropdownValuesForListedFields($format, $objects) {
 		foreach($format->fields as $k => $field) {
-			if($field->listed && strlen($field->source) && !sizeof(@$field->values->values)) {
-				switch($field->values->schema) {
-					case 'xml':
-						$this->app->loadXMLDirectory($field->values, true);
-						break;
+			if($field->listed && strlen($field->source)) {
+				$directory = $this->app->directory[$field->source];
 
-					case 'sql':
-						if(!@$source_type = $this->app->types[$this->app->directory[$field->source]->source]) {
-							FatalError('Не описана директория для типа данных '.$field->source);
-						}
+				$idsArray = getColFromTable($objects, $field->name);
 
-						$idsArray = GetColFromTable($objects, $field->name);
-
-						if(!sizeof($idsArray)) {
-							break;
-						}
-
-						$directory = $this->app->directory[$field->source];
-						$directory->location = $source_type->id.'.id IN ('.implode(',', $idsArray).')';
-
-						$this->LoadSQLDirectory($directory, true, array(), $format);
-						break;
+				if(sizeof($idsArray) && $directory->filter !== $idsArray) {
+					$directory->filter = $idsArray;
+					$this->LoadDirectory($directory, true, array(), $format);
 				}
 			}
 		}
@@ -225,6 +211,17 @@ class PXDatabase extends NLSQLDatabaseAdapter {
 		$location = $directory->location;
 
 		$location = $this->ParseWhereTemplate($location, $object, $format);
+
+		if(sizeof($directory->filter)) {
+			$tmpWhere = array();
+			if(strlen($location)) {
+				$tmpWhere[] = $location;
+			}
+			$tmpWhere[] = $directory->source.'.id IN ('.implode(',', $directory->filter).')'; 
+
+			$location = implode(' AND ', $tmpWhere);
+		}
+
 		$format = clone $this->types[$directory->source];
         
 		/*

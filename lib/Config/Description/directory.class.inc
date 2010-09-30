@@ -16,10 +16,12 @@ class PXDirectoryDescription {
 	var $parentField;
 	var $location;
 	var $values;
+	var $filter;
 
 	public function __construct($name) {
 		$this->name        = $name;
 		$this->values      = array();
+		$this->filter      = array();
 		$this->loaded      = false;
 		$this->parentField = false;
 	}
