@@ -1384,6 +1384,16 @@ SQL;
 		return $resTable[0]['count'];
 	}
 
+	function addLink($fromId, $toId, $fromFormat, $toFormat) {
+		$links = array(
+			$toId => array(
+				'on' => true,
+			)
+		);
+
+		$this->modifyLinks($fromFormat->references[$toFormat->id], $fromFormat->id, $fromId, $links);
+	}
+
 	/**
 	 *
 	 * Использует {@link PXDatabase::Query}

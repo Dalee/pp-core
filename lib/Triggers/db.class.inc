@@ -1,6 +1,5 @@
 <?php
 abstract class PXAbstractDatabaseTrigger extends PXAbstractTrigger {
-
 	//All ObBefore* triggers MUST return TRUE, otherwise object will not be added/modifyed/deleted !
 	//It can be used for additional content checks in order to forbid addition/modification/deletion of object. 
 	function OnBeforeAddObject(&$db, &$objId, &$format, &$object, &$dbFields, &$dbValues) {
