@@ -14,7 +14,7 @@ class PXAdminTreeBranch extends PXAdminWidget {
 		$html .= $this->paddingImages();
 
 		$html .= $this->contextMenuLink();
-		$html .= $this->editLink().$this->toChildsLink('<span'.$this->spanAttrs().'>'.$title.$this->listedFields().'</span>');
+		$html .= $this->editLink().$this->toChildsLink('<span'.$this->spanAttrs().'>'.$title.'</span>');
 
 		$html .= PXAdminTreeBranch::childrenHTML($this->leaf->children, $this->htmlTree, $this);
 
