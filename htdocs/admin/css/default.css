@@ -1157,8 +1157,7 @@ div.tree div.selected span {
 	color: #FFFFFF;
 }
 
-div.tree span.hide, div.tree div.selected div span.hide {
-	text-decoration: none;
+div.tree span.hide, div.tree a.hide, div.tree div.selected div span.hide {
 	color: #DDDDDD;
 }
 

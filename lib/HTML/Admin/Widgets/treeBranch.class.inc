@@ -85,6 +85,7 @@ class PXAdminTreeBranch extends PXAdminWidget {
 
 		while(!is_null($parent) && is_a($parent, 'PXAdminTreeBranch')) {
 			$type = $parent->isLast ? 'v' : 'tree';
+
 			if($parent->leaf->level > 1) {
 				array_unshift($imgs, '<img src="i/tree/'.$type.'.gif">');
 			}
@@ -164,7 +165,8 @@ class PXAdminTreeBranch extends PXAdminWidget {
 		$href = $this->htmlTree->childsLink($this->leaf->id);
 
 		if(strlen($href)) {
-			$html = '<a href="'.$href.'">'.$html.'</a>';
+			$_ = $this->leaf->content['status'] ? '' : ' class="hide"';
+			$html = '<a href="'.$href.'"'.$_.'>'.$html.'</a>';
 		}
 
 		return $html;
