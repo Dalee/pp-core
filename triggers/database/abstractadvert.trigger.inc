@@ -5,7 +5,6 @@ class PXTriggerDatabaseAbstractAdvert extends PXAbstractDatabaseTrigger {
 	var $refName;
 	var $db;
 	var $isDynamic;
-	var $imageFields = array('image', 'flash');
 
 	function PXTriggerDatabaseAbstractAdvert() {
 		$this->path       = BASEPATH.'site/var/ad/in';

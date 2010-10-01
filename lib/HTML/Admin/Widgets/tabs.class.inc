@@ -24,14 +24,18 @@ class PXWidgetTabs extends PXAdminComplexWidget {
 	function html() {
 		$this->decorate();
 
-		$current = $this->selected || PXRegistry::getRequest()->getVar($this->varName) || 'main';
+		$current = PXRegistry::getRequest()->getVar($this->varName, 'main');
+
+		if(!in_array($this->selected, array_keys($this->items))) {
+			$this->items[$this->selected] = $this->selected;
+		}
 
 		$html[] = "<ul class='topmenu'>";
 		$html[]  = join($this->blocks[self::PREPEND]);
 
 		foreach ($this->items as $k=>$v) {
 			$href   = $this->buildHref ? NLAbstractLayout::buildHref($this->varName, $k) : '?'.$this->varName.'='.$k;
-			$html[] = sprintf("<li %s><a href='%s'>%s</a><b></b></li>", ($k  == $current ? "class='current'" : ""), $href, $v);
+			$html[] = sprintf("<li %s><a href='%s'>%s</a><b></b></li>", ($k  === $current ? "class='current'" : ""), $href, $v);
 		}
 		
 		$html[] = join($this->blocks[self::APPEND]);
