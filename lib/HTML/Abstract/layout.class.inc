@@ -29,10 +29,16 @@ class NLAbstractLayout {
 		$this->html        = $this->template($template.'.tmpl');
 	}
 
-	function template($filename) {
+	function template($filename, $label=null) {
 		foreach($this->template_dirs as $dir) {
 			if(file_exists($dir.$filename)) {
-				return file_get_contents($dir.$filename);
+				$html = file_get_contents($dir.$filename);
+
+				if(is_string($label)) {
+					$this->append($label, $html);
+				}
+
+				return $html;
 			}
 		}
 
