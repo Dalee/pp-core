@@ -9,8 +9,8 @@ final class PXMultipleRegionsReflexer {
 	private $formatId;
 	private $parent = null;
 
-	static private $store  = array();
-	static private $wheres  = array();
+	private static $store  = array();
+	private static $wheres = array();
 
 	const REFLEX_FIELD = 'sys_reflex_id';
 
