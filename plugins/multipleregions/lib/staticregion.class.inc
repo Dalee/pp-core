@@ -190,8 +190,13 @@ class PXCorpRegions {
 			$newHost = $intersection['url'];
 		}
 
-		$newHost = strlen($newHost) ? $newHost : $host;
-		return $langVersion . $newHost;
+		$newHost = $langVersion . (strlen($newHost) ? $newHost : $host);
+		
+		if (count(explode('.', $newHost)) == 2) { //special behaviour for cases like 'megafon.ru'
+			$newHost = 'www.' . $newHost;
+		}
+		
+		return $newHost;
 	}
 
 	static function switchRegion($tree, $fullPath, $regionId, $sidFrom = null) {
