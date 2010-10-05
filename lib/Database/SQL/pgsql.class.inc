@@ -40,7 +40,7 @@ class NLPGSQLDatabase extends NLAbstractSQLDatabase {
 		}
 	}
 
-	function ModifyingQuery($query, $table=NULL, $retField=NULL, $flushCache = true) {
+	function ModifyingQuery($query, $table=NULL, $retField=NULL, $flushCache = true, $retCount = false) {
 		if (!$this->connected) {
 			$this->Connect();
 		}
@@ -67,7 +67,8 @@ class NLPGSQLDatabase extends NLAbstractSQLDatabase {
 					PXProfiler::end();
 					return NULL;
 				}
-
+			} elseif ($retCount) {
+				return pg_affected_rows($res);
 			} else {
 				PXProfiler::end();
 				return $res;

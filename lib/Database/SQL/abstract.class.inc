@@ -25,7 +25,7 @@ abstract class NLAbstractSQLDatabase {
 		$this->cache = ObjectCache::get($cacheType, 'database');
 	}
 
-	function modifyingQuery($query, $table=NULL, $retField=NULL, $flushCache = true) {
+	function modifyingQuery($query, $table=NULL, $retField=NULL, $flushCache = true, $retCount = false) {
 	}
 
 	function modifyingCopy($tableName, $cols, $data) {
