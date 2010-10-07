@@ -41,6 +41,10 @@ class ObjectChecker {
 			}
 
 			$objectIdOrNull     = ($a['objectid']     == NULL || $a['objectid']     == $object['id']);
+			/*
+				Warning ! Use parent object rules with caution ! Rule like "permit access to any object of type STRUCT with parent 123" will also
+				allow access to ANY object types (even are not of STRUCT type or not with immediate parent of STRUCT type) nested somewhere in STRUCT object with id 123
+			*/
 			$objectParentOrNull = ($a['objectparent'] == NULL || $a['objectparent'] == getFromArray($object, 'parent'));
 			$objectTypeOrNull   = ($a['objecttype']   == NULL || $a['objecttype']   == $format->id);
 
@@ -54,13 +58,14 @@ class ObjectChecker {
 
 	private function _checkParent($what, $format, $object) {
 		if ((bool) $format->parent && isset($object['parent']) && is_numeric($object['parent']) && $object['parent'] > 0) {
-			$pKey = $format->parent . $object['parent'];
+			
+			$object['id'] = -1; // deny check by id when check by parent !
+			$pKey         = $format->parent . $object['parent'];
 
 			$parentFormat = $this->acl->db->types[$this->acl->db->types[$format->id]->parent];
 
 			if((bool)$parentFormat->parent) {
 				$this->_loadParent($format, $object, $pKey);
-				
 				$object['parent'] = isset($this->acl->parents[$pKey]) ? $this->acl->parents[$pKey] : null;
 			} else {
 			}
