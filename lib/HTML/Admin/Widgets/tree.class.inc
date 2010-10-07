@@ -57,11 +57,13 @@ class PXAdminTree extends PXAdminWidget {
 	}
 
 	function html(){
+		$caption = $this->htmlCaption();
+
 		if(sizeof($this->tree->leafs[0]->children) > 0) {
 			// Рекурсивно генерируем дерево
-			return '<div class="tree">'.$this->htmlCaption().PXAdminTreeBranch::childrenHTML($this->tree->leafs[0]->children, $this).'</div>';
+			return '<div class="tree">'.$caption.PXAdminTreeBranch::childrenHTML($this->tree->leafs[0]->children, $this).'</div>';
 		} else {
-			$html .= '<div class="empty">&#8212;</div>';
+			return '<div class="tree">'.$caption.'<div class="empty">&#8212;</div></div>';
 		}
 	}
 
