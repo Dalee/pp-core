@@ -1384,7 +1384,19 @@ SQL;
 		return $resTable[0]['count'];
 	}
 
+	/*
+	 * ModifyLinks wrapper
+	 * */
 	function addLink($fromId, $toId, $fromFormat, $toFormat) {
+		$links = array(
+			$toId => array(
+				'on' => true,
+			)
+		);
+
+		$this->modifyLinks($fromFormat->references[$toFormat->id], $fromFormat->id, $fromId, $links, false);
+	}
+	function replaceLink($fromId, $toId, $fromFormat, $toFormat) {
 		$links = array(
 			$toId => array(
 				'on' => true,
