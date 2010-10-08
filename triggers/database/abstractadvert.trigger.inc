@@ -72,7 +72,7 @@ class PXTriggerDatabaseAbstractAdvert extends PXAbstractDatabaseTrigger {
 		$name = $this->path."/adv_b".$object['id'].".dat";
 
 		$this->normalizeFiles($object);
-		$this->_writeCache($name, implode("\n", $this->writeBanner($object)) . "\n", $object['status']);
+		$this->_writeCache($name, implode("\n", array_map(create_function('$row', ' return str_replace("\n", " ", $row);'), $this->writeBanner($object))) . "\n", $object['status']);
 
 		$places  = $this->getPlacesById($object['id']);
 
