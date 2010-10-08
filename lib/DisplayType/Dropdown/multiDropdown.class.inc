@@ -10,7 +10,7 @@ class PXDisplayTypeMultiDropDown extends PXDisplayTypeDropdown {
 			? $field->displayTypeArgs[0]
 			: NULL;
 
-		$value = array_key_exists(0, $value) && $value[0] == "NULL" ? "" : $value;
+		$value = array_key_exists(0, (array)$value) && $value[0] == "NULL" ? "" : $value;
 
 		return NLAbstractHTMLForm::BuildDropDown($field->name . "[]", $value, $field->values->GetList(), true, $size);
 	}
