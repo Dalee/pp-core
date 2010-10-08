@@ -296,6 +296,7 @@ DIV.context {
 	position: absolute;
 	display: none;
 	white-space: nowrap;
+	z-index: 2;
 }
 
 DIV.context A {
