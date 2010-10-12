@@ -15,7 +15,7 @@ class PXDisplayTypeText extends PXDisplayType {
 		$value     = isset($object[$field->name]) ? htmlspecialchars($object[$field->name]) : NULL;
 		$height    = isset($field->displayTypeArgs[1])  ? (int)$field->displayTypeArgs[1]   : 0;
 		$maxlength = !empty($field->displayTypeArgs[2]) ? (int)$field->displayTypeArgs[2]   : NULL;
-		$wrap      = !empty($field->displayTypeArgs[3]) ? trim($field->displayTypeArgs[3])  : NULL;
+		$wrap      = !empty($field->displayTypeArgs[3]) ? trim($field->displayTypeArgs[3])  : "physical";
 
 		return NLAbstractHTMLForm::BuildText($field->name, $value, $height, $maxlength, $wrap);
 	}
