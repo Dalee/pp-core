@@ -90,9 +90,9 @@ class NLAbstractHTMLForm {
 	}
 
 	static
-	function BuildText($name, $value, $height, $maxlength=null) {
+	function BuildText($name, $value, $height, $maxlength=null, $wrap = "physical") {
 		if ($height > 0) {
-			$input = new PXInputTextarea($name, $value, $height, $maxlength);
+			$input = new PXInputTextarea($name, $value, $height, $maxlength, $wrap);
 		} else {
 			$input = new PXInputInput($name, $value, $maxlength);
 		}
