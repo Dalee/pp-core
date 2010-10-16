@@ -22,7 +22,7 @@ class PXRequestBaseTest extends UnitTestCase {
 	// restore original environment after each test
 	function tearDown() {
 		$_SERVER = self::$original_bucks_server;
-		$_GET= self::$original_bucks_get; 
+		$_GET    = self::$original_bucks_get; 
 		$_POST   = self::$original_bucks_post; 
 		$_COOKIE = self::$original_bucks_cookie; 
 		$_FILES  = self::$original_bucks_files; 
@@ -228,7 +228,11 @@ class PXRequestBaseTest extends UnitTestCase {
 	 */
 	function test_getUploadFile_should_return_value() {
 		$request = new PXRequest();
-		$expected_array = array('name' => 'avatar.png');
+		$expected_array = array(
+			'name'  => 'avatar.png',
+			'error' => 0,
+			'size'  => 2048
+		);
 		$this->assertEqual($request->getUploadFile('avatar'), $expected_array);
 	}
 
@@ -267,6 +271,8 @@ class PXRequestBaseTest extends UnitTestCase {
 
 		$_FILES['avatar']           = array();
 		$_FILES['avatar']['name']   = 'avatar.png';
+		$_FILES['avatar']['error']  = 0;
+		$_FILES['avatar']['size']   = 2048;
 	}
 
 }

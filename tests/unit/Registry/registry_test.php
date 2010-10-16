@@ -7,15 +7,15 @@ require_once BASEPATH . '/libpp/lib/HTML/Admin/layout.class.inc';
 
 class RegistryTest extends UnitTestCase {
 	function setUp() {
-		$e = new PXEngineSbin();
+		$e = new PXEngineIndex();
 	}
 	
 	function testGet() {
 		$mapping = array(
 			'app'     => 'PXApplication', 
 			'db'      => 'PXDataBase', 
-			'request' => 'PXNullRequest',
-			'user'    => 'PXUserCron'
+			'request' => 'PXRequest',
+			'user'    => 'PXUserAuthorized'
 		);
 	
 		foreach($mapping as $methodName => $objClass) {

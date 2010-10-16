@@ -143,8 +143,9 @@ class UserRequestTest extends UnitTestCase {
 	}
 
 	private function init_test_datatype() {/*{{{*/
-		Mock::generate("PXApplication");
-		$app = new MockPXApplication();
+		//Mock::generate("PXApplication");
+		//$app = new MockPXApplication();
+		$app = PXApplication::getInstance(new PXEngineIndex());
 
 		$xml = <<<XML
 <model>
@@ -158,7 +159,7 @@ class UserRequestTest extends UnitTestCase {
 XML;
 
 		$dom = PXML::loadString($xml);
-		PXTypeDescription::fillAppTypes($dom, $app);
+		PXTypeDescription::fillAppTypes($dom->xpath("/model/datatypes/datatype"), $app);
 		return $app;
 	}/*}}}*/
 

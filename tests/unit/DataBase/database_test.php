@@ -18,7 +18,7 @@ class DatabaseTest extends UnitTestCase {
 	}/*}}}*/
 
 	/**
-	 * ÐŸÑ€Ð¾Ð²ÐµÑ€ÑÐµÐ¼ Ð¾Ð±ÑŠÐµÐºÑ‚Ñ‹ Ð½ÐµÐ¾Ð±Ñ…Ð¾Ð´Ð¸Ð¼Ñ‹Ðµ Ð´Ð»Ñ Ñ€Ð°Ð±Ð¾Ñ‚Ñ‹ 
+	 * ðÒÏ×ÅÒÑÅÍ ÏÂßÅËÔÙ ÎÅÏÂÈÏÄÉÍÙÅ ÄÌÑ ÒÁÂÏÔÙ 
 	 **/ 
 	function testIsObject() {/*{{{*/
 		$this->assertIsA($this->db, "pxdatabase");
@@ -31,7 +31,7 @@ class DatabaseTest extends UnitTestCase {
 	}/*}}}*/ 
 
 	/**
-	 * Ð¿Ñ€Ð¾Ð²ÐµÑ€ÑÐµÐ¼ ÐºÐ¾Ð»-Ð²Ð¾ Ð¿ÐµÑ€ÐµÐ´Ð°Ð½Ð½Ñ‹Ñ… Ð°Ñ€Ð³ÑƒÐ¼ÐµÐ½Ñ‚Ð¾Ð² Ð¸ Ð¸Ñ… Ð·Ð½Ð°Ñ‡ÐµÐ½Ð¸Ðµ Ð´Ð»Ñ ÐºÐ¾ÑÑ‚Ñ€ÑƒÐºÑ‚Ð¾Ñ€Ð°
+	 * ÐÒÏ×ÅÒÑÅÍ ËÏÌ-×Ï ÐÅÒÅÄÁÎÎÙÈ ÁÒÇÕÍÅÎÔÏ× É ÉÈ ÚÎÁÞÅÎÉÅ ÄÌÑ ËÏÓÔÒÕËÔÏÒÁ
 	 */
 	function testPXDatabase() {/*{{{*/
 	}/*}}}*/
@@ -49,10 +49,8 @@ class DatabaseTest extends UnitTestCase {
 	}/*}}}*/
 
 	function testLoadTriggers() {/*{{{*/
-		$this->db->loadTriggers();
-		
 		$this->assertIsA($this->db->triggers, "array");
-		$this->assertIsA(current($this->db->triggers), "pxabstracttrigger");
+		$this->assertIsA(current($this->db->triggers), "PXTriggerDescription");
 	}/*}}}*/
 
 	function testQuery() {/*{{{*/
@@ -207,6 +205,7 @@ class DatabaseTest extends UnitTestCase {
 		$result = $this->db->getObjectById($this->dt, $this->o['id']);
 		$this->assertTrue(empty($result));
 	}
+
 }
 
 ?>

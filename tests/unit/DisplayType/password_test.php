@@ -20,20 +20,19 @@ class PasswordTest extends UnitTestCase {
 		$html .= '<input type="checkbox" name="test_field[delete]" id="test_field[delete]" class="checkbox"><label for="test_field[delete]">удалить пароль</label>';
 		$html .= ' <span>Длина пароля должна быть не менее 6 символов. Хороший пароль должен включать в себя строчные и заглавные буквы латинского алфавита, а также цифры.</span>';
 		$html .= '</div>';
-		
+
 		$res  = $this->password->buildInput($this->field, $this->object);
-        
-        $this->assertPattern('#^\s*<div[^>]+>.+</div>\s*$#sm',  $res);
-        $this->assertPattern('#input\s+type="password"\s+name="test_field\[type\]"#m',  $res);
-        $this->assertPattern('#input\s+type="password"\s+name="test_field\[retype\]"#m',  $res);
-        $this->assertPattern('#input\s+type="checkbox"\s+name="test_field\[delete\]"#m',  $res);
-        
-        
+
+		$this->assertPattern('#^\s*<div[^>]+>.+</div>\s*$#sm',  $res);
+		$this->assertPattern('#input\s+type="password"\s+name="test_field\[type\]"#m',  $res);
+		$this->assertPattern('#input\s+type="password"\s+name="test_field\[retype\]"#m',  $res);
+		$this->assertPattern('#input\s+type="checkbox"\s+name="test_field\[delete\]"#m',  $res);
+
 		// длина пароля < 32 
 		$this->object['test_field'] = 'qwerty';
 		$res  = $this->password->buildInput($this->field, $this->object);
-        
-        // search for <span>blabla</span> notice
+
+		// search for <span>blabla</span> notice
 		$this->assertPattern("#<span>[^<]+</span>#sm",  $res);
 	}
 	
