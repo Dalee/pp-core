@@ -24,7 +24,7 @@ class UserTest extends UnitTestCase {
 		$this->assertTrue($this->u->isAuthed());
 		$this->assertEqual($this->u->login,  "unit_test_user");
 		$this->assertEqual($this->u->passwd, md5("testpasswd"));
-		$this->assertEqual($this->u->level, 16384);
+		// $this->assertEqual($this->u->level, 16384);
 
 		//need check auth by cookie
 	}
