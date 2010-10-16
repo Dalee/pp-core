@@ -1,9 +1,10 @@
 <?php
 
 class BaseHttpVarsTest extends UnitTestCase {
+
 	function setUp() {
-		$this->object = new NLHTTPVarsData;
-	}	
+		$this->object = new NLHTTPVarsData();
+	}
 
 	function test_charchek_machine() {
 		$this->object->raw['charcheck'] = 'йцукен';
@@ -15,11 +16,6 @@ class BaseHttpVarsTest extends UnitTestCase {
 		$this->object->raw['charcheck'] = myconv('k', 'u', 'йцукен');
 		$this->assertEqual('u', $this->object->charcheck_machine($this->object->raw['charcheck']));
 	}	
-
-	function test_is_utf() {
-		$this->object->raw['test'] = myconv('k', 'u', 'йцукен');
-		$this->assertTrue($this->object->isUtf());
-	}
 
 	function test_normalize_data() {
 	}
