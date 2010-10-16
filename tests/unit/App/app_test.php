@@ -1,19 +1,24 @@
 <?php
 class AppTest extends UnitTestCase {
 	function setUp() {
-		$this->app = PXApplication::getInstance("PXEngineIndex");
+		$this->app = PXApplication::getInstance(new PXEngineIndex());
 	}
 
 	function testGetInstance() {/*{{{*/
-		$engines  = array("sbin", "json", "sbin", "action", "adminAction", "adminIndex", "adminPopup");
+		// $engines  = array("sbin", "json", "sbin", "action", "adminAction", "adminIndex", "adminPopup");
 
-		while($e  = array_shift($engines)) 
-			$this->assertIsA(PXApplication::getInstance("PXEngine".ucfirst($e)), "PXApplication");
+		// while($e  = array_shift($engines)) 
+		//	$this->assertIsA(PXApplication::getInstance("PXEngine".ucfirst($e)), "PXApplication");
 	}/*}}}*/
 
 	function testParseProperties() {
 		$r = $this->app->properties;
-		$expt = array("PROFILER"=>"1", "CHILDREN_ON_PAGE"=>"10");
+		$expt = array(
+			"PROFILER"                => "1",
+			"CHILDREN_ON_PAGE"        => "10",
+			"EXISTING_TEST_PROPERTY0" => "0",
+			"EXISTING_TEST_PROPERTY1" => "1"
+		);
 		$this->assertIdentical($r, $expt);
 	}
 
@@ -52,9 +57,9 @@ class AppTest extends UnitTestCase {
 			<attribute name="status"      description="Активен"             storagetype="boolean"     displaytype="CHECKBOX"/>
 			</datatype> }}} */
 
-		$expected= array_combine($k = array("id", "parent", "title", "passwd", "realname", "email", "access", "data", "status"), 
+		$expected = array_combine($k = array("id", "parent", "title", "passwd", "realname", "access", "status", "image", "file"), 
 			array_pad(array(), sizeof($k), null));
-
+		
 		$this->assertIdentical($r, $expected);
 	}/*}}}*/
 
