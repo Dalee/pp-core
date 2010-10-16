@@ -11,11 +11,13 @@ class ResponseTest extends UnitTestCase {
 	
 	function testStatuses() {
 		$statuses_map = array(
-			"STATUS_OK"              => '200 OK',
-			"STATUS_MOVED"           => '301 Moved Permanetly',
-			"STATUS_NOT_FOUND"       => '404 Not found',
-			"STATUS_FORBIDDEN"       => '403 Forbidden',
-			"STATUS_NOT_IMPLEMENTED" => '501');
+			"STATUS_OK"                      => '200 OK',
+			"STATUS_MOVED"                   => '301 Moved Permanently',
+			"STATUS_NOT_FOUND"               => '404 Not Found',
+			"STATUS_FORBIDDEN"               => '403 Forbidden',
+			"STATUS_NOT_IMPLEMENTED"         => '501 Not Implemented',
+			"STATUS_TEMPORARILY_UNAVAILABLE" => '503 Service Temporarily Unavailable'
+		);
 		
 		$vars = get_object_vars($this->r);
 		
@@ -46,7 +48,7 @@ class ResponseTest extends UnitTestCase {
 	}*/
 	function testNotFound() {
 		$this->r->notFound();
-		$this->assertEqual($this->r->status, "404 Not found");
+		$this->assertEqual($this->r->status, "404 Not Found");
 	}
 
 	/*function forbidden() {
@@ -62,10 +64,9 @@ class ResponseTest extends UnitTestCase {
 	}*/
 	function testNotImplemented() {
 		$this->r->notImplemented();
-		$this->assertEqual($this->r->status, "501");
+		$this->assertEqual($this->r->status, "501 Not Implemented");
 	}
-	
-	
+
 	/*function isError() {
 		return !($this->status == $this->STATUS_OK);
 	}*/
@@ -86,7 +87,7 @@ class ResponseTest extends UnitTestCase {
 		$hdrs = $this->r->headers;
 		
 		$this->assertEqual($hdrs['X-Accel-Expires'], 0);
-		$this->assertEqual($hdrs['Cache-Control'], 'no-cache, must-revalidate');
+		$this->assertEqual($hdrs['Cache-Control'], 'no-store, no-cache, must-revalidate, post-check=0, pre-check=0');
 	}
 	
 	/*function cache($timeOut = 3600) {

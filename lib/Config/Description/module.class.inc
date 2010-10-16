@@ -11,6 +11,8 @@ class PXModuleDescription {
 	var $class       = NULL;
 	var $settings    = array();
 	var $package     = NULL;
+	var $hidetab     = false;
+	var $trigger     = false;
 
 	const EMPTY_DESCRIPTION = '---';
 

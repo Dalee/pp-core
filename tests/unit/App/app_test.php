@@ -45,18 +45,6 @@ class AppTest extends UnitTestCase {
 	function testInitContentObject() {/*{{{*/
 		$r = $this->app->initContentObject("suser");
 
-		/* {{{ <datatype name="suser" description="Пользователь" orderby="title" parent="sgroup" bydefault="all">
-			<attribute name="id"          description="ID"                  storagetype="pk"          displaytype="HIDDEN"/>
-			<attribute name="parent"      description="Входит в группу"     storagetype="integer"     displaytype="PARENTDROPDOWN" source="sgroup" listed="true"/>
-			<attribute name="title"       description="Логин"               storagetype="string"      displaytype="TEXT"/>
-			<attribute name="passwd"      description="Пароль"              storagetype="string"      displaytype="PASSWORD" listed="true"/>
-			<attribute name="realname"    description="Имя"                 storagetype="string"      displaytype="TEXT"/>
-			<attribute name="email"       description="E-mail"              storagetype="string"      displaytype="TEXT"/>
-			<attribute name="access"      description="Доступ"              storagetype="integer"     displaytype="DROPDOWN"  listed="true" source="suser-access"/>
-			<attribute name="data"        description="MISC"                storagetype="serialized"  displaytype="STATIC"/>
-			<attribute name="status"      description="Активен"             storagetype="boolean"     displaytype="CHECKBOX"/>
-			</datatype> }}} */
-
 		$expected = array_combine($k = array("id", "parent", "title", "passwd", "realname", "access", "status", "image", "file"), 
 			array_pad(array(), sizeof($k), null));
 		
@@ -64,8 +52,8 @@ class AppTest extends UnitTestCase {
 	}/*}}}*/
 
 	/**
-	 * Проверить структуру массива 
-	 * проверить структуру элемента
+	 * ��������� ��������� ������� 
+	 * ��������� ��������� ��������
 	 **/
 	function checkStruct($in, $ext) {
 		$this->assertIsA($in, "array");
@@ -88,7 +76,7 @@ class AppTest extends UnitTestCase {
 	}
 
 	function testDescrpition() {
-		$this->checkStruct($this->app->dbDescription, new NLDbDescription());
+		$this->checkStruct($this->app->dbDescription, new NLDbDescription(null));
 	}
 
 	function testModules() {
