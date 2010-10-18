@@ -3,22 +3,31 @@ function createPathByParentId(&$tree, $id) {
 	return createSomePathByParentId($tree, $id);
 }
 
-function createSomePathByParentId(&$tree, $id, $fieldname='pathname', $delim='/', $inContent=true, $withRoot=true) {
+function createSomePathByParentId(&$tree, $id, $fieldname='pathname', $delim='/', $inContent=true, $withRoot=true, $in_recursion=false) {
+	
+	$createdPath = '';
+	$path = '';
 	if(isset($tree->leafs[$id])) {
 		$path = $inContent ? $tree->leafs[$id]->content[$fieldname] : $tree->leafs[$id]->{$fieldname};
-	} else {
-		$path = '';
 	}
 
 	if(isset($tree->leafs[$id]->parent) && $tree->leafs[$id]->parent) {
-		return createSomePathByParentId($tree, $tree->leafs[$id]->parent, $fieldname, $delim, $inContent, $withRoot).$path.$delim;
+		$createdPath = createSomePathByParentId($tree, $tree->leafs[$id]->parent, $fieldname, $delim, $inContent, $withRoot, true).$path.$delim;
 
 	} elseif($withRoot) {
-		return ($path == 'default' ? '' : 'http://'.$path).$delim;
+		$createdPath = ($path == 'default' ? '' : 'http://'.$path).$delim;
 
 	} else {
-		return '';
+		$createdPath = '';
 	}
+	
+	if(!$in_recursion) {
+		$app = PXRegistry::getApp();
+		foreach($app->triggers->layout as $t) {
+			$createdPath = $t->getTrigger()->OnAfterPathCreated($createdPath);
+		}
+	}
+	return $createdPath;
 }
 
 function parseFloat($s) {
