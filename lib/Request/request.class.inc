@@ -58,6 +58,14 @@ class PXRequest {
 	static function GetOriginalPath() {
 		return $_SERVER['SCRIPT_NAME'];
 	}
+	
+	function SetPath($path) {
+		$this->path = $path;
+	}
+	
+	function GetPathAsString() {
+		return $this->path;
+	}
 
 	function GetPath() {
 		$tmpArray = explode("/", $this->path);

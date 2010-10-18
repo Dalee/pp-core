@@ -1,4 +1,5 @@
 <?php
+
 class PXMultiRegions {
 	private $disabled = false;
 	
@@ -7,6 +8,8 @@ class PXMultiRegions {
 	private $user;
 	private $rid;
 	private $context;
+	
+	private $use_uri = false;
 
 	private static $self;
 
@@ -27,6 +30,13 @@ class PXMultiRegions {
 		$this->user    = PXRegistry::getUser();
 
 		$this->format  = PXRegistry::getApp()->types[self::REGION_MARK];
+		
+		// FIXME: short form for getting properties? looks ugly.
+		$params = PXRegistry::getApp()->plugins['multipleregions']->params;
+		if(array_key_exists('use_uri', $params)) {
+			$this->use_uri = true;
+		}
+		
 	}/*}}}*/ 
 
 	function getInstance($context = NULL){ //context: ENUM {"user", "admin", "script"}/*{{{*/
@@ -38,7 +48,6 @@ class PXMultiRegions {
 		if($context){
 			self::$self->context = $context;
 		}
-
 		return self::$self;
 	}/*}}}*/
 
@@ -122,37 +131,62 @@ class PXMultiRegions {
 
 		return reset($urls);
 	}/*}}}*/
+	
+	
+	function getUserRidByUri($updatePath=true) {
+		$id = -1;
+		$regionList = $this->getRegionsData();
+		
+		$pieces = explode('/', trim($this->request->GetOriginalPath(), '/'));
+		$uriPart = $pieces[0];
+				
+		foreach($regionList as $regionId => $regionData) {
+			if(!strcmp($regionData['uri'], $uriPart)) {
+				$id = intval($regionData['id']);
+				if($updatePath) {
+					$newPath = substr(ltrim($this->request->GetOriginalPath(), '/'), strlen($uriPart));
+					$this->request->SetPath($newPath);
+				}
+				break;
+			}
+		}
+		return $id;
+	}
 
 	function getUserRid($forHost = ''){/*{{{*/
 		static $id;
 
 		if(!isset($id)) {
-			$host = preg_replace("#:\d{2,5}$#", '', strlen($forHost) ? $forHost : $this->request->getHttpHost());
-			$id   = 0;
-
-			foreach ($this->getRegionsData() as $region) {
-				if (empty($region['url'])) {
-					continue;
-				}
-
-				$region['url'] = str_replace(' ', '', $region['url']);
-				$regions       = explode(',', $region['url']);
-
-				if (in_array($host, $regions)) {
-					$id = $region['id'];
-					break;
-				}
-
-				foreach ($regions as $k => $r) {
-					if (!strstr($r, '*')) {
+			if($this->use_uri) {
+				$id = $this->getUserRidByUri();
+			} else {
+				$host = preg_replace("#:\d{2,5}$#", '', strlen($forHost) ? $forHost : $this->request->getHttpHost());
+				$id   = 0;
+	
+				foreach ($this->getRegionsData() as $region) {
+					if (empty($region['url'])) {
 						continue;
 					}
-
-					$mask = strtr($r, array('.' => '\.', '*' => '[a-z0-9\-]+'));
-
-					if (preg_match('#^'.$mask.'$#i', $host)) {
+	
+					$region['url'] = str_replace(' ', '', $region['url']);
+					$regions       = explode(',', $region['url']);
+	
+					if (in_array($host, $regions)) {
 						$id = $region['id'];
-						break(2);
+						break;
+					}
+	
+					foreach ($regions as $k => $r) {
+						if (!strstr($r, '*')) {
+							continue;
+						}
+	
+						$mask = strtr($r, array('.' => '\.', '*' => '[a-z0-9\-]+'));
+	
+						if (preg_match('#^'.$mask.'$#i', $host)) {
+							$id = $region['id'];
+							break(2);
+						}
 					}
 				}
 			}
