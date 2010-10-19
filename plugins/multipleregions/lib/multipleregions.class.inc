@@ -183,6 +183,7 @@ class PXMultiRegions {
 				}
 			}
 		}
+		return $id;
 	}
 
 	function getUserRid($forHost = ''){/*{{{*/
