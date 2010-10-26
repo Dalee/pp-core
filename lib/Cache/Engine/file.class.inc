@@ -41,28 +41,38 @@ class PXCacheFile implements IPXCache {
 	}
 
 	function load($objectId) {
-		$unserialized = null;
 		$fileName = $this->_getFilename($objectId);
-
-		if (($serialized = $this->_doLoad($fileName)) !== null) {
-			//avoiding error on: unserialize(serialize(false))
-			if ($serialized === 'b:0;') {
-				$unserialized = false;
-			} else {
-				if (($tmp = @unserialize($serialized)) !== false) {
-					$unserialized = $tmp;
-				}
-			}
-		}
-
-		return $unserialized;
+		return $this->_doLoad($fileName);
 	}
-	
+
+	function loadStaled($objectId) {
+		$fileName = $this->_getFilename($objectId);
+		return $this->_doLoad($fileName, 'expired');
+	}
+
 	function delete($key){
 		$file = $this->_getFilename($key);
 		@unlink($file);
 	}
-	
+
+	function expired($objectId) {
+		$fileName = $this->_getFilename($objectId);
+		$fp = @fopen($fileName, 'rb');
+
+		$expired = true;
+
+		if ($fp !== false) {
+			if (flock($fp, LOCK_SH)) {
+				$expired = $this->_isExpired($fp);
+				flock($fp, LOCK_UN);
+			}
+			
+			fclose($fp);
+		}
+
+		return $expired;
+	}
+
 	function clear() {
 		$this->_cleanDir($this->cache_dir.'/');
 	}
@@ -118,25 +128,38 @@ class PXCacheFile implements IPXCache {
 	}
 
 	/** @return String - serialized data */
-	protected function _doLoad($fileName) {
-		$serialized = null;
+	protected function _doLoad($fileName, $expired=false) {
+		$unserialized = $serialized = null;
 		$fp = @fopen($fileName, 'rb');
 
 		if ($fp !== false) {
 			if (flock($fp, LOCK_SH)) {
-				if (time() < (int)fread($fp, 10)) { // note: valid until 2038 ;)
+				if (!$this->_isExpired($fp) || $expired) { // note: valid until 2038 ;)
 					while(!feof($fp)) $serialized .= fread($fp, 8192);
-				}	
+				}
 				flock($fp, LOCK_UN);
 			}
 			fclose($fp);
 		}
 
-		return $serialized;
+		//avoiding error on: unserialize(serialize(false))
+		if ($serialized === 'b:0;') {
+			$unserialized = false;
+		} elseif ($serialized !== NULL) {
+			if (($tmp = @unserialize($serialized)) !== false) {
+				$unserialized = $tmp;
+			}
+		}
+
+		return $unserialized;
 	}
 
 	protected function _createCacheDir() {
 		MakeDirIfNotExists($this->cache_dir);
+	}
+
+	protected function _isExpired($fp) {
+		return time() >= (int) fread($fp, 10); // note: valid until 2038 ;)
 	}
 }
 ?>
