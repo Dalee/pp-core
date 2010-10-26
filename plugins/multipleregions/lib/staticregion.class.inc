@@ -245,5 +245,9 @@ class PXCorpRegions {
 		$langPrefix = PXRegistry::getApp()->getProperty('ENGLISH_HOST_PREFIX', 'english');
 		return strstr($host, $langPrefix . '.') ? $langPrefix : '';
 	}
+	
+	static function isRegionalObject($format){
+		return PXMultiRegions::getInstance()->isRegionalObject($format);
+	}
 }
 ?>

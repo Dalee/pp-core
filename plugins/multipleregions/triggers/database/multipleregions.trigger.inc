@@ -180,10 +180,9 @@ class PXTriggerDatabaseMultipleregions extends PXAbstractDatabaseTrigger {
 			}
 
 			$this->isRegionalCloning = true; //flag initalize regional clone
-				$cloner = 
-					new PXPublicRegionObjectCloner($format, $objectInDB, $objectInDB, $this);
+			$cloner = new PXPublicRegionObjectCloner($format, $objectInDB, $objectInDB, $this);
 
-				$nid = $cloner->cloneObject($allowedRegionsIds);
+			$nid = $cloner->cloneObject($allowedRegionsIds);
 
 			$this->isRegionalCloning = null;
 

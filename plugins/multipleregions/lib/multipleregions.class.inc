@@ -322,8 +322,8 @@ class PXMultiRegions {
 		return self::$isFederal = $this->user->can(self::MANAGE_REGION_MARK, $this->format);
 	}/*}}}*/
 
-	static function isRegionalObject($format){
-		return isset($format->fields[PXMultiRegions::REGION_MARK]);
+	function isRegionalObject($format){
+		return !$this->disabled && isset($format->fields[PXMultiRegions::REGION_MARK]);
 	}
 
 	#fixme
