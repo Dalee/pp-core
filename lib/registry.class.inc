@@ -10,6 +10,8 @@ final class PXRegistry {
 	private $response;
 	private $user;
 	private $layout;
+	private $struct;
+
 	private $userRegistry;
 
 	private function __construct(){
@@ -35,7 +37,7 @@ final class PXRegistry {
 				case 'app':
 					throw new Exception("{$varName} wasn't set yet.");
 					break;
-
+				
 				case 'db':
 					$registry->$varName = new PXDataBase(self::getApp());
 					break;
@@ -54,6 +56,10 @@ final class PXRegistry {
 
 				case 'response':
 					$registry->$varName = PXResponse::getInstance();
+					break;
+
+				case 'struct':
+					$registry->$varName  = PXRegistry::getDB()->getObjects(PXRegistry::getApp()->types['struct'], null, DB_SELECT_TREE);
 					break;
 
 				default:
@@ -87,6 +93,10 @@ final class PXRegistry {
 
 	public static function getResponse() {
 		return self::get('response');
+	}
+
+	public static function getStruct() {
+		return self::get('struct');
 	}
 
 	public static function getTypes($typeName=null) {
