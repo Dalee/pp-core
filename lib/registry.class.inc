@@ -59,7 +59,7 @@ final class PXRegistry {
 					break;
 
 				case 'struct':
-					$registry->$varName  = PXRegistry::getDB()->getObjects(PXRegistry::getApp()->types['struct'], null, DB_SELECT_TREE);
+					$registry->$varName  = self::getDB()->getObjects(self::getApp()->types['struct'], null, DB_SELECT_TREE);
 					break;
 
 				default:
