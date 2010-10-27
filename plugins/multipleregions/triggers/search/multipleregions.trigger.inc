@@ -1,7 +1,7 @@
 <?php
 class PXTriggerSearchMultipleregions extends PXAbstractSearchTrigger {
 	private
-	function isRegionalTypeOrParentIsReional($formatid) {
+	function isRegionalTypeOrParentIsRegional($formatid) {
 		$isReg = $this->isRegionalType($formatid);
 
 		if($isReg) {
@@ -18,7 +18,7 @@ class PXTriggerSearchMultipleregions extends PXAbstractSearchTrigger {
 
 	private
 	function isRegionalType($formatid) {
-		return $this->regions()->isRegionalObject(PXRegistry::getTypes($formatid));
+		return $this->regions()->isRegionalType(PXRegistry::getTypes($formatid));
 	}
 
 	private
@@ -30,18 +30,18 @@ class PXTriggerSearchMultipleregions extends PXAbstractSearchTrigger {
 		$types = array();
 
 		foreach($config as $dType => $fields) {
-			$types[$this->isRegionalTypeOrParentIsReional($dType)][] = $dType;
+			$types[$this->isRegionalTypeOrParentIsRegional($dType)][] = $dType;
 		}
 
 		$subWhere = array();
 
 		if(isset($types[true]) && sizeof($types[true])) { // has multiregional types
-			$rTypes = array_map(array(PXREgistry::getDB(), 'mapData'), $types[true]);
+			$rTypes = array_map(array(PXRegistry::getDB(), 'mapData'), $types[true]);
 			$subWhere[] = "(".$this->regions()->findByRegion()." AND dtype IN (".implode(',', $rTypes)."))";
 		}
 
 		if(isset($types[false]) && sizeof($types[false])) { // has multiregional types
-			$rTypes = array_map(array(PXREgistry::getDB(), 'mapData'), $types[false]);
+			$rTypes = array_map(array(PXRegistry::getDB(), 'mapData'), $types[false]);
 			$subWhere[] = "dtype IN (".implode(',', $rTypes).")";
 		}
 
@@ -54,7 +54,7 @@ class PXTriggerSearchMultipleregions extends PXAbstractSearchTrigger {
 		}
 
 		if ($this->isRegionalType($formatid)) {
-			$cols[] = 'sys_regions';
+			$cols[] = PXMultiRegions::REGION_MARK;
 		}
 	}
 
@@ -77,7 +77,7 @@ class PXTriggerSearchMultipleregions extends PXAbstractSearchTrigger {
 	}
 
 	function onIndexCronCanIndexRow($formatid, &$row, &$tree) {
-		if (!$this->isRegionalTypeOrParentIsReional($formatid)) {
+		if (!$this->isRegionalTypeOrParentIsRegional($formatid)) {
 			return true;
 		}
 

@@ -322,8 +322,14 @@ class PXMultiRegions {
 		return self::$isFederal = $this->user->can(self::MANAGE_REGION_MARK, $this->format);
 	}/*}}}*/
 
+	// Warning - if regional plugin is disabled (e.g. in scripts) and you have to check for existence 
+	// of regional field in object - use isRegionalType() method instead ! 
 	function isRegionalObject($format){
-		return !$this->disabled && isset($format->fields[PXMultiRegions::REGION_MARK]);
+		return !$this->disabled && $this->isRegionalType($format);
+	}
+	
+	function isRegionalType($format){
+		return isset($format->fields[PXMultiRegions::REGION_MARK]);
 	}
 
 	#fixme
