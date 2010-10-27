@@ -56,7 +56,7 @@ class PXAdminTreeBranch extends PXAdminWidget {
 		$_  = ' onClick="ContextHide();"';
 		$_ .= $this->leaf->content['status'] ? '' : ' class="hide"';
 
-		if (isset($this->objectFormat->fields['pathname'])) {
+		if (isset($this->htmlTree->datatype->fields['pathname'])) {
 			$_ .= ' title="'.$this->leaf->content['pathname'].'"';
 		}
 
