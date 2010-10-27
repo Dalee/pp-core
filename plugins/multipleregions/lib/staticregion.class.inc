@@ -246,8 +246,8 @@ class PXCorpRegions {
 		return strstr($host, $langPrefix . '.') ? $langPrefix : '';
 	}
 	
-	static function isRegionalObject($format){
-		return PXMultiRegions::getInstance()->isRegionalObject($format);
+	static function isRegionalObject($format_id){
+		return PXMultiRegions::getInstance()->isRegionalObject(PXRegistry::getTypes($format_id));
 	}
 }
 ?>
