@@ -180,6 +180,10 @@ class PXUserHTMLLayout extends PXLayoutInterface  {
 		$this->_filters[$functionName] = $args;
 	}
 
+	function addModifier($name, $functionMame) {
+		$this->smarty->register_modifier($name, $functionMame);
+	}
+
 	function addTemplateFunction($templateBlock, $functionName) {
 		$this->smarty->register_function($templateBlock, $functionName);
 	}

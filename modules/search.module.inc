@@ -3,15 +3,39 @@ class PXModuleSearch extends PXModule {
 	var $word;
 
 	function userIndex() {
-		if(!$query = $this->getSearchText()) {
+		$query = $this->getSearchText();
+
+		if(!$query) {
 			return;
 		}
+
 		$chapters = $this->getChapters();
 		$this->objects['search'] = $this->search($query, $chapters);
+		$this->layout->addModifier('searchAnons', array($this, '__prepareAnonce'));
+	}
+
+	function __prepareAnonce($text, $href, $length=200) {
+		$text = strip_tags($text);
+
+		// substr
+		if (strlen($text) > 100) {
+			$more  = $this->layout->getLangVar('more');
+
+			$text = substr($text, 0, 200);
+			$text .= '&hellip; <a href="'.$href.'">'.$more.'</a>';
+		}
+
+		// query hightlight
+		foreach(explode(' ', $this->getSearchText()) as $word) {
+			$text = preg_replace('/('.$word.')/i', '<span class="search-found">\\1</span>', $text);
+		}
+
+		return $text;
 	}
 
 	function getSearchText() {
 		$query = trim($this->request->getVar('text'));
+
 		if(!strlen($query)) {
 			return '';
 		}
