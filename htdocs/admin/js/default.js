@@ -138,7 +138,7 @@ function EditLinkToFile(name, dir) {
 }
 
 function DelContent(format, id) {
-	window.location.href = 'action.phtml?id='+id+'&area=main&action=remove&ask=1&format='+format+'&referer='+window.location.href;
+	window.location.href = 'action.phtml?id='+id+'&area=main&action=remove&ask=1&format='+format+'&referer='+escape(window.location.href);
 }
 
 function AddContent(format, parent) {
@@ -158,7 +158,7 @@ function MoveContent(format, id) {
 			return false;
 		}
 
-		href = 'action.phtml?id='+id+'&area=objects&action=directmove&format='+format+'&shift='+shift+'&referer='+window.location.href.replace('&', '%26');
+		href = 'action.phtml?id='+id+'&area=objects&action=directmove&format='+format+'&shift='+shift+'&referer='+escape(window.location.href);
 		window.location.href = href;
 	} catch(e) {
 	}
