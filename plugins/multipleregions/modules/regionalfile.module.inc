@@ -33,13 +33,19 @@ class PXModuleRegionalFile extends PXModuleFile {
 		} else { //work with list
 			$myRegions = $rid && isset($myRegions[$rid]) ? array($rid) : array_keys($myRegions);
 		}
+		
+		$fieldname = 'shortname';
+		$params = PXRegistry::getApp()->plugins['multipleregions']->params;
+		if(array_key_exists('fieldname', $params)) {
+			$fieldname = $params['fieldname'];
+		}
 
-		if (sizeof($this->settings) && sizeof($myRegions)) {
+		if (sizeof($this->settings) && sizeof($myRegions)) {			
 			$paths          = array_flip($this->settings);
 			$this->settings = array();
 
 			foreach ($myRegions as $regionId) {
-				$suffix = $this->{$isTree ? 'createDirectoryTree' : 'createSingleDirectory'}($allRegionsData, $regionId);
+				$suffix = $this->{$isTree ? 'createDirectoryTree' : 'createSingleDirectory'}($allRegionsData, $regionId, $fieldname);
 				$currentPaths = $paths;
 				array_walk($currentPaths, array($this, '_addSuffix'), $suffix);
 				$this->settings = array_merge($this->settings, array_flip($currentPaths));
