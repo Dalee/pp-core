@@ -272,6 +272,10 @@ class PXMultiRegions {
 				break;
 		}
 	}/*}}}*/
+	
+	function isDisabled() {
+		return $this->disabled;
+	}
 
 	function disable() {
 		$this->disabled = true;
