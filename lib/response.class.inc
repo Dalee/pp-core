@@ -92,7 +92,7 @@ class PXResponse {
 	}
 
 	function isError() {
-		return !($this->status == $this->STATUS_OK);
+		return $this->status != $this->STATUS_OK;
 	}
 
 	function dontCache() {
@@ -142,17 +142,22 @@ class PXResponse {
 	
 	function send($content=null) {
 		if(!headers_sent()) {
-			// FIXME
-			// header('HTTP/1.1 '.$this->status);
+			if($this->isError() || strlen($content)) {
+				// FIXME: we really need HTTP/1.1 ?
+				// for fix troubles with Transfer-Encoding: chunked
+				// use Nginx directive "chunked_transfer_encoding off;"
+				// in the http{} or location{} config scopes
+				header('HTTP/1.1 '.$this->status);
+			}
 
-			if(is_string($content)) {
+			if(strlen($content)) {
 				$this->setLength(strlen($content));
 			}
 
 			$this->_sendHeaders();
 		}
 
-		if(is_string($content)) {
+		if(strlen($content)) {
 			echo $content;
 		}
 	}

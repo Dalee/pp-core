@@ -37,6 +37,19 @@ function parseFloat($s) {
 	return floatval($s);
 }
 
+function __int32($numeric_value){
+	$x = (float)$numeric_value;
+	$y = pow(2,32);
+	
+	if ($x > $y) {
+		$x = pow(2,31)-1;
+	} elseif ($x >= pow(2,31)) {
+		$x -= $y;
+	}
+	
+	return (int)$x;
+}
+
 //FIXME: PXUserHTMLLayout::devBlock - it's right place for it. It is placed here because we using REALLY old version of Smarty, the valid block callback can be a global function only.
 function smarty_block_dev($params, $content, &$smarty) {
 	$app = & PXRegistry::getApp();
