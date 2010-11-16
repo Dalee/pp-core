@@ -73,7 +73,8 @@ class PXModuleRSSEngine extends PXModule {
 		$xml = myconv('k', $this->encoding{0}, $xml);
 		$xml = $this->unhtmlentities($xml);
 
-		$response =& PXResponse::getInstance();
+		$response = PXResponse::getInstance();
+		$response->setOk();
 		$response->setContentType('text/xml', $this->encoding);
 		$response->send($xml);
 		exit;
