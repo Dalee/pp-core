@@ -5,6 +5,7 @@ class PXTriggerDatabaseAbstractAdvert extends PXAbstractDatabaseTrigger {
 	var $refName;
 	var $db;
 	var $isDynamic;
+	var $oldPlaces;
 
 	function PXTriggerDatabaseAbstractAdvert() {
 		$this->path       = BASEPATH.'site/var/ad/in';
@@ -42,6 +43,13 @@ class PXTriggerDatabaseAbstractAdvert extends PXAbstractDatabaseTrigger {
 		}
 	}
 
+	function OnBeforeModifyLinks(&$db, &$objId, &$formatId, &$links, $linkedFormat, &$objectInDB, $reference) {
+		if ($formatId == 'adbanner') {
+			$this->oldPlaces = $this->getPlacesById($objId);
+		}
+		return true;
+	}
+	
 	function writeBanner($object) {
 		return array();
 	}
@@ -75,6 +83,10 @@ class PXTriggerDatabaseAbstractAdvert extends PXAbstractDatabaseTrigger {
 		$this->_writeCache($name, implode("\n", array_map(create_function('$row', ' return str_replace("\n", " ", $row);'), $this->writeBanner($object))) . "\n", $object['status']);
 
 		$places  = $this->getPlacesById($object['id']);
+
+		if ($this->oldPlaces) {
+			$places = $places + $this->oldPlaces;
+		}
 
 		foreach ($places as $place) {
 			$this->adplace($place);
