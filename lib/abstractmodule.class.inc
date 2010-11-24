@@ -14,11 +14,26 @@ abstract class PXModule implements PXModuleIF {
 	var $settings;
 	protected $__selfDescription;
 
+	/**
+	 * @var PXApplication
+	 */
 	var $app;
+	/**
+	 * @var PXDatabase
+	 */
 	var $db;
+	/**
+	 * @var PXRequest
+	 */
 	var $request;
+	/**
+	 * @var PXUser
+	 */
 	var $user;
 	var $layout;
+	/**
+	 * @var PXResponse
+	 */
 	var $response;
 
 	function __construct($area, $settings, $selfDescription = null) {

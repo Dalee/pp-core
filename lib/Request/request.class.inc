@@ -133,10 +133,14 @@ class PXRequest {
 		return $this->cookieData->_GetVar($varName);
 	}
 
+	/**
+	 * Set cookie
+	 * @deprecated
+	 */
 	function SetCookieVar($varName, $value='', $expire=NULL) {
-		$this->cookieData->_SetVar('charcheck', 'йцукен', $expire);
-
-		return $this->cookieData->_SetVar($varName, $value, $expire);
+		$response = PXRegistry::getResponse();
+		$response->SetCookie('charcheck', 'йцукен', $expire);
+		return $response->SetCookie($varName, $value, $expire);
 	}
 
 	function GetAllGetData() {

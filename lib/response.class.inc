@@ -176,5 +176,30 @@ class PXResponse {
 			sendheaders(); // TODO: remove
 		}
 	}
+
+	/**
+	 * Set cookie
+	 *
+	 * (Don't send cookie, if headers already sent)
+	 *
+	 * @param string $name
+	 * @param mixed $value
+	 * @param integer $expire
+	 * @return boolean
+	 */
+	function SetCookie($name, $value, $expire = NULL) {
+		if (headers_sent ()) {
+			return false;
+		}
+		if (is_array($value) || is_object($value)) {
+			$value = serialize($value);
+		}
+
+		$value = convert_cyr_string($value, 'k', 'w');
+		if (!is_numeric($expire)) {
+			$expire = 0;
+		}
+		return setcookie($name, $value, $expire, '/');
+	}
 }
 ?>
