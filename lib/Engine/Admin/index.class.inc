@@ -65,7 +65,7 @@ class PXEngineAdminIndex extends PXEngineAdmin {
 			return $this->showAuthForm();
 		}
 
-		$area = $this->request->getArea(current(array_keys($this->menu)));
+		$area = htmlspecialchars($this->request->getArea(current(array_keys($this->menu))));
 		$this->fillLayout($area);
 
 		if($area == 'exit') {
