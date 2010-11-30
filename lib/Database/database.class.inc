@@ -1406,6 +1406,27 @@ SQL;
 		$this->modifyLinks($fromFormat->references[$toFormat->id], $fromFormat->id, $fromId, $links);
 	}
 
+	function deleteLink($fromId, $toId, $fromFormat, $toFormat) {
+		$links = array(
+			$toId => array(
+				'off' => false,
+			)
+		);
+
+		$this->modifyLinks($fromFormat->references[$toFormat->id], $fromFormat->id, $fromId, $links, false);
+	}
+
+	function deleteAllLinks($fromId, $fromFormat, $toFormat) {
+		$links = array(
+			array(
+				'off' => false,
+			)
+		);
+
+		$this->modifyLinks($fromFormat->references[$toFormat->id], $fromFormat->id, $fromId, $links);
+	}
+
+
 	/**
 	 *
 	 * Использует {@link PXDatabase::Query}
