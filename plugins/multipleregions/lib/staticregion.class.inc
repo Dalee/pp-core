@@ -23,7 +23,7 @@ class PXCorpRegions {
 	}
 
 	static function getRegionId($type = 'user') {
-		$r = PXMultiRegions::getInstance();
+		$r = self::multi();
 
 		if ($type == 'user') {
 			return  $r->getUserRid();
@@ -42,7 +42,7 @@ class PXCorpRegions {
 
 	static function getRegionData($id = NULL) {
 		if ($id == NULL) {
-			$r = PXMultiRegions::getInstance();
+			$r = self::multi();
 			return $r->getMyRegionData();
 		} else {
 			return PXRegistry::getDb()->getObjectById(PXRegistry::getApp()->types[self::getField()], $id);
@@ -247,7 +247,7 @@ class PXCorpRegions {
 	}
 	
 	static function isRegionalObject($format_id){
-		return PXMultiRegions::getInstance()->isRegionalObject(PXRegistry::getTypes($format_id));
+		return self::multi()->isRegionalObject(PXRegistry::getTypes($format_id));
 	}
 }
 ?>
