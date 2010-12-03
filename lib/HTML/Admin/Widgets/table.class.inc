@@ -387,8 +387,8 @@ class PXAdminTable extends PXAdminComplexWidget {
 		}
 
 		switch(true){
-			case isset($this->parentPathnames):
-				$pathname = isset($row['parent']) ? $this->parentPathnames[$row['parent']] : '';
+			case isset($this->parentPathnames[$row['parent']]):
+				$pathname = $this->parentPathnames[$row['parent']];
 
 				if($this->dtype->parent == 'struct') {
 					return $pathname.$row['pathname'];
