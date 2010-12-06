@@ -290,13 +290,18 @@ class PXMultiRegions {
 			return "1 = 1";
 		}
 
-		$conditionArray = $regionsList
-			? $regionsList
-			: $this->getAllowedRegionsIds();
+		if (empty($this->rid)) {
+			$conditionArray = $regionsList
+				? $regionsList
+				: $this->getAllowedRegionsIds();
+			
+			$res = $this->db->intersectIntArray(PXMultiRegions::REGION_MARK, $conditionArray);
 
-		return empty($this->rid) 
-			? $this->db->intersectIntArray(PXMultiRegions::REGION_MARK, $conditionArray) 
-			: $this->db->inArray(self::REGION_MARK, $this->rid);
+		} else {
+			$res = $this->db->inArray(self::REGION_MARK, $this->rid);
+		}
+
+		return $res;
 	}/*}}}*/
 
 	function isCurrentInSet($list){/*{{{*/
