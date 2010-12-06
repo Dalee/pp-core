@@ -314,6 +314,10 @@ class NLPGSQLDatabase extends NLAbstractSQLDatabase {
 	function inArray($arrayField, $value, $sane = false){
 		return sprintf("%s @> ARRAY[%s]", $sane ? $arrayField : $this->EscapeString($arrayField), $sane ? $value : $this->EscapeString($value));
 	}
+	
+	function arrayIn($arrayField, $value, $sane = false){
+		return sprintf("%s <@ ARRAY[%s]", $sane ? $arrayField : $this->EscapeString($arrayField), $sane ? $value : $this->EscapeString($value));
+	}
 
 	function intersectIntArray($arrayField, $values) {
 		return sprintf("%s && '{%s}'",
