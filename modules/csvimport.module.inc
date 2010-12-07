@@ -251,6 +251,11 @@ HTML;
 		return $result;
 	}
 
+	#method for safe access
+	function getParsedCsv($filename, $length=null) {
+		return $this->_GetCsvSource($filename, $length);
+	}
+
 	function _PrepareString($str) {
 		if (!($length = strlen($str))) return NULL;
 		$str = strtr($str, $this->htmlEsc);
