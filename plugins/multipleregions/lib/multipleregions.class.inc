@@ -226,15 +226,13 @@ class PXMultiRegions {
 		return $id;
 	}/*}}}*/
 
-	function getRidFromLogin() {/*{{{*/
+	function getRidFromLogin() {
 		$urlRegionId = $this->getUserRid();
 
 		if($this->inAllowed($urlRegionId)) {
 			return $urlRegionId;
 		}
-
-		return "";
-	}/*}}}*/
+	}
 
 	function getRid(){/*{{{*/
 		return $this->rid;
