@@ -110,27 +110,39 @@ class PXAdminTable extends PXAdminComplexWidget {
 
 			$html .= '<table class="objects">';
 
-
-			//<!-- table header
-			$html .= '<thead><tr>';
-			$_icons = 2 + count($this->controls) + (($this->dtype->childs && $this->showChildObjects) ? 1 : 0);
-			$html .= '<th class="c'.(($_icons > 2) ? $_icons : '').'"><a href="'.$this->_buildHref($this->dtype->id.'_order', $this->dtype->order).'" title="Порядок сортировки по умолчанию"><img src="i/icon/order.gif" width="7" height="8" alt=""></a></th>';
+			$enabledFilters = 0;
+			$thead = '';
 
 			foreach ($this->dtype->fields as $field) {
 				if ($field->listed) {
-					$html .= '<th'.($field->name === $this->titleKey ? ' class="maincol"' : ' class="c-'.strtolower($field->displayType->name).'"').'>';
+					if($field->storageType->filterable()){
+						!($filterOn = isset($this->filters[$this->dtype->id][$field->name])) OR $enabledFilters++;
+						$thead .= '<th class="ref-filter-'.( $filterOn ? 'show' : 'hide').'" ondblclick="ShowHideFilter(this)" title="Двоиной клик, чтобы скрыть/показать фильтр по этому полю"><span>'.$field->description.'</span>';
+						$thead .= '<input type="text" name="filters['.$this->dtype->id.']['.$field->name.']" value="'.($filterOn ? $this->filters[$this->dtype->id][$field->name]: null).'" />';
+						$thead .= '</th>';
 
-					$param = array(
-						'order' => $this->currentOrder,
-						'dtype' => $this->dtype->id,
-						'table' => $this
-					);
+					} else {
 
-					$html .= $field->storageType->objectsSortOrder($field, NULL, $param);
-
-					$html .= '</th>';
+						$thead .= '<th'.($field->name === $this->titleKey ? ' class="maincol"' : ' class="c-'.strtolower($field->displayType->name).'"').'>';
+	
+						$param = array(
+							'order' => $this->currentOrder,
+							'dtype' => $this->dtype->id,
+							'table' => $this
+						);
+	
+						$thead .= $field->storageType->objectsSortOrder($field, NULL, $param);
+	
+						$thead .= '</th>';
+					}
 				}
 			}
+			
+			//<!-- table header
+			$html .= '<thead><tr>';
+			$_icons = 2 + count($this->controls) + (($this->dtype->childs && $this->showChildObjects) ? 1 : 0);
+			$html .= '<th class="c'.(($_icons > 2) ? $_icons : '').' ref-filter-'.( $enabledFilters ? 'show' : 'hide').'"><input type="submit" title="Применить фильтр(ы)" value="&gt;"/><a href="'.$this->_buildHref($this->dtype->id.'_order', $this->dtype->order).'" title="Порядок сортировки по умолчанию"><img src="i/icon/order.gif" width="7" height="8" alt=""></a></th>' . $thead;
+
 			$html .= '</tr></thead>';
 			//-->
 
