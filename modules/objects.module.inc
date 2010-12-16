@@ -168,7 +168,7 @@ class PXModuleObjects extends PXModule {
 	}
 
 	function popupCheckAccess($object){
-		if (!$this->user->can('write', $this->datatype, $object)) {
+		if (!$this->user->can(array('write', (($this->request->getId() > 0) ? 'modify' : 'add')) , $this->datatype, $object)) {
 			return true;
 		}
 	}
