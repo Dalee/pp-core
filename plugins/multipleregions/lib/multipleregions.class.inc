@@ -343,7 +343,6 @@ class PXMultiRegions {
 	function addRegionByDefault($format, &$dbFields, &$dbValues, $modifiedObject=null) {
 		if ($this->isRegionalObject($format)) {
 			$allowedRegionsIds = $this->getAllowedRegionsIds();
-
 			$key = array_flip($dbFields);
 			$toArray = array();
 
@@ -463,8 +462,11 @@ class PXMultiRegions {
 
 		$sql = call_user_func_array("sprintf", $params);
 		$result = $this->db->query($sql);
+		if(empty($result)) {
+			return array();
+		}
+		
 		$result = array_combine(getColFromTable($result, 'id'), $result);
-
 		unset($result[$object['id']]);
 
 		$cutOut = array_map(
