@@ -1,4 +1,29 @@
 <?php
+
+/**
+ * Copy the N fields from the table rows.
+ *
+ * @param array $table
+ * @param string $row1
+ * @param string $row2
+ * @return array
+ */
+function GetColsFromTable($table, $row1) {
+	$results = array();
+	if (!is_array($table)) {
+		return $results;
+	}
+	$cols = func_get_args();
+	array_shift($cols);
+	$cols = array_flip($cols);
+	foreach ($table as &$row) {
+		if (is_array($row)) {
+			$results[] = array_intersect_key($row, $cols);
+		}
+	}
+	return $results;
+}
+
 function GetColFromTable($table, $rowName) {
 	$retArray = array();
 	foreach ($table as $row) {
