@@ -64,10 +64,10 @@ class PXModuleObjects extends PXModule {
 
 	function indexAppendChild($cidObject) {
 		$format = $this->datatype->id;
-		$rCid = $this->request->getCid();
+		$rqCid = $this->request->getCid();
 
 		$this->layout->setThreeColumns();
-		$this->layout->setGetVarToSave('cid', $rCid);
+		$this->layout->setGetVarToSave('cid', $rqCid);
 
 		$allowedChilds = $this->app->GetAllowedChildsKeys($format, $cidObject);
 
@@ -84,7 +84,7 @@ class PXModuleObjects extends PXModule {
 			}
 
 		} else {
-			$this->layout->notSetAllowedChilds('INNER.2.0', $format, $rCid);
+			$this->layout->notSetAllowedChilds('INNER.2.0', $format, $rqCid);
 		}
 	}
 
