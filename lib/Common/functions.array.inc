@@ -31,6 +31,19 @@ function GetColFromTable($table, $rowName) {
 	return $retArray;
 }
 
+//grouping hash by key
+function groupArrayByCol($table, $rowName) {
+	$tmp = array();
+
+	foreach($table as $k => $row) {
+		if (isset($row[$rowName])) {
+			$tmp[$row[$rowName]][] = $row;
+		}
+	}
+
+	return $tmp;
+}
+
 function GetColFromTableWithIndexs($table, $rowName) {
 	$retArray = array();
 	foreach ($table as $index=>$row) {
