@@ -30,6 +30,7 @@ class NLMailMessage {
 		$this->returnPath       = NULL;
 		$this->files            = array();
 		$this->format           = 'text';
+		$this->multipart        = 'mixed';
 		$this->boundary         = strtoupper(uniqid(time()));
 		$this->_errorMessage    = NULL;
 		$this->log              = $logFile;
@@ -69,11 +70,19 @@ class NLMailMessage {
 	function setSubject($string) {
 		$this->subject = $string;
 	}
- 
+
 	function setFormat($string) {
 		$this->format = $string;
 	}
- 
+
+	function setMultipartMixed() {
+		$this->multipart = 'mixed';
+	}
+
+	function setMultipartRelated() {
+		$this->multipart = 'related';
+	}
+
 	function setBody($string) {
 		$string = str_replace("\xd", '', $string);
 		$this->body = $string;
@@ -118,14 +127,14 @@ class NLMailMessage {
 		$this->returnPath = $string;
 	}
  
-	function addFile($file, $name, $type='application/octet-stream', $source='') {
+	function addFile($file, $name, $type='application/octet-stream', $source='', $inline = false) {
 		$id = uniqid(rand(), true);
  
 		if(isset($this->files[$name])) {
 			return $this->files[$name]['id'];
 		}
  
-		$this->files[$name] = array('file'=>$file, 'name'=>$name, 'id'=>$id, 'type'=>$type, 'source'=>$source);
+		$this->files[$name] = array('file'=>$file, 'name'=>$name, 'id'=>$id, 'type'=>$type, 'source'=>$source, 'inline?' => $inline);
 		return 'cid:'.$id;
 	}
  
@@ -147,7 +156,7 @@ class NLMailMessage {
 			$this->addHeaders .= $this->_writeMimeHeaders();
  
 			foreach ($this->files as $f) {
-				$this->body .= $this->_attachFile($f['file'], $f['name'], $f['id'], $f['type'], $f['source']);
+				$this->body .= $this->_attachFile($f['file'], $f['name'], $f['id'], $f['type'], $f['source'], $f['inline?']);
 			}
 			$this->body .= "--".$this->boundary."--"."\n";
 		} else {
@@ -253,17 +262,17 @@ class NLMailMessage {
 		return $out;
 	}
  
-	function _attachTextAsFile($encoded, $file, $id, $type='application/octet-stream') {
-		$out = "--".$this->boundary . "\n";
-		$out = $out."Content-type: " . $type . "; name=\"$file\";\n";
-		$out = $out."Content-Transfer-Encoding: base64\n";
-		$out = $out."Content-ID: <$id>\n";
-		$out = $out."Content-disposition: attachment; filename=\"$file\"\n\n";
-		$out = $out.$encoded . "\n";
+	function _attachTextAsFile($encoded, $file, $id, $type='application/octet-stream', $inline = false) {
+		$out  = "--".$this->boundary . "\n";
+		$out .= "Content-type: " . $type . "; name=\"$file\";\n";
+		$out .= "Content-Transfer-Encoding: base64\n";
+		$out .= "Content-ID: <$id>\n";
+		$out .= "Content-disposition: " . ($inline ? 'inline' : 'attachment') . "; filename=\"$file\"\n\n";
+		$out .= $encoded . "\n";
 		return $out;
 	}
  
-	function _attachFile($file, $name, $id, $type='application/octet-stream', $source='') {
+	function _attachFile($file, $name, $id, $type='application/octet-stream', $source='', $inline = false) {
 		if(strlen($source)) {
 			$encoded = $this->_encodeString($source);
 		} else {
@@ -274,7 +283,7 @@ class NLMailMessage {
 			$file = $name;
 		}
  
-		return $this->_attachTextAsFile($encoded, $file, $id, $type);
+		return $this->_attachTextAsFile($encoded, $file, $id, $type, $inline);
 	}
  
 	function _writeSmtpHeaders() {
@@ -306,7 +315,7 @@ class NLMailMessage {
  
 	function _writeMimeHeaders() {
 		$out = "MIME-version: 1.0\n";
-		$out .= "Content-type: multipart/mixed; ";
+		$out .= "Content-type: multipart/{$this->multipart}; ";
 		$out .= "boundary=\"$this->boundary\"\n";
 		$out .= "Content-transfer-encoding: 7BIT\n";
 		return $out;
