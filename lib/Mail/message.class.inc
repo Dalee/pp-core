@@ -118,8 +118,10 @@ class NLMailMessage {
 			$text = str_replace('%'.strtoupper($k).'%', (string)$v, $text);
 		}
  
-		$text = preg_replace("/\%.*?\%/si", '', $text);
- 
+		$text = preg_replace("/(?<!\%)\%.*?\%/si", '', $text);
+		
+		$text = str_replace('%%', '%', $text);
+		
 		return $text;
 	}
  
