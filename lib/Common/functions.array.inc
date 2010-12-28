@@ -32,12 +32,17 @@ function GetColFromTable($table, $rowName) {
 }
 
 //grouping hash by key
-function groupArrayByCol($table, $rowName) {
+function groupArrayByCol($table, $rowNameOrCallBack) {
 	$tmp = array();
+	$is_callable = is_callable($rowNameOrCallBack);
 
 	foreach($table as $k => $row) {
-		if (isset($row[$rowName])) {
-			$tmp[$row[$rowName]][] = $row;
+		$rowName = $is_callable
+			? $rowNameOrCallBack($row)
+			: $rowNameOrCallBack;
+
+		if ($is_callable || isset($row[$rowName])) {
+			$tmp[$is_callable ? $rowName : $row[$rowName]][] = $row;
 		}
 	}
 
