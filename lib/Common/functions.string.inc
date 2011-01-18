@@ -530,7 +530,7 @@ function isAsciiString($AStr) {
 	return preg_match("/^{$ptrASCII}*$/sS", $AStr);
 }
 
-function myconv($from, $to, $string, $be_quiet = false) {
+function myconv($from, $to, $string, $be_quiet = true) {
 	if(isAsciiString($string)) {
 		return $string;
 	}
