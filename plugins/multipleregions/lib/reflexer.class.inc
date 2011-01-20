@@ -32,6 +32,7 @@ final class PXMultipleRegionsReflexer {
 		if (isset(self::$wheres[$this->where])) {
 			return self::$wheres[$this->where];
 		}
+
 		if ($this->regions->isRegionalObject($this->format) || is_object($this->parent)) {
 			$this->setReflexId();
 		}
@@ -64,27 +65,16 @@ final class PXMultipleRegionsReflexer {
 			? self::$store[$this->formatId]['parent']
 			: null;
 	}
-	
-	private function getParentId() {
-		return !empty(self::$store[$this->formatId]['parentId']) 
-			? self::$store[$this->formatId]['parentId']
-			: 0;
-	}
 
 	private function setReflexId() {
 		$reflexId = $this->getReflexId();
 
 		preg_match(sprintf("#%s\.(id|parent) = [^0-9]*?([0-9]+)#", $this->formatId) , $this->where, $m);
-		if(!isset($m[1]) || !isset($m[2])) {
-			return;
-		}
 
 		# or not id in where
 		# or saved ReflexId == currentReflexId
 		# or saved TypeParent == currentTypeParent
-		$check = ($reflexId && $this->getParentType() == $this->format->parent);
-		$check = $check && ($this->getParentId() == $m[2]);
-		if($reflexId == $m[2] || $check) {
+		if(!isset($m[2]) || $reflexId == $m[2] || ($reflexId && $this->getParentType() == $this->format->parent)) {
 			return;
 		}
 
@@ -100,13 +90,11 @@ final class PXMultipleRegionsReflexer {
 		if (!empty($result)) {
 			$result = reset($result);
 		}
-		
+
 		if (isset($result[self::REFLEX_FIELD])) {
 			self::$store[$this->formatId] = array(
 				"refId"  => $result[self::REFLEX_FIELD],
-				"parent" => $this->format->parent,
-				"parentId" => ($m[1] == 'parent') ? $m[2] : 0,
-			);
+				"parent" => $this->format->parent);
 		}
 	}
 }
