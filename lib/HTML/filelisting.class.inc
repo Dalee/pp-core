@@ -159,7 +159,8 @@ HTML;
 	}
 
 	function _listTitle($f) {
-		$_ = '<td class="file '.$f->type.'">';
+		$td_class = $f->isDir ? ' '.$f->type : '';
+		$_ = '<td class="file'.$td_class.'">';
 
 		if ($f->isDir) {
 			if($f->readable) {
@@ -200,8 +201,8 @@ HTML;
 		);
 
 		$context = ' onContextMenu="'.str_replace('\\', '/', implode(', ', $tmp)).'"';
-
-		return '<span'.$context.'>'.$f->name.'</span>';
+		$click   = $f->isDir ? $f->name : '<a style="margin-left:-21px" href="'.$f->alias.'"><img src="/admin/i/files/'.$f->type.'.gif" /></a><a class="memory" href="'.$f->alias.'" onClick="return InMemory(\''.$f->alias.'\');">'.$f->name.'</a>';
+		return "<span".$context.">".$click."</span>";
 	}
 
 	function _listSize($f) {
