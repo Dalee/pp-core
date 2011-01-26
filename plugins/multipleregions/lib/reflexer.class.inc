@@ -29,6 +29,11 @@ final class PXMultipleRegionsReflexer {
 	}
 
 	public function getWhere() {
+		/* if disabled: do not change where */
+		if (PXMultiRegions::getInstance()->isDisabled()) {
+			return $this->where;
+		}
+	
 		if (isset(self::$wheres[$this->where])) {
 			return self::$wheres[$this->where];
 		}
