@@ -84,11 +84,10 @@ class PXTriggerDatabaseMultipleregions extends PXAbstractDatabaseTrigger {
 			}
 
 			$this->isRegionalCloning = true; //flag initalize regional clone
-				$cloner = 
-					new PXPublicRegionObjectCloner($format, $object, $objectInDB, $this);
-
-				$nid = $cloner->cloneObject($allowedRegionsIds);
-
+			
+			$cloner = new PXPublicRegionObjectCloner($format, $object, $objectInDB, $this);
+			$nid    = $cloner->cloneObject($allowedRegionsIds);
+			
 			$this->isRegionalCloning = null;
 
 			$request = PXRegistry::getRequest();
@@ -125,7 +124,7 @@ class PXTriggerDatabaseMultipleregions extends PXAbstractDatabaseTrigger {
 		$isRegionalObject  = $regions->isRegionalObject($format);
 
 		// When cloning regional objects through standard cloning purify the regional field
-		if($isRegionalObject && !$this->isRegionalCloning) {
+		if ($isRegionalObject && !$this->isRegionalCloning) {
 			$object[PXMultipleRegionsReflexer::REFLEX_FIELD] = null;
 			$object[PXMultiRegions::REGION_MARK] = array();
 		}
@@ -180,8 +179,8 @@ class PXTriggerDatabaseMultipleregions extends PXAbstractDatabaseTrigger {
 			}
 
 			$this->isRegionalCloning = true; //flag initalize regional clone
-			$cloner = new PXPublicRegionObjectCloner($format, $objectInDB, $objectInDB, $this);
 
+			$cloner = new PXPublicRegionObjectCloner($format, $objectInDB, $objectInDB, $this);
 			$nid = $cloner->cloneObject($allowedRegionsIds);
 
 			$this->isRegionalCloning = null;
@@ -205,9 +204,12 @@ class PXTriggerDatabaseMultipleregions extends PXAbstractDatabaseTrigger {
 		$permit = $regions->checkRegionAccess($format, $objectInDB) && $regions->checkRegionAccessToParent($format, $objectInDB);
 
 		if(!$permit && $regions->isRegionalObject($format)) {
+			$this->isRegionalCloning = true;
+			
 			$cloner = new PXPublicRegionObjectCloner($format, $objectInDB, $objectInDB, $this);
 			$cloner->moveObject($regions->getAllowedRegionsIds());
 
+			$this->isRegionalCloning = null;
 		} elseif(!$permit) {
 			$this->fireError();
 		}

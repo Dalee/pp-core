@@ -67,8 +67,17 @@ class PXPublicRegionObjectCloner {
 		$reflex_field  = PXMultipleRegionsReflexer::REFLEX_FIELD;
 		$regions_field = PXMultiRegions::REGION_MARK;
 
+
+		// подготовка к клонированию
+		// объект из базы забиваем sys_reflex_id (sri) и регионы
+		// потому что нам надо склонировать всю старую информацию плюс sri и sys_regions
+		
 		$objectInDB[$reflex_field] = $this->oid;
 		$objectInDB[$regions_field] = $allowedRegionsIds;
+
+
+		// ищем родителя-клона
+		// если объект уже пренадлежит клонированному родителю то его надо поместить в родителя-клона
 
 		if (isset($objectInDB['parent']) && $this->parentFormat) {
 			$findClonedParent = $this->db->getObjectsByField($this->parentFormat,
@@ -85,6 +94,9 @@ class PXPublicRegionObjectCloner {
 
 		$this->nid = $this->object['id'] = 
 			$this->db->cloneContentObject($this->format, $objectInDB, !empty($this->objectInDB['status']));
+
+		// после клонирования объекта из базы накатываем на новый объект изменения пользователя
+		// проставляем ему регионы которые он реально выбрал в форме
 
 		$this->object[$regions_field] =
 			array_intersect($this->object[$regions_field], $allowedRegionsIds);
