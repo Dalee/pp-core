@@ -1,12 +1,20 @@
 <?php
 define("MASK_MIDDLE_PAGE",   0);
 
-class PXAdminPager extends PXAdminWidget {
+class PXAdminPager extends PXAdminComplexWidget {
 	var $_currentPage;
 	var $_rowsPerPage;
 	var $_rowsCount;
 	var $_pagerName;
 	var $_getData;
+
+	const BEFORE_PAGE_LIST = 0;
+	const AFTER_PAGE_LIST  = 1;
+
+	public $blocks = array(
+		self::BEFORE_PAGE_LIST => array(),
+		self::AFTER_PAGE_LIST  => array()
+	);
 
 	/**
 	 * Конструктор класса PXAdminPager.
@@ -29,7 +37,8 @@ class PXAdminPager extends PXAdminWidget {
 		$this->_getData     = $get_data;
 	}
 
-	function html(){
+	function html() {
+		$this->decorate();
 		return $this->_buildPager();
 	}
 
@@ -38,8 +47,8 @@ class PXAdminPager extends PXAdminWidget {
 		$html = '';
 
 		if ($this->_rowsCount > $this->_rowsPerPage && $this->_rowsPerPage > 0 && $this->_currentPage > 0) {
-
 			$html .= '<div class="perpage">';
+			$html .= join($this->blocks[self::BEFORE_PAGE_LIST]);
 
 			$allPages = ceil($this->_rowsCount/$this->_rowsPerPage)+1;
 			$start    = (ceil($this->_currentPage/10)-1)*10+1;
@@ -81,24 +90,14 @@ class PXAdminPager extends PXAdminWidget {
 				$html .= '</a>';
 			}
 
+			$html .= join($this->blocks[self::AFTER_PAGE_LIST]);
 			$html .= '</div>';
 		}
 		return $html;
 	}
 
 	function _buildHref($key, $val = NULL) {
-		$href = "?";
-		if (!is_null($key) && !is_null($val)) {
-			foreach ($this->_getData as $gdK => $gdV)
-				if ($key != $gdK && isset($gdV))
-					$href .= $gdK.'='.urlencode($gdV).'&';
-
-			$href .= $key.'='.urlencode($val).'&';
-		} else {
-			$href = " ";
-		}
-		$href = substr($href, 0, -1);
-		return $href;
+		return NLAbstractLayout::buildHref($key, $val, $this->_getData);
 	}
 
 	function getPosition () {
@@ -112,6 +111,18 @@ class PXAdminPager extends PXAdminWidget {
 		}
 
 		return $pagePosition;
+	}
+
+	function getPagerName() {
+		return $this->_pagerName;
+	}
+	
+	function getParamName() {
+		return $this->_pagerName . "_page";
+	}
+
+	public static function getPerPageParamByFormatId($formatId) {
+		return sprintf("%s_per_page", $formatId);
 	}
 }
 ?>

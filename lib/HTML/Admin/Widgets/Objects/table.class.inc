@@ -76,8 +76,12 @@ class PXAdminTableObjects extends PXAdminObjects  {
 	protected
 	function createSubWidget() {
 		$this->count       =& $this->loadObjects($this->getWhere(), DB_SELECT_COUNT);
+		
+		$onPage   = $this->request->getVar(PXAdminPager::getPerPageParamByFormatId($this->format->id), 
+						$this->app->getProperty('CHILDREN_ON_PAGE', 20)); 
 
-		$onPage      =  $this->app->getProperty('CHILDREN_ON_PAGE', 20);
+		$this->layout->setGetVarToSave(PXAdminPager::getPerPageParamByFormatId($this->format->id), $onPage); 
+
 		$currentPage =  $this->request->getVar($this->format->id.'_page', 1);
 
 		$this->layout->setGetVarToSave($this->format->id.'_page', $currentPage);
@@ -166,7 +170,7 @@ class PXAdminTableObjects extends PXAdminObjects  {
 	}
 
 	function html() {
-		return parent::html().$this->pager->html();
+		return parent::html() . $this->pager->html();
 	}
 }
 ?>

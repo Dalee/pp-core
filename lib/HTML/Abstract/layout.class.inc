@@ -169,7 +169,7 @@ class NLAbstractLayout {
 
 	function setGetVarToSave($key, $value) {
 		$this->getData[$key] = $value;
-		$this->assign(strtoupper($key), is_array($value) ? 'ARRAY' : $value);
+		$this->assign(strtoupper($key), $value);
 	}
 
 	function clearGetVar($key) {
@@ -212,6 +212,10 @@ class NLAbstractLayout {
 				$this->labels[$label][] = (string)$value;
 				break;
 
+			case is_array($value):
+				$this->labels[$label][] = (array)$value;
+				break;
+
 			case is_null($value):
 				// pass
 				break;
@@ -243,7 +247,7 @@ class NLAbstractLayout {
 		while(list($label, $widgets) = each($this->labels)) {
 			$html = '';
 
-			foreach($widgets as $w) {
+			foreach ($widgets as $w) {
 				$html .= $this->isWidget($w) ? $w->html() : $w;
 			}
 
@@ -279,29 +283,20 @@ class NLAbstractLayout {
 	}
 
 	// static
-	function buildHref($key, $value) {
-		$layout =& PXRegistry::getLayout();
+	public static function buildHref($key, $value, $getData=array()) {
+		$layoutData = PXRegistry::getLayout()->getData;
+		$getData    = array_merge($layoutData, $getData);
 
-		$href = "?";
+		$href   = "?";
 
-		$layout =& PXRegistry::getLayout();
-
-		foreach ($layout->getData as $k=>$v) {
+		foreach ($getData as $k=>$v) {
 			if (strval($v) != "" && $k != $key) {
-				if (is_array($v)) {
-					foreach ($v as $sk=>$sv) {
-						$href .= $k.'[]='.urlencode($sv).'&';
-					}
-				} else {
-					$href .= $k.'='.urlencode($v).'&';
-				}
+				$href = appendParamToUrl($href, $k, $v);
 			}
 		}
 
-		$href .= $key.'='.$value.'&';
-		$href = substr($href, 0, -1);
-
-		return $href;
+		$href = parse_url(appendParamToUrl($href, $key, $value));
+		return @"?{$href['query']}";
 	}
 }
 

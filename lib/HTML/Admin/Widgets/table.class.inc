@@ -28,9 +28,10 @@ class PXAdminTable extends PXAdminComplexWidget {
 	var $selectedRow;
 	var $showChildObjects;
 	var $childLink;
-	
-	const BEFORE_CONTENT = 0;
-	const AFTER_CONTENT  = 1;
+
+	const BEFORE_CONTENT_ALWAYS = 0;
+	const BEFORE_CONTENT        = 1;
+	const AFTER_CONTENT         = 2;
 
 	/**
 	 * Конструктор класса PXAdminTable.
@@ -55,8 +56,9 @@ class PXAdminTable extends PXAdminComplexWidget {
 		$this->selectedType        = NULL;
 
 		$this->blocks              = array( //set up available subwidgets areas
-			self::BEFORE_CONTENT => array(),
-			self::AFTER_CONTENT  => array()
+			self::BEFORE_CONTENT_ALWAYS => array(),
+			self::BEFORE_CONTENT        => array(),
+			self::AFTER_CONTENT         => array()
 		);
 
 		$this->position = MASK_NO_MOVE; //перемещение не возможно
@@ -105,6 +107,9 @@ class PXAdminTable extends PXAdminComplexWidget {
 		$html = '<div class="table_wrapper">';
 
 		$html .= $this->htmlCaption();
+		
+		$html .= join($this->blocks[self::BEFORE_CONTENT_ALWAYS]);
+
 		if (count($this->data)) {
 			$html .= join($this->blocks[self::BEFORE_CONTENT]);
 
@@ -114,7 +119,10 @@ class PXAdminTable extends PXAdminComplexWidget {
 			//<!-- table header
 			$html .= '<thead><tr>';
 			$_icons = 2 + count($this->controls) + (($this->dtype->childs && $this->showChildObjects) ? 1 : 0);
-			$html .= '<th class="c'.(($_icons > 2) ? $_icons : '').'"><a href="'.$this->_buildHref($this->dtype->id.'_order', $this->dtype->order).'" title="Порядок сортировки по умолчанию"><img src="i/icon/order.gif" width="7" height="8" alt=""></a></th>';
+
+			$html .= '<th class="c'.(($_icons > 2) ? $_icons : '').'">';
+			$html .= '<a href="'.$this->_buildHref($this->dtype->id.'_order', $this->dtype->order).'" title="Порядок сортировки по умолчанию"><img src="i/icon/order.gif" width="7" height="8" alt=""></a>';
+			$html .= '</th>';
 
 			foreach ($this->dtype->fields as $field) {
 				if ($field->listed) {
@@ -218,7 +226,7 @@ class PXAdminTable extends PXAdminComplexWidget {
 		}//if
 		
 		$html .= '</div>';
-		
+
 		return $html;
 	}
 
@@ -352,6 +360,7 @@ class PXAdminTable extends PXAdminComplexWidget {
 		$argsCount = func_num_args();
 
 		$href = "?";
+
 		for ($i = 0; $i < $argsCount; $i++) {
 			if (is_array($args[$i])) {
 				foreach ($args[$i] as $k => $v) {
@@ -360,21 +369,15 @@ class PXAdminTable extends PXAdminComplexWidget {
 			} else {
 				if (isset($args[$i+1])) {
 					$this->_addToUrl($href, $args[$i], $args[++$i]);
-				} else {
-					$href = " ";
 				}
 			}
 		}
-		$href = substr($href, 0, -1);
+
 		return $href;
 	}
 
 	function _addToUrl(&$href, $k, $v) {
-		foreach ($this->getData as $gdK => $gdV)
-			if ($k != $gdK && isset($gdV))
-				$href .= $gdK.'='.urlencode($gdV).'&';
-
-		$href .= $k.'='.urlencode($v).'&';
+		$href = NLAbstractLayout::buildHref($k, $v, $this->getData);
 	}
 
 	function setSiteTree($tree){

@@ -25,6 +25,10 @@ class PXAbstractPlugin {
 	function initSet($params = null) {
 	}
 
+	public static function getParam($pluginName, $paramName) {
+		return @PXRegistry::getApp()->plugins[$pluginName]->params[$paramName];
+	}
+
 	function loadTrigger($relativePath) {
 		list($type, $name) = explode("/", $relativePath);
 		$className = sprintf("pxtrigger%s%s", $type, $name);

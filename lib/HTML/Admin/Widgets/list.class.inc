@@ -38,23 +38,9 @@ class PXAdminList extends PXAdminWidget {
 		return $html;
 	}
 	
-	function _BuildHref($key, $value) {
-		$href = "?";
-		foreach ($this->_getData as $k=>$v) {
-			if (!empty($v) && $k != $key) {
-				if (is_array($v)) {
-					foreach ($v as $sk=>$sv) {
-						$href .= $k.'[]='.urlencode($sv).'&';
-					}
-				} else {
-					$href .= $k.'='.urlencode($v).'&';
-				}
-			}
-		}
-		$href .= $key.'='.$value.'&';
-		$href = substr($href, 0, -1);
-		return $href;
+	function _buildHref($key, $val = NULL) {
+		return NLAbstractLayout::buildHref($key, $val, $this->_getData);
 	}
-	
+
 }
 ?>
