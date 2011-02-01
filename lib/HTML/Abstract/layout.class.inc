@@ -287,8 +287,10 @@ class NLAbstractLayout {
 		$layoutData = PXRegistry::getLayout()->getData;
 		$getData    = array_merge($layoutData, $getData);
 
+		parse_str($href, $href_vars);
+
 		foreach ($getData as $k=>$v) {
-			if (strval($v) != "" && $k != $key) {
+			if (strval($v) != "" && $k != $key && empty($href_vars[$k])) {
 				$href = appendParamToUrl($href, $k, $v);
 			}
 		}
