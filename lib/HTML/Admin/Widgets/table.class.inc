@@ -199,8 +199,8 @@ class PXAdminTable extends PXAdminComplexWidget {
 				$html .= $this->_buildControls($tVars);
 
 				if ($this->dtype->childs && $this->showChildObjects && isset($this->childLink)) {
-					 $html .= '<a href="'.$this->_BuildHref($this->childLink, $row['id'], 'ctype', $this->dtype->id).'">';
-					 $html .= '<img src="i/icon/childs.gif" alt=""></a>';
+					$html .= '<a href="'.$this->_BuildHref($this->childLink, $row['id'], 'ctype', $this->dtype->id).'">';
+					$html .= '<img src="i/icon/childs.gif" alt=""></a>';
 				}
 
 				$html .= '</td>';
@@ -377,7 +377,7 @@ class PXAdminTable extends PXAdminComplexWidget {
 	}
 
 	function _addToUrl(&$href, $k, $v) {
-		$href = NLAbstractLayout::buildHref($k, $v, $this->getData);
+		$href = NLAbstractLayout::buildHref($k, $v, $this->getData, $href);
 	}
 
 	function setSiteTree($tree){

@@ -283,11 +283,9 @@ class NLAbstractLayout {
 	}
 
 	// static
-	public static function buildHref($key, $value, $getData=array()) {
+	public static function buildHref($key, $value, $getData=array(), $href="?") {
 		$layoutData = PXRegistry::getLayout()->getData;
 		$getData    = array_merge($layoutData, $getData);
-
-		$href   = "?";
 
 		foreach ($getData as $k=>$v) {
 			if (strval($v) != "" && $k != $key) {
