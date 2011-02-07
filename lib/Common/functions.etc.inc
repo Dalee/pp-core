@@ -1,10 +1,17 @@
 <?php
-function createPathByParentId(&$tree, $id) {
+function createPathByParentId($tree, $id) {
 	return createSomePathByParentId($tree, $id);
 }
 
-function createSomePathByParentId(&$tree, $id, $fieldname='pathname', $delim='/', $inContent=true, $withRoot=true, $in_recursion=false) {
-	
+function createSomePathByParentId($tree, $id, $fieldname='pathname', $delim='/', $inContent=true, $withRoot=true, $in_recursion=false) {
+	if (!$in_recursion) {
+		$app = PXRegistry::getApp();
+
+		foreach ($app->triggers->layout as $t) {
+			$t->getTrigger()->OnBeforePathCreated($tree, $id);
+		}
+	}
+
 	$createdPath = '';
 	$path = '';
 	if(isset($tree->leafs[$id])) {
