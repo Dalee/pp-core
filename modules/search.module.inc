@@ -27,7 +27,7 @@ class PXModuleSearch extends PXModule {
 
 		// query hightlight
 		foreach(explode(' ', $this->getSearchText()) as $word) {
-			$regex = sprintf("/(%s)/i", preg_quote($word));
+			$regex = sprintf("/(%s)/i", preg_quote($word, '/'));
 			$text = preg_replace($regex, '<span class="search-found">\\1</span>', $text);
 		}
 
