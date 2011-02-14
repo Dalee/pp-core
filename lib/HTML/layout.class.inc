@@ -163,9 +163,18 @@ class PXUserHTMLLayout extends PXLayoutInterface  {
 	function display() {
 		$html = $this->html($this->indexTemplate);
 
-		foreach($this->_filters as $filter=>$filterArgs) {
-			if(function_exists($filter)) {
-				array_unshift($filterArgs, $html);
+		foreach ($this->_filters as $filter => $filterArgs) {
+			if (strstr($filter, '::')) {
+				$filter = explode('::', $filter);
+
+				if (count($filter) > 2) {
+					trigger_error(sprintf('malformed filter %s', join('::', $filter)), E_WARNING);
+					continue;
+				}
+			}
+
+			if (is_callable($filter)) {
+				array_unshift($filterArgs, $html, $this);
 				$html = call_user_func_array($filter, $filterArgs);
 			}
 		}
@@ -177,7 +186,9 @@ class PXUserHTMLLayout extends PXLayoutInterface  {
 		$args = func_get_args();
 		array_shift($args);
 
-		$this->_filters[$functionName] = $args;
+		if (is_callable($functionName)) {
+			$this->_filters[is_array($functionName) ? join('::', $functionName) : $functionName] = $args;
+		}
 	}
 
 	function addModifier($name, $functionMame) {
