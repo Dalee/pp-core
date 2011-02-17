@@ -2,15 +2,6 @@
 
 class PXZoomFilter {
 	public static function run($html, $layout) {
-		$vars = $layout->smarty->get_template_vars();
-		$keys = array_keys($vars);
-
-		extract($vars, EXTR_PREFIX_ALL, 'lt');
-
-		if (!(!empty($lt_currentCtype) && !empty($lt_currentCid) && $lt_currentCid != -1 &&  $lt_currentCtype != -1)) {
-			return $html;
-		}
-
 		return self::wrapImages(self::makePhotoGallery($html));
 	}
 
