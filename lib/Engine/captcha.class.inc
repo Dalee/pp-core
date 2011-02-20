@@ -1,9 +1,9 @@
 <?php
-class PXEngineSbin extends PXEngine {
+class PXEngineCaptcha extends PXEngine {
 	var $result;
 
-	var $request = array('factory' => 'PXNullRequest');
-	var $user    = array('factory' => 'PXUserCron');
+	var $db   = array('factory' => 'PXDatabaseNull');
+	var $user = array('factory' => 'PXUserNull');
 
 	function initDirectories() {
 	}
@@ -13,7 +13,7 @@ class PXEngineSbin extends PXEngine {
 
 	function runModules() {
 	}
-
+	
 	public function engineClass(){
 		return PX_ENGINE_SBIN;
 	}

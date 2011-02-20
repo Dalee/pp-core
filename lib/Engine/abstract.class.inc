@@ -43,7 +43,6 @@ abstract class PXEngine {
 	}
 
 	protected function initApplication() {
-
 		foreach($this->initOrder as $var){
 			if(!is_array($this->$var) || empty($this->{$var}['factory'])){
 				continue;

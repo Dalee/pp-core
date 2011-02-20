@@ -18,8 +18,9 @@ define('DB_SELECT_FULL_TREE',  4);
  * Класс работы с БД
  */
 
+require_once 'interface.inc';
 require_once 'sqladapter.class.inc';
-class PXDatabase extends NLSQLDatabaseAdapter {
+class PXDatabase extends NLSQLDatabaseAdapter implements IPXDatabase {
 	/**
 	 * PXApplication reference
 	 * @var PXApplication
@@ -1702,6 +1703,10 @@ SQL;
 			$audit->error($errString, $format->parent .'/'. $object['parent']);
 			FatalError($errString);
 		}
+	}
+
+	function tableExists($table) {
+		return $this->db->tableExists($table);
 	}
 }
 ?>

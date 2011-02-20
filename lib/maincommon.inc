@@ -17,6 +17,7 @@ require_once 'Logger/nllogger.class.inc';
 require_once 'Exception/deprecated.class.inc';
 
 require_once 'Config/application.class.inc';
+require_once 'Database/null.class.inc';
 require_once 'Database/database.class.inc';
 require_once 'User/classes.inc';
 

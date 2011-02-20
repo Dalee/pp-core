@@ -156,7 +156,7 @@ final class PXRegistry {
 		self::_set('app', $app);
 	}
 
-	public static function setDB(PXDatabase $db) {
+	public static function setDB(IPXDatabase $db) {
 		self::_set('db', $db);
 	}
 

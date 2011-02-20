@@ -4,7 +4,7 @@
 	require_once BASEPATH.'/libpp/lib/Security/captcha.class.inc';
 
 	$engine  = new PXEngineCaptcha();
-	$request = new PXRequest();
+	$request = PXRegistry::getRequest();
 	$bn      = new NLBlockingNumbers();
 
 	switch($request->GetVar('action')){
