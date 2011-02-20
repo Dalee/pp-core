@@ -3,9 +3,10 @@
 	require_once BASEPATH.'/libpp/lib/Security/blockingnumbers.class.inc';
 	require_once BASEPATH.'/libpp/lib/Security/captcha.class.inc';
 
+	$engine  = new PXEngineCaptcha();
 	$request = new PXRequest();
 	$bn      = new NLBlockingNumbers();
-	
+
 	switch($request->GetVar('action')){
 		default:
 		case 'get_image':
@@ -16,7 +17,7 @@
 				$response->send();
 				exit;
 			}
-			
+
 			$fonts = array(
 				BASEPATH.'/libpp/share/fonts/tahoma.ttf'
 			);
@@ -26,7 +27,7 @@
 
 			$captcha = new NLCaptcha($str, $width, 40, $fonts, $colors, false, 23);
 		break;
-		
+
 		case 'get_code':
 			$length       = (int)$request->GetVar('len');
 			$length       = $length > 0 && $length <= 16 ? $length : 4;
