@@ -1704,9 +1704,5 @@ SQL;
 			FatalError($errString);
 		}
 	}
-
-	function tableExists($table) {
-		return $this->db->tableExists($table);
-	}
 }
 ?>
