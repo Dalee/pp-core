@@ -231,9 +231,9 @@ class PXCorpRegions {
 		if(empty(self::$fullTree)){
 			$treeTable      = PXRegistry::getDb()->Query('SELECT * FROM struct');
 			self::$fullTree = new NLTree($treeTable);
-			
-			return self::$fullTree;
 		}
+
+		return self::$fullTree;
 	}
 
 	static function initRegionTree($id) {
