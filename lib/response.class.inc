@@ -17,7 +17,12 @@ class PXResponse {
 
 		$this->status = $this->STATUS_OK;
 		$this->cache(3600);
-		$this->setContentType('text/html', PXRegistry::getApp()->GetProperty('OUTPUT_CHARSET', DEFAULT_CHARSET));
+		try {
+			$charset = PXRegistry::getApp()->GetProperty('OUTPUT_CHARSET', DEFAULT_CHARSET);
+		} catch (Exception $e) {
+			$charset = DEFAULT_CHARSET;
+		}
+		$this->setContentType('text/html', $charset);
 	}
 
 	function &getInstance() {
