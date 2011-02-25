@@ -5,7 +5,6 @@
 	require_once 'action.class.inc';
 	require_once 'json.class.inc';
 	require_once 'sbin.class.inc';
-	require_once 'captcha.class.inc';
 
 	require_once 'Admin/abstract.class.inc';
 

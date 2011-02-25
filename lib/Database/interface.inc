@@ -2,5 +2,6 @@
 interface IPXDatabase {
 	public function setUser($user);
 	public function LoadDirectoriesAutomatic(&$directories);
+	# TODO: describe more methods
 }
 ?>

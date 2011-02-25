@@ -20,6 +20,7 @@ define('DB_SELECT_FULL_TREE',  4);
 
 require_once 'interface.inc';
 require_once 'sqladapter.class.inc';
+
 class PXDatabase extends NLSQLDatabaseAdapter implements IPXDatabase {
 	/**
 	 * PXApplication reference
