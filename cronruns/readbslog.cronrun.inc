@@ -15,6 +15,8 @@ class PXCronRunReadBSLog extends PXAbstractCronRun {
 		$this->audit  = array(); // статистика audit letters
 		$this->stats  = array(); // статистика показов/кликов
 
+		$this->badLines = array(); // испорченные строчки в логе
+
 		$this->total  = array(
 			'clicks' => 0,
 			'shows'  => 0,
@@ -48,7 +50,12 @@ class PXCronRunReadBSLog extends PXAbstractCronRun {
 		$this->insertBannerStats();
 		$this->insertLettersAudit();
 
-		return array('status' => 0, 'note' => 'Успешно! (clicks/shows/audit: '.$this->total['clicks'].'/'.$this->total['shows'].'/'.$this->total['audit'].')');
+		return array(
+			'status' => 0,
+			'note' => 'Успешно! (clicks/shows/audit: '.$this->total['clicks'].'/'.$this->total['shows'].'/'.$this->total['audit'].')'.(
+				sizeof($$this->badLines) > 0 ? "\n\n".'Ошибки:'."\n".implode("\n", $this->badLines) : ''
+			)
+		);
 	}
 
 	function touchReload() {
@@ -114,11 +121,25 @@ class PXCronRunReadBSLog extends PXAbstractCronRun {
 
 		foreach ($fileStrings as $s) {
 			WorkProgress();
-			$this->_parseLine($s);
+			$this->_parseLine($s, $file);
 		}
 	}
 
-	function _parseLine($s) {
+	function _checkDate($date) {
+		static $min;
+		static $max;
+
+		if(is_null($min)) {
+			$min = mktime(0,0,0,1,1,2000);
+		}
+
+		if(is_null($max)) {
+			$max = time();
+		}
+		return $date > $min && $date < $max;
+	}
+
+	function _parseLine($s, $file) {
 		if (!strlen($s)) {
 			return;
 		}
@@ -126,6 +147,12 @@ class PXCronRunReadBSLog extends PXAbstractCronRun {
 		$temp     = explode(" ", $s);
 		$adplace  = $temp[3];
 		$adbanner = $temp[4];
+
+		if(!$this->_checkDate($temp[0])) {
+			$this->badLines[] = "\t".$file."\t".$s;
+			return;
+		}
+
 		$time     = date($this->DATE_FORMAT, $temp[0]);
 		$action   = ($temp['2'] == 'clk') ? 'clk' : 'show';
 
