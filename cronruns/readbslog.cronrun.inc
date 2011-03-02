@@ -53,7 +53,7 @@ class PXCronRunReadBSLog extends PXAbstractCronRun {
 		return array(
 			'status' => 0,
 			'note' => 'Успешно! (clicks/shows/audit: '.$this->total['clicks'].'/'.$this->total['shows'].'/'.$this->total['audit'].')'.(
-				sizeof($$this->badLines) > 0 ? "\n\n".'Ошибки:'."\n".implode("\n", $this->badLines) : ''
+				sizeof($this->badLines) > 0 ? "\n\n".'Ошибки:'."\n".implode("\n", $this->badLines) : ''
 			)
 		);
 	}
