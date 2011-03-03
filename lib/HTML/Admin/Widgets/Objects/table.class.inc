@@ -82,7 +82,8 @@ class PXAdminTableObjects extends PXAdminObjects  {
 
 		$this->layout->setGetVarToSave(PXAdminPager::getPerPageParamByFormatId($this->format->id), $onPage); 
 
-		$currentPage =  $this->request->getVar($this->format->id.'_page', 1);
+		$currentPage = $this->request->getVar($this->format->id.'_page', 1);
+		$currentPage = max(($currentPage > ceil($this->count/$onPage) ? ceil($this->count/$onPage) : $currentPage), 1);
 
 		$this->layout->setGetVarToSave($this->format->id.'_page', $currentPage);
 		$this->layout->setGetVarToSave($this->format->id.'_view', 'plain');
@@ -91,8 +92,6 @@ class PXAdminTableObjects extends PXAdminObjects  {
 		$currentOrder = $this->request->getOrderVar($this->format->id, $this->format->order, $this->format->fields);
 
 		$this->layout->setGetVarToSave($this->format->id.'_order', $currentOrder);
-
-		$currentPage =  $currentPage > ceil($this->count/$onPage) ? ceil($this->count/$onPage) : $currentPage;
 
 		$this->objects     =& $this->loadObjects($this->getWhere(), DB_SELECT_TABLE, $onPage, $onPage*($currentPage-1), $currentOrder);
 		$this->db->filterByAccess('admin', $this->format, $this->objects);
