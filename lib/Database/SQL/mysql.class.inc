@@ -6,22 +6,26 @@ class NLMYSQLDatabase extends NLAbstractSQLDatabase {
 	var $connection;
 	var $cache;
 	var $connected;
+	var $encoding;
 
 	function NLMYSQLDatabase($dbDescription) {
 		$this->setCache($dbDescription->cache);
 
 		$this->connectArray   = $dbDescription->GetMysqlConnectArray();
 		$this->connected      = false;
+		$this->encoding        = $dbDescription->encoding;
 		$this->dbids          = $dbDescription->dbids;
 	}
 
 	function Connect() {
 		if (!$this->connected) {
 			$this->connection = @mysql_connect($this->connectArray['host'].':'.$this->connectArray['port'], $this->connectArray['user'], $this->connectArray['passwd'], true);
-
 			if ($this->connection) {
 				if (@mysql_select_db($this->connectArray['dbname'], $this->connection)) {
 					$this->connected  = true;
+					if ($this->encoding) {
+						$this->Query("SET NAMES '{$this->encoding}'");
+					}
 				}
 			}
 		}
@@ -59,6 +63,33 @@ class NLMYSQLDatabase extends NLAbstractSQLDatabase {
 		}
 	}
 
+	function MapData($value) {
+		if (is_null($value) || $value === '') return "NULL";
+		else if ($value === "##now##")        return "now()";
+		else if ($value === "now()")          return "now()";
+		else return "'".$this->EscapeString($value)."'";
+	}
+	
+	function escapeField($field) {
+		return (is_array($field) ? array_map(array(&$this, 'escapeField'), $field) : '`' . $this->EscapeString($field) . '`');
+	}
+	
+	function mapFields($string) {
+		return $this->escapeField($string);
+	}
+
+	function __mapInsertData($value) {
+		return $this->MapData($value);
+	}
+
+	function __mapUpdateData($field, $value) {
+		return "`{$field}` = ".$this->MapData($value);
+	}
+
+	function EscapeString($s) {
+		return mysql_escape_string($s);
+	}	
+
 	function ModifyingCopy($tableName, $cols, $data) {
 		if (!$this->connected) {
 			$this->Connect();
@@ -77,28 +108,28 @@ class NLMYSQLDatabase extends NLAbstractSQLDatabase {
 		PXProfiler::begin('SQL: '.$query);
 
 		if (!is_null($table = $this->_loadFromCache($query, $donotusecache))) {
-		        return $table;
+			return $table;
 		}
 
 		if (!$this->connected) {
 			$this->Connect();
 		}
 
+		$table = array();
 		if ($this->connected) {
 			if (($res = @mysql_query($query, $this->connection)) == false) {
 				PXProfiler::end();
 				return ERROR_DB_BADQUERY;
 			}
 
-			$table = array();
+			if (is_resource($res)) {
+				while (($row = mysql_fetch_array($res, MYSQL_ASSOC))) {
+					$table[] = $row;
+				}
+				mysql_free_result($res);
 
-			while (($row = mysql_fetch_array($res, MYSQL_ASSOC))) {
-				$table[] = $row;
+				$this->_saveToCache($query, $table, $donotusecache);
 			}
-			mysql_free_result($res);
-
-			$this->_saveToCache($query, $table, $donotusecache);
-
 		} else {
 			PXProfiler::end();
 			return ERROR_DB_CANNOTCONNECT;
@@ -108,35 +139,37 @@ class NLMYSQLDatabase extends NLAbstractSQLDatabase {
 		return $table;
 	}
 
-	function InsertObject($table, $fields, $values) {
-		foreach ($values as $k=>$v) {
-			$values[$k] = addslashes($v);
+	function prepareValues($values) {
+		foreach($values as &$value) {
+			$norm = strtolower($value);
+			switch($norm) {
+				case '':
+					$value = "''";
+					break;
+				case '##now##':
+				case 'now()':
+					$value = 'NOW()';
+					break;
+				default:
+					$value = "'" . $this->EscapeString($value) . "'";
+					break;
+			}
 		}
-		$nextID = $this->GetNextID();
-		$query = "INSERT INTO $table (id, ";
-		if(!in_array('sys_order', $fields)) {
-			$query .= "sys_order, ";
-		}
-		$query  .= implode(", ", $fields).") VALUES (".$nextID;
-
-		if(!in_array('sys_order', $fields)) {
-			$query .= ", ".$nextID;
-		}
-		$query  .= ", ".str_replace("''", "NULL", "'".implode("', '", $values)."'").")";
-
-		$query  = str_replace("'now()'", "now()", $query);
-		$id     = $this->ModifyingQuery($query, $table, 'id');
-		$id     = $nextID;
-		return $id;
+		return $values;
 	}
 
-	function GetNextID() {
-		if (!$this->connected) $this->Connect();
-		$res = mysql_query("SELECT id FROM ".$this->dbids, $this->connection);
-		$lastID = mysql_result($res, 'id');
-		$nextID = $lastID + 1;
-		mysql_query("UPDATE ".$this->dbids." SET id = ".$nextID, $this->connection);
-		return $nextID;
+	function InsertObject($table, $fields, $values) {
+		$fields = $this->escapeField($fields);
+		$values = $this->prepareValues($values);
+		$sql = sprintf(
+			"INSERT INTO %s (%s) VALUES(%s)",
+			$this->escapeField($table),
+			implode(',', array_values($fields)),
+			implode(',', array_values($values))
+		);
+		
+		$id = $this->ModifyingQuery($sql, $table, 'id');
+		return $id;
 	}
 
 	function LimitOffsetString($limit, $offset) {
@@ -148,20 +181,22 @@ class NLMYSQLDatabase extends NLAbstractSQLDatabase {
 	}
 
 	function UpdateObjectById($table, $objectId, $fields, $values) {
-		$updateString = NULL;
-		foreach ($fields as $k=>$v) {
-			if ($v != 'id') {
-				if (is_null($values[$k])) {
-					$updateString .= $v ." = NULL, ";
-				} else {
-					$updateString .= $v ." = '".addslashes($values[$k])."', ";
-				}
-			}
+		$values = $this->prepareValues($values);
+		if (($index = array_search('id', $fields)) !== FALSE) {
+			unset($fields[$index]);
+			$fields = array_values($fields);
 		}
-		$updateString = substr($updateString, 0, -2);
-		$query = "UPDATE $table SET $updateString WHERE id=$objectId";
-		$this->ModifyingQuery($query);
-		return NULL;
+		$fields = $this->escapeField($fields);
+		$values = array_combine($fields, $values);
+			
+		if ($values) {
+			$update = array();
+			foreach($values as $key => $value) {
+				$update[] = $key.'='.$value;
+			}
+			$query = sprintf("UPDATE %s SET %s WHERE id = %d", $this->escapeField($table), implode(', ', $update), $objectId);
+			$this->ModifyingQuery($query);
+		}
 	}
 
 	/*
@@ -183,6 +218,14 @@ class NLMYSQLDatabase extends NLAbstractSQLDatabase {
 		$this->Query('ROLLBACK');
 	}
 
+	function exportFloat($string) {
+		return str_replace(',', '.', $string);
+	}
+
+	function importBoolean($string) {
+		return ($string == 't' || $string == '1') ? true : false;
+	}
+
 	function DateTimeString($value) {
 		$matches = array();
 		eregi("^([[:digit:]]*).([[:digit:]]*).([[:digit:]]*) ([[:digit:]]*):([[:digit:]]*):([[:digit:]]*)", $value, $matches);
@@ -201,34 +244,41 @@ class NLMYSQLDatabase extends NLAbstractSQLDatabase {
 	}
 
 	function IsUniqueColsCombination($tables, $colValues, $exception) {
-		if(!is_array($tables) || !sizeof($tables)) {
+		if (!is_array($tables) || !sizeof($tables)) {
 			FatalError("Вы не указали проверяемые таблицы");
 		}
 
-		if(!is_array($colValues) || !sizeof($colValues)) {
+		if (!is_array($colValues) || !sizeof($colValues)) {
 			FatalError("Вы не указали проверяемые столбцы");
 		}
 
-		$reiteration = 0;
-
+		$query = "SELECT (0 ";
 		foreach($tables as $t) {
-			$query = "SELECT count(*) FROM {$t} WHERE ";
+			list($where_clauses, $tableName) = array(array(), $t['tableName']);
 
-			foreach($colValues as $c=>$v) {
-				$query .= "{$c} = '{$v}' AND ";
+			foreach($colValues as $c => $v) {
+				$where_clauses[] = sprintf("%s = '%s'", $c, $v);
 			}
 
 			if(sizeof($exception)) {
 				foreach($exception as $c=>$v) {
-					$query .= "{$c} != '{$v}' AND ";
+					$where_clauses[] = sprintf("%s != '%s'", $c, $v);
 				}
 			}
 
-			$query = substr($query, 0, -4);
-			$reiteration += (int)current(current($this->Query($query, TRUE)));
-		}
+			$query = sprintf("%s + (SELECT count(*) FROM %s WHERE %s", 
+				$query, $tableName, join(" AND ", $where_clauses));
 
-		return $reiteration;
+			if($t['exWhere']) {
+				$query = sprintf("%s and %s", $query,  $t['exWhere']);
+			}
+
+			$query .= ")";
+		}
+		$query .= ")";
+
+		$result = $this->Query($query, TRUE);
+		return (is_array($result) ? (int)current(current($result)) : 0);
 	}
 }
 ?>
