@@ -38,7 +38,7 @@ class PXAuditLogger {
 		$this->db  = $db;
 
 		$this->logger = NLLogger::getLogger('audit');
-		if ($this->app->dbDescription['database']->dbtype == 'mysql' || $this->app->properties['DISABLE_LOGGER'] == '1' ) {
+		if ($this->app->dbDescription['database']->dbtype == 'mysql' || $this->app->getProperty('DISABLE_LOGGER', 0) == '1') {
 			$this->logger->addAppender('sql', 'BlackHoleAppender');
 		} else {
 			$this->logger->addAppender('sql', 'SQLAppender');
