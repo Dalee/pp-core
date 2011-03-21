@@ -18,7 +18,11 @@
 	$tests = new TestSuite('libpp tests');
 
 	if (isset($_SERVER['argv'][1])) {
-		$tests->addFile(realpath($unit_tests_dir . '/' . $_SERVER['argv'][1]));
+		$file = $_SERVER['argv'][1];
+		if (strlen($file) && $file[0] != '/') {
+			$file = realpath($unit_tests_dir . '/' . $file);
+		}
+		$tests->addFile($file);
 	} else {
 		$tests->collect($unit_tests_dir, new RecursivePatternCollector("/_test.php$/i"));
 	}

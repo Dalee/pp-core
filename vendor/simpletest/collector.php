@@ -157,5 +157,5 @@ class RecursivePatternCollector extends SimplePatternCollector {
         }
     }
 }
-?>
 
+?>
