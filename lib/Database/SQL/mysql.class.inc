@@ -29,6 +29,7 @@ class NLMYSQLDatabase extends NLAbstractSQLDatabase {
 				}
 			}
 		}
+		return $this->connected;
 	}
 
 	function Close() {

@@ -31,6 +31,7 @@ class NLPGSQLDatabase extends NLAbstractSQLDatabase {
 				$this->connected  = true;
 			}
 		}
+		return $this->connected;
 	}
 
 	function Close() {
