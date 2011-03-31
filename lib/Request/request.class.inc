@@ -116,6 +116,14 @@ class PXRequest {
 			return NULL;
 		}
 	}
+	
+	function getIpAddr($varName) {
+		if ($this->getHttpMethod() == 'POST') {
+			return $this->postData->_GetIPAddrVar($varName);
+		} else {
+			return $this->getData->_GetIPAddrVar($varName);
+		}
+	}
 
 	function GetUserAgent(){
 		return isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : '';
@@ -201,7 +209,7 @@ class PXRequest {
 	function GetUploadFile($varName, $isArray=FALSE) {
 		return $this->postData->_GetFileVar($varName, $isArray);
 	}
-
+	
 	/**
 	 * Проверяет вхождение ip-адреса в подсеть.
 	 *

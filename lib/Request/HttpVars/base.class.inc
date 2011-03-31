@@ -193,15 +193,20 @@ DO
 	function _GetIPAddrVar($varName) {
 		if (isset($this->raw[$varName])) {
 			if (is_array($this->raw[$varName])) {
-				return ip2long((!empty($this->raw[$varName][0]) ? $this->raw[$varName][0] : '0')."."
-					. (!empty($this->raw[$varName][0]) ? $this->raw[$varName][1] : '0')."."
-					. (!empty($this->raw[$varName][0]) ? $this->raw[$varName][2] : '0')."."
-					. (!empty($this->raw[$varName][0]) ? $this->raw[$varName][3] : '0'));
-
+				$val = $this->raw[$varName];
+				return ip2long(($this->ipPart($val[0]) && $val[0] != 0 ? $val[0] : '0')."."
+					. ($this->ipPart($val[1])                 ? $val[1] : '0')."."
+					. ($this->ipPart($val[2])                 ? $val[2] : '0')."."
+					. ($this->ipPart($val[3]) && $val[3] != 0 ? $val[3] : '0')
+					);
 			} else {
 				return $this->raw[$varName];
 			}
 		}
+	}
+
+	function ipPart($val) {
+		return ctype_digit($val) && $val <= 255 && $val >= 0;
 	}
 
 	function _IsSet($varName) {
