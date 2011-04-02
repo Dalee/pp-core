@@ -429,5 +429,9 @@ class PXRequest {
 		$part = $this->_getGetPostVar('part');
 		return is_null($part) ? 'index.html' : $part;
 	}
+
+	function isXmlHttpRequest() {
+		return isset($_SERVER['HTTP_X_REQUESTED_WITH']) && stristr($_SERVER['HTTP_X_REQUESTED_WITH'], 'XMLHttpRequest');
+	}
 }
 ?>
