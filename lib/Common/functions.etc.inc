@@ -22,7 +22,7 @@ function createSomePathByParentId($tree, $id, $fieldname='pathname', $delim='/',
 		$createdPath = createSomePathByParentId($tree, $tree->leafs[$id]->parent, $fieldname, $delim, $inContent, $withRoot, true).$path.$delim;
 
 	} elseif($withRoot) {
-		$createdPath = ($path == 'default' ? '' : 'http://'.$path).$delim;
+		$createdPath = ($path == 'default' ? '' : '//'.$path).$delim;
 
 	} else {
 		$createdPath = '';
