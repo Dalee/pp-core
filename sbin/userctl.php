@@ -24,13 +24,13 @@ $ARGV = $_SERVER['argv'];
 
 function show_usage_and_exit() {
 	$opts = array(
-		"-l                            list users", 
+		"-l                            list users",
 		"-f                            list groups",
 		"-g                            get auth type",
 		"-p <login> <password>         change password",
 		"-s <login>                    show login details",
 		"-a <login> <pass> <group_id>  add login",
-		"-d <login>                    disable account", 
+		"-d <login>                    disable account",
 		"-e <login>                    enable account"
 	);
 
@@ -93,7 +93,7 @@ if (count($ARGV) < 2) {
 }
 
 # It doesn't support long options (sic!)
-# $options = getopt("lp:s:a:d:e:", 
+# $options = getopt("lp:s:a:d:e:",
 #                    array("list", "password:","show:","add:","disable:","enable:"));
 
 $options = getopt("lfgp:s:a:d:e:");
@@ -112,18 +112,18 @@ foreach($options as $option => $value) {
 		case 'f':
 			$groups = $db->getObjects($app->types['sgroup'], NULL);
 			$format = "%10s\t%20s\t%25s\t%10s\n";
-			
+
 			printf($format, "group_id", "title", "modified", "status");
 			printf(str_repeat("--", 42) . "\n");
-			
+
 			foreach($groups as $group) {
 				printf($format, $group['id'], $group['title'], $group['sys_modified'], $group['status']);
 			}
-			
+
 			printf("\n");
 			success();
 			break;
-	
+
 		case 'l':
 			$users = $db->getObjects($app->types['suser'], NULL);
 			$format = "%25s\t%5s\t%10s\t%15s\n";
@@ -132,6 +132,7 @@ foreach($options as $option => $value) {
 			printf(str_repeat("--", 42) . "\n");
 
 			foreach($users as $user) {
+				$user['access'] = (empty($user['access'])) ? '' : $user['access'];
 				printf($format, $user['title'], $user['status'], $user['access'], $user['sys_modified']);
 			}
 
@@ -188,7 +189,7 @@ foreach($options as $option => $value) {
 			if(!isset($ARGV[2])) $errors[] = 'login';
 			if(!isset($ARGV[3])) $errors[] = 'pass';
 			if(!isset($ARGV[4])) $errors[] = 'group_id';
-			
+
 			$login  = $ARGV[2];
 			$passwd = $ARGV[3];
 			$group_id = intval($ARGV[4]);
@@ -207,7 +208,7 @@ foreach($options as $option => $value) {
 				if(!isValidPasswd($passwd)) {
 					$errors .= "Password must be from 3 to 16 symbols and contain only alphabetical, digits, \".\", \"-\", and \"_\"\n";
 				}
-				
+
 				$check = get_group_by_id($group_id);
 				if(!$check) {
 					$errors .= sprintf("Group id %d does not exists\n", $group_id);
