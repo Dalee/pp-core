@@ -37,6 +37,16 @@ class PXRequest {
 		return (isset($_SERVER['REQUEST_METHOD'])) ? $_SERVER['REQUEST_METHOD'] : 'CLI';
 	}
 
+	static function GetHttpProto() {
+		switch(true){
+			case isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on':
+			case isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] == 'https':
+				return "https";
+			default:
+				return "http";
+		}
+	}
+
 	static function GetHttpReferer() {
 		return (isset($_SERVER['HTTP_REFERER'])) ? $_SERVER['HTTP_REFERER'] : NULL;
 	}

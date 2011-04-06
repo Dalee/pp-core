@@ -172,7 +172,7 @@ HTML;
 	}
 
 	function environmentsUris() {
-		$requestUri  = 'http://'.PXRequest::GetHttpHost().urldecode(PXRequest::GetRequestUri());
+		$requestUri  = PXRequest::GetHttpProto().'://'.PXRequest::GetHttpHost().urldecode(PXRequest::GetRequestUri());
 		$remoteAddr  = PXRequest::GetRemoteAddr();
 		$httpReferer = urldecode(PXRequest::GetHttpReferer());
 
