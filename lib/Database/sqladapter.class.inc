@@ -64,6 +64,10 @@ class NLSQLDatabaseAdapter {
 		$this->dbDriver->setCache(false);
 	}
 
+	function getSelfDescription() {
+		return $this->selfDescription;
+	}
+
 	function LIKE($condition, $percs = NULL ){
 		return $this->dbDriver->LIKE($condition, is_null($percs) ? P_LEFT|P_RIGHT : $percs);
 	}

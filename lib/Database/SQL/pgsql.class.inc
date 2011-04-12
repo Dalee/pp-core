@@ -2,19 +2,27 @@
 require_once 'abstract.class.inc';
 
 class NLPGSQLDatabase extends NLAbstractSQLDatabase {
-
 	var $connectString;
 	var $connection;
 	var $cache;
-	var $encoding;
 	var $connected;
 
 	function NLPGSQLDatabase($dbDescription) {
 		$this->setCache($dbDescription->cache);
-
-		$this->connectString   = $dbDescription->GetPgsqlConnectString();
-		$this->encoding        = $dbDescription->encoding;
+		$this->setConnectParams($dbDescription);
 		$this->connected       = false;
+	}
+	
+	function setConnectParams($dbDescription) {
+		$keys = array_keys($this->connectArray);
+		$connectString = array();
+		foreach($keys as $key) {
+			if ($dbDescription->$key !== NULL) {
+				$this->connectArray[$key] = $dbDescription->$key;
+				$connectString[] = $key . '=' . $dbDescription->$key;
+			}
+		}
+		$this->connectString = trim(implode(' ', $connectString));
 	}
 
 	function Connect() {
@@ -24,8 +32,8 @@ class NLPGSQLDatabase extends NLAbstractSQLDatabase {
 			if ($this->connection) {
 				pg_exec($this->connection, "SET DATESTYLE='German'");
 
-				if ($this->encoding) {
-					pg_set_client_encoding($this->connection, $this->encoding);
+				if (!empty($this->connectArray['encoding'])) {
+					pg_set_client_encoding($this->connection, $this->connectArray['encoding']);
 				}
 
 				$this->connected  = true;
@@ -331,5 +339,11 @@ class NLPGSQLDatabase extends NLAbstractSQLDatabase {
 		$this->query("VACUUM ANALYZE ".$tableName, true);
 	}
 
+	function loggerSqlFormat($table, $fields) {
+		if (!count($fields)) return false;
+		$fieldNames = implode(', ', array_map(array(&$this, "mapFields"), array_keys($fields)));
+		$fieldValues = implode(', ', array_map(array(&$this, "MapData"), array_values($fields)));
+		return sprintf("INSERT INTO %s (%s) VALUES(%s)", $table, $fieldNames, $fieldValues);
+	}
 }
 ?>

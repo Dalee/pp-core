@@ -38,21 +38,24 @@ class PXAuditLogger {
 		$this->db  = $db;
 
 		$this->logger = NLLogger::getLogger('audit');
-		if ($this->app->dbDescription['database']->dbtype == 'mysql' || $this->app->getProperty('DISABLE_LOGGER', 0) == '1') {
+
+		$loggerSqlFormatFields = array(
+			'ts' => '%t',
+			'level' => '%l',
+			'type' => '%1',
+			'source' => '%2',
+			'user' => '%3',
+			'ip' => '%4',
+			'description' => '%5'
+		);		
+		$loggerSqlFormat = $db->loggerSqlFormat('log_audit', $loggerSqlFormatFields);
+		if (!$loggerSqlFormat || $this->app->getProperty('DISABLE_LOGGER', 0) == '1') {
 			$this->logger->addAppender('sql', 'BlackHoleAppender');
 		} else {
 			$this->logger->addAppender('sql', 'SQLAppender');
-			if ($this->app->dbDescription['database']->dbtype == 'mssql') {
-				$this->logger->setAppenderParam('sql', 'format', 'SET DATEFORMAT ymd; INSERT INTO log_audit ([ts], [level], [type], '.
-				' [source], [user], [ip], [description]) '.
-				" VALUES ('%t', '%l', '%1', '%2', '%3', '%4', '%5'); SET DATEFORMAT dmy;");
-			} else {
-				$this->logger->setAppenderParam('sql', 'format', 'INSERT INTO log_audit ("ts", "level", "type", '.
-				' "source", "user", "ip", "description") '.
-				" VALUES ('%t', '%l', '%1', '%2', '%3', '%4', '%5') ");
-			}
 			$this->logLevel = $this->logger->INFO;
 			$this->logger->setLevel($this->logLevel);
+			$this->logger->setAppenderParam('sql', 'format', $loggerSqlFormat);
 			$this->logger->setAppenderParamByRef('sql', 'db', $this->db);
 		}
 	}

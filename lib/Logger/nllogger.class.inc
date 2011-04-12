@@ -257,11 +257,11 @@ class SQLAppender extends Appender {
 
 	function SQLAppender($name) {
 		parent::Appender($name);
-		$this->format = "INSERT INTO log (time, message) VALUES (%t, %1);"; //override default format
+		$this->format = "";
 	}
 
 	function write($level, $message) {
-		if ($this->db !== null){
+		if ($this->db !== null && $this->format){
 			// Escape text message
 			$msg = $this->_compileMessage(
 				$level,

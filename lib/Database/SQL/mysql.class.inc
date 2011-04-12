@@ -2,29 +2,32 @@
 require_once 'abstract.class.inc';
 
 class NLMYSQLDatabase extends NLAbstractSQLDatabase {
-	var $connectArray;
 	var $connection;
 	var $cache;
-	var $connected;
-	var $encoding;
+	var $connected = false;
 
 	function NLMYSQLDatabase($dbDescription) {
 		$this->setCache($dbDescription->cache);
-
-		$this->connectArray   = $dbDescription->GetMysqlConnectArray();
-		$this->connected      = false;
-		$this->encoding        = $dbDescription->encoding;
-		$this->dbids          = $dbDescription->dbids;
+		$this->setConnectParams($dbDescription);
+	}
+	
+	function setConnectParams($dbDesc) {
+		$this->connectArray['port'] = '3306';
+		foreach(array_keys($this->connectArray) as $field) {
+			if ($dbDesc->$field !== NULL) {
+				$this->connectArray[$field] = $dbDesc->$field;
+			}
+		}
 	}
 
 	function Connect() {
 		if (!$this->connected) {
-			$this->connection = @mysql_connect($this->connectArray['host'].':'.$this->connectArray['port'], $this->connectArray['user'], $this->connectArray['passwd'], true);
+			$this->connection = @mysql_connect($this->connectArray['host'].':'.$this->connectArray['port'], $this->connectArray['user'], $this->connectArray['password'], true);
 			if ($this->connection) {
 				if (@mysql_select_db($this->connectArray['dbname'], $this->connection)) {
 					$this->connected  = true;
-					if ($this->encoding) {
-						$this->Query("SET NAMES '{$this->encoding}'");
+					if (!empty($this->connectArray['encoding'])) {
+						$this->Query("SET NAMES '{$this->connectArray['encoding']}'");
 					}
 				}
 			}
@@ -280,6 +283,10 @@ class NLMYSQLDatabase extends NLAbstractSQLDatabase {
 
 		$result = $this->Query($query, TRUE);
 		return (is_array($result) ? (int)current(current($result)) : 0);
+	}
+
+	function loggerSqlFormat() {
+		return false;
 	}
 }
 ?>

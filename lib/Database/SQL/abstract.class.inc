@@ -2,6 +2,14 @@
 require_once 'Config/Description/db.class.inc';
 
 abstract class NLAbstractSQLDatabase {
+	var $connectArray = array(
+		'host' => 'localhost',
+		'user' => '',
+		'port' => '',
+		'password' => '',
+		'dbname' => 'test',
+		'encoding' => ''
+	);
 	function __construct($dbDescription) {
 	}
 
@@ -125,6 +133,10 @@ abstract class NLAbstractSQLDatabase {
 		} elseif (is_int($customCacheExpiration) && $customCacheExpiration > 0) {
 			$this->cache->save($query, $data, $customCacheExpiration);
 		}
+	}
+
+	function loggerSqlFormat($table, $fields) {
+	
 	}
 }
 ?>

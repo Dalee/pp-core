@@ -2,7 +2,6 @@
 require_once 'abstract.class.inc';
 
 class NLMSSQLDatabase extends NLAbstractSQLDatabase {
-	var $connectArray;
 	var $connection;
 	var $cache;
 	var $connected;
@@ -10,8 +9,8 @@ class NLMSSQLDatabase extends NLAbstractSQLDatabase {
 
 	function NLMSSQLDatabase($dbDescription) {
 		$this->setCache($dbDescription->cache);
-
-		$this->connectArray    = $dbDescription->GetMssqlConnectArray();
+		$this->setConnectParams($dbDescription);
+		
 		$this->connected       = false;
 		$this->servercoding    = (isset($_SERVER['SERVER_PORT']) ? 'w' : 'd');
 	}
@@ -32,6 +31,14 @@ class NLMSSQLDatabase extends NLAbstractSQLDatabase {
 		}
 
 		return $this->connected;
+	}
+	
+	function setConnectParams($db) {
+		foreach(array_keys($this->connectArray) as $field) {
+			if ($db->$field !== NULL) {
+				$this->connectArray[$field] = $db->$field;
+			}
+		}
 	}
 
 	function Close() {
@@ -293,6 +300,13 @@ class NLMSSQLDatabase extends NLAbstractSQLDatabase {
 		}
 
 		return false;
+	}
+
+	function loggerSqlFormat($table, $fields) {
+		if (!count($fields)) return false;
+		$fieldNames = '[' . implode('], [', array_keys($fields)) .']';
+		$fieldValues = implode(', ', array_map(array(&$this, 'MapData'), array_values($fields)));
+		return sprintf('SET DATEFORMAT ymd; INSERT INTO %s (%s) VALUES (%s); SET DATEFORMAT dmy;', $table, $fieldNames, $fieldValues);
 	}
 }
 ?>

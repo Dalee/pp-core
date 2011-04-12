@@ -30,7 +30,7 @@ class NLDBDescription {
 
 	//RESOLVE ME!
 	function __get($name) {
-		return $this->$name;
+		return (property_exists($this, $name) ? $this->$name : NULL);
 	}
 
 	function __set($name, $value) {
@@ -51,40 +51,6 @@ class NLDBDescription {
 			FatalError("Вы не выбрали тип базы данных");
 			FatalError("Указан некорректный тип базы данных");
 		}
-	}
-
-	function GetPgsqlConnectString() {
-		$connection = array();
-
-		foreach(array("host", "port", "user", "password", "dbname") as $field) {
-			if ($this->$field) {
-				$connection[] =  sprintf("%s=%s", $field, $this->$field);
-			}
-		}
-
-		 return trim(join(" ", $connection));
-	}
-
-	function GetMssqlConnectArray() {
-		$connectArray = array();
-		$connectArray['host']     = $this->host     ? $this->host   : 'LOCALHOST';
-		$connectArray['port']     = $this->port     ? $this->port   : '0';
-		$connectArray['user']     = $this->user     ? $this->user   : 'admin';
-		$connectArray['password'] = $this->password ? $this->password : '';
-		$connectArray['dbname']   = $this->dbname   ? $this->dbname : 'test';
-
-		return $connectArray;
-	}
-
-	function GetMysqlConnectArray() {
-		$connectArray = array();
-		$connectArray['host']   = $this->host     ? $this->host   : 'localhost';
-		$connectArray['port']   = $this->port     ? $this->port   : '3306';
-		$connectArray['user']   = $this->user     ? $this->user   : 'admin';
-		$connectArray['passwd'] = $this->password ? $this->password : '';
-		$connectArray['dbname'] = $this->dbname   ? $this->dbname : 'test';
-
-		return $connectArray;
 	}
 }
 ?>
