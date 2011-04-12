@@ -19,7 +19,7 @@ class NLPGSQLDatabase extends NLAbstractSQLDatabase {
 		foreach($keys as $key) {
 			if ($dbDescription->$key !== NULL) {
 				$this->connectArray[$key] = $dbDescription->$key;
-				if ($key != 'encoding') {
+				if (in_array($key, array('host', 'hostaddr', 'port', 'dbname', 'user', 'password', 'connect_timeout', 'options', 'tty', 'sslmode', 'requiressl', 'service'))) {
 					$connectString[] = $key . '=' . $dbDescription->$key;
 				}
 			}
