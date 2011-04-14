@@ -55,8 +55,8 @@ class PXRequest {
 		return (isset($_SERVER['REQUEST_URI'])) ? $_SERVER['REQUEST_URI'] : NULL;
 	}
 
-	function getReferer($default=NULL) {
-		return self::GetHttpReferer($this->getVar('referer', $default));
+	function getReferer() {
+		return self::GetHttpReferer($this->getData->_getVar('referer'));
 	}
 
 	static function GetOriginalPath() {
@@ -200,6 +200,7 @@ class PXRequest {
 		} else {
 			$value = $this->_GetGetPostVar($varName);
 		}
+
 		return ($value !== NULL && $value !== '') ? $value : $default;
 	}
 
