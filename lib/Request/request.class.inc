@@ -56,7 +56,7 @@ class PXRequest {
 	}
 
 	function getReferer($default=NULL) {
-		return self::GetHttpReferer($this->getData->_GetVar('referer'));
+		return self::GetHttpReferer($this->getVar('referer', $default));
 	}
 
 	static function GetOriginalPath() {
