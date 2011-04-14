@@ -47,22 +47,16 @@ class PXRequest {
 		}
 	}
 
-	static function GetHttpReferer() {
-		return (isset($_SERVER['HTTP_REFERER'])) ? $_SERVER['HTTP_REFERER'] : NULL;
+	static function GetHttpReferer($default=NULL) {
+		return self::getServerVar('HTTP_REFERER', $default);
 	}
 
 	static function GetRequestUri() {
 		return (isset($_SERVER['REQUEST_URI'])) ? $_SERVER['REQUEST_URI'] : NULL;
 	}
 
-	function GetReferer() {
-		if (isset($_SERVER['HTTP_REFERER'])) {
-			return $_SERVER['HTTP_REFERER'];
-		} elseif ($this->getData->_GetVar('referer')) {
-			return $this->getData->_GetVar('referer');
-		} else {
-			return NULL;
-		}
+	function getReferer($default=NULL) {
+		return self::GetHttpReferer($this->getData->_GetVar('referer'));
 	}
 
 	static function GetOriginalPath() {
@@ -441,7 +435,11 @@ class PXRequest {
 	}
 
 	function isXmlHttpRequest() {
-		return isset($_SERVER['HTTP_X_REQUESTED_WITH']) && stristr($_SERVER['HTTP_X_REQUESTED_WITH'], 'XMLHttpRequest');
+		return (bool) stristr(self::getServerVar('HTTP_X_REQUESTED_WITH'), 'XMLHttpRequest');
+	}
+
+	static public function getServerVar($name, $default=null) {
+		return isset($_SERVER[$name]) ? $_SERVER[$name] : $default;
 	}
 }
 ?>
