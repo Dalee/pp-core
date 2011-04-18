@@ -1,11 +1,10 @@
 <?php
 	class PXAdminTableChangeParent extends PXAdminWidget {
 		function html() {
-			$fields = $this->parentWidget->dtype->fields;
-			return isset($fields['parent']) || isset($fields['pid']) ? $this->_drawMoveIntoSectionLink() : '';
+			return $this->parentWidget->dtype->parent == DT_STRUCT ? $this->_drawMoveIntoSectionLink() : '';
 		}
-		
-		function _getAllowedSections(){
+
+		function _getAllowedSections() {
 			$param                       = array('datatype' => $this->parentWidget->dtype);
 			list($format, $parentFormat) = PXDisplayTypeParentdropdown::getFormats($param);
 			$tree                        = PXDisplayTypeParentdropdown::getParentTree($object = null,$parentFormat);
