@@ -1,6 +1,6 @@
 #!/usr/bin/php5 -q
 <?php
-	require_once dirname(__FILE__).'/../../libpp/lib/mainuser.inc';
+	require_once dirname(__FILE__).'/../../../../libpp/lib/mainuser.inc';
 
 	Label('Start...');
 
