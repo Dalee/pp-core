@@ -39,7 +39,7 @@ class PXModuleAcl extends PXModule {
 		$fields = $this->_getFields();
 		$dicts  = $this->_getDicts();
 
-		$table = new PXAdminTableAcl($fields);
+		$table = new PXAdminTableSimple($fields);
 
 		$table->setData($rules);
 
@@ -59,14 +59,15 @@ class PXModuleAcl extends PXModule {
 		$table->addToParent('INNER.0.0');
 
 		$this->layout->setOneColumn();
+		$this->layout->assign('INNER.0.1', $this->addNewRuleButton());
+	}
 
+	function addNewRuleButton() {
 		$_  = '';
 		$_ .= '<a href="/admin/popup.phtml?area=' . $this->area . '" onclick="Popup(this.href); return false;" class="button">';
 		$_ .= '<img src="i/icon/add.gif" alt="Добавить правило">';
 		$_ .= 'Правило доступа';
-		$_ .= '</a>';
-
-		$this->layout->assign('INNER.0.1', $_);
+		return $_ .= '</a>';
 	}
 
 	function adminPopup() {
@@ -287,31 +288,11 @@ class PXModuleAcl extends PXModule {
 
 				$this->db->modifyingQuery('DELETE FROM '.$this->sqlTable.' WHERE id = '.$rId);
 				break;
+
 		}
 
 		return $redir;
 	}
 }
 
-class PXAdminTableAcl extends PXAdminTableSimple {
-	function _body() {
-		$_  = '';
-
-		foreach($this->_data as $row) {
-			$_ .= '<tr'.($row['access'] === 'deny' ? ' class="deny"' : '').'>';
-
-			if(isset($row['id'])) {
-				$_ .= $this->_cellCTRL($row['id']);
-			}
-
-			foreach($this->_cols as $col=>$title) {
-				$_ .= $this->_cell($row, $col);
-			}
-
-			$_ .= '</tr>';
-		}
-
-		return $_;
-	}
-}
 ?>
