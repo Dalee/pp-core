@@ -7,10 +7,15 @@ class NLPGSQLDatabase extends NLAbstractSQLDatabase {
 	var $cache;
 	var $connected;
 
-	function NLPGSQLDatabase($dbDescription) {
+	//Allowed: array('host', 'hostaddr', 'port', 'dbname', 'user', 'password', 'connect_timeout', 'options', 'tty', 'sslmode', 'requiressl', 'service')
+	protected $includeOptions = array('connect_timeout' => '');
+	protected $excludeOptions = array('encoding');
+	
+	function __construct($dbDescription) {
 		$this->setCache($dbDescription->cache);
+		$this->connectArray = array_merge($this->connectArray, $this->includeOptions);
 		$this->setConnectParams($dbDescription);
-		$this->connected       = false;
+		$this->connected = false;
 	}
 	
 	function setConnectParams($dbDescription) {
@@ -19,7 +24,7 @@ class NLPGSQLDatabase extends NLAbstractSQLDatabase {
 		foreach($keys as $key) {
 			if ($dbDescription->$key !== NULL) {
 				$this->connectArray[$key] = $dbDescription->$key;
-				if (in_array($key, array('host', 'hostaddr', 'port', 'dbname', 'user', 'password', 'connect_timeout', 'options', 'tty', 'sslmode', 'requiressl', 'service'))) {
+				if (!in_array($key, $this->excludeOptions)) {
 					$connectString[] = $key . '=' . $dbDescription->$key;
 				}
 			}

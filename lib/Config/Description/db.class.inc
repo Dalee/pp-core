@@ -3,6 +3,7 @@ define('ERROR_DB_CANNOTCONNECT', -1);
 define('ERROR_DB_BADQUERY',      -2);
 
 class NLDBDescription {
+	//REMOVE THESE STUPID FIELD DESCRIPTIONS !!!
 	private $user;
 	private $password;
 
@@ -21,10 +22,8 @@ class NLDBDescription {
 	public  $encoding;
 
 	function __construct($config) {
-		foreach(get_object_vars($this) as $k=>$v) {
-			if(isset($config[$k])) {
-				$this->$k = $config[$k];
-			}
+		foreach($config as $k=>$v) {
+			$this->$k = $v;
 		}
 	}
 

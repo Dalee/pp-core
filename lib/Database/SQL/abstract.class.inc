@@ -2,6 +2,7 @@
 require_once 'Config/Description/db.class.inc';
 
 abstract class NLAbstractSQLDatabase {
+	
 	var $connectArray = array(
 		'host' => 'localhost',
 		'user' => '',
