@@ -75,22 +75,42 @@ final class PXRegistry {
 		return self::get('app');
 	}
 
+	/**
+	 * @static
+	 * @return PXDatabase
+	 */
 	public static function getDb() {
 		return self::get('db');
 	}
 
+	/**
+	 * @static
+	 * @return PXRequest
+	 */
 	public static function getRequest() {
 		return self::get('request');
 	}
 
+	/**
+	 * @static
+	 * @return PXUserAuthorized
+	 */
 	public static function getUser() {
 		return self::get('user');
 	}
 
+	/**
+	 * @static
+	 * @return PXLayoutNull|PXUserHTMLLayout
+	 */
 	public static function getLayout() {
 		return self::get('layout');
 	}
 
+	/**
+	 * @static
+	 * @return PXResponse
+	 */
 	public static function getResponse() {
 		return self::get('response');
 	}
