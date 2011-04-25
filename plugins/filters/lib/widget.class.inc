@@ -29,7 +29,7 @@ class PXFiltersAdminWidget extends PXAdminWidget {
 		$filters_html[] = '<button class="run_f">Применить</button>';
 
 		if (!empty($filters[$dtype->id])) {
-			$filters_html[] = sprintf('<button value="%s" class="clr_f">Сбросить</button>', $dtype->id);
+			$filters_html[] = sprintf('<button dtype="%s" class="clr_f">Сбросить</button>', $dtype->id);
 		}
 
 		$collapsed = !empty($filters[$dtype->id]) ? '' : ' collapsed';
@@ -83,7 +83,7 @@ $(function() {
 
 	// FIXME kill all filters set var with filtes name here!
 	$(".clr_f").click(function() {
-		window.location.search = erase_filters($(this).attr('value'));
+		window.location.search = erase_filters($(this).attr('dtype'));
 		return false;
 	});
 
