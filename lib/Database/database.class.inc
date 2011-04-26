@@ -15,10 +15,7 @@ define('DB_SELECT_LIST',  3);
 define('DB_SELECT_FULL_TREE',  4);
 
 /**Значение не NULL*/
-define('DB_FIELD_VALUE_NOT_NULL', '~~___IS_NOT_NULL___~~');
-
-/**Значение IS NULL*/
-define('DB_FIELD_VALUE_IS_NULL', '~~___IS_NULL___~~');
+define('NOT_NULL', '~~___IS_NOT_NULL___~~');
 
 /**
  * Класс работы с БД
@@ -292,7 +289,7 @@ class PXDatabase extends NLSQLDatabaseAdapter implements IPXDatabase {
 		foreach ($this->triggers as $t){
 			$t->getTrigger()->OnGetDataBuildQuery($this, $format, $mode, $query, $selector, $where, $order_by, $limit);
 		}
-		
+
 		$queryIden = $this->_getCacheIden($query, $mode, $limit);
 		$data = $this->cache->load($queryIden);
 
@@ -508,29 +505,28 @@ class PXDatabase extends NLSQLDatabaseAdapter implements IPXDatabase {
 		return $this->getObjectsByFieldLimited($format, $status, $field, $value, null, null, $mode, $order);
 	}
 	function getObjectsByFieldLimited($format, $status, $field, $value, $limit, $offset, $mode=DB_SELECT_TABLE, $order=NULL) {
-		$value = $this->EscapeString($value);
-		if (is_array($field)) {
-			$whereClause = array();
-			foreach ($field as $k => $v) {
-				switch ($v) {
-					case DB_FIELD_VALUE_IS_NULL:
-						$val = ' IS NULL';
-						break;
-
-					case DB_FIELD_VALUE_NOT_NULL:
-						$val = ' IS NOT NULL';
-						break;
-
-					default:
-						$val = ' = '."'".$v."'";
-				}
-				$v = $this->EscapeString($v);
-				$whereClause[] = $format->id.'.'.$k.$val;
-			}
-			$whereClause = implode($whereClause, ' AND ');
-		} else {
-			$whereClause = $format->id.'.'.$field.' = '."'".$value."'";
+		if (! is_array($field)) {
+			$field = array($field => $value);
 		}
+
+		$whereClause = array();
+		foreach ($field as $k => $v) {
+			//заменяет спец.значения на соотв. sql-выражения
+			switch (1) {
+				case is_null($v):
+					$val = ' IS NULL';
+					break;
+
+				case $v === NOT_NULL:
+					$val = ' IS NOT NULL';
+					break;
+
+				default:
+					$val = ' = '."'".$this->EscapeString($v)."'";
+			}
+			$whereClause[] = $format->id.'.'.$k.$val;
+		}
+		$whereClause = implode($whereClause, ' AND ');
 
 		return $this->_GetData($format, $status, $mode, $whereClause, array($limit, $offset), $order);
 	}
