@@ -14,6 +14,12 @@ define('DB_SELECT_LIST',  3);
 /**Вернуть данные и таблицы в виде дерева, включая orphaned ветки в корневой раздел*/
 define('DB_SELECT_FULL_TREE',  4);
 
+/**Значение не NULL*/
+define('DB_FIELD_VALUE_NOT_NULL', '~~___IS_NOT_NULL___~~');
+
+/**Значение IS NULL*/
+define('DB_FIELD_VALUE_IS_NULL', '~~___IS_NULL___~~');
+
 /**
  * Класс работы с БД
  */
@@ -506,8 +512,20 @@ class PXDatabase extends NLSQLDatabaseAdapter implements IPXDatabase {
 		if (is_array($field)) {
 			$whereClause = array();
 			foreach ($field as $k => $v) {
+				switch ($v) {
+					case DB_FIELD_VALUE_IS_NULL:
+						$val = ' IS NULL';
+						break;
+
+					case DB_FIELD_VALUE_NOT_NULL:
+						$val = ' IS NOT NULL';
+						break;
+
+					default:
+						$val = ' = '."'".$v."'";
+				}
 				$v = $this->EscapeString($v);
-				$whereClause[] = $format->id.'.'.$k.' = '."'".$v."'";
+				$whereClause[] = $format->id.'.'.$k.$val;
 			}
 			$whereClause = implode($whereClause, ' AND ');
 		} else {
