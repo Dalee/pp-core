@@ -7,7 +7,8 @@ class PXModuleCsvImport extends PXModule {
 		parent::__construct($area, $settings);
 
 		$this->settings = $settings;
-
+		$this->area = $area;
+		
 		$this->htmlEsc = array(
 			chr(145) => '&lsquo;',
 			chr(146) => '&rsquo;',
@@ -24,8 +25,9 @@ class PXModuleCsvImport extends PXModule {
 	}
 
 	function adminIndex() {
-		$layout = $this->layout;
+		$layout  = $this->layout;
 		$request = $this->request;
+		$app     = $this->app;
 
 		$layout->setOneColumn();
 		$html = '';
@@ -63,7 +65,7 @@ class PXModuleCsvImport extends PXModule {
 
 	function _Success(&$request, &$app, &$db) {
 		$html  = '<h2>Импорт данных &laquo;'.$app->types[$this->settings['datatype']]->title.'&raquo; успешно произведен</h2>';
-		$html .= '<p>В базу внесено <strong>'.$request->GetVar('quantity').'</strong> объектов.</p>';
+		$html .= '<p>В базу внесено <strong>'.htmlspecialchars($request->GetVar('quantity')).'</strong> объектов.</p>';
 		return $html;
 	}
 
@@ -143,7 +145,7 @@ class PXModuleCsvImport extends PXModule {
 				$object[$fk] = $fv;
 			} elseif(is_numeric($fv)) {
 				$object[$fk] = $row[$fv];
-			} elseif(($fv === 'true' && $fv = true) || ($fv === 'false' && $fv = false)){
+			} elseif(($fv === 'true' && ($fv = true)) || ($fv === 'false' && (($fv = false) || true))){
 				$object[$fk] = $fv;
 			} else {
 				$object[$fk] = $fv;
@@ -209,7 +211,7 @@ class PXModuleCsvImport extends PXModule {
 			<h2>Импорт данных из CSV файла</h2>
 
 			<form action="action.phtml" method="POST" enctype="multipart/form-data" class="autoheight">
-				<input type="hidden" name="area" value="csv">
+				<input type="hidden" name="area" value="{$this->area}">
 				<input type="file" name="file">
 				<input type="submit" class="button" value="Импортировать данные">
 			</form>
