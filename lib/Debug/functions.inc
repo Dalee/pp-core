@@ -155,7 +155,7 @@ function D3($variable, $full=true) {
 function DLog($var, $full = true, $overwrite = 1, $fileName = '') {
 	static $started;
 	if (! $fileName) {
-		$fileName = dirname(__FILE__).'/../../../tmp/debug.log';
+		$fileName = BASEPATH.'tmp/debug.log';
 	}
 	$mode = FILE_APPEND;
 	if ($overwrite && ! $started) {
