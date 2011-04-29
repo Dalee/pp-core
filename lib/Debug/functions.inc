@@ -151,4 +151,19 @@ function D3($variable, $full=true) {
 
 	return $dump;
 }
+
+function DLog($var, $full = true, $overwrite = 1, $fileName = '') {
+	static $started;
+	if (! $fileName) {
+		$fileName = dirname(__FILE__).'/../../../tmp/debug.log';
+	}
+	$mode = FILE_APPEND;
+	if ($overwrite && ! $started) {
+		$mode = 0;
+	}
+	$started = true;
+	file_put_contents($fileName, '['.date('d.m.Y H:i:s')."]\r\n", $mode);
+	file_put_contents($fileName, html_entity_decode(d3($var, $full)), FILE_APPEND);
+	file_put_contents($fileName, "\r\n\r\n", FILE_APPEND);
+}
 ?>
