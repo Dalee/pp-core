@@ -336,7 +336,7 @@ class PXMultiRegions {
 	}
 	
 	function isRegionalType($format){
-		return isset($format->fields[PXMultiRegions::REGION_MARK]);
+		return isset(PXRegistry::getApp()->types[$format->id]->fields[PXMultiRegions::REGION_MARK]);
 	}
 
 	#fixme
