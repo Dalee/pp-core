@@ -69,6 +69,8 @@ class PXModuleSortableAcl extends PXModuleAcl {
 					});
 				}
 			});
+
+			$("table.objects tbody").sortable("option", "containment", "parent");
 		});');
 	}
 }
