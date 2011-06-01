@@ -36,6 +36,7 @@ class PXModuleAdvert extends PXModule {
 		$dtCampaign =& $this->app->types[$this->dtCampaign];
 
 		$tree = new PXAdminTreeObjects($dtCampaign);
+		$tree->setControlParent($sid);
 		$tree->showChildren('sid');
 		$tree->addToParent('INNER.0.0');
 
@@ -50,6 +51,7 @@ class PXModuleAdvert extends PXModule {
 		$dtBanner =&  $this->app->types[$this->dtBanner];
 
 		$table = new PXAdminTableObjects($dtBanner, $sid, 'ByParent');
+		$table->setControlParent($sid);
 		$stats = '<a href="javascript:AdminPopup(\''.$this->area.'\',\'{{format}}\',{{id}}, \'monthly\',990,600);"><img border="0" src="i/icon/stat.gif" align="middle" hspace="3" alt="{{title}}"></a>';
 		// FIXME
 		$table->appendControl('stats', $stats);
