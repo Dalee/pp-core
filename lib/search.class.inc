@@ -255,6 +255,7 @@ SQL;
 
 	private
 	function _getStemsArray($query) {
+		$query = preg_replace("/&(#\d+|[a-z]+);/s", '', $query);
 		preg_match_all("/\w+/s", _StrToLower(_yo2ye($query)), $tmp);
 		return array_unique($this->getStemsByArray(array_unique($tmp[0])));
 	}
