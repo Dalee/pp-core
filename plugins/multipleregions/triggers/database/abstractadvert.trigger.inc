@@ -16,6 +16,24 @@ class PXTriggerDatabaseMultiRegionalAbstractAdvert extends PXTriggerDatabaseAbst
 
 		return $result;
 	}
+
+	function adSync($format, $object) {
+		parent::adSync($format, $object);
+		if ($data = $this->db->query("SELECT ".PXMultipleRegionsReflexer::REFLEX_FIELD." FROM {$format} WHERE id={$object['id']}")) {
+			$sysReflexId = current(current($data));
+
+			if ($sysReflexId == $object['id']) {
+				return;
+			}
+
+			PXMultiRegions::getInstance()->disable();
+			$reflex = $this->db->getObjectById($this->db->app->types[$format], $sysReflexId);
+			PXMultiRegions::getInstance()->enable();
+
+			parent::adSync($format, $reflex);
+		}
+	}
+
 }
 
 ?>
