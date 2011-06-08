@@ -11,6 +11,7 @@ class PXPluginMultiRegions extends PXAbstractPlugin {
 		$this->loadDisplayType("multiregions_static");
 		$this->loadDisplayType("urltable");
 		$this->loadStorageType("regionurl");
+		$this->loadStorageType("federalflag");
 
 		$this->loadTrigger("database/multipleregions");
 		$this->loadTrigger("system/multipleregions");
