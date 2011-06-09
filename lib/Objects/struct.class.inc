@@ -137,8 +137,13 @@ class PXTreeObjects implements PXContentObjectsInterface, ArrayAccess, Iterator 
 
 	private
 	function __getLeaf($leafArray) {
-		#FIXME: perform caching here !!!
-		return new PXStructLeaf($leafArray, $this);
+		static $leafsCache = array();
+		
+		if(!isset($leafsCache[$leafArray->id])){
+			$leafsCache[$leafArray->id] = new PXStructLeaf($leafArray, $this);
+		}
+
+		return $leafsCache[$leafArray->id];
 	}
 
 	function __call($name, $arguments) {
