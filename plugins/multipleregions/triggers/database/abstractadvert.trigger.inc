@@ -19,7 +19,7 @@ class PXTriggerDatabaseMultiRegionalAbstractAdvert extends PXTriggerDatabaseAbst
 
 	function adSync($format, $object) {
 		parent::adSync($format, $object);
-		if ($data = $this->db->query("SELECT ".PXMultipleRegionsReflexer::REFLEX_FIELD." FROM {$format} WHERE id={$object['id']}")) {
+		if ($format == 'adbanner' && $data = $this->db->query("SELECT ".PXMultipleRegionsReflexer::REFLEX_FIELD." FROM {$format} WHERE id={$object['id']}")) {
 			$sysReflexId = current(current($data));
 
 			if ($sysReflexId == $object['id']) {
