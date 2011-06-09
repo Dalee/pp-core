@@ -20,7 +20,7 @@ class PXStructLeaf implements Iterator {
 
 	function parent($level=1) {
 		$parentId = $this->data->parent($level);
-		return is_null($parentId) ? new PXStructLeaf404() : new PXStructLeaf($this->data->tree->leafs[$parentId], $this->struct);
+		return is_null($parentId) ? new PXStructLeaf404() : $this->struct->getLeaf($this->data->tree->leafs[$parentId]);
 	}
 
 	function __get($key) {
@@ -68,7 +68,7 @@ class PXStructLeaf implements Iterator {
 			return false;
 		}
 
-		return new PXStructLeaf($this->data->tree->leafs[$key], $this->struct);
+		return $this->struct->getLeaf($this->data->tree->leafs[$key]);
 	}
 
 	public function key() {
@@ -137,8 +137,7 @@ class PXTreeObjects implements PXContentObjectsInterface, ArrayAccess, Iterator 
 	
 	private $leafsCache = array();
 
-	private
-	function __getLeaf($leafArray) {
+	function getLeaf($leafArray) {
 		if(!isset($this->leafsCache[$leafArray->id])){
 			$this->leafsCache[$leafArray->id] = new PXStructLeaf($leafArray, $this);
 		}
@@ -164,7 +163,7 @@ class PXTreeObjects implements PXContentObjectsInterface, ArrayAccess, Iterator 
 				$conds['current'] = array($this->hasCurrent(), $this->currentId);
 				
 				if($conds[$key][0]) {
-					return $this->__getLeaf($this->tree->leafs[$conds[$key][1]]);
+					return $this->getLeaf($this->tree->leafs[$conds[$key][1]]);
 				}
 				
 				PXRegistry::getResponse()->notFound();
@@ -192,7 +191,7 @@ class PXTreeObjects implements PXContentObjectsInterface, ArrayAccess, Iterator 
 	}
 
 	function getCurrent() {
-		return $this->__getLeaf($this->tree->leafs[$this->currentId]);
+		return $this->getLeaf($this->tree->leafs[$this->currentId]);
 	}
 
 	function getCurrentType(){
@@ -270,7 +269,7 @@ class PXTreeObjects implements PXContentObjectsInterface, ArrayAccess, Iterator 
 
 	// ArrayAccess if
 	public function offsetGet($id) {
-		return $this->__getLeaf($this->tree->leafs[$id]);
+		return $this->getLeaf($this->tree->leafs[$id]);
 	}
 
 	public function offsetSet($id, $object) {
@@ -283,6 +282,7 @@ class PXTreeObjects implements PXContentObjectsInterface, ArrayAccess, Iterator 
 
 	public function offsetUnset($id) {
 		unset($this->tree->leafs[$id]);
+		unset($this->leafsCache[$id]);
 	}
 
 	/* Iterator */
@@ -291,7 +291,7 @@ class PXTreeObjects implements PXContentObjectsInterface, ArrayAccess, Iterator 
 	}
 
 	function current() {
-		return $this->__getLeaf($this->tree->leafs[$this->key()]); 
+		return $this->getLeaf($this->tree->leafs[$this->key()]); 
 	}
 
 	function key() {
