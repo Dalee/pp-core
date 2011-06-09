@@ -134,16 +134,16 @@ class PXTreeObjects implements PXContentObjectsInterface, ArrayAccess, Iterator 
 	public $pathId = array();
 	public $rootId = -1;
 	public $currentId;
+	
+	private $leafsCache = array();
 
 	private
 	function __getLeaf($leafArray) {
-		static $leafsCache = array();
-		
-		if(!isset($leafsCache[$leafArray->id])){
-			$leafsCache[$leafArray->id] = new PXStructLeaf($leafArray, $this);
+		if(!isset($this->leafsCache[$leafArray->id])){
+			$this->leafsCache[$leafArray->id] = new PXStructLeaf($leafArray, $this);
 		}
 
-		return $leafsCache[$leafArray->id];
+		return $this->leafsCache[$leafArray->id];
 	}
 
 	function __call($name, $arguments) {
