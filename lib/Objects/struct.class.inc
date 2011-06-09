@@ -137,6 +137,7 @@ class PXTreeObjects implements PXContentObjectsInterface, ArrayAccess, Iterator 
 
 	private
 	function __getLeaf($leafArray) {
+		#FIXME: perform caching here !!!
 		return new PXStructLeaf($leafArray, $this);
 	}
 
@@ -150,30 +151,25 @@ class PXTreeObjects implements PXContentObjectsInterface, ArrayAccess, Iterator 
 	}
 
 	function __get($key) {
+		$conds = array();
 		switch($key) {
 			case 'root':
-				if($this->rootId !== -1) {
-					return new PXStructLeaf($this->tree->leafs[$this->rootId], $this);
-				} else {
-					PXRegistry::getResponse()->notFound();
-					return new PXStructLeaf404();
-				}
-				break;
-
+				$conds['root'] = array($this->rootId !== -1, $this->rootId);
 			case 'current':
-				if($this->hasCurrent()) {
-					return $this->__getLeaf($this->tree->leafs[$this->currentId]);
-				} else {
-					PXRegistry::getResponse()->notFound();
-					return new PXStructLeaf404();
+				$conds['current'] = array($this->hasCurrent(), $this->currentId);
+				
+				if($conds[$key][0]) {
+					return $this->__getLeaf($this->tree->leafs[$conds[$key][1]]);
 				}
-				break;
+				
+				PXRegistry::getResponse()->notFound();
+				return new PXStructLeaf404();
+			default:
+				if(!isset($this->$key) && isset($this->tree->$key)) {
+					return $this->tree->$key;
+				}
 		}
-
-		if(!isset($this->$key) && isset($this->tree->$key)) {
-			return $this->tree->$key;
-		}
-
+		
 		return null;
 	}
 
