@@ -336,6 +336,8 @@ class PXMultiRegions {
 	}
 	
 	function isRegionalType($format){
+		// Warning - $format may be clone of original PXTypeDescription, filtered by PXDatabase#LoadSQLDirectory
+		// and don't have all format fields, use original instance PXTypeDescription here:
 		return isset(PXRegistry::getApp()->types[$format->id]->fields[PXMultiRegions::REGION_MARK]);
 	}
 
