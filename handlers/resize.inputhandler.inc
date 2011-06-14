@@ -28,6 +28,9 @@
 				GDImageResize($object['tmp_name'], $object['tmp_name'], $width, $height, (int)$extraArgs[1], (int)$extraArgs[2]);
 				break;
 			case isset($extraArgs[1]):
+				if ( substr( $extraArgs[1], 0, 1 ) == '#' ) {
+					$extraArgs[1] = base_convert( substr( $extraArgs[1], 1 ), 16, 10 );
+				}
 				GDImageResize($object['tmp_name'], $object['tmp_name'], $width, $height, (int)$extraArgs[1]);
 				break;
 			default:
