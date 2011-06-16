@@ -18,17 +18,15 @@ function smarty_function_html_import($params, &$smarty) {
 		return;
 	}
 	
-	$asset_id = null;
+	$asset_id = '';
 	
-	foreach(array('/site/htdocs/', '/local/htdocs/', '/libpp/etc/') as $localpath) {
-		if(file_exists($localfile = BASEPATH . $localpath . $params['src'])) {
-			$asset_id = sprintf('?%s=%1$s', filemtime($localfile));
-			break;
+	if (strpos($params['src'], 'http') !== 0) {
+		foreach(array('/site/htdocs/', '/local/htdocs/', '/libpp/etc/') as $localpath) {
+			if(file_exists($localfile = BASEPATH . $localpath . $params['src'])) {
+				$asset_id = sprintf('?%s=%1$s', filemtime($localfile));
+				break;
+			}
 		}
-	}
-	
-	if (empty($asset_id)) {
-		return;
 	}
 
 	printf($tags[$params['tag']], $params['src'] . $asset_id);
