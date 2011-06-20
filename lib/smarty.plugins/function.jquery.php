@@ -2,19 +2,29 @@
 
 /**
  * Display JS-tag that loads jQuery
- * from Google AJAX CDN with desired version.
+ * from Popular AJAX CDN with desired version.
  *
  * Params:
- * - v (string) - version. May 1.x, 1.x.x, - load latest.
- * - dev (boolean) - load uncompressed version
+ * - v (string) Version
+ * - provider (enum: [yandex[, google[, microsoft]]]) CDN provider
+ * - dev (boolean) - Load uncompressed version?
  */
 function smarty_function_jquery($params, &$smarty) {
-	if (empty($params['v'])) {
+	$providers = array(
+		'microsoft' => '//ajax.aspnetcdn.com/ajax/jquery/jquery-%s.%sjs',
+		'google' => '//ajax.googleapis.com/ajax/libs/jquery/%s/jquery.%sjs',
+		'yandex' => '//yandex.st/jquery/%s/jquery.%sjs'
+	);
+	if (empty($params['v']) || $params['v'] == '1.6') {
 	//	load latest 1.x.x
-		$params['v'] = '1';
+		$params['v'] = '1.6.1';
 	}
-	$src = sprintf("https://ajax.googleapis.com/ajax/libs/jquery/%s/jquery.%sjs", $params['v'], empty($params['dev']) ? 'min.' : '');
-	echo '<script type="text/javascript" src="' . $src . '"></script>';
+	$min = (empty($params['dev']) ? 'min.' : '');
+	if (!array_key_exists($params['provider'], $providers)) {
+		$params['provider'] = 'yandex';
+	}
+	$src = sprintf($providers[$params['provider']], $params['v'], $min);
+	echo '<script type="text/javascript" src="' . $src . '"></script>' . "\n";
 }
 
 ?>
