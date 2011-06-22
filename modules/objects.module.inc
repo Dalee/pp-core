@@ -40,7 +40,7 @@ class PXModuleObjects extends PXModule {
 	function indexSetMenu($rSid) {
 		$types = array();
 		foreach ($this->app->types as $k=>$v) {
-			if (count($this->formats) == 0 || in_array($k, $this->formats)) {
+			if ((count($this->formats) == 0 || in_array($k, $this->formats)) && $this->user->can('admin', $v) ) {
 				$types[$k] = $v->title;
 			}
 		}
