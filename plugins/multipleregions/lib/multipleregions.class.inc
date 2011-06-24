@@ -141,13 +141,18 @@ class PXMultiRegions {
 		$uriPart = $pieces[0];
 				
 		foreach($regionList as $regionId => $regionData) {
-			if(!strcmp($regionData['uri'], $uriPart)) {
-				$id = intval($regionData['id']);
-				if($updatePath) {
-					$newPath = substr(ltrim($this->request->GetOriginalPath(), '/'), strlen($uriPart));
-					$this->request->SetPath($newPath);
+			// skip regions with empty URI
+			// if not skip, this may cause infinite redirect to /
+			$uri = trim($regionData['uri']);
+			if(!empty($uri)) {			
+				if(!strcmp($uri, $uriPart)) {
+					$id = intval($regionData['id']);
+					if($updatePath) {
+						$newPath = substr(ltrim($this->request->GetOriginalPath(), '/'), strlen($uriPart));
+						$this->request->SetPath($newPath);
+					}
+					break;
 				}
-				break;
 			}
 		}
 		return $id;
