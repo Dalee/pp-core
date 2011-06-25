@@ -5,7 +5,7 @@ class PXInputCheckbox extends PXAdminWidget {
 	var $value = NULL;
 	var $id = NULL;
 
-	function PXInputCheckbox($name, $on=false, $value="") {
+	function PXInputCheckbox($name, $on=false, $value=NULL) {
 		$this->name = $name;
 		$this->setOn($on);
 		$this->setValue($value);
@@ -27,7 +27,7 @@ class PXInputCheckbox extends PXAdminWidget {
 		$html = '<input type="checkbox" class="checkbox" name="'.$this->name.'" '.$this->on;
 
 		$html .= $this->id    ? ' id="'.$this->id.'"'       : '';
-		$html .= $this->value ? ' value="'.$this->value.'"' : '';
+		$html .= !is_null($this->value) ? ' value="'.$this->value.'"' : '';
 		$html .= $this->disable.' />';	
 
 		return $html;
