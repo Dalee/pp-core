@@ -128,7 +128,7 @@ class PXModuleMain extends PXModule {
 		$objsArray = array();
 
 		if (!$this->request->isIndexFile($pathName)) {
-			$objsArray = $this->_loadContentLimited($format, true, array('pathname' => $pathName, 'parent' => $object->currentId), 'IGNORED', 1, 0);
+			$objsArray = $this->loadSelectedObjects($object, $format, $pathName);
 
 		} else {
 			$a_per_page  = $this->app->getProperty(strtoupper($format->id).'_PER_PAGE', DEFAULT_CHILDREN_PER_PAGE);
@@ -147,7 +147,7 @@ class PXModuleMain extends PXModule {
 	
 	private function loadSelectedObjects($object, $format, $pathName) {
 		$objsArray = array();
-		
+
 		if (!isset($format->fields['pathname'])) {
 			return;
 		}
