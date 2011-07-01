@@ -1,19 +1,21 @@
 <?php
 class PXModuleRegister extends PXAbstractModule {
 	//config vars
-	var $systemName;
-	var $systemEmail;
-	var $registerPath;
-	var $userActivation;
-	var $userNotify;
-	var $contactEmailField;
-	var $captchaField;
-	var $defaultAuth;
+	protected $systemName;
+	protected $systemEmail;
+	protected $registerPath;
+	protected $userActivation;
+	protected $userNotify;
+	protected $contactEmailField;
+	protected $captchaField;
+	protected $defaultAuth;
 
-	var $fields;
+	protected $fields;
+	
+	protected $_controller;
 
 	// need for automatic assign using PXRegistry
-	var $response;
+	public $response;
 
 	function __construct($area, $settings) {
 		parent::__construct($area, $settings);
@@ -39,13 +41,13 @@ class PXModuleRegister extends PXAbstractModule {
 		}
 	}
 
-	function _parseField($formatString) {
+	protected function _parseField($formatString) {
 		@list($title, $min, $max, $validators) = explode('|', $formatString);
 		$validators = !empty($validators) ? explode(',', str_replace(' ', '',$validators)) : array();
 		return compact('title', 'min', 'max', 'validators');
 	}
 
-	function userIndex() { //&$app, &$request, &$user, &$db, &$layout, &$tree, &$objects, &$subObjects, &$references, &$heap, &$currentSid, &$currentCid, &$currentCtype, &$currentSCid, &$currentSCtype, &$rootId, &$pathId, &$urlFile, &$error) {
+	function userIndex() {
 		$layout  = $this->layout;
 		$request = $this->request;
 		$user    = $this->user;
@@ -122,14 +124,14 @@ class PXModuleRegister extends PXAbstractModule {
 		$this->_saveModel('session');
 	}
 
-	function userAction() { //&$app, &$request, &$user, &$db) {
+	function userAction() {
 		$this->response->dontCache();
 		$this->assignController();
 
 		return call_user_func($this->_controller);
 	}
 
-	function assignController(){
+	protected function assignController(){
 		$action = $this->request->GetVar('action');
 
 		if(method_exists($this, $controller = '_' . $action . 'Controller')) {
@@ -142,13 +144,13 @@ class PXModuleRegister extends PXAbstractModule {
 	################################# Controllers #################################
 
 	// {{{ Bad Action Controller
-	function _badactionController() {
+	protected function _badactionController() {
 		return false;
 	}
 	// }}} Bad Action Controller
 
 	// {{{ Modify Controller
-	function _modifyController(){
+	protected function _modifyController(){
 		if(!$this->user->isAuthed()) {
 			return;
 		}
@@ -181,7 +183,7 @@ class PXModuleRegister extends PXAbstractModule {
 	}
 
 	// TODO: For the future inheritance purposes same handlers may be written for other controllers
-	function _modifyControllerLoadDataHandler(&$userData){
+	protected function _modifyControllerLoadDataHandler(&$userData){
 		if(!count($userData = $this->loadModel('user', array('id' => $this->user->id, 'passwd' => $this->request->GetPostVar('currentpassword'))))){
 			return $this->buildRoute('modifyerror', array('currentpassword' => 'wrong'));
 		}
@@ -189,7 +191,7 @@ class PXModuleRegister extends PXAbstractModule {
 	// }}} Modify Controller
 
 	// {{{ Remind Controller
-	function _remindController(){
+	protected function _remindController(){
 		if($this->user->isAuthed()) {
 			return;
 		}
@@ -249,7 +251,7 @@ class PXModuleRegister extends PXAbstractModule {
 	// }}} Remind Controller
 
 	// {{{ Activation Controller
-	function _activationController() {
+	protected function _activationController() {
 		if(!$this->userActivation || $this->user->isAuthed()){
 			return;
 		}
@@ -287,7 +289,7 @@ class PXModuleRegister extends PXAbstractModule {
 	// }}} Activation Controller
 
 	// {{{ Register Controller
-	function _registerController() {
+	protected function _registerController() {
 		if($this->user->isAuthed()) {
 			return;
 		}
@@ -339,7 +341,7 @@ class PXModuleRegister extends PXAbstractModule {
 
 	################################# END Controllers #################################
 
-	function _parseFields(&$input, &$errors){
+	protected function _parseFields(&$input, &$errors){
 		$uData = array();
 		foreach ($this->fields as $k => $f) {
 			$input[$f['title']] = $uData[$f['title']] = $this->request->GetPostVar($f['title']);
@@ -361,7 +363,7 @@ class PXModuleRegister extends PXAbstractModule {
 		return $uData;
 	}
 
-	function buildRoute($destination, $stages = array()) {
+	protected function buildRoute($destination, $stages = array()) {
 		$_stages = array();
 		foreach($stages as $k => $v){
 			$_stages[] = $k.'='.$v;
@@ -371,7 +373,7 @@ class PXModuleRegister extends PXAbstractModule {
 		return method_exists($this, $route = '_' . $destination . 'Route') ? $this->$route($stages) : $this->registerPath;
 	}
 
-	function _sendMail(&$user, $params){
+	protected function _sendMail(&$user, $params){
 		if(!isset($user[$this->contactEmailField]) || empty($user[$this->contactEmailField])){
 			return false;
 		}
@@ -390,7 +392,7 @@ class PXModuleRegister extends PXAbstractModule {
 		return $m->Send();
 	}
 
-	function _saveModel($store, $object = array()){
+	protected function _saveModel($store, $object = array()){
 		switch($store){
 			case 'session':
 				session_commit();
@@ -417,7 +419,7 @@ class PXModuleRegister extends PXAbstractModule {
 		$this->_modelCache[$store] = $object;
 	}
 
-	function &loadModel($store, $filter = null){
+	protected function &loadModel($store, $filter = null){
 		$model = null;
 
 		switch($store){
@@ -468,7 +470,7 @@ class PXModuleRegister extends PXAbstractModule {
 	}
 
 	//{{{ Validators block
-	function _loginFieldValidator($field, $value, &$errors, &$userData){
+	protected function _loginFieldValidator($field, $value, &$errors, &$userData){
 		if (!isValidLogin($value, 1, 255)) { //login length must be controlled in the min and max field options
 			$errors[$field]['badlogin'] = true;
 		}
@@ -480,7 +482,7 @@ class PXModuleRegister extends PXAbstractModule {
 		}
 	}
 
-	function _passwordFieldValidator($field, $value, &$errors, &$userData){
+	protected function _passwordFieldValidator($field, $value, &$errors, &$userData){
 		if (!isset($value[0]) || !isValidPasswd($value[0], 1, 255)) { //password length must be controlled in the min and max field options
 			$errors[$field]['badpassword']    = true;
 		}
@@ -497,13 +499,13 @@ class PXModuleRegister extends PXAbstractModule {
 		if($field !== 'passwd') unset($userData[$field]);
 	}
 
-	function _emailFieldValidator($field, $value, &$errors, &$userData){
+	protected function _emailFieldValidator($field, $value, &$errors, &$userData){
 		if(!empty($value) && !isValidEmail($value)){
 			$errors[$field]['email'] = true;
 		}
 	}
 
-	function _uniqueFieldValidator($field, $value, &$errors, &$userData){
+	protected function _uniqueFieldValidator($field, $value, &$errors, &$userData){
 		if(strlen(trim($value))){
 			$user =& $this->loadModel('user', array($field => trim($value)));
 
@@ -515,7 +517,7 @@ class PXModuleRegister extends PXAbstractModule {
 		}
 	}
 
-	function _reqFieldValidator($field, $value, &$errors, &$userData){
+	protected function _reqFieldValidator($field, $value, &$errors, &$userData){
 		if(is_array($value)){
 			foreach($value as $everyField){
 				if(!strlen(trim($everyField))){
@@ -532,7 +534,7 @@ class PXModuleRegister extends PXAbstractModule {
 		}
 	}
 
-	function _dateFieldValidator($field, $value, &$errors, &$userData){
+	protected function _dateFieldValidator($field, $value, &$errors, &$userData){
 		extract($value, EXTR_SKIP);
 
 		if(empty($day) && empty($month) && empty($year)){
@@ -546,7 +548,7 @@ class PXModuleRegister extends PXAbstractModule {
 		}
 	}
 
-	function _fileFieldValidator($field, $value, &$errors, &$userData){
+	protected function _fileFieldValidator($field, $value, &$errors, &$userData){
 		$file = $this->request->GetUploadFile($field);
 
 		if(!empty($file)){
@@ -554,7 +556,7 @@ class PXModuleRegister extends PXAbstractModule {
 		}
 	}
 
-	function _captchaFieldValidator($field, $value, &$errors){
+	protected function _captchaFieldValidator($field, $value, &$errors){
 		if(!empty($this->captchaField) && 
 		    empty($value['key'])       or 
 		    empty($value['value'])     or 
@@ -565,7 +567,7 @@ class PXModuleRegister extends PXAbstractModule {
 	}
 	// }}} Validators block
 
-	function _applyModifiers(&$object){
+	protected function _applyModifiers(&$object){
 		if(!is_array($object) || empty($object)) {
 			return;
 		}
@@ -578,7 +580,7 @@ class PXModuleRegister extends PXAbstractModule {
 	}
 
 	// {{{ Modifiers block
-	function _passwdModifier($password){
+	protected function _passwdModifier($password){
 		$authmethodname = $this->user->getPrimaryAuthMethod($this->defaultAuth);
 		is_callable(array($authmethodname, 'passwdToDB')) or FatalError("Can't modify password with {$authmethodname}::passwdToDB() !");
 		return call_user_func(array($authmethodname, 'passwdToDB'), $password);
@@ -587,72 +589,72 @@ class PXModuleRegister extends PXAbstractModule {
 
 	// {{{ Routes block
 	// common
-	function _defaultRouteRedirect($destination, $urlArgs){
+	protected function _defaultRouteRedirect($destination, $urlArgs){
 		return $this->registerPath .'?view=' . $destination . (strlen($urlArgs) ? '&' . $urlArgs : '');
 	}
 
 	// register controller
-	function _successRoute($urlArgs){
+	protected function _successRoute($urlArgs){
 		return $this->_defaultRouteRedirect('success', $urlArgs);
 	}
 
-	function _errorRoute($urlArgs){
+	protected function _errorRoute($urlArgs){
 		return $this->_defaultRouteRedirect('error', $urlArgs);
 	}
 
 	// modify controller
-	function _modifyRoute($urlArgs){
+	protected function _modifyRoute($urlArgs){
 		return $this->_defaultRouteRedirect('modify', $urlArgs);
 	}
 
-	function _modifysuccessRoute($urlArgs){
+	protected function _modifysuccessRoute($urlArgs){
 		return $this->_defaultRouteRedirect('modifysuccess', $urlArgs);
 	}
 
-	function _modifyerrorRoute($urlArgs){
+	protected function _modifyerrorRoute($urlArgs){
 		return $this->_defaultRouteRedirect('modifyerror', $urlArgs);
 	}
 
 	// activation controller
-	function _activationRoute($urlArgs){
+	protected function _activationRoute($urlArgs){
 		return 'http://' . $this->request->GetHttpHost() . "/action.phtml?area={$this->area}&action=activation" . (strlen($urlArgs) ? '&' . $urlArgs : '');
 	}
 
-	function _activationsuccessRoute($urlArgs){
+	protected function _activationsuccessRoute($urlArgs){
 		return $this->_defaultRouteRedirect('activationsuccess', $urlArgs);
 	}
 
-	function _activationerrorRoute($urlArgs){
+	protected function _activationerrorRoute($urlArgs){
 		return $this->_defaultRouteRedirect('activationerror', $urlArgs);
 	}
 
 	// remind controller
-	function _remindRoute($urlArgs){
+	protected function _remindRoute($urlArgs){
 		return 'http://' . $this->request->GetHttpHost() . $this->registerPath . '?view=remind' . (strlen($urlArgs) ? '&' . $urlArgs : '');
 	}
 
-	function _remindsuccessRoute($urlArgs){
+	protected function _remindsuccessRoute($urlArgs){
 		return $this->_defaultRouteRedirect('remindsuccess', $urlArgs);
 	}
 
-	function _reminderrorRoute($urlArgs){
+	protected function _reminderrorRoute($urlArgs){
 		return $this->_defaultRouteRedirect('reminderror', $urlArgs);
 	}
 	// }}} Routes block
 	
 	// {{{ Mail templates data assigners block
-	function _activationMailData(&$user, $route){
+	protected function _activationMailData(&$user, $route){
 		$user[$route . 'code'] = generateRandomString(16);
 		return array(
 			'href' => $this->buildRoute($route, array('code' => $user[$route . 'code'], 'login' => $user['title']))
 		);
 	}
 
-	function _remindMailData(&$user, $route){
+	protected function _remindMailData(&$user, $route){
 		return $this->_activationMailData($user, $route);
 	}
 
-	function _notifyMailData(&$user, $route){
+	protected function _notifyMailData(&$user, $route){
 		return array(
 			'login'    => $user['title'],
 			'password' => $user['__plain_passwd__']
@@ -660,4 +662,5 @@ class PXModuleRegister extends PXAbstractModule {
 	}
 	// }}} Mail templates data assigners block
 }
+
 ?>
