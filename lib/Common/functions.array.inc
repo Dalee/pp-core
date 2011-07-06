@@ -21,6 +21,10 @@ function GetColsFromTable($table, $rows) {
 	return $results;
 }
 
+function GetBlankArray() {
+	return array();
+}
+
 function GetColFromTable($table, $rowName) {
 	$retArray = array();
 	foreach ($table as $row) {
