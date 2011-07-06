@@ -964,8 +964,11 @@ class PXDatabase extends NLSQLDatabaseAdapter implements IPXDatabase {
 			if ($result <  0) {
 				FatalError($this->GetError());
 			}
+			
+			foreach ($this->triggers as $t)
+				$t->getTrigger()->OnModifyObjectSysVars($this, $object['id'], $format, $object, $dbFields, $dbValues, $objectInDB);
+
 			$audit->info('Изменены системные параметры объекта', $format->id .'/'. $object['id']);
-			// TRIGGER ?
 		}
 	}
 

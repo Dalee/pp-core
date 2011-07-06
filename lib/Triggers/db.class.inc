@@ -15,6 +15,9 @@ abstract class PXAbstractDatabaseTrigger extends PXAbstractTrigger {
 	
 	function OnModifyObject(&$db, &$objId, &$format, &$object, &$dbFields, &$dbValues, &$objectInDB) {
 	}
+	
+	function OnModifyObjectSysVars(&$db, &$objId, &$format, &$object, &$dbFields, &$dbValues, &$objectInDB) {
+	}
 
 	function OnBeforeDeleteObject(&$db, &$objId, &$format, &$objectInDB) {
 		return true;
