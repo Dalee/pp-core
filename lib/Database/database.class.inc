@@ -826,6 +826,10 @@ class PXDatabase extends NLSQLDatabaseAdapter implements IPXDatabase {
 			$v->storageType->cloneFile($v, $object, $p);
 		}
 
+		foreach ($this->triggers as $t){
+			$t->getTrigger()->onCloneObject($this, $format, $object, $donorObject);
+		}
+
 		$audit->info('Объект клонирован', $format->id .'/'. $donorObject['id']);
 
 		return $object['id'];

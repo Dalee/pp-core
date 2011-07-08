@@ -195,9 +195,9 @@ class PXApplication {
 			WriteStringToFile($tmp, $source);
 
 			// Spyc'у не нравятся мои конфиги, поэтому их стоит немного переделать
-			include_once 'spyc/spyc.php';
-			$spyc = new Spyc();
-			$this->langTree = array_recursive_inheritance($this->langTree, $spyc->load($tmp));
+			include_once 'spyc/spyc.php5';
+
+			$this->langTree = array_recursive_inheritance($this->langTree, Spyc::YAMLLoad($tmp));
 			unlink($tmp);
 		}
 	}

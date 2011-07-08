@@ -163,7 +163,7 @@ function DLog($var, $full = true, $overwrite = 1, $fileName = '') {
 	}
 	$started = true;
 	file_put_contents($fileName, '['.date('d.m.Y H:i:s')."]\r\n", $mode);
-	file_put_contents($fileName, html_entity_decode(d3($var, $full)), FILE_APPEND);
+	file_put_contents($fileName, html_entity_decode(D3($var, $full)), FILE_APPEND);
 	file_put_contents($fileName, "\r\n\r\n", FILE_APPEND);
 }
 ?>

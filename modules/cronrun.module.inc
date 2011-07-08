@@ -42,14 +42,16 @@ class PXModuleCronRun extends PXModule {
 
 			$file = strtolower($jobname).".cronrun.inc";
 
-			if (file_exists(BASEPATH.'/local/cronruns/'.$file)) {
-				include_once BASEPATH.'/local/cronruns/'.$file;
+			if (!class_exists(sprintf("pxcronrun%s", strtolower($jobname)), false)) {
+				if (file_exists(BASEPATH.'/local/cronruns/'.$file)) {
+					include_once BASEPATH.'/local/cronruns/'.$file;
 
-			} elseif (file_exists(BASEPATH.'/libpp/cronruns/'.$file)) {
-				include_once BASEPATH.'/libpp/cronruns/'.$file;
+				} elseif (file_exists(BASEPATH.'/libpp/cronruns/'.$file)) {
+					include_once BASEPATH.'/libpp/cronruns/'.$file;
 
-			} else {
-				continue;
+				} else {
+					continue;
+				}
 			}
 
 			$class = 'PXCronRun' . $jobname;

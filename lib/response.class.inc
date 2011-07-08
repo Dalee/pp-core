@@ -192,7 +192,7 @@ class PXResponse {
 	 * @param integer $expire
 	 * @return boolean
 	 */
-	function SetCookie($name, $value, $expire = NULL) {
+	function SetCookie($name, $value, $expire = NULL, $domain = NULL) {
 		if (headers_sent ()) {
 			return false;
 		}
@@ -204,7 +204,7 @@ class PXResponse {
 		if (!is_numeric($expire)) {
 			$expire = 0;
 		}
-		return setcookie($name, $value, $expire, '/');
+		return setcookie($name, $value, $expire, '/', $domain);
 	}
 }
 ?>

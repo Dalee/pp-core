@@ -43,6 +43,10 @@ class PXAbstractPlugin {
 		$this->load($relativePath, "modules/%s.module.inc");
 	}
 
+	function loadCronrun($relativePath) {
+		$this->load($relativePath, "cronruns/%s.cronrun.inc");
+	}
+
 	function loadDisplayType($filename_without_ext) {
 		$this->loadWithLoader('displayTypes', 'PXDisplayType', $filename_without_ext);
 	}
