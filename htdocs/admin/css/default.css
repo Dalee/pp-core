@@ -138,6 +138,7 @@ table.objects td, table.objects-table td {
 	vertical-align: middle;
 	background-color: #FFFFFF;
 	color: #000000;
+	word-wrap: break-word;
 }
 
 table.objects td img, table.objects-table td img {
