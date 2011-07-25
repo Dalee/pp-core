@@ -1484,7 +1484,7 @@ SQL;
 		}
 		$tmp = array();
 		foreach ($links as $k=>$v) {
-			if(!ctype_digit($k)) {
+			if(is_string($k) && !ctype_digit($k)) {
 				FatalError('Попытка SQL-Injection!');
 			}
 			if (isset($v['on'])) $tmp[] = $k;
