@@ -40,7 +40,7 @@ abstract class NLAbstractSQLDatabase {
 	function modifyingCopy($tableName, $cols, $data) {
 	}
 
-	function query($query, $donotusecache = false) {
+	function query($query, $donotusecache = false, $limitpair = NULL) {
 	}
 
 	function insertObject($table, $fields, $values) {

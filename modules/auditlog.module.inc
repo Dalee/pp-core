@@ -10,7 +10,9 @@
 class PXModuleAuditLog extends PXModule {
 	function PXModuleAuditLog($area, $settings) {
 		parent::__construct($area, $settings);
-		$this->layout->setOneColumn();
+		if(is_callable(array($this->layout, 'setOneColumn'))){
+			$this->layout->setOneColumn();
+		}
 	}
 
 	function adminIndex() {

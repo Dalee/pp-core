@@ -9,7 +9,7 @@ class PXControlSubmit extends PXAdminWidget {
 	}
 
 	function html() {
-		return '<input type="submit"'.(!empty($this->name) ? ' name="'.$this->name.'"' : '').' value="'.$this->value.'" accesskey="s"'.$this->disable.'>';
+		return '<input type="submit"'.(!empty($this->name) ? ' name="'.$this->name.'"' : '').' value="'.htmlspecialchars($this->value).'" accesskey="s"'.$this->disable.'>';
 	}
 }
 ?>

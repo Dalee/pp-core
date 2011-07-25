@@ -33,7 +33,7 @@ class PXAdminHTMLLayout extends NLAbstractLayout {
 		$this->assignVersion();
 		$this->types = $types;
 
-		$this->assign('BODY.CLASS', PXRegistry::getRequest()->getArea());
+		$this->assign('BODY.CLASS', htmlspecialchars(PXRegistry::getRequest()->getArea()));
 	}
 
 	function assignVersion() {
@@ -76,7 +76,7 @@ class PXAdminHTMLLayout extends NLAbstractLayout {
 		$html = NULL;
 
 		if (sizeof($allowedFormats)) {
-			$html .=' onContextMenu="Context(event, \'add\', '.$selectedSid;
+			$html .=' onContextMenu="Context(event, \'add\', '.htmlspecialchars($selectedSid, ENT_QUOTES);
 
 			foreach ($this->types as $k=>$v) {
 				if (in_array($k, $allowedFormats)) {

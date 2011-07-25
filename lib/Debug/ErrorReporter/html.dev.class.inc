@@ -4,6 +4,7 @@ class PXErrorReporterHTMLDev extends PXErrorReporter {
 		$css = $this->isFirstError() ? $this->css() : '';
 
 		$traceHTML = $this->traceToHtml($error['trace']);
+		$error['message'] = htmlspecialchars($error['message']);
 
 		echo <<<HTML
 			<html class="error-debug">
@@ -41,6 +42,7 @@ HTML;
 		}
 
 		$traceHTML = $this->traceToHtml($error['trace']);
+		$error['message'] = htmlspecialchars($error['message']);
 
 		echo <<<HTML
 			<div class="error-debug">
@@ -83,6 +85,8 @@ ERROR_ROW;
 	}
 
 	function _argsToHTML($arg){
+		$arg['value'] = htmlspecialchars($arg['value']);
+		
 		return <<<ARGS
 			<span class="{$arg['type']}" title="{$arg['type']}">
 				{$arg['value']}

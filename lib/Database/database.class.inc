@@ -261,9 +261,14 @@ class PXDatabase extends NLSQLDatabaseAdapter implements IPXDatabase {
 	 * @return Array|NULL           results of {@link NLSQLDatabaseAdapter::Query()}
 	 */
 	private function _GetData($format, $status, $mode, $where=NULL, $limit=NULL, $order=NULL) {
-		if(is_array($limit) && (is_null($limit[0]) || is_null($limit[1]))) {
-			$limit = 1;
+		if(is_array($limit)) {
+			if(is_null($limit[0]) || is_null($limit[1])) {
+				$limit = null;
+			} else {
+				$limit = array_map('intval', $limit);
+			}
 		}
+		
 		PXProfiler::begin('GET DATA: ' . $format->id . '[' . $status . ', ' . $where . ']-[' .  (is_array($limit) ? implode('.', $limit) : '') . ']-[' . $order . ']');
 		$where = $this->joinWhere($format, $status, $where);
 
@@ -1479,6 +1484,9 @@ SQL;
 		}
 		$tmp = array();
 		foreach ($links as $k=>$v) {
+			if(!ctype_digit($k)) {
+				FatalError('Попытка SQL-Injection!');
+			}
 			if (isset($v['on'])) $tmp[] = $k;
 		}
 		$objectsToLink = $this->getObjectsByIdArray($this->types[$linkedFormat], NULL, $tmp);

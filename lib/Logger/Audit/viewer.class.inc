@@ -16,8 +16,8 @@ class PXAuditViewer {
 
 				case 'date':
 				case 'ts':
-					if(is_array($var) && !in_array(null, $var)) {
-						$var = getFromArray($var, 'day'). '-' . getFromArray($var, 'month') . '-' . getFromArray($var, 'year') . ' 00:00:00';
+					if(is_array($var) && checkdate((int)getFromArray($var, 'month'), (int)getFromArray($var, 'day'), (int)getFromArray($var, 'year'))) {
+						$var = sprintf('%02d-%02d-%04d 00:00:00', getFromArray($var, 'day'), getFromArray($var, 'month'), getFromArray($var, 'year'));
 					}
 
 					if(!is_array($var)) {
@@ -25,6 +25,7 @@ class PXAuditViewer {
 					} else {
 						unset($filters[$field]);
 					}
+
 					break;
 
 				case 'format':
@@ -32,7 +33,7 @@ class PXAuditViewer {
 					break;
 
 				case 'id':
-					$filters[$field] = "split_part(source, '/', 2) = '" . $var ."'";
+					$filters[$field] = "split_part(source, '/', 2) = '" . $this->db->escapeString($var) ."'";
 					break;
 
 				case 'level':

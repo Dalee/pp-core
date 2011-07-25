@@ -101,10 +101,10 @@ class PXAdminAuditWrapper {
 		}
 
 
-		$login       = $this->request->getVar("user");
-		$description = $this->request->getVar("description");
-		$ip          = $this->request->getVar("ip");
-		$id          = $this->request->getVar("id");
+		$login       = htmlspecialchars($this->request->getVar("user"));
+		$description = htmlspecialchars($this->request->getVar("description"));
+		$ip          = htmlspecialchars($this->request->getVar("ip"));
+		$id          = htmlspecialchars($this->request->getVar("id"));
 
 		$ts = $this->request->getVar('ts') ? $this->request->getVar('ts') : null;
 		$ds = $this->request->getVar('date');
@@ -268,18 +268,6 @@ HTML;
 			
 			if(is_null($var)) {
 				continue;
-			}
-			
-			if(is_array($var)) {
-				$var = array_map(array($this->db, "escapeString"), $var);
-			} else {
-				$var = $this->db->escapeString($var);
-			}
-
-			if(is_array($var)) {
-				$var = array_map(array($this->db, "escapeString"), $var);
-			} else {
-				$var = $this->db->escapeString($var);
 			}
 
 			$this->layout->setGetVarToSave($field, $var);

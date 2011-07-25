@@ -75,20 +75,20 @@ class PXAdminTableObjects extends PXAdminObjects  {
 
 	protected
 	function createSubWidget() {
-		$this->count       =& $this->loadObjects($this->getWhere(), DB_SELECT_COUNT);
+		$this->count = $this->loadObjects($this->getWhere(), DB_SELECT_COUNT);
 		
-		$onPage   = $this->request->getVar(PXAdminPager::getPerPageParamByFormatId($this->format->id), 
-						$this->app->getProperty('CHILDREN_ON_PAGE', 20)); 
+		$onPage = (int)$this->request->getVar(PXAdminPager::getPerPageParamByFormatId($this->format->id));
+		$onPage = $onPage > 0 ? $onPage : $this->app->getProperty('CHILDREN_ON_PAGE', 20); 
 
 		$this->layout->setGetVarToSave(PXAdminPager::getPerPageParamByFormatId($this->format->id), $onPage); 
 
-		$currentPage = $this->request->getVar($this->format->id.'_page', 1);
+		$currentPage = (int)$this->request->getVar($this->format->id.'_page', 1);
 		$currentPage = max(($currentPage > ceil($this->count/$onPage) ? ceil($this->count/$onPage) : $currentPage), 1);
 
 		$this->layout->setGetVarToSave($this->format->id.'_page', $currentPage);
 		$this->layout->setGetVarToSave($this->format->id.'_view', 'plain');
 
-		$currentPage  = $this->request->getVar($this->format->id.'_page', 1);
+		$currentPage  = (int)$this->request->getVar($this->format->id.'_page', 1);
 		$currentOrder = $this->request->getOrderVar($this->format->id, $this->format->order, $this->format->fields);
 
 		$this->layout->setGetVarToSave($this->format->id.'_order', $currentOrder);

@@ -19,12 +19,13 @@ class PXInputParentDropDown extends PXAdminWidget {
 			if(isset($v['disabled'])){
 				$html .= '<optgroup class="disabled" label="'.$v['title'].'"></optgroup>';
 			} else {
-				$html .= '<option value="'.$k.'"'.($k == $this->value && ($selected = true) ? ' selected' : '').'>'.$v['title'].'</option>';
+				$html .= '<option value="'.htmlspecialchars($k).'"'.($k == $this->value && ($selected = true) ? ' selected' : '').'>'.$v['title'].'</option>';
 			}
 		}
 
 		if(!empty($this->value) && !$selected) {
-			$html .= sprintf('<option value="%s" selected>[нет в списке - "%s"]</option>', $this->value, $this->value);
+			$val = htmlspecialchars($this->value);
+			$html .= sprintf('<option value="%s" selected>[нет в списке - "%s"]</option>', $val, $val);
 		}
 
 		$html .= '</select>';

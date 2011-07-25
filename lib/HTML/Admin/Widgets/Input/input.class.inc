@@ -11,7 +11,7 @@ class PXInputInput extends PXAdminWidget {
 	}
 
 	function html() {
-		return '<input type="text" name="'.$this->name.'" value="'.$this->value.'" '.$this->disable.( !is_null($this->maxlength) ? ' maxlength="'.$this->maxlength.'" ' : '').'>';
+		return '<input type="text" name="'.$this->name.'" value="'.htmlspecialchars($this->value).'" '.$this->disable.( !is_null($this->maxlength) ? ' maxlength="'.$this->maxlength.'" ' : '').'>';
 	}
 }
 

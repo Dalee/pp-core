@@ -11,7 +11,7 @@ class PXEngineAdminAction extends PXEngineAdmin {
 		PXProfiler::begin('RUN MODULES');
 
 		if (!isset($this->modules[$this->area])) {
-			FatalError('Некорректный параметр area = <em>'.strip_tags($this->area).'</em>');
+			FatalError('Некорректный параметр area = <em>'.htmlspecialchars($this->area).'</em>');
 		}
 
 		$instance = $this->modules[$this->area]->getModule();
