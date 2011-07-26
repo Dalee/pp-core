@@ -37,12 +37,11 @@ class PXInputDropDown extends PXAdminWidget {
 				unset($selected[$k]);
 			}
 			
-			$html .= sprintf('<option value="%s"%s>%s</option>', htmlspecialchars($value), $selectedHTML, htmlspecialchars($title));
+			$html .= sprintf('<option value="%s"%s>%s</option>', quot($value), $selectedHTML, htmlspecialchars($title));
 		}
 		
 		foreach($selected as $unknown => $k){
-			$unknown = htmlspecialchars($unknown);
-			$html .= sprintf('<option value="%s" selected>[нет в списке - "%s"]</option>', $unknown, $unknown);
+			$html .= sprintf('<option value="%s" selected>[нет в списке - "%s"]</option>', quot($unknown), htmlspecialchars($unknown));
 		}
 
 		$html .= '</select>';

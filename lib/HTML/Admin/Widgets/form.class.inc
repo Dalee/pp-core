@@ -293,7 +293,7 @@ HTML;
 			if($f->storageType->filterable()){
 				!($filterOn = isset($filters[$formatTo->id][$f->name])) OR $enabledFilters++;
 				$thead .= '<th class="ref-filter-'.( $filterOn ? 'show' : 'hide').'" ondblclick="ShowHideFilter(this)" title="Двоиной клик, чтобы скрыть/показать фильтр по этому полю"><span>'.$f->description.'</span>';
-				$thead .= '<input type="text" name="filters['.$formatTo->id.']['.$f->name.']" value="'.($filterOn ? htmlspecialchars($filters[$formatTo->id][$f->name]) : null).'" />';
+				$thead .= '<input type="text" name="filters['.$formatTo->id.']['.$f->name.']" value="'.($filterOn ? quot($filters[$formatTo->id][$f->name]) : null).'" />';
 				$thead .= '</th>';
 			} else {
 				$thead .= '<th>'.$f->description.'</th>';

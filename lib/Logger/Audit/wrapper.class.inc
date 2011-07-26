@@ -101,10 +101,10 @@ class PXAdminAuditWrapper {
 		}
 
 
-		$login       = htmlspecialchars($this->request->getVar("user"));
-		$description = htmlspecialchars($this->request->getVar("description"));
-		$ip          = htmlspecialchars($this->request->getVar("ip"));
-		$id          = htmlspecialchars($this->request->getVar("id"));
+		$login       = quot($this->request->getVar("user"));
+		$description = quot($this->request->getVar("description"));
+		$ip          = quot($this->request->getVar("ip"));
+		$id          = quot($this->request->getVar("id"));
 
 		$ts = $this->request->getVar('ts') ? $this->request->getVar('ts') : null;
 		$ds = $this->request->getVar('date');

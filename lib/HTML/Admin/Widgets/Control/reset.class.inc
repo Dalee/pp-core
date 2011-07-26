@@ -6,7 +6,7 @@ class PXControlReset extends PXAdminWidget {
 		$this->value = $value;
 	}
 	function html() {
-		return '<input type="reset" value="'.htmlspecialchars($this->value).'" '.$this->disable.'>';
+		return '<input type="reset" value="'.quot($this->value).'" '.$this->disable.'>';
 	}
 }
 	

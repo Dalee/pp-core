@@ -27,8 +27,8 @@ class PXInputCheckbox extends PXAdminWidget {
 		$html = '<input type="checkbox" class="checkbox" name="'.$this->name.'" '.$this->on;
 
 		$html .= $this->id    ? ' id="'.$this->id.'"'       : '';
-		$html .= !is_null($this->value) ? ' value="'.htmlspecialchars($this->value).'"' : '';
-		$html .= $this->disable.' />';	
+		$html .= !is_null($this->value) ? ' value="'.quot($this->value).'"' : '';
+		$html .= $this->disable.' />';
 
 		return $html;
 	}

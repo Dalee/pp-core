@@ -1135,4 +1135,8 @@ if (!function_exists("lcfirst")) {
 	}
 }
 
+function quot($string, $double = true) {
+	return strtr($string, $double ? array('"' => '&quot;') : array("'" => "&#039;"));
+}
+
 ?>

@@ -10,7 +10,7 @@ class PXInputDateHidden extends PXInputDateTime {
 
 		$html = '';
 		foreach($values as $k=>$v) {
-			$html .= '<input type="hidden" name="'.$this->name.'['.$k.']"   value="'.htmlspecialchars($v).'">';
+			$html .= '<input type="hidden" name="'.$this->name.'['.$k.']"   value="'.quot($v).'">';
 		}
 
 		return $html;
