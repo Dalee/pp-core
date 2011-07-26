@@ -70,7 +70,29 @@ class PXRequest {
 	function GetPathAsString() {
 		return $this->path;
 	}
-
+	
+	function IsBadPath() {
+		$path = $_SERVER['REQUEST_URI'];
+		if ($paramsPos = strpos($path, "?")) {
+			$path = substr($path, 0, $paramsPos);
+		}
+		// Terminal slash check
+		$regexp = '/\.(' . join('|', array_map('preg_quote', unserialize(ENUM_ALLOWED_PATHNAMES))) . ')\/+$/';
+		if (preg_match($regexp, $path)) {
+			return true;
+		}
+		// Double slash check
+		if (strpos($path, '//') !== false) {
+			return true;
+		}
+		// 'index.php' and etc. check (shouldn't occur in the middle)
+		$regexp = '/\/(' . join('|', array_map('preg_quote', $this->rootPathsList)) . ')\//';
+		if (preg_match($regexp, $path)) {
+			return true;
+		}
+		return false;
+	}
+	
 	function GetPath() {
 		$tmpArray = explode("/", $this->path);
 		$path = array();

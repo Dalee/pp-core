@@ -16,7 +16,13 @@ class PXModuleMain extends PXModule {
 	}
 
 	function userIndex() {
-		// get path
+		// Bad path
+		if ($this->request->IsBadPath()) {
+			$this->response->notFound();
+			return;
+		}
+		
+		// Get path
 		$urlPath = $this->request->getHostAndDir();
 		$urlFile = $this->request->getFile();
 		$urlPart = $this->request->getPart();
@@ -51,18 +57,15 @@ class PXModuleMain extends PXModule {
 	}
 
 	function check404error($urlFile, $urlPart) {
-		$response = PXResponse::getInstance();
-		$error = 0;
-
 		// Определение кода ошибки
 		if (
 			!$this->tree->hasCurrent() ||
 			!($this->request->isIndexFile($urlFile) || $this->objects->hasCurrent())    ||
 			!($this->request->isIndexFile($urlPart) || $this->subObjects->hasCurrent())
 		) {
-			$response->notFound();
+			$this->response->notFound();
 		} else {
-			$response->setOk();
+			$this->response->setOk();
 		}
 	}
 
