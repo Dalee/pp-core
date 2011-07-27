@@ -2,7 +2,7 @@
 class PXHTMLFileListingLink extends PXHTMLFileListing {
 	function PXHTMLFileListingLink($href, $side, $name) {
 		$this->PXHTMLFileListing($href, $side);
-		$this->name = $name;
+		$this->name = htmlspecialchars($name);
 	}
 
 	function htmlHeader() {
@@ -62,6 +62,7 @@ HTML;
 
 class PXHTMLFileListing {
 	function PXHTMLFileListing($href, $side) {
+		$href = htmlspecialchars($href);
 		$this->base = $href.'&'.$side.'dir=';
 
 		$this->href = $href;
