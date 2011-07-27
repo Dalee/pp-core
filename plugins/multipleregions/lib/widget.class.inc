@@ -29,7 +29,7 @@ class PXTabbedMenuRegionChanger extends PXAdminWidget {
 	}
 
 	private function _selector($rid, $regionsData) {
-		$uri = quot(PXRegistry::getRequest()->GetRequestUri());
+		$uri = htmlspecialchars(PXRegistry::getRequest()->GetRequestUri());
 
 		$varName           = PXMultiRegions::REGION_MARK . '[rid]';
 		$regionsData[null] = '- נןכבתבפר קףו עוחיןמש -';
