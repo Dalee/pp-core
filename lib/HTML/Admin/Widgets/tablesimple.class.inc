@@ -73,9 +73,9 @@ class PXAdminTableSimple extends PXAdminWidget {
 		$this->controls[] = array(
 			'title'   => $title,
 			'url'     => $url,
-		        'icon'    => $icon,
-		        'confirm' => $confirm,
-		        'popup'   => $popup,
+			'icon'    => $icon,
+			'confirm' => $confirm,
+			'popup'   => $popup,
 		);
 	}
 
