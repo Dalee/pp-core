@@ -204,8 +204,14 @@ class PXCorpRegions {
 			return $fullPath;
 		}
 
-		$fullPath = str_replace('http://', '', $fullPath);
-		$path     = explode('/', $fullPath);
+		$returnProto = 'http://';
+
+		if (preg_match("#^(https?://)#", $fullPath, $m)) {
+			$fullPath = str_replace($m[1], '', $fullPath);
+			$returnProto = $m[1];
+		}
+
+		$path = explode('/', $fullPath);
 		
 		if(empty($tree)) {
 			$tree = self::initRegionTree($regionId);
@@ -220,7 +226,7 @@ class PXCorpRegions {
 		while(($sid = array_pop($path)) < 0);
 		$path = createSomePathByParentId($tree, $sid, OBJ_FIELD_PATHNAME, '/', true, false);
 
-		return sprintf('http://%s/%s', $host, $path);
+		return sprintf('%s%s/%s', $returnProto, $host, $path);
 	}
 
 	static function regionExists($id) {
