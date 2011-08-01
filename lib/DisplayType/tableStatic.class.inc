@@ -26,7 +26,7 @@ class PXDisplayTypeTableStatic extends PXDisplayTypeStatic {
 
 		$_html .= '</table>';
 
-		return NLAbstractHTMLForm::BuildHidden($field->name, $value).$_html;
+		return $_html;
 	}
 }
 ?>
