@@ -408,6 +408,9 @@ function appendParamToUrl($url, $k, $v, $fragment = false, $num_save = false) {
 	$url = NULL;
 	if (!empty($tmp['scheme'])) {
 		$url .= $tmp['scheme'].'://'.$tmp['host'];
+		if (!empty($tmp['port'])) {
+			$url .= ':'.$tmp['port'];
+		}
 	} else {
 		$url .= PXRequest::GetHttpProto().'://'.PXRequest::GetHttpHost();
 	}
