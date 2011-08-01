@@ -24,7 +24,7 @@ class PXInputParentDropDown extends PXAdminWidget {
 		}
 
 		if(!empty($this->value) && !$selected) {
-			$html .= sprintf('<option value="%s" selected>[нет в списке - "%s"]</option>', quot($val), htmlspecialchars($val));
+			$html .= sprintf('<option value="%s" selected>[нет в списке - "%s"]</option>', quot($this->value), htmlspecialchars($this->value));
 		}
 
 		$html .= '</select>';
