@@ -152,6 +152,18 @@ class PXDisplayType {
 		$value = is_string($object[$field->name]) ? strip_tags($object[$field->name]) : $object[$field->name];
 		return $field->displayType->name.' - '.$value;
 	}
+	
+	/**
+	 * Возвращает ширину, необходимую для отображения объекта в ячейке.
+	 * Нулевое значение = стандартная ширина (то есть, сколько достанется после 
+	 * разделения колонок).
+	 * 
+	 * @param PXFieldDescription $field
+	 * @return Int
+	 */
+	function getCellWidth($field) {
+		return 0;
+	}
 
 	protected function getSubDirectoryIfExists($field, $object, $value) {
 		$temp = "";

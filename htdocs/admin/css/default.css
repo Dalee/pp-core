@@ -638,7 +638,7 @@ div.imagepreview {
 div.image-in-cell {
 	clear: none;
 	float: left;
-	margin: 10px;
+	padding: 0 10px;
 }
 
 div.imagepreview div {

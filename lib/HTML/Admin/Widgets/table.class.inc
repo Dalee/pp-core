@@ -126,7 +126,8 @@ class PXAdminTable extends PXAdminComplexWidget {
 
 			foreach ($this->dtype->fields as $field) {
 				if ($field->listed) {
-					$html .= '<th'.($field->name === $this->titleKey ? ' class="maincol"' : ' class="c-'.strtolower($field->displayType->name).'"').'>';
+					$cellWidth = $field->displayType->getCellWidth($field);
+					$html .= '<th'.($field->name === $this->titleKey ? ' class="maincol"' : ' class="c-'.strtolower($field->displayType->name).'"').($cellWidth ? 'style="width: '.$cellWidth.'px"' : '').'>';
 
 					$param = array(
 						'order' => $this->currentOrder,
@@ -347,7 +348,7 @@ class PXAdminTable extends PXAdminComplexWidget {
 	function _buildCell($object, $field) {
 		return $field->displayType->buildCell($field, $object);
 	}
-
+	
 	/**
 	 * Строим ссылку, не забываем добавлять getData.
 	 *
