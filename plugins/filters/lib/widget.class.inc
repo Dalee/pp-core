@@ -1,5 +1,7 @@
 <?php
 
+require_once BASEPATH . '/libpp/plugins/filters/lib/additional_loader.class.inc';
+
 class PXFiltersAdminWidget extends PXAdminWidget {
 	function html() {
 		$this->request = PXRegistry::getRequest();
@@ -25,7 +27,13 @@ class PXFiltersAdminWidget extends PXAdminWidget {
 			$filters_html[] = sprintf('<div><input type="text" value="%s" name="filters[%s][%s]" /> &ndash; <label>%s</label></div>', $filter_value, $dtype->id, $field->name, $field->description);
 		}
 
-		array_unshift($filters_html, '<p>Используйте ^-для поиска в начале строки $-в конце строки</p>');
+		array_unshift($filters_html, '<p>Используйте ^ для поиска в начале строки, $ &mdash; в конце строки.</p>');
+		
+		foreach (PXFiltersPluginAdditionalLoader::getAdditionalFilters($dtype->id) as $additionalFilterClass) {
+			/* @var $additionalFilterClass PXAdditionalFilter */
+			$filters_html[] = $additionalFilterClass->html();
+		}
+		
 		$filters_html[] = '<button class="run_f">Применить</button>';
 
 		if (!empty($filters[$dtype->id])) {
@@ -64,8 +72,18 @@ $(function() {
 			search_properties[tmp[0].replace('?', '')] = tmp[1];
 		}
 
-		$('input[name^="filters"]').filter(function() { return $(this).val().length }).each(function(i, item) {
-			search_properties[$(item).attr('name')] = $(item).val();
+		$('input[name^="filters"],select[name^="filters"]').filter(function() {
+			return $(this).val().length;
+		}).each(function(i, item) {
+			var name = $(item).attr('name');
+			var type = $(item).attr('type');
+			if (type == 'radio' || type == 'checkbox') {
+				if ($(item).attr('checked')) {
+					search_properties[name] = $(item).attr('value');
+				}
+			} else {
+				search_properties[name] = $(item).val();
+			}
 		});
 
 		var join = [];
@@ -125,6 +143,7 @@ fieldset.filters.collapsed {
 }
 
 fieldset.filters input, 
+fieldset.filters select, 
 fieldset.filters button {
 	margin: 3px;
 }

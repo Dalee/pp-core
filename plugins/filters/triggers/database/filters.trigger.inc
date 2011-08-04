@@ -1,5 +1,7 @@
 <?php
 
+require_once BASEPATH . '/libpp/plugins/filters/lib/additional_loader.class.inc';
+
 class PXTriggerDatabaseFilters extends PXAbstractDatabaseTrigger {
 	function OnBeforeGetDataBuildQuery($db, $format, &$mode, &$selector, &$where, &$order, &$limit) {
 		$layout = PXRegistry::getLayout();
@@ -30,7 +32,7 @@ class PXTriggerDatabaseFilters extends PXAbstractDatabaseTrigger {
 		$_where = array();
 
 		foreach ($filters as $name => $value) {
-			if (!$format->fields[$name]->storageType->filterable()) {
+			if (!isset($format->fields[$name]) or !$format->fields[$name]->storageType->filterable()) {
 				continue;
 			}
 
@@ -48,6 +50,14 @@ class PXTriggerDatabaseFilters extends PXAbstractDatabaseTrigger {
 			}
 
 			$_where[] = sprintf("%s.%s %s", $format->id, $name, $db->like($db->escapeString($value), $left | $right));
+		}
+		
+		foreach (PXFiltersPluginAdditionalLoader::getAdditionalFilters($format->id) as $additionalFilterClass) {
+			/* @var $additionalFilterClass PXAdditionalFilter */
+			$whereAdditionalPart = $additionalFilterClass->getWhere();
+			if ($whereAdditionalPart) {
+				$_where[] = $whereAdditionalPart;
+			}
 		}
 
 		if (!empty($_where)) {
