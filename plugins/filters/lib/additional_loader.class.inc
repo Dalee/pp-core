@@ -1,6 +1,6 @@
 <?php
 
-require_once BASEPATH . '/libpp/plugins/filters/additional/abstract.class.inc';
+require_once dirname(__FILE__) . '/../additional/abstract.class.inc';
 
 class PXFiltersPluginAdditionalLoader {
 	
@@ -10,9 +10,9 @@ class PXFiltersPluginAdditionalLoader {
 	/**
 	 * @return array of PXAdditionalFilter
 	 */
-	public static function getAdditionalFilters($formatId) {
+	public static function getAdditionalFilters($formatId, $pluginFolder) {
 		self::fillSettingsCache();
-		self::fillClassCache($formatId);
+		self::fillClassCache($formatId, $pluginFolder);
 		return self::$classCache[$formatId];
 	}
 	
@@ -39,14 +39,19 @@ class PXFiltersPluginAdditionalLoader {
 		}
 	}
 	
-	private static function fillClassCache($formatId) {
+	private static function fillClassCache($formatId, $pluginFolder) {
 		if (isset(self::$classCache[$formatId])) {
 			return;
 		}
 		self::$classCache[$formatId] = array();
 		if (isset(self::$settingsCache[$formatId])) {
 			foreach (self::$settingsCache[$formatId] as $classNamePart) {
-				require_once BASEPATH . '/local/plugins/filters/additional/' . strtolower($classNamePart) . '.class.inc';
+				$pathRight = '/plugins/' . $pluginFolder . '/additional/' . strtolower($classNamePart) . '.class.inc';
+				if (file_exists(BASEPATH . 'libpp' . $pathRight)) {
+					require_once BASEPATH . 'libpp' . $pathRight;
+				} else {
+					require_once BASEPATH . 'local' . $pathRight;
+				}
 				$className = 'PXAdditionalFilter' . $classNamePart;
 				self::$classCache[$formatId][] = new $className($formatId);
 			}

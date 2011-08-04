@@ -1,8 +1,15 @@
 <?php
 
-require_once BASEPATH . '/libpp/plugins/filters/lib/additional_loader.class.inc';
+require_once dirname(__FILE__) . '/additional_loader.class.inc';
 
 class PXFiltersAdminWidget extends PXAdminWidget {
+	private $pluginFolder;
+
+	function __construct($pluginFolder) {
+		$this->pluginFolder = $pluginFolder;
+		parent::__construct();
+	}
+	
 	function html() {
 		$this->request = PXRegistry::getRequest();
 		$this->layout  = PXRegistry::getLayout();
@@ -29,7 +36,7 @@ class PXFiltersAdminWidget extends PXAdminWidget {
 
 		array_unshift($filters_html, '<p>Используйте ^ для поиска в начале строки, $ &mdash; в конце строки.</p>');
 		
-		foreach (PXFiltersPluginAdditionalLoader::getAdditionalFilters($dtype->id) as $additionalFilterClass) {
+		foreach (PXFiltersPluginAdditionalLoader::getAdditionalFilters($dtype->id, $this->pluginFolder) as $additionalFilterClass) {
 			/* @var $additionalFilterClass PXAdditionalFilter */
 			$filters_html[] = $additionalFilterClass->html();
 		}
@@ -152,9 +159,11 @@ CSS;
 }
 
 class PXOnPageAdminWidget extends PXAdminWidget {
+	private $pluginFolder;
 	private $flag;
 
-	function __construct($flag=null) {
+	function __construct($pluginFolder, $flag=null) {
+		$this->pluginFolder = $pluginFolder;
 		$this->flag = $flag;
 		parent::__construct();
 	}

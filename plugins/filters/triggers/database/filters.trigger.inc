@@ -1,6 +1,6 @@
 <?php
 
-require_once BASEPATH . '/libpp/plugins/filters/lib/additional_loader.class.inc';
+require_once dirname(__FILE__) . '/../../lib/additional_loader.class.inc';
 
 class PXTriggerDatabaseFilters extends PXAbstractDatabaseTrigger {
 	function OnBeforeGetDataBuildQuery($db, $format, &$mode, &$selector, &$where, &$order, &$limit) {
@@ -52,7 +52,7 @@ class PXTriggerDatabaseFilters extends PXAbstractDatabaseTrigger {
 			$_where[] = sprintf("%s.%s %s", $format->id, $name, $db->like($db->escapeString($value), $left | $right));
 		}
 		
-		foreach (PXFiltersPluginAdditionalLoader::getAdditionalFilters($format->id) as $additionalFilterClass) {
+		foreach (PXFiltersPluginAdditionalLoader::getAdditionalFilters($format->id, $this->description->getFolder()) as $additionalFilterClass) {
 			/* @var $additionalFilterClass PXAdditionalFilter */
 			$whereAdditionalPart = $additionalFilterClass->getWhere();
 			if ($whereAdditionalPart) {

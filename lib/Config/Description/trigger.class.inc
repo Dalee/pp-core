@@ -17,7 +17,7 @@ class PXTriggerDescription {
 			return $this->instance;
 		}
 		$this->load();
-		return ($this->instance = new $this->klass());
+		return ($this->instance = new $this->klass($this));
 	}
 
 	function setAttrs($attributes) {
@@ -32,6 +32,10 @@ class PXTriggerDescription {
 
 	function getName() {
 		return $this->name;
+	}
+	
+	function getFolder() {
+		return $this->folder;
 	}
 
 	function getType() {

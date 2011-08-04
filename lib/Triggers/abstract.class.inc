@@ -1,11 +1,13 @@
 <?php
 abstract class PXAbstractTrigger {
-	function __construct(){
-		// none action
-	}
-
-	function getName() {
-		return $this->name;
+	
+	/**
+	 * @var PXTriggerDescription
+	 */
+	protected $description;
+	
+	function __construct(PXTriggerDescription $description){
+		$this->description = $description;
 	}
 }
 
