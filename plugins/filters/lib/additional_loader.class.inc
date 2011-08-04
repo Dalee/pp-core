@@ -47,13 +47,15 @@ class PXFiltersPluginAdditionalLoader {
 		if (isset(self::$settingsCache[$formatId])) {
 			foreach (self::$settingsCache[$formatId] as $classNamePart) {
 				$pathRight = '/plugins/' . $pluginFolder . '/additional/' . strtolower($classNamePart) . '.class.inc';
-				if (file_exists(BASEPATH . 'libpp' . $pathRight)) {
-					require_once BASEPATH . 'libpp' . $pathRight;
-				} else {
-					require_once BASEPATH . 'local' . $pathRight;
+				foreach (array('local', 'libpp') as $place) {
+					if(file_exists($fullPath = BASEPATH . $place . $pathRight)) {
+						require_once $fullPath;
+						$className = 'PXAdditionalFilter' . $classNamePart;
+						self::$classCache[$formatId][] = new $className($formatId);
+						continue(2);
+					}
 				}
-				$className = 'PXAdditionalFilter' . $classNamePart;
-				self::$classCache[$formatId][] = new $className($formatId);
+				FatalError("Unknown filters extender - '{$classNamePart}'");
 			}
 		}
 	}
