@@ -166,4 +166,45 @@ function DLog($var, $full = true, $overwrite = 1, $fileName = '') {
 	file_put_contents($fileName, html_entity_decode(D3($var, $full)), FILE_APPEND);
 	file_put_contents($fileName, "\r\n\r\n", FILE_APPEND);
 }
+
+/**
+ * @author Dmitry Kopytine <dm9@mylinks.ru>
+ * @author Dmitry Leykin <dilesoft@dilesoft.ru>
+ * From: http://code.google.com/p/intcmf/source/browse/trunk/bin/auxil.php
+ */
+function dd($var = null)
+{
+        header("Content-Type: text/html; charset=KOI8-R");
+        $backtrace = debug_backtrace();
+        if (isset ($backtrace[2]) and $backtrace[2]["function"] == "ddn") {
+                echo "<pre>ddn was called on <b>line {$backtrace[2]["line"]}</b> of file <b>{$backtrace[2]["file"]}</b>:\n\n";
+        } else {
+                echo "<pre>dd was called on <b>line {$backtrace[0]["line"]}</b> of file <b>{$backtrace[0]["file"]}</b>:\n\n<b>Backtrace:</b>\n";
+        }
+
+        foreach ($backtrace as $line) {
+                echo "file <font><b>{$line["file"]}</b></font> on line <font size=\"+1\"><b>{$line["line"]}</b></font>\n";
+        }
+
+        echo "\n";
+
+        foreach (func_get_args() as $idx => $val) {
+                $num = $idx + 1;
+                echo "<b>{$num}</b>:\n";
+                var_dump($val);
+        }
+        echo "</pre>";
+        die(999);
+}
+
+function ddn($pass_count = 1, $var = null)
+{
+        global $debug_pass_counter;
+        $debug_pass_counter ++;
+        if ($debug_pass_counter >= $pass_count) {
+                $args = func_get_args();
+                call_user_func_array("dd", array_slice($args, 1));
+        }
+}
+
 ?>

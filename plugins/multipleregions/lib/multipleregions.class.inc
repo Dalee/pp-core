@@ -39,6 +39,9 @@ class PXMultiRegions {
 		
 	}/*}}}*/ 
 
+	/**
+	 * @return PXMultiRegions
+	 */
 	function getInstance($context = NULL){ //context: ENUM {"user", "admin", "script"}/*{{{*/
 		if(empty(self::$self)){
 			$klass = __CLASS__;
