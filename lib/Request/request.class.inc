@@ -132,9 +132,16 @@ class PXRequest {
 	static function GetRemoteAddr() {
 		if (isset($_SERVER['HTTP_X_REAL_IP'])) {
 			if (strstr($_SERVER['HTTP_X_REAL_IP'], ",")) {
-				return trim(end(explode(",", $_SERVER['HTTP_X_REAL_IP'])));
+				$real_ip = trim(end(explode(",", $_SERVER['HTTP_X_REAL_IP'])));
 			} else {
-				return $_SERVER['HTTP_X_REAL_IP'];
+				$real_ip = $_SERVER['HTTP_X_REAL_IP'];
+			}
+			if (filter_var($real_ip, FILTER_VALIDATE_IP)) {
+				return $real_ip;
+			} else {
+				// Hacking attempt via unsafe header?
+				unset($_SERVER['HTTP_X_REAL_IP']);
+				FatalError("Malformed IP address given in X-Real-Ip header !");
 			}
 		} elseif (isset($_SERVER['REMOTE_ADDR'])) {
 			return $_SERVER['REMOTE_ADDR'];
