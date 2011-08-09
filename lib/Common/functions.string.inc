@@ -530,6 +530,60 @@ function isAsciiString($AStr) {
 	return preg_match("/^{$ptrASCII}*$/sS", $AStr);
 }
 
+/*
+ * Substring for a UTF8 string.
+ * 
+ * Input string should be UTF8-encoded.
+ * - If an encoding mistake is found in the first '$from' UTF8 characters, 
+ * blank string ('') is returned.
+ * - If an encoding mistake is found in the next charaters, only first N 
+ * correctly-encoded characters (starting from '$from') are returned 
+ * (N <= $length).
+ * 
+ * The function returns always a correct UTF8-encoded string.
+ */
+function substrUTF8($str, $from, $length) {
+	$len = strlen($str);
+	$chars = 0;
+	$i = 0;
+	$out = '';
+	while ($chars < $from + $length and $i < $len) {
+		$code = ord($str[$i]);
+		if ($code >= 0x00 && $code <= 0x7F) {
+			if ($chars >= $from) $out .= $str[$i];
+			$i += 1;
+		} elseif ($code >= 0xC0 && $code <= 0xDF) {
+			if ($i + 1 >= $len) return $out;
+			$code2 = ord($str[$i + 1]);
+			if ($code2 < 0x80 || $code2 > 0xBF) return $out;
+			if ($chars >= $from) $out .= $str[$i] . $str[$i + 1];
+			$i += 2;
+		} elseif ($code >= 0xE0 && $code <= 0xEF) {
+			if ($i + 2 >= $len) return $out;
+			$code2 = ord($str[$i + 1]);
+			if ($code2 < 0x80 || $code2 > 0xBF) return $out;
+			$code3 = ord($str[$i + 2]);
+			if ($code3 < 0x80 || $code3 > 0xBF) return $out;
+			if ($chars >= $from) $out .= $str[$i] . $str[$i + 1] . $str[$i + 2];
+			$i += 3;
+		} elseif ($code >= 0xF0 && $code <= 0xF7) {
+			if ($i + 3 >= $len) return $out;
+			$code2 = ord($str[$i + 1]);
+			if ($code2 < 0x80 || $code2 > 0xBF) return $out;
+			$code3 = ord($str[$i + 2]);
+			if ($code3 < 0x80 || $code3 > 0xBF) return $out;
+			$code4 = ord($str[$i + 3]);
+			if ($code4 < 0x80 || $code4 > 0xBF) return $out;
+			if ($chars >= $from) $out .= $str[$i] . $str[$i + 1] . $str[$i + 2] . $str[$i + 3];
+			$i += 4;
+		} else {
+			return $out;
+		}
+		++$chars;
+	}
+	return $out;
+}
+
 function myconv($from, $to, $string, $be_quiet = true) {
 	if(isAsciiString($string)) {
 		return $string;
