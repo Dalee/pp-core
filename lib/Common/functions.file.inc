@@ -41,6 +41,33 @@ function copyr($source, $dest) {
 	return true;
 }
 
+/**
+ * Calls a $callback function for every file in a directory and its 
+ * subdirectories.
+ * 
+ * The callback function receives 2 parameters:
+ * 1) file path (ex.: /path/to/file/my.txt);
+ * 2) file name (ex.: my.txt).
+ */
+function mapDir($dir, $callback) {
+	if (!is_dir($dir)) {
+		return false;
+	}
+	$fileNames = scandir($dir);
+	foreach ($fileNames as $fileName) {
+		if ($fileName == "." || $fileName == "..") {
+			continue;
+		}
+		$filePath = $dir . "/" . $fileName;
+		if (is_dir($filePath)) {
+			mapDir($filePath, $callback);
+		} else {
+			call_user_func($callback, $filePath, $fileName);
+		}
+	}
+	return true;
+}
+
 function unlinkDir($source) {
 	// Simple copy for a file
 	if (is_file($source)) {
