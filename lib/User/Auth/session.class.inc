@@ -1,11 +1,13 @@
 <?php
 class PXAuthSession extends PXAuthSecure {
-	protected $session_store = 'suser_session';
+	protected $session_store              = 'suser_session';
+	protected $suser_login_attempts_field = 'suser_login_attempts';
+	protected $sid;
+	
 	protected $_app;
 	protected $_user;
 	protected $_request;
 	protected $_db;
-	protected $sid;
 	
 	function __construct(&$app, &$request, &$user, &$db) {
 		$this->_app     = $app;
@@ -16,6 +18,18 @@ class PXAuthSession extends PXAuthSecure {
 		parent::PXAuthSecure($app, $request, $user, $db);
 	}
 
+	function encodePasswd($passwd) {}
+
+	function auth() {
+		setcookie('login',  $this->login, USER_SESSION_INTERVAL, '/', '');
+		setcookie('passwd', $this->encodeSession(), 0, '/', '');
+	}
+
+	function unAuth() {
+		setcookie('passwd', "", 0, '/', '');
+		$this->destroySession($this->privateKey($this->sid, $this->_user->data));
+	}
+
 	protected function _proceedAuth($uArray) {
 		if(!(count($uArray) && strlen($this->passwd))) {
 			return;
@@ -23,15 +37,15 @@ class PXAuthSession extends PXAuthSecure {
 
 		$this->sid = $this->passwd;
 
-		if ($this->passwdToDB($this->passwd) == $uArray['passwd'] || $this->validateSession($this->sid, $uArray)) {
+		if ($this->validatePassword($this->passwd, $uArray) || $this->validateSession($this->sid, $uArray)) {
 			$this->fillUserFields($uArray);
+		} else {
+			$this->incrementLoginAttempts($uArray);
 		}
 	}
 
-	function encodePasswd($passwd) {}
-
-	function encodeSession() {
-		$public_key  = md5(sprintf("--%s--%s--%s--%s--", mt_rand(), time(), $this->login, $this->passwdToDB($this->passwd)));
+	protected function encodeSession() {
+		$public_key  = md5(join("--", array(mt_rand(), time(), $this->login, $this->passwdToDB($this->passwd))));
 		$private_key = $this->privateKey($public_key, $this->_user->data);
 
 		//save session into database
@@ -40,10 +54,16 @@ class PXAuthSession extends PXAuthSecure {
 		return $public_key;
 	}
 
-	function validateSession($session, $uArray) {
+	protected function validatePassword($passwd, $uArray) {
+		// check login attempts before password validation to prevent enumerate passwords via bruteforce
+		// reset login attempts only when valid password entered
+		return $this->checkLoginAttempts($uArray) && $this->passwdToDB($this->passwd) == $uArray['passwd'] && $this->resetLoginAttempts($uArray);
+	}
+
+	protected function validateSession($session, $uArray) {
 		// run GC to flush altered sessions
 		if(mt_rand(0, ini_get("session.gc_divisor")) <= ini_get("session.gc_probability")) {
-			$this->_db->modifyingQuery(sprintf("DELETE FROM %s WHERE mtime < NOW() - INTERVAL '%s seconds'", $this->session_store, ini_get("session.gc_maxlifetime")), null, null, false);
+			$this->runSessionGC();
 		}
 		
 		$private_key = $this->privateKey($session, $uArray);
@@ -56,14 +76,37 @@ class PXAuthSession extends PXAuthSecure {
 		return ($session['suser_id'] == $uArray['id']) && (bool)$this->_db->modifyingQuery(sprintf("UPDATE %s SET mtime = NOW() WHERE sid = '%s'", $this->session_store, $private_key), null, null, false, true);
 	}
 
-	function auth() {
-		setcookie('login',  $this->login, USER_SESSION_INTERVAL, '/', '');
-		setcookie('passwd', $this->encodeSession(), 0, '/', '');
+	protected function destroySession($private_key) {
+		$this->_db->modifyingQuery(sprintf("DELETE FROM %s WHERE sid = '%s'", $this->session_store, $private_key), null, null, false);
 	}
 
-	function unAuth() {
-		setcookie('passwd', 0, 0, '/', '');
-		$this->_db->modifyingQuery(sprintf("DELETE FROM %s WHERE sid = '%s'", $this->session_store, $this->privateKey($this->sid, $this->_user->data)), null, null, false);
+	protected function runSessionGC() {
+		$this->_db->modifyingQuery(sprintf("DELETE FROM %s WHERE mtime < NOW() - INTERVAL '%s seconds'", $this->session_store, ini_get("session.gc_maxlifetime")), null, null, false);
+	}
+
+	protected function checkLoginAttempts($uArray) {
+		/* TODO: check for login attempts here, like this: 
+			if(!empty($uArray[$this->suser_login_attempts_field]) && $uArray[$this->suser_login_attempts_field] > N) { 
+				do something, ex. check captcha code
+				hint: maybe using here external validators for customizing local projects ?
+			}
+		*/
+		return true;
+	}
+
+	protected function resetLoginAttempts($uArray) {
+		if (!empty($uArray[$this->suser_login_attempts_field])) {
+			// reset with cache flush
+			$this->_db->modifyingQuery(sprintf("UPDATE %s SET suser_login_attempts = 0 WHERE id = '%s'", DT_USER, (int)$uArray['id']));
+		}
+		return true;
+	}
+
+	protected function incrementLoginAttempts($uArray) {
+		if (isset($uArray[$this->suser_login_attempts_field])) {
+			// increment with cache flush
+			$this->_db->modifyingQuery(sprintf("UPDATE %s SET suser_login_attempts = suser_login_attempts + 1 WHERE id = '%s'", DT_USER, (int)$uArray['id']));
+		}
 	}
 
 	protected function privateKey($public_key, $user) {
