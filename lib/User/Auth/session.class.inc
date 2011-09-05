@@ -26,21 +26,36 @@ class PXAuthSession extends PXAuthSecure {
 	}
 
 	function unAuth() {
-		setcookie('passwd', "", 0, '/', '');
+		$this->resetPasswd();
 		$this->destroySession($this->privateKey($this->sid, $this->_user->data));
 	}
 
-	protected function _proceedAuth($uArray) {
-		if(!(count($uArray) && strlen($this->passwd))) {
+	protected function passwd() {
+		$this->passwd = $this->_user->passwd = $this->parsePasswd($this->_request->getVar('passwd'));
+		$this->sid    = $this->parseSid($this->_request->getCookieVar('passwd'));
+	}
+
+	protected function parseSid($sid) {
+		if(!is_string($sid)) {
 			return;
 		}
 
-		$this->sid = $this->passwd;
+		return preg_replace('/^[^0-9a-z]{32}$/i', '', substr($sid, 0, 32));
+	}
 
-		if ($this->validatePassword($this->passwd, $uArray) || $this->validateSession($this->sid, $uArray)) {
-			$this->fillUserFields($uArray);
-		} else {
-			$this->incrementLoginAttempts($uArray);
+	protected function _proceedAuth($uArray) {
+		switch(true) {
+			case empty($uArray):
+				return;
+			case strlen($this->passwd) && $this->validatePassword($this->passwd, $uArray):
+				$this->fillUserFields($uArray);
+				break;
+			case strlen($this->sid) && $this->validateSession($this->sid, $uArray):
+				$this->fillUserFields($uArray);
+				break;
+			case strlen($this->passwd):
+				$this->incrementLoginAttempts($uArray);
+				break;
 		}
 	}
 
@@ -48,7 +63,7 @@ class PXAuthSession extends PXAuthSecure {
 		$public_key  = md5(join("--", array(mt_rand(), time(), $this->login, $this->passwdToDB($this->passwd))));
 		$private_key = $this->privateKey($public_key, $this->_user->data);
 
-		//save session into database
+		// save session into database
 		$this->_db->modifyingQuery(sprintf("INSERT INTO %s (suser_id, sid, ip) VALUES('%s', '%s', '%s')", $this->session_store, $this->_user->id, $private_key, $this->_request->GetRemoteAddr()), null, null, false);
 		
 		return $public_key;
@@ -60,6 +75,10 @@ class PXAuthSession extends PXAuthSecure {
 		return $this->checkLoginAttempts($uArray) && $this->passwdToDB($this->passwd) == $uArray['passwd'] && $this->resetLoginAttempts($uArray);
 	}
 
+	protected function resetPasswd() {
+		setcookie('passwd', "", 0, '/', '');
+	}
+
 	protected function validateSession($session, $uArray) {
 		// run GC to flush altered sessions
 		if(mt_rand(0, ini_get("session.gc_divisor")) <= ini_get("session.gc_probability")) {
@@ -69,6 +88,7 @@ class PXAuthSession extends PXAuthSecure {
 		$private_key = $this->privateKey($session, $uArray);
 		
 		if(!($session = reset($this->_db->query(sprintf("SELECT * FROM %s WHERE mtime >= NOW() - INTERVAL '%s seconds' AND sid = '%s' LIMIT 1", $this->session_store, ini_get("session.gc_maxlifetime"), $private_key), true)))) {
+			$this->resetPasswd(); // reset staled session cookie
 			return false;
 		}
 		
