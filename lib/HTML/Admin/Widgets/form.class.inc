@@ -468,15 +468,12 @@ HTML;
 			$html[] = '<input type="checkbox"'.$onClick.$checked.$disabled.' id="'.OBJ_FIELD_CHILDREN.'['.$k.']">';
 			$html[] = '<label for="'.OBJ_FIELD_CHILDREN.'['.$k.']">'.$v->title.'</label>';
 			$html[] = '</dt>';
- 
+
 			$value = ($checked) ? $this->object[OBJ_FIELD_CHILDREN][$k] : PXTypeDescription::_mapByDefaults('all');
-			$this->disable = !strlen($checked);
 
 			$html[] = '<dd>'.NLAbstractHTMLForm::BuildDropDown(OBJ_FIELD_CHILDREN.'['.$k.']', $value, $values, 0, 0).'</dd>';
 			$html[] = '<dd>'.$quantity.' '.NumericEndingsRussian($quantity, 'объект', 'объекта', 'объектов');
- 
-			$this->disable = false;
- 
+
 			if ($quantity > 0) {
 				$html[] = ' &#151; отвязка невозможна';
 			}
