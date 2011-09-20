@@ -350,7 +350,7 @@ class PXMultiRegions {
 	}
 
 	#fixme
-	function addRegionByDefault($format, &$dbFields, &$dbValues, $modifiedObject=null) {
+	function addRegionByDefault($format, &$dbFields, &$dbValues, &$modifiedObject=null) {
 		if ($this->isRegionalObject($format)) {
 			$allowedRegionsIds = $this->getAllowedRegionsIds();
 			$key = array_flip($dbFields);
@@ -372,6 +372,11 @@ class PXMultiRegions {
 				$regArray      = array_diff($regArray, $cutOutRegions);
 
 				$reg           = PXMultipleRegionsHelper::toString($regArray);
+				
+				// когда объект сохраняется под региональным редактором,
+				// мы проставляем данному объекту корректные разрешенные
+				// данному редактору регионы.
+				$modifiedObject[self::REGION_MARK] = $regArray;
 			}
 
 			PXMultipleRegionsHelper::simpleSetDbValues(self::REGION_MARK, $reg, $dbFields, $dbValues);
