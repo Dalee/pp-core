@@ -266,9 +266,6 @@ class NLAbstractLayout {
 		if($charset) {
 			if(defined('DEFAULT_CHARSET') && $charset != DEFAULT_CHARSET) {
 				$result = myconv(DEFAULT_CHARSET, $charset, $result);
-
-			} else {
-				$charset = null;
 			}
 		}
 
