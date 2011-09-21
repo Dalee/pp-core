@@ -71,6 +71,10 @@ final class PXRegistry {
 		return $registry->$varName;
 	}
 
+	/**
+	 * @static
+	 * @return PXApplication
+	 */
 	public static function getApp() {
 		return self::get('app');
 	}
