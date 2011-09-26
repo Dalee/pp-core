@@ -471,7 +471,7 @@ HTML;
 
 			$value = ($checked) ? $this->object[OBJ_FIELD_CHILDREN][$k] : PXTypeDescription::_mapByDefaults('all');
 
-			$html[] = '<dd>'.NLAbstractHTMLForm::BuildDropDown(OBJ_FIELD_CHILDREN.'['.$k.']', $value, $values, 0, 0).'</dd>';
+			$html[] = '<dd>'.NLAbstractHTMLForm::BuildDropDown(OBJ_FIELD_CHILDREN.'['.$k.']', $value, $values, 0, 0, !(bool)$checked).'</dd>';
 			$html[] = '<dd>'.$quantity.' '.NumericEndingsRussian($quantity, 'объект', 'объекта', 'объектов');
 
 			if ($quantity > 0) {
