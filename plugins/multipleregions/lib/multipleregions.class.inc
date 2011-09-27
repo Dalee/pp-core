@@ -443,7 +443,7 @@ class PXMultiRegions {
 
 	public function getCutOutRegions($format, $object) {
 
-		if(!isset($object['id'])){
+		if(empty($object['id'])){
 			return array();
 		}
 
