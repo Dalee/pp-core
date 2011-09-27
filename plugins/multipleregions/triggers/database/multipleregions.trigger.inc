@@ -33,6 +33,10 @@ class PXTriggerDatabaseMultipleregions extends PXAbstractDatabaseTrigger {
 				}
 			}
 
+            if (!isset($object['id'])) {
+                $object['id'] = $objId;
+            }
+
 			$regions->addRegionByDefault($format, $dbFields, $dbValues, $object);
 		} else {
 			$this->fireError();
