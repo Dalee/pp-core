@@ -14,6 +14,7 @@ require_once 'yaml.class.inc';
 
 require_once 'array.class.inc';
 require_once 'intarray.class.inc';
+require_once 'flatintarray.class.inc';
 
 require_once 'File/abstract.class.inc';
 require_once 'File/file.class.inc';
