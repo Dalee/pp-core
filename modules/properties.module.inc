@@ -20,7 +20,7 @@ class PXModuleProperties extends PXModule {
 		foreach((array) $this->_settings['attribute'] as $formatString){
 			$formatString = str_replace('|','&', $formatString);
 			$dataDesc     = array();
-			parse_str($formatString, $dataDesc);
+			parseStrMagic($formatString, $dataDesc);
 			if(!isset($dataDesc['name'])){
 				FatalError("В конфиге модуля для одного из полей отсутствует обязательный параметр name!");
 			}

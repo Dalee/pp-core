@@ -421,7 +421,7 @@ function appendParamToUrl($url, $k, $v, $fragment = false, $num_save = false) {
 		$url .= '/';
 	}
 	if (!empty($tmp['query'])) {
-		parse_str($tmp['query'], $qs);
+		parseStrMagic($tmp['query'], $qs);
 	} else {
 		$qs = array();
 	}
@@ -461,7 +461,7 @@ function removeParamFromUrl($url, $k, $fragment = false, $removeAll = false, $nu
 		$url .= '/';
 	}
 	if (!empty($tmp['query'])) {
-		parse_str($tmp['query'], $qs);
+		parseStrMagic($tmp['query'], $qs);
 	} else {
 		$qs = array();
 	}
@@ -483,6 +483,17 @@ function removeParamFromUrl($url, $k, $fragment = false, $removeAll = false, $nu
 	if ($fragment === false  and isset($tmp['fragment'])) $url .= '#' . $tmp['fragment'];
 	return $url;
 }
+
+function parseStrMagic($str, &$arr) {
+	parse_str($str, $arr);
+	if (get_magic_quotes_gpc()) {
+		$arr = stripSlashesDeep($arr);
+	}
+}
+
+function stripSlashesDeep($value) {
+	return is_array($value) ? array_map("stripSlashesDeep", $value) : stripslashes($value);
+};
 
 function multiLevelVarsToString($name, $arrayVars, $leaf=null, $num_save=false) {
 	foreach($arrayVars as $k=>$a) {
