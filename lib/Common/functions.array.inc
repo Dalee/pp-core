@@ -157,8 +157,8 @@ function array_recursive_inheritance() {
 function array_transpose($array) {
 	$t = array();
 
-	foreach($array as $key => $value) {
-		foreach($value as $key2 => $value2) {
+	foreach ($array as $key => $value) {
+		foreach ($value as $key2 => $value2) {
 			$t[$key2][$key] = $value2;
 		}
 	}
@@ -169,31 +169,32 @@ function array_transpose($array) {
 /**
  * Assoc array fields rename
  * 
- * @param array $A existing array
+ * @param array $array existing array
  * @param mixed $map existing keys or/and their new names
  * @param boolean $strict
  * @return array resulting array with selected keys
  */
-function array_remap($A, $map, $strict = false) {
-	if(!is_string($map)&&!is_array($map))
+function array_remap($array, $map, $strict = false) {
+	if (!is_string($map) && !is_array($map))
 		return false;
 	
 	$r = array();
 	
-	if(is_string($map))
+	if (is_string($map)) {
 		$map = array($map => $map);
+	}
 	
-	if(!$strict&&isset($map[0]))
-	{
+	if (!$strict && isset($map[0])) {
 		$rmap = array();
-		foreach($map as $k=>$v)
-			$rmap[ is_int($k)&&isset($A[$v]) ? $v : $k ] = $v;
-		
+		foreach($map as $k=>$v) {
+			$rmap[ (is_int($k) && isset($array[$v])) ? $v : $k ] = $v;
+		}
+
 		$map = $rmap;
 	}
 	
-	foreach($map as $k=>$v)
-		$r[$k] = isset($A[$v])?$A[$v]:null;
+	foreach ($map as $k => $v)
+		$r[$k] = isset($array[$v]) ? $array[$v] : null;
 	
 	return $r;
 }
