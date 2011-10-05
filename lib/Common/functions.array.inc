@@ -21,7 +21,7 @@ function GetColsFromTable($table, $rows) {
 	return $results;
 }
 
-function &GetColsFromTableWithIndex($table, $rows, $index) {
+function GetColsFromTableWithIndex($table, $rows, $index) {
 	$results = array();
 	if (!is_array($table)) {
 		return $results;
