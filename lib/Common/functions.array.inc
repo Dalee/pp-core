@@ -21,6 +21,21 @@ function GetColsFromTable($table, $rows) {
 	return $results;
 }
 
+function &GetColsFromTableWithIndex($table, $rows, $index) {
+	$results = array();
+	if (!is_array($table)) {
+		return $results;
+	}
+	$rows = array_flip($rows);
+	foreach ($table as $id => $row) {
+		if (is_array($row)) {
+			$k = $index ? $row[$index] : $id;
+			$results[] = array_intersect_key($row, $rows);
+		}
+	}
+	return $results;
+}
+
 function GetBlankArray() {
 	return array();
 }
