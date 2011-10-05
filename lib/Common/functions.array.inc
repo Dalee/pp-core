@@ -147,4 +147,55 @@ function array_recursive_inheritance() {
 	return $base;
 }
 
+/**
+ * Simple transpose operation
+ * Useful for tables (arrays of maps with the same fields)
+ * 
+ * @param array $array 2-dim array
+ * @return array transposed 2-dim array
+ */
+function array_transpose($array) {
+	$t = array();
+
+	foreach($array as $key => $value) {
+		foreach($value as $key2 => $value2) {
+			$t[$key2][$key] = $value2;
+		}
+	}
+
+	return $t;
+}
+
+/**
+ * Assoc array fields rename
+ * 
+ * @param array $A existing array
+ * @param mixed $map existing keys or/and their new names
+ * @param boolean $strict
+ * @return array resulting array with selected keys
+ */
+function array_remap($A, $map, $strict = false) {
+	if(!is_string($map)&&!is_array($map))
+		return false;
+	
+	$r = array();
+	
+	if(is_string($map))
+		$map = array($map => $map);
+	
+	if(!$strict&&isset($map[0]))
+	{
+		$rmap = array();
+		foreach($map as $k=>$v)
+			$rmap[ is_int($k)&&isset($A[$v]) ? $v : $k ] = $v;
+		
+		$map = $rmap;
+	}
+	
+	foreach($map as $k=>$v)
+		$r[$k] = isset($A[$v])?$A[$v]:null;
+	
+	return $r;
+}
+
 ?>
