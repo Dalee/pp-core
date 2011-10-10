@@ -40,7 +40,7 @@ class PXModuleRegionalFile extends PXModuleFile {
 			$fieldname = $params['fieldname'];
 		}
 
-		if (sizeof($this->settings) && sizeof($myRegions)) {			
+		if (sizeof($this->settings) && sizeof($myRegions)) {
 			$paths          = array_flip($this->settings);
 			$this->settings = array();
 
@@ -60,11 +60,7 @@ class PXModuleRegionalFile extends PXModuleFile {
 
 	protected
 	function createDirectoryTree($tree, $id, $fieldname = 'shortname', $delim = '/~') {
-		if (isset($tree->leafs[$id]) && isset($tree->leafs[$id]->content[$fieldname])) {
-			$path = $tree->leafs[$id]->content[$fieldname];
-		} else {
-			$path = '';
-		}
+		$path = @$this->withDefault($tree->leafs[$id]->content[$fieldname]);
 
 		if (isset($tree->leafs[$id]->parent) && $tree->leafs[$id]->parent) {
 			return $this->createDirectoryTree($tree, $tree->leafs[$id]->parent, $fieldname) . $delim . $path;
@@ -75,7 +71,22 @@ class PXModuleRegionalFile extends PXModuleFile {
 
 	protected
 	function createSingleDirectory($allRegionsData, $regionId, $fieldname = 'shortname', $delim = '/~'){
-		return isset($allRegionsData[$regionId]) && isset($allRegionsData[$regionId][$fieldname]) ? $delim . $allRegionsData[$regionId][$fieldname] : '';
+		return $delim . @$this->withDefault($allRegionsData[$regionId][$fieldname]);
+	}
+
+	protected
+	function withDefault($path) {
+		if (strlen($path)) {
+			return $path;
+		}
+		
+		$params = PXRegistry::getApp()->plugins['multipleregions']->params;
+		$path   = '';
+		if(array_key_exists('defaultfieldvalue', $params)) {
+			$path = $params['defaultfieldvalue'];
+		}
+		
+		return $path;
 	}
 }
 ?>
