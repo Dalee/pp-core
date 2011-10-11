@@ -1,5 +1,5 @@
 <?php
-class PXBindingDescriptionStructType extends PXBindingDescriptionStruct {
+class PXBindingDescriptionStructType extends PXBindingDescription {
 	function isBinding($content) {
 		if(!parent::isBinding($content)) {
 			return false;
