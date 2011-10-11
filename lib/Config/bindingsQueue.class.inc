@@ -36,26 +36,8 @@ class PXBindingsQueue implements Iterator {
 
 		$cls = 'PXBindingDescription';
 
-		switch($rule['type']) {
-			case 'main':
-				$cls .= 'Main';
-				break;
-
-			case 'types':
-				$cls .= 'Types';
-				break;
-
-			case 'struct':
-				$cls .= 'Struct';
-				break;
-
-			case 'content':
-				$cls .= 'Content';
-				break;
-
-			case 'subcontent':
-				$cls .= 'SubContent';
-				break;
+		if(class_exists($cls.$rule['type'])) {
+			$cls .= $rule['type'];
 		}
 
 		$this->__addRule($cls, $rule);
