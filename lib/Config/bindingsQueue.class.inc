@@ -36,8 +36,10 @@ class PXBindingsQueue implements Iterator {
 
 		$cls = 'PXBindingDescription';
 
-		if(class_exists($cls.$rule['type'])) {
-			$cls .= $rule['type'];
+		$type = preg_replace('/[^0-9a-z]/', '', $rule['type']);
+
+		if(class_exists($cls.$type)) {
+			$cls .= $type;
 		}
 
 		$this->__addRule($cls, $rule);

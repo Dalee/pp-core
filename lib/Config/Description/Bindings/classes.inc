@@ -2,6 +2,7 @@
 	require_once 'default.class.inc';
 	
 	require_once 'struct.class.inc';
+	require_once 'struct-type.class.inc';
 	require_once 'content.class.inc';
 	require_once 'subcontent.class.inc';
 	
