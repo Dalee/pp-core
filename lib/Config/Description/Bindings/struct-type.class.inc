@@ -1,17 +1,11 @@
 <?php
-class PXBindingDescriptionStructType extends PXBindingDescription {
-	function isBinding($content) {
-		if(!parent::isBinding($content)) {
-			return false;
-		}
+class PXBindingDescriptionStructType extends PXBindingDescriptionStruct {
 
-		if(!$content->tree->hasCurrent()) {
-			return false;
-		}
-
-		$current = $content->tree->getCurrent();
-
-		return isset($current->content['type']) && $current->content['type'] == $this->module;
+	function __construct($rule, $pOrder) {
+		parent::__construct($rule, $pOrder);
+		$this->var   = 'type';
+		$this->value = $this->module;
 	}
+
 }
 ?>

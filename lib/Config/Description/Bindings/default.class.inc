@@ -1,5 +1,7 @@
 <?php
 class PXBindingDescription {
+	protected $contentType;
+	
 	function __construct($rule, $pOrder) {
 		$this->type   = (string) $rule['type'];
 		$this->module = (string) $rule['module'];
@@ -9,19 +11,28 @@ class PXBindingDescription {
 		$this->order  = isset($rule['order']) ? (int) $rule['order']    : 0;
 
 		$this->pOrder = (int) $pOrder;
-		$this->finalizeQueue = false;
+	}
+
+	public function getModuleDescription() {
+		return PXRegistry::getApp()->modules[$this->module];
 	}
 
 	public function isBinding($content) {
-		return isset(PXRegistry::getApp()->modules[$this->module]);
+		$current = null;
+		
+		if (!empty($this->contentType)) {
+			if(!$content->{$this->contentType}->hasCurrent()) {
+				return false;
+			}
+			
+			$current = $content->{$this->contentType}->getCurrent();
+		}
+
+		return $this->bindingRule($content, $current);
 	}
 
-	function getModuleDescription() {
-		return PXRegistry::getApp()->modules[$this->module];
-	}
-	
-	public function finalizeBindingsQueue(){
-		$this->finalizeQueue = true;
+	protected function bindingRule($content, $current) {
+		return isset(PXRegistry::getApp()->modules[$this->module]);
 	}
 }
 ?>
