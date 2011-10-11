@@ -279,7 +279,8 @@ class PXDatabase extends NLSQLDatabaseAdapter implements IPXDatabase {
 
 		} else {
 			$selector = $this->_createSelector($format);
-			$order_by = $format->id . '.' . (is_null($order) ? $format->order : $order);
+			// strstr is for allowing random() as order criteria
+			$order_by = ((strstr($order, "()")) ? '' : $format->id . '.') . (is_null($order) ? $format->order : $order);
 		}
 
 		foreach ($this->triggers as $t){
