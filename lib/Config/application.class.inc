@@ -420,6 +420,7 @@ class PXApplication {
 			$module = new PXModuleDescription();
 			$module->setAttrs($domModule->attributes());
 			$module->lookPackage($dom);
+			$module->checkClass();
 
 			$nodes = $domModule->childNodes();
 			foreach ($nodes as $node) {

@@ -35,6 +35,24 @@ class PXModuleDescription {
 		}
 	}
 
+	function checkClass() {
+		if(is_null($this->name)) {
+			FatalError('Not defined module name');
+		}
+
+		if(is_null($this->class)) {
+			$cls = 'PXModule';
+
+			if(!is_null($this->package)) {
+				$cls .= str_replace('/', '', $this->package);
+			}
+
+			$cls .= $this->name;
+
+			$this->class = $cls;
+		}
+	}
+
 	function setToPackage($package) {
 		$this->package = $package;
 	}
