@@ -47,7 +47,7 @@ class PXModuleDescription {
 				$cls .= str_replace('/', '', $this->package);
 			}
 
-			$cls .= $this->name;
+			$cls .= preg_replace('/[^0-9a-z_]/i', '', $this->name);
 
 			$this->class = $cls;
 		}
