@@ -186,6 +186,11 @@ class PXTreeObjects implements PXContentObjectsInterface, ArrayAccess, Iterator 
 		return $current->content['type'];
 	}
 
+	public
+	function setCurrent($id) {
+		$this->currentId   = $id;
+	}
+
 	function hasCurrent() {
 		return isset($this->tree->leafs[$this->currentId]);
 	}
