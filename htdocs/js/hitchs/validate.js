@@ -135,12 +135,8 @@ function TypicalValidateInput(input) {
 	return true;
 }
 
-function ValidateNoticeAlert() {
-	alert.apply(arguments);
-}
-
 function ValidateNotice(input) {
-	ValidateNoticeAlert(input.getAttribute('notice'));
+	alert(input.getAttribute('notice'));
 	input.focus();
 	return false;
 }
