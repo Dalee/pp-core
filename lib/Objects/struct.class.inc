@@ -269,7 +269,7 @@ class PXTreeObjects implements PXContentObjectsInterface, ArrayAccess, Iterator 
 	}
 
 	function hasType($type) {
-		return $type === $this->format->id && sizeof($this->tree->leafs);
+		return isset($this->format->id) && $type === $this->format->id && !empty($this->tree->leafs);
 	}
 
 	// ArrayAccess if

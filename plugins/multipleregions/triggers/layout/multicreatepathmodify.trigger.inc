@@ -2,7 +2,7 @@
 
 class  PXTriggerLayoutMultiCreatepathmodify extends PXAbstractLayoutTrigger {
 	function onBeforePathCreated($tree, &$id) {
-		if (!empty($tree->leafs[$id])) return;
+		if (!isset($tree->leafs) || !empty($tree->leafs[$id])) return;
 
 		$table        = (array) $tree->toTable();
 		$reflex_field = PXMultipleRegionsReflexer::REFLEX_FIELD;
