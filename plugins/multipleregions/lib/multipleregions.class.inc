@@ -96,7 +96,7 @@ class PXMultiRegions {
 		}
 
 		if ($this->isTree()) {
-			$regions = new NLTree($regions, 'id', 'parent', self::DISPLAY_FIELD, $saveOrphans=true);
+			$regions = $this->db->buildTree($regions, 'id', 'parent', self::DISPLAY_FIELD, $saveOrphans=true);
 
 			if ($only_values) {
 				$regions = !empty($regions) ? $regions->getPlainTree(null) : array();

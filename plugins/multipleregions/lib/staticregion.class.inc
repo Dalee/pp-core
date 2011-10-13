@@ -235,8 +235,9 @@ class PXCorpRegions {
 
 	static function initFullTree() {
 		if(empty(self::$fullTree)){
-			$treeTable      = PXRegistry::getDb()->Query('SELECT * FROM struct');
-			self::$fullTree = new NLTree($treeTable);
+			$db = PXRegistry::getDb();
+			$treeTable      = $db->Query('SELECT * FROM struct');
+			self::$fullTree = $db->buildTree($treeTable);
 		}
 
 		return self::$fullTree;
@@ -245,7 +246,7 @@ class PXCorpRegions {
 	static function initRegionTree($id) {
 		$db = PXRegistry::getDb();
 		$treeTable = $db->query(sprintf("SELECT * FROM struct WHERE %s", $db->inArray(self::getField(), $id)));
-		return new NLTree($treeTable);
+		return $db->buildTree($treeTable);
 	}
 
 	static function isLangHost($host) {

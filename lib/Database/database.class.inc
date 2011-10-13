@@ -1667,7 +1667,7 @@ SQL;
 					$t->getTrigger()->OnBeforeBuildTree($this, $format, $newTable, $parentRefName);
 				}
 
-				$newTree = new NLTree($newTable, 'id', $parentRefName, 'title', $mode == DB_SELECT_FULL_TREE);
+				$newTree = $this->buildTree($newTable, 'id', $parentRefName, 'title', $mode == DB_SELECT_FULL_TREE);
 
 				PXProfiler::end();
 
@@ -1679,6 +1679,12 @@ SQL;
 				return current($resTable[0]);
 				break;
 		}
+	}
+
+	public function buildTree() {
+		$args = func_get_args();
+		$treeKlass = new ReflectionClass("NLTree");
+		return $treeKlass->newInstanceArgs($args);
 	}
 
 	function filterByAccess($what, $format, &$table) {
@@ -1698,7 +1704,7 @@ SQL;
 				}
 			}
 
-			$table = new NLTree($plainTable, $table->_idField, $table->_parentField, $table->_titleField, $table->saveOrphans);
+			$table = $this->buildTree($plainTable, $table->_idField, $table->_parentField, $table->_titleField, $table->saveOrphans);
 		}
 	}
 

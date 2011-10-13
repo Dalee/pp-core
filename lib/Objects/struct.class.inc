@@ -130,19 +130,17 @@ class PXStructLeaf404 extends PXStructLeaf {
 
 class PXTreeObjects implements PXContentObjectsInterface, ArrayAccess, Iterator {
 	public $format;
+	public $tree; //FIXME: really public ? Has some direct calls from PXStructLeaf.
 
 	public $pathId = array();
 	public $rootId = -1;
 	public $currentId;
 	
 	private $leafsCache = array();
+	private $treeIsLoaded = false;
 
-	function getLeaf($leafArray) {
-		if(!isset($this->leafsCache[$leafArray->id])){
-			$this->leafsCache[$leafArray->id] = new PXStructLeaf($leafArray, $this);
-		}
-
-		return $this->leafsCache[$leafArray->id];
+	function __construct() {
+		$this->tree = PXRegistry::getDb()->buildTree(array());
 	}
 
 	function __call($name, $arguments) {
@@ -166,7 +164,7 @@ class PXTreeObjects implements PXContentObjectsInterface, ArrayAccess, Iterator 
 					return $this->getLeaf($this->tree->leafs[$conds[$key][1]]);
 				}
 				
-				PXRegistry::getResponse()->notFound();
+				PXRegistry::getResponse()->notFound(); //FIXME: what a hell response method is called from here ???
 				return new PXStructLeaf404();
 			default:
 				if(!isset($this->$key) && isset($this->tree->$key)) {
@@ -176,6 +174,15 @@ class PXTreeObjects implements PXContentObjectsInterface, ArrayAccess, Iterator 
 		
 		return null;
 	}
+
+	function getLeaf($leafArray) {
+		if(!isset($this->leafsCache[$leafArray->id])){
+			$this->leafsCache[$leafArray->id] = new PXStructLeaf($leafArray, $this);
+		}
+
+		return $this->leafsCache[$leafArray->id];
+	}
+
 
 	function currentType() {
 		if(!$this->hasCurrent()) {
@@ -188,7 +195,7 @@ class PXTreeObjects implements PXContentObjectsInterface, ArrayAccess, Iterator 
 
 	public
 	function setCurrent($id) {
-		$this->currentId   = $id;
+		$this->currentId = $id;
 	}
 
 	function hasCurrent() {
@@ -260,8 +267,12 @@ class PXTreeObjects implements PXContentObjectsInterface, ArrayAccess, Iterator 
 
 	function load($urlPath) {
 		$this->tree = PXRegistry::getDb()->getObjects($this->format, true, DB_SELECT_TREE);
-
 		$this->findCurrent($urlPath);
+		$this->treeIsLoaded = true;
+	}
+
+	function isLoaded() {
+		return $this->treeIsLoaded;
 	}
 
 	function getAllowedChilds() {
