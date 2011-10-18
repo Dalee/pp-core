@@ -386,7 +386,7 @@ class PXAdminTable extends PXAdminComplexWidget {
 	}
 
 	function _buildShowOnSiteLink($row){
-		if(!isset($row['pathname']) || !strlen($row['pathname'])) {
+		if(!isset($row['parent']) || !isset($row['pathname']) || !strlen($row['pathname'])) {
 			return '';
 		}
 

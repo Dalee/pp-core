@@ -16,6 +16,9 @@ class PXDisplayTypeDropdown extends PXDisplayType {
 	}
 
 	function buildCell($field, $object, $param=NULL) {
+		if (!isset($field->values->displayField)) {
+			return '';
+		}
 		$displayField = $field->values->displayField;
 		$value = $object[$field->name];
 		return isset($field->values->values[$value][$displayField]) ? $field->values->values[$value][$displayField] : '';
