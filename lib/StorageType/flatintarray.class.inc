@@ -7,9 +7,9 @@ class PXStorageTypeFlatIntArray extends PXStorageTypeArray {
 	function normalize( $field, $object, &$param ) {
 		$value = $object[$field->name];
 
-		$str = substr( $value, 1, strlen( $value ) - 2 );
-
-		return explode( ',', $str );
+		$value = str_replace( '{', '[', $value );
+		$value = str_replace( '}', ']', $value );
+		return json_decode( $value );
 	}
 }
 
