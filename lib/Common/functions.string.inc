@@ -279,21 +279,21 @@ function _TranslitModern($text) {
 	return $text;
 }
 
-function NumericEndingsRussian($count, $oneItem, $severalItiems, $manyItems) {
-	$lastLetter       = substr($count, -1);
-	$secondLastLetter = strlen($count) > 1 ? substr($count, -2, 1) : '0';
-
-	if($secondLastLetter != 1) {
-		if($lastLetter == '1') {
-			return $oneItem;
-		}
-
-		if(in_array($lastLetter, array('2', '3', '4'))) {
-			return $severalItiems;
-		}
+function NumericEndingsRussian($count, $one, $two, $zero) {
+	$i = (int) substr( $count, -1 );
+	$s = (int) $count;
+	$x = $s;
+	if ( $x > 99 ) {
+		$x = substr( $s, -2 );
 	}
 
-	return $manyItems;
+	if ( $x >= 5 && $x <= 20 || $i >=5 || $i == 0 ) {
+		return $zero;
+	}
+	else if ( $i >= 2 && $i <=4 ) {
+		return $two;
+	}
+	return $one;
 }
 
 function htmlspecialcharsArray($array) {
