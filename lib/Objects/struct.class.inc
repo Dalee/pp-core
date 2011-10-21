@@ -164,15 +164,22 @@ class PXTreeObjects implements PXContentObjectsInterface, ArrayAccess, Iterator 
 					return $this->getLeaf($this->tree->leafs[$conds[$key][1]]);
 				}
 				
-				PXRegistry::getResponse()->notFound(); //FIXME: what a hell response method is called from here ???
 				return new PXStructLeaf404();
 			default:
-				if(!isset($this->$key) && isset($this->tree->$key)) {
+				if(isset($this->tree->$key)) {
 					return $this->tree->$key;
 				}
 		}
 		
 		return null;
+	}
+
+	/**
+	 * isset($tree->something)
+	 * dont use it for $tree->current or $tree->root.
+	 */
+	function __isset($key) {
+		return isset($this->tree->$key);
 	}
 
 	function getLeaf($leafArray) {
