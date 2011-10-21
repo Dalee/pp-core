@@ -1,15 +1,34 @@
 <?php
 
 class  PXTriggerLayoutMultiCreatepathmodify extends PXAbstractLayoutTrigger {
+
 	function onBeforePathCreated($tree, &$id) {
-		if (!isset($tree->leafs) || !empty($tree->leafs[$id])) return;
 
-		$table        = (array) $tree->toTable();
-		$reflex_field = PXMultipleRegionsReflexer::REFLEX_FIELD;
+		// check for not existance node in tree
+		if (!(isset($tree->leafs) && empty($tree->leafs[$id]))) {
+			return;
+		}
 
-		foreach ($table as $k => $v){
-			if (!empty($v[$reflex_field]) && $id == $v[$reflex_field]) {
-				$id = $v['id'];
+		static $idCache = array();
+
+		if (isset($idCache[$id])) {
+			$id = $idCache[$id];
+			return;
+		}
+
+		$reflexField = PXMultipleRegionsReflexer::REFLEX_FIELD;
+
+		foreach ($tree->leafs as $l) {
+
+			// looking for cloned node
+			if ($l->id == 0 || empty($l->content[$reflexField])) {
+				continue;
+			}
+
+			$reflexId = $l->content[$reflexField];
+			if ($reflexId == $id) {
+				$idCache[$id] = $l->id;
+				$id = $l->id;
 				break;
 			}
 		}
