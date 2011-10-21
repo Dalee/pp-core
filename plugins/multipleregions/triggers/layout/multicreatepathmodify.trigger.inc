@@ -1,6 +1,6 @@
 <?php
 
-class  PXTriggerLayoutMultiCreatepathmodify extends PXAbstractLayoutTrigger {
+class PXTriggerLayoutMultiCreatepathmodify extends PXAbstractLayoutTrigger {
 
 	function onBeforePathCreated($tree, &$id) {
 
@@ -9,11 +9,13 @@ class  PXTriggerLayoutMultiCreatepathmodify extends PXAbstractLayoutTrigger {
 			return;
 		}
 
-		static $idCache = array();
-
-		if (isset($idCache[$id])) {
-			$id = $idCache[$id];
+		if (isset($tree->__multiCreatePathModifyCache__[$id])) {
+			$id = $tree->__multiCreatePathModifyCache__[$id];
 			return;
+		}
+
+		if (!isset($tree->__multiCreatePathModifyCache__)) {
+			$tree->__multiCreatePathModifyCache__ = array();
 		}
 
 		$reflexField = PXMultipleRegionsReflexer::REFLEX_FIELD;
@@ -27,11 +29,13 @@ class  PXTriggerLayoutMultiCreatepathmodify extends PXAbstractLayoutTrigger {
 
 			$reflexId = $l->content[$reflexField];
 			if ($reflexId == $id) {
-				$idCache[$id] = $l->id;
-				$id = $l->id;
-				break;
+				$tree->__multiCreatePathModifyCache__[$id] = $l->id;
+				$id = $l->id; //set new value
+				return;
 			}
 		}
+		
+		$tree->__multiCreatePathModifyCache__[$id] = $id;
 	}
 }
 
