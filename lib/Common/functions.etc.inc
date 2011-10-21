@@ -21,7 +21,7 @@ function createSomePathByParentId($tree, $id, $fieldname='pathname', $delim='/',
 	if(isset($tree->leafs[$id]->parent) && $tree->leafs[$id]->parent) {
 		$createdPath = createSomePathByParentId($tree, $tree->leafs[$id]->parent, $fieldname, $delim, $inContent, $withRoot, true).$path.$delim;
 
-	} elseif($withRoot) {
+	} elseif($withRoot && !empty($path)) {
 		$createdPath = ($path == 'default' ? '' : (PXRequest::GetHttpProto().'://'.$path)).$delim;
 
 	} else {
