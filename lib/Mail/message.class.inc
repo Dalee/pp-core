@@ -330,25 +330,7 @@ class NLMailMessage {
 	}
  
 	function _encodeString($string) {
-		return $this->_myChunkSplit(base64_encode($string));
-	}
- 
-	function _myChunkSplit($str) {
-		$stmp = $str;
-		$len = strlen($stmp);
-		$out = '';
-		while ($len > 0) {
-			if ($len >= 76) {
-				$out = $out.substr($stmp, 0, 76)."\r\n";
-				$stmp = substr($stmp, 76);
-				$len = $len - 76;
-			} else {
-				$out = $out.$stmp."\r\n";
-				$stmp = "";
-				$len = 0;
-			}
-		}
-		return $out;
+		return chunk_split(base64_encode($string));
 	}
  
 	function _checkEmails() {
