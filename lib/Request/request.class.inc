@@ -61,7 +61,7 @@ class PXRequest {
 
 	static function GetOriginalPath() {
 		// We need to use REQUEST_URI but not SCRIPT_NAME variable because SCRIPT_NAME is not available when mod_rewrite is enabling in .htaccess
-		return parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+		return reset(explode("?", $_SERVER['REQUEST_URI'], 2));
 	}
 
 	function SetPath($path) {
