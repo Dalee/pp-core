@@ -21,7 +21,7 @@ class PXModuleMain extends PXModule {
 			$this->response->notFound();
 			return;
 		}
-		
+
 		// Get path
 		$urlPath = $this->request->getHostAndDir();
 		$urlFile = $this->request->getFile();
