@@ -357,7 +357,7 @@ function ContextEdit(id, status, format, title, alias, level, up, down) {
 }
 
 function ContextAdd(parent, format, title) {
-	return '<a class="add" href="javascript: AddContent(\''+format+'\', '+parent+')">'+title+'</a>';
+	return '<a class="add" href="javascript: AddContent(\''+format+'\', '+(parent ? parent : "''")+')">'+title+'</a>';
 }
 
 function Context(event) {

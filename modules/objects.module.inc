@@ -80,6 +80,7 @@ class PXModuleObjects extends PXModule {
 					$objects = new PXAdminTableObjects($childFormat, $rqCid, 'ByParent');
 				}
 
+				$objects->setControlParent($rqCid);
 				$objects->addToParent('INNER.2.0');
 			}
 
