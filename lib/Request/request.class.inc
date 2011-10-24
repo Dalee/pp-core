@@ -9,7 +9,7 @@ class PXRequest {
 	var $getData;
 	var $postData;
 	var $cookieData;
-	
+
 	protected $rootPathsList = array( 
 		'index.html', 
 		'index.shtml', 
@@ -38,7 +38,7 @@ class PXRequest {
 	}
 
 	static function GetHttpProto() {
-		switch(true){
+		switch (true) {
 			case isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on':
 			case isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] == 'https':
 				return "https";
@@ -60,13 +60,14 @@ class PXRequest {
 	}
 
 	static function GetOriginalPath() {
-		return $_SERVER['SCRIPT_NAME'];
+		// We need to use REQUEST_URI but not SCRIPT_NAME variable because SCRIPT_NAME is not available when mod_rewrite is enabling in .htaccess
+		return parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 	}
-	
+
 	function SetPath($path) {
 		$this->path = $path;
 	}
-	
+
 	function GetPathAsString() {
 		return $this->path;
 	}
@@ -92,7 +93,7 @@ class PXRequest {
 		}
 		return false;
 	}
-	
+
 	function GetPath() {
 		$tmpArray = explode("/", $this->path);
 		$path = array();
@@ -281,7 +282,7 @@ class PXRequest {
 
 		return $isIn;
 	}
-	
+
 	// Функция возвраящает массив "открытых" в редакторском интерфейсе элементов дерева
 	function getLeafStatus() {
 		$leafStatus = $this->cookieData->_getVar('leafStatus');
@@ -325,7 +326,7 @@ class PXRequest {
 	function getAction() {
 		return $this->_getGetPostVar('action');
 	}
-	
+
 	// Возвращаяет тип текущего объекта
 	function getCtype() {
 		return $this->_getGetPostVar('ctype');
@@ -418,7 +419,7 @@ class PXRequest {
 		$area = $this->_getGetPostVar('area') ? $this->_getGetPostVar('area') : $this->getGetVar('area');
 		return ($area == NULL) ? $default : $area;
 	}
-	
+
 	// clean the fields for admin system
 	function getOrderVar($format, $default_sort, $fields){
 		$currentOrder = $this->GetVar($format.'_order');
@@ -454,7 +455,7 @@ class PXRequest {
 
 		return 'index.html';
 	}
-	
+
 	function isIndexFile($file = '') {
 		return in_array(strlen($file) ? $file : $this->getFile(), $this->rootPathsList, true);
 	}
@@ -471,5 +472,7 @@ class PXRequest {
 	static public function getServerVar($name, $default=null) {
 		return isset($_SERVER[$name]) ? $_SERVER[$name] : $default;
 	}
+
 }
+
 ?>
