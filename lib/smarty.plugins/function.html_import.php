@@ -10,7 +10,7 @@
  */
 function smarty_function_html_import($params, &$smarty) {
 	$tags = array(
-		'css' => '<link rel="stylesheet" type="text/css" href="%s" %s />',
+		'tag' => '<link rel="stylesheet" type="text/css" href="%s" %s />',
 		'script' => '<script type="text/javascript" src="%s" %s></script>'
 	);
 	if(empty($params['src']) || empty($tags[$params['tag']])) {
@@ -21,8 +21,8 @@ function smarty_function_html_import($params, &$smarty) {
 	$extra_attributes = "";
 	foreach($params as $param => $value){
 		switch($param){
-			case 'css':
-			case 'script':
+			case 'tag':
+			case 'src':
 				break;
 			default:
 				$extra_params[] = sprintf(' %s="%s" ', $param, $value);
