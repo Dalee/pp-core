@@ -6,18 +6,32 @@
  * Params:
  * - tag (string) - type of tag
  * - src (string) - path to local file
+ * - extra params will be appended as tag attributes
  */
 function smarty_function_html_import($params, &$smarty) {
-	#TODO: add ability to set custom attributes like <link rel="stylesheet" media= ...
 	$tags = array(
-		'css' => '<link rel="stylesheet" type="text/css" href="%s" />',
-		'script' => '<script type="text/javascript" src="%s"></script>'
+		'css' => '<link rel="stylesheet" type="text/css" href="%s" %s />',
+		'script' => '<script type="text/javascript" src="%s" %s></script>'
 	);
-	
 	if(empty($params['src']) || empty($tags[$params['tag']])) {
 		return;
 	}
-	
+
+	$extra_params = array();
+	$extra_attributes = "";
+	foreach($params as $param => $value){
+		switch($param){
+			case 'css':
+			case 'script':
+				break;
+			default:
+				$extra_params[] = sprintf(' %s="%s" ', $param, $value);
+		}
+	}
+	if(sizeof($extra_params) != 0){
+		$extra_attributes = implode(' ', $extra_params);
+	}
+
 	$asset_id = '';
 	
 	if (strpos($params['src'], 'http') !== 0) {
@@ -29,7 +43,7 @@ function smarty_function_html_import($params, &$smarty) {
 		}
 	}
 
-	printf($tags[$params['tag']], $params['src'] . $asset_id);
+	printf($tags[$params['tag']], $params['src'] . $asset_id, $extra_attributes);
 }
 
 ?>
