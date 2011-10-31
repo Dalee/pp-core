@@ -202,7 +202,15 @@ HTML;
 		);
 
 		$context = ' onContextMenu="'.str_replace('\\', '/', implode(', ', $tmp)).'"';
-		$click   = $f->isDir ? $f->name : '<a style="margin-left:-21px" href="'.$f->alias.'"><img src="/admin/i/files/'.$f->type.'.gif" /></a><a class="memory" href="'.$f->alias.'" onClick="return InMemory(\''.$f->alias.'\');">'.$f->name.'</a>';
+		if ($f->isDir) {
+			$click = $f->name;
+		} elseif ($f->alias) {
+			$click = '<a style="margin-left:-21px" href="'.($f->alias).'"><img src="/admin/i/files/'.($f->type).'.gif" /></a>';
+			$click .= '<a class="memory" href="'.($f->alias).'" onClick="return InMemory(\''.$f->alias.'\');">'.$f->name.'</a>';
+		} else {
+			$click = $f->name;
+		}
+
 		return "<span".$context.">".$click."</span>";
 	}
 
