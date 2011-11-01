@@ -2,6 +2,8 @@
 require_once('HTML/Admin/Widgets/abstract.class.inc');
 
 require_once('HTML/Admin/Widgets/Input/checkbox.class.inc');
+require_once('HTML/Admin/Widgets/Input/radiobutton.class.inc');
+require_once('HTML/Admin/Widgets/Input/radiolist.class.inc');
 require_once('HTML/Admin/Widgets/Input/hidden.class.inc');
 require_once('HTML/Admin/Widgets/Input/color.class.inc');
 

@@ -513,6 +513,7 @@ div.edit-file-form, div.edit-file-form textarea {
 	height: 100%;
 }
 
+table.mainform td input.radio,
 table.mainform td input.checkbox {
 	width: auto;
 }
