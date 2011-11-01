@@ -10,7 +10,7 @@ class PXInputRadiolist extends PXAdminWidget {
 
 	public function __construct($name, $selected, $list) {
 		$this->name = $name;
-		$this->selected = $selected;
+		$this->selected = (string)$selected;
 		$this->list = $list;
 	}
 
@@ -23,7 +23,7 @@ class PXInputRadiolist extends PXAdminWidget {
 		foreach ($this->list as $value => $title) {
 			// hm... I don't like it
 			$id = $this->name . '_' . $value;
-			$input = new PXInputRadioButton($this->name, $this->selected === $value, $value);
+			$input = new PXInputRadioButton($this->name, $this->selected === (string)$value, $value);
 			$input->setId($id);
 			$out .= sprintf($this->pattern, $input->html(), quot($id), quot($title));
 		}
