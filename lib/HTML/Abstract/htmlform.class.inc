@@ -1,4 +1,5 @@
 <?php
+
 define('IMAGE_DEFAULT', 'i/v.gif');
 define('FLASH_DEFAULT', 'i/v.swf');
 define('FLASH_DEFAULT_FULL', '/admin/i/v.swf');
