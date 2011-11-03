@@ -1,13 +1,44 @@
 <?php
+/**
+ * documentation was lost
+ */
+
+/**
+ * Objects container
+ *
+ * @property-read array $current the current object
+ * @property-read array $first the first object in selection
+ */
 class PXObjects extends PXContentObjects {
-	public $currentId, $currentType;
-	
+
+	/**
+	 * current (active) object id
+	 * @var int
+	 * @protected
+	 */
+	public $currentId;
+
+	/**
+	 * current (active) object type
+	 * @var string
+	 * @protected
+	 */
+	public $currentType;
+
 	function hasCurrent() {
 		return @isset($this[$this->currentType][$this->currentId]);
 	}
 
 	function getCurrent() {
 		return $this[$this->currentType][$this->currentId];
+	}
+
+	public function hasItems($type) {
+		return @isset($this[$this->currentType]) && count($this[$this->currentType]);
+	}
+
+	public function getFirst($type) {
+		return reset($this[$type]);
 	}
 
 	function getAllowedChilds() {
@@ -21,16 +52,19 @@ class PXObjects extends PXContentObjects {
 	function __get($key) {
 		switch($key) {
 			case 'current':
-				if($this->hasCurrent()) {
+				if ($this->hasCurrent()) {
 					return $this->getCurrent();
-				} else {
-					return null;
 				}
 				break;
-		}
-
-		if(isset($this->$key)) {
-			return $this->$key;
+			case 'first':
+				if ($this->hasItems($this->currentType)) {
+					return $this->getFirst($this->currentType);
+				}
+				break;
+			default:
+				if (isset($this->$key)) {
+					return $this->$key;
+				}
 		}
 
 		return null;

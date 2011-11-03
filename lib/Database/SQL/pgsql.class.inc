@@ -10,14 +10,14 @@ class NLPGSQLDatabase extends NLAbstractSQLDatabase {
 	//Allowed: array('host', 'hostaddr', 'port', 'dbname', 'user', 'password', 'connect_timeout', 'options', 'tty', 'sslmode', 'requiressl', 'service')
 	protected $includeOptions = array('connect_timeout' => '');
 	protected $excludeOptions = array('encoding');
-	
+
 	function __construct($dbDescription) {
 		$this->setCache($dbDescription->cache);
 		$this->connectArray = array_merge($this->connectArray, $this->includeOptions);
 		$this->setConnectParams($dbDescription);
 		$this->connected = false;
 	}
-	
+
 	function setConnectParams($dbDescription) {
 		$keys = array_keys($this->connectArray);
 		$connectString = array();
@@ -110,36 +110,40 @@ class NLPGSQLDatabase extends NLAbstractSQLDatabase {
 				return ERROR_DB_BADQUERY;
 			}
 
-			foreach ($data as $k=>$row) {
-				$line = implode(chr(1), $row);
-				$line = str_replace("\\", "\\\\", $line);
-				$line = str_replace("\r", "\\r", $line);
-				$line = str_replace("\n", "\\n", $line);
-				$line = str_replace("\t", "\\t", $line);
-				$line = str_replace(chr(1), "\t", $line);
+                        $from = array( "\\", "\r", "\n", "\t", "\1" );
+                        $to = array( "\\\\", "\\r", "\\n", "\\t", "\t");
 
-				while (strstr($line, "\t\t")) {
-					$line = str_replace("\t\t", "\t\\N\t", $line);
-				}
+                        $lines = array();
+                        $row = reset($data);
+                        if (!empty($row))
+                        do {
+                                $line = str_replace($from, $to, implode("\1", $row));
 
-				if ($line{0} == "\t") {
-					$line = "\\N\t" . substr($line, 1);
-				}
-				
-				if ($line{strlen($line)-1} == "\t") {
-					$line .= "\\N";
-				}
+                                while (false !== strpos($line, "\t\t")) {
+                                        $line = str_replace("\t\t", "\t\\N\t", $line);
+                                }
 
-				if (pg_put_line($this->connection, $line."\n") == false) {
-					PXProfiler::end();
-					return ERROR_DB_BADQUERY;
-				}
-			}
+                                if ($line[0] == "\t") {
+                                        $line = "\\N" . $line;
+                                }
 
-			if (pg_put_line($this->connection, "\\.\n") == false) {
-				PXProfiler::end();
-				return ERROR_DB_BADQUERY;
-			}
+                                if ($line[strlen($line)-1] == "\t") {
+                                        $line .= "\\N";
+                                }
+
+                                $lines[] = $line;
+
+                        } while($row = next($data));
+
+                        if (pg_put_line($this->connection, join("\n", $lines)."\n") == false) {
+                                PXProfiler::end();
+                                return ERROR_DB_BADQUERY;
+                        }
+
+                        if (pg_put_line($this->connection, "\\.\n") == false) {
+                                PXProfiler::end();
+                                return ERROR_DB_BADQUERY;
+                        }
 
 			if (pg_end_copy($this->connection) == false) {
 				PXProfiler::end();
@@ -166,8 +170,8 @@ class NLPGSQLDatabase extends NLAbstractSQLDatabase {
 
 		PXProfiler::begin('SQL: '.$query);
 
-		if (!is_null($table = $this->_loadFromCache($query, $donotusecache))) { 
-			return $table; 
+		if (!is_null($table = $this->_loadFromCache($query, $donotusecache))) {
+			return $table;
 		}
 
 		if (!$this->connected) {

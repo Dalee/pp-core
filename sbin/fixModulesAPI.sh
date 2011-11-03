@@ -75,8 +75,9 @@ do
 		sed -i -r 's/function\s(.*)\$this->([\w\d]+?)/function \1\$\2/ig' $file;
 	done;
 
-	# ancient names
+	# ancient names and other praetorian stuff
 	sed -i -r 's/(RT|NL)AbstractModule/PXModule/g' $file;
+	sed -i -r 's/(RT|NL)(Request|Response)::/PXRegistry::get\2()->/g' $file;
 
 	diff -y --left-column --suppress-common-lines -W 180 $file.backup $file
 done
