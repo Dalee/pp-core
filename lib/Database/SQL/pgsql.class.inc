@@ -102,7 +102,14 @@ class NLPGSQLDatabase extends NLAbstractSQLDatabase {
 			$this->Connect();
 		}
 
+		$row = reset($data);
+		if (empty($row)) {
+			PXProfiler::end();
+			return ERROR_DB_BADQUERY;
+		}
+
 		if ($this->connected) {
+
 			$query = "COPY {$tableName} (\"".implode('", "', $cols)."\") FROM stdin";
 
 			if (pg_query($this->connection, $query) == false) {
@@ -110,40 +117,38 @@ class NLPGSQLDatabase extends NLAbstractSQLDatabase {
 				return ERROR_DB_BADQUERY;
 			}
 
-                        $from = array( "\\", "\r", "\n", "\t", "\1" );
-                        $to = array( "\\\\", "\\r", "\\n", "\\t", "\t");
+			$from = array( "\\", "\r", "\n", "\t", "\1" );
+			$to = array( "\\\\", "\\r", "\\n", "\\t", "\t");
+			$lines = array();
 
-                        $lines = array();
-                        $row = reset($data);
-                        if (!empty($row))
-                        do {
-                                $line = str_replace($from, $to, implode("\1", $row));
+			do {
+				$line = str_replace($from, $to, implode("\1", $row));
 
-                                while (false !== strpos($line, "\t\t")) {
-                                        $line = str_replace("\t\t", "\t\\N\t", $line);
-                                }
+				while (false !== strpos($line, "\t\t")) {
+					$line = str_replace("\t\t", "\t\\N\t", $line);
+				}
 
-                                if ($line[0] == "\t") {
-                                        $line = "\\N" . $line;
-                                }
+				if ($line[0] == "\t") {
+					$line = "\\N" . $line;
+				}
 
-                                if ($line[strlen($line)-1] == "\t") {
-                                        $line .= "\\N";
-                                }
+				if ($line[strlen($line)-1] == "\t") {
+					$line .= "\\N";
+				}
 
-                                $lines[] = $line;
+				$lines[] = $line;
 
-                        } while($row = next($data));
+			} while($row = next($data));
 
-                        if (pg_put_line($this->connection, join("\n", $lines)."\n") == false) {
-                                PXProfiler::end();
-                                return ERROR_DB_BADQUERY;
-                        }
+			if (pg_put_line($this->connection, join("\n", $lines)."\n") == false) {
+				PXProfiler::end();
+				return ERROR_DB_BADQUERY;
+			}
 
-                        if (pg_put_line($this->connection, "\\.\n") == false) {
-                                PXProfiler::end();
-                                return ERROR_DB_BADQUERY;
-                        }
+			if (pg_put_line($this->connection, "\\.\n") == false) {
+				PXProfiler::end();
+				return ERROR_DB_BADQUERY;
+			}
 
 			if (pg_end_copy($this->connection) == false) {
 				PXProfiler::end();
