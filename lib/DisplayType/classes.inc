@@ -38,4 +38,5 @@ require_once 'tableStatic.class.inc';
 require_once 'ipAddr.class.inc';
 
 require_once 'bubbleText.class.inc';
+require_once 'radiolist.class.inc';
 ?>
