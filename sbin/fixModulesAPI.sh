@@ -67,7 +67,7 @@ do
 	sed -i -r 's/\$currentSid/$this->tree->current->id/' $file;
 	sed -i -r 's/\$currentCid/$current = $this->objects->getCurrent(); \/\* fixme \*\/ $currentCid = $current["id"]/' $file;
 	sed -i -r 's/\$currentCtype/$this->objects->getCurrentType()/' $file;
-	sed -i -r 's/BASEPATH\s*\.\s*(["'"'"'])\/var\//BASEPATH . \1\/site\/var\//g' $file;
+	sed -i -r 's/BASEPATH\s*\.\s*(["'"'"'])\/?var\//BASEPATH . \1\/site\/var\//g' $file;
 	sed -i -r 's/\$pathId/$this->tree->pathId/g' $file;
 	sed -i -r 's/\$urlFile/$this->request->getFile()/g' $file;
 	sed -i -r 's/function\s+([a-z0-9]+)\s*\(([^\)]*)\$this->([a-z0-9]+)([^\)]*)\)/function \1(\2 $\3 \4)/ig' $file;
