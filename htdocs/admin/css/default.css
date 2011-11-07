@@ -200,6 +200,10 @@ table.objects td.null {
 	color: #C9CED6;
 }
 
+table.objects tr.even td.null {
+	color: white;
+}
+
 table.objects td.not-in-dict {
 	font-style: italic;
 }
