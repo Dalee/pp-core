@@ -27,61 +27,86 @@ function Label($str, $alwaysPrint=false) {
 }
 
 // Отображает индикатор, считающий циклы в циклах =)
-function WorkProgress($finish=FALSE, $total=0, $step = 1) {
+function WorkProgress($finish = FALSE, $total = 0, $step = 1, $showTimes = false) {
 	static $progress, $counter, $lastTotal;
+	static $timer, $firstStamp, $prevStamp;
 
-	if(isset($_SERVER['REQUEST_METHOD']))  {
+	if (isset($_SERVER['REQUEST_METHOD'])) {
 		return;
 	}
 
-	if(!isset($progress)) {
-		$progress = '+';
-	}
-
-	if(!isset($counter)) {
+	if (!isset($counter)) {
 		$counter = 0;
 	}
 
-	if($finish) {
-		// clear string
-		print "\r";
-		print " \t".str_repeat(' ', strlen((string) $counter) + 6 + strlen((string) $lastTotal));
+	if (!isset($progress)) {
+		$progress = 0;
+	}
 
-		print "\r";
-		$progress = '+';
-		$counter = 0;
+	if (!isset($lastTotal)) {
 		$lastTotal = 0;
+	}
+
+	if (!isset($timer)) {
+		$timer = false;
+	}
+
+	if ($finish) {
+		// clear string
+		echo "\r";
+		echo " \t".str_repeat(' ', min(strlen((string) $counter) + 6 + strlen((string) $lastTotal) + ($timer ? 50 : 0), 72));
+
+		echo "\r";
+		$progress = $counter = $lastTotal = 0;
+		$timer = false;
+		$firstStamp = 0;
 		return;
 	}
 
-	$lastTotal = $total;
+	if ($showTimes) {
+		$timer = $showTimes;
+	}
 
-	if(++$counter % $step) {
+	if ($timer && !$firstStamp) {
+		$firstStamp = microtime(1);
+	}
+
+	if ($total) {
+		$lastTotal = $total;
+	}
+
+	if (++$counter % $step) {
 		return;
 	}
 
-	switch($progress) {
-		case '+':
-			$progress = '/';
-			break;
+	$progresses = "|/-\\";
+	$progress ++;
 
-		case '/':
-			$progress = '-';
-			break;
-
-		case '-':
-			$progress = '\\';
-			break;
-
-		case '\\':
-			$progress = '+';
-			break;
-	}
-
-	print "\r".$progress."\t".$counter;
-
-	if($total > 0) {
-		print " of ".$total;
+	echo "\r".$progresses[$progress % 4]."\t".$counter;
+	if ($lastTotal > 0) {
+		echo " of ".$lastTotal;
+		if ($timer) {
+			$lastStamp = microtime(1);
+			$currentElapsed = $lastStamp-$prevStamp;
+			$elapsed = $lastStamp-$firstStamp;
+			printf('. elpsd / avrg / last / total / left: %02d:%02d / %.3fms / %.3fms / %02d:%02d / %02d:%02d   ',
+				$elapsed/60,
+				$elapsed%60,
+				($elapsed/$counter)*1000,
+				$currentElapsed*1000,
+				($totalTime = $elapsed/$counter*$lastTotal)/60,
+				$totalTime%60,
+				($leftTime = $totalTime-$elapsed)/60,
+				$leftTime%60
+			);
+			$prevStamp = $lastStamp;
+		}
+	} elseif ($timer) {
+		$lastStamp = microtime(1);
+		$currentElapsed = $lastStamp-$prevStamp;
+		$elapsed = $lastStamp-$firstStamp;
+		printf('. elpsd / avrg / last: %02d:%02d / %.3fms / %.3fms', $elapsed/60, $elapsed%60, ($elapsed/$counter)*1000, $currentElapsed*1000);
+		$prevStamp = $lastStamp;
 	}
 
 	return $counter;
