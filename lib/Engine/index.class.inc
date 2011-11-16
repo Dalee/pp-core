@@ -1,6 +1,6 @@
 <?php
 class PXEngineIndex extends PXEngine {
-	var $layout = array('factory' => 'PXUserHTMLLayout');
+	var  $layout = array('factory' => 'PXUserHTMLLayout');
 
 	function __construct() {     // Инициализация основных объектов приложения
 		parent::profilerStart();
