@@ -199,4 +199,43 @@ function array_remap($array, $map, $strict = false) {
 	return $r;
 }
 
+
+/**
+*
+* Функция находит для первого встреченного заданного элемента предыдущий и последующий элементы в списке.
+* @param array	$list		Список, в котором производится поиск. Передаётся по ссылке - иначе после foreach'а сбразывается указатель массива.
+* @param mixed	$current	Сосед искомых элементов.
+* @param bool	$circular	Считать ли последний элемент соседом первого.
+* @return array Список из двух элементов - предыдущего и последующего.
+*/
+function findNeighborElements(&$inList, $current, $circular = true) {
+
+	$found = false;
+	$pos   = 0;
+
+	foreach($inList as $element) {
+		$pos++;
+		if ( $current === $element) {
+			$found = true;
+			break;
+		}
+	}
+
+	$prev = null;
+	$next = null;
+
+	if($found){
+		$last = $pos + 1 > sizeof($inList);
+		$last ? end($inList) : prev($inList);
+		$last || $next = next($inList);
+		$last || prev($inList);
+		
+		$first = $pos == 1;
+		$first || $prev = prev($inList);
+
+		$first && $circular	&& $prev = end($inList);
+		$last  && $circular	&& $next = reset($inList);
+	}
+	return array($prev, $next);
+}
 ?>
