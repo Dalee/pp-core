@@ -19,7 +19,7 @@ class PXStructLeaf implements Iterator {
 	}
 
 	function parent($level=1) {
-		$parentId = $this->data->parent($level);
+		$parentId = is_object($this->data) ? $this->data->parent($level) : null;
 		return is_null($parentId) ? new PXStructLeaf404() : $this->struct->getLeaf($this->data->tree->leafs[$parentId]);
 	}
 
