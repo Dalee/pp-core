@@ -85,14 +85,15 @@ class PXUserHTMLLang {
 		$leaf = $this->tree;
 
 		foreach ($path as $p) {
-			if (!isset($leaf[$p])) {
-				if (isset($leaf[$this->lang][$p])) {
+			switch (array(isset($leaf[$p]), isset($leaf[$this->lang][$p]))) {
+				case array(false, true):
 					$leaf = $leaf[$this->lang][$p];
-					continue;
-				}
-				return false;
+					break;
+				case array(false, false):
+					return false;
+				default:
+					$leaf = $leaf[$p];
 			}
-			$leaf = $leaf[$p];
 		}
 
 		if (is_string($leaf)) {
