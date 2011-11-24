@@ -52,11 +52,12 @@ class PXModuleAcl extends PXModule {
 		$table->setDict('what',       $this->getWhatDict());
 		$table->setDict('access',     $this->access);
 
-		$table->setControls('/admin/popup.phtml?area='  . $this->area . '&id=',               'изменить это правило', 'edit', false, true);
-		$table->setControls('/admin/action.phtml?area=' . $this->area . '&action=delete&id=', 'удалить  это правило', 'del',  true,  false);
+		$queryParams = 'area='  . $this->area . '&sid=' . urlencode($sid);
+		$table->setControls('/admin/popup.phtml?'  . $queryParams . '&id=',               'изменить это правило', 'edit', false, true);
+		$table->setControls('/admin/action.phtml?' . $queryParams . '&action=delete&id=', 'удалить  это правило', 'del',  true,  false);
 
-		$table->setControls('/admin/action.phtml?area=' . $this->area . '&action=up&id=',     'поднять  это правило', 'up' ,  false, false);
-		$table->setControls('/admin/action.phtml?area=' . $this->area . '&action=down&id=',   'опустить это правило', 'down', false, false);
+		$table->setControls('/admin/action.phtml?' . $queryParams . '&action=up&id=',     'поднять  это правило', 'up' ,  false, false);
+		$table->setControls('/admin/action.phtml?' . $queryParams . '&action=down&id=',   'опустить это правило', 'down', false, false);
 		$table->showEven();
 
 		$table->addToParent('INNER.1.0');
@@ -279,7 +280,8 @@ class PXModuleAcl extends PXModule {
 
 	function adminAction() {
 		$rId = (int)$this->request->getVar('id');
-		$redir = '/admin/?area='.$this->area;
+		$sid = $this->_getSid();
+		$redir = '/admin/?area='.$this->area.'&sid='.$sid;
 
 		switch($this->request->getVar('action')) {
 			case 'up':

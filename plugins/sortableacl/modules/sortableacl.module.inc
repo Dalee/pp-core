@@ -4,8 +4,8 @@ require_once BASEPATH  . '/libpp/modules/acl.module.inc';
 
 class PXModuleSortableAcl extends PXModuleAcl {
 	function addNewRuleButton() {
-		$buttonHtml = parent::addNewRuleButton();
-		return $buttonHtml . '<script>'. $this->js() . '</script>';
+		$this->js();
+		return parent::addNewRuleButton();
 	}
 
 	function sort() {
@@ -33,9 +33,8 @@ class PXModuleSortableAcl extends PXModuleAcl {
 	}
 
 	function js() {
-		return trim('$(function() { 
-			$("head").append($("<script>").attr("src", "js/tools/jui.min.js")); 
-
+		$this->layout->assignJs("js/tools/jui.min.js");
+		$this->layout->assignInlineJs('$(function() {
 			var positions_slice = {
 				start: 0,
 				stop: 0
@@ -60,12 +59,13 @@ class PXModuleSortableAcl extends PXModuleAcl {
 					}
 
 					var options = {
-						area: "acl",
+						area: ' . json_encode($this->area) . ',
 						sorts: $.param(srlz),
 						action: "sort"
 					};
 
 					$.post("/admin/action.phtml", options, function(data) {
+						// dunno
 					});
 				}
 			});
