@@ -36,14 +36,26 @@ ul.list {
 li  {
 	padding: 2px;
 }
+ul.list li a {
+	display:block;
+}
+
+li:hover {
+	background-color: #D6E1F5;
+}
 
 li.selected {
 	background-color: #385A94;
 }
-
 li.selected a {
 	color: #FFFFFF;
 	}
+
+
+ul.list li i.all {
+	line-height:18px;
+	font-size:110%;
+}
 
 pre.debug {
 	font-size: 150%;
@@ -131,7 +143,7 @@ table.objects th a.down, table.objects-table th a.down {
 }
 
 table.objects td, table.objects-table td {
-	padding: 3px 4px;
+	padding: 5px 4px;
 	border: 1px double #C9CED6;
 	border-left: none;
 	border-right: none;
@@ -171,7 +183,7 @@ table.links label.ref-linked {
 }
 
 table.objects th.c4, table.objects-table th.c4 {
-	width: 60px;
+	width: 62px;
 	text-align: center;
 }
 
@@ -201,7 +213,7 @@ table.objects td.null {
 }
 
 table.objects tr.even td.null {
-	color: white;
+	color: #C8CDD5;
 }
 
 table.objects td.not-in-dict {
@@ -504,7 +516,7 @@ table.mainform td, table.mainform th {
 
 table.objects tr.even td, table.objects tr.even  th,
 table.mainform tr.even td, table.mainform tr.even  th {
-	background-color: #C9CED6;
+	background-color: #F0F2F4;
 }
 
 table.mainform td input, table.mainform td textarea {

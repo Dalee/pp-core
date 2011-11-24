@@ -22,7 +22,7 @@ class PXModuleAcl extends PXModule {
 	}
 	
 	function getAclDefinitionsFor($what){
-		if(empty($this->app->langTree['module_acl_rules'][$what])) {
+		if (empty($this->app->langTree['module_acl_rules'][$what])) {
 			FatalError("Не описаны правила module_acl_rules[{$what}] в lang.yaml");
 		}
 		
@@ -31,13 +31,16 @@ class PXModuleAcl extends PXModule {
 	}
 	
 	function getWhatDict() { 
-		return $this->what; 
+		return $this->what;
 	}
 
 	function adminIndex() {
-		$rules  = $this->_getRules();
+		$sid = $this->_getSid();
+		$rules  = $this->_getRules($sid);
 		$fields = $this->_getFields();
 		$dicts  = $this->_getDicts();
+
+		$this->indexSetMenu($sid);
 
 		$table = new PXAdminTableSimple($fields);
 
@@ -56,16 +59,47 @@ class PXModuleAcl extends PXModule {
 		$table->setControls('/admin/action.phtml?area=' . $this->area . '&action=down&id=',   'опустить это правило', 'down', false, false);
 		$table->showEven();
 
-		$table->addToParent('INNER.0.0');
+		$table->addToParent('INNER.1.0');
 
-		$this->layout->setOneColumn();
-		$this->layout->assign('INNER.0.1', $this->addNewRuleButton());
+		$this->layout->setTwoColumns(false);
+		$this->layout->assign('INNER.1.1', $this->addNewRuleButton());
+	}
+
+	function indexSetMenu($rSid) {
+		$types = array();
+
+		$countsQueryResult = $this->db->query(sprintf('SELECT "objecttype" as "id", count(*) as "count" FROM "%s" WHERE "objectrule" = \'%s\' GROUP BY 1;', $this->sqlTable, $this->objectRule));
+		$counts = array_flat($countsQueryResult, 'id', 'count');
+
+		$types['*'] = '   <i class="all">Полный список</i> (' . array_sum($counts) . ')';
+		if ($counts['']) {
+			$types[''] = ' Все (' . $counts[''] . ')';
+		}
+
+		$objects = $this->objectRule === 'user'
+			? $this->app->types
+			: $this->app->getAvailableModules();
+		foreach ($objects as $k => $v) {
+			if (!isset($counts[$k])) {
+				continue;
+			}
+			$title = (!empty($v->title) ? $v->title : (!empty($v->description) ? $v->description : (!empty($v->name) ? $v->name : $k)));
+			$count = (int)$counts[$k];
+			$types[$k] = "$title ($count)";
+		}
+		asort($types);
+
+		if (!isset($types[$rSid])) {
+			$rSid = key($types);
+		}
+
+		$this->layout->assignKeyValueList('INNER.0.0', $types, $rSid);
 	}
 
 	function addNewRuleButton() {
 		$_  = '';
 		$_ .= '<a href="/admin/popup.phtml?area=' . $this->area . '" onclick="Popup(this.href); return false;" class="button">';
-		$_ .= '<img src="i/icon/add.gif" alt="Добавить правило">';
+		$_ .= '<img src="i/icon/add.gif" alt="Добавить правило" />';
 		$_ .= 'Правило доступа';
 		return $_ .= '</a>';
 	}
@@ -163,11 +197,23 @@ class PXModuleAcl extends PXModule {
 		);
 	}
 
-	function _getRules() {
-		$tmp = $this->db->query("SELECT * FROM ".$this->sqlTable . " WHERE objectrule = '" . $this->objectRule . "' ORDER BY sys_order");
+	function _getSid() {
+		return isset($_GET['sid']) ? $_GET['sid'] : '*';
+	}
+
+	function _getRules($sid = null) {
+		$andwhat = '';
+		switch (true) {
+			case $sid === null or $sid === '*':break;
+			default:
+				$sid = (string)$sid;
+			case is_scalar($sid):
+				$andwhat = sprintf(' AND COALESCE("objecttype", \'\') = \'%s\'', $sid);
+		}
+		$tmp = $this->db->query(sprintf('SELECT * FROM "%s" WHERE "objectrule" = \'%s\' %s ORDER BY "sys_order" ASC;', $this->sqlTable, $this->objectRule, $andwhat));
 
 		$table = array();
-		foreach($tmp as $t) {
+		foreach ($tmp as $t) {
 			$table[$t['id']] = $t;
 		}
 
@@ -176,7 +222,7 @@ class PXModuleAcl extends PXModule {
 
 	function _getTypes() {
 		$types  = array();
-		foreach($this->db->types as $typeName=>$type) { 
+		foreach ($this->db->types as $typeName=>$type) { 
 			$types[$typeName] = $type->title;
 		}
 

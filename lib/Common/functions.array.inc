@@ -168,35 +168,110 @@ function array_transpose($array) {
 
 /**
  * Assoc array fields rename
- * 
+ *
  * @param array $array existing array
  * @param mixed $map existing keys or/and their new names
  * @param boolean $strict
  * @return array resulting array with selected keys
  */
 function array_remap($array, $map, $strict = false) {
-	if (!is_string($map) && !is_array($map))
+	if (!is_string($map) && !is_array($map)) {
 		return false;
-	
-	$r = array();
-	
+	}
+
+	$result = array();
+
 	if (is_string($map)) {
 		$map = array($map => $map);
 	}
-	
+
 	if (!$strict && isset($map[0])) {
 		$rmap = array();
 		foreach($map as $k=>$v) {
 			$rmap[ (is_int($k) && isset($array[$v])) ? $v : $k ] = $v;
 		}
-
 		$map = $rmap;
 	}
-	
-	foreach ($map as $k => $v)
-		$r[$k] = isset($array[$v]) ? $array[$v] : null;
-	
-	return $r;
+
+	foreach ($map as $k => $v) {
+		$result[$k] = isset($array[$v]) ? $array[$v] : null;
+	}
+
+	return $result;
+}
+
+
+/**
+ * Array flatter (maker)
+ * Note: boolean values is special. true is a $key, false is a current value ($key for key, $value for value)
+ *
+ * @param array $array source array
+ * @param string $toKey a key existing keys or/and their new names
+ * @param mixed $toValue a key or a list of existing keys in source array
+ * @return array resulting array with keys $toKey and values $toValue
+ * @example
+ *   $arr = array(
+ *     'x' => array('a' => 'foo', 'b' => 5, 'c' => 'oof'),
+ *     'y' => array('a' => 'bar', 'b' => 2, 'c' => 'zzz'),
+ *     'z' => array('a' => 'baz', 'b' => 6, 'c' => '123'),
+ *     ...
+ *   );
+ *   array_flat($arr, 'a', 'b'); // array( 'foo' => 5, 'bar' => 2, 'baz' => 6, ... )
+ *   array_flat($arr, 'c', true); // array( 'oof' => 'x', 'zzz' => 'y', '123' => 'z', ... )
+ *   array_flat($arr, false, array('a', 'c')); // array( array('a' => 'foo', 'c' => 'oof'), array('a' => 'bar', 'c' => 'zzz'), ... )
+ */
+function array_flat($array, $toKey = false, $toValue = false) {
+
+	if (!is_array($array)) {
+		return false;
+	}
+
+	$result = array();
+
+	foreach ($array as $key => $value) {
+
+		// choose value
+		switch (true) {
+			// if list of keys
+			case is_array($toValue):
+				$newValue = array_intersect_key($value, array_flip(array_values($toValue)));
+				break;
+			// if false
+			default:
+			case $toValue === false:
+				$newValue = $value; // as was
+				break;
+			// if true
+			case $toValue === true:
+				$newValue = $key; // as key
+				break;
+			// if scalar
+			case is_scalar($toValue):
+				$newValue = $value[$toValue];
+		}
+
+		// choose key
+		switch (true) {
+			// if we just simplifiying some kind of php array to list
+			case $toKey === false:
+				$result[] = $newValue;
+				continue;
+			// default
+			default:
+			case $toKey === true:
+			case is_scalar($value):
+				$newKey = $key;
+				break;
+			// some field of value will be used as key in new map
+			case is_array($value) && array_key_exists($toKey, $value):
+				$newKey = $value[$toKey];
+		}
+
+		// push key-value pair to result
+		$result[$newKey] = $newValue;
+	}
+
+	return $result;
 }
 
 
