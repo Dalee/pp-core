@@ -57,7 +57,7 @@ class PXModuleObjects extends PXModule {
 		$cId  = $this->request->getCid();
 		$table->showChildren('cid');
 
-		if($cId) {
+		if($cId && $table->has($cId)) {
 			 $this->indexAppendChild($table->get($cId));
 		}
 	}
