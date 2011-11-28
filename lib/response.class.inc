@@ -145,7 +145,7 @@ class PXResponse {
 		$this->addHeader('Content-Disposition', $dispositionType . '; filename="'. $filename .'"');
 	}
 	
-	function send($content=null) {
+	function send($content = null, $http_version_1_1 = true) {
 		if(!headers_sent()) {
 			if($this->isError() || strlen($content)) {
 				// FIXME: we really need HTTP/1.1 ?
@@ -153,7 +153,7 @@ class PXResponse {
 				// (Apache uses it when Content-Length header missed for 1.1)
 				// you may use Nginx directive "chunked_transfer_encoding off;"
 				// in the http{} or location{} config scopes
-				header('HTTP/1.1 '.$this->status);
+				header(sprintf('HTTP/1.%d %s', (int)$http_version_1_1, $this->status));
 			}
 
 			if(strlen($content)) {
