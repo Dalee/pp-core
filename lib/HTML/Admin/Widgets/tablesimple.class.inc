@@ -1,5 +1,21 @@
 <?php
+
 class PXAdminTableSimple extends PXAdminWidget {
+
+	protected $cols;
+	protected $widths;
+
+	protected $dict;
+	protected $data;
+	protected $footer;
+
+	protected $controls;
+
+	protected $nullText;
+	protected $caption;
+
+	protected $tableId;
+
 	function PXAdminTableSimple($cols) {
 		$this->cols   = $cols;
 		$this->widths = array();
@@ -12,7 +28,7 @@ class PXAdminTableSimple extends PXAdminWidget {
 
 		$this->nullText = '';
 		$this->caption  = '';
-		
+
 		$this->showEven = false;
 	}
 
@@ -36,6 +52,10 @@ class PXAdminTableSimple extends PXAdminWidget {
 		$this->footer = $cells;
 	}
 
+        function setTableId($id = null) {
+                $this->tableId = $id ? $id : md5(microtime(1));
+        }
+
 	function htmlCaption() {
 		if(!strlen($this->caption)) {
 			return '';
@@ -49,10 +69,11 @@ class PXAdminTableSimple extends PXAdminWidget {
 		$i = 0;
 		foreach($this->data as $row) {
 			$even = $i++ % 2;
-			$_ .= '<tr'.($this->showEven && $even ? ' class="even"': '').'>';
+			$id = isset($row['id']) ? $row['id'] : 0;
+			$_ .= '<tr'.($this->showEven && $even ? ' class="even"': '').($this->tableId && $id ? ' id="'.$this->tableId.'-'.$id.'"' : '').'>';
 
-			if(isset($row['id'])) {
-				$_ .= $this->cellCTRL($row['id']);
+			if ($id) {
+				$_ .= $this->cellCTRL($id);
 			}
 
 			foreach($this->cols as $col=>$title) {
@@ -82,7 +103,7 @@ class PXAdminTableSimple extends PXAdminWidget {
 	function setNullText($text) {
 		$this->nullText = $text;
 	}
-	
+
 	function showEven(){
 		$this->showEven = true;
 	}

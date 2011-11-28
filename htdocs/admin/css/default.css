@@ -106,6 +106,10 @@ table.objects, table.objects-table {
 	border: 1px solid #C9CED6;
 	table-layout: fixed;
 	empty-cells: show;
+	position: relative;
+}
+table.objects tbody {
+	position: relative;
 }
 
 table.objects th, table.objects-table th {
@@ -118,6 +122,7 @@ table.objects th, table.objects-table th {
 	color: #FFFFFF;
 	font-weight: bold;
 	white-space: nowrap;
+	position: relative;
 }
 
 table.objects th a, table.objects-table th a {

@@ -5,11 +5,13 @@
  * @package ProximaPortal
  * @subpackage HTML
  */
+
 define("MASK_FIRST_PAGE", 1);
 define("MASK_LAST_PAGE",  2);
 define("MASK_NO_MOVE",    3);
 
 class PXAdminTable extends PXAdminComplexWidget {
+
 	var $data;
 	var $dtype;
 	var $getData;
@@ -28,6 +30,8 @@ class PXAdminTable extends PXAdminComplexWidget {
 	var $selectedRow;
 	var $showChildObjects;
 	var $childLink;
+
+	protected $tableId;
 
 	const BEFORE_CONTENT_ALWAYS = 0;
 	const BEFORE_CONTENT        = 1;
@@ -182,7 +186,13 @@ class PXAdminTable extends PXAdminComplexWidget {
 						'up'     => $up,                        // можно ли вверх ?
 						'down'   => $down);                     // а вниз ?
 
-				$html .= '<tr oncontextmenu="'.$this->_buildContext('edit', $tVars).'" class="';
+				$html .= '<tr oncontextmenu="'.$this->_buildContext('edit', $tVars).'" ';
+
+				if ($this->tableId) {
+					$html .= ' id="' . $this->tableId . '-' . $row['id'] . '"';
+				}
+
+				$html .= ' class="';
 
 				if ($row['status'] == false) {
 					$html .= ' hide';
@@ -439,5 +449,10 @@ class PXAdminTable extends PXAdminComplexWidget {
 		$html .= '</h2>';
 		return $html;
 	}
+
+	function setTableId($id = null) {
+		$this->tableId = $id ? $id : md5(microtime(1));
+	}
+
 }//class
 ?>

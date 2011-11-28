@@ -5,23 +5,28 @@ class PXModuleAcl extends PXModule {
 	var $objectRule     = 'user';
 	var $aclObjectTitle = 'Тип объекта';
 
+	protected $ruleTypeField;
+	protected $orderingField;
+
 	function __construct($area, $settings) {
 		parent::__construct($area, $settings);
 
 		$this->what     = $this->getAvailableActions();
 		$this->access   = $this->getAvailableAccess();
 		$this->sqlTable = 'acl_objects';
+		$this->orderingField = 'sys_order';
+		$this->ruleTypeField = 'objectrule';
 	}
 	
 	function getAvailableActions() {
 		return $this->getAclDefinitionsFor('actions');
 	}
 	
-	function getAvailableAccess(){
+	function getAvailableAccess() {
 		return $this->getAclDefinitionsFor('access');
 	}
 	
-	function getAclDefinitionsFor($what){
+	function getAclDefinitionsFor($what) {
 		if (empty($this->app->langTree['module_acl_rules'][$what])) {
 			FatalError("Не описаны правила module_acl_rules[{$what}] в lang.yaml");
 		}
@@ -30,7 +35,7 @@ class PXModuleAcl extends PXModule {
 		return array_combine(array_keys($_), getColFromTable($_, 'rus')); //TODO: make lang choose optional
 	}
 	
-	function getWhatDict() { 
+	function getWhatDict() {
 		return $this->what;
 	}
 
@@ -59,6 +64,8 @@ class PXModuleAcl extends PXModule {
 		$table->setControls('/admin/action.phtml?' . $queryParams . '&action=up&id=',     'поднять  это правило', 'up' ,  false, false);
 		$table->setControls('/admin/action.phtml?' . $queryParams . '&action=down&id=',   'опустить это правило', 'down', false, false);
 		$table->showEven();
+
+		$table->setTableId('acl');
 
 		$table->addToParent('INNER.1.0');
 
@@ -202,23 +209,27 @@ class PXModuleAcl extends PXModule {
 		return isset($_GET['sid']) ? $_GET['sid'] : '*';
 	}
 
-	function _getRules($sid = null) {
-		$andwhat = '';
+	function _getSidCriteria($sid) {
+		$andwhat = array('blank' => '(TRUE)');
 		switch (true) {
 			case $sid === null or $sid === '*':break;
 			default:
 				$sid = (string)$sid;
 			case is_scalar($sid):
-				$andwhat = sprintf(' AND COALESCE("objecttype", \'\') = \'%s\'', $sid);
+				$andwhat['sid'] = sprintf(' COALESCE("objecttype", \'\') = \'%s\'', $sid);
 		}
-		$tmp = $this->db->query(sprintf('SELECT * FROM "%s" WHERE "objectrule" = \'%s\' %s ORDER BY "sys_order" ASC;', $this->sqlTable, $this->objectRule, $andwhat));
+		return $andwhat;
+	}
 
-		$table = array();
-		foreach ($tmp as $t) {
-			$table[$t['id']] = $t;
-		}
+	function _getRules($sid = null, $limit = null) {
+		$criterias = $this->_getSidCriteria($sid);
+		$criterias[] = sprintf('"objectrule" = \'%s\'', $this->objectRule);
+		$where = join('AND', $criterias);
+		$limit = ($limit) ? array((int)$limit, 0) : null;
 
-		return $table;
+		$tmp = $this->db->query(sprintf('SELECT * FROM "%s" WHERE %s ORDER BY "%s" ASC;', $this->sqlTable, $where, $this->orderingField), false, $limit);
+
+		return $limit == 1 ? reset($tmp) : array_flat($tmp, 'id');
 	}
 
 	function _getTypes() {
@@ -228,7 +239,7 @@ class PXModuleAcl extends PXModule {
 		}
 
 		$types[null] = '-- любой --';
-		
+
 		return $types;
 	}
 
@@ -250,46 +261,258 @@ class PXModuleAcl extends PXModule {
 		return $dicts;
 	}
 
-	function _moveRule($rId, $direction) {
+	protected
+	function getRuleById($rId, $sid = false) {
+		return current($this->getRulesByIds($rId, $sid));
+	}
+
+	protected
+	function getRulesByIds($ids, $sid = false) {
+		$ids = array_filter(array_map('intval', (array)$ids));
+		if (empty($ids)) {
+			return array();
+		}
+
+		$criteria = $this->_getSidCriteria($sid);
+		$criteria['id'] = sprintf('"id" IN (%s)', join(',', $ids));
+		$where = join(' AND ', $criteria);
+
+		$query = sprintf('SELECT %s, id FROM %s WHERE %s;', $this->orderingField, $this->sqlTable, $where);
+
+		return $this->db->query($query);
+	}
+
+
+	protected
+	function getRulesByRuleAndDirection($rule, $direction, $sid = false, $limit = 1) {
+		if ($limit <= 0) {
+			return null;
+		}
+
 		$db = $this->db;
 
-		$objectInDB = $db->query(sprintf('SELECT sys_order, id FROM %s WHERE id = %d', $this->sqlTable, $rId));
+		// combining query
+		$criteria = $this->_getSidCriteria($sid);
+		$criteria['rule'] = sprintf('"objectrule" = \'%s\'', $this->objectRule);
 
-		if(sizeof($objectInDB) !== 1) {
-			FatalError('Правило с id = '.$rId.' не найдено');
+		// set where and order by $direction
+		switch ($direction) {
+			default:
+			case 'up':
+				$criteria['field'] = '"%1$s" < %2$d';
+				$order = '"%1$s" DESC';
+				break;
+			case 'down':
+				$criteria['field'] = '"%1$s" > %2$d';
+				$order = '"%1$s" ASC';
 		}
-		$objectInDB = current($objectInDB);
+		$criteria['field'] = sprintf($criteria['field'], $this->orderingField, $rule[$this->orderingField]);
 
-		$limit  = array(1, 0);
-		$where  = sprintf("sys_order %s %d AND objectrule = '%s'", GetFromArray(array('<','>'), $direction == 'down'), (int)$objectInDB['sys_order'], $this->objectRule);
-		$order  = 'sys_order '.($direction == 'down' ? ''  : 'DESC');
-		$query  = sprintf('SELECT sys_order, id FROM %s WHERE %s ORDER BY %s ', $this->sqlTable, $where, $order);
+		$where = join(' AND ', $criteria);
+		$order = sprintf($order, $this->orderingField);
+		$query = sprintf('SELECT "%s", "id" FROM %s WHERE %s ORDER BY %s ', $this->orderingField, $this->sqlTable, $where, $order);
 
-		$nearObject = $db->query($query, false, $limit);
-
-		if (sizeof($nearObject)) {
-			$nearObject = current($nearObject);
-			$moveQuery  = "UPDATE {$this->sqlTable} SET sys_order = %d WHERE id = %d";
-
-			$db->transactionBegin();
-			$db->modifyingQuery(sprintf($moveQuery, $objectInDB['sys_order'], $nearObject['id']));
-			$db->modifyingQuery(sprintf($moveQuery, $nearObject['sys_order'], $objectInDB['id']));
-			$db->transactionCommit();
+		$objectsInDB = $db->query($query, false, array($limit, 0));
+		if (!sizeof($objectsInDB)) {
+			return null;
 		}
+
+		return $limit == 1 ? current($objectsInDB) : $objectsInDb;
+	}
+
+	protected
+	function getFirstRule($sid = false) {
+		return $this->_getRules($sid, 1);
+	}
+
+	protected
+	function getRulesBetweenOrders($from, $to, $sid = false) {
+		echo ($from . ' ' . $to) . PHP_EOL;
+		if ($from > $to) {
+			$from ^= $to ^= $from ^= $to;
+		}
+
+		$criteria = $this->_getSidCriteria($sid);
+		$criteria['rule'] = sprintf('"objectrule" = \'%s\'', $this->objectRule);
+		$criteria['between'] = sprintf('"%s" BETWEEN %d AND %d', $this->orderingField, $from, $to);
+		$where = join(' AND ', $criteria);
+
+		$query  = sprintf('SELECT "%1$s", "id" FROM "%2$s" WHERE %3$s ORDER BY "%1$s" ASC;', $this->orderingField, $this->sqlTable, $where);
+
+		return $this->db->query($query);
+	}
+
+	protected
+	function swapOrders($a, $b) {
+		$this->db->transactionBegin();
+		$this->setOrder($a[$this->orderingField], $b['id']);
+		$this->setOrder($b[$this->orderingField], $a['id']);
+		$this->db->transactionCommit();
+
+		return true; // fixme.
+	}
+
+	protected
+	function _moveRule($rId, $direction, $sid = false) {
+		$db = $this->db;
+
+		$moving = $this->getRuleById($rId, $sid);
+		$passive = $this->getRulesByRuleAndDirection($moving, $direction, $sid);
+
+		if ($passive) {
+			return $this->swapOrders($moving, $passive);
+		}
+
+		return false;
+	}
+
+	protected
+	function setOrder($order, $criteria) {
+		if (($order[0] == '-' || $order[0] == '+') && ctype_digit(substr($order, 1))) {
+			// makes -1, +1 sql-readable
+			$order = sprintf('COALESCE("%s",0) %s', $this->orderingField, $order);
+		}
+
+		switch (true) {
+			case (is_int($criteria) || ctype_digit($criteria)):
+				$where = '"id" = ' . $criteria;
+				break;
+			case (is_string($criteria) && ($criteria[0] == '<' || $criteria[0] == '>') && ctype_digit(substr($criteria, 1))):
+			case (is_string($criteria) && ($criteria[0] == '<' || $criteria[0] == '>') && ctype_digit(substr($criteria, 2)) && $criteria[1] == '='):
+				$where = $this->orderingField . $criteria;
+				break;
+			case is_array($criteria):
+				$where = join(' AND ', $criteria);
+				break;
+			default:
+				$where = $criteria;
+		}
+
+		$set = array("{$this->orderingField} = {$order}"/*, "sys_modified = now()"*/);
+		$set = join(",", $set);
+
+		$query = "UPDATE {$this->sqlTable} SET {$set} WHERE {$where};";
+
+		// echo $query . PHP_EOL;return;
+		$this->db->modifyingQuery($query);
+	}
+
+	protected
+	function getMaxOrder($sid) {
+		static $maxOrder;
+		if ($maxOrder) {
+			return $maxOrder;
+		}
+
+		$where = join(' AND ', $this->_getSidCriteria($sid));
+		list(list($maxOrder)) = $this->db->query("SELECT max({$this->orderingField}) as \"0\" FROM {$this->sqlTable} WHERE {$where};");
+		return $maxOrder;
+	}
+
+	protected
+	function putRuleAfterRule($movingId, $afterId, $sid = false) {
+		$db = $this->db;
+
+		$rules = array_flat($this->getRulesByIds(array($movingId, $afterId), $sid), 'id', $this->orderingField);
+		if (!array_key_exists($movingId, $rules)) {
+			return false;
+		}
+
+		$movingOrder = $rules[$movingId];
+		if (null === $movingOrder) {
+			$movingOrder = $this->getMaxOrder($sid);
+		}
+
+		switch (true) {
+			case $afterId == 'first' || $afterId == 0:
+				$this->setOrder('+1', "<" . $movingOrder);
+				$this->setOrder(0, $movingId);
+				return true;
+				break;
+			case is_int($afterId) || ctype_digit($afterId):
+				$afterOrder = $rules[$afterId];
+				break;
+			default:
+				return 'after?!';
+		}
+
+		//$changing = $this->getRulesOrdersBetweenOrders($moving[$oField], $after[$oField], $sid);
+		//if (sizeof($changing) == sizeof(array_unique($changing))) {
+			// equal orders exists. some magic will comes sometimes. write here something if you know how to fix it
+			//$changing
+		//}
+		//if (empty($moving[$this->orderingField)) {
+			// fail... null in sys_order. need to set sys_orders to ALL nulled between moving and passive
+		//}
+		//if (empty($after[$this->orderingField])) {
+			// see above
+		//}
+
+		if ($afterOrder === null) {
+			// hm. cant be moved...
+			return 'do something with nulls!';
+		}
+
+		// fyi: all nulled at the end. _not at start_
+		$oField      = $this->orderingField;
+
+		switch (true) {
+			case $movingOrder - 1 == $afterOrder:
+				// already correct order
+				break;
+			default:
+			case $movingOrder == $afterOrder:
+				// dunno... what we can do here? hm.
+				$this->setOrder('+1', $movingId);
+				// or that?
+				// $criteria['upper'] = sprintf('("%s" > %d OR "id" = %d)', $oField, $movingOrder, $moving['id']);
+				// $this->setOrder('+1', $criteria)
+				break;
+			case $movingOrder < $afterOrder:
+				// a 1      | a 1      | a 1  // set b after e
+				// b 2      | b 2 -> 4 | c 2  // moving = b, after = e
+				// c 3 -> 2 | c 2      | d 2
+				// d 3 -> 2 | d 3      | e 3
+				// e 4 -> 3 | e 4      | b 4
+				$criteria = sprintf('%2$d < %1$s AND %1$s <= %3$d', $oField, $movingOrder, $afterOrder);
+
+				$this->setOrder('-1', $criteria);
+				$this->setOrder($afterOrder, $movingId);
+				break;
+			case $movingOrder > $afterOrder:
+				// a 1      | a 1      | a 1  // set e after a (e.order > a.order)
+				// b 2 -> 3 | b 3      | e 2  // moving = e, after = a
+				// c 3 -> 4 | c 4      | b 3
+				// d 3 -> 4 | d 4      | c 4
+				// e 4      | e 4 -> 2 | d 4
+				$criteria = sprintf('%2$d < %1$s AND %1$s <= %3$d', $oField, $afterOrder, $movingOrder);
+
+				$this->setOrder('+1', $criteria);
+				$this->setOrder($afterOrder+1, $movingId);
+				break;
+		}
+
+		return compact('moving', 'after', 'changing', 'where');
 	}
 
 	function adminAction() {
 		$rId = (int)$this->request->getVar('id');
+		$afterId = (int)$this->request->getVar('after');
 		$sid = $this->_getSid();
 		$redir = '/admin/?area='.$this->area.'&sid='.$sid;
+		$ajax = $this->request->getVar('ajax');
+		$result = null;
 
-		switch($this->request->getVar('action')) {
+		$action = $this->request->getVar('action');
+		switch ($action) {
 			case 'up':
-				$this->_moveRule($rId, 'up');
+			case 'down':
+				$result = $this->_moveRule($rId, $action, $sid);
 				break;
 
-			case 'down':
-				$this->_moveRule($rId, 'down');
+			// ajax
+			case 'putafter':
+				$result = $this->putRuleAfterRule($rId, $afterId, $sid);
 				break;
 
 			case 'add':
@@ -299,13 +522,12 @@ class PXModuleAcl extends PXModule {
 				foreach($fields as $field) {
 					$values[$field] = $this->request->getVar($field);
 				}
-				
-				$ruleTypeField          = 'objectrule';
-				$fields[]               = $ruleTypeField;
-				$values[$ruleTypeField] = $this->objectRule;
+
+				$fields[] = $this->ruleTypeField;
+				$values[$this->ruleTypeField] = $this->objectRule;
 
 				$rId = $this->db->InsertObject($this->sqlTable, $fields, $values);
-				$this->db->ModifyingQuery('UPDATE '.$this->sqlTable.' SET sys_order = id WHERE id = '.$rId);
+				$this->setOrder($rId, $rId);
 
 				$redir = '/admin/popup.phtml?area='.$this->area.'&id='.$rId;
 				break;
@@ -320,7 +542,7 @@ class PXModuleAcl extends PXModule {
 
 				$this->db->UpdateObjectById($this->sqlTable, $rId, $fields, $values);
 
-				$redir = '/admin/popup.phtml?area='.$this->area.'&id='.$rId;
+				$redir = '/admin/popup.phtml?area='.$this->area.'&sid='.$sid.'&id='.$rId;
 				break;
 
 			case 'delete':
@@ -336,7 +558,10 @@ class PXModuleAcl extends PXModule {
 
 				$this->db->modifyingQuery('DELETE FROM '.$this->sqlTable.' WHERE id = '.$rId);
 				break;
+		}
 
+		if ($ajax) {
+			die(json_encode($result));
 		}
 
 		return $redir;
