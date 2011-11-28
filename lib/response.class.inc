@@ -59,10 +59,10 @@ class PXResponse {
 		
 		if (!is_null($cacheTimeOut)) {
 			$this->cache($cacheTimeOut);
-		}
-		else {
+		} else {
 			$this->dontCache();
 		}
+
 		$this->send();
 
 		exit();
@@ -149,8 +149,9 @@ class PXResponse {
 		if(!headers_sent()) {
 			if($this->isError() || strlen($content)) {
 				// FIXME: we really need HTTP/1.1 ?
-				// for fix troubles with Transfer-Encoding: chunked
-				// use Nginx directive "chunked_transfer_encoding off;"
+				// to fix troubles with Transfer-Encoding: chunked
+				// (Apache uses it when Content-Length header missed for 1.1)
+				// you may use Nginx directive "chunked_transfer_encoding off;"
 				// in the http{} or location{} config scopes
 				header('HTTP/1.1 '.$this->status);
 			}
