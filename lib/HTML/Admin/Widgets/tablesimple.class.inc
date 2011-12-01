@@ -2,6 +2,11 @@
 
 class PXAdminTableSimple extends PXAdminWidget {
 
+	const DEFAULT_MODE      = 0;
+	const HIDEHEADER_MODE   = 1;
+	const HIDEFOOTER_MODE   = 2;
+	const BODY_MODE         = 3;
+
 	protected $cols;
 	protected $widths;
 
@@ -52,9 +57,9 @@ class PXAdminTableSimple extends PXAdminWidget {
 		$this->footer = $cells;
 	}
 
-        function setTableId($id = null) {
-                $this->tableId = $id ? $id : md5(microtime(1));
-        }
+	function setTableId($id = null) {
+		$this->tableId = $id ? $id : md5(microtime(1));
+	}
 
 	function htmlCaption() {
 		if(!strlen($this->caption)) {
@@ -166,19 +171,41 @@ class PXAdminTableSimple extends PXAdminWidget {
 		return $_;
 	}
 
-	function html() {
-		$_  = '';
+	function html($mode = self::DEFAULT_MODE) {
 
-		$_ .= $this->htmlHeader();
-		$_ .= $this->htmlBody();
-		$_ .= $this->htmlFooter();
+		$_  = '<table class="objects">';
+
+		$_ .= $this->htmlCaption();
+
+		switch ($mode) {
+			default:
+			case self::DEFAULT_MODE:
+				$_ .= $this->htmlCaption();
+				$_ .= $this->htmlHeader();
+				$_ .= $this->htmlBody();
+				$_ .= $this->htmlFooter();
+				break;
+			case self::HIDEHEADER_MODE:
+				$_ .= $this->htmlBody();
+				$_ .= $this->htmlFooter();
+				break;
+			case self::HIDEFOOTER_MODE:
+				$_ .= $this->htmlCaption();
+				$_ .= $this->htmlHeader();
+				$_ .= $this->htmlBody();
+				break;
+			case self::BODY_MODE:
+				$_ .= $this->htmlBody();
+				break;
+		}
+
+		$_ .= '</table>';
 
 		return $_;
 	}
 
 	function htmlHeader() {
-		$_  = '<table class="objects">';
-		$_ .= $this->htmlCaption();
+		$_ = '';
 
 		if(sizeof($this->widths)) {
 			$_ .= '<colgroup>';
@@ -218,7 +245,7 @@ class PXAdminTableSimple extends PXAdminWidget {
 			$_ .= '</tr></tfoot>';
 		}
 
-		return $_.'</table>';
+		return $_;
 	}
 }
 

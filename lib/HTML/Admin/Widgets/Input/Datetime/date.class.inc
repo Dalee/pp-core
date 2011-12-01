@@ -29,9 +29,9 @@ class PXInputDate extends PXInputDateTime {
 
 		$delim= '<span>/</span>';
 
-		$year  = new PXInputDropDown($this->name.'[year]',  $this->date['year'],  $years);
-		$month = new PXInputDropDown($this->name.'[month]', $this->date['month'], $monthes);
-		$day   = new PXInputDropDown($this->name.'[day]',   $this->date['day'],   $days);
+		$year  = new PXInputDropDown($this->name.'[year]',  (int)$this->date['year'],  $years);
+		$month = new PXInputDropDown($this->name.'[month]', (int)$this->date['month'], $monthes);
+		$day   = new PXInputDropDown($this->name.'[day]',   (int)$this->date['day'],   $days);
 
 
 		return $day->html().$delim.$month->html().$delim.$year->html();

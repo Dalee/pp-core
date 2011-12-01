@@ -3,7 +3,7 @@ class PXControlSubmit extends PXAdminWidget {
 	var $value;
 	var $name = NULL;
 
-	function PXControlSubmit($value, $name) {
+	function PXControlSubmit($value, $name = null) {
 		$this->value = $value;
 		$this->name = $name;
 	}

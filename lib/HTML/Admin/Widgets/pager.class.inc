@@ -121,8 +121,23 @@ class PXAdminPager extends PXAdminComplexWidget {
 		return $this->_pagerName . "_page";
 	}
 
+	public static function getPageParamByFormatId($formatId) {
+		return sprintf("%s_page", $formatId);
+	}
+
 	public static function getPerPageParamByFormatId($formatId) {
 		return sprintf("%s_per_page", $formatId);
 	}
+
+	public static function getPageByFormatId($formatId, $default = null) {
+		return PXRegistry::getRequest()->getGetVar(self::getPageParamByFormatId($formatId), $default);
+	}
+
+	public static function getPerPageByFormatId($formatId, $default = null) {
+		return PXRegistry::getRequest()->getGetVar(self::getPerPageParamByFormatId($formatId), $default);
+	}
+
+
+
 }
 ?>
