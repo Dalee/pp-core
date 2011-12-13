@@ -97,7 +97,7 @@ class PXResponse {
 	}
 
 	function isError() {
-		return $this->status != $this->STATUS_OK;
+		return ($this->status != $this->STATUS_OK) && ($this->status != $this->STATUS_NOT_MODIFIED);
 	}
 
 	function dontCache() {
