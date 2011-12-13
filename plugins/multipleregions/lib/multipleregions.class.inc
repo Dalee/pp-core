@@ -392,10 +392,16 @@ class PXMultiRegions {
 
 		if (isset($object['parent'])) {
 			$parentFormat = $this->db->types[$format->parent];
-
+			
 			$parent = $this->db->GetObjectById($parentFormat, $object['parent']);
 
-			# probably parent is hidden by regional filter
+			/* probably parent is hidden by regional filter
+				TODO/FIXME: возможно здесь логическая ошибка, которая проявляется при редактировании нерегиональным субобъектов, 
+				котороая проявляется в следующем: даже если мы имеем доступ к оригинальному родителю,
+				но в настоящий момент он скрыт региональным фильтиром (мы редактируем субобъект в регионе А, оригинальный региональный родитель
+				опубликован в регионе Б), мы не доходим до проверки доступа к родителю.
+				возможно, правильнее будет выключать региональный фильтр перед запросом $this->db->GetObjectById() выше и включать его обратно после ?
+			*/
 			if (!count($parent)) {
 				return false;
 			}
