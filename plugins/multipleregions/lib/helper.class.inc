@@ -67,7 +67,8 @@ class PXMultipleRegionsHelper {
 			return;
 		}
 
-		if (!isset($data->leafs[$rid]->content[$field]) && ($parent = $data->leafs[$rid]->parent())) {
+		if (!(isset($data->leafs[$rid]->content[$field]) && strlen($data->leafs[$rid]->content[$field])) && 
+		     ($parent = $data->leafs[$rid]->parent())) {
 			return self::getVarRecursive($field, $parent, $data);
 		}
 
