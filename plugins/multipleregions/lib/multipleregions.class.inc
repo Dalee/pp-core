@@ -394,6 +394,9 @@ class PXMultiRegions {
 			$parentFormat = $this->db->types[$format->parent];
 			$hasDisabled  = $this->isDisabled();
 
+			# если мы редактируем субобъект в регионе А, оригинальный региональный родитель опубликован в регионе Б, 
+			# мы всё равно должны загрузить его и проверить доступ текущего редактора к региону Б, 
+			# поэтому здесь происходит кратковременное отключение регионального фильтра
 			$this->disable();
 			$parent = $this->db->GetObjectById($parentFormat, $object['parent']);
 
