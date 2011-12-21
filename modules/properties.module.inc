@@ -1,4 +1,5 @@
 <?php
+require_once(BASEPATH."libpp/lib/XML/simplexml.classes.inc");
 class PXModuleProperties extends PXModule {
 	var $_settings;
 	var $_pseudoDatatype;
@@ -15,7 +16,8 @@ class PXModuleProperties extends PXModule {
 		$this->_pseudoDatatype->id     = 'properties';
 		$this->_pseudoDatatype->title  = 'Настройки сайта';
 
-		$arToObject = create_function('&$val, $key', '$val = (object)array("name" => $key, "value" => $val);');
+//		$dt->addAttribute('name', 'properties');
+//		$dt->addAttribute('title', "EE");
 
 		foreach((array) $this->_settings['attribute'] as $formatString){
 			$formatString = str_replace('|','&', $formatString);
@@ -33,8 +35,8 @@ class PXModuleProperties extends PXModule {
 				unset($dataDesc['source']);
 			}
 			$dataDesc['displaytype'] = str_replace(',','|', $dataDesc['displaytype']);
-			array_walk($dataDesc, $arToObject);
-			$field         = new PXFieldDescription(array_values($dataDesc), $this->app, $this->_pseudoDatatype);
+			$dataDesc = $this->preparationData($dataDesc);
+			$field         = new PXFieldDescription($dataDesc, $this->app, $this->_pseudoDatatype);
 			$field->listed = false;
 			if(isset($_tmpSource)){
 				$field->source = $_tmpSource;
@@ -45,7 +47,16 @@ class PXModuleProperties extends PXModule {
 			$this->_pseudoDatatype->assignToGroup($field);
 		}
 	}
-	
+
+	function preparationData($data) {
+		$attr = new SimpleXMLElement("<attribute/>");
+		foreach($data as $k => $v) {
+			$attr->addAttribute($k, $v);
+		}
+
+		return new PXmlSimplexmlNode($attr);
+	}
+
 	function _checkForErrors(){
 		if(!isset($this->_settings['attribute']) || !sizeof($this->_settings['attribute'])){
 			return "Сайт не предусматривает пользовательских настроек.";
@@ -76,10 +87,9 @@ class PXModuleProperties extends PXModule {
 		$db->loadDirectoriesByType($this->_pseudoDatatype, $propObject);
 		$objectForm = new PXAdminForm($propObject, $this->_pseudoDatatype);
 
-		$formToHtml = $objectForm->form();
-		$formToHtml = preg_replace("#<input .*?(?>name\s*=\s*('|\")area\\1).*?>#", '', $formToHtml); //FIXME: it's a hack, waiting for Widgets interface
-
-		$html = $this->_editArea($formToHtml);
+		$objectForm->setAction($this->request->getAction());
+		$objectForm->setTitle($this->_pseudoDatatype->title);
+		$html = $this->_editArea($objectForm->form());
 
 		$layout->Assign("INNER.0.0", $html);
 	}
@@ -104,7 +114,7 @@ class PXModuleProperties extends PXModule {
 				<input type="submit" class="button" value="Сохранить">
 			</form>
 HTML;
-	}
+}
 
 	function loadModel($filter = array()){
 		$object = array();
