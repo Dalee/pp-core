@@ -71,7 +71,7 @@ class PXAdminForm extends PXAdminComplexWidget {
 	}
 
 	function form() {
-		$this->mainForm();
+		return $this->mainForm();
 	}
 
 	static function EditTextFileForm($file, $dir) {
