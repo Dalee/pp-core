@@ -264,23 +264,21 @@ class PXMultiRegions {
 		}
 	}/*}}}*/
 
-	function setRid( $Rid = NULL ) {/*{{{*/
-		if ( ! is_null( $Rid ) ) {
-			$this->rid = $Rid;
-		}
-		else {
-			switch($this->context) {
-				case 'user':
-					$this->rid = $this->getUserRid();
-					break;
-				case 'admin':
-					$this->rid = $this->getAdminRid();
-					break;
-				case 'script':
-					$this->rid = '';
-					$this->disable();
-					break;
-			}
+	function setRid($Rid = NULL) {/*{{{*/
+		switch(array(isset($Rid), $this->context)) {
+			case array(true, true):
+				$this->rid = $Rid;
+				break;
+			case array(false, 'user'):
+				$this->rid = $this->getUserRid();
+				break;
+			case array(false, 'admin'):
+				$this->rid = $this->getAdminRid();
+				break;
+			case array(false, 'script'):
+				$this->rid = '';
+				$this->disable();
+				break;
 		}
 	}/*}}}*/
 	
