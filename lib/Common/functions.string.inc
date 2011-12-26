@@ -501,7 +501,7 @@ function multiLevelVarsToString($name, $arrayVars, $leaf=null, $num_save=false) 
 		$t[$k] = is_array($a) ? multiLevelVarsToString($name, $a, $t[$k], $num_save) : $name.$t[$k]."=".urlencode($a); 
 	}
 
-	return join ('&', $t);
+	return !empty($t) ? join ('&', $t) : '';
 }
 
 function generateRandomString($length) {
