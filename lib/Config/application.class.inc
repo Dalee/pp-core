@@ -230,11 +230,25 @@ class PXApplication {
 	/**
 	 * Возвращает ассоциативный массив доступных модулей.
 	 *
-	 * @param Integer $level название текущего раздела
 	 * @return Array         массив из элементов 'module_name' => $module
 	 */
 	public function getAvailableModules() {
 		return array_filter($this->modules, create_function('$module', "return PXRegistry::getUser()->can('admin', \$module);"));
+	}
+
+	/**
+	 * Возвращает ассоциативный массив доступных модулей.
+	 *
+	 * @param String $package путь пакаджа (например, "csv/import")
+	 * @return Array          массив из элементов 'module_name' => $module
+	 */
+	public function getAvailableModulesWithinPackage($package) {
+		$availableModules = $this->getAvailableModules();
+		if (empty($package)) {
+			return $availableModules;
+		}
+		// for 5.3: return array_filter($availableModules, function ($module) using $package { return 0 === strpos($module->package, $package); });
+		return array_filter($availableModules, create_function('$module', 'return 0 === strpos($module->package, "'.addslashes($package).'");'));
 	}
 
 	/**
