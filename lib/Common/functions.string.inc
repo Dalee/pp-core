@@ -1236,7 +1236,7 @@ function money2str($money, $stripkop=false) {
     $offset = sizeof($segments);
     if ((int)$rub== 0) { // если 0 рублей
         $o[] = $nol;
-        $o[] = morph( 0, $forms[1][ 0],$forms[1][1],$forms[1][2]);
+        $o[] = NumericEndingsRussian( 0, $forms[1][ 0],$forms[1][1],$forms[1][2]);
     }
     else {
         foreach ($segments as $k=>$lev) {
@@ -1264,28 +1264,15 @@ function money2str($money, $stripkop=false) {
                 elseif($r22> 0) $o[] = $sex[ $sexi ][$r3]; // 1-9
             }
             // Рубли
-            $o[] = morph($ri, $forms[$offset][ 0],$forms[$offset][1],$forms[$offset][2]);
+            $o[] = NumericEndingsRussian($ri, $forms[$offset][ 0],$forms[$offset][1],$forms[$offset][2]);
             $offset--;
         }
     }
     // Копейки
     if (!$stripkop) {
         $o[] = $kop;
-        $o[] = morph($kop,$forms[ 0][ 0],$forms[ 0][1],$forms[ 0][2]);
+        $o[] = NumericEndingsRussian($kop,$forms[ 0][ 0],$forms[ 0][1],$forms[ 0][2]);
     }
     return preg_replace("/\s{2,}/",' ',implode(' ',$o));
 }
-
-/**
- * Склоняем словоформу
- */
-function morph($n, $f1, $f2, $f5) {
-    $n = abs($n) % 100;
-    $n1= $n % 10;
-    if ($n>10 && $n<20) return $f5;
-    if ($n1>1 && $n1<5) return $f2;
-    if ($n1==1) return $f1;
-    return $f5;
-}
-
 ?>
