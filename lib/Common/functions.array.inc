@@ -323,7 +323,7 @@ function findNeighborElements(&$inList, $current, $circular = true) {
  * @param bool $strict	Использовать строгое (===) или нестрогое (==) сравнение
  * @param int $count	Максимальное количество возврщаемых строк
  * 
- * @return mixed	Строки, для которых в заданном столбце ячейка имеет заданное значение
+ * @return array	Таблица из строк, для которых в заданном столбце ячейка имеет заданное значение. Если ничего не найдено, то пустой массив.
  */
 function getRowsFromTable($array, $colName, $colValue, $strict = true, $count = INF) {
 	$found  = array();
@@ -348,17 +348,11 @@ function getRowsFromTable($array, $colName, $colValue, $strict = true, $count = 
 * @param mixed $colValue	Значение ячейки в этом столбце
 * @param bool $strict	Использовать строгое (===) или нестрогое (==) сравнение
 *
-* @return mixed	Строка, для которой в заданном столбце ячейка имеет заданное значение
+* @return array	Строка, для которой в заданном столбце ячейка имеет заданное значение, либо пустой массив в случае, если ничего не найдено.
 */
 function getRowFromTable($array, $colName, $colValue, $strict = true) {
-	$found  = array();
-	foreach($array as $row) {
-		if ($strict ? ($row[$colName] !== $colValue) : ($row[$colName] != $colValue) ) {
-			continue;
-		}
-		$found = $row;
-		break;
-	}
+	$found = getRowsFromTable($array, $colName, $colValue, $strict, 1);
+	count($found) && $found = reset($found);
 	return $found;
 }
 
