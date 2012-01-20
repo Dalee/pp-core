@@ -320,27 +320,46 @@ function findNeighborElements(&$inList, $current, $circular = true) {
  * @param array $array	Таблица
  * @param string $colName	Название столбца
  * @param mixed $colValue	Значение ячейки в этом столбце
- * @param int $count	Максимальное количество возврщаемых строк ($count <= 0 - вернуть все)
  * @param bool $strict	Использовать строгое (===) или нестрогое (==) сравнение
+ * @param int $count	Максимальное количество возврщаемых строк
  * 
- * @return mixed	Строка или строки, для которых в заданном столбце ячейка имеет заданное значение
+ * @return mixed	Строки, для которых в заданном столбце ячейка имеет заданное значение
  */
-function getRowsFromTable($array, $colName, $colValue, $count = 0, $strict = true) {
+function getRowsFromTable($array, $colName, $colValue, $strict = true, $count = INF) {
 	$found  = array();
 	$nFound = 0;
 	foreach($array as $idx => $row) {
-		if ($strict ? $row[$colName] !== $colValue : $row[$colName] != $colValue ) {
+		if ($strict ? ($row[$colName] !== $colValue) : ($row[$colName] != $colValue) ) {
 			continue;
 		}
 		$found[$idx] = $row;
-		$nFound++;
-		if($count > 0 && $nFound >= $count){
+		if(++$nFound >= $count){
 			break;
 		}
 	}
-	$count == 1 && $found = reset($found);
 	return $found;
 }
 
+/**
+* Поиск строк в таблице по значению одного из столбцов
+*
+* @param array $array	Таблица
+* @param string $colName	Название столбца
+* @param mixed $colValue	Значение ячейки в этом столбце
+* @param bool $strict	Использовать строгое (===) или нестрогое (==) сравнение
+*
+* @return mixed	Строка, для которой в заданном столбце ячейка имеет заданное значение
+*/
+function getRowFromTable($array, $colName, $colValue, $strict = true) {
+	$found  = array();
+	foreach($array as $row) {
+		if ($strict ? ($row[$colName] !== $colValue) : ($row[$colName] != $colValue) ) {
+			continue;
+		}
+		$found = $row;
+		break;
+	}
+	return $found;
+}
 
 ?>
