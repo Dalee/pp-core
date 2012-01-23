@@ -17,12 +17,17 @@ class PXResponse {
 		$this->addHeader('X-Powered-By', 'Proxima Portal '.PP_VERSION);
 
 		$this->status = $this->STATUS_OK;
-		$this->cache(PXRegistry::getApp()->GetProperty('PP_RESPONSE_CACHE_EXPIRATION', 3600));
+
 		try {
-			$charset = PXRegistry::getApp()->GetProperty('OUTPUT_CHARSET', DEFAULT_CHARSET);
+			$app       = PXRegistry::getApp(); // APP may not be initialized yet and throws exception
+			$charset   = $app->GetProperty('OUTPUT_CHARSET', DEFAULT_CHARSET);
+			$cacheTime = $app->GetProperty('PP_RESPONSE_CACHE_EXPIRATION', 3600);
 		} catch (Exception $e) {
-			$charset = DEFAULT_CHARSET;
+			$charset   = DEFAULT_CHARSET;
+			$cacheTime = 3600;
 		}
+
+		$this->cache($cacheTime);
 		$this->setContentType('text/html', $charset);
 	}
 
