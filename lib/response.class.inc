@@ -5,6 +5,7 @@ class PXResponse {
 	var $STATUS_NOT_MODIFIED            = '304 Not Modified';
 	var $STATUS_NOT_FOUND               = '404 Not Found';
 	var $STATUS_FORBIDDEN               = '403 Forbidden';
+	var $STATUS_INTERNAL_ERROR          = '500 Internal Server Error';
 	var $STATUS_NOT_IMPLEMENTED         = '501 Not Implemented';
 	var $STATUS_TEMPORARILY_UNAVAILABLE = '503 Service Temporarily Unavailable';
 
@@ -16,7 +17,7 @@ class PXResponse {
 		$this->addHeader('X-Powered-By', 'Proxima Portal '.PP_VERSION);
 
 		$this->status = $this->STATUS_OK;
-		$this->cache(3600);
+		$this->cache(PXRegistry::getApp()->GetProperty('PP_RESPONSE_CACHE_EXPIRATION', 3600));
 		try {
 			$charset = PXRegistry::getApp()->GetProperty('OUTPUT_CHARSET', DEFAULT_CHARSET);
 		} catch (Exception $e) {
@@ -72,6 +73,10 @@ class PXResponse {
 		$this->headers[$name] = $value;
 	}
 
+	function removeHeader($name) {
+		unset($this->headers[$name]);
+	}
+
 	function setOk() {
 		$this->status = $this->STATUS_OK;
 	}
@@ -88,22 +93,37 @@ class PXResponse {
 		$this->status = $this->STATUS_FORBIDDEN;
 	}
 	
+	# Do nothing with cache for 500s answers at Proxima side
+	function internalError() {
+		$this->status = $this->STATUS_INTERNAL_ERROR;
+		$this->noCache();
+	}
+	
 	function notImplemented() {
 		$this->status = $this->STATUS_NOT_IMPLEMENTED;
+		$this->noCache();
 	}
 	
 	function unavailable(){
 		$this->status = $this->STATUS_TEMPORARILY_UNAVAILABLE;
+		$this->noCache();
 	}
 
 	function isError() {
 		return ($this->status != $this->STATUS_OK) && ($this->status != $this->STATUS_NOT_MODIFIED);
 	}
 
+	# Cache management
 	function dontCache() {
 		$this->addHeader('X-Accel-Expires',  0);
 		$this->addHeader('Cache-Control', 'no-store, no-cache, must-revalidate, post-check=0, pre-check=0');
 		$this->addHeader('Expires', DateUnixToGMT());
+	}
+
+	function noCache() { // not sure about caching behaviour, make upstream server responsible for this
+		$this->removeHeader('X-Accel-Expires');
+		$this->removeHeader('Cache-Control');
+		$this->removeHeader('Expires');
 	}
 
 	function cache($timeOut = 3600, $xae = null) {
