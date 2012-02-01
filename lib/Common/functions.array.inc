@@ -329,7 +329,7 @@ function getRowsFromTable($array, $colName, $colValue, $strict = true, $count = 
 	$found  = array();
 	$nFound = 0;
 	foreach($array as $idx => $row) {
-		if ($strict ? ($row[$colName] !== $colValue) : ($row[$colName] != $colValue) ) {
+		if (!array_key_exists($colName, $row) || ($strict ? ($row[$colName] !== $colValue) : ($row[$colName] != $colValue))) {
 			continue;
 		}
 		$found[$idx] = $row;
