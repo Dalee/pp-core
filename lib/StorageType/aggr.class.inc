@@ -1,22 +1,32 @@
 <?php
-
+/**
+ * "Виртуальное" поле - агрегатор для различных полей объекта
+ * нигде не хранится, значение вычисляется в параметрических методах (можно указывать свои локальные функции-агрегаторы)
+ *
+ * displayType - various (ex. STATIC)
+ * storageType virtual
+ * storageTypeArgs - aggregator_name|aggregator_arg1|aggregator_arg2|...
+ * Пример вычисления CTR для adbanner datatype:
+ * <attribute name="ctr" description="CTR" storagetype="aggr|div_percent|clicks|shows" displaytype="STATIC" defaultvalue="0" />
+ */
 class PXStorageTypeAggr extends PXStorageTypeVirtual {
 
 	public function normalize($field, $object, &$param) {
 
 		$args = $field->storageTypeArgs;
-		if (empty($args)) return "";
+		$res  = parent::normalize($field, $object, $param);
+		
+		if (empty($args)) {
+			return $res;
+		}
 
 		$cb = array_shift($args);
-		$args[0] = isset($object[$args[0]]) ? $object[$args[0]] : "";
-		$args[1] = isset($object[$args[1]]) ? $object[$args[1]] : "";
+		array_unshift($args, $object);
 
-		$res = null;
-		if (is_callable(array($this, sprintf("aggr_%s", $cb)), false)) {
-			$cb = array($this, sprintf("aggr_%s", $cb));
-			$res = call_user_func_array($cb, $args);
+		if (is_callable($_ = array($this, "aggr_" . $cb))) {
+			$res = call_user_func_array($_, $args);
 		} else if (is_callable($cb)) {
-			$res = call_user_func_array($cb, $args);
+			$res = call_user_func_array($cb, $args); // for local project custom aggregators
 		}
 
 		return $res;
@@ -29,8 +39,8 @@ class PXStorageTypeAggr extends PXStorageTypeVirtual {
 	 * @param type $c the third arg: precision
 	 * @return float
 	 */
-	protected function aggr_div($a, $b, $c = 2) {
-		return (empty($a) || empty($b)) ? 0.0 : round($a/$b, (int)$c);
+	protected function aggr_div($object, $a, $b, $c = 2) {
+		return (empty($object[$a]) || empty($object[$b])) ? 0.0 : round($object[$a]/$object[$b], (int)$c);
 	}
 	
 	/**
@@ -40,8 +50,8 @@ class PXStorageTypeAggr extends PXStorageTypeVirtual {
 	 * @param type $c the third arg: precision
 	 * @return float
 	 */
-	protected function aggr_div_percent($a, $b, $c = 2) {
-		return $this->aggr_div($a, $b, (int)$c + 2) * 100 . '%';
+	protected function aggr_div_percent($object, $a, $b, $c = 2) {
+		return $this->aggr_div($object, $a, $b, (int)$c + 2) * 100 . '%';
 	}
 }
 

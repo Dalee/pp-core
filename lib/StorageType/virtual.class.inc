@@ -1,10 +1,9 @@
 <?php
 /**
  * "Виртуальное" поле
- * нигде не хранится, значение берется или из значения по умолчанию ($field->defaultValue)
- * или позже вычисляется в PXOutputHandler'ах
+ * нигде не хранится, значение берется из значения по умолчанию ($field->defaultValue)
  *
- * displayType STATIC
+ * displayType - various (ex. STATIC)
  * storageType virtual
  */
 class PXStorageTypeVirtual extends PXStorageType {
