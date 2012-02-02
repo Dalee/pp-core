@@ -67,10 +67,12 @@ class PXMultipleRegionsHelper {
 			return;
 		}
 
-		// what does it mean?
-		// btw fixme: $data->leafs[$rid]->content[$field] can be an array. strlen(array()) generates Notice!
-		if (!(isset($data->leafs[$rid]->content[$field]) && strlen($data->leafs[$rid]->content[$field])) && 
-		     ($parent = $data->leafs[$rid]->parent())) {
+		if (!(isset($data->leafs[$rid]->content[$field]) && 
+				is_scalar($data->leafs[$rid]->content[$field]) ? 
+				strlen($data->leafs[$rid]->content[$field]) : 
+				!empty($data->leafs[$rid]->content[$field])) && 
+			($parent = $data->leafs[$rid]->parent())) {
+
 			return self::getVarRecursive($field, $parent, $data);
 		}
 
