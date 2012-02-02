@@ -19,7 +19,7 @@ class PXTypeDescription {
 	var $dTypes        = array();
 	var $struct        = 'plain';
 	var $byDefault     = NULL;
-	var $outputHandler = NULL;
+	var $outputHandler = NULL; # REMOVEME ! This option is deprecated and will be removed in the future.
 
 	function parentType() {
 		return PXRegistry::getTypes($this->parent);
@@ -199,7 +199,7 @@ class PXTypeDescription {
 				case 'parent'        : $this->parent        = $attr->value; break;
 				case 'bydefault'     : $this->byDefault     = $this->_mapByDefaults($attr->value); break;
 				case 'struct'        : $this->struct        = $attr->value; break;
-				case 'outputhandler' : $this->outputHandler = $attr->value; break;
+				case 'outputhandler' : $this->outputHandler = $attr->value; break; # Deprecated !
 
 				default              : d2("Unknown attr name: ".$attr->name); break;
 			}

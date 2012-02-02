@@ -1604,7 +1604,12 @@ SQL;
 					$table[$k][OBJ_FIELD_CHILDREN] = array();
 				}
 			}
-			if (isset($format->outputHandler)) { //TODO: make trigger here instead of obsoleted handlers !
+			/*
+			 * TODO: make trigger here instead of obsoleted handlers !
+			 * output handlers are deprecated !
+			*/
+			
+			if (isset($format->outputHandler)) {
 				$file = strtolower($format->outputHandler).'.outputhandler.inc';
 				if (file_exists(BASEPATH.'/local/lib/handlers/'.$file)) {
 					include_once BASEPATH.'/local/lib/handlers/'.$file;
