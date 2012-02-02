@@ -80,7 +80,7 @@ class PXCronRunReadBSLog extends PXAbstractCronRun {
 		while (false !== ($file = readdir($handle))) {
 			WorkProgress();
 
-			if (preg_match('/^log\.(\d+)/', $file, $match)) {
+			if (preg_match('/^log\.(\d+\.\d+)$/', $file, $match)) {
 				$this->files[$match[1]] = BASEPATH.$this->BS_OUT_DIR.$file;
 			}
 		}
