@@ -13,8 +13,8 @@ class PXErrorReporterHTML extends PXErrorReporter {
 
 	function fatalWarning($error) {
 		$response    = & PXResponse::getInstance();
-		$host        = PXRequest::GetHttpHost();
-		$uri         = urldecode(PXRequest::GetRequestUri());
+		$host        = quot(PXRequest::GetHttpHost());
+		$uri         = quot(urldecode(PXRequest::GetRequestUri()));
 		$response->unavailable();
 		$response->send(<<<HTML
 			<html>
@@ -172,9 +172,9 @@ HTML;
 	}
 
 	function environmentsUris() {
-		$requestUri  = PXRequest::GetHttpProto().'://'.PXRequest::GetHttpHost().urldecode(PXRequest::GetRequestUri());
+		$requestUri  = PXRequest::GetHttpProto().'://'.quot(PXRequest::GetHttpHost()).quot(urldecode(PXRequest::GetRequestUri()));
 		$remoteAddr  = PXRequest::GetRemoteAddr();
-		$httpReferer = urldecode(PXRequest::GetHttpReferer());
+		$httpReferer = quot(urldecode(PXRequest::GetHttpReferer()));
 
 		return <<<HTML
 			<dt>RequestUri:</dt>
