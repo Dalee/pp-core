@@ -31,26 +31,7 @@ class PXEngineJSON extends PXEngine {
 	}
 	
 	public static function jsonEncodeCyr($object) {
-		if (is_array($object)) {
-			$encoded = array();
-
-			foreach ($object as $k => $v) {
-				$encoded[self::jsonEncodeCyr($k)] = self::jsonEncodeCyr($v);
-			}
-			$object = $encoded;
-
-		} elseif (is_object($object)) {
-			$vars = get_object_vars($object);
-
-			foreach ($vars as $m => $v) {
-				$object->$m = self::jsonEncodeCyr($v);
-			}
-
-		} elseif (is_string($object)) {
-			$object = myconv('k', 'u', $object);
-		}
-
-		return $object;
+		return convertCyrillicObjectToUtf($object);
 	}
 	
 	// Common data encoders for library methods standardization
