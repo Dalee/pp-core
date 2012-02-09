@@ -1281,7 +1281,7 @@ function convertCyrillicObjectToUtf($object, $from_charset = 'k') {
 		$encoded = array();
 
 		foreach ($object as $k => $v) {
-			$encoded[self::jsonEncodeCyr($k)] = self::jsonEncodeCyr($v);
+			$encoded[convertCyrillicObjectToUtf($k)] = convertCyrillicObjectToUtf($v);
 		}
 		$object = $encoded;
 
@@ -1289,7 +1289,7 @@ function convertCyrillicObjectToUtf($object, $from_charset = 'k') {
 		$vars = get_object_vars($object);
 
 		foreach ($vars as $m => $v) {
-			$object->$m = self::jsonEncodeCyr($v);
+			$object->$m = convertCyrillicObjectToUtf($v);
 		}
 
 	} elseif (is_string($object)) {
