@@ -3,11 +3,12 @@
  * Базовый класс для работы с файлами
  */
 class PXStorageTypeAbstractFile extends PXStorageType {
-	function &_getCache(){
+
+	function _getCache(){ //REMOVEME: Obsoleted and unused feature.
 		static $aiCache;
 		$pid = getmypid(); //cronjob protection
 		if(!isset($aiCache[$pid])){
-			$db = & PXRegistry::getDb(); //FIXME: possibly unsafe DB link getter
+			$db = PXRegistry::getDb(); //FIXME: possibly unsafe DB link getter
 			$cacheType     = isset($db->selfDescription->aicache) ? $db->selfDescription->aicache : 'null';
 			$aiCache[$pid] = ObjectCache::get($cacheType, 'ai', 24 * 60 * 60);
 		}
@@ -37,18 +38,15 @@ class PXStorageTypeAbstractFile extends PXStorageType {
 	}
 
 	function getFromCache($key){
-		$cache = & PXStorageTypeAbstractFile::_getCache();
-		return $cache->load($key);
+		return self::_getCache()->load($key);
 	}
 	
 	function removeFromCache($key){
-		$cache = & PXStorageTypeAbstractFile::_getCache();
-		$cache->delete($key);
+		self::_getCache()->delete($key);
 	}
 	
 	function saveToCache($key, $data){
-		$cache = & PXStorageTypeAbstractFile::_getCache();
-		$cache->save($key, array($data));
+		self::_getCache()->save($key, array($data));
 		return $data;
 	}
 	
@@ -62,6 +60,7 @@ class PXStorageTypeAbstractFile extends PXStorageType {
 		foreach(PXRegistry::getApp()->triggers->{'storagetype'} as $t) {
 			$t->getTrigger()->normalizeFilePath($field, $object, $params);
 		}
+
 		return '/ai/' . implode('/', $params) . '/';
 	}
 	
@@ -81,6 +80,7 @@ class PXStorageTypeAbstractFile extends PXStorageType {
 		return $normalizedObject;
 	}
 
+	// Template method
 	function __normalize(){
 		FatalError(get_class($this)."::__normalize() doesn't exists !");
 	}
@@ -90,15 +90,7 @@ class PXStorageTypeAbstractFile extends PXStorageType {
 	}
 
 	function copyFile($field, $src, $dest) {
-		if (count($field->storageTypeArgs) > 1) {
-			
-			$width  = $field->storageTypeArgs[0];
-			$height = $field->storageTypeArgs[1];
-			GDImageResize($src, $dest, $width, $height);
-			
-		} else {
-			copy($src, $dest);
-		}
+		copy($src, $dest);
 	}
 }
 ?>

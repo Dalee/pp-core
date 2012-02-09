@@ -10,6 +10,7 @@
  * storageType imagesarray
  */
 class PXStorageTypeImagesarray extends PXStorageTypeFilesarray {
+	//FIXME: Remove possible static usage of this method from projects !
 	function proceedFile($field, &$object, &$param, $allowed=ENUM_ALLOWED_IMAGETYPES) {
 		$param['allowed'] = unserialize($allowed);
 		return parent::proceedFile($field, $object, $param);
@@ -17,7 +18,7 @@ class PXStorageTypeImagesarray extends PXStorageTypeFilesarray {
 
 	function __normalize($field, $object, &$param) {
 		$imagesArray = array();
-		$basedir     = parent::ai($field, $object, $param['format']);;
+		$basedir     = $this->ai($field, $object, $param['format']);;
 
 		$d = new NLDir(HTDOCS_PATH . $basedir);
 

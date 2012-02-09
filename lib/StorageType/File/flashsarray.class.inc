@@ -10,6 +10,7 @@
  * storageType flashsarray
  */
 class PXStorageTypeFlashsarray extends PXStorageTypeImagesarray {
+	//FIXME: Remove possible static usage of this method from projects !
 	function proceedFile($field, &$object, &$param) {
 		return parent::proceedFile($field, $object, $param, ENUM_ALLOWED_FLASHTYPES);
 	}

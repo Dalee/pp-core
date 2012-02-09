@@ -8,6 +8,7 @@
  * storageType image
  */
 class PXStorageTypeImage extends PXStorageTypeFile {
+	//FIXME: Remove static usage of this method from projects !
 	function proceedFile($field, &$object, &$param, $allowed=ENUM_ALLOWED_IMAGETYPES) {
 		$param['allowed'] = unserialize($allowed);
 		return parent::proceedFile($field, $object, $param);
@@ -15,7 +16,7 @@ class PXStorageTypeImage extends PXStorageTypeFile {
 
 	function __normalize($field, $object, &$param, $allowed) {
 		$allowedImageTypes = array_unique(unserialize(is_null($allowed) ? ENUM_ALLOWED_IMAGETYPES : $allowed));
-		$basedir           = parent::ai($field, $object, $param['format']);
+		$basedir           = $this->ai($field, $object, $param['format']);
 		$tmp               = glob(HTDOCS_PATH . $basedir . '/*');
 
 		if (!count($tmp)) {
@@ -40,6 +41,16 @@ class PXStorageTypeImage extends PXStorageTypeFile {
 			'width'  => isset($width)    ? $width    : NULL,
 			'height' => isset($height)   ? $height   : NULL
 		);
+	}
+
+	function copyFile($field, $src, $dest) {
+		if (count($field->storageTypeArgs) == 2) { //REMOVEME: This is obsoleted and deprecated feature !
+			$width  = $field->storageTypeArgs[0];
+			$height = $field->storageTypeArgs[1];
+			GDImageResize($src, $dest, $width, $height);
+		} else {
+			parent::copyFile($field, $src, $dest);
+		}
 	}
 }
 ?>

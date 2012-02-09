@@ -8,10 +8,13 @@
  * storageType file
  */
 class PXStorageTypeFile extends PXStorageTypeAbstractFile {
-	//FIXME: make me static
+	//FIXME: Remove static usage of this method from projects !
 	function proceedFile($field, &$object, &$param) {
+		$is_static_call  = !isset($this); //see FIXME above
 		$fileArray       = &$object[$field->name];
-		$ai              = parent::ai($field, $object, $param['format']);
+		$ai              = $is_static_call ?
+		                      self::ai($field, $object, $param['format']) :
+		                      $this->ai($field, $object, $param['format']);
 		$basedir         = HTDOCS_PATH . $ai;
 		$filename        = null;
 		$invalidateCache = false;
@@ -40,7 +43,9 @@ class PXStorageTypeFile extends PXStorageTypeAbstractFile {
 							unlink($basedir.$entry);
 						}
 					}
-					parent::copyFile($field, $fileArray['tmp_name'], $basedir.$filename);
+					$_ = $is_static_call ?
+						self::copyFile($field, $fileArray['tmp_name'], $basedir.$filename) :
+						$this->copyFile($field, $fileArray['tmp_name'], $basedir.$filename);
 
 					$invalidateCache = true;
 				}
@@ -55,17 +60,19 @@ class PXStorageTypeFile extends PXStorageTypeAbstractFile {
 				}
 			}
 		}
+
 		if($invalidateCache){
-			parent::removeFromCache($ai);
+			$_ = $is_static_call ? self::removeFromCache($ai) : $this->removeFromCache($ai);
 		}
-		if (method_exists($this, "normalize")) {
+
+		if (!$is_static_call) {
 			$fileArray = $this->normalize($field, $object, $param);
 		}
 	}
 
 	function __normalize($field, $object, &$param) {
 		$fileName = NULL;
-		$basedir  = parent::ai($field, $object, $param['format']);
+		$basedir  = $this->ai($field, $object, $param['format']);
 		$d        = new NLDir(HTDOCS_PATH . $basedir);
 
 		if ($d->Exist()) {
