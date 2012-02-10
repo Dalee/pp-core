@@ -58,7 +58,7 @@ function d2_type2string($v) {
 		case 'object':
 			$d = 'Object '.get_class($v);
 			while(($v = get_parent_class($v)) !== false) {
-				$d .= ' extend '.$v;
+				$d .= ' extends '.$v;
 			}
 			return $d;
 			break;
@@ -95,11 +95,19 @@ function d2_shortObject($variable) {
 
 	$showAble = new stdClass;
 
+	$showAble->__class = d2_type2string($variable);
+
 	$methods = array();
 	foreach(get_class_methods($variable) as $k=>$v) {
-		$methods[] = $v;
+		$method = new ReflectionMethod(get_class($variable), $v);
+		$name = $method->getDeclaringClass()->getName() . ($method->isStatic()?'::':'->') . $method->getName() . ($method->isFinal()?' !':($method->isAbstract()?' ?':''));
+		$params = array();
+		foreach ($method->getParameters() as $param) {
+			$params[] = '$' . $param->getName() . ($param->isDefaultValueAvailable() ? ' = ' . var_export($param->getDefaultValue(), 1) : '');
+		}
+		$methods[] = $name . ' (' . join(', ', $params) . ')';
 	}
-	$showAble->_methods = $methods;
+	$showAble->__methods = $methods;
 
 	foreach(get_object_vars($variable) as $k=>$v) {
 		$showAble->$k = d2_type2string($v);
@@ -121,6 +129,12 @@ function d2_encode($dump) {
 	return $dump;
 }
 
+function D20() {
+	for ($i=0, $l=func_num_args(); $i<$l; $i++) {
+		D2(func_get_arg($i), false);
+	}
+}
+
 function D2($variable, $full=true) {
 	$dump = d3($variable, $full);
 
@@ -140,13 +154,17 @@ function D3($variable, $full=true) {
 		case !$full && is_object($variable):
 			$variable = d2_shortObject($variable);
 			break;
+
+		case !$full && is_null($variable) || is_bool($variable):
+			$variable = d2_type2string($variable);
+			break;
+
+		case $full && is_object($variable):
+			//$variable->
+			break;
 	}
 
-	if(is_null($variable) || is_bool($variable)) {
-		$variable = d2_type2string($variable);
-	}
-
-	$dump = print_r($variable, true);
+	$dump = $full ? var_export($variable, 1) : print_r($variable, 1);
 	$dump = d2_encode($dump);
 
 	return $dump;
