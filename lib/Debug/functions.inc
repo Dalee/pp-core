@@ -96,16 +96,23 @@ function d2_shortObject($variable) {
 	$showAble = new stdClass;
 
 	$showAble->__class = d2_type2string($variable);
+	$classref = new ReflectionClass($variable);
 
 	$methods = array();
-	foreach(get_class_methods($variable) as $k=>$v) {
-		$method = new ReflectionMethod(get_class($variable), $v);
-		$name = $method->getDeclaringClass()->getName() . ($method->isStatic()?'::':'->') . $method->getName() . ($method->isFinal()?' !':($method->isAbstract()?' ?':''));
+	foreach ($classref->getMethods(ReflectionMethod::IS_PUBLIC | ReflectionMethod::IS_PROTECTED) as $k=>$v) {
+		$method = new ReflectionMethod($classref->getName(), $v->getName());
+		$name = ($method->isPrivate() || $method->isProtected() ? '-' : '') . // access
+		        ($method->returnsReference()?'&':'') .
+		        $method->getDeclaringClass()->getName() . ($method->isStatic()?'::':'->') . $method->getName() .
+		        ($method->isFinal()?' !':($method->isAbstract()?' ?':''));
 		$params = array();
 		foreach ($method->getParameters() as $param) {
-			$params[] = '$' . $param->getName() . ($param->isDefaultValueAvailable() ? ' = ' . var_export($param->getDefaultValue(), 1) : '');
+			$params[] = ' ' . ($param->isArray() ? 'array ' : (($paramType = $param->getClass()) ? $paramType->getName() . ' ' : '')) .
+			            ($param->isPassedByReference()?'&':'') . '$' . $param->getName() .
+			            ($param->isDefaultValueAvailable() ? ' = ' . var_export($param->getDefaultValue(), 1) : '');
 		}
-		$methods[] = $name . ' (' . join(', ', $params) . ')';
+		$fileinfo = ' :'.$method->getStartLine(); // ' -- '.str_replace(realpath(BASEPATH),'',realpath($method->getFileName())).':'.$method->getEndLine();
+		$methods[] = $name . ' (' . join(',', $params) . ' )' . $fileinfo;
 	}
 	$showAble->__methods = $methods;
 
@@ -158,12 +165,9 @@ function D3($variable, $full=true) {
 		case !$full && is_null($variable) || is_bool($variable):
 			$variable = d2_type2string($variable);
 			break;
-
-		case $full && is_object($variable):
-			//$variable->
-			break;
 	}
 
+	// little protection for slowly recusrions
 	$dump = $full ? var_export($variable, 1) : print_r($variable, 1);
 	$dump = d2_encode($dump);
 
