@@ -70,7 +70,7 @@ abstract class PXEngine {
 	}
 
 	function initModules() {
-		$rArea = $this->request->getVar('area');
+		$rArea = $this->request->getArea();
 
 		if(!isset($this->app->modules[$rArea])) {
 			Finalize('/');
@@ -94,6 +94,12 @@ abstract class PXEngine {
 
 	public function engineClass(){
 		return PX_ENGINE_USER;
+	}
+
+	function checkArea($area) {
+		if (!isset($this->modules[$area])) {
+			FatalError('Некорректный параметр area = <em>' . strip_tags($this->area) . '</em>');
+		}
 	}
 }
 ?>

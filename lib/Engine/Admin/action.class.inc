@@ -3,16 +3,14 @@ class PXEngineAdminAction extends PXEngineAdmin {
 	var $nextLocation;
 
 	function initModules() {
-		$this->modules = $this->app->getAvailableModules();
-		$this->area    = $this->request->getArea(current(array_keys($this->modules)));
+		$this->area    = $this->request->getArea();
+		$this->modules = array($this->area => $this->app->getAvailableModule($this->area));
 	}
 
 	function runModules() {
 		PXProfiler::begin('RUN MODULES');
 
-		if (!isset($this->modules[$this->area])) {
-			FatalError('Некорректный параметр area = <em>'.htmlspecialchars($this->area).'</em>');
-		}
+		$this->checkArea($this->area);
 
 		$instance = $this->modules[$this->area]->getModule();
 		$this->nextLocation = $instance->adminAction();

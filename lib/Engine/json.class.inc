@@ -8,9 +8,7 @@ class PXEngineJSON extends PXEngine {
 	}
 
 	function runModules() {
-		$module_name = $this->request->getVar('area');
-
-		$module = $this->app->modules[$module_name]->getModule();
+		$module = $this->modules[$this->area]->getModule();
 
 		$response =& PXResponse::getInstance();
 		$response->dontCache();

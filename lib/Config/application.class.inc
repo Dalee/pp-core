@@ -237,6 +237,15 @@ class PXApplication {
 	}
 
 	/**
+	 * Возвращает модуль по его имени с проверкой доступа к нему.
+	 *
+	 * @return PXModule модуль
+	 */
+	public function getAvailableModule($module_name) {
+		return isset($this->modules[$module_name]) && PXRegistry::getUser()->can('admin', $this->modules[$module_name]) ? $this->modules[$module_name] : null;
+	}
+
+	/**
 	 * Возвращает ассоциативный массив доступных модулей.
 	 *
 	 * @param String $package путь пакаджа (например, "csv/import")

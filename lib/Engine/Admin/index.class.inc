@@ -2,8 +2,9 @@
 class PXEngineAdminIndex extends PXEngineAdmin {
 	var $menu;
 
-	var $layout      = array('factory' => 'PXAdminHTMLLayout', 'helper' => true);
-	var $outerLayout = 'index';
+	var $layout                 = array('factory' => 'PXAdminHTMLLayout', 'helper' => true);
+	var $outerLayout            = 'index';
+	protected $templateMainArea = 'INNER.0.0';
 
 	function initLayout($klass){
 		$this->layout = new $klass($this->outerLayout, $this->app->types);
@@ -48,7 +49,7 @@ class PXEngineAdminIndex extends PXEngineAdmin {
 	function checkArea($area) {
 		if (!isset($this->modules[$area])) {
 			$this->layout->setOneColumn();
-			$this->layout->assignError('INNER.0.0', 'Некорректный параметр <em>area</em> = <em>'.strip_tags($area).'</em>');
+			$this->layout->assignError($this->templateMainArea, 'Некорректный параметр <em>area</em> = <em>' . strip_tags($area) . '</em>');
 			$this->layout->assignTitle('Некорректный параметр area');
 			return false;
 		}
@@ -65,19 +66,19 @@ class PXEngineAdminIndex extends PXEngineAdmin {
 			return $this->showAuthForm();
 		}
 
-		$area = htmlspecialchars($this->request->getArea(current(array_keys($this->menu))));
-		$this->fillLayout($area);
+		$this->area = $this->request->getArea(current(array_keys($this->menu)));
+		$this->fillLayout($this->area);
 
-		if($area == 'exit') {
+		if($this->area == 'exit') {
 			$response =& PXResponse::getInstance();
 			$response->redirect('action.phtml?area=auth&action=exit');
 		}
 
-		if(!$this->checkArea($area)) {
+		if(!$this->checkArea($this->area)) {
 			return;
 		}
 
-		$instance = $this->modules[$area]->getModule()->adminIndex();
+		$instance = $this->modules[$this->area]->getModule()->adminIndex();
 
 		PXProfiler::end();
 	}

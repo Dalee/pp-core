@@ -1,12 +1,15 @@
 <?php
 class PXEngineAdminJSON extends PXEngineJSON {
-	function __construct(){
+	function __construct() {
 		parent::__construct();
 	}
-	
+
 	function initModules() {
+		$this->area    = $this->request->getArea();
+		$this->modules = array($this->area => $this->app->getAvailableModule($this->area));
+		$this->checkArea($this->area);
 	}
-	
+
 	function getJson($module) {
 		return $module->adminJson();
 	}
