@@ -1,10 +1,6 @@
 <?php
 class PXAbstractCronRun {
-	var $name;
-
-	function PXAbstractCronRun() {
-		$this->name = 'Abstract CronRun Class';
-	}
+	public $name = 'Abstract CronRun Class';
 
 	function Run(&$app, &$db, &$tree, $matchedTime, $matchedRule) {
 		return array(
