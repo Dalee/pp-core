@@ -132,13 +132,9 @@ class PXUserHTMLLang {
 	}
 
 	function _dateWeekdaysReplaces($time) {
-		$weekDay = strftime('%w', $time);
-		//	воскресенье == 0, между прочим
-		if($weekDay==='0') {
-			$weekDay = 7;
-		}
-		$short = $this->_get('weekdays.short');
-		$full  = $this->_get('weekdays'); 
+		$weekDay = strftime('%u', $time);
+		$short   = $this->_get('weekdays.short');
+		$full    = $this->_get('weekdays'); 
 
 		return array(
 			'%a' => $short[$weekDay -1],
