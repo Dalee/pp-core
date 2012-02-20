@@ -10,6 +10,11 @@ class PXEngineAdminAction extends PXEngineAdmin {
 	function runModules() {
 		PXProfiler::begin('RUN MODULES');
 
+		// For correct user login expiration handling
+		if (!$this->user->isAdmin()) {
+			return;
+		}
+
 		$this->checkArea($this->area);
 
 		$instance = $this->modules[$this->area]->getModule();
