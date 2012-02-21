@@ -283,14 +283,14 @@ function array_flat($array, $toKey = false, $toValue = false) {
 * @param bool	$circular	Считать ли последний элемент соседом первого.
 * @return array Список из двух элементов - предыдущего и последующего.
 */
-function findNeighborElements(&$inList, $current, $circular = true) {
+function findNeighborElements(&$inList, $current, $circular = true, $strict = true) {
 
 	$found = false;
 	$pos   = 0;
 
 	foreach($inList as $element) {
 		$pos++;
-		if ( $current === $element) {
+		if ($strict ? $current === $element : $current == $element) {
 			$found = true;
 			break;
 		}
