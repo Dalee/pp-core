@@ -47,13 +47,13 @@ HTML
 		try {
 			$app         = PXRegistry::getApp(); // APP may not be initialized yet and throws exception
 			$errorRepDir = $app->GetProperty('PP_ERROR_REPORTER_ANTIFLOOD_DIR', 'error_reporter');
-			$cacheTime   = $app->GetProperty('PP_ERROR_REPORTER_ANTIFLOOD_LAG', 30);
+			$cacheTime   = (int)$app->GetProperty('PP_ERROR_REPORTER_ANTIFLOOD_LAG', 30);
 		} catch (Exception $e) {
 			$errorRepDir = 'error_reporter';
 			$cacheTime   = 30;
 		}
 		
-		if (empty($cacheTime)) {
+		if (empty($cacheTime) || empty($errorRepDir)) {
 			return array(null, false);
 		}
 		
