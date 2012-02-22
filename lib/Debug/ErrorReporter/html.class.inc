@@ -53,6 +53,10 @@ HTML
 			$cacheTime   = 30;
 		}
 		
+		if (empty($cacheTime)) {
+			return array(null, false);
+		}
+		
 		$cache          = ObjectCache::get('file', $errorRepDir, $cacheTime);
 		$errorSignature = json_encode($this->errorsMap);
 
