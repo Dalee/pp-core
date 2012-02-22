@@ -43,7 +43,29 @@ HTML
 		);
 	}
 
-	function _getMailSubject() {
+	function _throttling() {
+		try {
+			$app         = PXRegistry::getApp(); // APP may not be initialized yet and throws exception
+			$errorRepDir = $app->GetProperty('PP_ERROR_REPORTER_ANTIFLOOD_DIR', 'error_reporter');
+			$cacheTime   = $app->GetProperty('PP_ERROR_REPORTER_ANTIFLOOD_LAG', 30);
+		} catch (Exception $e) {
+			$errorRepDir = 'error_reporter';
+			$cacheTime   = 30;
+		}
+		
+		$cache          = ObjectCache::get('file', $errorRepDir, $cacheTime);
+		$errorSignature = json_encode($this->errorsMap);
+
+		$inLoop   = !$cache->expired($errorSignature);
+		$curCount = $cache->loadStaled($errorSignature);
+		$timer    = time();
+		$count    = $inLoop && $curCount ? array($curCount[0], $curCount[1] + 1) : array($timer, 0);
+
+		$cache->save($errorSignature, $count, $cacheTime - ($timer - $count[0]));
+		return array(is_array($curCount) ? $curCount[1] : null, $inLoop);
+	}
+
+	function _getMailSubject($cyclesCount) {
 		$errorTypes = array();
 		foreach($this->errors as $e) {
 			@$errorTypes[$e['type']]++;
@@ -84,11 +106,17 @@ SORT_FUNCTION
 			$subject[] = $type .'('.$count.')';
 		}
 
-		return $this->computer.': '.implode(', ', $subject);
+		return sprintf("%s: %s%s", $this->computer, join(', ', $subject), $cyclesCount ? "; this message throttled $cyclesCount times" : '');
 	}
 
 	function sendReport() {
-		$subject = $this->_getMailSubject();
+		list($cyclesCount, $inLoop) = $this->_throttling();
+
+		if ($inLoop) {
+			return;
+		}
+
+		$subject = $this->_getMailSubject($cyclesCount);
 
 		$mail = new NLMailMessage();
 		$this->mail =& $mail;

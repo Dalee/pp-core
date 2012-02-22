@@ -19,6 +19,8 @@ class PXErrorReporter {
 	// protected
 	var $errors = array();
 
+	var $errorsMap = array();
+
 	static
 	function &getInstance() {
 		static $instance;
@@ -106,6 +108,7 @@ class PXErrorReporter {
 		);
 
 		$this->errors[] = $error;
+		$this->errorsMap[$error['file']][$error['line']][$error['code']] = true;
 	}
 
 	function getLastError() {
