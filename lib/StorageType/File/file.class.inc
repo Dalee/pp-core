@@ -10,7 +10,7 @@
 class PXStorageTypeFile extends PXStorageTypeAbstractFile {
 	//FIXME: Remove static usage of this method from projects !
 	function proceedFile($field, &$object, &$param) {
-		$is_static_call  = !isset($this); //see FIXME above
+		$is_static_call  = !isset($this) || !(is_a($this, 'PXStorageTypeAbstractFile')); //see FIXME above
 		$fileArray       = &$object[$field->name];
 		$ai              = $is_static_call ?
 		                      self::ai($field, $object, $param['format']) :
