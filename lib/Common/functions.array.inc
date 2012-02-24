@@ -278,19 +278,20 @@ function array_flat($array, $toKey = false, $toValue = false) {
 /**
 *
 * Функция находит для первого встреченного заданного элемента предыдущий и последующий элементы в списке.
-* @param array	$inList		Список, в котором производится поиск. Передаётся по ссылке - иначе после foreach'а сбразывается указатель массива.
+* @param array	$list		Список, в котором производится поиск. Передаётся по ссылке - иначе после foreach'а сбразывается указатель массива.
 * @param mixed	$current	Сосед искомых элементов.
 * @param bool	$circular	Считать ли последний элемент соседом первого.
 * @param bool	$strict		Использовать строгое (true) или нестрогое (false) сравнение при поиске элемента. 
 * @return array Список из двух элементов - предыдущего и последующего.
 */
-function findNeighborElements(&$inList, $current, $circular = true, $strict = true) {
+function findNeighborElements($list, $current, $circular = true, $strict = true) {
 
+	$inList = &$list; // Иначе foreach не меняет указатель массива по завершению, что ломает весь алгоритм
+	
 	$found = false;
 	$pos   = 0;
 
-	reset($inList);
-	while(list(,$element) = each($inList)) {
+	foreach($inList as $element) {
 		$pos++;
 		if ($strict ? $current === $element : $current == $element) {
 			$found = true;
