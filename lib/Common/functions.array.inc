@@ -289,7 +289,8 @@ function findNeighborElements(&$inList, $current, $circular = true, $strict = tr
 	$found = false;
 	$pos   = 0;
 
-	foreach($inList as $element) {
+	reset($inList);
+	while(list(,$element) = each($inList)) {
 		$pos++;
 		if ($strict ? $current === $element : $current == $element) {
 			$found = true;
