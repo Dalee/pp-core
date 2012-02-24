@@ -16,9 +16,6 @@ class PXModuleProperties extends PXModule {
 		$this->_pseudoDatatype->id     = 'properties';
 		$this->_pseudoDatatype->title  = 'Настройки сайта';
 
-//		$dt->addAttribute('name', 'properties');
-//		$dt->addAttribute('title', "EE");
-
 		foreach((array) $this->_settings['attribute'] as $formatString){
 			$formatString = str_replace('|','&', $formatString);
 			$dataDesc     = array();
