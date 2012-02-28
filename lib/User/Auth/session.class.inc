@@ -3,6 +3,7 @@ class PXAuthSession extends PXAuthSecure {
 	protected $session_store              = 'suser_session';
 	protected $suser_login_attempts_field = 'suser_login_attempts';
 	protected $sid;
+	protected $session_lifetime;
 	
 	protected $_app;
 	protected $_user;
@@ -14,6 +15,10 @@ class PXAuthSession extends PXAuthSecure {
 		$this->_user    = $user;
 		$this->_request = $request;
 		$this->_db      = $db;
+		
+		if (!($this->session_lifetime = (int)ini_get("session.gc_maxlifetime"))) {
+			$this->session_lifetime = 1800;
+		}
 		
 		parent::PXAuthSecure($app, $request, $user, $db);
 	}
@@ -64,7 +69,7 @@ class PXAuthSession extends PXAuthSecure {
 		$private_key = $this->privateKey($public_key, $this->_user->data);
 
 		// save session into database
-		$this->_db->modifyingQuery(sprintf("INSERT INTO %s (suser_id, sid, ip) VALUES('%s', '%s', '%s')", $this->session_store, $this->_user->id, $private_key, $this->_request->GetRemoteAddr()), null, null, false);
+		$this->_db->modifyingQuery(sprintf("INSERT INTO %s (suser_id, sid, ip) VALUES('%d', '%s', '%s')", $this->session_store, $this->_user->id, $private_key, $this->_request->GetRemoteAddr()), null, null, false);
 		
 		return $public_key;
 	}
@@ -87,7 +92,7 @@ class PXAuthSession extends PXAuthSecure {
 		
 		$private_key = $this->privateKey($session, $uArray);
 		
-		if(!($session = reset($this->_db->query(sprintf("SELECT * FROM %s WHERE mtime >= NOW() - INTERVAL '%s seconds' AND sid = '%s' LIMIT 1", $this->session_store, ini_get("session.gc_maxlifetime"), $private_key), true)))) {
+		if(!($session = reset($this->_db->query(sprintf("SELECT * FROM %s WHERE mtime >= NOW() - INTERVAL '%d seconds' AND sid = '%s' LIMIT 1", $this->session_store, $this->session_lifetime, $private_key), true)))) {
 			$this->resetPasswd(); // reset staled session cookie
 			return false;
 		}
@@ -101,7 +106,7 @@ class PXAuthSession extends PXAuthSecure {
 	}
 
 	protected function runSessionGC() {
-		$this->_db->modifyingQuery(sprintf("DELETE FROM %s WHERE mtime < NOW() - INTERVAL '%s seconds'", $this->session_store, ini_get("session.gc_maxlifetime")), null, null, false);
+		$this->_db->modifyingQuery(sprintf("DELETE FROM %s WHERE mtime < NOW() - INTERVAL '%d seconds'", $this->session_store, $this->session_lifetime), null, null, false);
 	}
 
 	protected function checkLoginAttempts($uArray) {
@@ -117,7 +122,7 @@ class PXAuthSession extends PXAuthSecure {
 	protected function resetLoginAttempts($uArray) {
 		if (!empty($uArray[$this->suser_login_attempts_field])) {
 			// reset with cache flush
-			$this->_db->modifyingQuery(sprintf("UPDATE %s SET suser_login_attempts = 0 WHERE id = '%s'", DT_USER, (int)$uArray['id']));
+			$this->_db->modifyingQuery(sprintf("UPDATE %s SET suser_login_attempts = 0 WHERE id = '%d'", DT_USER, $uArray['id']));
 		}
 		return true;
 	}
@@ -125,7 +130,7 @@ class PXAuthSession extends PXAuthSecure {
 	protected function incrementLoginAttempts($uArray) {
 		if (isset($uArray[$this->suser_login_attempts_field])) {
 			// increment with cache flush
-			$this->_db->modifyingQuery(sprintf("UPDATE %s SET suser_login_attempts = suser_login_attempts + 1 WHERE id = '%s'", DT_USER, (int)$uArray['id']));
+			$this->_db->modifyingQuery(sprintf("UPDATE %s SET suser_login_attempts = suser_login_attempts + 1 WHERE id = '%d'", DT_USER, $uArray['id']));
 		}
 	}
 
