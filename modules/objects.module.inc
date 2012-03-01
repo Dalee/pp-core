@@ -19,9 +19,8 @@ class PXModuleObjects extends PXModule {
 
 	function adminIndex() {
 		$rSid = $this->request->getSid();
-		$this->indexSetMenu($rSid);
 
-		if (is_null($rSid)) {
+		if (!$this->indexSetMenu($rSid)) {
 			return;
 		}
 
@@ -39,15 +38,18 @@ class PXModuleObjects extends PXModule {
 
 	function indexSetMenu($rSid) {
 		$types = array();
+		$canProceed = false;
 		foreach ($this->app->types as $k=>$v) {
 			if ((count($this->formats) == 0 || in_array($k, $this->formats)) && $this->user->can('admin', $v) ) {
 				$types[$k] = $v->title;
+				$canProceed = $canProceed || $rSid == $k; 
 			}
 		}
 
 		uasort($types, array($this, '__sortTypes'));
 
 		$this->layout->assignKeyValueList('INNER.0.0', $types, $rSid);
+		return $canProceed;
 	}
 
 	function indexAppendTable() {
