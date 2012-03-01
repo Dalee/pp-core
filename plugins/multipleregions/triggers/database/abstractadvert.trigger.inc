@@ -9,10 +9,11 @@ class PXTriggerDatabaseMultiRegionalAbstractAdvert extends PXTriggerDatabaseAbst
 
 	protected function getBannersById($id) {
 		$regionsObj = PXMultiRegions::getInstance();
+		$enabled = !$regionsObj->isDisabled();
 
-		$regionsObj->disable();
+		$enabled && $regionsObj->disable();
 		$result = parent::getBannersById($id);
-		$regionsObj->enable();
+		$enabled && $regionsObj->enable();
 
 		return $result;
 	}
@@ -30,9 +31,10 @@ class PXTriggerDatabaseMultiRegionalAbstractAdvert extends PXTriggerDatabaseAbst
 				return;
 			}
 
-			$regionsObj->disable();
+			$enabled = !$regionsObj->isDisabled();
+			$enabled && $regionsObj->disable();
 			$reflex = $this->db->getObjectById($this->db->app->types[$format], $sysReflexId);
-			$regionsObj->enable();
+			$enabled && $regionsObj->enable();
 
 			parent::adSync($format, $reflex);
 		}
