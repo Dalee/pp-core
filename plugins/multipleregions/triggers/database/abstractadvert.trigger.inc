@@ -40,6 +40,14 @@ class PXTriggerDatabaseMultiRegionalAbstractAdvert extends PXTriggerDatabaseAbst
 		}
 	}
 
+	function onBeforeCloneObject($db, $format, &$object, $donor) {
+		if ($format->id == 'adbanner') { // task 1964, megaplan 1039820
+			$object['shows'] = 0;
+			$object['clicks'] = 0;
+			$object['current'] = false;
+		}
+		return parent::onBeforeCloneObject($db, $format, $object, $donor);
+	}
 }
 
 ?>
