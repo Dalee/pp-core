@@ -146,7 +146,7 @@ class PXDatabase extends NLSQLDatabaseAdapter implements IPXDatabase {
 
 				if(sizeof($idsArray) && $directory->filter !== $idsArray) {
 					$directory->filter = $idsArray;
-					$this->LoadDirectory($directory, true, array(), $format);
+					$this->LoadDirectory($directory, array(),true, $format);
 				}
 			}
 		}
