@@ -33,9 +33,27 @@ class PXDisplayTypeMultiRegions extends PXDisplayTypeBubbleText {
 		return !empty($object[$field->name]) ? $object[$field->name] : (array) $regions->getRid();
 	}
 
+	protected function _getSubregionsForMacroregions($regions) {
+		$ids = array();
+		foreach ($regions->getRegionsData() as $region) {
+			if (empty($region['parent'])) {
+				continue;
+			}
+			if (empty($ids[$region['parent']])) {
+				$ids[$region['parent']] = array();
+			}
+			array_push($ids[$region['parent']], $region['id']);
+		}
+		foreach ($ids as $k => $id) {
+			$ids[$k] = join(',', $id);
+		}
+		return $ids;
+	}
+
 	function buildInput($field, $object, $param=NULL) {
 		$regions = PXMultiRegions::getInstance();
 		$values = $this->_getValues($field, $object, $regions);
+		$subregions = $this->_getSubregionsForMacroregions($regions);
 
 		if (!is_array($values)) {
 			return;
@@ -47,6 +65,8 @@ class PXDisplayTypeMultiRegions extends PXDisplayTypeBubbleText {
 
 		if (!$this->singleObject) {
 			$html[] = $this->_buildSelector($field, $value, $values);
+			$html[] = "<script>\nvar multiregions_subregions = ".json_encode($subregions).";\n</script>";
+			$html[] = "<script>\n".$this->selectorInlineJS()."\n</script>";
 		} else {
 			$html[] = $this->_buildStatic($field, $value, $values);
 		}
@@ -160,6 +180,41 @@ class PXDisplayTypeMultiRegions extends PXDisplayTypeBubbleText {
 		list($result, $isShowBubble, $allowedRegions, $inObject) = $this->collapse($field, $object);
 
 		return $result;
+	}
+
+	function selectorInlineJS() {
+		$js = <<<JS
+$(function(){
+	var subregions = window.multiregions_subregions||{};
+	$('select[name="sys_regions[]"]').unbind('click').click(function(e){
+		var select = $(this), option = $(e.target);
+		if (!option || !(/option/i).test(option[0].tagName||'') || e.altKey || e.shiftKey) {
+			return;
+		}
+		if (select.val().indexOf('-1') != -1 || option.val() == -1) {
+			var allIds = [];
+			$.each(select.find('option'), function(i,el){ allIds.push($(el).val()); });
+			select.val(allIds);
+			return;
+		}
+		if (!subregions[option.val()]) {
+			return;
+		}
+
+		if (select.val().indexOf(option.val()) == -1) {
+			var ids = [], inner = subregions[option.val()].split(',');
+			$.each(select.val(), function(i, el){
+				if (inner.indexOf(el) != -1) return;
+				ids.push(el);
+			});
+			select.val(ids);
+		} else {
+			select.val((subregions[option.val()] + ',' + select.val().join(',')).split(','));
+		}
+	});
+});
+JS;
+		return $js;
 	}
 }
 ?>
