@@ -1237,3 +1237,15 @@ form.simple {
 	background-color: #385A94;
 	color: #ffffff;
 }
+
+div.help-box {}
+div.help-box .help-for {
+	float:left;
+}
+div.help-box .help-text {
+	float:left;
+	margin-left:10px;
+	line-height:1.5em;
+	font-size:12px;
+	max-width:350px;
+}

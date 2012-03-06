@@ -53,7 +53,6 @@ class PXDisplayTypeMultiRegions extends PXDisplayTypeBubbleText {
 	function buildInput($field, $object, $param=NULL) {
 		$regions = PXMultiRegions::getInstance();
 		$values = $this->_getValues($field, $object, $regions);
-		$subregions = $this->_getSubregionsForMacroregions($regions);
 
 		if (!is_array($values)) {
 			return;
@@ -61,15 +60,24 @@ class PXDisplayTypeMultiRegions extends PXDisplayTypeBubbleText {
 
 		$value = $this->_getValue($regions, $object, $field);
 
-		$html[] = new PXInputHidden($field->name . "_objectform", true);
 
+		$html[] = '<div class="help-box">';
+
+		$html[] = '<div class="help-for">';
+		$html[] = new PXInputHidden($field->name . "_objectform", true);
 		if (!$this->singleObject) {
 			$html[] = $this->_buildSelector($field, $value, $values);
-			$html[] = "<script>\nvar multiregions_subregions = ".json_encode($subregions).";\n</script>";
-			$html[] = "<script>\n".$this->selectorInlineJS()."\n</script>";
+			PXRegistry::getLayout()->assignInlineJS($this->selectorInlineJS());
 		} else {
 			$html[] = $this->_buildStatic($field, $value, $values);
 		}
+		$html[] = '</div>';
+
+		$html[] = '<div class="help-text">';
+		$html[] = $this->helpText();
+		$html[] = '</div>';
+
+		$html[] = '</div>';
 
 		return join($html);
 	}
@@ -182,11 +190,14 @@ class PXDisplayTypeMultiRegions extends PXDisplayTypeBubbleText {
 		return $result;
 	}
 
-	function selectorInlineJS() {
-		$js = <<<JS
+	protected function selectorInlineJS() {
+		$regions = PXMultiRegions::getInstance();
+		$subregions = $this->_getSubregionsForMacroregions($regions);
+		$js = "var multiregions_subregions = ".json_encode($subregions).";";
+		$js .= <<<JS
 $(function(){
 	var subregions = window.multiregions_subregions||{};
-	$('select[name="sys_regions[]"]').unbind('click').click(function(e){
+	$('select[name="sys_regions[]"]').unbind('click').click(function(e) {
 		var select = $(this), option = $(e.target);
 		if (!option || !(/option/i).test(option[0].tagName||'') || e.altKey || e.shiftKey) {
 			return;
@@ -215,6 +226,15 @@ $(function(){
 });
 JS;
 		return $js;
+	}
+
+	protected function helpText() {
+		$r = <<<help
+<p>По умолчанию при выборе макрорегиона автоматически выбираются его субрегионы.</p>
+<p>Но при зажатой клавише Alt автовыбор не активируется и выделяется только сам макрорегион без субрегионов.</p>
+<p>Так же, используйте зажатую клавижу Ctrl для последовательного выбора регионов, и Shift для выбора нескольких регионов подряд.</p>
+help;
+		return trim($r);
 	}
 }
 ?>
