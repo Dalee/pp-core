@@ -60,24 +60,25 @@ class PXDisplayTypeMultiRegions extends PXDisplayTypeBubbleText {
 
 		$value = $this->_getValue($regions, $object, $field);
 
-
-		$html[] = '<div class="help-box">';
-
-		$html[] = '<div class="help-for">';
-		$html[] = new PXInputHidden($field->name . "_objectform", true);
 		if (!$this->singleObject) {
-			$html[] = $this->_buildSelector($field, $value, $values);
+			$html[] = '<div class="help-box">';
+			$html[] = new PXInputHidden($field->name . "_objectform", true);
+
 			PXRegistry::getLayout()->assignInlineJS($this->selectorInlineJS());
+			PXRegistry::getLayout()->assignInlineCSS($this->selectorInlineCSS());
+
+			$html[] = '<div class="help-for">';
+			$html[] = $this->_buildSelector($field, $value, $values);
+			$html[] = '</div>';
+
+			$html[] = '<div class="help-text">';
+			$html[] = $this->helpText();
+			$html[] = '</div>';
+
+			$html[] = '</div>';
 		} else {
 			$html[] = $this->_buildStatic($field, $value, $values);
 		}
-		$html[] = '</div>';
-
-		$html[] = '<div class="help-text">';
-		$html[] = $this->helpText();
-		$html[] = '</div>';
-
-		$html[] = '</div>';
 
 		return join($html);
 	}
@@ -226,6 +227,22 @@ $(function(){
 });
 JS;
 		return $js;
+	}
+
+	protected function selectorInlineCSS() {
+		$r = <<<CSS
+div.help-box {}
+div.help-box .help-for {
+	float:left;
+}
+div.help-box .help-text {
+	float:left;
+	margin-left:10px;
+	line-height:1.5em;
+	max-width:350px;
+}
+CSS;
+		return $r;
 	}
 
 	protected function helpText() {
