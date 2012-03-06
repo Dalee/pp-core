@@ -690,7 +690,7 @@ class PXApplication {
 	}
 
 	/*
-	 * function is_enought($files_array) { <return TRUE when enought files collected> }
+	 * function is_enough($files_array) { <return TRUE when enough files collected> }
 	 */
 	private static function findFilesUnless($filename, $is_enough = NULL) {
 		$files = array();
