@@ -213,10 +213,16 @@ class NLPGSQLDatabase extends NLAbstractSQLDatabase {
 	}
 
 	function MapData($value) {
-		if (is_null($value) || $value === '') return "NULL";
-		else if ($value === "##now##")        return "now()";
-		else if ($value === "now()")          return "now()";
-		else return "'".$this->EscapeString($value)."'";
+		switch(true) {
+			case is_null($value) || $value === '' :
+				return "NULL";
+			case $value === "##now##" || $value === "now()":
+				return "now()";
+			case is_bool($value):
+				return $value ? "'t'" : "'f'";
+			default:
+				return "'".$this->EscapeString($value)."'";
+		}
 	}
 	
 	function mapFields($field) {
