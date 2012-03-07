@@ -10,16 +10,16 @@ class PXInputTextarea extends PXAdminWidget {
 		$this->value     = $value;
 		$this->name      = $name;
 		$this->height    = $height;
-		$this->maxlength = $maxlength; //FIXME: What is it mean ? - "cell_maxlength определяет максимальное число символов, выводимых в ячейке"
+		$this->maxlength = $maxlength; //Only Chrome and FF support this attribute
 		$this->wrap      = $wrap;
 	}
 
 	function html() {
 		$height = strpos($this->height, '%') ? $this->height : $this->height.'px';
+		$max    = isset($this->maxlength) ? 'maxlength="' . (int)$this->maxlength . '"': '';
 
-		return <<<HTML
-			<textarea name="{$this->name}" wrap="{$this->wrap}" style="height: {$height};" {$this->disable}>{$this->value}</textarea>
-HTML;
+		return sprintf('<textarea name="%s" wrap="%s" style="height: %s;" %s %s>%s</textarea>',
+		               $this->name, $this->wrap, $height, $this->disable, $max, $this->value);
 	}
 }
 ?>
