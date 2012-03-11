@@ -1,4 +1,5 @@
 <?php
+
 class PXResponse {
 	var $STATUS_OK                      = '200 OK';
 	var $STATUS_MOVED                   = '301 Moved Permanently';
@@ -34,7 +35,7 @@ class PXResponse {
 	function &getInstance() {
 		static $instance;
 
-		if(is_null($instance)) {
+		if (is_null($instance)) {
 			$instance = new PXResponse();
 		}
 
@@ -45,7 +46,7 @@ class PXResponse {
 		if (ini_get('display_errors') && PXErrorReporter::hasErrors(true)) {
 			exit();
 		}
-		
+
 		// sanitize url
 		$url = strtr($url, array(
 				' '   => '%20',
@@ -58,11 +59,11 @@ class PXResponse {
 				'%00' => ''
 			)
 		);
-		
+
 		$this->status = $this->STATUS_MOVED;
 
 		$this->addHeader('Location', $url);
-		
+
 		if (!is_null($cacheTimeOut)) {
 			$this->cache($cacheTimeOut);
 		} else {
@@ -89,27 +90,27 @@ class PXResponse {
 	function notFound() {
 		$this->status = $this->STATUS_NOT_FOUND;
 	}
-	
+
 	function notModified() {
 		$this->status = $this->STATUS_NOT_MODIFIED;
 	}
-	
+
 	function forbidden() {
 		$this->status = $this->STATUS_FORBIDDEN;
 	}
-	
-	# Do nothing with cache for 500s answers at Proxima side
+
+	// Do nothing with cache for 500s answers at Proxima side
 	function internalError() {
 		$this->status = $this->STATUS_INTERNAL_ERROR;
 		$this->noCache();
 	}
-	
+
 	function notImplemented() {
 		$this->status = $this->STATUS_NOT_IMPLEMENTED;
 		$this->noCache();
 	}
-	
-	function unavailable(){
+
+	function unavailable() {
 		$this->status = $this->STATUS_TEMPORARILY_UNAVAILABLE;
 		$this->noCache();
 	}
@@ -118,7 +119,7 @@ class PXResponse {
 		return ($this->status != $this->STATUS_OK) && ($this->status != $this->STATUS_NOT_MODIFIED);
 	}
 
-	# Cache management
+	// Cache management
 	function dontCache() {
 		$this->addHeader('X-Accel-Expires',  0);
 		$this->addHeader('Cache-Control', 'no-store, no-cache, must-revalidate, post-check=0, pre-check=0');
@@ -144,35 +145,35 @@ class PXResponse {
 	function setCharset($charset) {
 		$this->setContentType($this->contentType['type'], $charset);
 	}
-	
+
 	function setLastModified($timestamp){
 		$this->addHeader('Last-Modified', DateUnixToGMT($timestamp));
 	}
-	
+
 	function setContentType($contentType, $charset=null) {
-		$this->contentType['type'] = $contentType;
+		$this->contentType = array(
+			'type'    => $contentType,
+			'charset' => NULL
+		);
 
-		if(strlen($charset)) {
+		if (strlen($charset)) {
 			$this->contentType['charset'] = $charset;
-		}
-
-		if(!empty($this->contentType['charset'])) {
 			$contentType .= ';charset='.$charset;
 		}
 
 		$this->addHeader('Content-Type', $contentType);
 	}
-	
+
 	function downloadFile($filename, $contentType = null, $dispositionType = 'attachment', $charset=null) {
 		if (strlen($contentType)) {
 			$this->setContentType($contentType, $charset);
 		}
 		$this->addHeader('Content-Disposition', $dispositionType . '; filename="'. $filename .'"');
 	}
-	
+
 	function send($content = null, $http_version_1_1 = true) {
-		if(!headers_sent()) {
-			if($this->isError() || strlen($content)) {
+		if (!headers_sent()) {
+			if ($this->isError() || strlen($content)) {
 				// FIXME: we really need HTTP/1.1 ?
 				// to fix troubles with Transfer-Encoding: chunked
 				// (Apache uses it when Content-Length header missed for 1.1)
@@ -181,14 +182,14 @@ class PXResponse {
 				header(sprintf('HTTP/1.%d %s', (int)$http_version_1_1, $this->status));
 			}
 
-			if(strlen($content)) {
+			if (strlen($content)) {
 				$this->setLength(strlen($content));
 			}
 
 			$this->_sendHeaders();
 		}
 
-		if(strlen($content)) {
+		if (strlen($content)) {
 			echo $content;
 		}
 	}
@@ -219,7 +220,7 @@ class PXResponse {
 	 * @return boolean
 	 */
 	function SetCookie($name, $value, $expire = NULL, $domain = NULL) {
-		if (headers_sent ()) {
+		if (headers_sent()) {
 			return false;
 		}
 		if (is_array($value) || is_object($value)) {
@@ -233,4 +234,5 @@ class PXResponse {
 		return setcookie($name, $value, $expire, '/', $domain);
 	}
 }
+
 ?>
