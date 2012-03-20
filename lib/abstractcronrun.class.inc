@@ -2,6 +2,8 @@
 class PXAbstractCronRun {
 	public $name = 'Abstract CronRun Class';
 
+	function __construct() {}
+
 	function Run(&$app, &$db, &$tree, $matchedTime, $matchedRule) {
 		return array(
 			'status' => -1,
