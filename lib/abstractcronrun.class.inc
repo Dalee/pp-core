@@ -1,5 +1,5 @@
 <?php
-class PXAbstractCronRun {
+abstract class PXAbstractCronRun {
 	public $name = 'Abstract CronRun Class';
 
 	function __construct() {}
