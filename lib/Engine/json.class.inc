@@ -1,8 +1,9 @@
 <?php
+
 class PXEngineJSON extends PXEngine {
 	var $result;
-	
-	function __construct(){
+
+	function __construct() {
 		parent::profilerStart();
 		parent::__construct();
 	}
@@ -23,27 +24,29 @@ class PXEngineJSON extends PXEngine {
 		$response->send(json_encode($encodedResult));
 		exit;
 	}
-	
+
 	function getJson($module) {
 		return $module->userJson();
 	}
-	
+
 	public static function jsonEncodeCyr($object) {
 		return convertCyrillicObjectToUtf($object);
 	}
-	
+
 	// Common data encoders for library methods standardization
-	
-	public static function toError($value, $koi82utf8 = false){
+
+	public static function toError($value, $koi82utf8 = false) {
 		return self::toObject('iserror', $value, $koi82utf8);
 	}
-	
-	public static function toSuccess($value, $koi82utf8 = false){
+
+	public static function toSuccess($value, $koi82utf8 = false) {
 		return self::toObject('isok', $value, $koi82utf8);
 	}
-	
-	protected static function toObject($key, $value, $encode){
+
+	protected static function toObject($key, $value, $encode) {
 		return (object)array($key => (object)array('notice' => $encode ? self::jsonEncodeCyr($value) : $value));
 	}
+
 }
+
 ?>
