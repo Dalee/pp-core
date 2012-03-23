@@ -26,15 +26,16 @@ class PXObjects extends PXContentObjects {
 	public $currentType;
 
 	function hasCurrent() {
-		return @isset($this[$this->currentType][$this->currentId]);
+		return $this->currentId && @isset($this[$this->currentType][$this->currentId]);
 	}
 
 	function getCurrent() {
 		return $this[$this->currentType][$this->currentId];
 	}
 
-	public function hasItems($type) {
-		return @isset($this[$this->currentType]) && count($this[$this->currentType]);
+	public function hasItems($type = null) {
+		$type = $type ? $type : $this->currentType;
+		return @isset($this[$type]) && count($this[$type]);
 	}
 
 	public function getFirst($type) {
