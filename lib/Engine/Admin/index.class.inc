@@ -28,11 +28,11 @@ class PXEngineAdminIndex extends PXEngineAdmin {
 	}
 
 	function showAuthForm() {
-		if(!isset($this->modules['auth'])) {
+		if(!isset($this->modules[$this->authArea])) {
 			FatalError('Undefined auth module or you forget insert "allo" for "admin" auth module in acl_objects');
 		}
 
-		$auth = $this->modules['auth']->getModule();
+		$auth = $this->modules[$this->authArea]->getModule();
 		$auth->adminIndex();
 	}
 
@@ -62,7 +62,7 @@ class PXEngineAdminIndex extends PXEngineAdmin {
 
 		$this->initMenu();
 
-		if (!$this->user->isAdmin()) {
+		if (!$this->hasAdminModules()) {
 			return $this->showAuthForm();
 		}
 
@@ -71,7 +71,7 @@ class PXEngineAdminIndex extends PXEngineAdmin {
 
 		if($this->area == 'exit') {
 			$response =& PXResponse::getInstance();
-			$response->redirect('action.phtml?area=auth&action=exit');
+			$response->redirect(sprintf('action.phtml?area=%s&action=exit', $this->authArea));
 		}
 
 		if(!$this->checkArea($this->area)) {

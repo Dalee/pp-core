@@ -42,8 +42,8 @@ class PXModuleAuth extends PXModule {
 		} else {
 			$nextLocation = $request->GetReferer();
 			if(strpos($nextLocation, '?') !== FALSE) {
-				if(strpos($nextLocation, 'action') !== FALSE) {
-					$nextLocation = preg_replace("/action=.*?\&?(.*)?$/", "action=error", $nextLocation);
+				if(strpos($nextLocation, '?action=') !== FALSE || strpos($nextLocation, '&action=') !== FALSE) {
+					$nextLocation = preg_replace("/(?<=\&|\?)action=[^&]*/", "action=error", $nextLocation);
 				} else {
 					$nextLocation .= '&action=error';
 				}

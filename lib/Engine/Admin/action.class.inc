@@ -4,14 +4,14 @@ class PXEngineAdminAction extends PXEngineAdmin {
 
 	function initModules() {
 		$this->area    = $this->request->getArea();
-		$this->modules = array($this->area => $this->app->getAvailableModule($this->area));
+		$this->modules = self::getModule($this->app, $this->area);
 	}
 
 	function runModules() {
 		PXProfiler::begin('RUN MODULES');
 
-		// For correct user login expiration handling
-		if (!$this->user->isAdmin()) {
+		// For correct user session expiration handling and admin auth module working
+		if (!($this->hasAdminModules() || $this->area == $this->authArea)) {
 			return;
 		}
 

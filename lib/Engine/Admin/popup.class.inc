@@ -5,7 +5,7 @@ class PXEngineAdminPopup extends PXEngineAdminIndex {
 
 	function initModules() {
 		$this->area    = $this->request->getArea();
-		$this->modules = array($this->area => $this->app->getAvailableModule($this->area));
+		$this->modules = self::getModule($this->app, $this->area);
 	}
 
 	function fillLayout() {
@@ -15,7 +15,7 @@ class PXEngineAdminPopup extends PXEngineAdminIndex {
 	function runModules() {
 		PXProfiler::begin('RUN MODULES');
 
-		if (!$this->user->isAdmin()) {
+		if (!$this->hasAdminModules()) {
 			return $this->layout->assignError($this->templateMainArea, 'Нет доступа');
 		}
 

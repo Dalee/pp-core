@@ -6,7 +6,7 @@ class PXEngineAdminJSON extends PXEngineJSON {
 
 	function initModules() {
 		$this->area    = $this->request->getArea();
-		$this->modules = array($this->area => $this->app->getAvailableModule($this->area));
+		$this->modules = PXEngineAdmin::getModule($this->app, $this->area);
 		$this->checkArea($this->area);
 	}
 
