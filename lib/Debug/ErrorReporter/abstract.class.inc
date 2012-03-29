@@ -76,7 +76,7 @@ class PXErrorReporter {
 		static $errorTypes = array(
 			E_ERROR           => 'Error',
 			E_WARNING         => 'Warning',
-			E_PARSE           => 'Parsing Error',
+			E_PARSE           => 'Parse Error',
 			E_NOTICE          => 'Notice',
 
 			E_CORE_ERROR      => 'Core Error',
@@ -85,9 +85,14 @@ class PXErrorReporter {
 			E_COMPILE_ERROR   => 'Compile Error',
 			E_COMPILE_WARNING => 'Compile Warning',
 
+			E_STRICT          => 'Strict Notice',
+			E_RECOVERABLE_ERROR => 'Catchable fatal error',
+//			E_DEPRECATED      => 'Run-time notice', // since 5.3.0
+
 			E_USER_ERROR      => 'User Error',
 			E_USER_WARNING    => 'User Warning',
 			E_USER_NOTICE     => 'User Notice',
+//			E_USER_DEPRECATED => 'User Warning (Deprecated)', // since 5.3.0
 
 			NL_FATAL_ERROR    => 'Fatal Error'
 		);
