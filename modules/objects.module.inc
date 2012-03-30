@@ -24,7 +24,7 @@ class PXModuleObjects extends PXModule {
 			return;
 		}
 
-		$this->datatype =& $this->getDatatype('sid');
+		$this->datatype = $this->getDatatype('sid');
 		$format = $this->datatype->id;
 
 		$rView = $this->request->getVar($format.'_view');
@@ -121,7 +121,7 @@ class PXModuleObjects extends PXModule {
 		$this->db->LoadDirectoriesByType($this->datatype, $object); 
 
 		// warn about parent if need
-		if (!empty($this->datatype->parent)) {
+		if (!empty($this->datatype->parent) && empty($object['parent']) && $this->datatype->struct != 'tree') {
 			$parentDatatype = $this->app->types[$this->datatype->parent];
 			PXDecorativeWidgetsCollection::addToCollection(
 				"<em class='warning'>Внимание!</em> " .

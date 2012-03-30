@@ -60,7 +60,7 @@ abstract class PXAdminComplexWidget extends PXAdminWidget {
 		$this->PXAdminWidget();
 	}
 
-	function append(/*PXAdminWidget */$block, $label) { // $block instance of PXAdminWidget or PXAdminComplexWidget
+	function append($block, $label) { // $block commonly used for instances of PXAdminWidget or PXAdminComplexWidget, but can apply string
 		$this->blocks[$label][] = $block;
 	}
 
