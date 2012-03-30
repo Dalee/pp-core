@@ -548,6 +548,13 @@ table.mainform td input:hover, table.mainform td textarea:hover {
 	border-color: #385A94 !important;
 }
 
+.form_widget_notices {
+	padding:5px 10px;
+}
+.form_widget_notices .warning {
+	color:red;
+}
+
 dl.sysinfo {
 	margin: 5px 0;
 	padding: 0;

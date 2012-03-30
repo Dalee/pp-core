@@ -98,7 +98,7 @@ class PXModuleObjects extends PXModule {
 	}
 
 	function adminPopup() {
-		$this->datatype =& $this->getDatatype();
+		$this->datatype = $this->getDatatype();
 		$object   = $this->popupGetObject();
 
 		if (!$this->user->isAdmin() || empty($object)) {
@@ -120,9 +120,21 @@ class PXModuleObjects extends PXModule {
 
 		$this->db->LoadDirectoriesByType($this->datatype, $object); 
 
+		// warn about parent if need
+		if (!empty($this->datatype->parent)) {
+			$parentDatatype = $this->app->types[$this->datatype->parent];
+			PXDecorativeWidgetsCollection::addToCollection(
+				"<em class='warning'>Внимание!</em> " .
+				"Объект типа '<b>{$this->datatype->title}</b>' может не быть создан вне контекста объекта '<b>{$parentDatatype->title}</b>'.<br/>" .
+				"Рекомендуется не использовать данный функционал для создания объектов данного типа.",
+				'PXAdminForm',
+				'notices',
+				PXAdminForm::NOTICES_CONTENT
+			);
+		}
+
 		$form = new PXAdminForm($object, $this->datatype);
 		$form->disable = $this->popupCheckAccess($object);
-
 		$form->setAction($this->request->getAction());
 		$form->setArea('objects');
 		$form->setChildren($possibleFormats, $counts);

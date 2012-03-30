@@ -21,9 +21,10 @@ class PXAdminForm extends PXAdminComplexWidget {
 	const PREPEND_RIGHTCONTROLS = 6;
 	const RIGHTCONTROLS         = 7;
 	const APPEND_RIGHTCONTROLS  = 8;
-	
-	const TITLE                = 9;
-	const MENU                 = 10;
+
+	const TITLE                 = 9;
+	const MENU                  = 10;
+	const NOTICES_CONTENT       = 11;
 
 	public $blocks = array( //set up available subwidgets areas
 		self::PREPEND_LEFTCONTROLS => array(),
@@ -33,13 +34,14 @@ class PXAdminForm extends PXAdminComplexWidget {
 		self::PREPEND_RIGHTCONTROLS =>	array(),
 		self::RIGHTCONTROLS         => array(),
 		self::APPEND_RIGHTCONTROLS  => array(),
-		
+
 		self::MENU                 => array(),
 		self::TITLE                => array(),
 
 		self::BEFORE_CONTENT       => array(),
 		self::CONTENT              => array(),
-		self::AFTER_CONTENT        => array());
+		self::AFTER_CONTENT        => array(),
+		self::NOTICES_CONTENT      => array());
 
 	function __construct($object, $format) {
 		$this->object = $object;
@@ -85,6 +87,12 @@ class PXAdminForm extends PXAdminComplexWidget {
 	function getForm() {
 		$this->decorate();
 		$this->layout->setOuterForm('action.phtml', 'POST', 'multipart/form-data');
+
+		if (!empty($this->blocks[self::NOTICES_CONTENT])) {
+			$html[] =  '<div class="form_widget_notices">';
+			$html[] =  join($this->blocks[self::NOTICES_CONTENT]);
+			$html[] =  '</div>';
+		}
 
 		$html[] =  join($this->blocks[self::BEFORE_CONTENT]);
 
