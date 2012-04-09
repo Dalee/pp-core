@@ -397,30 +397,52 @@ class PXDatabase extends NLSQLDatabaseAdapter implements IPXDatabase {
 	}
 
 	/**
-	 * Возвращает объекты из БД по массиву id (Integer)
+	 * Возвращает объекты из БД по массиву числовых значений для поля (Integer)
 	 * Использует {@link NLSQLDatabaseAdapter::Query()} для запросов
 	 *
-	 * @param PXTypeDescription
-	 * @param String $format        objects status ('TRUE' | 'FALSE')
-	 * @param Array $status         array of id's
-	 * @param Integer $idArray      request mode. Default = {@link DB_SELECT_TABLE}
+	 * @param PXTypeDescription     $format
+	 * @param String $status        objects status ('TRUE' | 'FALSE')
+	 * @param String $field         integer field in DB for search
+	 * @param Array  $intArray      array of int values
+	 * @param Integer $mode         request mode. Default = {@link DB_SELECT_TABLE}
 	 * @return Array
 	 */
-	function getObjectsByIdArray($format, $status, $idArray, $mode=DB_SELECT_TABLE, $order=NULL) {
-		foreach ($idArray as $id) {
-			if (!is_numeric($id)) {
+	function getObjectsByIntArray($format, $status, $field, array $intArray, $mode=DB_SELECT_TABLE, $order=NULL) {
+		return $this->getObjectsByIntArrayLimited($format, $status, $field, $intArray, null, null, $mode, $order);
+	}
+	function getObjectsByIntArrayLimited($format, $status, $field, array $intArray, $limit, $offset, $mode=DB_SELECT_TABLE, $order=NULL) {
+		if (!isset($format->fields[$field])) {
+			FatalError(sprintf('В модели "%s" отсутствует поле "%s"!', $format->id, $field));
+		}
+
+		foreach ($intArray as $val) {
+			if (!is_numeric($val)) {
 				FatalError('Попытка SQL-Injection!');
 			}
 		}
 
-		if (count($idArray)) {
-			$whereClause = $format->id.'.id IN ('.implode(', ', $idArray).')';
-
-			return $this->_GetData($format, $status, $mode, $whereClause, null, $order);
-
+		if (count($intArray)) {
+			$whereClause = sprintf('%s.%s IN (%s)', $format->id, $field, implode(', ', $intArray));
+			$res = $this->_GetData($format, $status, $mode, $whereClause, array($limit, $offset), $order);
 		} else {
-			return $mode === DB_SELECT_TABLE ? array() : 0;
+			$res = $this->emptyResult($mode);
 		}
+
+		return $res;
+	}
+
+	/**
+	 * Возвращает объекты из БД по массиву id (Integer)
+	 * Использует {@link NLSQLDatabaseAdapter::Query()} для запросов
+	 *
+	 * @param PXTypeDescription     $format
+	 * @param String $status        objects status ('TRUE' | 'FALSE')
+	 * @param Array  $idArray       array of objects id
+	 * @param Integer $mode         request mode. Default = {@link DB_SELECT_TABLE}
+	 * @return Array
+	 */
+	function getObjectsByIdArray($format, $status, $idArray, $mode=DB_SELECT_TABLE, $order=NULL) {
+		return $this->getObjectsByIntArray($format, $status, 'id', $idArray, $mode, $order);
 	}
 
 	/**
@@ -445,7 +467,7 @@ class PXDatabase extends NLSQLDatabaseAdapter implements IPXDatabase {
 	 *
 	 * @param PXTypeDescription $format
 	 * @param String $status    objects status ('TRUE' | 'FALSE')
-	 * @param Integer $parent   parent id (numeric or NULL)
+	 * @param Mixed $parent     parent id value (numeric, array or NULL)
 	 * @param Integer $mode     request mode, default = {@link DB_SELECT_TABLE}
 	 * @return Array
 	 */
@@ -460,8 +482,7 @@ class PXDatabase extends NLSQLDatabaseAdapter implements IPXDatabase {
 			$whereClause = $format->id.'.parent IS NULL';
 
 		} elseif (is_array($parent)) {
-			$whereClause = $format->id.'.parent IN ('.implode(',', $parent).')';
-
+			return $this->getObjectsByIntArrayLimited($format, $status, 'parent', $parent, $limit, $offset, $mode, $order);
 		} else {
 			FatalError('Попытка SQL-Injection!');
 		}
@@ -582,10 +603,24 @@ class PXDatabase extends NLSQLDatabaseAdapter implements IPXDatabase {
 		}
 		$whereClause = substr($whereClause, 0, -4);
 		if(!strlen($whereClause)) {
-			return $mode === DB_SELECT_TABLE ? array() : 0;
+			return $this->emptyResult();
 		}
 
 		return $this->_GetData($format, $status, $mode, $whereClause, array($limit, $offset), $order);
+	}
+
+	protected function emptyResult($mode) {
+		switch($mode) {
+			case DB_SELECT_TABLE:
+				$res = array();
+				break;
+			case DB_SELECT_COUNT:
+				$res = 0;
+				break;
+			default:
+				$res = null;
+		}
+		return $res;
 	}
 
 	/**
