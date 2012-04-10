@@ -2,9 +2,11 @@
 /**
  * Массив
  * В базе может храниться как integer[], string[]
+ * Реализация проигрывает по скорости PXStorageTypeIntArray и PXStorageTypeFlatIntArray,
+ * поэтому для integer[] не рекомендуется.
  *
  * displayType HIDDEN, STATIC, TABLE
- * storageType serialized
+ * storageType array
  */
 class PXStorageTypeArray extends PXStorageType {
 	const STATE_BEGIN    = 1;
