@@ -53,6 +53,8 @@ class PXInputTable extends PXAdminWidget {
 		foreach ($this->value as $row) {
 			$html .= '<tr>';
 
+			$row = (array)$row;
+
 			for ($i=0; $i<count($this->colsWidth); $i++) {
 				$html .= '<td>';
 
