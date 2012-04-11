@@ -77,7 +77,7 @@ class PXMultiRegions {
 	}
 
 	function substractCloned($regions, $cutOut=array()) {/*{{{*/
-		return array_diff_key($regions, array_flip($cutOut));
+		return array_diff_key($regions, @array_flip($cutOut));
 	}/*}}}*/
 
 	function isTree() {/*{{{*/
@@ -427,7 +427,7 @@ class PXMultiRegions {
 		}
 
 		$regionsData = $this->getRegionsData();
-		$orig        = array_flip($object[self::REGION_MARK]);
+		$orig        = @array_flip($object[self::REGION_MARK]);
 		$allowed     = array_flip($this->getAllowedRegionsIds());
 
 		foreach ($orig as $id => $tmp) {

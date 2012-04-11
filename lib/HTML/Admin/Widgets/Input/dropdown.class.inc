@@ -25,7 +25,7 @@ class PXInputDropDown extends PXAdminWidget {
 		$html     = squeeze(sprintf('<select name="%s" %s %s %s>', $this->name, $this->disable, $this->multiple, $this->size), ' ');
 		$empty    = array(null => 0);
 
-		$selected = max($empty, array_flip((array)$this->value));
+		$selected = max($empty, @array_flip((array)$this->value));
 		
 		foreach ($this->values as $k=>$title) {
 			$selectedHTML = '';

@@ -141,7 +141,7 @@ class PXDisplayTypeMultiRegions extends PXDisplayTypeBubbleText {
 		$inObject = GetColFromTableWithIndexs(
 			array_intersect_key(
 				$regions->getRegionsData(),
-				array_flip($object[$field->name])
+				@array_flip($object[$field->name])
 			),
 
 			"title"

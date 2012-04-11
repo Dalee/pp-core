@@ -21,10 +21,8 @@ class PXDisplayTypeMultiDropDown extends PXDisplayTypeDropdown {
 
 		$values = $field->values->values;
 		$values = array_intersect_key($values, array_flip($value));
-			
-		return !empty($values)
-			? join(", ", GetColFromTable($values, $displayField)) 
-			: '';
+
+		return !empty($values) ? join(", ", GetColFromTable($values, $displayField)) : '';
 	}
 }
 
