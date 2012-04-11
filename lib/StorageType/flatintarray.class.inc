@@ -8,6 +8,9 @@
  */
 class PXStorageTypeFlatIntArray extends PXStorageTypeIntArray {
 	protected function prepareValue($value) {
+		if (empty($value)) { // ;-( fix
+			return '[]';
+		}
 		$value{0} = '[';
 		$value{strlen($value) - 1} = ']';
 		return $value;
