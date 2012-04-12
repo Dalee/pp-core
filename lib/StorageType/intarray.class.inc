@@ -16,6 +16,10 @@ class PXStorageTypeIntArray extends PXStorageTypeArray {
 
 	function normalize( $field, $object, &$param ) {
 		$value = $object[$field->name];
+		if (empty($value)) { // checking for empty value
+			return array();
+		}
+
 		$value = strtolower($value); // avoid json_decode error in case with NULL values, transform NULL -> null
 		$value = $this->prepareValue($value);
 
