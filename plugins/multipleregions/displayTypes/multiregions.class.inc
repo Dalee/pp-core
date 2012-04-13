@@ -239,7 +239,7 @@ div.help-box .help-text {
 	float:left;
 	margin-left:10px;
 	line-height:1.5em;
-	max-width:350px;
+	max-width:300px;
 }
 CSS;
 		return $r;
