@@ -22,7 +22,7 @@ class PXModuleAdvert extends PXModule {
 		$campaigns = $this->adminCampaigns($sid);
 
 		if (is_numeric($sid) && $campaigns->has($sid)) {
-			$this->adminBanners($sid);
+			$this->adminBanners($sid, $campaigns);
 		}
 
 		$this->adminPlaces();
@@ -47,7 +47,7 @@ class PXModuleAdvert extends PXModule {
 		return $tree;
 	}
 
-	function adminBanners($sid) {
+	function adminBanners($sid, $campaigns = null) {
 		$dtBanner =&  $this->app->types[$this->dtBanner];
 
 		$table = new PXAdminTableObjects($dtBanner, $sid, 'ByParent');
@@ -59,6 +59,19 @@ class PXModuleAdvert extends PXModule {
 
 		if ($this->user->can('write', $dtBanner, array('id' => 0, 'parent' => $sid))) {
 			$this->controls[$this->dtBanner] = array($sid, $sid, 1);
+		}
+
+		// Load additional children tables
+		if (is_a($campaigns, 'PXAdminTreeObjects') && count($allowedChilds = $this->app->getAllowedChildsKeys($this->dtCampaign, $campaigns->get($sid))) > 1) {
+			foreach(array_diff($allowedChilds, array($this->dtBanner)) as $extra_dt) {
+				if (!isset($this->app->types[$extra_dt])) {
+						$this->layout->append('INNER.1.0', '<h1 class="error">Формат '.$extra_dt.' не описан</h1>');
+						continue;
+					}
+					$objects = new PXAdminTableObjects($extra_dt, $sid, 'ByParent');
+					$objects->setControlParent($sid);
+					$objects->addToParent('INNER.1.0');
+			}
 		}
 	}
 
