@@ -102,16 +102,14 @@ function FPDF($orientation='P', $unit='mm', $size='A4')
 	$this->ColorFlag = false;
 	$this->ws = 0;
 	// Font path
-	if(defined('FPDF_FONTPATH'))
-	{
+	$this->corefontpath = (is_dir(dirname(__FILE__).'/font')) ? dirname(__FILE__).'/font/' : '';
+	if(defined('FPDF_FONTPATH')) {
 		$this->fontpath = FPDF_FONTPATH;
 		if(substr($this->fontpath,-1)!="/" && substr($this->fontpath,-1)!="\\")
 			$this->fontpath .= "/";
+	} else {
+		$this->fontpath = $this->corefontpath;
 	}
-	elseif(is_dir(dirname(__FILE__).'/font'))
-		$this->fontpath = dirname(__FILE__).'/font/';
-	else
-		$this->fontpath = '';
 	// Core fonts
 	$this->CoreFonts = array('courier', 'helvetica', 'times', 'symbol', 'zapfdingbats');
 	// Scale factor
@@ -881,6 +879,10 @@ function Ln($h=null)
 
 function Image($file, $x=null, $y=null, $w=0, $h=0, $type='', $link='')
 {
+	if (!file_exists($file) && defined('FPDF_IMAGEPATH') && file_exists(FPDF_IMAGEPATH.'/'.$file)) {
+		$file = FPDF_IMAGEPATH.'/'.$file;
+	}
+
 	// Put an image on the page
 	if(!isset($this->images[$file]))
 	{
@@ -1142,7 +1144,11 @@ function _endpage()
 function _loadfont($font)
 {
 	// Load a font definition file from the font directory
-	include($this->fontpath.$font);
+	if (file_exists($this->fontpath.$font)) {
+		include($this->fontpath.$font);
+	} else {
+		include($this->corefontpath.$font);
+	}
 	$a = get_defined_vars();
 	if(!isset($a['name']))
 		$this->Error('Could not include font definition file');
