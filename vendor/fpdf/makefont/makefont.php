@@ -354,6 +354,7 @@ function MakeFont($fontfile, $enc='cp1252', $embed=true)
 	Message('Font definition file generated: '.$basename.'.php');
 }
 
+/*
 if(PHP_SAPI=='cli')
 {
 	// Command-line interface
@@ -370,4 +371,5 @@ if(PHP_SAPI=='cli')
 		$embed = true;
 	MakeFont($fontfile, $enc, $embed);
 }
+*/
 ?>
