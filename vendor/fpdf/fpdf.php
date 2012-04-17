@@ -1543,7 +1543,7 @@ function _putfonts()
 		// Font file embedding
 		$this->_newobj();
 		$this->FontFiles[$file]['n'] = $this->n;
-		$font = file_get_contents($this->fontpath.$file,true);
+		$font = file_get_contents(file_exists($this->fontpath.$file) ? $this->fontpath.$file : $this->corefontpath.$file,true);
 		if(!$font)
 			$this->Error('Font file not found: '.$file);
 		$compressed = (substr($file,-2)=='.z');
