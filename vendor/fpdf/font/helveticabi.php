@@ -1,6 +1,6 @@
 <?php
 $type = 'TrueType';
-$name = 'Arial-BoldItalicMT';
+$name = 'Helvetica-BoldOblique';
 $desc = array('Ascent'=>728,'Descent'=>-210,'CapHeight'=>715,'Flags'=>96,'FontBBox'=>'[-560 -376 1390 1018]','ItalicAngle'=>-12,'StemV'=>120,'MissingWidth'=>750);
 $up = -106;
 $ut = 105;
@@ -19,4 +19,6 @@ $cw = array(
 	chr(242)=>667,chr(243)=>722,chr(244)=>611,chr(245)=>677,chr(246)=>927,chr(247)=>722,chr(248)=>708,chr(249)=>1000,chr(250)=>643,chr(251)=>979,chr(252)=>719,chr(253)=>989,chr(254)=>708,chr(255)=>854);
 $enc = 'koi8-r';
 $diff = '128 /SF100000 /SF110000 /SF010000 /SF030000 /SF020000 /SF040000 /SF080000 /SF090000 /SF060000 /SF070000 /SF050000 /upblock /dnblock /block /lfblock /rtblock /ltshade /shade /dkshade /integraltp /filledbox /periodcentered /radical /approxequal /lessequal /greaterequal /space /integralbt /degree /twosuperior /periodcentered /divide /SF430000 /SF240000 /SF510000 /afii10071 /SF520000 /SF390000 /SF220000 /SF210000 /SF250000 /SF500000 /SF490000 /SF380000 /SF280000 /SF270000 /SF260000 /SF360000 /SF370000 /SF420000 /SF190000 /afii10023 /SF200000 /SF230000 /SF470000 /SF480000 /SF410000 /SF450000 /SF460000 /SF400000 /SF540000 /SF530000 /SF440000 /copyright /afii10096 /afii10065 /afii10066 /afii10088 /afii10069 /afii10070 /afii10086 /afii10068 /afii10087 /afii10074 /afii10075 /afii10076 /afii10077 /afii10078 /afii10079 /afii10080 /afii10081 /afii10097 /afii10082 /afii10083 /afii10084 /afii10085 /afii10072 /afii10067 /afii10094 /afii10093 /afii10073 /afii10090 /afii10095 /afii10091 /afii10089 /afii10092 /afii10048 /afii10017 /afii10018 /afii10040 /afii10021 /afii10022 /afii10038 /afii10020 /afii10039 /afii10026 /afii10027 /afii10028 /afii10029 /afii10030 /afii10031 /afii10032 /afii10033 /afii10049 /afii10034 /afii10035 /afii10036 /afii10037 /afii10024 /afii10019 /afii10046 /afii10045 /afii10025 /afii10042 /afii10047 /afii10043 /afii10041 /afii10044';
+$file = 'helveticabi.z';
+$originalsize = 561924;
 ?>
