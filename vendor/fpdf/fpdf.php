@@ -34,6 +34,7 @@ var $bMargin;            // page break margin
 var $cMargin;            // cell margin
 var $x, $y;              // current position in user unit
 var $lasth;              // height of last printed cell
+var $lineHeight = 1.5;   // line height coefficient
 var $LineWidth;          // line width in user unit
 var $fontpath;           // path containing fonts
 var $CoreFonts;          // array of core font names
