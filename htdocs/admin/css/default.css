@@ -1239,8 +1239,78 @@ img.cursor {
 	 margin-bottom: 1em;
 }
 
-form.simple {
+form.simple { /* inversion? for simple? */
 	padding: 1em;
 	background-color: #385A94;
 	color: #ffffff;
+}
+
+/** simple structured form */
+form.simpleform {
+	padding:1em;
+}
+form.simpleform .field {
+	height:auto;
+	padding:0.6em 1em;
+	background:white;
+}
+form.simpleform .field:nth-child(2n) {
+	background:#f7f7f7;
+}
+form.simpleform .field.submit,
+form.simpleform .field.button {
+	padding-left:21em;
+}
+form.simpleform .field label:first-child {
+	text-align:left;
+	width:20em;
+	display:inline-block;
+}
+form.simpleform .field input[type=file] {
+	height:20px;
+	cursor: pointer;
+	padding: 0 3px;
+}
+
+form.simpleform .field input[type=submit],
+form.simpleform .field input[type=button],
+form.simpleform .field button {
+	border-radius:4px;
+	border:1px solid #555;
+	background:white;
+	background: -moz-linear-gradient(top, rgba(246,248,249,0.2) 0%, rgba(229,235,238,0.2) 50%, rgba(215,222,227,0.2) 51%, rgba(245,247,249,0.2) 100%);
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(246,248,249,0.2)), color-stop(50%,rgba(229,235,238,0.2)), color-stop(51%,rgba(215,222,227,0.2)), color-stop(100%,rgba(245,247,249,0.2)));
+	background: -webkit-linear-gradient(top, rgba(246,248,249,0.2) 0%,rgba(229,235,238,0.2) 50%,rgba(215,222,227,0.2) 51%,rgba(245,247,249,0.2) 100%);
+	background: -o-linear-gradient(top, rgba(246,248,249,0.2) 0%,rgba(229,235,238,0.2) 50%,rgba(215,222,227,0.2) 51%,rgba(245,247,249,0.2) 100%);
+	background: -ms-linear-gradient(top, rgba(246,248,249,0.2) 0%,rgba(229,235,238,0.2) 50%,rgba(215,222,227,0.2) 51%,rgba(245,247,249,0.2) 100%);
+	background: linear-gradient(top, rgba(246,248,249,0.2) 0%,rgba(229,235,238,0.2) 50%,rgba(215,222,227,0.2) 51%,rgba(245,247,249,0.2) 100%);
+	padding: 3px 6px;
+	cursor: pointer;
+	margin-right: 1em;
+}
+form.simpleform .field input[type=submit]:hover,
+form.simpleform .field input[type=button]:hover,
+form.simpleform .field button:hover {
+	background-color:#C7EDFF;
+	box-shadow:0 1px 3px -1px #555;
+}
+form.simpleform .field input.warn[type=submit],
+form.simpleform .field input.warn[type=button],
+form.simpleform .field button.warn {
+	background-color:#fff0f0;
+}
+form.simpleform .field input[type=submit]:active,
+form.simpleform .field input[type=button]:active,
+form.simpleform .field button:active {
+	background-color:#f9f9f9;
+	box-shadow:inset 0 1px 3px -1px #555;
+}
+form.simpleform .field input.warn[type=submit]:active,
+form.simpleform .field input.warn[type=button]:active,
+form.simpleform .field button.warn:active {
+	background-color:#fff5f5;
+}
+
+form.simpleform select {
+	margin-left: 3px;
 }
