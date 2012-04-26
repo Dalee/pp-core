@@ -47,6 +47,9 @@ abstract class PXUser {
 	// FIXME
 	function auth() {
 		if(strtolower(get_class($this->auth)) != 'pxauthnull' || $this->checkAuth()){
+			foreach($this->app->triggers->system as $t) {
+				$t->getTrigger()->onAfterUserAuth($this);
+			}
 			return $this->auth->auth();
 		}
 		return false;
