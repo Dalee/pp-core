@@ -58,6 +58,10 @@ class PXAuthInterface {
 	 * @return bool
 	 */
 	function onAuth(){
+		$user = PXRegistry::getUser();
+		foreach($this->app->triggers->system as $t) {
+			$t->getTrigger()->onAfterUserAuth($user);
+		}
 		return true;
 	}
 
