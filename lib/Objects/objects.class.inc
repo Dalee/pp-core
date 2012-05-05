@@ -39,7 +39,7 @@ class PXObjects extends PXContentObjects {
 	}
 
 	public function getFirst($type) {
-		return reset($this[$type]);
+		return !empty($this[$type]) && is_array($this[$type]) ? reset($this[$type]) : null;
 	}
 
 	function getAllowedChilds() {
