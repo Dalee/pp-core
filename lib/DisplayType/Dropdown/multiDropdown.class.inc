@@ -15,9 +15,14 @@ class PXDisplayTypeMultiDropDown extends PXDisplayTypeDropdown {
 		return NLAbstractHTMLForm::BuildDropDown($field->name . "[]", $value, $field->values->GetList(), true, $size);
 	}
 
+	// remove 0 -> NULL, 0 -> '', 0 -> "NULL" values
+	function _filterNULL($value) {
+		return !( (is_null($value)) || (empty($value)) || ($value == "NULL"));
+	}
+
 	function buildCell($field, $object, $param=NULL) {
 		$displayField = $field->values->displayField;
-		$value = $object[$field->name];
+		$value = array_filter($object[$field->name], array($this, "_filterNULL"));
 
 		$values = $field->values->values;
 		$values = array_intersect_key($values, array_flip($value));
