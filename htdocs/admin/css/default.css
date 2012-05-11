@@ -18,7 +18,7 @@ span.version {
 	font-size: 1em;
 	display: block;
 	clear: both;
-	posiiton: relative;
+	position: relative;
 	margin: 0 0 10px 10px;
 	line-height: 1em;
 }
@@ -524,6 +524,11 @@ table.mainform tr.even td, table.mainform tr.even  th {
 	background-color: #F0F2F4;
 }
 
+table.objects tr:nth-child(2n+1) td,
+table.mainform tr:nth-child(2n+1) td {
+	background-color: #F0F2F4;
+}
+
 table.mainform td input, table.mainform td textarea {
 	width: 100%;
 	vertical-align: middle;
@@ -537,6 +542,16 @@ div.edit-file-form, div.edit-file-form textarea {
 table.mainform td input.radio,
 table.mainform td input.checkbox {
 	width: auto;
+}
+
+table.mainform td label {
+	display: inline-block;
+	margin: 0.5em 0.5em;
+}
+table.mainform td label input.radio {
+	padding: 0;
+	margin: 0;
+	vertical-align: top;
 }
 
 table.mainform td div.redactor {
