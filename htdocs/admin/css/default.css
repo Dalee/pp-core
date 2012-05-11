@@ -524,11 +524,6 @@ table.mainform tr.even td, table.mainform tr.even  th {
 	background-color: #F0F2F4;
 }
 
-table.objects tr:nth-child(2n+1) td,
-table.mainform tr:nth-child(2n+1) td {
-	background-color: #F0F2F4;
-}
-
 table.mainform td input, table.mainform td textarea {
 	width: 100%;
 	vertical-align: middle;
@@ -1269,9 +1264,7 @@ form.simpleform .field {
 	padding:0.6em 1em;
 	background:white;
 }
-form.simpleform .field:nth-child(2n) {
-	background:#f7f7f7;
-}
+
 form.simpleform .field.submit,
 form.simpleform .field.button {
 	padding-left:21em;
