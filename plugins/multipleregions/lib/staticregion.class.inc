@@ -41,11 +41,11 @@ class PXCorpRegions {
 	}
 
 	static function getRegionData($id = NULL) {
+		$r = self::multi();
 		if ($id == NULL) {
-			$r = self::multi();
 			return $r->getMyRegionData();
 		} else {
-			return PXRegistry::getDb()->getObjectById(PXRegistry::getApp()->types[self::getField()], $id);
+			return getFromArray($r->getRegionsData(), $id, array());
 		}
 	}
 
