@@ -53,20 +53,20 @@ final class PXMultipleRegionsReflexer {
 	private function modifyWhere() {
 		$reflexId = $this->getReflexId();
 		
-		$modified = preg_replace("#({$this->formatId}\.)?(parent) in ([^\)]+)#i", "$1$2 in $3,'{$reflexId}'",  $this->where);
-		$modified = preg_replace("#({$this->formatId}\.)?(parent) = ([^\)\s]+)#i", "$1$2 in ($3,'{$reflexId}')", $modified);
-
-		return $modified;
+ 		$modified = preg_replace("#({$this->formatId}\.)?(parent) in \((?=\s*\d)#i", "$1$2 in ('{$reflexId}',",  $this->where);
+ 		$modified = preg_replace("#({$this->formatId}\.)?(parent) = ([^\s]+)#i", "$1$2 in ($3,'{$reflexId}')", $modified);
+		
+ 		return $modified;
 	}
 
 	private function getReflexId() {
-		return !empty(self::$store[$this->formatId]['refId']) 
+		return !empty(self::$store[$this->formatId]['refId'])
 			? self::$store[$this->formatId]['refId']
 			: null;
 	}
 
 	private function getParentType() {
-		return !empty(self::$store[$this->formatId]['parent']) 
+		return !empty(self::$store[$this->formatId]['parent'])
 			? self::$store[$this->formatId]['parent']
 			: null;
 	}

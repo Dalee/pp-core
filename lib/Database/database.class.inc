@@ -108,8 +108,8 @@ class PXDatabase extends NLSQLDatabaseAdapter implements IPXDatabase {
 	function LoadDirectoriesByType(&$format, $object=NULL) {
 		foreach ($format->fields as $k=>$v) {
 			if (
-				is_object($v->values) && 
-				strtolower(get_class($v->values)) == 'pxdirectorydescription' && 
+				is_object($v->values) &&
+				strtolower(get_class($v->values)) == 'pxdirectorydescription' &&
 				!$v->values->loaded
 			) {
 				$this->LoadDirectory($format->fields[$k]->values, $object, true, $format);
@@ -222,7 +222,7 @@ class PXDatabase extends NLSQLDatabaseAdapter implements IPXDatabase {
 			if(strlen($location)) {
 				$tmpWhere[] = $location;
 			}
-			$tmpWhere[] = $directory->source.'.id IN ('.implode(',', $directory->filter).')'; 
+			$tmpWhere[] = $directory->source.'.id IN ('.implode(',', $directory->filter).')';
 
 			$location = implode(' AND ', $tmpWhere);
 		}
@@ -422,7 +422,7 @@ class PXDatabase extends NLSQLDatabaseAdapter implements IPXDatabase {
 		}
 
 		if (count($intArray)) {
-			$whereClause = sprintf('%s.%s IN (%s)', $format->id, $field, implode(', ', $intArray));
+			$whereClause = sprintf('%s.%s IN (%s)', $format->id, $field, implode(',', $intArray));
 			$res = $this->_GetData($format, $status, $mode, $whereClause, array($limit, $offset), $order);
 		} else {
 			$res = $this->emptyResult($mode);
