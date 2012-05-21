@@ -53,7 +53,7 @@ final class PXMultipleRegionsReflexer {
 	private function modifyWhere() {
 		$reflexId = $this->getReflexId();
 		
-		$modified = preg_replace("#({$this->formatId}\.)?(parent) in ([^\)\s]+)#i", "$1$2 in $3,'{$reflexId}'",  $this->where);
+		$modified = preg_replace("#({$this->formatId}\.)?(parent) in ([^\)]+)#i", "$1$2 in $3,'{$reflexId}'",  $this->where);
 		$modified = preg_replace("#({$this->formatId}\.)?(parent) = ([^\)\s]+)#i", "$1$2 in ($3,'{$reflexId}')", $modified);
 
 		return $modified;
