@@ -138,12 +138,15 @@ class PXAdminTableObjects extends PXAdminObjects  {
 
 		if($format->parent == 'struct') {
 			$tree = $this->db->getObjects($format->parentType(), null, DB_SELECT_TREE);
+			fillRootPathnames($tree); // temporary
+
 			foreach($parentsIds as $p) {
 				$pathnames[$p] = isset($tree->leafs[$p]) ? $tree->leafs[$p]->createpath() : '';
 			}
 
 		} else {
 			$parents = $this->db->getObjectsByIdArray($format->parentType(), null, $parentsIds);
+			fillRootPathnames($parents); // temporary
 
 			$parentPathnames = $this->_loadParentPathnames($format->parentType(), $parents);
 

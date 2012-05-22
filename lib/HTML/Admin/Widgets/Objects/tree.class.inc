@@ -7,6 +7,7 @@ class PXAdminTreeObjects extends PXAdminObjects {
 
 	function loadObjects() {
 		$this->tree = $this->db->getObjects($this->format, null, DB_SELECT_TREE);
+		fillRootPathnames($this->tree); // temporary
 
 		$this->db->filterByAccess('admin', $this->format, $this->tree);
 		$this->count = sizeof($this->tree->leafs) - 1;
