@@ -278,7 +278,7 @@ class PXModuleMain extends PXModule {
 
 	// temporary struct root fixer. probably we must move it out to struct.class.inc (PXStructTree)
 	protected
-	function fillPathnamedAliases(&$tree, $host = null) {
+	function fillPathnamedAliases($tree, $host = null) {
 		// "пустой" проект
 		if (empty($tree) or empty($tree->levels[1])) {
 			return;
@@ -305,7 +305,7 @@ class PXModuleMain extends PXModule {
 			}
 		}
 
-		// находим нужный корень и правим его pathname
+		// находим нужный корень и правим его pathname по полному соответствию маске
 		foreach ($tree->levels[1] as $_rootId) {
 			if ($tree->leafs[$_rootId]->content['pathname'] === $hostAlias) {
 				$tree->leafs[$_rootId]->content['__pathname'] = $tree->leafs[$_rootId]->content['pathname'];
