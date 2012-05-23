@@ -15,7 +15,7 @@ abstract class PXAdminObjects extends PXAdminWidget implements IPXAdminObjects {
 		return self::$dataCache[$key];
 	}
 	protected static function makeDataKey() {
-		return md5(json_encode(func_get_args()));
+		return md5(var_export(func_get_args(),1));
 	}
 
 	function __construct($format) {
