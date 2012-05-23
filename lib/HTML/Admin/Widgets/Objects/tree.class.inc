@@ -1,4 +1,5 @@
 <?php
+
 class PXAdminTreeObjects extends PXAdminObjects {
 	function __construct($format) {
 		parent::__construct($format);
@@ -8,7 +9,7 @@ class PXAdminTreeObjects extends PXAdminObjects {
 	function loadObjects() {
 		$cacheDataKey = self::makeDataKey($this->format->id);
 		if ($r = self::retrieveData($cacheDataKey)) {
-			$this->tree =& $r;
+			$this->tree = $r;
 			$this->count = sizeof($this->tree->leafs) - 1;;
 			return;
 		}
@@ -52,7 +53,7 @@ class PXAdminTreeObjects extends PXAdminObjects {
 		return $this->tree->leafs[$id]->content;
 	}
 
-	function &getTree() {
+	function getTree() {
 		return $this->tree;
 	}
 }

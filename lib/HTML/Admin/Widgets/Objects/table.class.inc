@@ -50,7 +50,7 @@ class PXAdminTableObjects extends PXAdminObjects  {
 		);
 
 		$method = 'getObjects';
-		if(strlen($this->loadMethod)) {
+		if (strlen($this->loadMethod)) {
 			$method .= $this->loadMethod;
 			$args[] = $where;
 
@@ -59,11 +59,11 @@ class PXAdminTableObjects extends PXAdminObjects  {
 			$args[] = $where;
 		}
 
-		if(sizeof($this->additionalArgs) > 0) {
+		if (sizeof($this->additionalArgs) > 0) {
 			$args = array_merge($args, $this->additionalArgs);
 		}
 
-		if(!is_null($limit) && !is_null($offset)) {
+		if (!is_null($limit) && !is_null($offset)) {
 			$method .= 'Limited';
 			$args[] = $limit;
 			$args[] = $offset;
@@ -72,7 +72,7 @@ class PXAdminTableObjects extends PXAdminObjects  {
 		$args[] = $mode;
 		$args[] = $order;
 
-		if(!method_exists($this->db, $method)) {
+		if (!method_exists($this->db, $method)) {
 			FatalError('Undefined method '.$method.' in database');
 		}
 
