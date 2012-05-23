@@ -6,11 +6,19 @@ class PXAdminTreeObjects extends PXAdminObjects {
 	}
 
 	function loadObjects() {
+		$cacheDataKey = self::makeDataKey($this->format->id);
+		if ($r = self::retrieveData($cacheDataKey)) {
+			$this->tree =& $r;
+			$this->count = sizeof($this->tree->leafs) - 1;;
+			return;
+		}
+
 		$this->tree = $this->db->getObjects($this->format, null, DB_SELECT_TREE);
-		fillRootPathnames($this->tree); // temporary
 
 		$this->db->filterByAccess('admin', $this->format, $this->tree);
 		$this->count = sizeof($this->tree->leafs) - 1;
+
+		self::storeData($cacheDataKey, $this->tree);
 	}
 
 	function getControlParent() {
@@ -42,6 +50,10 @@ class PXAdminTreeObjects extends PXAdminObjects {
 		}
 
 		return $this->tree->leafs[$id]->content;
+	}
+
+	function &getTree() {
+		return $this->tree;
 	}
 }
 ?>

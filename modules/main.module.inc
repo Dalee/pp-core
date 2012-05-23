@@ -69,21 +69,22 @@ class PXModuleMain extends PXModule {
 		}
 	}
 
+	protected
 	function _parseAliasesConfig() {
-		if(!isset($this->settings['domainAlias'])) {
+		if (!isset($this->settings['domainAlias'])) {
 			$this->settings['domainAlias'] = array();
+			return array();
 		}
 
 		$config = $this->settings['domainAlias'];
-
-		if(is_string($config)) {
-			$config = array($config);
+		if (is_string($config)) {
+			$config = explode("\n", $config);
 		}
 
 		$aliases = array();
-		foreach($config as $k=>$tmp) {
-			list($host, $alias) = preg_split('/\s*=\s*/', trim($tmp));
-			$aliases[$host] = $alias; 
+		foreach ($config as $row) {
+			list ($host, $alias) = preg_split('/\s*=\s*/', trim($row));
+			$aliases[$host] = $alias;
 		}
 
 		return $aliases;
@@ -147,7 +148,7 @@ class PXModuleMain extends PXModule {
 
 		return $objsArray;
 	}
-	
+
 	private function loadSelectedObjects($object, $format, $pathName) {
 		$objsArray = array();
 
@@ -158,7 +159,7 @@ class PXModuleMain extends PXModule {
 		$objsArray = $this->_loadContentLimited($format, true, array('pathname' => $pathName, 'parent' => $object->currentId), 'IGNORED', 1, 0);
 		return $objsArray;
 	}
-	
+
 	private function getCurrentPage($format, $count, $a_per_page) {
 		// default page - from properties.ini (first or last)
 		$defaultPage = $this->app->getProperty('FP_' . strtoupper($format->id).'_DEFAULT_LAST_PAGE') ? ceil($count/$a_per_page) : 1;
@@ -184,6 +185,8 @@ class PXModuleMain extends PXModule {
 		$rqCid = $request->getCid();
 
 		$hTree = new PXAdminTreeObjects($this->rootFormat);
+		$this->fillPathnamedAliases($hTree->getTree());
+
 		$hTree->hideCaption();
 		$hTree->showChildren('sid');
 
@@ -272,5 +275,46 @@ class PXModuleMain extends PXModule {
 	function _loadContentLimited(&$format, $status, $param, $value, $limit, $offset, $flag = DB_SELECT_TABLE, $order = NULL){
 		return $this->db->GetObjectsByFieldLimited($format, $status, $param, $value, $limit, $offset, $flag, $order);
 	}
+
+	// temporary struct root fixer. probably we must move it out to struct.class.inc (PXStructTree)
+	protected
+	function fillPathnamedAliases(&$tree, $host = null) {
+		// "пустой" проект
+		if (empty($tree) or empty($tree->levels[1])) {
+			return;
+		}
+
+		// set current host
+		is_null($host) && $host = PXRegistry::getRequest()->getHTTPHost();
+		$aliases = $this->_parseAliasesConfig();
+
+		// находим соответствие между хостом, на который мы зашли - fixme: use case?
+		// и корнем в дереве, который может быть нам нужен
+		$hostAlias = 'default';
+		if (isset($aliases[$host])) {
+			$hostAlias = $aliases[$host];
+		}
+
+		// если алиас "не нашли", может быть нужный хост есть среди корней? - fixme: use case?
+		if ($hostAlias == 'default') {
+			foreach ($tree->levels[1] as $_rootId) {
+				if ($tree->leafs[$_rootId]->content['pathname'] === $host) {
+				$hostAlias = $host;
+					break;
+				}
+			}
+		}
+
+		// находим нужный корень и правим его pathname
+		foreach ($tree->levels[1] as $_rootId) {
+			if ($tree->leafs[$_rootId]->content['pathname'] === $hostAlias) {
+				$tree->leafs[$_rootId]->content['__pathname'] = $tree->leafs[$_rootId]->content['pathname'];
+				$tree->leafs[$_rootId]->content['pathname'] = $host;
+				break;
+			}
+		}
+	}
+
 }
+
 ?>

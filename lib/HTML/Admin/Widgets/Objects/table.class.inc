@@ -37,7 +37,13 @@ class PXAdminTableObjects extends PXAdminObjects  {
 
 
 	private
-	function loadObjects($where=NULL, $mode=DB_SELECT_TABLE, $limit=null, $offset=null, $order=NULL) {
+	function &loadObjects($where=NULL, $mode=DB_SELECT_TABLE, $limit=null, $offset=null, $order=NULL) {
+		$args = func_get_args();
+		$cacheDataKey = self::makeDataKey($this->format->id, $this->loadMethod, $this->additionalArgs, $args);
+		if ($r = self::retrieveData($cacheDataKey)) {
+			return $r;
+		}
+
 		$args = array(
 			$this->format,
 			NULL
@@ -70,7 +76,10 @@ class PXAdminTableObjects extends PXAdminObjects  {
 			FatalError('Undefined method '.$method.' in database');
 		}
 
-		return call_user_func_array(array($this->db, $method), $args);
+		$r = call_user_func_array(array($this->db, $method), $args);
+
+		self::storeData($cacheDataKey, $r);
+		return $r;
 	}
 
 	protected
@@ -137,8 +146,8 @@ class PXAdminTableObjects extends PXAdminObjects  {
 		$pathnames = array();
 
 		if($format->parent == 'struct') {
-			$tree = $this->db->getObjects($format->parentType(), null, DB_SELECT_TREE);
-			fillRootPathnames($tree); // temporary
+			$treeObjects = new PXAdminTreeObjects('struct');
+			$tree = $treeObjects->getTree();
 
 			foreach($parentsIds as $p) {
 				$pathnames[$p] = isset($tree->leafs[$p]) ? $tree->leafs[$p]->createpath() : '';
@@ -146,7 +155,6 @@ class PXAdminTableObjects extends PXAdminObjects  {
 
 		} else {
 			$parents = $this->db->getObjectsByIdArray($format->parentType(), null, $parentsIds);
-			fillRootPathnames($parents); // temporary
 
 			$parentPathnames = $this->_loadParentPathnames($format->parentType(), $parents);
 

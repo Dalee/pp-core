@@ -5,6 +5,19 @@ abstract class PXAdminObjects extends PXAdminWidget implements IPXAdminObjects {
 	protected $count = 0;
 	protected $controlParent;
 
+	// simple runtime cacher. cross AdminWidget (!)
+	protected static $dataCache = array('null' => null);
+	protected static function storeData($key, &$data) {
+		self::$dataCache[$key] = $data;
+	}
+	protected static function &retrieveData($key) {
+		(!isset(self::$dataCache[$key])) && $key = 'null'; // oops?
+		return self::$dataCache[$key];
+	}
+	protected static function makeDataKey() {
+		return md5(json_encode(func_get_args()));
+	}
+
 	function __construct($format) {
 		if(is_string($format)) {
 			$format = PXRegistry::getTypes($format);
