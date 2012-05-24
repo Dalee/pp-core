@@ -9,12 +9,17 @@
 
 	$db = PXRegistry::getDB();
 
-	$banners = $db->getObjects($db->types['adbanner'], null);
+	$status = in_array('--null', $argv) ? null
+		: (in_array('--false', $argv) ? false
+		: true); // by default
+	$onlymobile = in_array('--only-mobile', $argv);
+	$banners = $db->getObjects($db->types['adbanner'], $status);
 
- 	foreach($banners as $b) {
+	Label('Processing '.($onlymobile?'mobile ':'').'banners with '.(is_null($status)?' any status':'status '.($status?'true':'false')).'.');
+ 	foreach ($banners as $b) {
 		WorkProgress(false, count($banners));
 
-		if($b['status']) {
+		if (!$onlymobile || (isset($b['mobile_status']) && $b['mobile_status'])) {
 			$db->modifyContentObject($db->types['adbanner'], $b);
 		}
 	}
