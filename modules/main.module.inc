@@ -185,6 +185,8 @@ class PXModuleMain extends PXModule {
 		$rqCid = $request->getCid();
 
 		$hTree = new PXAdminTreeObjects($this->rootFormat);
+
+		($this->rootFormatId == $this->app->modules['main']->settings['rootFormat']) &&
 		$this->fillPathnamedAliases($hTree->getTree());
 
 		$hTree->hideCaption();
