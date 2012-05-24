@@ -7,11 +7,16 @@
 
 	$engine = new PXEngineSbin();
 
+	if (in_array('--help', $argv) || in_array('-?', $argv) || in_array('-h', $argv)) {
+		Label("Banners reloader");
+		Label("  --null, --false, --true   for reload banners with that status");
+		Label("  --only-mobile             for filter by mobile_status (if exist)");
+		exit;
+	}
+
 	$db = PXRegistry::getDB();
 
-	$status = in_array('--null', $argv) ? null
-		: (in_array('--false', $argv) ? false
-		: true); // by default
+	$status = in_array('--null', $argv) ? null : !in_array('--false', $argv);
 	$onlymobile = in_array('--only-mobile', $argv);
 	$banners = $db->getObjects($db->types['adbanner'], $status);
 
@@ -19,9 +24,12 @@
  	foreach ($banners as $b) {
 		WorkProgress(false, count($banners));
 
-		if (!$onlymobile || (isset($b['mobile_status']) && $b['mobile_status'])) {
-			$db->modifyContentObject($db->types['adbanner'], $b);
+		// filter by mobile_status
+		if ($onlymobile && !(isset($b['mobile_status']) && $b['mobile_status'])) {
+			continue;
 		}
+
+		$db->modifyContentObject($db->types['adbanner'], $b);
 	}
 
 	WorkProgress(true);
