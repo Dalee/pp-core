@@ -1,4 +1,5 @@
 <?php
+
 abstract class PXEngine {
 	protected $modules;
 	protected $area;
@@ -11,7 +12,7 @@ abstract class PXEngine {
 
 	protected $initOrder = array('app', 'db', 'request', 'user', 'layout');
 
-	function __construct() {     // Инициализация основных объектов приложения
+	function __construct() { // Инициализация основных объектов приложения
 		PXProfiler::begin('INIT');
 
 		$this->initApplication();
@@ -24,7 +25,7 @@ abstract class PXEngine {
 
 		$this->user->checkAuth();
 
-		foreach($this->app->triggers->system as $t){
+		foreach ($this->app->triggers->system as $t) {
 			$t->getTrigger()->OnAfterEngineStart($this); //FIXME: this line is correct placeholder for this event ?
 		}
 
@@ -35,16 +36,16 @@ abstract class PXEngine {
 	}
 
 	protected function saveToRegistry() {
-		foreach(array_keys(get_object_vars($this)) as $var){
-			if(is_object($this->$var) && PXRegistry::canSaveIt($var)) {
+		foreach (array_keys(get_object_vars($this)) as $var) {
+			if (is_object($this->$var) && PXRegistry::canSaveIt($var)) {
 				call_user_func_array(array("PXRegistry", 'set'.ucfirst($var)), array(&$this->$var));
 			}
 		}
 	}
 
 	protected function initApplication() {
-		foreach($this->initOrder as $var){
-			if(!is_array($this->$var) || empty($this->{$var}['factory'])){
+		foreach ($this->initOrder as $var) {
+			if (!is_array($this->$var) || empty($this->{$var}['factory'])) {
 				continue;
 			}
 
@@ -52,7 +53,7 @@ abstract class PXEngine {
 
 			$initHelper = (!empty($this->{$var}['helper']) && method_exists($this, 'init'.ucfirst($var)) ? 'init'.ucfirst($var) : false);
 
-			if($initHelper){
+			if ($initHelper) {
 				$this->$initHelper($this->{$var}['factory']);
 			} else {
 				$this->$var = new $this->{$var}['factory'];
@@ -61,18 +62,18 @@ abstract class PXEngine {
 		}
 	}
 
-	protected function initApp($klass){
+	protected function initApp($klass) {
 		$this->app = PXApplication::getInstance($this); //$klass::getInstance(...) available since php 5.3.0 only
 	}
 
-	protected function initDb($klass){
-		$this->db =& new $klass($this->app);
+	protected function initDb($klass) {
+		$this->db = new $klass($this->app);
 	}
 
 	function initModules() {
 		$rArea = $this->request->getArea();
 
-		if(!isset($this->app->modules[$rArea])) {
+		if (!isset($this->app->modules[$rArea])) {
 			Finalize('/');
 		}
 
@@ -92,7 +93,7 @@ abstract class PXEngine {
 
 	abstract function runModules();
 
-	public function engineClass(){
+	public function engineClass() {
 		return PX_ENGINE_USER;
 	}
 
@@ -102,4 +103,5 @@ abstract class PXEngine {
 		}
 	}
 }
+
 ?>
