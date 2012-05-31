@@ -167,8 +167,7 @@ function D3($variable, $full=true) {
 			break;
 	}
 
-	// little protection for slowly recusrions
-	$dump = $full ? var_export($variable, 1) : print_r($variable, 1);
+	$dump = print_r($variable, 1);
 	$dump = d2_encode($dump);
 
 	return $dump;
