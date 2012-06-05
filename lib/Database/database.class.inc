@@ -1608,7 +1608,7 @@ SQL;
 				} while(!is_null($v = & $v['next']));
 			}
 			if (count($data)) {
-				$this->ModifyingCopy($reference->name, array_keys(reset($data)), &$data);
+				$this->ModifyingCopy($reference->name, array_keys(reset($data)), $data);
 			}
 			$this->transactionCommit();
 

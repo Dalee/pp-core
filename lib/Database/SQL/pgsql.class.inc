@@ -95,7 +95,7 @@ class NLPGSQLDatabase extends NLAbstractSQLDatabase {
 		}
 	}
 
-	function ModifyingCopy($tableName, $cols, &$data) {
+	function ModifyingCopy($tableName, $cols, $data) {
 		PXProfiler::begin('SQL: COPY '.sizeof($cols).'x'.sizeof($data).' to '.$tableName);
 
 		if (!$this->connected) {
