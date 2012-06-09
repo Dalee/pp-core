@@ -52,7 +52,7 @@ class PXCronRule {
 		$this->valid = false;
 		$this->asString = $ruleString;
 
-		$params = explode(' +', $ruleString);
+		$params = preg_split('/\s+/', $ruleString);
 
 		if (count($params) != 5) {
 			return;
