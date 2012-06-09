@@ -73,22 +73,17 @@ class PXRequest {
 	}
 	
 	function IsBadPath() {
-		$path = $_SERVER['REQUEST_URI'];
-		if ($paramsPos = strpos($path, "?")) {
-			$path = substr($path, 0, $paramsPos);
-		}
+		$path = $this->GetPathAsString();
 		// Terminal slash check
-		$regexp = '/\.(' . join('|', array_map('preg_quote', unserialize(ENUM_ALLOWED_PATHNAMES))) . ')\/+$/';
-		if (preg_match($regexp, $path)) {
+		if (preg_match('#\.(' . join('|', array_map('preg_quote', unserialize(ENUM_ALLOWED_PATHNAMES))) . ')/+$#', $path)) {
 			return true;
 		}
-		// Double slash check
+		/*REMOVEME: perform this check is unnecessary / Double slash check
 		if (strpos($path, '//') !== false) {
 			return true;
-		}
+		}*/
 		// 'index.php' and etc. check (shouldn't occur in the middle)
-		$regexp = '/\/(' . join('|', array_map('preg_quote', $this->rootPathsList)) . ')\//';
-		if (preg_match($regexp, $path)) {
+		if (preg_match('#/(' . join('|', array_map('preg_quote', $this->rootPathsList)) . ')/#', $path)) {
 			return true;
 		}
 		return false;
