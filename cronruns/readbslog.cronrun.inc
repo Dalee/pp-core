@@ -136,7 +136,7 @@ class PXCronRunReadBSLog extends PXAbstractCronRun {
 		if(is_null($max)) {
 			$max = time();
 		}
-		return $date > $min && $date < $max;
+		return $date > $min && $date <= $max;
 	}
 
 	function _parseLine($s, $file) {
