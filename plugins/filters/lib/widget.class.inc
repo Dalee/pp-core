@@ -34,11 +34,13 @@ class PXFiltersAdminWidget extends PXAdminWidget {
 			
 			switch(true){
 				case $field->storageType instanceof PXStorageTypeBoolean:
-					$filters_html[] = sprintf('<div><select name="filters[%s][%s]">',$dtype->id, $field->name);
-					$filters_html[] = sprintf('<option value=""%s>Все</option>',  empty($filter_value) ? ' selected="selected"' : '');
-					$filters_html[] = sprintf('<option value="t"%s>Да</option>',  $filter_value == 't' ? ' selected="selected"' : '');
-					$filters_html[] = sprintf('<option value="f"%s>Нет</option>', $filter_value == 'f' ? ' selected="selected"' : '');
-					$filters_html[] = sprintf('</select> &ndash; <label>%s</label></div>', $field->description);
+					$spformat = '<label><input type="radio" name="filters[%s][%s]" value="%s"%s/>%s</label> ';
+					
+					$filters_html[] = '<div>';
+					$filters_html[] = sprintf($spformat, $dtype->id, $field->name, '', empty($filter_value) ? ' checked="checked"' : '', 'Все');
+					$filters_html[] = sprintf($spformat, $dtype->id, $field->name, 'f', $filter_value == 'f' ? ' checked="checked"' : '', 'Нет');
+					$filters_html[] = sprintf($spformat, $dtype->id, $field->name, 't', $filter_value == 't' ? ' checked="checked"' : '', 'Да');
+					$filters_html[] = sprintf('&ndash; <label>%s</label></div>', $field->description);
 					break;
 				default:
 					$filters_html[] = sprintf('<div><input type="text" value="%s" name="filters[%s][%s]" /> &ndash; <label>%s</label></div>', $filter_value, $dtype->id, $field->name, $field->description);
