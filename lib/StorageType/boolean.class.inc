@@ -33,5 +33,9 @@ class PXStorageTypeBoolean extends PXStorageType {
 	function normalize($field, $object, &$param) {
 		return $param['db']->importBoolean($object[$field->name]);
 	}
+	
+	public function filterable() {
+		return true;
+	}
 }
 ?>

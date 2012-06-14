@@ -35,21 +35,26 @@ class PXTriggerDatabaseFilters extends PXAbstractDatabaseTrigger {
 			if (!isset($format->fields[$name]) or !$format->fields[$name]->storageType->filterable()) {
 				continue;
 			}
-
-			$value = urldecode($value);
-
-			$left  = substr($value, 0, 1) != '^' ? P_LEFT : 0;
-			$right = substr($value, -1)   != '$' ? P_RIGHT : 0;
-
-			if (!$left) {
-				$value = substr($value, 1);
+			$storageType = $format->fields[$name]->storageType;
+			switch(true){
+				case $storageType instanceof PXStorageTypeBoolean :
+					empty($value) || $_where[] = sprintf("%s.%s = %s", $format->id, $name, $value == 't' ? 'true' : 'false');
+					break;
+				default:
+					$value = urldecode($value);
+					
+					$left  = substr($value, 0, 1) != '^' ? P_LEFT : 0;
+					$right = substr($value, -1)   != '$' ? P_RIGHT : 0;
+					
+					if (!$left) {
+						$value = substr($value, 1);
+					}
+					
+					if (!$right) {
+						$value = substr($value, 0, strlen($value) - 1);
+					}
+					$_where[] = sprintf("%s.%s %s", $format->id, $name, $db->like($db->escapeString($value), $left | $right));
 			}
-
-			if (!$right) {
-				$value = substr($value, 0, strlen($value) - 1);
-			}
-
-			$_where[] = sprintf("%s.%s %s", $format->id, $name, $db->like($db->escapeString($value), $left | $right));
 		}
 		
 		foreach (PXFiltersPluginAdditionalLoader::getAdditionalFilters($format->id, $this->description->getFolder()) as $additionalFilterClass) {

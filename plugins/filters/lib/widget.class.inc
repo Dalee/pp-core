@@ -31,7 +31,18 @@ class PXFiltersAdminWidget extends PXAdminWidget {
 		foreach ($dtype->fields as $field) {
 			if (!$field->listed || !$field->storageType->filterable()) continue;
 			$filter_value = @htmlspecialchars($filters[$dtype->id][$field->name]);
-			$filters_html[] = sprintf('<div><input type="text" value="%s" name="filters[%s][%s]" /> &ndash; <label>%s</label></div>', $filter_value, $dtype->id, $field->name, $field->description);
+			
+			switch(true){
+				case $field->storageType instanceof PXStorageTypeBoolean:
+					$filters_html[] = sprintf('<div><select name="filters[%s][%s]">',$dtype->id, $field->name);
+					$filters_html[] = sprintf('<option value=""%s>Все</option>',  empty($filter_value) ? ' selected="selected"' : '');
+					$filters_html[] = sprintf('<option value="t"%s>Да</option>',  $filter_value == 't' ? ' selected="selected"' : '');
+					$filters_html[] = sprintf('<option value="f"%s>Нет</option>', $filter_value == 'f' ? ' selected="selected"' : '');
+					$filters_html[] = sprintf('</select> &ndash; <label>%s</label></div>', $field->description);
+					break;
+				default:
+					$filters_html[] = sprintf('<div><input type="text" value="%s" name="filters[%s][%s]" /> &ndash; <label>%s</label></div>', $filter_value, $dtype->id, $field->name, $field->description);
+			}
 		}
 
 		array_unshift($filters_html, '<p>Используйте ^ для поиска в начале строки, $ &mdash; в конце строки.</p>');
@@ -149,8 +160,8 @@ fieldset.filters.collapsed {
 	margin-bottom: 0;
 }
 
-fieldset.filters input, 
-fieldset.filters select, 
+fieldset.filters input,
+fieldset.filters select,
 fieldset.filters button {
 	margin: 3px;
 }
