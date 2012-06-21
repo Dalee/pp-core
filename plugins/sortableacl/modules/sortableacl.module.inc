@@ -16,7 +16,9 @@ class PXModuleSortableAcl extends PXModuleAcl {
 		$this->db->transactionBegin();
 
 		foreach($sorts as $order => $id) {
-			$this->db->modifyingQuery(sprintf("UPDATE %s SET sys_order = '%s' WHERE id = '%s'", $this->sqlTable, $order, $id));
+			$this->db->modifyingQuery(sprintf("UPDATE %s SET sys_order = '%s' WHERE id = '%s'",
+			                          $this->sqlTable, $this->db->escapeString($order),
+			                          $this->db->escapeString($id)));
 		}
 
 		$this->db->transactionCommit();

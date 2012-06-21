@@ -135,7 +135,7 @@ HTML;
 				$href .= $pathA[$i].'/';
 			}
 
-			$res[] = '<a href="'.$this->base.$href.'">'.$d.'</a>';
+			$res[] = '<a href="'.$this->base.quot($href).'">'.strip_tags($d).'</a>';
 		}
 
 		$_ = implode('/', $res);
@@ -195,8 +195,8 @@ HTML;
 			$f->writable,                 // isWrite
 			$f->deletable,                // isDelete
 			$f->binary,                   // isBinary
-			"'".$this->catalog."'",       // dir
-			"'".$this->href."'",          // href
+			"'".htmlspecialchars(str_replace("'", "", $this->catalog))."'",       // dir
+			"'".htmlspecialchars(str_replace("'", "", $this->href))."'",          // href
 			"'".$this->side."'",          // side
 			$f->copyable."); return false;"
 		);

@@ -187,7 +187,7 @@ class PXModuleCsvImport extends PXModule {
 
 		MakeDirIfNotExists($dir);
 		if ($file && $file != 'none' && $file['name'] && is_writable($dir)) {
-			$newFileName = $dir.'/'._TranslitFilename($file['name']);
+			$newFileName = $dir.'/'._TranslitFilename(_stripBadFileChars($file['name']));
 
 			if (!@copy($file['tmp_name'], $newFileName)) {
 				FatalError('ERROR_IO_BADPERMISSIONS', $dir);

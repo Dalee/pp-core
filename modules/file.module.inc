@@ -238,45 +238,71 @@ HTML;
 	}
 
 	function _initRequestVars() {
-		$request =& $this->request;
+		$rSide        = $this->request->getVar('side');
+		$lDir         = $this->request->getVar('ldir');
+		$rDir         = $this->request->getVar('rdir');
 
-		$rSide        = $request->getVar('side');
-		$lDir         = $request->getVar('ldir');
-		$rDir         = $request->getVar('rdir');
+		$outSide      = $this->request->getVar('outside');
 
-		$outSide      = $request->getVar('outside');
-		$this->redir  = ($outSide !== $this->area ? 'popup.phtml?action='.$outSide.'&name='.$request->getVar('name').'&' : 'index.phtml?');
+		$this->catObject = new PXFileListing($this->settings);
+
+		$this->redir  = ($outSide !== $this->area ? 'popup.phtml?action='.$outSide.'&name='.$this->request->getVar('name').'&' : 'index.phtml?');
 		$this->redir .= 'area='.$this->area.'&ldir='.$lDir.'&rdir='.$rDir;
 
-		$this->catalog     = BASEPATH.($rSide != 'r' ? $lDir : $rDir).'/';
-		$this->destination = BASEPATH.($rSide == 'r' ? $lDir : $rDir).'/';
-		$this->mFile       = $request->getVar('mfile');
+		$catalog       = ($rSide != 'r' ? $lDir : $rDir);
+		$this->catalog = $catalog && $this->catObject->isValid($catalog) ? $this->fullPath($catalog) . '/' : null;
+
+		$destination       = ($rSide == 'r' ? $lDir : $rDir);
+		$this->destination = $destination && $this->catObject->isValid($destination) ? $this->fullPath($destination) . '/' : null;
+
+		$this->mFile       = _stripBadFileChars($this->request->getVar('mfile'));
+		$this->nFile       = $this->_escapeFileName($this->request->getVar('nfile'));
 	}
 
 	function adminAction() {
 		$this->_initRequestVars();
 
 		switch($this->request->getVar('action')) {
-			case 'createdir': $this->_aCreateDir(); break;
+			case 'createdir': $this->withArgs(array($this->catalog), '_aCreateDir'); break;
 
-			case 'copy':      $this->_aCopy();      break;
-			case 'move':      $this->_aMove();      break;
-			case 'rename':    $this->_aRename();    break;
-			case 'delete':    $this->_aDelete();    break;
+			case 'copy':      $this->withArgs(array($this->catalog, $this->destination, $this->mFile), '_aCopy');    break;
+			case 'move':      $this->withArgs(array($this->catalog, $this->destination, $this->mFile), '_aMove');    break;
+			case 'rename':    $this->withArgs(array($this->catalog, $this->mFile, $this->nFile),       '_aRename');  break;
+			case 'delete':    $this->withArgs(array($this->catalog, $this->mFile),                     '_aDelete');  break;
 
-			case 'edit':      $this->_aEdit();      break;
+			case 'edit':      $this->withArgs(array($this->mFile),                                     '_aEdit');    break;
 
-			case 'unzip':     $this->_aUnZip();     break;
-			case 'upload':    $this->_aUpload();    break;
+			case 'unzip':     $this->withArgs(array($this->catalog, $this->mFile),                     '_aUnZip');   break;
+			case 'upload':    $this->withArgs(array($this->catalog),                                   '_aUpload');  break;
 		}
 
 		return $this->redir;
 	}
 
+	protected function fullPath($path) {
+		return BASEPATH. DIRECTORY_SEPARATOR . $path;
+	}
+
+	protected function withArgs($fields, $action) {
+		count($fields) == count(array_filter($fields)) && $this->{$action}();
+	}
+
+	function _escapeFileName($name) {
+		return $name = _TranslitFilename(_stripBadFileChars($name));
+	}
+
+
+	# Actions
 	function _aEdit() {
 		$this->redir = NULL;
+
+		if (!$this->catObject->isValid($mdir = $this->request->getVar('mdir'))) {
+			return;
+		}
+
+		$mdir        = $this->fullPath($mdir);
 		$source      = $this->request->getVar('filesource');
-		$filePath    = BASEPATH.$this->request->getVar('mdir').$this->mFile;
+		$filePath    = $mdir . $this->mFile;
 
 		if(is_file($filePath) && is_writable($filePath) && !is_binary($filePath)) {
 			$fp = fopen($filePath, 'w');
@@ -286,7 +312,7 @@ HTML;
 	}
 
 	function _aDelete() {
-		$filePath = $this->catalog.$this->mFile;
+		$filePath = $this->catalog . $this->mFile;
 
 		if(!is_writable($this->catalog)) {
 			return;
@@ -322,27 +348,18 @@ HTML;
 		}
 	}
 	
-	function _escapeFileName($name) {
-		if (substr($this->catalog.$name, 0, 2) != '\\') {
-			$name = _TranslitFilename($name);
-		}
-		return $name;
-	}
-	
 	function _aCreateDir() {
-		$newDir = $this->request->GetVar('ndir');
-		$newDir = $this->_escapeFileName($newDir);
+		$ndir = $this->_escapeFileName($this->request->getVar('ndir'));
 		
-		if(is_dir($this->catalog) && is_writable($this->catalog) && !is_dir($this->catalog.$newDir)) {
-			MakeDirIfNotExists($this->catalog.$newDir);
+		if(is_dir($this->catalog) && is_writable($this->catalog) && !is_dir($this->catalog . $ndir)) {
+			MakeDirIfNotExists($this->catalog.$ndir);
 		}
 	}
 
 	function _aRename() {
 		$oldFile = $this->mFile;
-		$newFile = $this->request->getVar('nfile');
-		$newFile = $this->_escapeFileName($newFile);
-		
+		$newFile = $this->nFile;
+
 		if((is_file($this->catalog.$oldFile) || is_dir($this->catalog.$oldFile)) && is_writable($this->catalog) && (!is_file($this->catalog.$newFile) && !is_dir($this->catalog.$newFile))) {
 			rename($this->catalog.$oldFile, $this->catalog.$newFile);
 		}
@@ -350,25 +367,21 @@ HTML;
 
 	function _aUnZip() {
 		if(is_file($this->catalog.$this->mFile) && is_writable($this->catalog)) {
-			system("unzip -oq ".$this->catalog.$this->mFile." -d ".$this->catalog);
+			system("unzip -oq " . escapeshellarg($this->catalog.$this->mFile) . " -d " . escapeshellarg($this->catalog));
 		}
 	}
 
 	function _aUpload() {
-		$request =& $this->request;
-
-		if($request->GetUploadFile('uploadfile')) {
-			$this->uploadFileFromUser($request->GetUploadFile('uploadfile'));
-		}
-
-		if($request->GetVar('uploadfileurl')) {
-			$this->uploadFileFromWeb($request->GetVar('uploadfileurl'));
+		if($this->request->GetUploadFile('uploadfile')) {
+			$this->uploadFileFromUser($this->request->GetUploadFile('uploadfile'));
+		} elseif($this->request->GetVar('uploadfileurl')) {
+			$this->uploadFileFromWeb($this->request->GetVar('uploadfileurl'));
 		}
 	}
 
 	function uploadFileFromUser($file) {
 		if ($file && $file != 'none' && $file['name'] && is_writable($this->catalog)) {
-			$filename = _TranslitFilename(stripslashes($file['name']));
+			$filename = _TranslitFilename(_stripBadFileChars(stripslashes($file['name'])));
 			if (!@copy($file['tmp_name'], $this->catalog.$filename)) {
 				FatalError('Не удалось скопировать файл '.$file['tmp_name'].' в каталог '.$this->catalog);
 			}
@@ -380,7 +393,7 @@ HTML;
 	}
 
 	function uploadFileFromWeb($url) {
-		if ($url && strlen($url) && (strpos($url, 'http://')!== false) && is_writable($this->catalog)) {
+		if ($url && strlen($url) && preg_match('#^https?://#', $url) && is_writable($this->catalog)) {
 			if($fp = @fopen($url, 'r')) {
 				$fileSource = '';
 
@@ -404,7 +417,8 @@ HTML;
 						FatalError('Не удалось изменить права доступа файлу '.$filename);
 					}
 
-					if(preg_match_all("/\/(\w+\.\w{1,5})(\?.*)?(\#\w*)?$/", $url, $matches, PREG_SET_ORDER) && isset($matches[0][0])) {
+					if(preg_match_all("#/([\w\-]+\.\w{1,5})(\?.*)?$#", $url, $matches, PREG_SET_ORDER) && isset($matches[0][0])) {
+						$matches[0][0] = _TranslitFilename($matches[0][0]);
 						rename($filename, $this->catalog.$matches[0][0]);
 						$filename = $this->catalog.$matches[0][0];
 					}
@@ -420,7 +434,7 @@ HTML;
 
 					$fileAttr = getimagesize($filename);
 
-					if(isset($fileAttr[2])) {
+					if(isset($map[$fileAttr[2]])) {
 						$subname = str_replace($this->catalog, '', $filename);
 						if(strpos($subname, '.')) {
 							$subname = substr($subname, 0, strpos($subname, '.'));

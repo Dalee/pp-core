@@ -160,9 +160,9 @@ class NLAbstractLayout {
 
 		$this->assign('LOGIN.LOGINNAME',    getFromArray($namesArray,  'login'));
 		$this->assign('LOGIN.PASSWDNAME',   getFromArray($namesArray,  'passwd'));
-		$this->assign('LOGIN.LOGINVALUE',   getFromArray($valuesArray, 'login'));
+		$this->assign('LOGIN.LOGINVALUE',   quot(getFromArray($valuesArray, 'login')));
 		$this->assign('LOGIN.REFERERNAME',  getFromArray($namesArray,  'referer'));
-		$this->assign('LOGIN.REFERERVALUE', getFromArray($valuesArray, 'referer'));
+		$this->assign('LOGIN.REFERERVALUE', quot(getFromArray($valuesArray, 'referer')));
 		$this->assign('LOGIN.AREANAME',     getFromArray($namesArray,  'area'));
 		$this->assign('LOGIN.AREAVALUE',    getFromArray($valuesArray, 'area'));
 	}

@@ -149,7 +149,7 @@ HTML;
 
 		$datatypesHTML .= '</ul>';
 
-
+		$hword = quot($this->word);
 		$html = <<<HTML
 		<style type="text/css">
 			fieldset li, fieldset ul {
@@ -169,7 +169,7 @@ HTML;
 			<input type="hidden" name="area"      value="{$this->area}">
 			<input type="hidden" name="charcheck" value="йцукен">
 
-			<input type="text" style="width:80%;" name="word" value="{$this->word}">
+			<input type="text" style="width:80%;" name="word" value="{$hword}">
 
 			<input type="submit" value="Найти">
 

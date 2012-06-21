@@ -109,6 +109,11 @@ class PXFileListing {
 		return $this->_ls($catalog);
 	}
 
+	# public interface
+	public function isValid($catalog) {
+		return $this->_isValid($catalog);
+	}
+
 	function _ls($catalog) {
 		$this->_files = array();
 

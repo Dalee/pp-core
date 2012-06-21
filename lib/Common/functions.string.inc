@@ -210,15 +210,7 @@ function _TranslitFilename($text) {
 	);
 
 	$text = strtr(trim($text), $trans);
-	if(strpos($text, '.')) {
-		$text = explode('.', $text);
-		$text[0] = substr($text[0], 0, 32);
-		$text = implode('.', $text);
-	} else {
-		 $text = substr($text, 0, 32);
-	}
-
-	return $text;
+	return substr($text, 0, 255); //max filename length in most common filesystems
 }
 
 function _TranslitUnique($text) {
@@ -1297,6 +1289,10 @@ function convertCyrillicObjectToUtf($object, $from_charset = 'k') {
 	}
 
 	return $object;
+}
+
+function _stripBadFileChars($fname) {
+	return str_replace(array('..' . DIRECTORY_SEPARATOR, DIRECTORY_SEPARATOR, chr(0)), '', $fname);
 }
 
 ?>

@@ -44,8 +44,8 @@ class PXAdminHTMLLayout extends NLAbstractLayout {
 		// pass ;
 	}
 
-	function assignTitle($title= NULL) {
-		$title = ((is_null($title) || !strlen(trim($title))) ? '' : $title.' / ')."Proxima CMS Портал";
+	function assignTitle($title = NULL) {
+		$title = ((is_null($title) || !strlen(trim($title))) ? '' : strtr($title, array('<' => '&lt;', '>' => '&gt;')).' / ')."Proxima CMS Портал";
 		$this->Assign("OUTER.TITLE", $title);
 	}
 
