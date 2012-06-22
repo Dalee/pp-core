@@ -27,7 +27,7 @@ class PXAuthSession extends PXAuthSecure {
 
 	function auth() {
 		setcookie('login',  $this->login, USER_SESSION_INTERVAL, '/', '');
-		setcookie('passwd', $this->encodeSession(), 0, '/', '');
+		setcookie('passwd', $this->encodeSession(), 0, '/', '', false, true); //set passwd HttpOnly
 	}
 
 	function unAuth() {
