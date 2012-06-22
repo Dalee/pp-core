@@ -367,7 +367,7 @@ HTML;
 
 	function _aUnZip() {
 		if(is_file($this->catalog.$this->mFile) && is_writable($this->catalog)) {
-			system("unzip -oq " . escapeshellarg($this->catalog.$this->mFile) . " -d " . escapeshellarg($this->catalog));
+			system(sprintf("unzip -oq %s -d %s", escapeshellarg($this->catalog.$this->mFile), escapeshellarg($this->catalog)));
 		}
 	}
 
