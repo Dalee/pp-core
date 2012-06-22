@@ -20,7 +20,7 @@ class PXAuthPlain extends PXAuthInterface {
 
 	function auth() {
 		setcookie('login',  $this->login,                       USER_SESSION_INTERVAL, '/', '');
-		setcookie('passwd', $this->EncodePasswd($this->passwd), USER_SESSION_INTERVAL, '/', '');
+		setcookie('passwd', $this->EncodePasswd($this->passwd), USER_SESSION_INTERVAL, '/', '', false, true); //set passwd HttpOnly
 	}
 
 	function unAuth() {

@@ -35,7 +35,7 @@ class PXAuthSecure extends PXAuthInterface {
 
 	function auth() {
 		setcookie('login',  $this->login,                              USER_SESSION_INTERVAL, '/', '');
-		setcookie('passwd', $this->encodePasswd($this->passwd, false), USER_SESSION_INTERVAL, '/', '');
+		setcookie('passwd', $this->encodePasswd($this->passwd, false), USER_SESSION_INTERVAL, '/', '', false, true); //set passwd HttpOnly
 	}
 
 	function unAuth() {
