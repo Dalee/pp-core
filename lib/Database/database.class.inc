@@ -603,7 +603,7 @@ class PXDatabase extends NLSQLDatabaseAdapter implements IPXDatabase {
 		}
 		$whereClause = substr($whereClause, 0, -4);
 		if(!strlen($whereClause)) {
-			return $this->emptyResult();
+			return $this->emptyResult($mode);
 		}
 
 		return $this->_GetData($format, $status, $mode, $whereClause, array($limit, $offset), $order);
