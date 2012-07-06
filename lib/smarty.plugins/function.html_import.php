@@ -20,39 +20,26 @@ function smarty_function_html_import($params, &$smarty) {
 
 	$extra_params = array();
 	$extra_attributes = "";
-	$minified = false;
 
 	foreach($params as $param => $value){
 		switch($param){
 			case 'tag':
 			case 'src':
 				break;
-			case 'min':
-			case 'minified':
-				$minified = $value;
-				break;
 			default:
 				$extra_params[] = sprintf(' %s="%s" ', $param, $value);
 		}
 	}
 
-	if (sizeof($extra_params) != 0){
+	if(sizeof($extra_params) != 0){
 		$extra_attributes = implode(' ', $extra_params);
 	}
 
 	$asset_id = '';
-
+	
 	if (strpos($params['src'], 'http') !== 0) {
-		foreach (array('/site/htdocs/', '/local/htdocs/', '/libpp/htdocs/') as $localpath) {
-			$localfile = BASEPATH . $localpath . $params['src'];
-			if ($minified) {
-				$minlocalfile = pathinfo($localfile, PATHINFO_FILENAME) . '.min.' . pathinfo($localfile, PATHINFO_EXTENSION);
-				if (file_exists($minlocalfile)) {
-					$asset_id = sprintf('?%s=%1$s', filemtime($minlocalfile));
-					break;
-				}
-			}
-			if (file_exists($localfile)) {
+		foreach(array('/site/htdocs/', '/local/htdocs/', '/libpp/htdocs/') as $localpath) {
+			if(file_exists($localfile = BASEPATH . $localpath . $params['src'])) {
 				$asset_id = sprintf('?%s=%1$s', filemtime($localfile));
 				break;
 			}
