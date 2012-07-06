@@ -68,12 +68,12 @@ class PXTriggerDatabaseAbstractAdvert extends PXAbstractDatabaseTrigger {
 		}
 	}
 
-	protected function getBannersById($id) {
-		return $this->db->GetObjectsByIdArray($this->dtBanner, TRUE, array_keys($this->db->GetLinks($this->refName, $this->dtPlace->id, $id)));
+	protected function getBannersById($id, $status = true) {
+		return $this->db->GetObjectsByIdArray($this->dtBanner, $status, array_keys($this->db->GetLinks($this->refName, $this->dtPlace->id, $id)));
 	}
 
-	protected function getPlacesById($id) {
-		return $this->db->GetObjectsByIdArray($this->dtPlace, TRUE, array_keys($this->db->GetLinks($this->refName, $this->dtBanner->id, $id)));
+	protected function getPlacesById($id, $status = true) {
+		return $this->db->GetObjectsByIdArray($this->dtPlace, $status, array_keys($this->db->GetLinks($this->refName, $this->dtBanner->id, $id)));
 	}
 
 	function adbanner($object) {

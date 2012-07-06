@@ -62,6 +62,7 @@ class PXResponse {
 
 		$this->status = $this->STATUS_MOVED;
 
+		$this->addHeader('PP-Location-Initiator', json_encode(array_map(create_function('$a', 'return $a["file"] . ":" . $a["line"];'), debug_backtrace())));
 		$this->addHeader('Location', $url);
 
 		if (!is_null($cacheTimeOut)) {
