@@ -4,7 +4,7 @@ require_once dirname(__FILE__) . '/additional_loader.class.inc';
 
 class PXFiltersAdminWidget extends PXAdminWidget {
 	private $pluginFolder;
-
+	
 	function __construct($pluginFolder) {
 		$this->pluginFolder = $pluginFolder;
 		parent::__construct();
@@ -16,16 +16,18 @@ class PXFiltersAdminWidget extends PXAdminWidget {
 
 		$this->layout->assignInlineJS($this->js());
 		$this->layout->assignInlineCSS($this->css());
-
+		
 		$app = PXRegistry::getApp();
 
 		$filters = $this->request->getVar('filters', array());
 		$filters_html = array();
 
 		$dtype = @$this->parentWidget->dtype;
-
-		if (!$dtype) {
-			return;
+		
+		$ignoredTypes = explode(',', PXAbstractPlugin::getParam('filters', 'ignore'));
+		
+		if (!$dtype || in_array($dtype->id, $ignoredTypes)) {
+			return '';
 		}
 
 		foreach ($dtype->fields as $field) {
