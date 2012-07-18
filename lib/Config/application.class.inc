@@ -184,21 +184,18 @@ class PXApplication {
 			}
 		}
 
-		foreach(array_reverse($filenames) as $filename){
+		foreach (array_reverse($filenames) as $filename) {
 			$source = ReadFileToString($filename);
 
 			$source = preg_replace('|^((\s*)include\s+(.+?))$|ime', "__ReplaceIncludeWhenParseLangYaml('$1', '$2', '$3');", $source);   // делаем include
-			$source = preg_replace('/\t/',          ' ' ,         $source);   // я люблю табы для читабельности
-			$source = preg_replace('/(\r?\n){2,}/', "\n",         $source);   // и лишние переводы строк
-
-			$tmp = tempnam(BASEPATH.'tmp/lang/', 'lang');
-			WriteStringToFile($tmp, $source);
+			$source = preg_replace('/\t/',          ' ' ,         $source);   // я люблю табы для читабельности, но по стандарту ямла это должны быть пробелы
+			$source = preg_replace('/(\r?\n){2,}/', "\n",         $source);   // и лишние переводы строк. и хотя спик их не любит, по стандарту ямла это норма, если документ выделен в потоке в блок --- ...
 
 			// Spyc'у не нравятся мои конфиги, поэтому их стоит немного переделать
 			include_once 'spyc/spyc.php5';
 
-			$this->langTree = array_recursive_inheritance($this->langTree, Spyc::YAMLLoad($tmp));
-			unlink($tmp);
+			// spyc must die. long live php-yaml!
+			$this->langTree = array_recursive_inheritance($this->langTree, Spyc::YAMLLoad($source));
 		}
 	}
 
