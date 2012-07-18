@@ -21,7 +21,7 @@ class PXStorageTypeArray extends PXStorageType {
 	}
  
 	function normalizeObjectAttribute($field, $object, &$param) {
-		$value     = $object[$field->name];
+		$value     = (array)$object[$field->name];
 		$valueInDb = $this->arrayToDB($value);
 		if(is_array($param['dbFields'])) {
 			$param['dbFields'][] = $field->name;
