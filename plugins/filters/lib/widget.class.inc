@@ -24,7 +24,7 @@ class PXFiltersAdminWidget extends PXAdminWidget {
 
 		$dtype = @$this->parentWidget->dtype;
 		
-		$ignoredTypes = explode(',', PXAbstractPlugin::getParam('filters', 'ignore'));
+		$ignoredTypes = array_map('trim', explode(',', PXAbstractPlugin::getParam('filters', 'ignore')));
 		
 		if (!$dtype || in_array($dtype->id, $ignoredTypes)) {
 			return '';
