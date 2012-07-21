@@ -56,11 +56,11 @@ class NLSQLDatabaseAdapter {
 		return $on ? $this->cacheOn() : $this->cacheOff();
 	}
 
-	function cacheOn(){
+	function cacheOn() {
 		$this->dbDriver->setCache($this->selfDescription->cache);
 	}
 
-	function cacheOff(){
+	function cacheOff() {
 		$this->dbDriver->setCache(false);
 	}
 
@@ -68,8 +68,9 @@ class NLSQLDatabaseAdapter {
 		return $this->selfDescription;
 	}
 
-	function LIKE($condition, $percs = NULL ){
+	function LIKE($condition, $percs = NULL) {
 		return $this->dbDriver->LIKE($condition, is_null($percs) ? P_LEFT|P_RIGHT : $percs);
 	}
 }
+
 ?>
