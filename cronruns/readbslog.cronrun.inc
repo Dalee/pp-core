@@ -25,6 +25,21 @@ class PXCronRunReadBSLog extends PXAbstractCronRun {
 
 		$this->timeMin = 0;
 		$this->timeMax = 0;
+		
+		/*
+			Extra console params:
+			argv[2] means filename to parse or files limit per round
+			argv[3] means skip write banner event data to log
+		*/
+		if (!empty($_SERVER['argv'][2])) {
+			if (is_numeric($_SERVER['argv'][2])) {
+				$this->fLimit = $_SERVER['argv'][2];
+			} else {
+				$this->files[]   = $_SERVER['argv'][2];
+				$this->leaveFile = true;
+			}
+			$this->skipLog = isset($_SERVER['argv'][3]);
+		}
 	}
 
 	function Run(&$app, &$db, &$tree, $mTime, $mRule) {
@@ -37,9 +52,13 @@ class PXCronRunReadBSLog extends PXAbstractCronRun {
 			return array('status' => -1, 'note' => $message);
 		}
 
-		$message = $this->filesList();
-		if(is_string($message)) {
-			return array('status' => -2, 'note' => $message);
+		if (empty($this->files)) {
+			$message = $this->filesList();
+			if(is_string($message)) {
+				return array('status' => -2, 'note' => $message);
+			}
+		} else {
+			ini_set('memory_limit', -1); // For really big files
 		}
 
 		$message = $this->processing();
@@ -77,7 +96,7 @@ class PXCronRunReadBSLog extends PXAbstractCronRun {
 			return $message;
 		}
 
-		while (false !== ($file = readdir($handle))) {
+		while (false !== ($file = readdir($handle)) && (empty($this->fLimit) || $this->fLimit-- > 0)) {
 			WorkProgress();
 
 			if (preg_match('/^log\.(\d+\.\d+)$/', $file, $match)) {
@@ -102,7 +121,7 @@ class PXCronRunReadBSLog extends PXAbstractCronRun {
 		foreach ($this->files as $file) {
 			$this->_parseFile($file);
 
-			unlink($file);
+			empty($this->leaveFile) && unlink($file);
 		}
 		WorkProgress(true);
 	}
@@ -285,6 +304,9 @@ class PXCronRunReadBSLog extends PXAbstractCronRun {
 	}
 
 	function _log($str, $logNameTemp) {
+		if ($this->skipLog) {
+			return;
+		}
 		static $logHandler = null;
 		static $logName    = '';
 
