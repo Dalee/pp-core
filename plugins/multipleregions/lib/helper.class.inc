@@ -67,10 +67,10 @@ class PXMultipleRegionsHelper {
 			return;
 		}
 
-		if (!(isset($data->leafs[$rid]->content[$field]) && 
-				is_scalar($data->leafs[$rid]->content[$field]) ? 
-				strlen($data->leafs[$rid]->content[$field]) : 
-				!empty($data->leafs[$rid]->content[$field])) && 
+		if (!(isset($data->leafs[$rid]->content[$field]) &&
+				is_scalar($data->leafs[$rid]->content[$field]) ?
+				strlen($data->leafs[$rid]->content[$field]) :
+				!empty($data->leafs[$rid]->content[$field])) &&
 			($parent = $data->leafs[$rid]->parent())) {
 
 			return self::getVarRecursive($field, $parent, $data);
@@ -92,12 +92,12 @@ class PXMultipleRegionsHelper {
 
 		$fields = array();
 		if (!isset($regions->leafs[$rid])) {
-			return;
+			return array();
 		}
 
 		$fields[$rid] = $regions->leafs[$rid]->content[$field];
 		if($parent = $regions->leafs[$rid]->parent) {
-			$fields = array_merge($fields, self::getTreeVar($field, $parent, $regions));
+			$fields = self::getTreeVar($field, $parent, $regions) + $fields;
 		}
 
 		return $fields;
