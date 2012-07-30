@@ -33,7 +33,7 @@ class PXCronRunReadBSLog extends PXAbstractCronRun {
 		*/
 		if (!empty($_SERVER['argv'][2])) {
 			if (is_numeric($_SERVER['argv'][2])) {
-				$this->fLimit = $_SERVER['argv'][2];
+				$this->fLimit = (int)$_SERVER['argv'][2];
 			} else {
 				$this->files[]   = $_SERVER['argv'][2];
 				$this->leaveFile = true;
@@ -96,7 +96,7 @@ class PXCronRunReadBSLog extends PXAbstractCronRun {
 			return $message;
 		}
 
-		while (false !== ($file = readdir($handle)) && (empty($this->fLimit) || $this->fLimit-- > 0)) {
+		while (false !== ($file = readdir($handle)) && (!isset($this->fLimit) || $this->fLimit-- > 0)) {
 			WorkProgress();
 
 			if (preg_match('/^log\.(\d+\.\d+)$/', $file, $match)) {
@@ -225,7 +225,7 @@ class PXCronRunReadBSLog extends PXAbstractCronRun {
 		//update audit letters stats
 		foreach ($this->audit as $id => $shows) {
 			WorkProgress();
-			$this->db->query("UPDATE newsletter SET shows = shows + {$shows} WHERE id = {$id}");
+			$this->db->modifyingQuery("UPDATE newsletter SET shows = shows + {$shows} WHERE id = {$id}", NULL, NULL, false);
 
 			$this->total['audit'] += $shows;
 		}
@@ -241,13 +241,20 @@ class PXCronRunReadBSLog extends PXAbstractCronRun {
 		$timeMax = date($this->DATE_FORMAT, $this->timeMax);
 
 		$sql = "SELECT ts, adplace, adbanner FROM adstat WHERE ts BETWEEN '".$timeMin."' AND '".$timeMax."'";
-		$rowsToUpdate = $db->query($sql);
+		$rowsToUpdate = $db->query($sql, true);
 
 		if(!is_array($rowsToUpdate)) {
 			$rowsToUpdate = array();
 		}
 
+		$hashToUpdate = array();
+
+		foreach($rowsToUpdate as $row) {
+			$hashToUpdate[join('|', array($row["ts"], $row["adplace"], $row["adbanner"]))] = true;
+		}
+
 		Label('rowsToUpdate - '.sizeof($rowsToUpdate));
+		unset($rowsToUpdate);
 
 		//insert new banner stats into db
 		foreach ($this->stats as $timestamp => $timestampData) {
@@ -263,7 +270,7 @@ class PXCronRunReadBSLog extends PXAbstractCronRun {
 					$clk  = isset($actions['clk'])  ? $actions['clk']  : 0;
 
 					// update existing record
-					if (in_array(array('ts'=>$timestamp, 'adplace'=>$place, 'adbanner'=>$banner), $rowsToUpdate)) {
+					if (isset($hashToUpdate[join('|', array($timestamp, $place, $banner))])) {
 						$sql = "UPDATE adstat SET show = show + '{$show}', click = click + '{$clk}' ";
 						$sql.= "WHERE ts = '{$timestamp}' AND adplace = '{$place}' and adbanner='{$banner}'";
 						$act = "U";
@@ -276,16 +283,16 @@ class PXCronRunReadBSLog extends PXAbstractCronRun {
 					}
 
 					Label ($timestamp ."\t". $place ."\t". $banner ."\t". $show ."\t". $clk ."\t[".$act."]");
-					$db->query($sql);
+					$db->modifyingQuery($sql, NULL, NULL, false);
 
 					// and update adbanner table...
 					if ($show > 0) {
-						$db->query("UPDATE adbanner SET shows  = shows  + '{$show}' WHERE id = {$banner}");
+						$db->modifyingQuery("UPDATE adbanner SET shows  = shows  + '{$show}' WHERE id = {$banner}", NULL, NULL, false);
 						$this->total['shows'] += $show;
 					}
 
 					if ($clk > 0) {
-						$db->query("UPDATE adbanner SET clicks = clicks + '{$clk}'  WHERE id = {$banner}");
+						$db->modifyingQuery("UPDATE adbanner SET clicks = clicks + '{$clk}'  WHERE id = {$banner}", NULL, NULL, false);
 						$this->total['clicks'] += $clk;
 					}
 
