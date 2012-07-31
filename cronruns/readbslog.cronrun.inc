@@ -47,6 +47,8 @@ class PXCronRunReadBSLog extends PXAbstractCronRun {
 
 		Label('Starting...');
 
+		ini_set('memory_limit', -1); // For really large lists of files
+
 		$message = $this->touchReload();
 		if(is_string($message)) {
 			return array('status' => -1, 'note' => $message);
@@ -57,8 +59,6 @@ class PXCronRunReadBSLog extends PXAbstractCronRun {
 			if(is_string($message)) {
 				return array('status' => -2, 'note' => $message);
 			}
-		} else {
-			ini_set('memory_limit', -1); // For really big files
 		}
 
 		$message = $this->processing();
