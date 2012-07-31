@@ -6,6 +6,8 @@ class PXCronRunReadBSLog extends PXAbstractCronRun {
 	var $BS_OUT_DIR    = '/site/var/ad/out/';      // Каталог с bs log files (входные). Относительно BASEPATH
 	var $LOGS_DIR      = '/site/var/ad/logs/';     // Каталог с результатами работы скрипта (выход). Относительно BASEPATH
 
+	protected $fLimit, $leaveSourceFile = false, $skipLog = false;
+
 	function PXCronRunReadBSLog() {
 		$this->name = 'Обработка логов баннерной системы';
 
@@ -36,9 +38,10 @@ class PXCronRunReadBSLog extends PXAbstractCronRun {
 				$this->fLimit = (int)$_SERVER['argv'][2];
 			} else {
 				$this->files[]   = $_SERVER['argv'][2];
-				$this->leaveFile = true;
+				$this->leaveSourceFile = true;
 			}
-			$this->skipLog = isset($_SERVER['argv'][3]);
+			
+			$this->skipLog = !empty($_SERVER['argv'][3]);
 		}
 	}
 
@@ -121,7 +124,7 @@ class PXCronRunReadBSLog extends PXAbstractCronRun {
 		foreach ($this->files as $file) {
 			$this->_parseFile($file);
 
-			empty($this->leaveFile) && unlink($file);
+			empty($this->leaveSourceFile) && unlink($file);
 		}
 		WorkProgress(true);
 	}
@@ -314,6 +317,7 @@ class PXCronRunReadBSLog extends PXAbstractCronRun {
 		if ($this->skipLog) {
 			return;
 		}
+
 		static $logHandler = null;
 		static $logName    = '';
 
