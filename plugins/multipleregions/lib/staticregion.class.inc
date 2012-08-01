@@ -1,4 +1,9 @@
 <?php
+
+/**
+ * @deprecated DONT USE IT NEVER IN NEW SUBPROJECTS. DEFINITELY UNEXPECTABLE CODE
+ * @todo split to interfaces (IRegionsHelper, ...), and to abstract classes with static methods (or just simple functions)
+ */
 class PXCorpRegions {
 	private static $fullTree;
 
@@ -10,7 +15,7 @@ class PXCorpRegions {
 		if (is_null($id)) {
 			$id = self::multi()->getUserRid();
 		}
-		
+
 		$r = PXRegistry::getDb()->query(sprintf('SELECT federal FROM %s WHERE id = %d LIMIT 1', self::getField(), (int)$id));
 
 		return isset($r[0]) && $r[0]['federal'] == 't';
@@ -162,25 +167,26 @@ class PXCorpRegions {
 			$currentHost  = array_reverse(explode('.', $host));
 			
 			foreach ($urls as $k => $url) {
-				//FIXME! WTF IS HERE ???
+
+				//FIXME! WTF IS HERE ??? skipping special hosts. buggy and unexpectable
 				if (preg_match(sprintf('/^(%s\.|pda\.|m\.)/', $langPrefix), $url)) {
 					continue;
 				}
 
 				$possibleHost = array_reverse(explode('.', $url));
 				$count        = 0;
-				
-				foreach($possibleHost as $k => &$v) {
-					if(isset($currentHost[$k]) && ($currentHost[$k] === $v || $v === '*')){
-						$count++;
-						$v = $currentHost[$k];
-					} else {
+
+				// filling up new host name
+				foreach ($possibleHost as $k => $v) {
+					if (!isset($currentHost[$k]) || ($v !== '*' && $v !== $currentHost[$k])) {
 						break;
 					}
+					$count ++;
+					$possibleHost[$k] = $currentHost[$k];
 				}
-				
+
 				$possibleHost = join('.', array_reverse($possibleHost));
-				
+
 				if ($count > $intersection['count'] && !strstr($possibleHost, '*')) {
 					$intersection['count'] = $count;
 					$intersection['url']   = $possibleHost;
@@ -190,12 +196,13 @@ class PXCorpRegions {
 			$newHost = $intersection['url'];
 		}
 
+		// cuz that $langVersion here we can't instantly prepend any other domain prefixes (pda., m., etc.)
 		$newHost = $langVersion . (strlen($newHost) ? $newHost : $host);
-		
-		if (count(explode('.', $newHost)) == 2) { //special behaviour for cases like 'megafon.ru'
+
+		if (count(explode('.', $newHost)) == 2) { // special behaviour for cases like 'domain.name'
 			$newHost = 'www.' . $newHost;
 		}
-		
+
 		return $newHost;
 	}
 
@@ -212,20 +219,23 @@ class PXCorpRegions {
 		}
 
 		$path = explode('/', $fullPath);
-		
-		if(empty($tree)) {
+
+		if (empty($tree)) {
 			$tree = self::initRegionTree($regionId);
 		}
-		
+
 		$host = self::findUrl($path[0], $regionId);
-		
-		array_shift($path); //remove URL
+
+		array_shift($path); // remove URL
 		array_unshift($path, self::isLangHost($host) ? 'en' : 'default'); //TODO: change this root finding method !
-		
+
+		// cuz we need to restore current struct (path) in new region instantly. TODO: think about how to move it outta here
 		$path = $tree->getIdArrayByPath(OBJ_FIELD_PATHNAME, $path);
 		while(($sid = array_pop($path)) < 0);
 		$path = createSomePathByParentId($tree, $sid, OBJ_FIELD_PATHNAME, '/', true, false);
 
+		// host can be empty -> http:///$path
+		empty($host) && $returnProto = '';
 		return sprintf('%s%s/%s', $returnProto, $host, $path);
 	}
 
@@ -259,4 +269,5 @@ class PXCorpRegions {
 		return self::multi()->isRegionalObject(PXRegistry::getTypes($format_id));
 	}
 }
+
 ?>
