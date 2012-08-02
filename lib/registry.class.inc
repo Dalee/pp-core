@@ -198,10 +198,10 @@ final class PXRegistry {
 }
 
 final class PXRegistryUSER {
-	private 
+	private
 		$__hash__;
 	
-	public 
+	public
 		function get($key){
 			if(isset($this->__hash__[$key])){
 				return $this->__hash__[$key];

@@ -3,18 +3,25 @@ class PXTriggerDatabaseAbstractAdvert extends PXAbstractDatabaseTrigger {
 	var $dtPlace;
 	var $dtBanner;
 	var $refName;
-	var $db;
+
 	var $isDynamic;
 	var $oldPlaces;
+	
+	public function __get($name){
+		switch($name){
+			case 'db':
+				return PXRegistry::getDb();
+		}
+	}
 
 	function PXTriggerDatabaseAbstractAdvert() {
 		$this->path       = BASEPATH.'site/var/ad/in';
-		$this->db         =& PXRegistry::getDb();
-		$settings         = $this->db->app->modules['advert']->settings;
+		$app              = PXRegistry::getApp();
+		$settings         = $app->modules['advert']->settings;
 		
-		$this->dtBanner   = $this->db->app->types[$settings['banner']];
-		$this->dtPlace    = $this->db->app->types[$settings['place']];
-		$this->refName    = $this->db->app->references[$settings['banner'].'2'.$settings['place']];
+		$this->dtBanner   = $app->types[$settings['banner']];
+		$this->dtPlace    = $app->types[$settings['place']];
+		$this->refName    = $app->references[$settings['banner'].'2'.$settings['place']];
 	}
 
 	function OnAddObject(&$db, &$objId, &$format, &$object, &$dbFields, &$dbValues) {

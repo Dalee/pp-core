@@ -3,7 +3,6 @@
 class PXMultiRegions {
 	private $disabled = false;
 	
-	private $db;
 	private $request;
 	private $user;
 	private $rid;
@@ -24,8 +23,14 @@ class PXMultiRegions {
 	const MANAGE_REGION_MARK = 'manage_region';
 	const DISPLAY_FIELD      = 'title';
 
+	public function __get($name){
+		switch($name){
+			case 'db':
+				return PXRegistry::getDb();
+		}
+	}
+	
 	private function __construct(){/*{{{*/
-		$this->db      = PXRegistry::getDb();
 		$this->request = PXRegistry::getRequest();
 		$this->user    = PXRegistry::getUser();
 
@@ -37,7 +42,7 @@ class PXMultiRegions {
 			$this->use_uri = true;
 		}
 		
-	}/*}}}*/ 
+	}/*}}}*/
 
 	/**
 	 * @return PXMultiRegions
@@ -147,7 +152,7 @@ class PXMultiRegions {
 			// skip regions with empty URI
 			// if not skip, this may cause infinite redirect to /
 			$uri = trim($regionData['uri']);
-			if(!empty($uri)) {			
+			if(!empty($uri)) {
 				if(!strcmp($uri, $uriPart)) {
 					$id = intval($regionData['id']);
 					if($updatePath) {
@@ -340,8 +345,8 @@ class PXMultiRegions {
 		return self::$isFederal = $this->user->can(self::MANAGE_REGION_MARK, $this->format);
 	}/*}}}*/
 
-	// Warning - if regional plugin is disabled (e.g. in scripts) and you have to check for existence 
-	// of regional field in object - use isRegionalType() method instead ! 
+	// Warning - if regional plugin is disabled (e.g. in scripts) and you have to check for existence
+	// of regional field in object - use isRegionalType() method instead !
 	function isRegionalObject($format){
 		return !$this->disabled && $this->isRegionalType($format);
 	}
@@ -397,8 +402,8 @@ class PXMultiRegions {
 			$parentFormat = $this->db->types[$format->parent];
 			$hasDisabled  = $this->isDisabled();
 
-			# если мы редактируем субобъект в регионе А, оригинальный региональный родитель опубликован в регионе Б, 
-			# мы всё равно должны загрузить его и проверить доступ текущего редактора к региону Б, 
+			# если мы редактируем субобъект в регионе А, оригинальный региональный родитель опубликован в регионе Б,
+			# мы всё равно должны загрузить его и проверить доступ текущего редактора к региону Б,
 			# поэтому здесь происходит кратковременное отключение регионального фильтра
 			$this->disable();
 			$parent = $this->db->GetObjectById($parentFormat, $object['parent']);
@@ -463,7 +468,7 @@ class PXMultiRegions {
 
 		$object[$reflex_field] = null;
 
-		$getReflexId = 
+		$getReflexId =
 			$this->db->query("select {$reflex_field} from {$format->id} where id = '{$object['id']}'");
 
 		if (!empty($getReflexId)) {
@@ -501,7 +506,7 @@ class PXMultiRegions {
 		unset($result[$object['id']]);
 
 		$cutOut = array_map(
-			array("PXMultipleRegionsHelper", "toArray"), 
+			array("PXMultipleRegionsHelper", "toArray"),
 			getColFromTable($result, $regions_field)
 		);
 
