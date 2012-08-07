@@ -322,17 +322,19 @@ function findNeighborElements($list, $current, $circular = true, $strict = true)
  * 
  * @param array $array	Таблица
  * @param string $colName	Название столбца
- * @param mixed $colValue	Значение ячейки в этом столбце
+ * @param mixed $colValues	Значение ячейки в этом столбце, можно передавать список значений для проверки
  * @param bool $strict	Использовать строгое (===) или нестрогое (==) сравнение
  * @param int $count	Максимальное количество возврщаемых строк
  * 
  * @return array	Таблица из строк, для которых в заданном столбце ячейка имеет заданное значение. Если ничего не найдено, то пустой массив.
  */
-function getRowsFromTable($array, $colName, $colValue, $strict = true, $count = INF) {
-	$found  = array();
-	$nFound = 0;
+function getRowsFromTable($array, $colName, $colValues, $strict = true, $count = INF) {
+	$found     = array();
+	$nFound    = 0;
+	$colValues = (array)$colValues;
 	foreach($array as $idx => $row) {
-		if (!array_key_exists($colName, $row) || ($strict ? ($row[$colName] !== $colValue) : ($row[$colName] != $colValue))) {
+		//FIXME: change in_array() to something more effective, it will be slow for big lists
+		if (!array_key_exists($colName, $row) || !in_array($row[$colName], $colValues, $strict)) {
 			continue;
 		}
 		$found[$idx] = $row;
@@ -348,13 +350,13 @@ function getRowsFromTable($array, $colName, $colValue, $strict = true, $count = 
 *
 * @param array $array	Таблица
 * @param string $colName	Название столбца
-* @param mixed $colValue	Значение ячейки в этом столбце
+* @param mixed $colValues	Значение ячейки в этом столбце, можно передавать список значений для проверки
 * @param bool $strict	Использовать строгое (===) или нестрогое (==) сравнение
 *
 * @return array	Строка, для которой в заданном столбце ячейка имеет заданное значение, либо пустой массив в случае, если ничего не найдено.
 */
-function getRowFromTable($array, $colName, $colValue, $strict = true) {
-	$found = getRowsFromTable($array, $colName, $colValue, $strict, 1);
+function getRowFromTable($array, $colName, $colValues, $strict = true) {
+	$found = getRowsFromTable($array, $colName, $colValues, $strict, 1);
 	count($found) && $found = reset($found);
 	return $found;
 }
