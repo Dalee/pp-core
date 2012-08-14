@@ -219,7 +219,8 @@ class PXCorpRegions {
 		}
 
 		$path = explode('/', $fullPath);
-
+		$pathname = end($path);
+		
 		if (empty($tree)) {
 			$tree = self::initRegionTree($regionId);
 		}
@@ -231,8 +232,27 @@ class PXCorpRegions {
 
 		// cuz we need to restore current struct (path) in new region instantly. TODO: think about how to move it outta here
 		$path = $tree->getIdArrayByPath(OBJ_FIELD_PATHNAME, $path);
+		
 		while(($sid = array_pop($path)) < 0);
-		$path = createSomePathByParentId($tree, $sid, OBJ_FIELD_PATHNAME, '/', true, false);
+		
+		if(strpos($pathname, '.')){
+			$db = PXRegistry::getDb();
+			$query = array();
+			$allowedFormats = PXRegistry::getApp()->getAllowedChilds(DT_STRUCT, $tree->leafs[$sid]);
+			foreach($allowedFormats as $format => $v){
+				if(!isset(PXRegistry::getTypes($format)->fields[OBJ_FIELD_PATHNAME])){
+					continue;
+				}
+				$query[] = sprintf("SELECT id FROM %s WHERE parent = %d AND %s='%s'", $format, $sid, OBJ_FIELD_PATHNAME, $db->escapeString($pathname));
+			}
+			$result = $db->query(join (' UNION ', $query));
+			if(empty($result)){
+				$pathname = '';
+			}
+		} else {
+			$pathname = '';
+		}
+		$path = createSomePathByParentId($tree, $sid, OBJ_FIELD_PATHNAME, '/', true, false).$pathname;
 
 		// host can be empty -> http:///$path
 		empty($host) && $returnProto = '';
@@ -255,7 +275,8 @@ class PXCorpRegions {
 
 	static function initRegionTree($id) {
 		$db = PXRegistry::getDb();
-		$treeTable = $db->query(sprintf("SELECT * FROM struct WHERE %s", $db->inArray(self::getField(), $id)));
+		$treeTable = $db->query(sprintf("SELECT * FROM %s WHERE %s", DT_STRUCT, $db->inArray(self::getField(), $id)));
+		$db->_NormalizeTable($treeTable, PXRegistry::getTypes(DT_STRUCT));
 		return $db->buildTree($treeTable);
 	}
 
