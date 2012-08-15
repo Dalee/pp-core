@@ -245,7 +245,9 @@ class PXCorpRegions {
 				}
 				$query[] = sprintf("SELECT id FROM %s WHERE parent = %d AND %s='%s'", $format, $sid, OBJ_FIELD_PATHNAME, $db->escapeString($pathname));
 			}
-			$result = $db->query(join (' UNION ', $query));
+			
+			sizeof($query) && $result = $db->query(join (' UNION ', $query));
+			
 			if(empty($result)){
 				$pathname = '';
 			}
