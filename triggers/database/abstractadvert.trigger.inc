@@ -138,6 +138,11 @@ class PXTriggerDatabaseAbstractAdvert extends PXAbstractDatabaseTrigger {
 		return (empty($object['flash']['path'])) ? $object['type']."_gif" : $object['type']."_flash";
 	}
 
+	protected function touchReload() {
+		touch($this->path.'/reload');
+		sleep(1);
+	}
+	 
 	function adSync($format, $object) {
 		if($object != null) {
 			if (isset($object['dynamic'])) {
@@ -156,8 +161,7 @@ class PXTriggerDatabaseAbstractAdvert extends PXAbstractDatabaseTrigger {
 			flock($fd, LOCK_UN);
 			fclose($fd);
 
-			touch($this->path.'/reload');
-			sleep(1);
+			$this->touchReload();
 		}
 	}
 }
