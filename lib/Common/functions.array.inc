@@ -220,7 +220,7 @@ function array_remap($array, $map, $strict = false) {
  *   array_flat($arr, 'c', true); // array( 'oof' => 'x', 'zzz' => 'y', '123' => 'z', ... )
  *   array_flat($arr, false, array('a', 'c')); // array( array('a' => 'foo', 'c' => 'oof'), array('a' => 'bar', 'c' => 'zzz'), ... )
  */
-function array_flat($array, $toKey = false, $toValue = false) {
+function array_flat($array, $toKey = false, $toValue = false, $unique = false) {
 
 	if (!is_array($array)) {
 		return false;
@@ -244,6 +244,13 @@ function array_flat($array, $toKey = false, $toValue = false) {
 			// if true
 			case $toValue === true:
 				$newValue = $key; // as key
+				break;
+			// if dot delimited string keys
+			case is_scalar($toValue) && strpos($toValue, '.'):
+				$newValue = $value;
+				foreach (explode('.', $toValue) as $toValueKey) {
+					$newValue = $newValue[$toValueKey];
+				}
 				break;
 			// if scalar
 			case is_scalar($toValue):
@@ -271,9 +278,22 @@ function array_flat($array, $toKey = false, $toValue = false) {
 		$result[$newKey] = $newValue;
 	}
 
+	$unique && $result = array_flip(array_flip($result));
+
 	return $result;
 }
 
+/**
+ * Функция собирает в массивы ключи по значениям
+ * Например, из [a=>1, b=>1, c=>2, d=>3, e=>2] функция вернет [1=>[a,b], 2=>[c,e], 3=>[d]]
+ */
+function array_keys_grouped($array) {
+	$result = array();
+	foreach (array_unique($array) as $v) {
+		$result[$v] = array_keys($array, $v);
+	}
+	return $result;
+}
 
 /**
 *
