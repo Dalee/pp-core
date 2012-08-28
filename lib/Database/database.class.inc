@@ -24,21 +24,29 @@ define('NOT_NULL', '~~___IS_NOT_NULL___~~');
 require_once 'interface.inc';
 require_once 'sqladapter.class.inc';
 
+class PXDatabaseException extends Exception{}
+
 class PXDatabase extends NLSQLDatabaseAdapter implements IPXDatabase {
 	/**
 	 * PXApplication reference
 	 * @var PXApplication
 	 */
-	var $app;
+	public $app;
 
-	/** @var array */
-	var $types;
+	/** @public array */
+	public $types;
 
-	/** @var triggers */
-	var $triggers;
+	/** @public triggers */
+	public $triggers;
 
-	/** @var PXUser */
-	var $user;
+	/** @public PXUser */
+	public $user;
+	/**
+	 * new Behavior added
+	 * If this flag set to true, database will throws exception , instead of error triggering.
+	 * @var bool
+	 */
+	public $throwException = false;
 
 	/**
 	 * Конструктор класса
@@ -54,6 +62,14 @@ class PXDatabase extends NLSQLDatabaseAdapter implements IPXDatabase {
 		$this->types    = $app->types;
 		$this->triggers = $this->app->triggers->{$dbDescriptionName};
 	}
+
+	protected function FatalError($message='') {
+		if($this->throwException){
+			throw new PXDatabaseException($message);
+		}
+		FatalError($message);
+	}
+
 
 	function setUser($user) {
 		$this->user = $user;
@@ -73,10 +89,10 @@ class PXDatabase extends NLSQLDatabaseAdapter implements IPXDatabase {
 		$resTable = parent::query($query, $donotusecache, $limitpair);
 
 		if ($resTable == ERROR_DB_CANNOTCONNECT) {
-			FatalError('Невозможно подсоединиться к БД');
+			$this->FatalError('Невозможно подсоединиться к БД');
 
 		} elseif ($resTable == ERROR_DB_BADQUERY) {
-			FatalError($this->getError());
+			$this->FatalError($this->getError());
 		}
 
 		return $resTable;
@@ -384,7 +400,7 @@ class PXDatabase extends NLSQLDatabaseAdapter implements IPXDatabase {
 			return array();
 		}
 		if (!is_numeric($id)) {
-			FatalError('Попытка SQL-Injection!');
+			$this->FatalError('Попытка SQL-Injection!');
 		}
 
 		$data = $this->_GetData($format, null, DB_SELECT_TABLE, $format->id.'.id = '.$id);
@@ -412,12 +428,12 @@ class PXDatabase extends NLSQLDatabaseAdapter implements IPXDatabase {
 	}
 	function getObjectsByIntArrayLimited($format, $status, $field, array $intArray, $limit, $offset, $mode=DB_SELECT_TABLE, $order=NULL) {
 		if (!isset($format->fields[$field])) {
-			FatalError(sprintf('В модели "%s" отсутствует поле "%s"!', $format->id, $field));
+			$this->FatalError(sprintf('В модели "%s" отсутствует поле "%s"!', $format->id, $field));
 		}
 
 		foreach ($intArray as $val) {
 			if (!is_numeric($val)) {
-				FatalError('Попытка SQL-Injection!');
+				$this->FatalError('Попытка SQL-Injection!');
 			}
 		}
 
@@ -484,7 +500,7 @@ class PXDatabase extends NLSQLDatabaseAdapter implements IPXDatabase {
 		} elseif (is_array($parent)) {
 			return $this->getObjectsByIntArrayLimited($format, $status, 'parent', $parent, $limit, $offset, $mode, $order);
 		} else {
-			FatalError('Попытка SQL-Injection!');
+			$this->FatalError('Попытка SQL-Injection!');
 		}
 
 		return $this->_GetData($format, $status, $mode, $whereClause, array($limit, $offset), $order);
@@ -643,7 +659,7 @@ class PXDatabase extends NLSQLDatabaseAdapter implements IPXDatabase {
 		if (!$this->user->can(array('write', 'add'), $format, $object)) {
 			$errString = 'Отказано в доступе при попытке создать объект типа <em>'.$format->id.'</em>';
 			$audit->error($errString, $format->id .'/0');
-			FatalError($errString);
+			$this->FatalError($errString);
 		}
 
 		$this->checkForParent($format, $object);
@@ -695,7 +711,7 @@ class PXDatabase extends NLSQLDatabaseAdapter implements IPXDatabase {
 			if ($newId < 0) {
 				$errString = $this->GetError();
 				$audit->error($errString, $format->id .'/'.getFromArray($object, 'parent'));
-				FatalError($errString);
+				$this->FatalError($errString);
 			}
 			$this->ModifyingQuery('UPDATE '.$format->id.' SET sys_order = id WHERE id = '.$newId);
 
@@ -746,17 +762,17 @@ class PXDatabase extends NLSQLDatabaseAdapter implements IPXDatabase {
 				$objectInDB = $this->getObjectById($this->types[$format->parent], $parentId);
 
 				if (!count($objectInDB)) {
-					FatalError('Попытка добавить объект в несуществующий раздел');
+					$this->FatalError('Попытка добавить объект в несуществующий раздел');
 				}
 
 				if ($format->id != $format->parent && !in_array($format->id, $this->app->GetAllowedChildsKeys($format->parent, $objectInDB))) {
-					FatalError('Объект данного типа не может быть добавлен в данный раздел');
+					$this->FatalError('Объект данного типа не может быть добавлен в данный раздел');
 				}
 
 				if (!$this->user->can(array('write', 'add'), $format, array('id' => 0, 'parent' => $parentId))) {
 					$errString = 'Отказано в доступе при попытке создать объект типа <em>'.$format->id.'</em>';
 					$audit->error($errString, $format->id .'/0');
-					FatalError($errString);
+					$this->FatalError($errString);
 				}
 			}
 		}
@@ -891,20 +907,20 @@ class PXDatabase extends NLSQLDatabaseAdapter implements IPXDatabase {
 		if (!$this->user->can(array('write', 'modify'), $format, $object)) {
 			$errString = 'Отказано в доступе при попытке модифицировать объект типа <em>'.$format->id.'</em>';
 			$audit->error($errString, $format->parent .'/'. $object['parent']);
-			FatalError($errString);
+			$this->FatalError($errString);
 		}
 
 		$objectInDB = $this->getObjectById($format, $object['id']);
 		if (!count($objectInDB)) {
 			$errString = 'Попытка модифицировать отсутствующий объект';
 			$audit->error($errString, $format->id .'/'.$object['id']);
-			FatalError($errString);
+			$this->FatalError($errString);
 		}
 
 		if (!$this->user->can(array('write', 'modify'), $format, $objectInDB)) {
 			$errString = 'Отказано в доступе при попытке модифицировать объект типа <em>'.$format->id.'</em>';
 			$audit->error($errString, $format->parent .'/'. $object['parent']);
-			FatalError($errString);
+			$this->FatalError($errString);
 		}
 
 		$this->checkForParent($format, $object);
@@ -943,7 +959,7 @@ class PXDatabase extends NLSQLDatabaseAdapter implements IPXDatabase {
 			$result = $this->UpdateObjectByID($format->id, $object['id'], $dbFields, $dbValues);
 			if ($result <  0) {
 				$audit->error($this->GetError(), $format->id .'/'. $object['id']);
-				FatalError($this->GetError());
+				$this->FatalError($this->GetError());
 			}
 			if ($format->struct == 'tree' && isset($objectInDB['parent']) && $objectInDB['parent'] != $object['parent']) {
 				$childs        = $this->getObjectsByParent($format, NULL, $objectInDB['parent'], DB_SELECT_TREE);
@@ -986,7 +1002,7 @@ class PXDatabase extends NLSQLDatabaseAdapter implements IPXDatabase {
 		$objectInDB = $this->getObjectById($format, $object['id']);
 		
 		if (!count($objectInDB)) {
-			FatalError('Попытка модифицировать отсутствующий объект');
+			$this->FatalError('Попытка модифицировать отсутствующий объект');
 		}
 		
 		if(isset($objectInDB['parent']) && !isset($object['parent'])){
@@ -996,7 +1012,7 @@ class PXDatabase extends NLSQLDatabaseAdapter implements IPXDatabase {
 		if (!$this->user->can(array('write', 'modify'), $format, $object)) {
 			$errString = 'Отказано в доступе при попытке модифицировать объект типа <em>'.$format->id.'</em>';
 			$audit->error($errString, $format->parent .'/'. (isset($object['parent']) ? $object['parent'] : ''));
-			FatalError($errString);
+			$this->FatalError($errString);
 		}
 		
 		$dbFields = array();
@@ -1008,7 +1024,7 @@ class PXDatabase extends NLSQLDatabaseAdapter implements IPXDatabase {
 		if (count($dbFields)) {
 			$result = $this->UpdateObjectByID($format->id, $object['id'], $dbFields, $dbValues);
 			if ($result <  0) {
-				FatalError($this->GetError());
+				$this->FatalError($this->GetError());
 			}
 			
 			foreach ($this->triggers as $t)
@@ -1031,11 +1047,11 @@ class PXDatabase extends NLSQLDatabaseAdapter implements IPXDatabase {
 	function DeleteContentObject($format, $objectId) {
 		$audit = PXAuditLogger::getLogger($this->app, $this);
 		$objectInDB = $this->getObjectById($format, $objectId);
-		if (!count($objectInDB)) FatalError('Попытка удалить отсутствующий объект');
+		if (!count($objectInDB)) $this->FatalError('Попытка удалить отсутствующий объект');
 		if (!$this->user->can(array('write', 'delete'), $format, $objectInDB)) {
 			$errString = 'Отказано в доступе при попытке удалить объект типа <em>'.$format->id.'</em>';
 			$audit->error($errString, $format->parent .'/'. $objectInDB['id']);
-			FatalError($errString);
+			$this->FatalError($errString);
 		}
 
 		if ($format->struct == 'tree' && isset($format->fields['pid']) && isset($this->types[$format->parent])) {
@@ -1124,12 +1140,12 @@ class PXDatabase extends NLSQLDatabaseAdapter implements IPXDatabase {
 		$audit = PXAuditLogger::getLogger($this->app, $this);
 
 		$objectInDB = $this->getObjectById($format, $objectId);
-		if (!count($objectInDB)) FatalError('Попытка модифицировать отсутствующий объект');
+		if (!count($objectInDB)) $this->FatalError('Попытка модифицировать отсутствующий объект');
 
 		if (!$this->user->can(array('write', 'modify'), $format, $objectInDB)) {
 			$errString = 'Отказано в доступе при попытке модифицировать объект типа <em>'.$format->id.'</em>';
 			$audit->error($errString, $format->id .'/'. $objectInDB['id']);
-			FatalError($errString);
+			$this->FatalError($errString);
 		}
 
 		$swap = (preg_match('#sys_order\s+DESC#i', $format->order));
@@ -1512,17 +1528,17 @@ SQL;
 		$linkedFormat = $reference->getOther($format);
 
 		$objectInDB = $this->getObjectById($this->types[$format], $id);
-		if (!count($objectInDB)) FatalError('Попытка модифицировать отсутствующий объект');
+		if (!count($objectInDB)) $this->FatalError('Попытка модифицировать отсутствующий объект');
 
 		if (!$this->user->can(array('write', 'modify'), $this->types[$format], $objectInDB)) {
 			$errString = 'Отказано в доступе при попытке модифицировать объект типа <em>'.$format.'</em>';
 			$audit->error($errString, $format .'/'. $objectInDB['id']);
-			FatalError($errString);
+			$this->FatalError($errString);
 		}
 		$tmp = array();
 		foreach ($links as $k=>$v) {
 			if(is_string($k) && !ctype_digit($k)) {
-				FatalError('Попытка SQL-Injection!');
+				$this->FatalError('Попытка SQL-Injection!');
 			}
 			if (isset($v['on'])) $tmp[] = $k;
 		}
@@ -1531,7 +1547,7 @@ SQL;
 			if (!$this->user->can(array('write', 'modify'), $this->types[$linkedFormat], $objectToLink) && !$this->user->can('linkto', $this->types[$linkedFormat], $objectToLink)) {
 				$errString = 'Отказано в доступе при попытке привязать объект типа <em>'.$linkedFormat.'</em> к объекту типа <em>'.$format.'</em>';
 				$audit->error($errString, $linkedFormat .'/'. $objectToLink['id']);
-				FatalError($errString);
+				$this->FatalError($errString);
 			}
 		}
 
@@ -1772,14 +1788,14 @@ SQL;
 			if ($permitCheck === false || !count($parentObject)) {
 				$errString = 'Попытка переместить объект в несуществующий раздел';
 				$audit->error($errString, $format->id .'/'.$object['id']);
-				FatalError($errString);
+				$this->FatalError($errString);
 			}
 		}
 
 		if ($format->id != $format->parent && !in_array($format->id, $this->app->GetAllowedChildsKeys($format->parent, $parentObject))) {
 			$errString = 'Объект данного типа не может быть добавлен в данный раздел';
 			$audit->error($errString, $format->parent .'/'. $object['parent']);
-			FatalError($errString);
+			$this->FatalError($errString);
 		}
 	}
 }
