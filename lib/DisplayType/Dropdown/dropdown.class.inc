@@ -7,6 +7,8 @@
  *             width не используется
  */
 class PXDisplayTypeDropdown extends PXDisplayType {
+	protected static $trees = array();
+	
 	var $format;
 	var $parentFormat;
 	
@@ -40,12 +42,14 @@ class PXDisplayTypeDropdown extends PXDisplayType {
 	}
 	
 	function getParentTree(&$object,$parentFormat) {
-		$db  = PXRegistry::getDb();
-		$app = PXRegistry::getApp();
-
-		$r = $db->getObjects($app->types[$parentFormat], NULL, DB_SELECT_FULL_TREE); 
-
-		return $r;
+		if(!isset(self::$trees[$parentFormat])){
+			$db  = PXRegistry::getDb();
+			$app = PXRegistry::getApp();
+			
+			self::$trees[$parentFormat] = $db->getObjects($app->types[$parentFormat], NULL, DB_SELECT_FULL_TREE);
+		}
+		
+		return self::$trees[$parentFormat];
 	}
 	
 	function getSelfParentTree(&$object,&$param) {
