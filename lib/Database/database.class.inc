@@ -935,9 +935,9 @@ class PXDatabase extends NLSQLDatabaseAdapter implements IPXDatabase {
 			}
 
 			$p = array('skipHidden' => $skipHidden, 'objectInDB' => $objectInDB);
-			$isContinue = $v->displayType->preModifyObject($v, $object, $p);
+			$skipThisField = $v->displayType->preModifyObject($v, $object, $p);
 
-			if ($isContinue) {
+			if ($skipThisField) {
 				continue;
 			}
 
