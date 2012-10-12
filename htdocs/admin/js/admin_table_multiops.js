@@ -60,7 +60,7 @@ $(function(/*Common multiple bottom controls*/) {
 			
 			var obArray      = []
 			
-			objectsTable.find('input.multiselect[checked]').each(function(){
+			objectsTable.find('input.multiselect:checked').each(function(){
 				if($(this).attr('oid')) obArray.push($(this).attr('oid'))
 			})
 			
