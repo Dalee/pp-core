@@ -221,16 +221,16 @@ class PXCorpRegions {
 		$path = explode('/', $fullPath);
 		$pathname = end($path);
 		
-		if (empty($tree)) {
-			$tree = self::initRegionTree($regionId);
-		}
-
 		$host = self::findUrl($path[0], $regionId);
 
 		array_shift($path); // remove URL
 		array_unshift($path, self::isLangHost($host) ? 'en' : 'default'); //TODO: change this root finding method !
 
 		// cuz we need to restore current struct (path) in new region instantly. TODO: think about how to move it outta here
+		if (empty($tree)) {
+			$tree = self::initRegionTree($regionId, $path);
+		}
+		
 		$path = $tree->getIdArrayByPath(OBJ_FIELD_PATHNAME, $path);
 		
 		while(($sid = array_pop($path)) < 0);
@@ -275,11 +275,25 @@ class PXCorpRegions {
 		return self::$fullTree;
 	}
 
-	static function initRegionTree($id) {
+	static function initRegionTree($id, $pathnames = null) {
 		$db = PXRegistry::getDb();
-		$treeTable = $db->query(sprintf("SELECT * FROM %s WHERE %s", DT_STRUCT, $db->inArray(self::getField(), $id)));
-		$db->_NormalizeTable($treeTable, PXRegistry::getTypes(DT_STRUCT));
-		return $db->buildTree($treeTable);
+		$region = PXMultiRegions::getInstance();
+		$current_id = $region->getRid();
+		$region->setRid($id, true);
+		
+		if(!empty($pathnames)){
+			$where = array();
+			foreach($pathnames as $pathname){
+				strlen($pathname) && $where[] = sprintf("'%s'",$db->escapeString($pathname));
+			}
+			$where = sprintf('pathname IN (%s)', join(',',array_unique($where)));
+			$tree = $db->getObjectsByWhere(PXRegistry::getTypes(DT_STRUCT), true, $where, DB_SELECT_TREE);
+		} else {
+			$tree = $db->getObjects(PXRegistry::getTypes(DT_STRUCT), true, DB_SELECT_TREE);
+		}
+		
+		$region->setRid($current_id, true);
+		return $tree;
 	}
 
 	static function isLangHost($host) {

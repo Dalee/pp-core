@@ -47,7 +47,7 @@ class PXMultiRegions {
 	/**
 	 * @return PXMultiRegions
 	 */
-	function getInstance($context = NULL){ //context: ENUM {"user", "admin", "script"}/*{{{*/
+	static function getInstance($context = NULL){ //context: ENUM {"user", "admin", "script"}/*{{{*/
 		if(empty(self::$self)){
 			$klass = __CLASS__;
 			self::$self = new $klass();
@@ -269,7 +269,11 @@ class PXMultiRegions {
 		}
 	}/*}}}*/
 
-	function setRid($Rid = NULL) {/*{{{*/
+	function setRid($Rid = NULL, $force = false) {/*{{{*/
+		if(!empty($force) && isset($Rid)){ // В случае, если необходимо манипулировать объектами региона, известного по ID, и при этом игнорировать текущий контекст
+			$this->rid = $Rid;
+			return;
+		}
 		switch(array(isset($Rid), $this->context)) {
 			case array(true, true):
 				$this->rid = $Rid;
@@ -285,6 +289,7 @@ class PXMultiRegions {
 				$this->disable();
 				break;
 		}
+		
 	}/*}}}*/
 	
 	function isDisabled() {
