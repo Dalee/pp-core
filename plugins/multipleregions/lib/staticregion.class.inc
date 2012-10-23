@@ -226,11 +226,11 @@ class PXCorpRegions {
 		array_shift($path); // remove URL
 		array_unshift($path, self::isLangHost($host) ? 'en' : 'default'); //TODO: change this root finding method !
 
-		// cuz we need to restore current struct (path) in new region instantly. TODO: think about how to move it outta here
 		if (empty($tree)) {
 			$tree = self::initRegionTree($regionId, $path);
 		}
 		
+		// cuz we need to restore current struct (path) in new region instantly. TODO: think about how to move it outta here
 		$path = $tree->getIdArrayByPath(OBJ_FIELD_PATHNAME, $path);
 		
 		while(($sid = array_pop($path)) < 0);
