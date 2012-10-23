@@ -1,5 +1,6 @@
 <?php
-include_once 'Version/svn_revision.inc';
+//include_once 'Version/svn_revision.inc';
+define('PP_REVISION', 0);
 
 // Default timezone settings for formated date output
 date_default_timezone_set('Europe/Moscow');
