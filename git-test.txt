@@ -1,3 +1,4 @@
 It is testig - how to transport svn commits to git
 this is new commit, it should be comes to git automaticaly
-
+Created finale repo in git.dalee.ru/dalee-libpp5
+Now we will use this repo.
