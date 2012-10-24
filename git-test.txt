@@ -1,1 +1,3 @@
 It is testig - how to transport svn commits to git
+this is new commit, it should be comes to git automaticaly
+
