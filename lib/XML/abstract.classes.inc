@@ -177,7 +177,8 @@ abstract class PXmlAbstractNode implements IPXmlNode {
 	}
 	
 	function parent($selector = null){
-		return reset($this->xpath('..')); //TODO: make here selector context apply
+		$ret = $this->xpath('..'); //TODO: make here selector context apply
+		return reset($ret);
 	}
 }
 ?>

@@ -8,6 +8,7 @@ $Id$
 
 require_once 'maincommon.inc';
 require_once 'HTML/layout.class.inc';
+require_once 'HTML/assets.class.inc';
 
 require_once 'local/lib/mainuser.inc';
 
