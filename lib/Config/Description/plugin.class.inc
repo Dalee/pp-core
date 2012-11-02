@@ -47,7 +47,7 @@ class PXPluginDescription {
 		}
 
 		foreach ($objects->{$type} as $o) {
-			$v = reset($o);
+			$v = (string)$o;
 			$this->{$field}[$v] = $v;
 		}
 	}
