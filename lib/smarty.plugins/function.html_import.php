@@ -40,6 +40,7 @@ function smarty_function_html_import($params, &$smarty) {
 	$extra_params     = array();
 	$extra_attributes = "";
 	$asset_mode       = PXRegistry::getApp()->getProperty('CONFIG.ASSETS_ENABLED') && !isset($params['noasset']);
+	$asset_mode       = $asset_mode && !empty($params['asset_group']);	
 	$print_tag        = !$asset_mode;
 
 	foreach($params as $param => $value) {
