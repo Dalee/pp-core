@@ -1,0 +1,61 @@
+{strip}
+	{if $pages > 1 and $max_page > 1}
+		{math equation='x - 2 > 0     ? x - 2 : 1'     x=$page           assign=min}
+		{math equation='y - x - 2 > 0 ? x + 3 : y + 1' x=$page  y=$pages assign=max}
+		{math equation='x - 3 > 0     ? 3     : x'     x=$min            assign=premax}
+		{math equation='x - y > 0     ? x - 1 : y'     x=$pages y=$max   assign=postmin}
+		{math equation='x + 1'                         x=$pages          assign=postmax}
+		{math equation='x - 1'                         x=$page           assign=prev}
+		{math equation='x + 1'                         x=$page           assign=next}
+
+		{assign var=pagehref value='?'}
+		{assign var=pagevar value=$name|default:'page'}
+		
+		{foreach from=$request->getAllGetData() item=value key=param name=pager}
+			{if $param != $pagevar}
+				{assign var=has_args value=true}
+				{assign var=pagehref value=$pagehref|appendParamToUrl:$param:$value:false:true}
+			{/if}
+			{if $smarty.foreach.pager.last and $has_args}
+				{assign var=pagehref value=$pagehref|cat:'&'}
+			{/if}
+		{/foreach}
+		
+		{assign var=pagehref value=$pagehref|regex_replace:'/^.+\?/':'?'|escape}
+		
+		<p class="lister">
+			<a href="{$pagehref}{$pagevar}={$prev}"{if $prev == 0} class="disabled"{/if}>
+				&larr;<span>Предыдущая</span>
+			</a>
+			<a href="{$pagehref}{$pagevar}={$next}"{if $next > $pages} class="disabled"{/if}>
+				<span>Следующая</span>&rarr;
+			</a>
+		</p>
+			
+		<p class="pages">
+			{if $min != 1}
+				{section name=customer start=1 loop=$premax}
+					{include file='misc/pager/item.tmpl' item=$smarty.section.customer.index}
+				{/section}
+			{/if}
+
+			{if $premax != $min}
+				<span> &hellip; </span>
+			{/if}
+			
+			{section name=customer start=$min loop=$max}
+				{include file='misc/pager/item.tmpl' item=$smarty.section.customer.index}
+			{/section}
+
+			{if $postmin != $max}
+				<span> &hellip; </span>
+			{/if}
+	
+			{if $max != $postmax}
+				{section name=customer start=$postmin loop=$postmax}
+					{include file='misc/pager/item.tmpl' item=$smarty.section.customer.index}
+				{/section}
+			{/if}
+		</p>
+	{/if}
+{/strip}

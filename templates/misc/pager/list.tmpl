@@ -1,0 +1,15 @@
+{strip}
+	{pager objects=$someObjects format=$contentType notshow=true}
+
+	{if $a_per_page}
+		{foreach from=$someObjects item=object key=id name=a_paged}
+			{if ($smarty.foreach.a_paged.iteration <= $a_per_page*$page) and ($smarty.foreach.a_paged.iteration > $a_per_page*($page-1))}
+				{if smarty_file_exists("dt/$contentType.tmpl")}
+					{include file="dt/$contentType.tmpl"}
+				{else}
+					{include file="dt/notready.tmpl" format=$contentType}
+				{/if}
+			{/if}
+		{/foreach}
+	{/if}
+{/strip}

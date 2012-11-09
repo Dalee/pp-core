@@ -1,0 +1,7 @@
+{strip}
+	{lang get=pager.item assign=title}
+	<a href="{$pagehref}{$pagevar}={$item}" title="{$title|replace:'%item%':$item|replace:'%all%':$pages}"{if $item == $page} class="active"{/if}>
+		{$item}<b></b>
+	</a>
+	{" "}
+{/strip}
