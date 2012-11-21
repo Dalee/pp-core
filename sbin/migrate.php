@@ -147,10 +147,10 @@
 			// execute
 			$cmd = array();
 			$cmd[] = "{$this->command}";
-			$cmd[] = "--no-psqlrc";
-			$cmd[] = "--quiet";
-			$cmd[] = "--single-transaction";
-			$cmd[] = "--no-password";
+			$cmd[] = "-X"; // --no-psqlrc
+			$cmd[] = "-q"; // --quiet
+			$cmd[] = "-1"; // --single-transaction
+			//$cmd[] = "--no-password"; not supported in 8.3
 			$cmd[] = "-v ON_ERROR_STOP=1";
 			$cmd[] = sprintf("--host=%s", escapeshellarg($this->host));
 			$cmd[] = sprintf("--port=%s", escapeshellarg($this->port));
