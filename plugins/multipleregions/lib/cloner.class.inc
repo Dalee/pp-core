@@ -34,7 +34,9 @@ class PXPublicRegionObjectCloner {
 	}/*}}}*/
 
 	private function substractRegions($allowedRegionsIds) {
-		$regionsIds = array_flip($this->objectInDB[PXMultiRegions::REGION_MARK]);
+		$regionsIds = empty($this->objectInDB[PXMultiRegions::REGION_MARK])
+			? array()
+			: array_flip(array_filter($this->objectInDB[PXMultiRegions::REGION_MARK]));
 
 		foreach($allowedRegionsIds as $id) {
 			if(isset($regionsIds[$id])) {
@@ -43,9 +45,9 @@ class PXPublicRegionObjectCloner {
 		}
 
 		$this->db->modifyingQuery(
-			sprintf("UPDATE %s set %s = '%s' where id = '%s'", 
-				$this->format->id, 
-				PXMultiRegions::REGION_MARK, 
+			sprintf("UPDATE %s set %s = '%s' where id = '%s'",
+				$this->format->id,
+				PXMultiRegions::REGION_MARK,
 				PXMultipleRegionsHelper::toString(array_flip($regionsIds)),
 				$this->oid
 			)
@@ -92,7 +94,7 @@ class PXPublicRegionObjectCloner {
 			}
 		}
 
-		$this->nid = $this->object['id'] = 
+		$this->nid = $this->object['id'] =
 			$this->db->cloneContentObject($this->format, $objectInDB, !empty($this->objectInDB['status']));
 
 		// после клонирования объекта из базы накатываем на новый объект изменения пользователя
