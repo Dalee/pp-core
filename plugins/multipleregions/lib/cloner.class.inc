@@ -36,7 +36,7 @@ class PXPublicRegionObjectCloner {
 	private function substractRegions($allowedRegionsIds) {
 		$regionsIds = empty($this->objectInDB[PXMultiRegions::REGION_MARK])
 			? array()
-			: array_flip($this->objectInDB[PXMultiRegions::REGION_MARK]);
+			: array_flip(array_filter($this->objectInDB[PXMultiRegions::REGION_MARK]));
 
 		foreach($allowedRegionsIds as $id) {
 			if(isset($regionsIds[$id])) {
