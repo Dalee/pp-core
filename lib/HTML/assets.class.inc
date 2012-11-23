@@ -56,9 +56,36 @@
 					$bundleContent[] = file_get_contents($name);
 				}
 				$bundleContent = join($delim, $bundleContent);
-				MakeDirIfNotExists("{$this->assetsRoot}/{$type}");
-				//TODO: add gzip here
+				$bundleTypeRoot = "{$this->assetsRoot}/{$type}";
+
+				MakeDirIfNotExists($bundleTypeRoot);
 				WriteStringToFile($bundleFullPath, $bundleContent);
+
+				if(in_array($type, array('css', 'js'))) {
+					if (PXRegistry::getApp()->getProperty('CONFIG.ASSETS_USE_YUI')) { // try to minify css and javascript
+						$statusCode = -1;
+						$compressorBinary = trim(exec('which yui-compressor', $dummy, $statusCode));
+
+						if((intval($statusCode) === 0)) {
+							$outputFile = tempnam($bundleTypeRoot, $bundleName);
+
+							$cmd = array();
+							$cmd[] = $compressorBinary; // /usr/bin/yui-compressor
+							$cmd[] = $bundleFullPath; // .../asset-....(js|css)
+							$cmd[] = "--type {$type}";
+							$cmd[] = "-o";
+							$cmd[] = $outputFile;
+
+							$cmd_string = implode(' ', $cmd);
+							$statusCode = -1;
+							$compressionResult = exec($cmd_string, $dummy, $statusCode);
+
+							if((intval($statusCode) === 0)) {
+								rename($outputFile, $bundleFullPath);
+							}
+						}
+					}
+				}
 			}
 			
 			$this->assets[$type][$group] = array(); //Empty written asset for later usage
