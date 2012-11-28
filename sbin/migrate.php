@@ -2,13 +2,14 @@
 <?php
 	/**
 	 * Proxima Portal simple migration manager
-	 * 
+	 *
 	 * ./libpp/sbin/migrate.php create hello_world
 	 * ./libpp/sbin/migrate.php c hello_world
+	 * ./libpp/sbin/migrate.php c -- "ALTER TABLE hello ADD COLUMN world VARCHAR;"
 	 *
 	 * ./libpp/sbin/migrate.php migrate
 	 * ./libpp/sbin/migrate.php m
-	 * 
+	 *
 	 * ./libpp/sbin/migrate.php setup
 	 * ./libpp/sbin/migrate.php s
 	 *
@@ -235,27 +236,32 @@
 					break;
 
 				case 'c':
-				case 'create': 
-					$this->create(); 
+				case 'create':
+					$this->create();
 					break;
 
 				case 's':
-				case 'setup': 
-					$this->setup(); 
+				case 'setup':
+					$this->setup();
 					break;
 
 				case 'm':
-				case 'migrate': 
+				case 'migrate':
 					$this->migrate(); 
 					break;
 
-				case 'r':
-				case 'rollback': 
-					$this->rollback(); 
+				case 'e':
+				case 'execute':
+					$this->execute();
 					break;
 
-				default: 
-					$this->help(); 
+				case 'r':
+				case 'rollback':
+					$this->rollback();
+					break;
+
+				default:
+					$this->help();
 					break;
 			}
 		}
@@ -288,10 +294,12 @@
 		protected function help() {
 			$help  = "Usage: migrate.php option [argument]\n\n";
 			$help .= "Options:\n";
-			$help .= "\tc|create <name>\t- create new migration\n";
+			$help .= "\tc|create <name> [<query>]\t- create new migration\n";
+			$help .= "\tc|create -- <query>\n";
 			$help .= "\ts|setup\t\t- initial setup\n";
 			$help .= "\tl|log\t\t- display pending migrations\n";
 			$help .= "\tm|migrate\t- perform pending migrations\n";
+			$help .= "\te|execute <name>\t\t- execute some migration\n";
 			$this->display($help);
 
 			if(!$this->db->settedup()) {
@@ -331,22 +339,39 @@
 				$this->display("Migration name absent");
 				exit(1);
 			}
+			// special behavior of -- name
+			if($this->argv[2] == '--') {
+				$first_query_string = trim($this->argv[3], " \t\n\r;");
+				if (empty($first_query_string)) {
+					$this->display("Special '--' filename requires query argument");
+					exit(3);
+				}
+				list($query) = explode(';', $first_query_string);
+				$this->argv[2] = preg_replace('/[^a-z0-9\-]+/', '_', strtolower($query));
+			}
 			if(!$this->db->settedup()) {
 				$this->display("Setup is not performed, please run: setup");
 			}
 
 			$name = strtolower($this->argv[2]);
-			if(!preg_match('/^[a-z_-]+$/', $name)) {
-				$this->display("Incorrect name: {$name}. Allowed: a-z, _, and -");
+			if(!preg_match('/^[a-z0-9_-]+$/', $name)) {
+				$this->display("Incorrect name: {$name}. Allowed: a-z, 0-9, _, and -");
 				exit(1);
 			}
 
-			$data = "--// Created by: {$this->login}\n\n--sql commands for up goes here\n";
-			$name = sprintf("%d_%s", time(), $name);
+			$data = "--// Created by: {$this->login}\n\n";
+			$name = sprintf("%s_%s", date('YmdHis'), $name);
+
+			// put command line sql data
+			if (!empty($this->argv[3])) {
+				$data .= join("\n", array_slice($this->argv, 3));
+			} else {
+				$data .= "--sql commands for up goes here\n";
+			}
 
 			$filename = MIGRATEDIR.'/'.$name.'.sql';
 			if(file_exists($filename)) {
-				$this->display("Strange, but migration allready exists");
+				$this->display("Strange, but migration already exists");
 				exit(1);
 			}
 
@@ -359,8 +384,8 @@
 		/**
 		 *
 		 */
-		protected function getAll() {
-			$all = glob(MIGRATEDIR.'/*.sql');
+		protected function getAll($migration = '*.sql') {
+			$all = glob(MIGRATEDIR.'/'.$migration);
 			foreach($all as $idx => $fullname) {
 				$all[$idx] = basename($fullname);
 			}
@@ -405,6 +430,46 @@
 			}
 		}
 
+		protected function execute() {
+			if($this->argc < 3) {
+				$this->display("Migration name absent");
+				exit(1);
+			}
+			$name = strtolower($this->argv[2]);
+			if(!preg_match('/^[a-z0-9_\-\?\*]+$/', $name)) {
+				$this->display("Incorrect name: {$name}. Allowed: a-z, 0-9, _, and -, and wildcards");
+				exit(1);
+			}
+			if(!$this->db->settedup()) {
+				$this->display("Setup is not performed, please run: setup");
+				exit(2);
+			}
+
+			$available = $this->getAll($name);
+			if(empty($available)) {
+				$this->display("Migration '{$name}' was not found.");
+				exit(3);
+			}
+
+			$applied = $this->db->getAll();
+			$pending = array_diff($available, $applied);
+			$filename = reset($available);
+			if (empty($pending)) {
+				$answer = $this->prompt("Migration {$filename} marked as imported.\nDo you really want to continue? [y/N]");
+				if (strtolower($answer[0]) !== 'y') {
+					$this->display("Execution cancelled");
+					return;
+				}
+				if($this->db->migrate($filename, $this->silent)) {
+					$this->display("Successfully migrated: {$filename}");
+				} else {
+					$this->display("Failed to migrate: {$filename}");
+					exit(1);
+				}
+
+			}
+		}
+
 		/**
 		 * FIXME: is this really need?
 		 *
@@ -424,6 +489,14 @@
 			if(!$this->silent) {
 				print($message."\n");
 			}
+		}
+
+		protected function prompt($message) {
+			if (!$this->silent) {
+				echo $message . ' ';
+				return `read __tmp && echo \$__tmp`;
+			}
+			return false;
 		}
 	}
 
