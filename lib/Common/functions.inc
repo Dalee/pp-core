@@ -21,5 +21,6 @@ require_once('functions.execution.inc');
 require_once('functions.date.inc');
 require_once('functions.validate.inc');
 require_once('functions.imageswork.inc');
+require_once('functions.json.inc');
 
 ?>
