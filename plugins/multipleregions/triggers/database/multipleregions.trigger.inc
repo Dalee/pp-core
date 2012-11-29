@@ -67,7 +67,7 @@ class PXTriggerDatabaseMultipleregions extends PXAbstractDatabaseTrigger {
 		$regions_field = PXMultiRegions::REGION_MARK;
 
 		if ($isRegionalObject && empty($allowedRegionsIds)) {
-			PXMultipleRegionsHelper::simpleSetDbValues(PXMultiRegions::REGION_MARK, 
+			PXMultipleRegionsHelper::simpleSetDbValues(PXMultiRegions::REGION_MARK,
 				PXMultipleRegionsHelper::toString($objectInDB[$regions_field]), $dbFields, $dbValues);
 
 			return true;
@@ -138,7 +138,7 @@ class PXTriggerDatabaseMultipleregions extends PXAbstractDatabaseTrigger {
 		$permit = $regions->checkRegionAccess($format, $objectInDB) && $regions->checkRegionAccessToParent($format, $objectInDB);
 
 		if(!$permit && $regions->isRegionalObject($format)) {
-			$cloner = 
+			$cloner =
 				new PXPublicRegionObjectCloner($format, $object = null, $objectInDB, $this);
 
 			$cloner->deleteObject($regions->getAllowedRegionsIds());
@@ -162,7 +162,7 @@ class PXTriggerDatabaseMultipleregions extends PXAbstractDatabaseTrigger {
 		$regions_field = PXMultiRegions::REGION_MARK;
 
 		if ($isRegionalObject && empty($allowedRegionsIds)) {
-			PXMultipleRegionsHelper::simpleSetDbValues(PXMultiRegions::REGION_MARK, 
+			PXMultipleRegionsHelper::simpleSetDbValues(PXMultiRegions::REGION_MARK,
 				PXMultipleRegionsHelper::toString($objectInDB[$regions_field]), $dbFields, $dbValues);
 
 			return true;
@@ -210,6 +210,7 @@ class PXTriggerDatabaseMultipleregions extends PXAbstractDatabaseTrigger {
 			$cloner->moveObject($regions->getAllowedRegionsIds());
 
 			$this->isRegionalCloning = null;
+			$permit = true; //Мы клонировали объект, $objectInDB теперь содержит клон, который необходимо позволить-таки передвинуть.
 		} elseif(!$permit) {
 			$this->fireError();
 		}

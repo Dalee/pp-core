@@ -1121,9 +1121,7 @@ class PXDatabase extends NLSQLDatabaseAdapter implements IPXDatabase {
 			return;
 		}
 		$direction = $shift > 0 ? 'up' : 'down';
-		for($i=0; $i<abs($shift);$i++) {
-			$this->_moveContentObject($format, $objectId, $direction);
-		}
+		$this->_moveContentObject($format, $objectId, $direction, abs($shift));
 	}
 
 	/**
@@ -1136,7 +1134,7 @@ class PXDatabase extends NLSQLDatabaseAdapter implements IPXDatabase {
 	 * @param Array             $objectId   object id
 	 * @param String            $direction  up|down
 	 */
-	function _moveContentObject($format, $objectId, $direction) {
+	function _moveContentObject($format, $objectId, $direction, $steps = 1) {
 		$audit = PXAuditLogger::getLogger($this->app, $this);
 
 		$objectInDB = $this->getObjectById($format, $objectId);
@@ -1148,47 +1146,47 @@ class PXDatabase extends NLSQLDatabaseAdapter implements IPXDatabase {
 			$this->FatalError($errString);
 		}
 
-		$swap = (preg_match('#sys_order\s+DESC#i', $format->order));
-		$down = $direction == 'down';
-		if($swap) {
-			$down = !$down;
-		}
-
-		$where = $format->id.'.sys_order '.($down ? '>' : '<').' '.$objectInDB['sys_order'];
-
+		$swap = !!preg_match('#sys_order\s+DESC#i', $format->order);
+		$down = ($swap xor ($direction == 'down'));
+		
+		$where = array();
+		$where[] = sprintf('%s.sys_order %s %s', $format->id, $down ? '>' : '<', $objectInDB['sys_order']);
+		
 		if (!empty($format->parent)) {
-			$where .= ' AND '.$format->id.'.parent '. (is_null($objectInDB['parent']) ? 'IS NULL' : '= '.$objectInDB['parent']);
+			$parent = $objectInDB['parent'];
+			$is_null = is_null($parent);
+			$where[] = sprintf('%s.parent %s %s', $format->id, $is_null ? 'IS' : '=', $is_null ? 'NULL' : $parent);
 		}
 
 		if ($format->struct == 'tree' && isset($format->fields['pid'])) {
-			$where .= ' AND '.$format->id.'.pid';
-
 			$pid = $objectInDB['pid'];
-			$where .= (is_null($pid) || !is_numeric($pid)) ? ' IS NULL' : ' = '.$pid;
+			$is_null = is_null($pid);
+			$where[] = sprintf('%s.pid %s %s', $format->id, $is_null ? 'IS' : '=', $is_null ? 'NULL' : $pid);
 		}
-
-		$nearObject = $this->getObjectsByWhereLimited($format, NULL, $where, 1, 0, DB_SELECT_TABLE, 'sys_order '.($down ? '' : 'DESC'));
-
+		
+		$where = join(' AND ', $where);
+		$nearObject = $this->getObjectsByWhereLimited($format, NULL, $where, 1, $steps-1, DB_SELECT_TABLE, 'sys_order'.($down ? '' : ' DESC'));
 		$permitMove = true;
+		$object_id= $objectInDB['id'];
+		
 		foreach ($this->triggers as $t){
 			$permitMove = $t->getTrigger()->OnBeforeMoveObject($this, $objectId, $format, $objectInDB);
 			if(!$permitMove) break;
 		}
+		
+		if($permitMove && sizeof($nearObject)) {
+			$nearObject = current($nearObject);
+			$this->transactionBegin();
+				$qry = sprintf('UPDATE %s SET sys_order = sys_order + 1 WHERE sys_order %s %d', $format->id, $down ? '>' : '>=', $nearObject['sys_order']);
+				$this->ModifyingQuery($qry);
+				$qry = sprintf('UPDATE %s SET sys_order = %d WHERE %1$s.id = %d', $format->id, $nearObject['sys_order'] + ($down ? 1 : 0), $objectInDB['id']);
+				$this->ModifyingQuery($qry);
+			$this->transactionCommit();
 
-		if($permitMove) {
-			if (sizeof($nearObject)) {
-				$nearObject = current($nearObject);
-
-				$this->transactionBegin();
-				$this->ModifyingQuery('UPDATE '.$format->id.' SET sys_order='.$objectInDB['sys_order'].' WHERE id='.$nearObject['id']);
-				$this->ModifyingQuery('UPDATE '.$format->id.' SET sys_order='.$nearObject['sys_order'].' WHERE id='.$objectInDB['id']);
-				$this->transactionCommit();
-
-				foreach ($this->triggers as $t)
-					$t->getTrigger()->OnMoveObject($this, $objectId, $format, $objectInDB);
-
-				$audit->info('Объект перемещен в списке', $format->id .'/'. $objectId);
+			foreach ($this->triggers as $t) {
+				$t->getTrigger()->OnMoveObject($this, $objectId, $format, $objectInDB);
 			}
+			$audit->info('Объект перемещен в списке', $format->id .'/'. $objectId);
 		}
 	}
 
