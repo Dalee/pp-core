@@ -1165,7 +1165,12 @@ class PXDatabase extends NLSQLDatabaseAdapter implements IPXDatabase {
 		}
 		
 		$where = join(' AND ', $where);
-		$nearObject = $this->getObjectsByWhereLimited($format, NULL, $where, 1, $steps-1, DB_SELECT_TABLE, 'sys_order'.($down ? '' : ' DESC'));
+		$nearCount = $this->getObjectsByWhere($format, NULL, $where, DB_SELECT_COUNT);
+		if(!$nearCount){
+			return;
+		}
+		$offset = ($steps > $nearCount ? $nearCount : $steps) - 1;
+		$nearObject = $offset >= 0 ? $this->getObjectsByWhereLimited($format, NULL, $where, 1, $offset, DB_SELECT_TABLE, 'sys_order'.($down ? '' : ' DESC')) : array();
 		$permitMove = true;
 		$object_id= $objectInDB['id'];
 		
