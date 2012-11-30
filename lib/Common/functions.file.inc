@@ -297,4 +297,17 @@ function parse_csv_file($filename, $delim=';') {
 
 	return $result;
 }
+
+function FindSystemFile($fileName){
+	$pathArray = explode(':', $_SERVER['PATH']);
+	if (!in_array('/usr/X11R6/bin/', $pathArray) && !in_array('/usr/X11R6/bin', $pathArray)) {
+		$pathArray[] = '/usr/X11R6/bin/';
+	}
+	foreach ($pathArray as $path) {
+		if (is_executable($path.'/'.$fileName)) {
+			return $path.'/'.$fileName;
+		}
+	}
+} 
+
 ?>

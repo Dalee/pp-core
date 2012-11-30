@@ -61,34 +61,30 @@
 				MakeDirIfNotExists($bundleTypeRoot);
 				WriteStringToFile($bundleFullPath, $bundleContent);
 
-				if(in_array($type, array('css', 'js'))) {
-					if (PXRegistry::getApp()->getProperty('CONFIG.ASSETS_USE_YUI')) { // try to minify css and javascript
-						$statusCode = -1;
-						$compressorBinary = trim(exec('which yui-compressor', $dummy, $statusCode));
+				if(in_array($type, array('css', 'js')) && 
+					PXRegistry::getApp()->getProperty('CONFIG.ASSETS_USE_YUI') && 
+					($compressorBinary = FindSystemFile('yui-compressor'))) {
+					// try to minify css and javascript
+					$outputFile = tempnam($bundleTypeRoot, $bundleName);
 
-						if((intval($statusCode) === 0)) {
-							$outputFile = tempnam($bundleTypeRoot, $bundleName);
+					$cmd = array();
+					$cmd[] = $compressorBinary; // /usr/bin/yui-compressor
+					$cmd[] = $bundleFullPath;   // .../asset-....(js|css)
+					$cmd[] = "--type {$type}";
+					$cmd[] = "-o";
+					$cmd[] = $outputFile;
 
-							$cmd = array();
-							$cmd[] = $compressorBinary; // /usr/bin/yui-compressor
-							$cmd[] = $bundleFullPath; // .../asset-....(js|css)
-							$cmd[] = "--type {$type}";
-							$cmd[] = "-o";
-							$cmd[] = $outputFile;
+					$cmd_string = implode(' ', $cmd);
+					$statusCode = -1;
+					$compressionResult = exec($cmd_string, $dummy, $statusCode);
 
-							$cmd_string = implode(' ', $cmd);
-							$statusCode = -1;
-							$compressionResult = exec($cmd_string, $dummy, $statusCode);
-
-							if((intval($statusCode) === 0)) {
-								rename($outputFile, $bundleFullPath);
-							}
-						}
+					if((intval($statusCode) === 0)) {
+						rename($outputFile, $bundleFullPath);
 					}
 				}
 			}
 			
-			$this->assets[$type][$group] = array(); //Empty written asset for later usage
+			$this->assets[$type][$group] = array(); //Make an asset blank for future use
 			
 			return array($bundleFullPath, $bundleRelPath, filemtime($bundleFullPath));
 		}

@@ -15,17 +15,8 @@ function GDInDrawPicture($src_im, &$dst_im) {
 }
 
 function FindMagicTools($component){
-	$pathArray = explode(':', $_SERVER['PATH']);
-	if (!in_array('/usr/X11R6/bin/', $pathArray) && !in_array('/usr/X11R6/bin', $pathArray)) {
-		$pathArray[] = '/usr/X11R6/bin/';
-	}
-	foreach ($pathArray as $path) {
-		if (is_executable($path.'/'.$component)) {
-			return $path.'/'.$component;
-		}
-	}
-
-	FatalError('Cant find ImageMagick '.strtoupper($component).' tools');
+	($magicPath = FindSystemFile($component)) or FatalError('Cant find ImageMagick '.strtoupper($component).' tools');
+	return $magicPath;
 }
 
 function FindNconvert() {
