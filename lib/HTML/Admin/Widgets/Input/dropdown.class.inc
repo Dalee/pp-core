@@ -30,7 +30,7 @@ class PXInputDropDown extends PXAdminWidget {
 
 		foreach ($this->values as $k => $title) {
 			// simple drop down selector
-			if (is_scalar($title)) {
+			if (!is_array($title)) {
 				$html .= $this->htmlOption($k, $title, $selected);
 				continue;
 			}
