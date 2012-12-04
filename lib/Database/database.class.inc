@@ -1,18 +1,20 @@
 <?php
 /**Вернуть данные и таблицы в виде массива*/
-define('DB_SELECT_TABLE', 0);
+define('DB_SELECT_TABLE', 1);
 
 /**Вернуть количество строк COUNT()*/
-define('DB_SELECT_COUNT', 1);
+define('DB_SELECT_COUNT', 2);
 
 /**Вернуть данные и таблицы в виде дерева, исключая orphaned ветки */
-define('DB_SELECT_TREE',  2);
+define('DB_SELECT_TREE',  4);
 
 /**Вернуть данные и таблицы в виде LIST*/
-define('DB_SELECT_LIST',  3);
+define('DB_SELECT_LIST',  8);
 
 /**Вернуть данные и таблицы в виде дерева, включая orphaned ветки в корневой раздел*/
-define('DB_SELECT_FULL_TREE',  4);
+define('DB_SELECT_FULL_TREE',  16);
+
+define('DB_SELECT_WITHOUT_EXTERNALS',  32);
 
 /**Значение не NULL*/
 define('NOT_NULL', '~~___IS_NOT_NULL___~~');
@@ -299,20 +301,18 @@ class PXDatabase extends NLSQLDatabaseAdapter implements IPXDatabase {
 			$first_is_fun = preg_match('#^\s*\w+\s*\(#S', $order);
 			$order_by     = ($first_is_fun ? '' : $format->id . '.') . $order;
 		}
-
 		foreach ($this->triggers as $t){
 			$t->getTrigger()->OnBeforeGetDataBuildQuery($this, $format, $mode, $selector, $where, $order_by, $limit);
 		}
-
+	
 		$query = 'SELECT ' . $selector . ' FROM ' . $format->id;
 
 		if (!is_null($where))    $query .= ' WHERE ' . $where;
 		if (!is_null($order_by)) $query .= ' ORDER BY ' . $order_by;
-
 		foreach ($this->triggers as $t){
 			$t->getTrigger()->OnGetDataBuildQuery($this, $format, $mode, $query, $selector, $where, $order_by, $limit);
 		}
-
+		
 		$queryIden = $this->_getCacheIden($query, $mode, $limit);
 		$data = $this->cache->load($queryIden);
 
@@ -1639,10 +1639,14 @@ SQL;
 	 * @todo docme (check params documentation)
 	 * @access public
 	 */
-	function _NormalizeTable(&$table, $format) {
+	function _NormalizeTable(&$table, $format, $withoutNotInDB = false) {
 		foreach ($table as $k=>$v) {
 			foreach ($format->fields as $fk=>$fv) {
 				$p = array('db'=>&$this, 'format'=>$format->id);
+
+				if($withoutNotInDB && $fv->storageType->notInDb($fv, $table[$k], $p)){
+					continue;
+				}
 				$table[$k][$fk] = $fv->storageType->normalize($fv, $table[$k], $p);
 			}
 
@@ -1682,11 +1686,11 @@ SQL;
 	 * @todo docme (check params documentation)
 	 */
 	protected function _PrepareResult($resTable, $format, $mode) {
-		switch ($mode) {
-			case DB_SELECT_TABLE:
+		switch (true) {
+			case $mode & DB_SELECT_TABLE:
 				PXProfiler::begin('PREPARE: '.$format->id.' ['.sizeof($resTable).'x'.sizeof($format->fields).']');
 
-				$this->_NormalizeTable($resTable, $format);
+				$this->_NormalizeTable($resTable, $format, !!($mode & DB_SELECT_WITHOUT_EXTERNALS));
 
 				$newTable = array();
 				foreach ($resTable as $k=>$v) {
@@ -1701,13 +1705,13 @@ SQL;
 				return $newTable;
 				break;
 				
-			case DB_SELECT_TREE:
-			case DB_SELECT_FULL_TREE:
+			case $mode & DB_SELECT_TREE:
+			case $mode & DB_SELECT_FULL_TREE:
 				PXProfiler::begin('PREPARE: '.$format->id.' ['.sizeof($resTable).'x'.sizeof($format->fields).']');
 
-				$this->_NormalizeTable($resTable, $format);
+				$this->_NormalizeTable($resTable, $format, !!($mode & DB_SELECT_WITHOUT_EXTERNALS));
 				$newTable = array();
-
+			
 				foreach ($resTable as $k=>$v) {
 					if ($this->user->can('read', $format, $v)) {
 						$newTable[$v['id']] = $v;
@@ -1723,9 +1727,7 @@ SQL;
 				foreach($this->triggers as $t) {
 					$t->getTrigger()->OnBeforeBuildTree($this, $format, $newTable, $parentRefName);
 				}
-
-				$newTree = $this->buildTree($newTable, 'id', $parentRefName, 'title', $mode == DB_SELECT_FULL_TREE);
-
+				$newTree = $this->buildTree($newTable, 'id', $parentRefName, 'title', !!($mode & DB_SELECT_FULL_TREE));
 				PXProfiler::end();
 
 				return $newTree;
@@ -1798,5 +1800,10 @@ SQL;
 			$this->FatalError($errString);
 		}
 	}
+	
+	function importBoolean($string) {
+		return $this->dbDriver->importBoolean($string);
+	}
+	
 }
 ?>
