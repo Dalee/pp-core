@@ -1,7 +1,16 @@
 <?php
 
 class PXAdminTreeObjects extends PXAdminObjects {
-	function __construct($format) {
+	protected $withoutExternals;
+	/**
+	 *
+	 * @param unknown $format
+	 * @param string $where - deprecated
+	 * @param string $loadMethod - deprecated
+	 * @param string $withoutExternals
+	 */
+	function __construct($format, $where=NULL, $loadMethod='', $withoutExternals = false) {
+		$this->withoutExternals = $withoutExternals;
 		parent::__construct($format);
 		$this->createSubWidget();
 	}
@@ -10,11 +19,11 @@ class PXAdminTreeObjects extends PXAdminObjects {
 		$cacheDataKey = self::makeDataKey($this->format->id);
 		if ($r = self::retrieveData($cacheDataKey)) {
 			$this->tree = $r;
-			$this->count = sizeof($this->tree->leafs) - 1;;
+			$this->count = sizeof($this->tree->leafs) - 1;
 			return;
 		}
 
-		$this->tree = $this->db->getObjects($this->format, null, DB_SELECT_TREE);
+		$this->tree = $this->db->getObjects($this->format, null, DB_SELECT_TREE | ($this->withoutExternals ? DB_SELECT_WITHOUT_EXTERNALS : 0) );
 
 		$this->db->filterByAccess('admin', $this->format, $this->tree);
 		$this->count = sizeof($this->tree->leafs) - 1;

@@ -248,7 +248,6 @@ class NLAbstractLayout {
 			$html = '';
 
 			foreach ($widgets as $w) {
-				echo sprintf("%s : %s\n<br>",date("H:i:m"), get_class($w));
 				$html .= $this->isWidget($w) ? $w->html() : $w;
 			}
 

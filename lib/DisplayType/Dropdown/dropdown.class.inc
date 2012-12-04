@@ -46,7 +46,7 @@ class PXDisplayTypeDropdown extends PXDisplayType {
 			$db  = PXRegistry::getDb();
 			$app = PXRegistry::getApp();
 			
-			self::$trees[$parentFormat] = $db->getObjects($app->types[$parentFormat], NULL, DB_SELECT_FULL_TREE);
+			self::$trees[$parentFormat] = $db->getObjects($app->types[$parentFormat], NULL, DB_SELECT_FULL_TREE | DB_SELECT_WITHOUT_EXTERNALS);
 		}
 		
 		return self::$trees[$parentFormat];

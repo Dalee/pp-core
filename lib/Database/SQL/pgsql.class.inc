@@ -249,7 +249,7 @@ class NLPGSQLDatabase extends NLAbstractSQLDatabase {
 
 	/*
 	 * Transaction related functions
-	 * 
+	 *
 	 */
 	function transactionBegin() {
 		$this->Query('BEGIN',true);
@@ -276,7 +276,7 @@ class NLPGSQLDatabase extends NLAbstractSQLDatabase {
 	}
 
 	function importBoolean($string) {
-		return ($string == 't' || $string == '1') ? true : false;
+		return $string == 't' || $string == '1';
 	}
 
 	function IsUniqueColsCombination($tables, $colValues, $exception) {
@@ -302,7 +302,7 @@ class NLPGSQLDatabase extends NLAbstractSQLDatabase {
 				}
 			}
 
-			$query = sprintf("%s + (SELECT count(*) FROM %s WHERE %s", 
+			$query = sprintf("%s + (SELECT count(*) FROM %s WHERE %s",
 				$query, $tableName, join(" AND ", $where_clauses));
 
 			if($t['exWhere']) {
@@ -352,7 +352,7 @@ class NLPGSQLDatabase extends NLAbstractSQLDatabase {
 
 	function intersectIntArray($arrayField, $values) {
 		return sprintf("%s && '{%s}'",
-			$this->escapeString($arrayField), 
+			$this->escapeString($arrayField),
 			join(",", array_filter($values, "is_numeric")));
 	}
 
