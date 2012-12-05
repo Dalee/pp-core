@@ -184,7 +184,7 @@ class PXModuleMain extends PXModule {
 		$rqSid = $request->getSid();
 		$rqCid = $request->getCid();
 
-		$hTree = new PXAdminTreeObjects($this->rootFormat);
+		$hTree = new PXAdminTreeObjects($this->rootFormat, null, null, true);
 
 		($this->rootFormatId == $this->app->modules['main']->settings['rootFormat']) &&
 		$this->fillPathnamedAliases($hTree->getTree());
@@ -212,7 +212,7 @@ class PXModuleMain extends PXModule {
 					}
 
 					if ($app->types[$childFormat]->struct == 'tree' && $request->GetVar($childFormat.'_view') != 'plain') {
-						$objects = new PXAdminTreeObjects($childFormat, $rqSid, 'ByParent');
+						$objects = new PXAdminTreeObjects($childFormat, $rqSid, 'ByParent', true);
 
 					} else {
 						$objects =  new PXAdminTableObjects($childFormat, $rqSid, 'ByParent');

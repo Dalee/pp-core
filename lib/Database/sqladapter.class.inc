@@ -2,7 +2,7 @@
 require_once 'Cache/classes.inc';
 
 class NLSQLDatabaseAdapter {
-	private   $dbDriver;
+	protected $dbDriver;
 	protected $selfDescription; // ?
 
 	function NLSQLDatabaseAdapter(&$dbDescription) {
