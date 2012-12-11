@@ -49,38 +49,39 @@ class PXUserHTMLLayout extends PXLayoutInterface  {
 		include_once 'HTML/lang.class.inc';
 
 		$this->lang = new PXUserHTMLLang();
-		$this->AddTemplateFunction('lang', array(&$this->lang, 'lang'));
+		$this->AddTemplateFunction('lang', array($this->lang, 'lang'));
+		$this->addTemplateModifier('lang', array($this->lang, 'lang_modifier'));
 
-		$this->AddTemplateFunction('pager', array(&$this, 'pager'));
-		$this->AddTemplateFunction('autopager', array(&$this, 'autopager')); 
+		$this->AddTemplateFunction('pager', array($this, 'pager'));
+		$this->AddTemplateFunction('autopager', array($this, 'autopager')); 
 
 		$this->AddTemplateBlock('dev', 'smarty_block_dev'); //FIXME: see functions.etc.inc
 	}
 
 	function htmlPager($totalObjects, $objectsPerPage, &$smarty, $param) {
-	 	$maxPage = ceil($totalObjects/$objectsPerPage); 
-	 	$objectsPerPage = $objectsPerPage; 
+		$maxPage = ceil($totalObjects/$objectsPerPage); 
+		$objectsPerPage = $objectsPerPage;
 
-	 	$request     =& PXRegistry::getRequest();
+		$request     = PXRegistry::getRequest();
 
-	 	$currentPage = $request->GetVar('page', $this->getVar('FP_' . strtoupper($param['format']) . '_DEFAULT_PAGE', 1));
-	 	$currentPage = (int)preg_replace('/[^0-9]+/', '', $currentPage); 
-	 	$currentPage = $currentPage > 0 ? $currentPage : 1; 
+		$currentPage = $request->GetVar('page', $this->getVar('FP_' . strtoupper($param['format']) . '_DEFAULT_PAGE', 1));
+		$currentPage = (int)preg_replace('/[^0-9]+/', '', $currentPage);
+		$currentPage = $currentPage > 0 ? $currentPage : 1;
 
-	 	if ($currentPage > $maxPage) { 
-	 		$currentPage = $maxPage; 
-	 	}
+		if ($currentPage > $maxPage) {
+			$currentPage = $maxPage;
+		}
 
-	 	$smarty->assign('a_per_page', $objectsPerPage); 
-	 	$smarty->assign('page',       $currentPage); 
-	 	$smarty->assign('pages',      $maxPage); 
-	 	$smarty->assign('max_page',   $maxPage); 
+		$smarty->assign('a_per_page', $objectsPerPage);
+		$smarty->assign('page',       $currentPage);
+		$smarty->assign('pages',      $maxPage);
+		$smarty->assign('max_page',   $maxPage);
 
-	 	if(isset($param['notshow'])) { 
-	 		return; 
-	 	} 
-	 	return $this->html('misc/pager/pages.tmpl'); 
- 	}
+		if(isset($param['notshow'])) {
+			return;
+		}
+		return $this->html('misc/pager/pages.tmpl');
+	}
 
 	function autopager($param, &$smarty) {
 		$total      = $this->getVar('FP_' . strtoupper($param['format']) . '_TOTAL');
@@ -99,7 +100,7 @@ class PXUserHTMLLayout extends PXLayoutInterface  {
 		/* Нужна ли постраничка? */
 		$p = strtoupper($param['format']).'_PER_PAGE';
 
-		$app =& PXRegistry::getApp();
+		$app = PXRegistry::getApp();
 		$a_per_page = $app->GetProperty($p, $total);
 
 		if ($a_per_page == 0) {
@@ -143,7 +144,7 @@ class PXUserHTMLLayout extends PXLayoutInterface  {
 	}
 
 	function getVar($varName, $default=NULL) {
-		$var =& $this->smarty->get_template_vars($varName);
+		$var = $this->smarty->get_template_vars($varName);
 		return (isset($var) ? $var : $default);
 	}
 
@@ -191,8 +192,13 @@ class PXUserHTMLLayout extends PXLayoutInterface  {
 		}
 	}
 
-	function addModifier($name, $functionMame) {
-		$this->smarty->register_modifier($name, $functionMame);
+	// back-compat. deprecated
+	function addModifier($name, $callback) {
+		$this->addTemplateModifier($name, $callback);
+	}
+
+	function addTemplateModifier($name, $callback) {
+		$this->smarty->register_modifier($name, $callback);
 	}
 
 	function addTemplateFunction($templateBlock, $functionName) {

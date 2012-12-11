@@ -1,18 +1,35 @@
 <?php
+
 class PXUserHTMLLang {
-	function PXUserHTMLLang() {
+
+	protected $charset = '';
+	protected $lang = '';
+	protected $tree;
+
+	public function __construct() {
 		$this->setLang('rus');
 	}
 
-	function setTree($tree) {
+	public function setTree($tree) {
 		$this->tree = $tree;
 	}
 
-	function setLang($lang) {
+	public function setLang($lang) {
 		$this->lang = $lang;
 	}
 
-	function lang($param, &$smarty) {
+	/**
+	 * smarty_modifier_lang
+	 */
+	public function lang_modifier($path) {
+		$result = $this->_get($path);
+		return false === $result ? null : $result;
+	}
+
+	/**
+	 * smarty_function_lang
+	 */
+	public function lang($param, &$smarty) {
 		if (empty($param)) {
 			echo $this->lang;
 			return;
@@ -24,31 +41,31 @@ class PXUserHTMLLang {
 		$action = null;
 		$encoding = null;
 
-		if(isset($param['get'])) {
+		if (isset($param['get'])) {
 			$path = $param['get'];
 			$action = 'echo';
 		}
 
-		if(isset($param['return'])) {
+		if (isset($param['return'])) {
 			$action = 'return';
 		}
 
-		if(isset($param['date'])) {
+		if (isset($param['date'])) {
 			$date = $param['date'];
 			$path = is_null($path) ? 'date' : $path;
 			$action = 'date';
 		}
 
-		if(isset($param['assign'])) {
+		if (isset($param['assign'])) {
 			$varname = $param['assign'];
 			$action = 'assign';
 		}
 
-		if(isset($param['encoding'])) {
+		if (isset($param['encoding'])) {
 			$encoding = $param['encoding'];
 		}
 
-		if(is_null($path)) {
+		if (is_null($path)) {
 			return;
 		}
 
@@ -178,8 +195,6 @@ class PXUserHTMLLang {
 		return $value;
 	}
 
-	var $charset = '';
-
 	function _reconv($value, $encoding) {
 		if ($encoding == 'utf8') {
 			$this->charset = 'u';
@@ -206,4 +221,3 @@ class PXUserHTMLLang {
 		}
 	}
 }
-?>
