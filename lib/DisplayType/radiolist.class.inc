@@ -9,9 +9,14 @@ class PXDisplayTypeRadioList extends PXDisplayTypeDropDown {
 
 		$args = !empty($field->displayTypeArgs) ? array_flip($field->displayTypeArgs) : null;
 
-		if (isset($args['null']))
+		if (isset($args['null'])){
 			$values = array(null => "---") + $values;
-
+		}
+		
+		if (isset($args['notnull'])){
+			unset($values['']);
+		}
+		
 		$selector = new PXInputRadiolist($field->name, $value, $values);
 		return $selector->html();
 	}

@@ -42,6 +42,7 @@
 		protected $host = 'localhost';
 		protected $passwd = '';
 		protected $port = '5432';
+		protected $encoding = 'utf8';
 
 		public function __construct($data) {
 			if(!empty($data['host'])) $this->host = $data['host'];
@@ -49,6 +50,7 @@
 			if(!empty($data['passwd'])) $this->passwd = $data['passwd'];
 			if(!empty($data['port'])) $this->port = $data['port'];
 			if(!empty($data['command'])) $this->cli = $data['command'];
+			if(!empty($data['encoding'])) $this->encoding = $data['encoding'];
 
 			if(empty($data['dbname'])) {
 				print "ERROR: dbname is not set in database.ini\n";
@@ -59,7 +61,7 @@
 
 		abstract public function setup($filenames);
 		abstract public function migrate($filename, $silent);
-		abstract public function settedup();
+		abstract public function settedUp();
 	}
 
 	/**
@@ -69,11 +71,18 @@
 		protected $pdo = null;
 		protected $command = 'psql';
 
+		protected function makeSetClientEncodingQuery() {
+			return "SET client_encoding TO '{$this->encoding}'";
+		}
+
 		public function __construct($data) {
 			parent::__construct($data);
 
 			$dsn = "pgsql:dbname={$this->dbname};host={$this->host};port={$this->port}";
 			$this->pdo = new PDO($dsn, $this->user, $this->passwd);
+
+			// set right encoding
+			$this->pdo->exec($this->makeSetClientEncodingQuery());
 		}
 
 		public function getAll() {
@@ -82,7 +91,7 @@
 			return $data;
 		}
 
-		public function settedup() {
+		public function settedUp() {
 			$stmt = $this->pdo->prepare(sprintf('select * from pg_catalog.pg_tables WHERE tablename = ?'));
 			$stmt->execute(array(Database::TABLE_NAME));
 			$rowCount = $stmt->rowCount();
@@ -136,13 +145,22 @@
 			$src = MIGRATEDIR . '/' . $filename;
 			$dst = tempnam(BASEDIR.'/tmp', 'sql_');
 
-			$migration_data = file_get_contents($src);
 			$migration_sql = sprintf(
 				"INSERT INTO %s (filename) VALUES (%s);", 
 				Database::TABLE_NAME,
 				$this->pdo->quote($filename)
 			);
-			$migration_data .= "\n\n-- append migration info\n{$migration_sql}";
+
+			// creating migration
+			$migration_data = "-- set right client encoding\n";
+			$migration_data .= $this->makeSetClientEncodingQuery() . ";";
+
+			$migration_data .= "\n\n-- migration data\n";
+			$migration_data .= file_get_contents($src);
+
+			$migration_data .= "\n\n-- append migration info\n";
+			$migration_data .= $migration_sql;
+
 			file_put_contents($dst, $migration_data);
 
 			// execute

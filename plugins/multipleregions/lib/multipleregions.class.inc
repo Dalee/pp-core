@@ -1,6 +1,7 @@
 <?php
 
 class PXMultiRegions {
+	private $previousDisabled = false;
 	private $disabled = false;
 	
 	private $request;
@@ -297,11 +298,19 @@ class PXMultiRegions {
 	}
 
 	function disable() {
+		$this->previousDisabled = $this->disabled;
 		$this->disabled = true;
 	}
 
 	function enable() {
+		$this->previousDisabled = $this->disabled;
 		$this->disabled = false;
+	}
+
+	function restoreState() {
+		$this->disabled = $this->previousDisabled;
+		$this->previousDisabled = false;
+		return $this->disabled;
 	}
 
 	function findByRegion($regionsList=null) {/*{{{*/
