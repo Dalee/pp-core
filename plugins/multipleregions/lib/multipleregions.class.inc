@@ -271,6 +271,9 @@ class PXMultiRegions {
 	}/*}}}*/
 
 	function setRid($Rid = NULL, $force = false) {/*{{{*/
+		if(isset($Rid) && !ctype_digit($Rid)){
+			FatalError(sprintf('Invalid region id: "%s"', $Rid));
+		}
 		if(!empty($force) && isset($Rid)){ // В случае, если необходимо манипулировать объектами региона, известного по ID, и при этом игнорировать текущий контекст
 			$this->rid = $Rid;
 			return;
