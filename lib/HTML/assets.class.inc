@@ -60,28 +60,6 @@
 
 				MakeDirIfNotExists($bundleTypeRoot);
 				WriteStringToFile($bundleFullPath, $bundleContent);
-
-				if(in_array($type, array('css', 'js')) && 
-					PXRegistry::getApp()->getProperty('CONFIG.ASSETS_USE_YUI') && 
-					($compressorBinary = FindSystemFile('yui-compressor'))) {
-					// try to minify css and javascript
-					$outputFile = tempnam($bundleTypeRoot, $bundleName);
-
-					$cmd = array();
-					$cmd[] = $compressorBinary; // /usr/bin/yui-compressor
-					$cmd[] = $bundleFullPath;   // .../asset-....(js|css)
-					$cmd[] = "--type {$type}";
-					$cmd[] = "-o";
-					$cmd[] = $outputFile;
-
-					$cmd_string = implode(' ', $cmd);
-					$statusCode = -1;
-					$compressionResult = exec($cmd_string, $dummy, $statusCode);
-
-					if((intval($statusCode) === 0)) {
-						rename($outputFile, $bundleFullPath);
-					}
-				}
 			}
 			
 			$this->assets[$type][$group] = array(); //Make an asset blank for future use

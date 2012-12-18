@@ -11,7 +11,7 @@
 	}
 
 	class PXHtmlImageTag {
-		const INLINE_MAX_TRESHOLD = 8192;
+		const INLINE_MAX_TRESHOLD = 4096;
 
 		static private $instance = null;
 
@@ -91,7 +91,7 @@
 		 *
 		 *
 		 */
-		protected function getProperty ($propertyName, $defaultValue = null) {
+		public function getProperty ($propertyName, $defaultValue = null) {
 			$ret = $defaultValue;
 			if (array_key_exists($propertyName, $this->config)) {
 				$ret = $this->config[$propertyName];
