@@ -88,14 +88,14 @@ class PXStorageTypeFilesarray extends PXStorageTypeAbstractFile {
 				}
 			}
 		}
-
-		if (is_array($_FILES) && isset($_FILES[$varName.'_edit']) && is_array($_FILES[$varName.'_edit'])) {
-			foreach ($_FILES[$varName.'_edit']['name'] as $k=>$v) {
+		$edited = PXRegistry::getRequest()->GetUploadFile($varName.'_edit', true);
+		if (isset($edited['name']) && is_array($edited['name'])) {
+			foreach ($edited['name'] as $k=>$v) {
 				if (file_exists($basedir.'/'.$k) && isset($v) && strlen($v)) {
 					unlink($basedir.'/'.$k);
 					$_ = $is_static_call ?
-						self::copyFile($field, $_FILES[$varName.'_edit']['tmp_name'][$k], $basedir.'/'._TranslitFilename($v)) :
-						$this->copyFile($field, $_FILES[$varName.'_edit']['tmp_name'][$k], $basedir.'/'._TranslitFilename($v));
+						self::copyFile($field, $edited['tmp_name'][$k], $basedir.'/'._TranslitFilename($v)) :
+						$this->copyFile($field, $edited['tmp_name'][$k], $basedir.'/'._TranslitFilename($v));
 					$invalidateCache = true;
 				}
 			}
