@@ -379,7 +379,7 @@ function ContextEdit(id, status, format, title, alias, level, up, down) {
 	ret += '<div class="hr"></div>';
 
 	if (alias.length) {
-		ret += '<a class="alias" href="'+alias+'" target="_blank">Показать на сайте</a>';
+		ret += '<a class="alias" href="/admin/preview.phtml?q='+alias+'" target="_blank">Показать на сайте</a>';
 	} else {
 		ret += '<span class="alias">Показать на сайте</span>';
 	}

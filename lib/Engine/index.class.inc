@@ -1,4 +1,5 @@
 <?php
+
 class PXEngineIndex extends PXEngine {
 	var  $layout = array('factory' => 'PXUserHTMLLayout');
 
@@ -59,9 +60,9 @@ class PXEngineIndex extends PXEngine {
 		$this->layout->assign('urlFile',        PXRegistry::getRequest()->getFile());
 
 		$this->layout->assign('requestHost',    PXRegistry::getRequest()->getHttpHost());
-		$this->layout->assign('requestUri',     $_SERVER['REQUEST_URI']);
+		$this->layout->assign('requestUri',     PXRegistry::getRequest()->getRequestUri());
 		$this->layout->assign('requestReferer', PXRegistry::getRequest()->getHttpReferer());
-		$this->layout->assign('requestPath',    $_SERVER['SCRIPT_NAME']);
+		$this->layout->assign('requestPath',    PXRegistry::getRequest()->getPathAsString());
 	}
 
 	function html() {
