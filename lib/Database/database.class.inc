@@ -278,7 +278,7 @@ class PXDatabase extends NLSQLDatabaseAdapter implements IPXDatabase {
 	 * @param Array|NULL $limit     NULL or array(LIMIT,OFFSET)
 	 * @return Array|NULL           results of {@link NLSQLDatabaseAdapter::Query()}
 	 */
-	private function _GetData($format, $status, $mode, $where=NULL, $limit=NULL, $order=NULL) {
+	protected function _GetData($format, $status, $mode, $where=NULL, $limit=NULL, $order=NULL) {
 		if(is_array($limit)) {
 			if(is_null($limit[0]) || is_null($limit[1])) {
 				$limit = null;
