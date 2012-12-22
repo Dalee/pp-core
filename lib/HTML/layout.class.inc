@@ -201,12 +201,12 @@ class PXUserHTMLLayout extends PXLayoutInterface  {
 		$this->smarty->register_modifier($name, $callback);
 	}
 
-	function addTemplateFunction($templateBlock, $functionName) {
-		$this->smarty->register_function($templateBlock, $functionName);
+	function addTemplateFunction($name, $callback) {
+		$this->smarty->register_function($name, $callback);
 	}
 	
-	function addTemplateBlock($templateBlock, $functionName, $cacheable = true) {
-		$this->smarty->register_block($templateBlock, $functionName, $cacheable);
+	function addTemplateBlock($name, $callback, $cacheable = true) {
+		$this->smarty->register_block($name, $callback, $cacheable);
 	}
 
 	function removeFilter($functionName) {
