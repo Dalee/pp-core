@@ -4,12 +4,17 @@ class PXRequestBase     extends PXRequestAbstract {}
 class PXRequestUser     extends PXRequestBase {}
 
 class PXNullRequest extends PXRequestAbstract {
-	function __construct() {
+	public function __construct() {
 	}
 
-	function getVar($varName) {
+	public function getVar($varName) {
 		return NULL;
 	}
+	
+	public function GetUploadFile($varName, $isArray = false){
+		return array();
+	}
+	
 }
 
 ?>
