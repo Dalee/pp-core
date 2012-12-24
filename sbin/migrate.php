@@ -454,7 +454,7 @@
 				exit(1);
 			}
 			$name = strtolower($this->argv[2]);
-			if(!preg_match('/^[a-z0-9_\-\?\*]+$/', $name)) {
+			if(!preg_match('/^[a-z0-9_\-\?\*]+(\.sql)?$/', $name)) {
 				$this->display("Incorrect name: {$name}. Allowed: a-z, 0-9, _, and -, and wildcards");
 				exit(1);
 			}
