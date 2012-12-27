@@ -262,7 +262,7 @@ function array_flat($array, $toKey = false, $toValue = false, $unique = false) {
 			// if we just simplifiying some kind of php array to list
 			case $toKey === false:
 				$result[] = $newValue;
-				continue;
+				continue 2;
 			// default
 			default:
 			case $toKey === true:
