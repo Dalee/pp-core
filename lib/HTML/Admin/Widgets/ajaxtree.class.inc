@@ -1,4 +1,6 @@
 <?php
+require_once 'ajaxTreeBranch.class.inc';
+
 class PXAdminAjaxTree extends PXAdminTree {
 	protected $currentLeaf;
 	/**
@@ -6,17 +8,17 @@ class PXAdminAjaxTree extends PXAdminTree {
 	 * Инициализирует поля класса. необходимые для построения дерева.
 	 */
 	public function __construct(&$datatype, &$tree, $currentLeafId = null) {
-		parent::__construnct($datatype, $tree);
+		parent::__construct($datatype, $tree);
 		$this->currentLeaf = $currentLeafId;
 	}
 
 	public function html() {
-		return isset($this->currentLeafId) ? $this->branchHtml() : $this->treeHtml();
+		return isset($this->currentLeaf) ? $this->branchHtml() : $this->treeHtml();
 	}
 	
 	protected function branchHtml(){
-		return isset($this->tree->leafs[$this->currentLeafId])
-			? PXAdminAjaxTreeBranch::childrenHTML($this->tree->leafs[$this->currentLeafId]->children, $this)
+		return isset($this->tree->leafs[$this->currentLeaf])
+			? PXAdminAjaxTreeBranch::childrenHTML($this->tree->leafs[$this->currentLeaf]->children, $this)
 			: '';
 	}
 	
@@ -29,6 +31,35 @@ class PXAdminAjaxTree extends PXAdminTree {
 			return '<div class="tree">' . $caption . '<div class="empty">&#8212;</div></div>';
 		}
 	}
+	
+	public /* override */ function isOpenLeaf($id) {
+		return in_array($this->datatype->id . $id, $this->leafsToOpen);
+	}
+	
+	public /* override */ function setSelected($selectedSid) {
+		$this->selectedSid = $selectedSid;
+	
+		// Добавляем в массив "расхлопывающихся" листьев всех предков выбранного
+		$tmpId = $selectedSid;
+		while (isset($this->tree->leafs[$tmpId]->parent)) {
+			$tmpId = $this->tree->leafs[$tmpId]->parent;
+			$this->leafsToOpen[] = $this->datatype->id . $tmpId;
+		}
+	
+	}
+	
+	public function isLastLeaf($id) {
+		if(!isset($this->tree->leafs[$id])){
+			return false;
+		}
+		$leaf = $this->tree->leafs[$id];
+		$pid = $leafs->parent;
+		if(!isset($this->tree->leafs[$pid])){
+			return false;
+		}
+		$parent = $this->tree->leafs[$pid];
+		return end($parent->children) == $id;
+	}
 
+	
 }
-?>

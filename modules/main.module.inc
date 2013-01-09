@@ -169,7 +169,18 @@ class PXModuleMain extends PXModule {
 
 		return $currentPage;
 	}
-
+	
+	public function adminJson() {
+		$format = $this->request->getVar('f');
+		$id = $this->request->getVar('id');
+		$answer = '';
+		if(!empty($id) && isset($this->app->types[$format]) && ($this->app->types[$format]->struct == 'tree' && $this->request->GetVar($format.'_view') != 'plain')){
+			$hTree = new PXAdminAjaxTreeObjects($format, null, null, true, $id);
+			$answer = $hTree->html();
+		}
+		return array('branch' => $answer);
+	}
+	 
 	function adminIndex() {
 		if (!isset($this->app->types[$this->rootFormatId])) {
 			FatalError("Некорректный тип данных");
@@ -184,7 +195,7 @@ class PXModuleMain extends PXModule {
 		$rqSid = $request->getSid();
 		$rqCid = $request->getCid();
 
-		$hTree = new PXAdminTreeObjects($this->rootFormat, null, null, true);
+		$hTree = new PXAdminAjaxTreeObjects($this->rootFormat, null, null, true);
 
 		($this->rootFormatId == $this->app->modules['main']->settings['rootFormat']) &&
 		$this->fillPathnamedAliases($hTree->getTree());

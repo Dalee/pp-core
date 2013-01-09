@@ -96,19 +96,49 @@ function OpenClose(id) {
 	document.all[id].style.display = (document.all[id].style.display == 'block') ? 'none' : 'block';
 }
 
-function hideShowLeaf(id) {
-	var direction = (document.getElementById('leafImg'+id).src.indexOf('close') != -1) ? 'open' : 'close';
+function hideShowLeaf(id, format) {
+	var position, direction, src, parentDiv, childrenDivs, expandImg, expandLink, href;
+	
+	format = format || '';
+	expandImg  = $('#leafImg'+format+id);
+	parentDiv  = $('#leafId' + format + id);
+	
+	src       = expandImg.attr('src');
+	position  = src.indexOf('close') == -1 ? 'open' : 'close';
+	direction = position == 'close' ? 'open' : 'close'; 
 
-	document.getElementById('leafImg'+id).src = 'i/tree/'+direction+'.gif';
-	document.cookie = 'leafStatus[leafId'+id+']='+direction;
-
-	parentDiv = document.getElementById('leafId'+id);
-
-	for (i=0; i<parentDiv.childNodes.length; i++) {
-		if (parentDiv.childNodes[i].tagName == 'DIV') {
-			parentDiv.childNodes[i].style.display = (direction == 'open') ? 'block' : 'none';
-		}
+	childrenDivs = parentDiv.children('div');
+	
+	if(direction == 'open' && !childrenDivs.length){
+		expandLink = expandImg.parent('a'); 
+		href       = expandLink.attr('href');
+		expandLink.removeAttr('href');
+		expandImg.attr('src', src.replace('.gif', '-anim.gif'));
+		$.ajax({
+			url : '/admin/json.phtml?area=main',
+			data: {f: format, id: id},
+			dataType: 'json',
+			type: 'POST',
+			success: function(data){
+				if(data.branch){
+					parentDiv.append(data.branch).children('div').show();
+					expandImg.attr('src', src.replace(position, direction));
+					document.cookie = 'leafStatus[leafId' + format + id + ']=' + direction;
+					expandLink.attr('href', href);
+				} else {
+					expandImg.attr('src', src);
+				}
+			},
+			error: function(){
+				expandImg.attr('src', src);
+			}
+		});
+	} else {
+		expandImg.attr('src', src.replace(position, direction));
+		document.cookie = 'leafStatus[leafId' + format + id + ']=' + direction;
+		childrenDivs.toggle(direction == 'open');
 	}
+	
 }
 
 function Popup(url, width, height) {

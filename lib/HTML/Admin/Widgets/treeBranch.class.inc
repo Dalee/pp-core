@@ -1,29 +1,24 @@
 <?php
 class PXAdminTreeBranch extends PXAdminWidget {
-	function PXAdminTreeBranch(&$leaf, &$htmlTree, &$parentLeaf) {
-		$this->leaf     =& $leaf;
-		$this->htmlTree =& $htmlTree;
-		$this->parent   =& $parentLeaf;
+	
+	function PXAdminTreeBranch($leaf, $htmlTree, $parentLeaf) {
+		$this->leaf     = $leaf;
+		$this->htmlTree = $htmlTree;
+		$this->parent   = $parentLeaf;
 	}
 
 	function html() {
 		$title = strip_tags($this->leaf->title);
 
-		$html = array();
-		$html[] = '<div'.$this->divAttrs().'>';
+		$html = '';
+		$html .= '<div'.$this->divAttrs().'>';
+		$html .= $this->paddingImages();
+		$html .= $this->contextMenuLink();
+		$html .= $this->editLink().$this->toChildsLink('<span'.$this->spanAttrs().'>'.$title.'</span>');
+		$html .= PXAdminTreeBranch::childrenHTML($this->leaf->children, $this->htmlTree, $this);
+		$html .= '</div>';
 
-		$html[] = $this->paddingImages();
-
-		$html[] = $this->contextMenuLink();
-
-		$html[] = $this->editLink().$this->toChildsLink('<span'.$this->spanAttrs().'>'.$title.'</span>');
-
-		($this->htmlTree->isOpenLeaf($this->leaf->id) || !$this->leaf->parent) && $html[] = PXAdminTreeBranch::childrenHTML($this->leaf->children, $this->htmlTree, $this);
-
-		$html[] = '</div>';
-
-
-		return join($html);
+		return $html;
 	}
 
 	function divAttrs() {
@@ -84,7 +79,9 @@ class PXAdminTreeBranch extends PXAdminWidget {
 		$imgs = array();
 
 		$parent = $this->parent;
-
+		if($parent == $parent->parent){
+			die('=(');
+		}
 		while(!is_null($parent) && is_a($parent, 'PXAdminTreeBranch')) {
 			$type = $parent->isLast ? 'v' : 'tree';
 
