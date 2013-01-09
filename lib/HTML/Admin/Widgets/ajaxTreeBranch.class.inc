@@ -1,6 +1,6 @@
 <?php
-class PXAdminTreeBranch extends PXAdminWidget {
-	function PXAdminTreeBranch(&$leaf, &$htmlTree, &$parentLeaf) {
+class PXAdminAjaxTreeBranch extends PXAdminWidget {
+	function PXAdminTreeBranch(&$leaf, &$htmlTree) {
 		$this->leaf     =& $leaf;
 		$this->htmlTree =& $htmlTree;
 		$this->parent   =& $parentLeaf;
@@ -8,11 +8,11 @@ class PXAdminTreeBranch extends PXAdminWidget {
 
 	function html() {
 		$title = strip_tags($this->leaf->title);
+				
+		$html = '';
+		$html .= '<div'.$this->divAttrs().'>';
 
-		$html = array();
-		$html[] = '<div'.$this->divAttrs().'>';
-
-		$html[] = $this->paddingImages();
+		$html .= $this->paddingImages();
 
 		$html[] = $this->contextMenuLink();
 
@@ -127,39 +127,19 @@ class PXAdminTreeBranch extends PXAdminWidget {
 		return $this->getPadding().$img;
 	}
 
-	static function childrenHTML($children, &$htmlTree, $parentLeaf=null) {
+	public static function childrenHTML($children, $ajaxHtmlTree) {
 		$html = '';
 
 		foreach($children as $k=>$chId) {
 			$isFirst = $k == 0;
 			$isLast  = $k + 1 == sizeof($children);
 
-			$leaf = new PXAdminTreeBranch($htmlTree->getLeaf($chId), $htmlTree, $parentLeaf);
+			$leaf = new PXAdminAjaxTreeBranch($htmlTree->getLeaf($chId), $ajaxHtmlTree);
 			$leaf->setPosition($isFirst, $isLast);
 			$html .= $leaf->html();
 		}
 
 		return $html;
-	}
-
-	function setPosition($isFirst, $isLast) {
-		$this->isFirst = $isFirst;
-		$this->isLast  = $isLast;
-	}
-
-	function contextMenu() {
-		$canUp   = $this->isFirst || !$this->htmlTree->canChangeOrder() ? 0 : 1;
-		$canDown = $this->isLast  || !$this->htmlTree->canChangeOrder() ? 0 : 1;
-
-		$id       = $this->leaf->id;
-		$public   = (int)$this->leaf->content['status'];
-		$format   = $this->htmlTree->datatype->id;
-		$title    = $this->escapeTitle();
-
-		$pathname = $this->htmlTree->getPathname($id);
-		$level    = $this->leaf->level;
-
-		return "Context(event, 'edit', {$id}, {$public}, '{$format}',  '{$title}', '{$pathname}', {$level}, {$canUp}, {$canDown}); return false;";
 	}
 
 	function toChildsLink($html) {

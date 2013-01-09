@@ -89,7 +89,7 @@ class PXEngineAdminIndex extends PXEngineAdmin {
 
 		$charset = $this->app->GetProperty('OUTPUT_CHARSET', DEFAULT_CHARSET);
 
-		PXRegistry::getDb()->close();
+		PXRegistry::getDb()->close(); // Why close?
 		$this->layout->flush($charset);
 	}
 }
