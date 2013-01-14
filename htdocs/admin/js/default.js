@@ -122,15 +122,13 @@ function hideShowLeaf(id, format) {
 			success: function(data){
 				if(data.branch){
 					parentDiv.append(data.branch).children('div').show();
-					expandImg.attr('src', src.replace(position, direction));
+					src = src.replace(position, direction);
 					document.cookie = 'leafStatus[leafId' + format + id + ']=' + direction;
-					expandLink.attr('href', href);
-				} else {
-					expandImg.attr('src', src);
 				}
 			},
-			error: function(){
+			complete: function(){
 				expandImg.attr('src', src);
+				expandLink.attr('href', href);
 			}
 		});
 	} else {
