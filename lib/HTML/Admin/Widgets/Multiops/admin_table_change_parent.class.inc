@@ -6,7 +6,6 @@
 
 		function _getAllowedSections() {
 			$param                       = array('datatype' => $this->parentWidget->dtype);
-			
 			list($format, $parentFormat) = PXDisplayTypeParentdropdown::getFormats($param);
 			$tree                        = PXDisplayTypeParentdropdown::getParentTree($object = null,$parentFormat);
 			$parents                     = $tree->getPlainTree(null);

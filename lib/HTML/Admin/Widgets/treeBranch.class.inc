@@ -79,9 +79,6 @@ class PXAdminTreeBranch extends PXAdminWidget {
 		$imgs = array();
 
 		$parent = $this->parent;
-		if($parent == $parent->parent){
-			die('=(');
-		}
 		while(!is_null($parent) && is_a($parent, 'PXAdminTreeBranch')) {
 			$type = $parent->isLast ? 'v' : 'tree';
 

@@ -245,13 +245,13 @@ class NLAbstractLayout {
 		// widgets to html
 		// replace labels to html
 		while(list($label, $widgets) = each($this->labels)) {
-			$html = array();
+			$html = '';
 
 			foreach ($widgets as $w) {
-				$html[] = $this->isWidget($w) ? $w->html() : $w;
+				$html .= $this->isWidget($w) ? $w->html() : $w;
 			}
 			
-			$this->html = str_replace('{'.$label.'}', join($html), $this->html);
+			$this->html = str_replace('{'.$label.'}', $html, $this->html);
 		}
 
 		// delete labels without content
