@@ -6,7 +6,7 @@
 	 *
 	 */
 	define('BASEPATH', rtrim(realpath(dirname(__FILE__).'/../../'), '/') . '/');
-	define('WORKPATH', BASEPATH . 'site/htdocs');
+	define('WORKPATH', BASEPATH . 'local/htdocs');
 	define('SOURCEPATH', BASEPATH . 'local/htdocs');
 
 	set_time_limit(0);
@@ -141,10 +141,9 @@
 
 
 	function isNeedProcessing($fileData, $destinationFile) {
-		$srcTime = $fileData['mtime'];
-		$dstTime = (file_exists($destinationFile)) ? filemtime($destinationFile) : 0;
-		return ($dstTime < $srcTime);
+		return true;
 	}
+
 
 	function moveFileToTargetDir($tempFile, $destinationFile) {
 		if (file_exists($destinationFile)) {
@@ -155,8 +154,26 @@
 		rename($tempFile, $destinationFile);
 	}
 
+	// add protection code
+	// 
+	$isProtectionDisabled = false;
+	if ($argc > 1) {
+		if (isset($argv[1])) {
+			if (strcmp($argv[1], 'i_am_chosen_one') == 0) {
+				$isProtectionDisabled = true;
+			}
+		}
+	}
 
-	//
+	if(!$isProtectionDisabled) {
+		print ("WARNING! ALARMA!\n");
+		print ("This script modifying content of local/htdocs dir\n");
+		print ("If you really know what are you doing, run this script with:\n");
+		print ("i_am_chosen_one parameter.\n\n");
+		exit(1);
+	}
+
+	// begin processing
 	$treePart = new DirectorySubtree();
 	
 	/**
@@ -170,7 +187,7 @@
 		$sourceFile = $fileData['fullpath'];
 		$destinationFile = buildDestinationFilePath('css', $fileData);
 
-		if (!isNeedProcessing($fileData, $destinationFile)) {
+		if (!isNeedProcessing($fileData, $destinationFile)) { // FIXME: don't have any meaning now.
 			continue;
 		}
 
