@@ -45,25 +45,28 @@
 			if (empty($this->assetsRoot) || empty($this->assets[$type][$group])) {
 				return;
 			}
-			
-			$bundleName     = sprintf("asset-%s.%s", md5(join('|', $this->assets[$type][$group])), $type);
-			$bundleRelPath  = "/{$type}/{$bundleName}";
+
+			$bundleContent = array();
+			foreach($this->assets[$type][$group] as $name) {
+				$bundleContent[] = file_get_contents($name);
+			}
+			$bundleContent = join($delim, $bundleContent);
+
+			$md5 = md5($bundleContent);
+			$md5subdir = substr($md5, 0, 2);
+			$bundleName     = sprintf("asset-%s.%s", $md5, $type);
+			$bundleRelPath  = "/{$type}/{$group}/{$md5subdir}/{$bundleName}";
 			$bundleFullPath = $this->assetsRoot . $bundleRelPath;
-			
+
 			if (!file_exists($bundleFullPath)) {
-				$bundleContent = array();
-				foreach($this->assets[$type][$group] as $name) {
-					$bundleContent[] = file_get_contents($name);
-				}
-				$bundleContent = join($delim, $bundleContent);
-				$bundleTypeRoot = "{$this->assetsRoot}/{$type}";
+				$bundleTypeRoot = "{$this->assetsRoot}/{$type}/{$group}/{$md5subdir}";
 
 				MakeDirIfNotExists($bundleTypeRoot);
 				WriteStringToFile($bundleFullPath, $bundleContent);
 			}
-			
+
 			$this->assets[$type][$group] = array(); //Make an asset blank for future use
-			
+
 			return array($bundleFullPath, $bundleRelPath, filemtime($bundleFullPath));
 		}
 	}

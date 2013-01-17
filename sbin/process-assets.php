@@ -197,7 +197,7 @@
 		$resultData = CssMin::minify(
 			file_get_contents($sourceFile),
 			array(),
-			array('ConvertImageUrl' => true)
+			array('ConvertImageUrl' => compact('sourceFile'))
 		);
 
 		if(!empty($resultData)) {
