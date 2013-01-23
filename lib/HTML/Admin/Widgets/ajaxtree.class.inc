@@ -26,7 +26,8 @@ class PXAdminAjaxTree extends PXAdminTree {
 		$caption = $this->htmlCaption();
 
 		if(sizeof($this->tree->leafs[0]->children) > 0) {
-			return '<div class="tree">' . $caption . PXAdminAjaxTreeBranch::childrenHTML($this->tree->leafs[0]->children, $this) . '</div>';
+			$data = $this->showChildLinks ? ' data-cl="'.$this->childLinkVarName.'"' : '';
+			return '<div class="tree"' . $data . '>' . $caption . PXAdminAjaxTreeBranch::childrenHTML($this->tree->leafs[0]->children, $this) . '</div>';
 		} else {
 			return '<div class="tree">' . $caption . '<div class="empty">&#8212;</div></div>';
 		}

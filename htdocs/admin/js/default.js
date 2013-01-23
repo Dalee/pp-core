@@ -97,10 +97,10 @@ function OpenClose(id) {
 }
 
 function hideShowLeaf(id, format) {
-	var position, direction, src, parentDiv, childrenDivs, expandImg, expandLink, href;
+	var position, direction, src, parentDiv, childrenDivs, expandImg, expandLink, href, tree, data;
 	
 	format = format || '';
-	expandImg  = $('#leafImg'+format+id);
+	expandImg  = $('#leafImg' + format + id);
 	parentDiv  = $('#leafId' + format + id);
 	
 	src       = expandImg.attr('src');
@@ -110,13 +110,16 @@ function hideShowLeaf(id, format) {
 	childrenDivs = parentDiv.children('div');
 	
 	if(direction == 'open' && !childrenDivs.length){
+		data       = {f: format, id: id};
+		tree       = expandImg.closest('div.tree');
+		tree.data('cl') && (data.cl = tree.data('cl')); 
 		expandLink = expandImg.parent('a'); 
 		href       = expandLink.attr('href');
 		expandLink.removeAttr('href');
 		expandImg.attr('src', src.replace('.gif', '-anim.gif'));
 		$.ajax({
 			url : '/admin/json.phtml?area=main',
-			data: {f: format, id: id},
+			data: data,
 			dataType: 'json',
 			type: 'POST',
 			success: function(data){

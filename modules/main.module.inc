@@ -172,10 +172,20 @@ class PXModuleMain extends PXModule {
 	
 	public function adminJson() {
 		$format = $this->request->getVar('f');
+		$cl = $this->request->getVar('cl');
 		$id = $this->request->getVar('id');
 		$answer = '';
 		if(!empty($id) && isset($this->app->types[$format]) && ($this->app->types[$format]->struct == 'tree' && $this->request->GetVar($format.'_view') != 'plain')){
+
+			// {Нам это необходимо, чтобы работал PXAdminAjaxTreeObjects
+			$layout = new NLAbstractLayout();
+			$layout->setGetVarToSave('area', $this->area);
+			PXRegistry::setLayout($layout);
+			// нам это необходимо, чтобы работал PXAdminAjaxTreeObjects}
+
 			$hTree = new PXAdminAjaxTreeObjects($format, null, null, true, $id);
+			isset($cl) && $hTree->showChildren($cl);
+			
 			$answer = $hTree->html();
 		}
 		return array('branch' => $answer);
