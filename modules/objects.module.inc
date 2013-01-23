@@ -42,7 +42,7 @@ class PXModuleObjects extends PXModule {
 		foreach ($this->app->types as $k=>$v) {
 			if ((count($this->formats) == 0 || in_array($k, $this->formats)) && $this->user->can('admin', $v) ) {
 				$types[$k] = $v->title;
-				$canProceed = $canProceed || $rSid == $k; 
+				$canProceed = $canProceed || $rSid == $k;
 			}
 		}
 
@@ -93,7 +93,7 @@ class PXModuleObjects extends PXModule {
 
 
 	function indexAppendTree() {
-		$objects = new PXAdminTreeObjects($this->datatype);
+		$objects = new PXAdminAjaxTreeObjects($this->datatype);
 		$objects->addToParent('INNER.1.0');
 	}
 
@@ -118,7 +118,7 @@ class PXModuleObjects extends PXModule {
 			$counts[$allowedFormat] = $this->db->getObjectsByParent($childType, NULL, $object['id'], DB_SELECT_COUNT);
 		}
 
-		$this->db->LoadDirectoriesByType($this->datatype, $object); 
+		$this->db->LoadDirectoriesByType($this->datatype, $object);
 
 		// warn about parent if need
 		if (!empty($this->datatype->parent) && empty($object['parent']) && $this->datatype->struct != 'tree') {

@@ -44,6 +44,7 @@ require_once('HTML/Admin/Widgets/list.class.inc');
 
 
 include_once 'HTML/Admin/Widgets/tree.class.inc';
+include_once 'HTML/Admin/Widgets/ajaxtree.class.inc';
 require_once('HTML/Admin/Widgets/table.class.inc');
 require_once('HTML/Admin/Widgets/tablesimple.class.inc');
 require_once('HTML/Admin/Widgets/form.class.inc');

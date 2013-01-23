@@ -1,25 +1,22 @@
 <?php
 class PXAdminTreeBranch extends PXAdminWidget {
-	function PXAdminTreeBranch(&$leaf, &$htmlTree, &$parentLeaf) {
-		$this->leaf     =& $leaf;
-		$this->htmlTree =& $htmlTree;
-		$this->parent   =& $parentLeaf;
+	
+	function PXAdminTreeBranch($leaf, $htmlTree, $parentLeaf) {
+		$this->leaf     = $leaf;
+		$this->htmlTree = $htmlTree;
+		$this->parent   = $parentLeaf;
 	}
 
 	function html() {
 		$title = strip_tags($this->leaf->title);
 
-		$html = '<div'.$this->divAttrs().'>';
-
+		$html = '';
+		$html .= '<div'.$this->divAttrs().'>';
 		$html .= $this->paddingImages();
-
 		$html .= $this->contextMenuLink();
 		$html .= $this->editLink().$this->toChildsLink('<span'.$this->spanAttrs().'>'.$title.'</span>');
-
 		$html .= PXAdminTreeBranch::childrenHTML($this->leaf->children, $this->htmlTree, $this);
-
 		$html .= '</div>';
-
 
 		return $html;
 	}
@@ -82,7 +79,6 @@ class PXAdminTreeBranch extends PXAdminWidget {
 		$imgs = array();
 
 		$parent = $this->parent;
-
 		while(!is_null($parent) && is_a($parent, 'PXAdminTreeBranch')) {
 			$type = $parent->isLast ? 'v' : 'tree';
 
@@ -125,8 +121,7 @@ class PXAdminTreeBranch extends PXAdminWidget {
 		return $this->getPadding().$img;
 	}
 
-	static
-	function childrenHTML($children, &$htmlTree, $parentLeaf=null) {
+	static function childrenHTML($children, &$htmlTree, $parentLeaf=null) {
 		$html = '';
 
 		foreach($children as $k=>$chId) {

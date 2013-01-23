@@ -43,13 +43,9 @@ class PXAdminTree extends PXAdminWidget {
 	}
 
 	function childsLink($id) {
-		if($this->datatype->childs) {
-			if($this->showChildLinks) { 
-				return NLAbstractLayout::_BuildHref($this->childLinkVarName, $id);
-			}
-		}
-
-		return null;
+		return $this->datatype->childs && $this->showChildLinks
+			? NLAbstractLayout::_BuildHref($this->childLinkVarName, $id)
+			: null;
 	}
 
 	function isOpenLeaf($id) {

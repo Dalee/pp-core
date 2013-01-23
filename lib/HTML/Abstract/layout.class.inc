@@ -20,7 +20,7 @@ class NLAbstractLayout {
 		$this->template_dirs = array(
 			BASEPATH.'local/templates/admin/',
 			BASEPATH.'libpp/templates/admin/'
-		); 
+		);
 	}
 
 	function setOuterLayout($template) {
@@ -250,7 +250,7 @@ class NLAbstractLayout {
 			foreach ($widgets as $w) {
 				$html .= $this->isWidget($w) ? $w->html() : $w;
 			}
-
+			
 			$this->html = str_replace('{'.$label.'}', $html, $this->html);
 		}
 
