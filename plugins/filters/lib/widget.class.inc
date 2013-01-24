@@ -3,79 +3,85 @@
 require_once dirname(__FILE__) . '/additional_loader.class.inc';
 
 class PXFiltersAdminWidget extends PXAdminWidget {
-	private $pluginFolder;
+	protected $pluginFolder;
+	protected $ignoredTypes;
+	protected $dtype             = null;
+	protected $additionalFilters = array();
 	
-	function __construct($pluginFolder) {
-		$this->pluginFolder = $pluginFolder;
+	public function __construct($pluginFolder) {
 		parent::__construct();
+		$this->pluginFolder  = $pluginFolder;
 	}
 	
-	function html() {
-		$this->request = PXRegistry::getRequest();
-		$this->layout  = PXRegistry::getLayout();
-
-		$this->layout->assignInlineJS($this->js());
-		$this->layout->assignInlineCSS($this->css());
-		
-		$app = PXRegistry::getApp();
-
-		$filters = $this->request->getVar('filters', array());
-		$filters_html = array();
-
-		$dtype = @$this->parentWidget->dtype;
-		
+	public /* override */ function setParent($widget) {
+		parent::setParent($widget);
+		if(isset($widget->dtype)){
+			$this->dtype = $widget->dtype;
+			$this->additionalFilters = PXFiltersPluginAdditionalLoader::getAdditionalFilters($this->dtype->id, $this->pluginFolder);
+		}
+	}
+	
+	public /* override */ function html() {
 		$ignoredTypes = array_map('trim', explode(',', PXAbstractPlugin::getParam('filters', 'ignore')));
-		
-		if (!$dtype || in_array($dtype->id, $ignoredTypes)) {
+		if (empty($this->dtype) || in_array($this->dtype->id, $ignoredTypes)) {
 			return '';
 		}
+		$request = PXRegistry::getRequest();
+		$layout  = PXRegistry::getLayout();
+		$app     = PXRegistry::getApp();
+		
+		$layout->assignInlineJS($this->js());
+		$layout->assignInlineCSS($this->css());
+		
+		$filters = $request->getVar('filters', array());
 
-		foreach ($dtype->fields as $field) {
+		$filters_html = '<p>Используйте ^ для поиска в начале строки, $ &mdash; в конце строки.</p>';
+		
+		foreach ($this->dtype->fields as $field) {
 			if (!$field->listed || !$field->storageType->filterable()) continue;
-			$filter_value = @htmlspecialchars($filters[$dtype->id][$field->name]);
+			$filter_value = @htmlspecialchars($filters[$this->dtype->id][$field->name]);
 			
 			switch(true){
 				case $field->storageType instanceof PXStorageTypeBoolean:
-					$spformat = '<label><input type="radio" name="filters[%s][%s]" value="%s"%s/>%s</label> ';
+					$spformat = '<label><input type="radio" name="filters[' . $this->dtype->id . '][' . $field->name .']" value="%s"%s/>%s</label> ';
 					
-					$filters_html[] = '<div>';
-					$filters_html[] = sprintf($spformat, $dtype->id, $field->name, '', empty($filter_value) ? ' checked="checked"' : '', 'Все');
-					$filters_html[] = sprintf($spformat, $dtype->id, $field->name, 'f', $filter_value == 'f' ? ' checked="checked"' : '', 'Нет');
-					$filters_html[] = sprintf($spformat, $dtype->id, $field->name, 't', $filter_value == 't' ? ' checked="checked"' : '', 'Да');
-					$filters_html[] = sprintf('&ndash; <label>%s</label></div>', $field->description);
+					$filters_html .= '<div>';
+					$filters_html .= sprintf($spformat, '',  empty($filter_value) ? ' checked="checked"' : '', 'Все');
+					$filters_html .= sprintf($spformat, 'f', $filter_value == 'f' ? ' checked="checked"' : '', 'Нет');
+					$filters_html .= sprintf($spformat, 't', $filter_value == 't' ? ' checked="checked"' : '', 'Да');
+					$filters_html .= sprintf('&ndash; <label>%s</label></div>', $field->description);
 					break;
 				default:
-					$filters_html[] = sprintf('<div><input type="text" value="%s" name="filters[%s][%s]" /> &ndash; <label>%s</label></div>', $filter_value, $dtype->id, $field->name, $field->description);
+					$filters_html .= sprintf('<div><input type="text" value="%s" name="filters[%s][%s]" /> &ndash; <label>%s</label></div>', $filter_value, $this->dtype->id, $field->name, $field->description);
 			}
 		}
-
-		array_unshift($filters_html, '<p>Используйте ^ для поиска в начале строки, $ &mdash; в конце строки.</p>');
 		
-		foreach (PXFiltersPluginAdditionalLoader::getAdditionalFilters($dtype->id, $this->pluginFolder) as $additionalFilterClass) {
-			/* @var $additionalFilterClass PXAdditionalFilter */
-			$filters_html[] = $additionalFilterClass->html();
+		foreach($this->additionalFilters as $additionalFilter){
+			$filters_html .= $additionalFilter->html();
 		}
 		
-		$filters_html[] = '<button class="run_f">Применить</button>';
+		$filters_html .= '<button class="run_f">Применить</button>';
 
-		if (!empty($filters[$dtype->id])) {
-			$filters_html[] = sprintf('<button dtype="%s" class="clr_f">Сбросить</button>', $dtype->id);
+		if (!empty($filters[$this->dtype->id])) {
+			$filters_html .= sprintf('<button dtype="%s" class="clr_f">Сбросить</button>', $this->dtype->id);
 		}
 
-		$collapsed = !empty($filters[$dtype->id]) ? '' : ' collapsed';
+		$collapsed = !empty($filters[$this->dtype->id]) ? '' : ' collapsed';
 
-		return join(array(
-			'<fieldset class="filters', $collapsed, '">',
-				'<legend><span>&nbsp;&nbsp;&nbsp;</span> Фильтры</legend>',
-				'<div class="wrap">',
-					join($filters_html),
-				'</div>',
-			'</fieldset>'
-		));
+		return
+<<<HTML
+			<fieldset class="filters{$collapsed}">
+				<legend><span>&nbsp;&nbsp;&nbsp;</span> Фильтры</legend>
+				<div class="wrap">
+					$filters_html
+				</div>
+			</fieldset>
+HTML;
 	}
 
 	function js() {
-		return <<<JAVASCRIPT
+		return
+<<<JAVASCRIPT
 $(function() {
 	var erase_filters = function(name) {
 		var loc = window.location.search;
@@ -136,7 +142,8 @@ JAVASCRIPT;
 	}
 
 	function css() {
-		return <<<CSS
+		return
+<<<CSS
 fieldset.filters {
 	margin-bottom: 20px;
 	border: 1px solid #385A94;
@@ -198,13 +205,13 @@ class PXOnPageAdminWidget extends PXAdminWidget {
 		// list on page: 10,30,50,100
 		$this->onPageValues = explode(',', PXAbstractPlugin::getParam('filters', 'on_page'));
 
-		$req = PXRegistry::getRequest();
+		$req     = PXRegistry::getRequest();
 		$param   = PXAdminPager::getPerPageParamByFormatId($this->parentWidget->getPagerName());
-		$tmp = array();
+		$tmp     = array();
 
 		foreach ($this->onPageValues as $i => $t) {
 			$selected = $req->getVar($param, 20) == $t ? 'selected' : '';
-			$tmp[$i] = sprintf("<a class='%s' href='%s'>%s</a>", $selected, NLAbstractLayout::buildHref($param, $t), $t);
+			$tmp[$i]  = sprintf("<a class='%s' href='%s'>%s</a>", $selected, NLAbstractLayout::buildHref($param, $t), $t);
 		}
 
 		return "Показывать на странице: " . join($tmp);
