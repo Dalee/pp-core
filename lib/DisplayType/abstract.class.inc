@@ -169,9 +169,9 @@ class PXDisplayType {
 		$temp = "";
 		$app  = PXRegistry::getApp();
 
-		if(isset($app->directory[$field->source])) {
+		if (isset($app->directory[$field->source])) {
 			$directory = $app->directory[$field->source];
-			$dirObject = $directory->values[$object[$field->name]];
+			$dirObject = isset($directory->values[$object[$field->name]]) ? $directory->values[$object[$field->name]] : null;
 
 			$temp = isset($dirObject[$directory->displayField]) ? $dirObject[$directory->displayField] : '';
 		}
