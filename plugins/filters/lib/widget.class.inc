@@ -68,7 +68,7 @@ class PXFiltersAdminWidget extends PXAdminWidget {
 
 		$collapsed = !empty($filters[$this->dtype->id]) ? '' : ' collapsed';
 
-		return
+		$result =
 <<<HTML
 			<fieldset class="filters{$collapsed}">
 				<legend><span>&nbsp;&nbsp;&nbsp;</span> Фильтры</legend>
@@ -77,10 +77,11 @@ class PXFiltersAdminWidget extends PXAdminWidget {
 				</div>
 			</fieldset>
 HTML;
+		return $result;
 	}
 
 	function js() {
-		return
+		$result =
 <<<JAVASCRIPT
 $(function() {
 	var erase_filters = function(name) {
@@ -139,10 +140,11 @@ $(function() {
 	});
 });
 JAVASCRIPT;
+		return $result;
 	}
 
 	function css() {
-		return
+		$result =
 <<<CSS
 fieldset.filters {
 	margin-bottom: 20px;
@@ -177,6 +179,7 @@ fieldset.filters button {
 	margin: 3px;
 }
 CSS;
+		return $result;
 	}
 }
 
