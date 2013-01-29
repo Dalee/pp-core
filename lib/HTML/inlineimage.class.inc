@@ -204,8 +204,9 @@
 		 */
 		protected function _buildAttrString ($attrData) {
 			$attrStrings = array();
+
 			foreach ($attrData as $key => $value) {
-				$attrStrings[] = $key . '="' . $value . '"';
+				$attrStrings[] = $key . '="' . htmlspecialchars($value) . '"';
 			}
 
 			return implode(' ', $attrStrings);
