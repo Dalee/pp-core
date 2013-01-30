@@ -8,11 +8,12 @@
 	define('BASEPATH', rtrim(realpath(dirname(__FILE__).'/../../'), '/') . '/');
 	define('WORKPATH', BASEPATH . 'local/htdocs');
 	define('SOURCEPATH', BASEPATH . 'local/htdocs');
+	define('DEBUGMODE', false);
 
 	set_time_limit(0);
 	ini_set('memory_limit', '512M');
 	umask(0);
-	
+
 	require_once (BASEPATH . 'libpp/lib/HTML/inlineimage.class.inc');
 	require_once (BASEPATH . 'libpp/vendor/CSSMin/CssMin.php');
 	require_once (BASEPATH . 'libpp/lib/Common/functions.file.inc');
@@ -71,7 +72,6 @@
 				return array();
 			}
 
-			
 			$dirList = array();
 			$fileList = array();
 
@@ -100,7 +100,7 @@
 			foreach($dirList as $_ => $fullPath) {
 				$dirFiles = $this->recursiveWalk($fullPath);
 				if (!empty($dirFiles)) {
-					$fileList = array_merge($fileList, $dirFiles);	
+					$fileList = array_merge($fileList, $dirFiles);
 				}
 			}
 
@@ -140,32 +140,101 @@
 	}
 
 
-	function isNeedProcessing($fileData, $destinationFile) {
+	function parseAssetsIgnoreFile ($ignoreString) {
+		$lines = explode("\n", str_replace("\r", '', $ignoreString));
+		$wildcards = array();
+		foreach ($lines as $line) {
+			// according to http://www.kernel.org/pub/software/scm/git/docs/gitignore.html
+			// A line starting with # serves as a comment.
+			if (strpos($line, '#') !== false) {
+				$line = substr($line, 0, strpos($line, '#'));
+			}
+			$line = trim($line);
+			// A blank line matches no files, so it can serve as a separator for readability.
+			if (empty($line)) {
+				continue;
+			}
+
+			$flag = 0;
+			$wc = $line;
+
+			// An optional prefix ! which negates the pattern; any matching file excluded by a previous pattern will become included again. If a negated pattern matches, this will override lower precedence patterns sources.
+			$negate = ($wc[0] === '!');
+
+			$wc = ltrim($wc, "\t !");
+
+			// If the pattern ends with a slash, it is removed for the purpose of the following description, but it would only find a match with a directory. In other words, foo/ will match a directory foo and paths underneath it, but will not match a regular file or a symbolic link foo (this is consistent with the way how pathspec works in general in git).
+			if (substr($wc, -1, 1) === '/') {
+				$wc = $wc . '*';
+
+			// If the pattern does not contain a slash /, git treats it as a shell glob pattern and checks for a match against the pathname relative to the location of the .gitignore file (relative to the toplevel of the work tree if not from a .gitignore file).
+			} else if (strpos($wc, '/') === false) {
+				// dummy
+
+			// Otherwise, git treats the pattern as a shell glob suitable for consumption by fnmatch(3) with the FNM_PATHNAME flag: wildcards in the pattern will not match a / in the pathname. For example, "Documentation/*.html" matches "Documentation/git.html" but not "Documentation/ppc/ppc.html" or "tools/perf/Documentation/perf.html".
+			} else {
+				$flag = FNM_PATHNAME;
+			}
+
+			// A leading slash matches the beginning of the pathname. For example, "/*.c" matches "cat-file.c" but not "mozilla-sha1/sha1.c".
+			$wc = (substr($wc, 0, 1) === '/') ? ($wc) : ('*' . $wc);
+
+			$pattern = $wc;
+			$wildcards[] = compact('line', 'pattern', 'flag', 'negate');
+		}
+		if (DEBUGMODE) {
+			var_dump($wildcards);
+		}
+		return $wildcards;
+	}
+
+	function isNeedProcessing($fileData, $sourceFile, $destinationFile) {
+		static $except = null;
+		($except === null) && $except = file_exists(BASEPATH . '.assetsignore')
+			? parseAssetsIgnoreFile(file_get_contents(BASEPATH . '.assetsignore'))
+			: array();
+
+		// todo: make it as close as gitignore works
+		$relDestinationFile = preg_replace('@^'.BASEPATH.'/?[^/]+/htdocs/@', '/', $destinationFile);
+		foreach ($except as $wildcard) {
+			if (fnmatch($wildcard['pattern'], $relDestinationFile, $wildcard['flag'])) {
+				if (DEBUGMODE) {
+					echo 'skip '.$relDestinationFile." by wildcard ".json_encode($wildcard). PHP_EOL;
+					return false; //isset($wildcard['negate']) && $wildcard['negate'];
+				}
+				return (isset($wildcard['negate']) && $wildcard['negate']);
+			}
+		}
+		if (DEBUGMODE) {
+			echo 'processing ' . $relDestinationFile . PHP_EOL;
+			return false;
+		}
 		return true;
 	}
 
 
 	function moveFileToTargetDir($tempFile, $destinationFile) {
-		if (file_exists($destinationFile)) {
-			unlink($destinationFile);	
+		if (!file_exists($tempFile) || !strlen(file_get_contents($tempFile))) {
+			unlink($tempFile);
+			echo "ALARM: Empty file in result of processing " . $destinationFile . PHP_EOL;
+			return false;
 		}
-		
+
+		if (file_exists($destinationFile)) {
+			unlink($destinationFile);
+		}
+
 		chmod($tempFile, 0644);
 		rename($tempFile, $destinationFile);
+
+		return true;
 	}
 
 	// add protection code
 	// 
-	$isProtectionDisabled = false;
-	if ($argc > 1) {
-		if (isset($argv[1])) {
-			if (strcmp($argv[1], 'i_am_chosen_one') == 0) {
-				$isProtectionDisabled = true;
-			}
-		}
-	}
+	$isProtectionDisabled = (isset($argv[1]) && strcmp($argv[1], 'i_am_chosen_one') == 0);
 
-	if(!$isProtectionDisabled) {
+	if (!$isProtectionDisabled) {
 		print ("WARNING! ALARMA!\n");
 		print ("This script modifying content of local/htdocs dir\n");
 		print ("If you really know what are you doing, run this script with:\n");
@@ -175,10 +244,11 @@
 
 	// begin processing
 	$treePart = new DirectorySubtree();
-	
+
 	/**
 	 * CSS processing
 	 *
+	 * @todo: add support of '/blocks/*?/*?.css files
 	 */
 	$treePart->build(SOURCEPATH . '/css');
 	$fileList = $treePart->getFileList('*.css');
@@ -187,7 +257,7 @@
 		$sourceFile = $fileData['fullpath'];
 		$destinationFile = buildDestinationFilePath('css', $fileData);
 
-		if (!isNeedProcessing($fileData, $destinationFile)) { // FIXME: don't have any meaning now.
+		if (!isNeedProcessing($fileData, $sourceFile, $destinationFile)) { // filter by .assetsignore
 			continue;
 		}
 
@@ -215,11 +285,11 @@
 	$treePart->build(SOURCEPATH . '/js');
 	$fileList = $treePart->getFileList('*.js');
 
-	foreach($fileList as $_ => $fileData) {
+	foreach ($fileList as $_ => $fileData) {
 		$sourceFile = $fileData['fullpath'];
 		$destinationFile = buildDestinationFilePath('js', $fileData);
 
-		if (!isNeedProcessing($fileData, $destinationFile)) {
+		if (!isNeedProcessing($fileData, $sourceFile, $destinationFile)) {
 			continue;
 		}
 
@@ -229,7 +299,7 @@
 
 		if (PXHtmlImageTag::getInstance()->getProperty('CONFIG.ASSETS_USE_YUI') && 
 			($compressorBinary = FindSystemFile('yui-compressor'))) {
-			
+
 			$outputFile = tempnam($bundleTypeRoot, $bundleName);
 			$cmd = array();
 			$cmd[] = $compressorBinary; // /usr/bin/yui-compressor
@@ -248,5 +318,5 @@
 				unlink($tempFile);
 			}
 		}
-	}	
+	}
 ?>
