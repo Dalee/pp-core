@@ -23,6 +23,10 @@
 		$s = print_r($var, true);
 		echo $s."\n";
 	}
+	function FatalError($a) {
+		echo 'FatalError: ' . $a . PHP_EOL;
+		die(1);
+	}
 
 	// 
 	class DirectorySubtree {
