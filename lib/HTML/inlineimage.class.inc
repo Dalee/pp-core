@@ -335,7 +335,7 @@
 		 */
 		public function buildProperty ($imageData) {
 			if (intval($this->getProperty('CONFIG.INLINE_IMAGES')) === 0) {
-				return $this->_realTagBuild($imageData);
+				return $this->_realPropertyBuild($imageData);
 			}
 
 			$cacheKey = implode('_', $imageData);
