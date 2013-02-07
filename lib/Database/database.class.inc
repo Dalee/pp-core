@@ -1223,6 +1223,7 @@ class PXDatabase extends NLSQLDatabaseAdapter implements IPXDatabase {
 	 * @param PXTypeDescription $format
 	 * @param Array             $object     object id
 	 * @param Array             $pathnames
+	 * @todo MOVEITASAP!
 	 */
 	function _NormalizeObjectPathName($format, $object, &$pathnames) {
 		$url = strtolower(_TranslitModern($object['pathname']));
@@ -1242,12 +1243,12 @@ class PXDatabase extends NLSQLDatabaseAdapter implements IPXDatabase {
 		if (!$url) $url = strtolower(_TranslitModern(substr(preg_replace('/\&.+?\;/', '', $object['title']), 0, 32)));
 		if (!$url) $url = sprintf('%08d', rand(0, 100000000));
 
-		// part 2: triming bad chars
+		// part 2: triming bad chars - very readable... gj.
 		$url = trim($url);
 		for($i=0;$i<strlen($url);$i++) {
 			$o = ord($url{$i});
 
-			if ($o != 45 && $o != 46 && ($o < 48 || $o > 57) && ($o < 65 || $o > 90) && $o != 95 && ($o < 97 || $o > 122)) {
+			if ($o != 45 && $o != 46 && ($o < 48 || $o > 57) && ($o < 65 || $o > 90) && $o != 95 && ($o < 97 || $o > 122) && ($o != 58)) {
 				$url{$i} = '_';
 			}
 		}
