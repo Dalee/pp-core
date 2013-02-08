@@ -67,7 +67,8 @@ function smarty_function_html_import($params, &$smarty) {
 	if ($asset_mode) {
 		$assetH = PXHtmlAssetsManager::getInstance(BASEPATH . '/site/htdocs' . $assets_dir, $allowed_paths);
 	}
-	
+
+	$is_bundle = false;
 	switch(true) {
 		case $assetH && !empty($params['print_asset']):
 			list($fullPath, $localPath, $mtime) = $assetH->makeAssetsBundle($asset_types[$params['tag']], $asset_delimiters[$params['tag']], $assets_group);
@@ -75,6 +76,7 @@ function smarty_function_html_import($params, &$smarty) {
 				$asset_id      = $mtime;
 				$params['src'] = $assets_dir . $localPath;
 				$print_tag    = true; //allow write result asset tag in asset mode
+				$is_bundle = true;
 			}
 			break;
 		
@@ -100,7 +102,7 @@ function smarty_function_html_import($params, &$smarty) {
 			$print_tag = true;
 	}
 	
-	$print_tag && printf($tags[$params['tag']], $params['src'] . ($asset_id ? sprintf('?%s=%1$s', $asset_id) : ''), $extra_attributes);
+	$print_tag && printf($tags[$params['tag']], $params['src'] . ($asset_id && !$is_bundle ? sprintf('?%s=%1$s', $asset_id) : ''), $extra_attributes);
 }
 
 ?>
