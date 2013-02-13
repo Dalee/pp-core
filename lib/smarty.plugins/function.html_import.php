@@ -17,6 +17,11 @@ function smarty_function_html_import($params, &$smarty) {
 		'script' => '<script type="text/javascript" src="%s" %s></script>'
 	);
 
+	$tags_inline = array(
+		'css'    => "<style type=\"text/css\" %2\$s>\n%1\$s\n</style>",
+		'script' => "<script type=\"text/javascript\" %2\$s>\n//<![CDATA[\n%1\$s\n//]]>\n</script>"
+	);
+
 	$asset_types = array(
 		'css'    => 'css',
 		'script' => 'js'
@@ -49,6 +54,7 @@ function smarty_function_html_import($params, &$smarty) {
 			case 'noasset':
 			case 'asset_group':
 			case 'print_asset':
+			case 'inline':
 				break;
 			default:
 				$extra_params[] = sprintf(' %s="%s" ', $param, $value);
@@ -63,13 +69,25 @@ function smarty_function_html_import($params, &$smarty) {
 	$assetH       = null; 
 	$assets_group = isset($params['asset_group']) ? $params['asset_group'] : null;
 	$assets_dir   = ''; //FIXME
-	
+
+	$inline       = isset($params['inline']) ? $params['inline'] : null;
+
 	if ($asset_mode) {
 		$assetH = PXHtmlAssetsManager::getInstance(BASEPATH . '/site/htdocs' . $assets_dir, $allowed_paths);
 	}
 
 	$is_bundle = false;
-	switch(true) {
+	switch (true) {
+		case $inline && strpos($params['src'], 'http') !== 0:
+			foreach ($allowed_paths as $localpath) {
+				if (file_exists($localfile = $localpath . $params['src'])) {
+					$params['content'] = file_get_contents($localfile);
+					$print_tag = true;
+					break;
+				}
+			}
+			break;
+
 		case $assetH && !empty($params['print_asset']):
 			list($fullPath, $localPath, $mtime) = $assetH->makeAssetsBundle($asset_types[$params['tag']], $asset_delimiters[$params['tag']], $assets_group);
 			if (!empty($localPath)) {
@@ -79,30 +97,32 @@ function smarty_function_html_import($params, &$smarty) {
 				$is_bundle = true;
 			}
 			break;
-		
+
 		case !empty($params['src']) && strpos($params['src'], 'http') !== 0:
-			foreach($allowed_paths as $localpath) {
-				if(file_exists($localfile = $localpath . $params['src'])) {
+			foreach ($allowed_paths as $localpath) {
+				if (file_exists($localfile = $localpath . $params['src'])) {
 					if ($assetH) {
 						$assetH->addFileToBundle($localfile, $asset_types[$params['tag']], $assets_group);
 						break;
 					}
-					
 					$asset_id = filemtime($localfile);
 					break;
 				}
 			}
 			break;
-		
+
 		case !(empty($params['print_asset']) || $asset_mode):
 			$print_tag = false; //skip empty print of {html_import print_asset=1 ...} when asset_mode turned off
 			break;
-		
+
 		default:
 			$print_tag = true;
 	}
-	
-	$print_tag && printf($tags[$params['tag']], $params['src'] . ($asset_id && !$is_bundle ? sprintf('?%s=%1$s', $asset_id) : ''), $extra_attributes);
+
+	if ($print_tag) {
+		$inline || printf($tags[$params['tag']], $params['src'] . ($asset_id && !$is_bundle ? sprintf('?%s=%1$s', $asset_id) : ''), $extra_attributes);
+		$inline && printf($tags_inline[$params['tag']], $params['content'], $extra_attributes);
+	}
 }
 
 ?>
