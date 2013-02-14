@@ -34,7 +34,7 @@ class NLPGSQLDatabase extends NLAbstractSQLDatabase {
 
 	function Connect() {
 		if (!$this->connected) {
-			$this->connection = @pg_connect($this->connectString, PGSQL_CONNECT_FORCE_NEW) or FatalError('Can\'t connect to '.$this->connectString);
+			$this->connection = pg_connect($this->connectString, PGSQL_CONNECT_FORCE_NEW) or FatalError('Can\'t connect to '.$this->connectString);
 
 			if ($this->connection) {
 				pg_exec($this->connection, "SET DATESTYLE='German'");
