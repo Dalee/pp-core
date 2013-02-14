@@ -47,7 +47,8 @@
 		public function __construct($data) {
 			if(!empty($data['host'])) $this->host = $data['host'];
 			if(!empty($data['user'])) $this->user = $data['user'];
-			if(!empty($data['passwd'])) $this->passwd = $data['password'];
+			if(!empty($data['password'])) $this->passwd = $data['password'];
+			if(!empty($data['passwd'])) $this->passwd = $data['passwd'];
 			if(!empty($data['port'])) $this->port = $data['port'];
 			if(!empty($data['command'])) $this->cli = $data['command'];
 			if(!empty($data['encoding'])) $this->encoding = $data['encoding'];
