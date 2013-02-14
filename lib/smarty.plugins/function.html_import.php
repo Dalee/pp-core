@@ -57,7 +57,7 @@ function smarty_function_html_import($params, &$smarty) {
 			case 'inline':
 				break;
 			default:
-				$extra_params[] = sprintf(' %s="%s" ', $param, $value);
+				$extra_params[] = sprintf(' %s="%s" ', $param, htmlspecialchars($value));
 		}
 	}
 
