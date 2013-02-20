@@ -2,6 +2,7 @@
 
 /**
  * Display tag for inclusion local style or javescript files with asset id modifier to manipulate client caching
+ * @ todo: Move it to separate assets class and leave here just api calls
  *
  * Params:
  * - tag (string) - type of tag
@@ -12,6 +13,9 @@
  * - extra params will be appended as tag attributes
  */
 function smarty_function_html_import($params, &$smarty) {
+
+	static $imported = array();
+
 	$tags = array(
 		'css'    => '<link rel="stylesheet" type="text/css" href="%s" %s />',
 		'script' => '<script type="text/javascript" src="%s" %s></script>'
@@ -99,6 +103,7 @@ function smarty_function_html_import($params, &$smarty) {
 			break;
 
 		case !empty($params['src']) && strpos($params['src'], 'http') !== 0:
+			$print_tag = false;
 			foreach ($allowed_paths as $localpath) {
 				if (file_exists($localfile = $localpath . $params['src'])) {
 					if ($assetH) {
@@ -106,6 +111,7 @@ function smarty_function_html_import($params, &$smarty) {
 						break;
 					}
 					$asset_id = filemtime($localfile);
+					$print_tag = true;
 					break;
 				}
 			}
@@ -119,10 +125,16 @@ function smarty_function_html_import($params, &$smarty) {
 			$print_tag = true;
 	}
 
-	if ($print_tag) {
-		$inline || printf($tags[$params['tag']], $params['src'] . ($asset_id && !$is_bundle ? sprintf('?%s=%1$s', $asset_id) : ''), $extra_attributes);
-		$inline && printf($tags_inline[$params['tag']], $params['content'], $extra_attributes);
+	if (!empty($params['unique']) && isset($imported[$params['src']])) {
+		return;
 	}
-}
+	$imported[$params['src']] = true;
 
-?>
+	$out = '';
+	if ($print_tag) {
+		$inline || $out = sprintf($tags[$params['tag']], $params['src'] . ($asset_id && !$is_bundle ? sprintf('?%1$s=', $asset_id) : ''), $extra_attributes);
+		$inline && $out = sprintf($tags_inline[$params['tag']], $params['content'], $extra_attributes);
+	}
+
+	return $out;
+}
