@@ -364,6 +364,15 @@ class PXApplication {
 			$location = $domDirectory->getAttribute('location');
 			$curDir->location = ($location != '') ? $location : NULL;
 
+			$sourcekeyfield = trim($domDirectory->getAttribute('source-key-field'));
+			$curDir->sourceKeyField = strlen($sourcekeyfield) ? $sourcekeyfield : '@id';
+
+			$sourcedisplayfield = trim($domDirectory->getAttribute('source-display-field'));
+			$curDir->sourceDisplayField = strlen($sourcedisplayfield) ? $sourcedisplayfield : '.';
+
+			$sourceitem = trim($domDirectory->getAttribute('source-item'));
+			$curDir->sourceItem = strlen($sourceitem) ? $sourceitem : './*';
+
 			if ($curDir->load == 'automatic' && $curDir->schema == 'xml') {
 				$this->LoadXMLDirectory($curDir, false);
 			}
@@ -380,6 +389,10 @@ class PXApplication {
 		$file          = $directory->sourceDir.$directory->source;
 		$xpathSelector = $directory->location;
 
+		$idField       = $directory->sourceKeyField;
+		$titleField    = $directory->sourceDisplayField;
+		$xitem         = $directory->sourceItem;
+
 		if (!($dom2 = PXml::load($file))) {
 			FatalError("Ошибка в файле справочника <EM>$file</EM>");
 		}
@@ -387,26 +400,33 @@ class PXApplication {
 		$results = $dom2->xpath($xpathSelector);
 
 		if ($results) {
-			$nodes = $results[0]->childNodes();
 
-			foreach ($nodes as $node) {
-				$id = $node->getAttribute('id');
+			foreach ($results as $result) {
 
-				$directory->values[$id] = array(
-					'id'    => $id,
-					'title' => utf8_decode($node->nodeValue())
-				);
-
-				$attrs = $node->attributes();
-
-				// Structure attributes fix
-				foreach ($attrs as $attr_val) {
-					if ($attr_val->name == 'id') {
-						continue;
-					}
-
-					$directory->values[$id][$attr_val->name] = utf8_decode($attr_val->value);
+				$nodes = $result->xpath($xitem);
+				if (empty($nodes)) {
+					continue;
 				}
+
+				foreach ($nodes as $node) {
+					$id = $node->nodeXValue($idField);
+
+					$directory->values[$id] = array(
+						'id'    => $id,
+						'title' => utf8_decode($node->nodeXValue($titleField))
+					);
+
+					$attrs = $node->attributes();
+
+					// Structure attributes fix
+					foreach ($attrs as $attr_val) {
+						if ($attr_val->name == 'id') {
+							continue;
+						}
+						$directory->values[$id][$attr_val->name] = utf8_decode($attr_val->value);
+					}
+				}
+
 			}
 
 			$directory->SetLoaded();

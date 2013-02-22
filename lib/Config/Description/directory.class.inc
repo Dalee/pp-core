@@ -18,6 +18,10 @@ class PXDirectoryDescription {
 	var $values;
 	var $filter;
 
+	var $sourceKeyField;
+	var $sourceDisplayField;
+	var $sourceItem;
+
 	public function __construct($name) {
 		$this->name        = $name;
 		$this->values      = array();
