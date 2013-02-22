@@ -10,7 +10,7 @@ class PXAuthSession extends PXAuthSecure {
 	protected $_request;
 	protected $_db;
 	
-	function __construct(&$app, &$request, &$user, &$db) {
+	public function __construct($app, $request, $user, $db, $authParams = null) {
 		$this->_app     = $app;
 		$this->_user    = $user;
 		$this->_request = $request;
@@ -23,7 +23,7 @@ class PXAuthSession extends PXAuthSecure {
 		parent::PXAuthSecure($app, $request, $user, $db);
 	}
 
-	function encodePasswd($passwd) {}
+	function encodePasswd($passwd, $toMd5=true) {}
 
 	function auth() {
 		setcookie('login',  $this->login, USER_SESSION_INTERVAL, '/', '');

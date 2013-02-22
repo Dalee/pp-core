@@ -7,7 +7,7 @@ class PXNullRequest extends PXRequestAbstract {
 	public function __construct() {
 	}
 
-	public function getVar($varName) {
+	public function GetVar($varName, $default = NULL) {
 		return NULL;
 	}
 	

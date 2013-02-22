@@ -1,6 +1,7 @@
 <?php
 class PXAuthSecure extends PXAuthInterface {
-	function PXAuthSecure(&$app, &$request, &$user, &$db) {
+	
+	public function __construct($app, $request, $user, $db, $authParams = null) {
 		$this->login();
 		$this->passwd();
 
