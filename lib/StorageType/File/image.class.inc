@@ -9,12 +9,12 @@
  */
 class PXStorageTypeImage extends PXStorageTypeFile {
 	//FIXME: Remove static usage of this method from projects !
-	function proceedFile($field, &$object, &$param, $allowed=ENUM_ALLOWED_IMAGETYPES) {
+	function proceedFile($field, &$object, &$param, $allowed = ENUM_ALLOWED_IMAGETYPES) {
 		$param['allowed'] = unserialize($allowed);
 		return parent::proceedFile($field, $object, $param);
 	}
 
-	function __normalize($field, $object, &$param, $allowed) {
+	function __normalize($field, $object, &$param, $allowed = NULL) {
 		$allowedImageTypes = array_unique(unserialize(is_null($allowed) ? ENUM_ALLOWED_IMAGETYPES : $allowed));
 		$basedir           = $this->ai($field, $object, $param['format']);
 		$tmp               = glob(HTDOCS_PATH . $basedir . '/*');

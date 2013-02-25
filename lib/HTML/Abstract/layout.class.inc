@@ -276,7 +276,7 @@ class NLAbstractLayout {
 	}
 
 	// static
-	function _buildHref($key, $value) {
+	public static function _buildHref($key, $value) {
 		return NLAbstractLayout::buildHref($key, $value);
 	}
 

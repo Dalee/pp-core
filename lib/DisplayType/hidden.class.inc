@@ -15,7 +15,7 @@ class PXDisplayTypeHidden extends PXDisplayType {
 		return $even;
 	}
 
-	function preModifyObject($field, $object, $param=NULL) {
+	function preModifyObject($field, &$object, $param=NULL) {
 		return (bool)$param['skipHidden'];
 	}
 

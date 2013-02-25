@@ -24,7 +24,7 @@ class PXStorageType {
 	 *
 	 * @return String
 	 */
-	function objectsSortOrder($field, $object, $param=NULL) {
+	function objectsSortOrder($field, $object, &$param=NULL) {
 		return $field->description;
 	}
 

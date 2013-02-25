@@ -54,7 +54,7 @@ class PXAdminAjaxTreeBranch extends PXAdminTreeBranch {
 		return $this->getPadding() . $img;
 	}
 
-	public static function childrenHTML($children, $ajaxHtmlTree, $parentalBranch = null) {
+	public static function childrenHTML($children, &$ajaxHtmlTree, $parentalBranch = null) {
 		if(!count($children)){
 			return '';
 		}

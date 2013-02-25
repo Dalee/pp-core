@@ -3,7 +3,7 @@ class PXAuditViewer {
 	function PXAuditViewer($filters, $cols) {
 		$this->cols = $cols;
 		$this->filters = $filters;
-		$this->db =& PXRegistry::getDb();
+		$this->db = PXRegistry::getDb();
 	}
 
 	function filterToSQL($filters) {
@@ -75,7 +75,7 @@ class PXAuditViewer {
 	function getErrorLevels() {
 		$levels = array();
 
-		$app =& PXRegistry::getApp();
+		$app = PXRegistry::getApp();
 
 		if(isset($app->directory['error-type']->values)) {
 			$levels = GetColFromTableWithIndexs($app->directory['error-type']->values, 'title');

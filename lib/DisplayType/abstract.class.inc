@@ -45,7 +45,7 @@ class PXDisplayType {
 	 *
 	 * @return Boolean
 	 */
-	function preModifyObject($field, $object, $param=NULL) {
+	function preModifyObject($field, &$object, $param=NULL) {
 		return false;
 	}
 
@@ -148,7 +148,7 @@ class PXDisplayType {
 	 *
 	 * @return String
 	 */
-	function buildCell($field, $object, $param=NULL) {
+	public function buildCell($field, $object, $param=NULL) {
 		$value = is_string($object[$field->name]) ? strip_tags($object[$field->name]) : $object[$field->name];
 		return $field->displayType->name.' - '.$value;
 	}

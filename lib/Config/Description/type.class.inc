@@ -82,12 +82,12 @@ class PXTypeDescription {
 	}
 
 	function issetType($typeName) {
-		$allTypes =& PXRegistry::getTypes();
+		$allTypes = PXRegistry::getTypes();
 		return isset($allTypes[$typeName]) && is_object($allTypes[$typeName]);
 	}
 
 	function &getType($typeName) {
-		$allTypes =& PXRegistry::getTypes();
+		$allTypes = PXRegistry::getTypes();
 		return $allTypes[$typeName];
 	}
 
@@ -197,7 +197,7 @@ class PXTypeDescription {
 				case 'description'   : $this->title         = utf8_decode($attr->value); break;
 				case 'orderby'       : $this->order         = $attr->value; break;
 				case 'parent'        : $this->parent        = $attr->value; break;
-				case 'bydefault'     : $this->byDefault     = $this->_mapByDefaults($attr->value); break;
+				case 'bydefault'     : $this->byDefault     = self::_mapByDefaults($attr->value); break;
 				case 'struct'        : $this->struct        = $attr->value; break;
 				case 'outputhandler' : $this->outputHandler = $attr->value; break; # Deprecated !
 
@@ -212,13 +212,14 @@ class PXTypeDescription {
 
 	/**
 	* Преобразует 'all', 'selected', 'none' в числовые значения.
+	* protected -> public, because used in PXAdminForm
 	*
 	* @see PP_CHILDREN_FETCH_ALL, PP_CHILDREN_FETCH_SELECTED, PP_CHILDREN_FETCH_NONE
-	* @access protected
+	* @access public 
 	* @param String $string
 	* @return Integer
 	*/
-	function _mapByDefaults($string) {
+	public static function _mapByDefaults($string) {
 		switch($string) {
 			case 'all'     : return PP_CHILDREN_FETCH_ALL;
 			case 'selected': return PP_CHILDREN_FETCH_SELECTED;

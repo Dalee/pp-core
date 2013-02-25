@@ -12,7 +12,12 @@ class PXDisplayTypePassword extends PXDisplayType {
 	}
 
 	function buildCell($field, $object, $param=NULL) {
-		return strlen($object[$field->name]) ? PXDisplayTypeCheckbox::buildCell($field, array($field->name => true), $param) : '';
+		$ret = '';
+		if (strlen($object[$field->name]) > 0) {
+			$obj = new PXDisplayTypeCheckbox($this->display, $this->name); /* E_STRICT remove */
+			$ret = $obj->buildCell($field, array($field->name => true), $param);
+		}
+		return $ret;
 	}
 
 	function getFromRequest($field, $object, $param=NULL) {

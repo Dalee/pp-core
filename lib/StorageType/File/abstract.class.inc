@@ -81,7 +81,7 @@ class PXStorageTypeAbstractFile extends PXStorageType {
 	}
 
 	// Template method
-	function __normalize(){
+	function __normalize($field, $object, &$param) {
 		FatalError(get_class($this)."::__normalize() doesn't exists !");
 	}
 

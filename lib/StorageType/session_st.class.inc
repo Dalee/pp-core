@@ -5,7 +5,7 @@
  * displayType HIDDEN
  */
 class PXStorageTypeSession extends PXStorageType {
-	function normalize($field, $object, &$param, $allowed = null) {
+	function normalize($field, $object, &$param, $allowed = NULL) {
 		$s = new PXSession('session_'.$field->name);
 		$s->open();
 		
@@ -16,7 +16,7 @@ class PXStorageTypeSession extends PXStorageType {
 		return $normalized;
 	}
 	
-	function proceedFile($field, $object, &$param) {
+	function proceedFile($field, &$object, &$param, $allowed = NULL) { /* E_STRICT */
 		$s = new PXSession('session_'.$field->name);
 		$s->open();
 

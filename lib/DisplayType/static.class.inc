@@ -21,7 +21,7 @@ class PXDisplayTypeStatic extends PXDisplayType {
 		return $this->getSubDirectoryIfExists($field, $object, $value);
 	}
 
-	function preModifyObject($field, $object, $param=NULL) {
+	function preModifyObject($field, &$object, $param=NULL) {
 		return (bool)$param['skipHidden'];
 	}
 }

@@ -31,7 +31,7 @@ class PXDisplayTypeDropdown extends PXDisplayType {
 	}
 
 	
-	function getFormats(&$param) {
+	public static function getFormats(&$param) {
 		$format = '';
 		$parentFormat = '';
 		if (count($param) && isset($param['datatype']) && is_object($param['datatype'])) {
@@ -41,7 +41,7 @@ class PXDisplayTypeDropdown extends PXDisplayType {
 		return array($format,$parentFormat);
 	}
 	
-	function getParentTree(&$object,$parentFormat) {
+	public static function getParentTree(&$object,$parentFormat) {
 		if(!isset(self::$trees[$parentFormat])){
 			$db  = PXRegistry::getDb();
 			$app = PXRegistry::getApp();

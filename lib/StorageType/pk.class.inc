@@ -7,7 +7,7 @@
  * storageType pk
  */
 class PXStorageTypePk extends PXStorageTypeInteger {
-	function objectsSortOrder($field, $object, &$param) {
+	function objectsSortOrder($field, $object, &$param = NULL) { /* E_STRICT */
 		return PXStorageType::objectsSortOrder($field, $object, $param);
 	}
 

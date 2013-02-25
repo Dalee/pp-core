@@ -12,7 +12,7 @@ class PXStorageTypeInteger extends PXStorageType {
 		return (!(is_null($object[$k]) || $object[$k] === '')) ? (int)$object[$k] : NULL;
 	}
 
-	function objectsSortOrder($field, $object, &$param) {
+	function objectsSortOrder($field, $object, &$param = NULL) { /* E_STRICT */
 		return $this->objectsSortOrderString($field, $object, $param);
 	}
 

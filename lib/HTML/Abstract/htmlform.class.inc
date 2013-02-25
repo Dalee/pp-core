@@ -11,6 +11,7 @@ class NLAbstractHTMLForm {
 		$this->disable = false;
 	}
 
+	static
 	function _DisabledStatus() {
 		// isset($this) -- for PHP5
 		return (isset($this) && isset($this->disable) && $this->disable);
@@ -43,6 +44,7 @@ class NLAbstractHTMLForm {
 		return NLAbstractHTMLForm::BuildInputCheckBox($name, $on, $value, $id);
 	}
 
+	static
 	function BuildSubmit($value, $name=NULL) {
 		$submit = new PXControlSubmit($value, $name);
 		$submit->setDisabled(NLAbstractHTMLForm::_DisabledStatus());
@@ -56,6 +58,7 @@ class NLAbstractHTMLForm {
 		return $button->html();
 	}
 
+	static
 	function BuildReset($value) {
 		$reset = new PXControlReset($value);
 		$reset->setDisabled(NLAbstractHTMLForm::_DisabledStatus());
@@ -83,6 +86,7 @@ class NLAbstractHTMLForm {
 		return $href;
 	}
 
+	static
 	function BuildHidden($name, $value) {
 		$hidden = new PXInputHidden($name, $value);
 
@@ -209,6 +213,7 @@ class NLAbstractHTMLForm {
 		return $file->html();
 	}
 
+	static
 	function BuildDropDown($name, $value, $values, $multiple=false, $size=null, $disabled=false) {
 		$dropdown = new PXInputDropDown($name, $value, $values);
 		$dropdown->setDisabled($disabled||NLAbstractHTMLForm::_DisabledStatus());
@@ -223,6 +228,7 @@ class NLAbstractHTMLForm {
 		return $dropdown->html();
 	}
 	
+	static
 	function BuildParentDropDown($name, $value, $values) {
 		$parentdropdown = new PXInputParentDropDown($name, $value, $values);
 		$parentdropdown->setDisabled(NLAbstractHTMLForm::_DisabledStatus());

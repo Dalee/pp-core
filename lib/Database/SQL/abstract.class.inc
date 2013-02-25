@@ -90,7 +90,7 @@ abstract class NLAbstractSQLDatabase {
 	function vacuumTable($tableName) {
 	}
 
-	function tableExists() {
+	function tableExists($tableName) { /* E_STRICT */
 		return true;
 	}
 
