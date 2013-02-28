@@ -171,6 +171,7 @@ class PXUserHTMLLang {
 			'%b'  => $monthsShort[$monthNumber],
 			'%B3' => $months3[$monthNumber],
 			'%B2' => $months2[$monthNumber],
+			'%BE' => $months[$monthNumber],        // we have 2 places to format date: smarty.date_format and smarty.lang. both have own dictionary. :(
 			'%B'  => $months[$monthNumber],
 			'%h'  => $monthsShort[$monthNumber]
 		);
