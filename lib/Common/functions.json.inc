@@ -14,7 +14,9 @@ function __json_encode_koi_u2k(&$value) {
  * @return string
  */
 function json_encode_koi($value, $options = 0) {
-	if (is_scalar($value)) {
+	if (empty($value)) {
+		// dummy
+	} elseif (is_scalar($value)) {
 		__json_encode_koi_k2u($value);
 	} else {
 		array_walk_recursive($value, '__json_encode_koi_k2u');
