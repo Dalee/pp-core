@@ -14,7 +14,11 @@ function __json_encode_koi_u2k(&$value) {
  * @return string
  */
 function json_encode_koi($value, $options = 0) {
-	array_walk_recursive($value, '__json_encode_koi_k2u');
+	if (is_scalar($value)) {
+		__json_encode_koi_k2u($value);
+	} else {
+		array_walk_recursive($value, '__json_encode_koi_k2u');
+	}
 	$value = PHP_MINOR_VERSION > 2
 		? json_encode($value, $options)
 		: json_encode($value);
@@ -31,6 +35,10 @@ function json_encode_koi($value, $options = 0) {
  */
 function json_decode_koi($value, $assoc = false, $depth = 512, $options = 0) {
 	$value = json_decode($value, $assoc, $depth, $options);
-	array_walk_recursive($value, '__json_encode_koi_u2k');
+	if (is_scalar($value)) {
+		__json_encode_koi_u2k($value);
+	} else {
+		array_walk_recursive($value, '__json_encode_koi_u2k');
+	}
 	return $value;
 }
