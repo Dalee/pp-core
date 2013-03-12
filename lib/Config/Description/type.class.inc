@@ -92,7 +92,7 @@ class PXTypeDescription {
 	}
 
 	// static parser factory
-	function fillAppTypes($domDatatypes, &$app) {
+	static function fillAppTypes($domDatatypes, &$app) {
 
 		if (!is_array($domDatatypes) || count($domDatatypes) == 0) {
 			FatalError("Не определена объектная модель проекта");

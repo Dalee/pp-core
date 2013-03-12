@@ -10,7 +10,8 @@ class PXDisplayTypeFlashsarray extends PXDisplayTypeImagesarray {
 		return NLAbstractHTMLForm::BuildMultimedia($name, $value, 'flash', $value['entry']);
 	}
 
-	function buildCellHtml($value, $id, $dummy = null) { /* E_STRICT warning remove */
+	function buildCellHtml() {
+		list($value, $id) = func_get_args(); // PHP54 args contract violation
 		return PXDisplayTypeFlash::buildCellHtml($value, $id);
 	}
 }

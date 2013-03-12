@@ -20,7 +20,7 @@ class PXAuthSession extends PXAuthSecure {
 			$this->session_lifetime = 1800;
 		}
 		
-		parent::PXAuthSecure($app, $request, $user, $db);
+		parent::__construct($app, $request, $user, $db, $authParams);
 	}
 
 	function encodePasswd($passwd, $toMd5=true) {}
