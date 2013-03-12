@@ -294,7 +294,8 @@ class PXTreeObjects implements PXContentObjectsInterface, ArrayAccess, Iterator 
 	}
 
 	function getAllowedChilds() {
-		return PXRegistry::getApp()->getAllowedChilds($this->format->id, $this->getCurrent());
+		$cur = $this->getCurrent();
+		return PXRegistry::getApp()->getAllowedChilds($this->format->id, $cur);
 	}
 
 	function hasType($type) {

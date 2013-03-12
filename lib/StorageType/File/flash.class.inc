@@ -8,12 +8,12 @@
  * storageType flash
  */
 class PXStorageTypeFlash extends PXStorageTypeImage {
-	function proceedFile($field, &$object, &$param, $allowed = NULL) { /* E_STRICT, may be use allowed with default ENUM? */
-		return parent::proceedFile($field, $object, $param, ENUM_ALLOWED_FLASHTYPES);
+	function proceedFile($field, &$object, &$param, $allowed = ENUM_ALLOWED_FLASHTYPES) {
+		return parent::proceedFile($field, $object, $param, $allowed);
 	}
 
-	function normalize($field, $object, &$param, $allowed = NULL) {
-		return parent::normalize($field, $object, $param, ENUM_ALLOWED_FLASHTYPES);
+	function normalize($field, $object, &$param, $allowed = ENUM_ALLOWED_FLASHTYPES) {
+		return parent::normalize($field, $object, $param, $allowed);
 	}
 }
 ?>

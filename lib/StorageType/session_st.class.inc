@@ -16,7 +16,7 @@ class PXStorageTypeSession extends PXStorageType {
 		return $normalized;
 	}
 	
-	function proceedFile($field, &$object, &$param, $allowed = NULL) { /* E_STRICT */
+	function proceedFile($field, &$object, &$param, $allowed = null) {
 		$s = new PXSession('session_'.$field->name);
 		$s->open();
 

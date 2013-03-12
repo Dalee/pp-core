@@ -27,7 +27,7 @@ class PXRequest {
 		$this->httpMethod = $this->GetHttpMethod();
 		$this->host       = $this->GetHttpHost();
 		$this->remoteAddr = $this->GetRemoteAddr();
-		$this->path       = $this->GetOriginalPath();
+		$this->path       = static::GetOriginalPath();
 
 		$this->getData    = new NLGetData();
 		$this->postData   = new NLPostData();
@@ -62,8 +62,8 @@ class PXRequest {
 
 	static function GetOriginalPath() {
 		// We need to use REQUEST_URI but not SCRIPT_NAME variable because SCRIPT_NAME is not available when mod_rewrite is enabling in .htaccess
-		$requestUri = $_SERVER['REQUEST_URI'];
-		return substr($requestUri, strpos($requestUri, '?'));
+		$parts = explode("?", $_SERVER['REQUEST_URI'], 2);
+		return reset($parts);
 	}
 
 	function SetPath($path) {

@@ -12,11 +12,11 @@
 class PXStorageTypeImagesarray extends PXStorageTypeFilesarray {
 	//FIXME: Remove possible static usage of this method from projects !
 	function proceedFile($field, &$object, &$param, $allowed=ENUM_ALLOWED_IMAGETYPES) {
-		$param['allowed'] = unserialize($allowed);
-		return parent::proceedFile($field, $object, $param);
+		$param['allowed'] = unserialize($allowed); //PHP54: $allowed is for arguments contract at now
+		return parent::proceedFile($field, $object, $param, $allowed);
 	}
 
-	function __normalize($field, $object, &$param) {
+	function __normalize($field, $object, &$param, $allowed = null) {
 		$imagesArray = array();
 		$basedir     = $this->ai($field, $object, $param['format']);;
 

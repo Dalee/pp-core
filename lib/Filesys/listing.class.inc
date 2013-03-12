@@ -5,7 +5,7 @@ include_once PPLIBPATH . 'Filesys/dir.class.inc';
 class PXFileListingRoots extends PXFileListing {
 	var $_comments;
 
-	function getList() {
+	function getList($catalog) {
 		return;
 	}
 
@@ -237,8 +237,8 @@ class PXFileListingItem {
 		$this->size = filesize($this->path);
 	}
 
-	function _Comment() {
-		$this->comment = null;
+	function _Comment($text) {
+		$this->comment = $text;
 	}
 
 	function _isDir() {

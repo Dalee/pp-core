@@ -61,7 +61,7 @@ class PXTriggerDatabaseVersion extends PXAbstractDatabaseTrigger {
 		return true;
 	}
 
-	function OnBeforeNormalizePathBuildQuery($format, $exObjectFormat, &$table, $object) {
+	function OnBeforeNormalizePathBuildQuery($format, $exObjectFormat, &$table, $object = null) {
 		if(isset($object['sys_version'])) {
 			$w = 'sys_version is not null and sys_version = -1';
 		} else {

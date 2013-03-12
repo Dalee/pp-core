@@ -9,7 +9,7 @@
  */
 class PXStorageTypeFile extends PXStorageTypeAbstractFile {
 	//FIXME: Remove static usage of this method from projects !
-	function proceedFile($field, &$object, &$param) {
+	function proceedFile($field, &$object, &$param, $allowed = null) {
 		$is_static_call  = !isset($this) || !(is_a($this, 'PXStorageTypeAbstractFile')); //see FIXME above
 		$fileArray       = &$object[$field->name];
 		$ai              = $is_static_call ?
@@ -70,7 +70,7 @@ class PXStorageTypeFile extends PXStorageTypeAbstractFile {
 		}
 	}
 
-	function __normalize($field, $object, &$param) {
+	function __normalize($field, $object, &$param, $allowed = null) {
 		$fileName = NULL;
 		$basedir  = $this->ai($field, $object, $param['format']);
 		$d        = new NLDir(HTDOCS_PATH . $basedir);

@@ -131,7 +131,7 @@ class PXUserHTMLLayout extends PXLayoutInterface  {
 		$this->smarty->assign_by_ref($varName, $variable);
 	}
 
-	function assignRequest(&$request) {
+	function assignRequest($request) {
 		$this->smarty->_get     = $request->GetAllGetData();
 		$this->smarty->_post    = $request->GetAllPostData();
 		$this->smarty->_cookies = $request->GetAllCookieData();

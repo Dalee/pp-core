@@ -89,7 +89,7 @@ class PXTriggerDatabaseForum extends PXAbstractDatabaseTrigger {
 		return;
 	}
 
-	function OnModifyObject(&$db, &$objId, &$format, &$object, &$dbFields, &$dbValues) {
+	function OnModifyObject(&$db, &$objId, &$format, &$object, &$dbFields, &$dbValues, &$objectInDB) {
 		if($format->id == $this->dtMessages) {
 			$this->UpdateTopic($db, $object['parent']);
 		}

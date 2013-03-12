@@ -36,13 +36,13 @@ class PXEngineAdminIndex extends PXEngineAdmin {
 		$auth->adminIndex();
 	}
 
-	function fillLayout($area) {
+	function fillLayout() {
 		$this->layout->setLogoutForm('?area=exit');
-		$this->layout->setMenu($this->menu, $area, 'area', false);
+		$this->layout->setMenu($this->menu, $this->area, 'area', false);
 
 		$this->layout->setTwoColumns();
 
-		$this->layout->setGetVarToSave('area', $area);
+		$this->layout->setGetVarToSave('area', $this->area);
 		$this->layout->setGetVarToSave('sid', $this->request->getSid());
 	}
 
@@ -67,7 +67,7 @@ class PXEngineAdminIndex extends PXEngineAdmin {
 		}
 
 		$this->area = $this->request->getArea(current(array_keys($this->menu)));
-		$this->fillLayout($this->area);
+		$this->fillLayout();
 
 		if($this->area == 'exit') {
 			$response =& PXResponse::getInstance();

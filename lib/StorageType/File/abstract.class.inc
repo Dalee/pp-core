@@ -21,7 +21,7 @@ class PXStorageTypeAbstractFile extends PXStorageType {
 		$ai              = $this->ai($field, $object, $param['format']);
 		$basedir         = HTDOCS_PATH . $ai;
 
-		if (is_array($fileArray) && !empty($fileArray) && !empty($donor[$field->name]['path'])) {
+		if (is_array($fileArray) && !empty($donor[$field->name]['path'])) {
 			MakeDirIfNotExists($basedir);
 			if($symlink) {
 				symlink(
@@ -81,7 +81,7 @@ class PXStorageTypeAbstractFile extends PXStorageType {
 	}
 
 	// Template method
-	function __normalize($field, $object, &$param) {
+	function __normalize($field, $object, &$param, $allowed = null){
 		FatalError(get_class($this)."::__normalize() doesn't exists !");
 	}
 
@@ -93,4 +93,3 @@ class PXStorageTypeAbstractFile extends PXStorageType {
 		copy($src, $dest);
 	}
 }
-?>

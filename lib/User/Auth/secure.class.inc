@@ -1,7 +1,7 @@
 <?php
 class PXAuthSecure extends PXAuthInterface {
-	
-	public function __construct($app, $request, $user, $db, $authParams = null) {
+
+	public function __construct(&$app, &$request, &$user, &$db, $authParams = null) {
 		$this->login();
 		$this->passwd();
 
@@ -19,7 +19,7 @@ class PXAuthSecure extends PXAuthInterface {
 		}
 	}
 
-	function encodePasswd($passwd, $toMd5=true) {
+	function encodePasswd($passwd, $toMD5=true) {
 		$md = $toMd5 ? md5($passwd) : $passwd;
 		$tmp = '';
 
@@ -43,4 +43,3 @@ class PXAuthSecure extends PXAuthInterface {
 		setcookie('passwd', 0, 0, '/', '');
 	}
 }
-?>

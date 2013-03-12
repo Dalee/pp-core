@@ -47,7 +47,11 @@ class PXUserAuthorized extends PXUser {
 			FatalError('Неизвестный способ авторизации ' . $authClass);
 		}
 
-		$tmpAuth  = new $authClass(PXRegistry::getApp(), PXRegistry::getRequest(), $this, PXRegistry::getDB(), $params);
+		//PHP54 doesnt like temp objects passed by reference
+		$app = PXRegistry::getApp();
+		$req = PXRegistry::getRequest();
+		$db  = PXRegistry::getDB();
+		$tmpAuth  = new $authClass($app, $req, $this, $db, $params);
 		if(!$this->isAuthed()) {
 			return false;
 		}

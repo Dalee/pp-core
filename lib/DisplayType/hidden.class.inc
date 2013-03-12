@@ -11,7 +11,7 @@ class PXDisplayTypeHidden extends PXDisplayType {
 		return NLAbstractHTMLForm::BuildHidden($field->name, $value);
 	}
 
-	function getRow($even = null) {
+	function getRow($even = false) {
 		return $even;
 	}
 
