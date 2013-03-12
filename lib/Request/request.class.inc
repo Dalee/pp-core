@@ -250,7 +250,7 @@ class PXRequest {
 	 * @return Int
 	 */
 	static function IsIpInSubnet($ip, $subnet) {
-		list($net,$mask) = split("/",$subnet);
+		list($net,$mask) = explode("/",$subnet);
 
 		$lnet   = ip2long($net);
 		$lip    = ip2long($ip);
