@@ -490,7 +490,8 @@ class PXMultiRegions {
 			$this->db->query("select {$reflex_field} from {$format->id} where id = '{$object['id']}'");
 
 		if (!empty($getReflexId)) {
-			$object[$reflex_field] = reset(reset($getReflexId));
+			$arr = reset($getReflexId);
+			$object[$reflex_field] = reset($arr);
 		}
 
 		$pattern = '

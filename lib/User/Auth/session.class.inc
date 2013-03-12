@@ -92,7 +92,8 @@ class PXAuthSession extends PXAuthSecure {
 		
 		$private_key = $this->privateKey($session, $uArray);
 		
-		if(!($session = reset($this->_db->query(sprintf("SELECT * FROM %s WHERE mtime >= NOW() - INTERVAL '%d seconds' AND sid = '%s' LIMIT 1", $this->session_store, $this->session_lifetime, $private_key), true)))) {
+		$res = $this->_db->query(sprintf("SELECT * FROM %s WHERE mtime >= NOW() - INTERVAL '%d seconds' AND sid = '%s' LIMIT 1", $this->session_store, $this->session_lifetime, $private_key), true);
+		if(!($session = reset($res))) {
 			$this->resetPasswd(); // reset staled session cookie
 			return false;
 		}

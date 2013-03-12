@@ -150,6 +150,7 @@ class NLAbstractHTMLForm {
 		return $time->html().' '.$date->html();
 	}
 
+	static
 	function BuildDateTime($name, $value, $showTime, $showDate, $useCalendar, $valueNotNull = false) {
 		$timeCls = $showTime ? 'PXInputTime' : 'PXInputTimeHidden';
 		$dateCls = $showDate ? ($useCalendar ? 'PXInputDateCalendar' : 'PXInputDate') : 'PXInputDateHidden';
@@ -246,6 +247,7 @@ class NLAbstractHTMLForm {
 		return NLAbstractHTMLForm::BuildTableByCols($name, $value, $colsWidth, $height, $header);
 	}
 
+	static
 	function BuildTableByCols($name, $value, $cols, $height, $header = array()) {
 		$table = new PXInputTable($name, $value, $cols, $height, $header);
 		$table->setDisabled(NLAbstractHTMLForm::_DisabledStatus());

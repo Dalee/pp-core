@@ -72,8 +72,8 @@ class PXAuditLogger {
 		static $instance;
 
 		if ($instance === null) {
-			$app = & PXRegistry::getApp();
-			$db  = & PXRegistry::getDb();
+			$app = PXRegistry::getApp();
+			$db  = PXRegistry::getDb();
 
 			$class = $app->getProperty('LOGGER_CLASS', 'PXAuditLogger');
 			$instance = new $class($app, $db);

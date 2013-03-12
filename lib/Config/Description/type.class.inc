@@ -160,7 +160,7 @@ class PXTypeDescription {
 		PXTypeDescription::findParents($app->types);
 	}
 
-	// static
+	static
 	function findParents(&$types) {
 		foreach ($types as $k=>$v) {
 			if (!empty($v->parent)) {

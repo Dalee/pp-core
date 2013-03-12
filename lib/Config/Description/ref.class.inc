@@ -45,7 +45,7 @@ class PXRefDescription {
 		return (($this->from == $formatName) ? $this->to : $this->from);
 	}
 
-	function fillReferences($domReferences, &$app){
+	static function fillReferences($domReferences, &$app){
 		if (!is_array($domReferences) || count($domReferences) == 0) {
 			return;
 		}
