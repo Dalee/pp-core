@@ -1,7 +1,7 @@
 <?php
 class PXModuleArticles extends PXAbstractModule {
 	function userIndex() {
-		$articles = array();
+		$articles = $this->layout->getVar('articles', array());
  
 		if(isset($this->objects['html'])) {
 			foreach($this->objects['html'] as $o) {
