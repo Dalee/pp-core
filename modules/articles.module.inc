@@ -9,6 +9,7 @@ class PXModuleArticles extends PXAbstractModule {
 			}
 		}
  
+echo 'zxc';
 		$this->layout->Assign('articles', $articles);
 	}
 }
