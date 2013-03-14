@@ -1,7 +1,7 @@
 <?php
 class PXModuleArticles extends PXAbstractModule {
 	function userIndex() {
-		$articles = array();
+		$articles = $this->layout->getVar('articles', array());
  
 		if(isset($this->objects['html'])) {
 			foreach($this->objects['html'] as $o) {
@@ -9,6 +9,7 @@ class PXModuleArticles extends PXAbstractModule {
 			}
 		}
  
+echo 'zxc';
 		$this->layout->Assign('articles', $articles);
 	}
 }
