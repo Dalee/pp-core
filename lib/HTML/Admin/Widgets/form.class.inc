@@ -81,7 +81,7 @@ class PXAdminForm extends PXAdminComplexWidget {
 			NLAbstractHTMLForm::BuildHidden('area', 'file').
 			NLAbstractHTMLForm::BuildHidden('mdir', str_replace(BASEPATH, '', $dir)).
 			NLAbstractHTMLForm::BuildHidden('mfile', $file).
-			NLAbstractHTMLForm::BuildText('filesource', htmlspecialchars(ReadFileToString($dir.'/'.$file)), '100%');
+			NLAbstractHTMLForm::BuildText('filesource', htmlspecialchars(ReadFileToString($dir.'/'.$file), ENT_COMPAT|ENT_HTML401, DEFAULT_CHARSET), '100%');
 	}
 
 	function getForm() {
@@ -350,7 +350,7 @@ HTML;
 				$params['other'] = $v;
  
 				foreach ($reference->fields as $sk=>$sv) {
-					$value = ($linksIsset) ? $links[$v['id']]['fields'][$sk] : htmlspecialchars($sv->defaultValue);
+					$value = ($linksIsset) ? $links[$v['id']]['fields'][$sk] : htmlspecialchars($sv->defaultValue, ENT_COMPAT|ENT_HTML401, DEFAULT_CHARSET);
 					$k = $reference->name.'['.$iteration.']['.$v['id'].'][fields]['.$sk.']';
  
 					$sv->name = $k;

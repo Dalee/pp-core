@@ -12,7 +12,7 @@ require_once PPLIBPATH . 'DisplayType/text.class.inc';
  */
 class PXDisplayTypeRichedit extends PXDisplayTypeText {
 	function buildInput($field, $object, $param=NULL) {
-		$value    = isset($object[$field->name]) ? htmlspecialchars($object[$field->name]) : NULL;
+		$value    = isset($object[$field->name]) ? htmlspecialchars($object[$field->name], ENT_COMPAT|ENT_HTML401, DEFAULT_CHARSET) : NULL;
 		$req      = PXRegistry::getRequest();
 		$layout   = PXRegistry::getLayout();
 		$redactor = $req->getCookieVar('richedit');

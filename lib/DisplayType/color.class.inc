@@ -7,7 +7,7 @@
  */
 class PXDisplayTypeColor extends PXDisplayType {
 	function buildInput($field, $object, $param=NULL) {
-		$value = isset($object[$field->name]) ? htmlspecialchars($object[$field->name]) : NULL;
+		$value = isset($object[$field->name]) ? htmlspecialchars($object[$field->name], ENT_COMPAT|ENT_HTML401, DEFAULT_CHARSET) : NULL;
 		return NLAbstractHTMLForm::BuildColor($field->name, $value);
 	}
 	function buildCell($field, $object, $param=NULL) {

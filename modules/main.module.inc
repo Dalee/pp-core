@@ -282,7 +282,7 @@ class PXModuleMain extends PXModule {
 			}
 
 		} elseif ($rqSid != null) {
-			$layout->assign('INNER.1.0', '<H2 class="error">Раздел '.htmlspecialchars($rqSid).' не найден</H2>');
+			$layout->assign('INNER.1.0', '<H2 class="error">Раздел '.htmlspecialchars($rqSid, ENT_COMPAT|ENT_HTML401, DEFAULT_CHARSET).' не найден</H2>');
 
 		} else {
 			$layout->assign('INNER.1.0', '<H2>Выберите раздел</H2>');

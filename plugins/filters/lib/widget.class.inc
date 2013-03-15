@@ -39,7 +39,7 @@ class PXFiltersAdminWidget extends PXAdminWidget {
 		
 		foreach ($this->dtype->fields as $field) {
 			if (!$field->listed || !$field->storageType->filterable()) continue;
-			$filter_value = @htmlspecialchars($filters[$this->dtype->id][$field->name]);
+			$filter_value = @htmlspecialchars($filters[$this->dtype->id][$field->name], ENT_COMPAT|ENT_HTML401, DEFAULT_CHARSET);
 			
 			switch(true){
 				case $field->storageType instanceof PXStorageTypeBoolean:

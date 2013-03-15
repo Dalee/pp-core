@@ -27,7 +27,7 @@ class PXRequest {
 		$this->httpMethod = $this->GetHttpMethod();
 		$this->host       = $this->GetHttpHost();
 		$this->remoteAddr = $this->GetRemoteAddr();
-		$this->path       = static::GetOriginalPath();
+		$this->path       = self::GetOriginalPath(); //PHP54/52: <static> is better but for 52 using <self>
 
 		$this->getData    = new NLGetData();
 		$this->postData   = new NLPostData();

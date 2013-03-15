@@ -898,7 +898,7 @@ function hrefCallback($p) {
 	}
 
 	// Преобразуем спецсимволы в HTML-представление.
-	$name = htmlspecialchars($p[0]);
+	$name = htmlspecialchars($p[0], ENT_COMPAT|ENT_HTML401, DEFAULT_CHARSET);
 	// Если нет протокола, добавляем его в начало строки.
 	$href = !empty($p[2])? $name : "http://$name";
 	// Формируем ссылку.

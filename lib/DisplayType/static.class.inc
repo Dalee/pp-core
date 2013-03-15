@@ -8,7 +8,7 @@
 class PXDisplayTypeStatic extends PXDisplayType {
 	function buildInput($field, $object, $param=NULL) {
 		$k = $field->name;
-		$value = isset($object[$k]) ? htmlspecialchars(is_array($object[$k]) ? print_r($object[$k], true) : $object[$k]) : NULL;
+		$value = isset($object[$k]) ? htmlspecialchars(is_array($object[$k]) ? print_r($object[$k], true) : $object[$k], ENT_COMPAT|ENT_HTML401, DEFAULT_CHARSET) : NULL;
 
 		$values = isset($field->values) ? $field->values->GetList() : array();
 		return NLAbstractHTMLForm::BuildHidden($field->name, $value).(isset($values[$value]) ? $values[$value] : $value);

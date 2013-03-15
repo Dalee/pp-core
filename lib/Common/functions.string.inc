@@ -304,7 +304,7 @@ function htmlspecialcharsArray($array) {
 		if (is_array($v)) {
 			$array[$k] = htmlspecialcharsArray($v);
 		} else {
-			$array[$k] = htmlspecialchars($v);
+			$array[$k] = htmlspecialchars($v, ENT_COMPAT|ENT_HTML401, DEFAULT_CHARSET);
 		}
 	}
 	return $array;
