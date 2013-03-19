@@ -1,0 +1,3 @@
+[submodule "vendor/PEAR"]
+	path = vendor/PEAR
+	url = git@git.dalee.ru:akurzhonkov/libpp5-pear.git
