@@ -542,6 +542,8 @@ table.mainform td input.checkbox {
 table.mainform td label {
 	display: inline-block;
 	margin: 0.5em 0.5em;
+	text-indent: -21px;
+	padding-left: 21px;
 }
 table.mainform td label input.radio {
 	padding: 0;
