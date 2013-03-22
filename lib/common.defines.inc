@@ -16,11 +16,16 @@ if(!isset($_SERVER['REQUEST_METHOD'])) {
 // Определение BASEPATH - это полный путь к корню сайта
 if(!defined('BASEPATH')) {
 	if (IS_WIN) {
-		define('BASEPATH', str_replace("\\\\", DIRECTORY_SEPARATOR, $_SERVER["DOCUMENT_ROOT"]."\\"));
+		define('BASEPATH', rtrim(str_replace("\\\\", DIRECTORY_SEPARATOR, $_SERVER["DOCUMENT_ROOT"]), DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR);
 	} else {
-		define('BASEPATH', str_replace("/", DIRECTORY_SEPARATOR, $_SERVER["DOCUMENT_ROOT"]."/"));
+		define('BASEPATH', rtrim(str_replace("/", DIRECTORY_SEPARATOR, $_SERVER["DOCUMENT_ROOT"]), DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR);
 	}
 }
+
+// Объявляем PPPATH, LOCALPATH
+defined('SITEPATH')  || define('SITEPATH', BASEPATH . 'site' . DIRECTORY_SEPARATOR);
+defined('PPPATH')    || define('PPPATH', BASEPATH . 'libpp' . DIRECTORY_SEPARATOR);
+defined('LOCALPATH') || define('LOCALPATH', BASEPATH . 'local' . DIRECTORY_SEPARATOR);
 
 //
 if (isset($_SERVER['HTTP_X_REWRITE_URL'])) {

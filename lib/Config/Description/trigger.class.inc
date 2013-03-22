@@ -60,21 +60,9 @@ class PXTriggerDescription {
 	}
 	
 	function getPathToClass() {
-		$file = strtolower("triggers/{$this->type}/{$this->name}.trigger.inc");
-
-		if (file_exists(BASEPATH.'/local/'.$file)) {
-			return BASEPATH.'/local/'.$file;
-
-		} elseif (file_exists(BASEPATH.'/libpp/'.$file)) {
-			return BASEPATH.'/libpp/'.$file;
-
-		} elseif (file_exists(BASEPATH.'/local/plugins/' . $this->folder . '/' .$file)) { 
-			return BASEPATH.'/local/plugins/'. $this->folder . '/' .$file;
-
-		} elseif (file_exists(BASEPATH.'/libpp/plugins/' . $this->folder . '/' .$file)) {
-			return BASEPATH.'/libpp/plugins/'. $this->folder . '/' .$file;
-
-		}
+		$file = strtolower("triggers/{$this->type}/{$this->name}");
+		// why we looking for a trigger in global scope first? does it wrong?
+		return pp_fetch_file(array('', 'plugins/' . $this->folder), $file, '.trigger');
 	}
 }
 ?>

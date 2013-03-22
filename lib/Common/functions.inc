@@ -13,6 +13,7 @@ if (!defined('IS_WIN')) {
 	define('IS_WIN', (bool)(substr(PHP_OS, 0, 3) == 'WIN'));
 }
 
+require_once('functions.pp.inc');
 require_once('functions.etc.inc');
 require_once('functions.file.inc');
 require_once('functions.string.inc');
@@ -22,5 +23,3 @@ require_once('functions.date.inc');
 require_once('functions.validate.inc');
 require_once('functions.imageswork.inc');
 require_once('functions.json.inc');
-
-?>
