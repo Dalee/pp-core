@@ -37,7 +37,7 @@ class PXAdminHTMLLayout extends NLAbstractLayout {
 	}
 
 	function assignVersion() {
-		$this->assign('OUTER.VERSION', sprintf('version %s.%d', PP_VERSION, PP_REVISION));
+		$this->assign('OUTER.VERSION', PP_VERSION);
 	}
 
 	function setApp() {

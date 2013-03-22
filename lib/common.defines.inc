@@ -1,6 +1,4 @@
 <?php
-//include_once 'Version/svn_revision.inc';
-define('PP_REVISION', 0);
 
 // Default timezone settings for formated date output
 date_default_timezone_set('Europe/Moscow');
@@ -94,10 +92,6 @@ if ($tmp === false) {
 	// TODO: fire error or warning
 }
 unset($tmp);
-
-
-// версия PP
-define('PP_VERSION', '1.5');
 
 // разрешенные форматы изображений
 define('ENUM_ALLOWED_IMAGETYPES', serialize(array(

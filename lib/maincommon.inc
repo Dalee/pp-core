@@ -1,5 +1,6 @@
 <?php
 require_once 'common.defines.inc';
+require_once 'common.version.inc';
 
 require_once 'registry.class.inc';
 require_once 'Common/functions.inc';
