@@ -36,8 +36,12 @@ function json_encode_koi($value, $options = 0) {
  * @return string
  */
 function json_decode_koi($value, $assoc = false, $depth = 512, $options = 0) {
-	$value = json_decode($value, $assoc, $depth, $options);
-	if (is_scalar($value)) {
+	$value = PHP_MINOR_VERSION > 2
+		? json_decode($value, $assoc, $depth, $options)
+		: json_decode($value, $assoc);
+	if (empty($value)) {
+		// dummy
+	} elseif (is_scalar($value)) {
 		__json_encode_koi_u2k($value);
 	} else {
 		array_walk_recursive($value, '__json_encode_koi_u2k');
