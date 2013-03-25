@@ -117,11 +117,6 @@
 				if(empty($domainName)) {
 					continue;
 				}
-
-				if (substr($domainName, 0, 4) !== 'http') {
-					// fixme: if domains serve content only in https, need to add fully qualified domain name
-					$domainName = 'http://' . $domainName;
-				}
 				$this->cdnDomains[] = $domainName;
 			}
 
