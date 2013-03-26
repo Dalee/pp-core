@@ -9,6 +9,7 @@ class CssConvertImageUrlMinifierPlugin extends aCssMinifierPlugin {
 	private $include = array (
 			'background',
 			'background-image',
+			'src', /* @font { src: url() } */
 		);
 
 	/**
@@ -31,7 +32,6 @@ class CssConvertImageUrlMinifierPlugin extends aCssMinifierPlugin {
 		$result = $imageTag->buildProperty(array('src' => $m[1]));
 
 		$token->Value = str_replace($m[0], $result, $token->Value);
-
 		return true;
 	}
 

@@ -23,7 +23,7 @@
 		protected $config = null;
 		protected $cdnDomains = null;
 		protected $cdnEnabled = false;
-		protected $currentIndex = 0;
+		protected $maxIndex = 0;
 
 		//
 		public static function getInstance() {
@@ -120,7 +120,8 @@
 				$this->cdnDomains[] = $domainName;
 			}
 
-			if(count($this->cdnDomains) > 0) {
+			$this->maxIndex = count($this->cdnDomains);
+			if($this->maxIndex > 0) {
 				$this->cdnEnabled = true;
 			}
 		}
@@ -222,17 +223,15 @@
 		 *
 		 *
 		 */
-		protected function _buildCDNURL ($imageSource) {
+		public function buildCdnUrl ($imageSource) {
 			if (!$this->cdnEnabled) {
 				return $imageSource;
 			}
 
-			$maxIndex = (count($this->cdnDomains) - 1);
-			$this->currentIndex = ($this->currentIndex > $maxIndex) ? 0 : $this->currentIndex;
+			$code = ord(md5($imageSource));
+			$domainIndex = ($code % $this->maxIndex);
 
-			$link = $this->cdnDomains[$this->currentIndex] . $imageSource;
-			$this->currentIndex += 1;
-
+			$link = $this->cdnDomains[$domainIndex] . $imageSource;
 			return $link;
 		}
 
@@ -264,7 +263,7 @@
 					}
 
 					if (!$forceInline && $this->cdnEnabled) {
-						$imageData['src'] = $this->_buildCDNURL($imageData['src']);
+						$imageData['src'] = $this->buildCdnUrl($imageData['src']);
 					}
 
 					if ($forceSize) {

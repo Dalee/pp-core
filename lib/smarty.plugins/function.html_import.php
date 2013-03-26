@@ -133,7 +133,8 @@ function smarty_function_html_import($params, &$smarty) {
 
 	$out = '';
 	if ($print_tag) {
-		$inline || $out = sprintf($tags[$params['tag']], $params['src'] . ($asset_id && !$is_bundle ? sprintf('?%1$s=', $asset_id) : ''), $extra_attributes);
+		$cndSource = PXHtmlImageTag::getInstance()->buildCdnUrl($params['src']);
+		$inline || $out = sprintf($tags[$params['tag']], $cndSource . ($asset_id && !$is_bundle ? sprintf('?%1$s=', $asset_id) : ''), $extra_attributes);
 		$inline && $out = sprintf($tags_inline[$params['tag']], $params['content'], $extra_attributes);
 	}
 
