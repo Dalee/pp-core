@@ -108,10 +108,15 @@
 			// define max treshold
 			$this->maxTreshold = (intval($this->getProperty('CONFIG.INLINE_IMAGES_MAX_TRESHOLD', 0)));
 			$this->maxTreshold = ($this->maxTreshold > 0) ? $this->maxTreshold : self::INLINE_MAX_TRESHOLD;
-
-			// loading CDN list 
-			$rawDomainList = array_filter($this->getProperty('CONFIG.CDN_LIST', array()));
+			
 			$this->cdnDomains = array();
+			$this->cdnEnabled = false;
+
+			$rawDomainList = array_filter($this->getProperty('CONFIG.CDN_LIST', array()));
+			if (intval($this->getProperty('CONFIG.ASSETS_ENABLED')) == 0) { // if assets disabled, do not enable cdn
+				return;
+			}
+
 			foreach ($rawDomainList as $_ => $domainName) {
 				$domainName = trim($domainName);
 				if(empty($domainName)) {
