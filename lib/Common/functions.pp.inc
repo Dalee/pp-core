@@ -15,7 +15,7 @@ function pp_base_paths($sub = null) {
 
 	$r = array();
 
-//	$r[] = SHAREDPATH . $sub; // uncomment it if possible
+	$r[] = SHAREDPATH . $sub; // uncomment it if possible
 	$r[] = LOCALPATH . $sub;
 
 //	foreach (pp_modules() as $module) { // probably we can integrate it somehow

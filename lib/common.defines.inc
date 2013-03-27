@@ -22,10 +22,10 @@ if(!defined('BASEPATH')) {
 	}
 }
 
-// Объявляем PPPATH, LOCALPATH
-defined('SITEPATH')  || define('SITEPATH', BASEPATH . 'site' . DIRECTORY_SEPARATOR);
-defined('PPPATH')    || define('PPPATH', BASEPATH . 'libpp' . DIRECTORY_SEPARATOR);
-defined('LOCALPATH') || define('LOCALPATH', BASEPATH . 'local' . DIRECTORY_SEPARATOR);
+// Объявляем PPPATH, LOCALPATH, SHAREDPATH
+defined('PPPATH')     || define('PPPATH',     BASEPATH . 'libpp' . DIRECTORY_SEPARATOR);
+defined('LOCALPATH')  || define('LOCALPATH',  BASEPATH . 'local' . DIRECTORY_SEPARATOR);
+defined('SHAREDPATH') || define('SHAREDPATH', BASEPATH . 'site' . DIRECTORY_SEPARATOR);
 
 //
 if (isset($_SERVER['HTTP_X_REWRITE_URL'])) {
