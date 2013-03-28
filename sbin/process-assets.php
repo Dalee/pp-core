@@ -14,9 +14,12 @@
 	ini_set('memory_limit', '512M');
 	umask(0);
 
+	require_once (BASEPATH . 'libpp/lib/common.defines.inc');
 	require_once (BASEPATH . 'libpp/lib/HTML/inlineimage.class.inc');
 	require_once (BASEPATH . 'libpp/vendor/CSSMin/CssMin.php');
+	require_once (BASEPATH . 'libpp/lib/Common/functions.pp.inc');
 	require_once (BASEPATH . 'libpp/lib/Common/functions.file.inc');
+	require_once (BASEPATH . 'libpp/lib/Common/functions.etc.inc');
 
 	//
 	function d2($var) {
@@ -301,10 +304,10 @@
 		$tempFile = tempnam(BASEPATH . 'tmp', 'js');
 		print ("Processing {$sourceFile} thru {$tempFile} to {$destinationFile}\n");
 
-		if (PXHtmlImageTag::getInstance()->getProperty('CONFIG.ASSETS_USE_YUI') && 
+		if (PXHtmlAssets::getInstance()->assets_yui && 
 			($compressorBinary = FindSystemFile('yui-compressor'))) {
 
-			$outputFile = tempnam($bundleTypeRoot, $bundleName);
+			// wtf? $outputFile = tempnam($bundleTypeRoot, $bundleName);
 			$cmd = array();
 			$cmd[] = $compressorBinary; // /usr/bin/yui-compressor
 			$cmd[] = $sourceFile;   // .../asset-....(js|css)

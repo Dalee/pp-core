@@ -10,7 +10,7 @@
 		FatalError('BASEPATH is not defined');
 	}
 
-	require_once ('HTML/assets.class.inc');
+	require_once (BASEPATH . 'libpp/lib/HTML/assets.class.inc');
 
 	class PXHtmlImageTag {
 
@@ -144,7 +144,7 @@
 				return;
 			}
 
-			$inline = $inline || ($statData['size'] <= self::INLINE_MAX_TRESHOLD);
+			$inline = $forceInline || ($statData['size'] <= self::INLINE_MAX_TRESHOLD);
 
 			$imageData['src'] = $inline
 				? $this->_getInlineData($imageDestination, $metaData['mime'])
@@ -212,7 +212,7 @@
 		 * FIXME: not work with ../path/to/image :(
 		 */
 		public function buildProperty ($imageData) {
-			if (intval($this->getProperty('CONFIG.INLINE_IMAGES')) === 0) {
+			if (!self::$assets->inlineimages_enabled) {
 				return $this->_realPropertyBuild($imageData);
 			}
 

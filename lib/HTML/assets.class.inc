@@ -12,8 +12,6 @@ if (!defined('BASEPATH')) {
 	FatalError('BASEPATH is not defined');
 }
 
-require_once('HTML/assetsbundler.class.inc');
-
 /**
  * PXHTMLAssets class
  * @property-read bool $enabled Main trigger
@@ -226,6 +224,8 @@ final class PXHTMLAssets {
 	);
 
 	public function import ($params) {
+
+		require_once (BASEPATH . 'libpp/lib/HTML/assetsbundler.class.inc');
 
 		if (empty($params['tag'])) {
 			FatalError ('broken assets? wtf!');
