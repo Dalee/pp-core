@@ -1,9 +1,9 @@
 <?php
 	/**
-	 * 
+	 *
 	 * CONFIG.INLINEIMAGES 0/off/1/on (activate module)
 	 * CONFIG.INLINEIMAGES_MAX_TRESHOLD 2048 (max size in bytes of inlined file, optional)
-	 * CONFIG.CDN_LIST = "fully-qualified-domain1, fully-qualified-domain2" 
+	 * CONFIG.CDN_LIST = "fully-qualified-domain1, fully-qualified-domain2"
 	 * 		(list of servers ready to serve static content)
 	 */
 	if (!defined('BASEPATH')) {
@@ -98,6 +98,9 @@
 			$attrStrings = array();
 
 			foreach ($attrData as $key => $value) {
+				if (preg_match('/^data[A-Z]/', $key)){
+					$key = strtolower(preg_replace('/([A-Z])/', '-$1', $key));
+				}
 				$attrStrings[] = $key . '="' . htmlspecialchars($value) . '"';
 			}
 
@@ -121,7 +124,7 @@
 		}
 
 		/**
-		 * 
+		 *
 		 * @param array $imageData
 		 */
 		protected function rebuildImageData (&$imageData) {
