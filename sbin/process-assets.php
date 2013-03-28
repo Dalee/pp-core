@@ -5,16 +5,19 @@
 	 *
 	 *
 	 */
-	define('BASEPATH', rtrim(realpath(dirname(__FILE__).'/../../'), '/') . '/');
-	define('WORKPATH', BASEPATH . 'local/htdocs');
+	define('BASEPATH',   rtrim(realpath(dirname(__FILE__).'/../../'), '/') . '/');
+	define('PPPATH',     BASEPATH . 'libpp/');
+	define('LOCALPATH',  BASEPATH . 'local/');
+	define('SHAREDPATH', BASEPATH . 'site/');
+	define('WORKPATH',   BASEPATH . 'local/htdocs');
 	define('SOURCEPATH', BASEPATH . 'local/htdocs');
-	define('DEBUGMODE', false);
+	define('DEBUGMODE',  false);
 
 	set_time_limit(0);
 	ini_set('memory_limit', '512M');
 	umask(0);
 
-	require_once (BASEPATH . 'libpp/lib/common.defines.inc');
+	// require_once (BASEPATH . 'libpp/lib/common.defines.inc');
 	require_once (BASEPATH . 'libpp/lib/HTML/inlineimage.class.inc');
 	require_once (BASEPATH . 'libpp/vendor/CSSMin/CssMin.php');
 	require_once (BASEPATH . 'libpp/lib/Common/functions.pp.inc');
