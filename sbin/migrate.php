@@ -157,10 +157,10 @@
 			$migration_data .= $this->makeSetClientEncodingQuery() . ";";
 
 			$migration_data .= "\n\n-- migration data\n";
-			$migration_data .= file_get_contents($src);
+			$migration_data .= file_get_contents($src) . ";";
 
 			$migration_data .= "\n\n-- append migration info\n";
-			$migration_data .= $migration_sql;
+			$migration_data .= $migration_sql . ";";
 
 			file_put_contents($dst, $migration_data);
 
