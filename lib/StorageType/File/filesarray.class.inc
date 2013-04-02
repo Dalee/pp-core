@@ -17,24 +17,26 @@ class PXStorageTypeFilesarray extends PXStorageTypeAbstractFile {
 		$ai              = $this->ai($field, $object, $param['format']);
 		$basedir         = HTDOCS_PATH . $ai;
 
-		if (is_array($fileArray)) {
-			MakeDirIfNotExists($basedir);
+		if (!is_array($fileArray) || empty($fileArray)) {
+			return;
+		}
 
-			foreach($fileArray as $k=>$f) {
-				$object[$field->name][$k]['path'] = $ai.$f['entry'];
+		MakeDirIfNotExists($basedir);
 
-				if($symlink) {
-					symlink(
-						HTDOCS_PATH . $donor[$field->name][$k]['path'],
-						HTDOCS_PATH . $object[$field->name][$k]['path']
-					);
+		foreach ($fileArray as $k => $f) {
+			$object[$field->name][$k]['path'] = $ai.$f['entry'];
 
-				} else {
-					copy(
-						HTDOCS_PATH . $donor[$field->name][$k]['path'],
-						HTDOCS_PATH . $object[$field->name][$k]['path']
-					);
-				}
+			if ($symlink) {
+				symlink(
+					HTDOCS_PATH . $donor[$field->name][$k]['path'],
+					HTDOCS_PATH . $object[$field->name][$k]['path']
+				);
+
+			} else {
+				copy(
+					HTDOCS_PATH . $donor[$field->name][$k]['path'],
+					HTDOCS_PATH . $object[$field->name][$k]['path']
+				);
 			}
 		}
 	}
@@ -54,28 +56,25 @@ class PXStorageTypeFilesarray extends PXStorageTypeAbstractFile {
 		if (is_array($fileArray) && !empty($fileArray['name'][0])) {
 			$filename = NULL;
 
-			if(is_array($allowed)) {
-				if(in_array($fileArray['type'][0], array_keys($allowed))) {
-					MakeDirIfNotExists($basedir);
-
-					$tmp = _TranslitFilename($fileArray['name'][0]);
-					$tmp = preg_replace('/\.\w+$/', '', $tmp);
-
-					if(in_array($fileArray['type'][0], array_keys($allowed))) {
-						$filename = $basedir.'/'.$tmp.'.'.$allowed[$fileArray['type'][0]];
-					}
-				}
-
-			} else {
-				MakeDirIfNotExists($basedir);
+			if (!is_array($allowed) || empty($allowed)) {
 				$filename = $basedir.'/'. _TranslitFilename($fileArray['name'][0]);
+
+			} elseif (in_array($fileArray['type'][0], array_keys($allowed))) {
+				$tmp = _TranslitFilename($fileArray['name'][0]);
+				$tmp = preg_replace('/\.\w+$/', '', $tmp);
+
+				if (in_array($fileArray['type'][0], array_keys($allowed))) {
+					$filename = $basedir.'/'.$tmp.'.'.$allowed[$fileArray['type'][0]];
+				}
 			}
 
-			if(!is_null($filename)) {
+			if (!is_null($filename)) {
+				MakeDirIfNotExists($basedir);
+
 				$_ = $is_static_call ?
 					self::copyFile($field, $fileArray['tmp_name'][0], $filename) :
 					$this->copyFile($field, $fileArray['tmp_name'][0], $filename);
-				
+
 				$invalidateCache = true;
 			}
 		}
@@ -88,6 +87,7 @@ class PXStorageTypeFilesarray extends PXStorageTypeAbstractFile {
 				}
 			}
 		}
+
 		$edited = PXRegistry::getRequest()->GetUploadFile($varName.'_edit', true);
 		if (isset($edited['name']) && is_array($edited['name'])) {
 			foreach ($edited['name'] as $k=>$v) {
@@ -101,7 +101,8 @@ class PXStorageTypeFilesarray extends PXStorageTypeAbstractFile {
 			}
 		}
 
-		if($invalidateCache){
+		if ($invalidateCache) {
+			unlinkDirTreeIfEmpty($basedir);
 			$_ = $is_static_call ? self::removeFromCache($ai) : $this->removeFromCache($ai);
 		}
 
@@ -115,23 +116,23 @@ class PXStorageTypeFilesarray extends PXStorageTypeAbstractFile {
 		$basedir    = $this->ai($field, $object, $param['format']);
 		$d          = new NLDir(HTDOCS_PATH . $basedir);
 
-		if ($d->Exist()) {
-			foreach ($d->getFileNames() as $entry) {
-				$diskPath = HTDOCS_PATH . $basedir . $entry;
-				$httpPath = $basedir.$entry;
+		if (!$d->Exist()) {
+			return $filesArray;
+		}
 
-				$filesArray[$entry] = array(
-					'path' => isset($httpPath) ? $httpPath : NULL,
-					'filename' => $entry,
-					'size'     => filesize($diskPath),
-					'type'     => mime_content_type($diskPath),
-					'entry'    => $entry
-				);
-				$filesArray[$entry]['fullpath'] = &$filesArray[$entry]['path'];
+		$fileEntries = $d->getFileNames();
+		foreach ($fileEntries as $entry) {
+			$diskPath = HTDOCS_PATH . $basedir . $entry;
+			$httpPath = $basedir.$entry;
 
-				unset($httpPath);
-				unset($diskPath);
-			}
+			$filesArray[$entry] = array(
+				'path' => isset($httpPath) ? $httpPath : NULL,
+				'filename' => $entry,
+				'size'     => filesize($diskPath),
+				'type'     => mime_content_type($diskPath),
+				'entry'    => $entry
+			);
+			$filesArray[$entry]['fullpath'] = &$filesArray[$entry]['path'];
 		}
 
 		return $filesArray;

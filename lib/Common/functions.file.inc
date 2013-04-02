@@ -77,7 +77,7 @@ function unlinkDir($source) {
 	// Loop through the folder
 	$dir = dir($source);
 
-	if($dir == false) {
+	if ($dir == false) {
 		return;
 	}
 
@@ -99,6 +99,38 @@ function unlinkDir($source) {
 	rmdir($source);
 
 	return true;
+}
+
+function unlinkDirTreeIfEmpty($source) {
+	if (!file_exists($source)) {
+		return;
+	}
+
+	// loop thru the folder
+	$dir = dir($source);
+
+	if (!$dir) {
+		return;
+	}
+
+	$empty = true;
+
+	while (false !== ($entry = $dir->read())) {
+		// skip pointers
+		if ($entry == '.' || $entry == '..') {
+			continue;
+		}
+		$entryfullpath = "$source/$entry";
+
+		// unlink empty children if possible
+		$empty = is_dir($entryfullpath) ? unlinkDirTreeIfEmpty($entryfullpath) : false;
+	}
+
+	// cleanup
+	$dir->close();
+	($empty === true) && rmdir($source);
+
+	return $empty;
 }
 
 function smarty_file_exists($filename) {
