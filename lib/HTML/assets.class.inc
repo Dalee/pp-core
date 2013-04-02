@@ -37,6 +37,7 @@ final class PXHTMLAssets {
 	public function __get ($k) {
 		$k = (string)($k);
 		static $cache = array();
+
 		if (array_key_exists($k, $cache)) {
 			return $cache[$k];
 		}
@@ -259,7 +260,7 @@ final class PXHTMLAssets {
 				case 'unique':
 					break;
 				default:
-					$extra_params[] = sprintf('%s="%s"', $param, htmlspecialchars($value));
+					$extra_params[] = sprintf('%s="%s"', convertStringToDashed($param), htmlspecialchars($value));
 			}
 		}
 
@@ -342,7 +343,9 @@ final class PXHTMLAssets {
 			if ($this->findLocalPathByURL($resource_uri)) {
 				$resource_uri = $this->cdnize($resource_uri);
 			}
-			$asset_id && !$is_bundle && ($resource_uri .= sprintf('?_=%1$s', $asset_id));
+			if ($asset_id && !$is_bundle && strpos($resource_uri, '?') === false) {
+				$resource_uri .= sprintf('%s_=%1$s', strpos($resource_uri, '?')? '?' : '&', $asset_id);
+			}
 
 			$out = sprintf($tag_data['pattern'], $resource_uri, $extra_attributes);
 		}

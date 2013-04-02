@@ -92,15 +92,14 @@
 		/**
 		 * @param attrData array
 		 * convert array into string a-la 'key1="value1" key2="value2"'
+		 * camelCased and under_scored keys coverts to dash-ed
 		 *
 		 */
 		protected function _buildAttrString ($attrData) {
 			$attrStrings = array();
 
 			foreach ($attrData as $key => $value) {
-				if (preg_match('/^data[A-Z]/', $key)){
-					$key = strtolower(preg_replace('/([A-Z])/', '-$1', $key));
-				}
+				$key = convertStringToDashed($key);
 				$attrStrings[] = $key . '="' . htmlspecialchars($value) . '"';
 			}
 

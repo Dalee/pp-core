@@ -1291,8 +1291,30 @@ function convertCyrillicObjectToUtf($object, $from_charset = 'k') {
 	return $object;
 }
 
+// Converts "abc_def", "abc-def", "abcDef" strings to "AbcDef", but not "ab-cDef"
+function convertStringToPascalCase ($s) {
+	return ucfirst(convertStringToCamelCase($s));
+}
+
+// Converts "AbcDef" string to "abcDef"
+function convertStringToCamelCase ($s) {
+	return preg_replace_callback('/[\-_][a-z]/i', '__convertStringToCamelCase_helper', $s);
+}
+function __convertStringToCamelCase_helper($a) { return strtoupper($a[0][1]); }
+
+// Converts "AbcDef" string to "abc_def"
+function convertStringToUnderscored ($s) {
+	return ltrim(preg_replace_callback('/(?:[A-Z]|(?:-)[a-z])/', '__convertStringToUnderscored_helper', $s), '_');
+}
+function __convertStringToUnderscored_helper($a) { return '_' . strtolower(substr($a[0], -1, 1)); }
+
+// Converts "AbcDef" string to "abc-def"
+function convertStringToDashed ($s) {
+	return ltrim(preg_replace_callback('/(?:[A-Z]|(?:_)[a-z])/', '__convertStringToDashed_helper', $s), '-');
+}
+function __convertStringToDashed_helper($a) { return '-' . strtolower(substr($a[0], -1, 1)); }
+
 function _stripBadFileChars($fname) {
 	return str_replace(array('..' . DIRECTORY_SEPARATOR, DIRECTORY_SEPARATOR, chr(0)), '', $fname);
 }
 
-?>
