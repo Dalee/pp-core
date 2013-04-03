@@ -21,7 +21,7 @@ class PXStorageTypeAbstractFile extends PXStorageType {
 		$ai              = $this->ai($field, $object, $param['format']);
 		$basedir         = HTDOCS_PATH . $ai;
 
-		if (is_array($fileArray) && !empty($donor[$field->name]['path'])) {
+		if (is_array($fileArray) && !empty($fileArray) && !empty($donor[$field->name]['path'])) {
 			MakeDirIfNotExists($basedir);
 			if($symlink) {
 				symlink(

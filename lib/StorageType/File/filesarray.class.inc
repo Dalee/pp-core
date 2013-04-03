@@ -54,11 +54,13 @@ class PXStorageTypeFilesarray extends PXStorageTypeAbstractFile {
 		$invalidateCache = false;
 
 		if (is_array($fileArray) && !empty($fileArray['name'][0])) {
-			$filename = NULL;
+			$filename = null;
 
+			// if no filter by extension
 			if (!is_array($allowed) || empty($allowed)) {
 				$filename = $basedir.'/'. _TranslitFilename($fileArray['name'][0]);
 
+			// if type in allowed list
 			} elseif (in_array($fileArray['type'][0], array_keys($allowed))) {
 				$tmp = _TranslitFilename($fileArray['name'][0]);
 				$tmp = preg_replace('/\.\w+$/', '', $tmp);
