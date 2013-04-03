@@ -344,7 +344,7 @@ final class PXHTMLAssets {
 				$resource_uri = $this->cdnize($resource_uri);
 			}
 			if ($asset_id && !$is_bundle && strpos($resource_uri, '?') === false) {
-				$resource_uri .= sprintf('%s_=%1$s', strpos($resource_uri, '?')? '?' : '&', $asset_id);
+				$resource_uri .= sprintf('?_=%s', $asset_id);
 			}
 
 			$out = sprintf($tag_data['pattern'], $resource_uri, $extra_attributes);
