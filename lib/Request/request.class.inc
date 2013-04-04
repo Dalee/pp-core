@@ -1,5 +1,6 @@
 <?php
-require_once('HttpVars/classes.inc');
+
+require_once PPLIBPATH . 'Request/HttpVars/classes.inc';
 
 class PXRequest {
 	var $httpMethod;

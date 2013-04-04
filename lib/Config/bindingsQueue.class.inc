@@ -1,5 +1,5 @@
 <?php
-require_once 'Description/Bindings/classes.inc';
+require_once PPLIBPATH . 'Config/Description/Bindings/classes.inc';
 
 class PXBindingsQueue implements Iterator {
 	private $pOrder, $rules;

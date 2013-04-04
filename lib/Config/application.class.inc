@@ -1,19 +1,19 @@
 <?php
-require_once 'Description/db.class.inc';
+require_once PPLIBPATH . 'Config/Description/db.class.inc';
 
-require_once 'Description/type.class.inc';
-require_once 'Description/field.class.inc';
+require_once PPLIBPATH . 'Config/Description/type.class.inc';
+require_once PPLIBPATH . 'Config/Description/field.class.inc';
 
-require_once 'Description/directory.class.inc';
-require_once 'Description/ref.class.inc';
+require_once PPLIBPATH . 'Config/Description/directory.class.inc';
+require_once PPLIBPATH . 'Config/Description/ref.class.inc';
 
-require_once 'Description/module.class.inc';
-require_once 'bindingsQueue.class.inc';
+require_once PPLIBPATH . 'Config/Description/module.class.inc';
+require_once PPLIBPATH . 'Config/bindingsQueue.class.inc';
 
-require_once 'Description/trigger.class.inc';
-require_once 'triggersList.class.inc';
+require_once PPLIBPATH . 'Config/Description/trigger.class.inc';
+require_once PPLIBPATH . 'Config/triggersList.class.inc';
 
-require_once 'Description/plugin.class.inc';
+require_once PPLIBPATH . 'Config/Description/plugin.class.inc';
 
 /**
  * PXApplication - главный класс.
@@ -192,7 +192,7 @@ class PXApplication {
 			$source = preg_replace('/(\r?\n){2,}/', "\n",         $source);   // и лишние переводы строк. и хотя спик их не любит, по стандарту ямла это норма, если документ выделен в потоке в блок --- ...
 
 			// Spyc'у не нравятся мои конфиги, поэтому их стоит немного переделать
-			include_once 'spyc/spyc.php5';
+			require_once PPPATH . 'vendor/spyc/spyc.php5';
 
 			// spyc must die. long live php-yaml!
 			$this->langTree = array_recursive_inheritance($this->langTree, Spyc::YAMLLoad($source));

@@ -1,32 +1,32 @@
 <?php
-require_once 'abstract.class.inc';
 
-require_once 'string.class.inc';
-require_once 'integer.class.inc';
-require_once 'bigint.class.inc';
-require_once 'pk.class.inc';
-require_once 'float.class.inc';
-require_once 'boolean.class.inc';
-require_once 'timestamp.class.inc';
+require_once PPLIBPATH . 'StorageType/abstract.class.inc';
 
-require_once 'serialized.class.inc';
-require_once 'yaml.class.inc';
+require_once PPLIBPATH . 'StorageType/string.class.inc';
+require_once PPLIBPATH . 'StorageType/integer.class.inc';
+require_once PPLIBPATH . 'StorageType/bigint.class.inc';
+require_once PPLIBPATH . 'StorageType/pk.class.inc';
+require_once PPLIBPATH . 'StorageType/float.class.inc';
+require_once PPLIBPATH . 'StorageType/boolean.class.inc';
+require_once PPLIBPATH . 'StorageType/timestamp.class.inc';
 
-require_once 'array.class.inc';
-require_once 'intarray.class.inc';
-require_once 'flatintarray.class.inc';
+require_once PPLIBPATH . 'StorageType/serialized.class.inc';
+require_once PPLIBPATH . 'StorageType/yaml.class.inc';
 
-require_once 'File/abstract.class.inc';
-require_once 'File/file.class.inc';
-require_once 'File/image.class.inc';
-require_once 'File/flash.class.inc';
-require_once 'File/filesarray.class.inc';
-require_once 'File/imagesarray.class.inc';
-require_once 'File/flashsarray.class.inc';
+require_once PPLIBPATH . 'StorageType/array.class.inc';
+require_once PPLIBPATH . 'StorageType/intarray.class.inc';
+require_once PPLIBPATH . 'StorageType/flatintarray.class.inc';
 
-require_once 'virtual.class.inc';
-require_once 'aggr.class.inc';
-require_once 'session_st.class.inc';
+require_once PPLIBPATH . 'StorageType/File/abstract.class.inc';
+require_once PPLIBPATH . 'StorageType/File/file.class.inc';
+require_once PPLIBPATH . 'StorageType/File/image.class.inc';
+require_once PPLIBPATH . 'StorageType/File/flash.class.inc';
+require_once PPLIBPATH . 'StorageType/File/filesarray.class.inc';
+require_once PPLIBPATH . 'StorageType/File/imagesarray.class.inc';
+require_once PPLIBPATH . 'StorageType/File/flashsarray.class.inc';
 
-require_once 'sql.class.inc';
-?>
+require_once PPLIBPATH . 'StorageType/virtual.class.inc';
+require_once PPLIBPATH . 'StorageType/aggr.class.inc';
+require_once PPLIBPATH . 'StorageType/session_st.class.inc';
+
+require_once PPLIBPATH . 'StorageType/sql.class.inc';

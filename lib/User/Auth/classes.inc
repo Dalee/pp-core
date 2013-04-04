@@ -1,10 +1,9 @@
 <?php
-	require_once 'abstract.class.inc';
-	
-	require_once 'null.class.inc';
-	require_once 'plain.class.inc';
-	require_once 'secure.class.inc';
-	require_once dirname(__FILE__) . '/session.class.inc';
-	require_once 'domain.class.inc';
-	require_once 'rambler.class.inc';
-?>
+	require_once PPLIBPATH . 'User/Auth/abstract.class.inc';
+
+	require_once PPLIBPATH . 'User/Auth/null.class.inc';
+	require_once PPLIBPATH . 'User/Auth/plain.class.inc';
+	require_once PPLIBPATH . 'User/Auth/secure.class.inc';
+	require_once PPLIBPATH . 'User/Auth/session.class.inc';
+	require_once PPLIBPATH . 'User/Auth/domain.class.inc';
+	require_once PPLIBPATH . 'User/Auth/rambler.class.inc';

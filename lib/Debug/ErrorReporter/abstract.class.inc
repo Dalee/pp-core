@@ -1,9 +1,10 @@
 <?php
-require_once 'html.dev.class.inc';
-require_once 'text.dev.class.inc';
 
-require_once 'html.class.inc';
-require_once 'text.class.inc';
+require_once PPLIBPATH . 'Debug/ErrorReporter/html.dev.class.inc';
+require_once PPLIBPATH . 'Debug/ErrorReporter/text.dev.class.inc';
+
+require_once PPLIBPATH . 'Debug/ErrorReporter/html.class.inc';
+require_once PPLIBPATH . 'Debug/ErrorReporter/text.class.inc';
 
 define('NL_FATAL_ERROR', 16384);
 

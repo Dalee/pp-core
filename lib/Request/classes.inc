@@ -1,4 +1,3 @@
 <?php
-	include_once 'request.class.inc';
-	include_once 'request.classes.inc';
-?>
+	require_once PPLIBPATH . 'Request/request.class.inc';
+	require_once PPLIBPATH . 'Request/request.classes.inc';

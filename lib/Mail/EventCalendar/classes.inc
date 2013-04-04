@@ -1,11 +1,11 @@
 <?php
-require_once('vevent.class.inc');
-require_once('request.class.inc');
-require_once('reply.class.inc');
-require_once('refresh.class.inc');
-require_once('publish.class.inc');
-require_once('add.class.inc');
-require_once('cancel.class.inc');
-require_once('counter.class.inc');
-require_once('declinecounter.class.inc');
-?>
+
+require_once PPLIBPATH . 'Mail/EventCalendar/vevent.class.inc';
+require_once PPLIBPATH . 'Mail/EventCalendar/request.class.inc';
+require_once PPLIBPATH . 'Mail/EventCalendar/reply.class.inc';
+require_once PPLIBPATH . 'Mail/EventCalendar/refresh.class.inc';
+require_once PPLIBPATH . 'Mail/EventCalendar/publish.class.inc';
+require_once PPLIBPATH . 'Mail/EventCalendar/add.class.inc';
+require_once PPLIBPATH . 'Mail/EventCalendar/cancel.class.inc';
+require_once PPLIBPATH . 'Mail/EventCalendar/counter.class.inc';
+require_once PPLIBPATH . 'Mail/EventCalendar/declinecounter.class.inc';

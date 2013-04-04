@@ -1,6 +1,6 @@
 <?php
-require_once 'abstract.class.inc';
-require_once 'struct.class.inc';
-require_once 'objects.class.inc';
-require_once 'subobjects.class.inc';
-?>
+
+require_once PPLIBPATH . 'Objects/abstract.class.inc';
+require_once PPLIBPATH . 'Objects/struct.class.inc';
+require_once PPLIBPATH . 'Objects/objects.class.inc';
+require_once PPLIBPATH . 'Objects/subobjects.class.inc';

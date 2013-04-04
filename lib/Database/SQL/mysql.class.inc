@@ -1,5 +1,6 @@
 <?php
-require_once 'abstract.class.inc';
+
+require_once PPLIBPATH . 'Database/SQL/abstract.class.inc';
 
 class NLMYSQLDatabase extends NLAbstractSQLDatabase {
 	var $connection;

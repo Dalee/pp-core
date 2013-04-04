@@ -9,8 +9,8 @@ define('DT_USER',         'suser');
 define('DT_GROUP',        'sgroup');
 define('LINK_GROUP2USER', 'sgroup2suser');
 
-require_once 'User/Auth/classes.inc';
-require_once 'Acl/classes.inc';
+require_once PPLIBPATH . 'User/Auth/classes.inc';
+require_once PPLIBPATH . 'Acl/classes.inc';
 
 abstract class PXUser {
 	var $id;

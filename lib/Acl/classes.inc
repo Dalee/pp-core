@@ -1,6 +1,5 @@
 <?php
-	include_once 'acl.class.inc';
-	include_once 'checker.class.inc';
-	include_once 'object.class.inc';
-	include_once 'module.class.inc';
-?>
+	include_once PPLIBPATH . 'Acl/acl.class.inc';
+	include_once PPLIBPATH . 'Acl/checker.class.inc';
+	include_once PPLIBPATH . 'Acl/object.class.inc';
+	include_once PPLIBPATH . 'Acl/module.class.inc';

@@ -1,8 +1,7 @@
 <?php
-require_once 'base.class.inc';
 
-require_once 'get.class.inc';
-require_once 'post.class.inc';
-require_once 'cookie.class.inc';
+require_once PPLIBPATH . 'Request/HttpVars/base.class.inc';
 
-?>
+require_once PPLIBPATH . 'Request/HttpVars/get.class.inc';
+require_once PPLIBPATH . 'Request/HttpVars/post.class.inc';
+require_once PPLIBPATH . 'Request/HttpVars/cookie.class.inc';

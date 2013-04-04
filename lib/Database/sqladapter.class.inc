@@ -1,5 +1,6 @@
 <?php
-require_once 'Cache/classes.inc';
+
+require_once PPLIBPATH . 'Cache/classes.inc';
 
 class NLSQLDatabaseAdapter {
 	protected $dbDriver;

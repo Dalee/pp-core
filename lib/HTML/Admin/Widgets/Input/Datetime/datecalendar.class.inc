@@ -1,5 +1,7 @@
 <?php
-require_once 'abstract.class.inc';
+
+require_once PPLIBPATH . 'HTML/Admin/Widgets/Input/Datetime/abstract.class.inc';
+
 class PXInputDateCalendar extends PXInputDateTime {
 	function html() {
 		$name  = $this->name;
@@ -34,4 +36,3 @@ HTML;
 		return preg_replace('/>\s+</', '><', $html);
 	}
 }
-?>

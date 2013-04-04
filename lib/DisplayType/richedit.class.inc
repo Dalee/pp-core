@@ -1,6 +1,7 @@
 <?php
-require_once 'text.class.inc';
- 
+
+require_once PPLIBPATH . 'DisplayType/text.class.inc';
+
 /**
  * Визуальный редактор
  *
@@ -33,4 +34,3 @@ JS
 		return $html;
 	}
 }
-?>

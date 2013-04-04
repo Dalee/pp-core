@@ -1,11 +1,12 @@
 <?php
+
 define('NOT_CLI', isset($_SERVER['REQUEST_METHOD']));
 define('CLI',    !isset($_SERVER['REQUEST_METHOD']));
 
-require_once 'trace.inc';
-require_once 'ErrorReporter/abstract.class.inc';
-require_once 'profiler.classes.inc';
-require_once 'sbin.inc';
+require_once PPLIBPATH . 'Debug/trace.inc';
+require_once PPLIBPATH . 'Debug/ErrorReporter/abstract.class.inc';
+require_once PPLIBPATH . 'Debug/profiler.classes.inc';
+require_once PPLIBPATH . 'Debug/sbin.inc';
 
 function getMicroTime() {
 	list($usec, $sec) = explode(" ", microtime());

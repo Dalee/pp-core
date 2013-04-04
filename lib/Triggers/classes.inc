@@ -1,8 +1,8 @@
 <?php
-require_once 'Triggers/abstract.class.inc';
-require_once 'Triggers/system.class.inc';
-require_once 'Triggers/db.class.inc';
-require_once 'Triggers/storagetype.class.inc';
-require_once 'Triggers/search.class.inc';
-require_once 'Triggers/layout.class.inc';
-?>
+
+require_once PPLIBPATH . 'Triggers/abstract.class.inc';
+require_once PPLIBPATH . 'Triggers/system.class.inc';
+require_once PPLIBPATH . 'Triggers/db.class.inc';
+require_once PPLIBPATH . 'Triggers/storagetype.class.inc';
+require_once PPLIBPATH . 'Triggers/search.class.inc';
+require_once PPLIBPATH . 'Triggers/layout.class.inc';

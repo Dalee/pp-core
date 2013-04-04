@@ -3,7 +3,7 @@
 
 (PHP_SAPI !== 'cli') && die ('Only for cli'.PHP_EOL);
 
-include "makefont/makefont.php";
+include BASEPATH . "libpp/vendor/fpdf/makefont/makefont.php";
 
 // Command-line interface
 ($argc == 1) && die("Usage: php makefont.php fontfile [enc:koi8-r] [embed:true]\n");

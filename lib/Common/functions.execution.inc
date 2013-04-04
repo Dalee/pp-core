@@ -49,7 +49,7 @@ HTML;
 }
 
 function Finalize($url) {
-	require_once 'libpp/lib/response.class.inc';
+	require_once PPLIBPATH . 'response.class.inc';
 
 	$response =& PXResponse::getInstance();
 	$response->redirect($url);

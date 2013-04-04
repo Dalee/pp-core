@@ -1,5 +1,6 @@
 <?php
-require_once 'Config/Description/db.class.inc';
+
+require_once PPLIBPATH . 'Config/Description/db.class.inc';
 
 abstract class NLAbstractSQLDatabase {
 	

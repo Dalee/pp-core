@@ -6,7 +6,7 @@ class PXUserHTMLLayout extends PXLayoutInterface  {
 	function __construct() {
 		parent::__construct();
 
-		include_once 'Smarty/Smarty.class.php';
+		require_once PPPATH . 'vendor/Smarty/Smarty.class.php';
 
 		$this->_initSmarty();
 		$this->_filters  = array();
@@ -46,7 +46,7 @@ class PXUserHTMLLayout extends PXLayoutInterface  {
 
 	private 
 	function _initLang() {
-		include_once 'HTML/lang.class.inc';
+		require_once PPLIBPATH . 'HTML/lang.class.inc';
 
 		$this->lang = new PXUserHTMLLang();
 		$this->AddTemplateFunction('lang', array($this->lang, 'lang'));

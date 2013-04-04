@@ -1,5 +1,7 @@
 <?php
-require_once('tabs.class.inc');
+
+require_once PPLIBPATH . 'HTML/Admin/Widgets/tabs.class.inc';
+
 class PXWidgetMenuTabbed extends PXAdminComplexWidget {
 	const BEFORE_TABS = 0;
 	const TABS        = 1;
@@ -37,4 +39,3 @@ class PXWidgetMenuTabbed extends PXAdminComplexWidget {
 		return join($html);
 	}
 }
-?>

@@ -1,9 +1,8 @@
 <?php
-require_once 'interface.inc';
+require_once PPLIBPATH . 'HTML/Admin/Widgets/Objects/interface.inc';
 
-require_once 'abstract.class.inc';
-require_once 'table.class.inc';
-require_once 'tree.class.inc';
+require_once PPLIBPATH . 'HTML/Admin/Widgets/Objects/abstract.class.inc';
+require_once PPLIBPATH . 'HTML/Admin/Widgets/Objects/table.class.inc';
+require_once PPLIBPATH . 'HTML/Admin/Widgets/Objects/tree.class.inc';
 
-require_once 'ajaxtree.class.inc';
-?>
+require_once PPLIBPATH . 'HTML/Admin/Widgets/Objects/ajaxtree.class.inc';

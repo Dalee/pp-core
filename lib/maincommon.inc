@@ -1,51 +1,51 @@
 <?php
-require_once 'common.defines.inc';
-require_once 'common.version.inc';
 
-require_once 'registry.class.inc';
-require_once 'Common/functions.inc';
-require_once 'Debug/functions.inc';
+require_once dirname(__FILE__) . '/common.defines.inc';
 
-require_once 'loader.class.inc';
+require_once PPLIBPATH . 'common.version.inc';
 
-require_once 'Filesys/dir.class.inc';
-require_once 'Datastruct/tree.classes.inc';
-require_once 'response.class.inc';
-require_once 'Request/classes.inc';
-require_once 'Mail/message.class.inc';
-require_once 'Mail/EventCalendar/classes.inc';
-require_once 'Logger/nllogger.class.inc';
-require_once 'Exception/deprecated.class.inc';
+require_once PPLIBPATH . 'registry.class.inc';
+require_once PPLIBPATH . 'Common/functions.inc';
+require_once PPLIBPATH . 'Debug/functions.inc';
 
-require_once 'Config/application.class.inc';
-require_once 'Database/database.class.inc';
-require_once 'User/classes.inc';
+require_once PPLIBPATH . 'loader.class.inc';
 
-require_once 'session.class.inc';
+require_once PPLIBPATH . 'Filesys/dir.class.inc';
+require_once PPLIBPATH . 'Datastruct/tree.classes.inc';
+require_once PPLIBPATH . 'response.class.inc';
+require_once PPLIBPATH . 'Request/classes.inc';
+require_once PPLIBPATH . 'Mail/message.class.inc';
+require_once PPLIBPATH . 'Mail/EventCalendar/classes.inc';
+require_once PPLIBPATH . 'Logger/nllogger.class.inc';
+require_once PPLIBPATH . 'Exception/deprecated.class.inc';
 
-require_once 'DisplayType/classes.inc';
-require_once 'StorageType/classes.inc';
+require_once PPLIBPATH . 'Config/application.class.inc';
+require_once PPLIBPATH . 'Database/database.class.inc';
+require_once PPLIBPATH . 'User/classes.inc';
 
-require_once 'Triggers/classes.inc';
+require_once PPLIBPATH . 'session.class.inc';
 
-require_once 'abstractmodule.class.inc';
-require_once 'abstractcronrun.class.inc';
-require_once 'abstractplugin.class.inc';
+require_once PPLIBPATH . 'DisplayType/classes.inc';
+require_once PPLIBPATH . 'StorageType/classes.inc';
 
-require_once 'search.class.inc';
-require_once 'logger.class.inc';
-require_once 'Objects/classes.inc';
-require_once 'HTML/interface.class.inc';
+require_once PPLIBPATH . 'Triggers/classes.inc';
 
-require_once 'Engine/classes.inc';
+require_once PPLIBPATH . 'abstractmodule.class.inc';
+require_once PPLIBPATH . 'abstractcronrun.class.inc';
+require_once PPLIBPATH . 'abstractplugin.class.inc';
 
-require_once 'XML/abstract.classes.inc';
-require_once 'XML/domxml.classes.inc';
-require_once 'XML/simplexml.classes.inc';
-require_once 'XML/xml.class.inc';
-require_once 'XML/XSLT/classes.inc';
+require_once PPLIBPATH . 'search.class.inc';
+require_once PPLIBPATH . 'logger.class.inc';
+require_once PPLIBPATH . 'Objects/classes.inc';
+require_once PPLIBPATH . 'HTML/interface.class.inc';
+
+require_once PPLIBPATH . 'Engine/classes.inc';
+
+require_once PPLIBPATH . 'XML/abstract.classes.inc';
+require_once PPLIBPATH . 'XML/domxml.classes.inc';
+require_once PPLIBPATH . 'XML/simplexml.classes.inc';
+require_once PPLIBPATH . 'XML/xml.class.inc';
+require_once PPLIBPATH . 'XML/XSLT/classes.inc';
 
 
 spl_autoload_register(array('PXAbstractPlugin', 'autoload'));
-
-?>

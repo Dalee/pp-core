@@ -1,6 +1,7 @@
 <?php
-include_once('Common/functions.array.inc');
-include_once('Common/functions.string.inc');
+
+require_once PPLIBPATH . 'Common/functions.array.inc';
+require_once PPLIBPATH . 'Common/functions.string.inc';
 
 define('TABLECOLOR1',       '#E7E9ED');
 define('TABLECOLOR2',       '#C9CED6');

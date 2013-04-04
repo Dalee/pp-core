@@ -1,5 +1,7 @@
 <?php
-require_once 'abstract.class.inc';
+
+require_once PPLIBPATH . 'HTML/Admin/Widgets/Input/Datetime/abstract.class.inc';
+
 class PXInputTimeHidden extends PXInputDateTime {
 	function html() {
 		$html = '';
@@ -11,4 +13,3 @@ class PXInputTimeHidden extends PXInputDateTime {
 		return $html;
 	}
 }
-?>

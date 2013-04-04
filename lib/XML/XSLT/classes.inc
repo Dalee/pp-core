@@ -1,5 +1,5 @@
 <?php
-require_once 'abstract.class.inc';
-require_once 'sablotron.class.inc';
-require_once 'libxslt.class.inc';
-?>
+
+require_once PPLIBPATH . 'XML/XSLT/abstract.class.inc';
+require_once PPLIBPATH . 'XML/XSLT/sablotron.class.inc';
+require_once PPLIBPATH . 'XML/XSLT/libxslt.class.inc';

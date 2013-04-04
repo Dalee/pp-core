@@ -1,6 +1,7 @@
 <?php
-require_once 'Filesys/listing.class.inc';
-require_once 'HTML/filelisting.class.inc';
+
+require_once PPLIBPATH . 'Filesys/listing.class.inc';
+require_once PPLIBPATH . 'HTML/filelisting.class.inc';
 
 class PXModuleFile extends PXModule {
 	var $settings;

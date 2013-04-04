@@ -1,5 +1,6 @@
 <?php
-require_once 'ajaxTreeBranch.class.inc';
+
+require_once PPLIBPATH . 'HTML/Admin/Widgets/ajaxTreeBranch.class.inc';
 
 class PXAdminAjaxTree extends PXAdminTree {
 	protected $currentLeaf;

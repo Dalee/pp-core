@@ -1,5 +1,6 @@
 <?php
-require_once('Common/functions.array.inc');
+
+require_once PPLIBPATH . 'Common/functions.array.inc';
 
 class NLHTTPVarsData {
 	var $raw;
@@ -214,4 +215,3 @@ DO
 	}
 
 }
-?>

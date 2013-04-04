@@ -23,8 +23,8 @@ define('NOT_NULL', '~~___IS_NOT_NULL___~~');
  * Класс работы с БД
  */
 
-require_once 'interface.inc';
-require_once 'sqladapter.class.inc';
+require_once PPLIBPATH . 'Database/interface.inc';
+require_once PPLIBPATH . 'Database/sqladapter.class.inc';
 
 class PXDatabaseException extends Exception{}
 

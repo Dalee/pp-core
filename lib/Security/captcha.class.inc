@@ -181,7 +181,7 @@ class NLCaptcha {
 	}
 
 	function showImage() {
-		require_once 'libpp/lib/response.class.inc';
+		require_once PPLIBPATH . 'response.class.inc';
 		$response = PXResponse::getInstance();
 		$response->dontCache();
 		$response->setContentType('image/jpeg');

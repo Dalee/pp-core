@@ -1,6 +1,6 @@
 <?php
 
-require_once 'acl.module.inc';
+require_once PPPATH . 'modules/acl.module.inc';
 
 class PXModuleMAcl extends PXModuleAcl {
 	var $what;

@@ -1,5 +1,6 @@
 <?php
-require_once 'treeBranch.class.inc';
+
+require_once PPLIBPATH . 'HTML/Admin/Widgets/treeBranch.class.inc';
 
 class PXAdminTree extends PXAdminWidget {
 	/**

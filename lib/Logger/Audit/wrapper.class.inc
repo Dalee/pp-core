@@ -1,6 +1,7 @@
 <?php
-require_once "table.class.inc";
-require_once "viewer.class.inc";
+
+require_once PPLIBPATH . 'Logger/Audit/table.class.inc';
+require_once PPLIBPATH . 'Logger/Audit/viewer.class.inc';
 
 class PXAdminAuditWrapper {
 	var $app, $request, $db, $layout;

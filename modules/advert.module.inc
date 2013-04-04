@@ -174,9 +174,9 @@ class PXModuleAdvert extends PXModule {
 					else
 						$xTitleOverall = 'Средний CTR: '. number_format(100*$sumClicks/$sumShows,2);
 
-					DEFINE("TTF_DIR", BASEPATH . "/libpp/share/fonts/");
-					require_once 'Jpgraph/jpgraph.php';
-					require_once 'Jpgraph/jpgraph_bar.php';
+					DEFINE("TTF_DIR", PPPATH . "share/fonts/");
+					require_once PPPATH . 'vendor/Jpgraph/jpgraph.php';
+					require_once PPPATH . 'vendor/Jpgraph/jpgraph_bar.php';
 
 					$graph = new Graph(950,400,"auto");
 					$graph->SetScale("textlin");
