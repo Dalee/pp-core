@@ -9,6 +9,16 @@
  * @subpackage  Common
  */
 
+function SortRussianByTitle($a, $b) {
+	if ($a == $b) return 0;
+	return (convert_cyr_string($a['title'], 'k', 'w') < convert_cyr_string($b['title'], 'k', 'w')) ? -1 : 1;
+}
+
+function NumericCmp($a, $b) {
+	if ($a == $b) return 0;
+	return ($a < $b) ? -1 : 1;
+}
+
 function _PrepareWMLText($string) {
 	$string = preg_replace("/\\$\s*(\d+([,|.]\d+)?)/si", "\\1 Õ.Å.", $string);
 

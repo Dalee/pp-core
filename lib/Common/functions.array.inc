@@ -76,23 +76,12 @@ function GetColFromTableWithIndexs($table, $rowName) {
 	return $retArray;
 }
 
-function SortRussianByTitle($a, $b) {
-	if ($a == $b) return 0;
-	return (convert_cyr_string($a['title'], 'k', 'w') < convert_cyr_string($b['title'], 'k', 'w')) ? -1 : 1;
-}
-
-
 function GetFromArray($array, $index, $default=NULL) {
 	if (isset($array[$index])) {
 		return $array[$index];
 	} else {
 		return $default;
 	}
-}
-
-function NumericCmp($a, $b) {
-	if ($a == $b) return 0;
-	return ($a < $b) ? -1 : 1;
 }
 
 //Thanks to the PHP.NET comments, it is very helpful function sometimes, but it exists only in PHP5
