@@ -233,9 +233,12 @@ class PXAdminForm extends PXAdminComplexWidget {
 	}
 
 	private function removeForm() {
+		$title = isset($this->object['title'])
+			? $this->object['title']
+			: ($this->format->id.'#'.$this->object['id']);
 		return <<<HTML
 			<h2>
-				Вы уверенны, что хотите удалить объект &laquo;<strong>{$this->object['title']}</strong>&raquo;
+				Вы уверенны, что хотите удалить объект &laquo;<strong>{$title}</strong>&raquo;
 			</h2>
  
 			<p class="delete">
