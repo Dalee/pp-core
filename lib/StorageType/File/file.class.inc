@@ -62,6 +62,7 @@ class PXStorageTypeFile extends PXStorageTypeAbstractFile {
 		}
 
 		if($invalidateCache){
+			unlinkDirTreeIfEmpty($basedir);
 			$_ = $is_static_call ? self::removeFromCache($ai) : $this->removeFromCache($ai);
 		}
 
