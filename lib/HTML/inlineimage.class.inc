@@ -98,6 +98,7 @@
 		protected function _buildAttrString ($attrData) {
 			$attrStrings = array();
 
+			unset($attrData['nocdn']);
 			foreach ($attrData as $key => $value) {
 				$key = convertStringToDashed($key);
 				$attrStrings[] = $key . '="' . htmlspecialchars($value) . '"';
@@ -169,12 +170,13 @@
 		 *		'height' => image height (optional)
 		 *		'force_size' => force output image weight and height (optional)
 		 *		'force_inline' => force inline output (optional)
+		 *		'nocdn' => force nocdn (optional)
 		 *  )
 		 * </code>
 		 *
 		 */
 		public function buildTag ($imageData) {
-			if (!$this->enabled) {
+			if (!$this->enabled || @$imageData['nocdn']) {
 				return $this->_realTagBuild($imageData);
 			}
 
