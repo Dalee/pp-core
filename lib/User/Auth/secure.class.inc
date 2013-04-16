@@ -19,7 +19,7 @@ class PXAuthSecure extends PXAuthInterface {
 		}
 	}
 
-	function encodePasswd($passwd, $toMD5=true) {
+	function encodePasswd($passwd, $toMd5=true) {
 		$md = $toMd5 ? md5($passwd) : $passwd;
 		$tmp = '';
 
