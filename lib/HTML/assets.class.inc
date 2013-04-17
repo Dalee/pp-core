@@ -324,10 +324,10 @@ final class PXHTMLAssets {
 				$print_tag = true;
 		}
 
-		if (!empty($params['unique']) && isset($imported[$params['src']])) {
+		if (!empty($params['unique']) && isset(self::$imported[$params['src']])) {
 			return;
 		}
-		$imported[$params['src']] = true;
+		self::$imported[$params['src']] = true;
 
 		if (!$print_tag) {
 			return '';
