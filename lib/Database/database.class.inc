@@ -1690,6 +1690,7 @@ SQL;
 	 * @todo docme (check params documentation)
 	 */
 	protected function _PrepareResult($resTable, $format, $mode) {
+		$mode = (empty($mode)) ? DB_SELECT_TABLE : $mode; // if mode == NULL, function behavior is undefined
 		switch (true) {
 			case $mode & DB_SELECT_TABLE:
 				PXProfiler::begin('PREPARE: '.$format->id.' ['.sizeof($resTable).'x'.sizeof($format->fields).']');
