@@ -2,22 +2,21 @@
 /**
  * Выпадающий список с деревом объектов из связанного справочника(directory) указанного в аттрибуте source 
  *
- * storageType integer|intarray
- * displayType TREEDROPDOWN|height
+ * storageType integer
+ * displayType TREEDROPDOWN|width
  * 
  */
 
 class PXDisplayTypeTreedropdown extends PXDisplayTypeDropdown {
 	function buildInput($field, $object, $param=NULL) {
-		$value = isset($object[$field->name]) ? array_map("htmlspecialchars", (array)$object[$field->name]) : NULL;
-		$value = array_key_exists(0, (array)$value) && $value[0] == "NULL" ? "" : $value;
+		$value = isset($object[$field->name]) ? htmlspecialchars($object[$field->name]) : NULL;
 		$referencedTree =  $field->values->GetTree();
+	
+		return NLAbstractHTMLForm::BuildDropDown($field->name, $value, $this->getListFromField());
+	}
 
-		$width   = @$field->displayTypeArgs[0];
-		$fldname = $width > 1 ? $field->name.'[]': $field->name;
-
-		return NLAbstractHTMLForm::BuildDropDown($fldname, $value, $referencedTree->getPlainTree(0),
-			($width > 1 ? true : false), ($width > 1 ? $width : NULL));
+	protected function getListFromField($field) {
+		$tree = $field->values->GetTree();
+		return $tree ? $tree->GetPlainTree(0) : array();
 	}
 }
-?>

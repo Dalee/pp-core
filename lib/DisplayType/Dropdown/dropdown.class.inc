@@ -11,10 +11,14 @@ class PXDisplayTypeDropdown extends PXDisplayType {
 	
 	var $format;
 	var $parentFormat;
-	
+
+	protected function getListFromField($field) {
+		return $field->values->GetList();
+	}
+
 	function buildInput($field, $object, $param=NULL) {
 		$value = isset($object[$field->name]) ? htmlspecialchars($object[$field->name]) : NULL;
-		return NLAbstractHTMLForm::BuildDropDown($field->name, $value, $field->values->GetList());
+		return NLAbstractHTMLForm::BuildDropDown($field->name, $value, $this->getListFromField($field));
 	}
 
 	function buildCell($field, $object, $param=NULL) {
@@ -62,4 +66,3 @@ class PXDisplayTypeDropdown extends PXDisplayType {
 		}
 	}
 }
-?>
