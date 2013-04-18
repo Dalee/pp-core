@@ -450,42 +450,61 @@
 		}
 
 		protected function execute() {
-			if($this->argc < 3) {
+			if ($this->argc < 3) {
 				$this->display("Migration name absent");
 				exit(1);
 			}
-			$name = strtolower($this->argv[2]);
-			if(!preg_match('/^[a-z0-9_\-\?\*]+(\.sql)?$/', $name)) {
-				$this->display("Incorrect name: {$name}. Allowed: a-z, 0-9, _, and -, and wildcards");
+
+			$applied = $this->db->getAll();
+			$all = $this->getAll();
+			$pending = array_diff($all, $applied);
+			$wildcard = preg_replace('@^(\./)?local/etc/sql/@', '', strtolower($this->argv[2]));
+
+			$lastcreated = ($wildcard === '-');
+			$lastcreated && ($wildcard = reset($pending));
+
+			if (!preg_match('/^[a-z0-9_\-\?\*]+(\.sql)?$/', $wildcard)) {
+				$this->display("Incorrect name: {$wildcard}. Allowed: a-z, 0-9, _, and -, and wildcards");
 				exit(1);
 			}
-			if(!$this->db->settedup()) {
+			if (!$this->db->settedup()) {
 				$this->display("Setup is not performed, please run: setup");
 				exit(2);
 			}
 
-			$available = $this->getAll($name);
-			if(empty($available)) {
-				$this->display("Migration '{$name}' was not found.");
+			if (strpos($wildcard, '*') === false) {
+				$wildcard = '*' . $wildcard . '*';
+			}
+			if (strpos($wildcard, '.sql') === false) {
+				$wildcard .= '.sql';
+			}
+			$available = $this->getAll($wildcard);
+			if (empty($available)) {
+				$this->display("Migration '{$wildcard}' was not found.");
 				exit(3);
 			}
-
-			$applied = $this->db->getAll();
-			$pending = array_diff($available, $applied);
 			$filename = reset($available);
-			if (empty($pending)) {
+
+			if (in_array($filename, $applied)) {
 				$answer = $this->prompt("Migration {$filename} marked as imported.\nDo you really want to continue? [y/N]");
 				if (strtolower($answer[0]) !== 'y') {
 					$this->display("Execution cancelled");
 					return;
 				}
-				if($this->db->migrate($filename, $this->silent)) {
+			} elseif ($lastcreated) {
+				$answer = $this->prompt("Do you want to migrate {$filename}? [y/N]");
+				if (strtolower($answer[0]) !== 'y') {
+					$this->display("Execution cancelled");
+					return;
+				}
+			}
+			if ($filename) {
+				if ($this->db->migrate($filename, $this->silent)) {
 					$this->display("Successfully migrated: {$filename}");
 				} else {
 					$this->display("Failed to migrate: {$filename}");
 					exit(1);
 				}
-
 			}
 		}
 
