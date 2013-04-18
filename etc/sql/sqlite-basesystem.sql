@@ -133,7 +133,7 @@ CREATE TABLE log_audit (
 );
 
 --CREATE INDEX source_idx ON log_audit(split_part(source, '/', 2));
---CREATE INDEX type_idx ON log_audit (type);
+CREATE INDEX type_idx ON log_audit (type);
 --CREATE INDEX data_idx ON log_audit(date_trunc('day', ts));
 CREATE VIEW log_audit_view AS SELECT "id", "ts", date(ts, 'DD.MM.YYYY') as "date", "level", "type", "source", "user", "ip", "description" FROM log_audit;
 
@@ -155,8 +155,17 @@ CREATE TABLE sitesearch (
 	weightsum   INTEGER NOT NULL
 );
 -- ---------------------------------------------------------------------------------------------
--- CREATE UNIQUE INDEX stems_idx ON stems (stem);
--- CREATE INDEX sdata_stemid_idx ON searchdata (stemid);
--- CREATE UNIQUE INDEX sdata_uniq_idx ON searchdata (stemid, did);
+CREATE UNIQUE INDEX stems_idx ON stems (stem);
+CREATE INDEX sdata_stemid_idx ON searchdata (stemid);
+CREATE UNIQUE INDEX sdata_uniq_idx ON searchdata (stemid, did);
 -- ---------------------------------------------------------------------------------------------
 ALTER TABLE struct ADD "index" INTEGER DEFAULT 1;
+
+-- 004_suser_session
+CREATE TABLE suser_session (
+	id            INTEGER PRIMARY KEY AUTOINCREMENT,
+	suser_id      INTEGER DEFAULT NULL REFERENCES suser ON DELETE CASCADE ON UPDATE CASCADE,
+	mtime         TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+	sid           VARCHAR,
+	ip            VARCHAR
+);
