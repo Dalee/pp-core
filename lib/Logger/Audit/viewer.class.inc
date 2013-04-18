@@ -67,8 +67,9 @@ class PXAuditViewer {
 		$offset  = ($page-1) * $onPage;
 		$limit_pair = ($count > $onPage) ? array($onPage, $offset) : NULL;
 
-		$selectSQL = "SELECT \"" . implode("\",\"", $this->cols) . "\" FROM log_audit_view " . $this->filterToSQL($this->filters) ."ORDER BY id DESC";
-
+		$cols = array_map(array($this->db, 'mapFields'), $this->cols);
+		$selectSQL = "SELECT " . implode(", ", $cols) . " FROM log_audit_view " . $this->filterToSQL($this->filters) ."ORDER BY id DESC";
+		
 		return $this->db->query($selectSQL, false, $limit_pair);
 	}
 

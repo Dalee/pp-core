@@ -1376,10 +1376,9 @@ SQL;
 SQL;
 
 		$limit = is_numeric($limit) && is_numeric($offset) ? array($limit, $offset) : NULL;
-
 		$resTable = $this->Query($query, false, $limit);
 		$retTable = array();
-		$param = array('db'=>&$this, 'format'=>$reference->name);
+		$param = array('db'=>$this, 'format'=>$reference->name);
 
 		foreach ($resTable as $element) {
 			$title = $element[$linkedFormat.'title'];

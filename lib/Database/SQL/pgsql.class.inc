@@ -317,20 +317,6 @@ class NLPGSQLDatabase extends NLAbstractSQLDatabase {
 		return (int)(current(current($this->Query($query, TRUE))));
 	}
 
-	function GetTableInfo($tableName) {
-		if (!$this->connected) {
-			$this->Connect();
-		}
-
-		$res = pg_meta_data($this->connection, $tableName);
-
-		if (!is_array($res)) {
-			return ERROR_DB_BADQUERY;
-		} else {
-			return $res;
-		}
-	}
-
 	function getError() {
 		return pg_last_error();
 	}

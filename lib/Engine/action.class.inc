@@ -10,7 +10,7 @@ class PXEngineAction extends PXEngine {
 	function runModules() {
 		$module = $this->modules[$this->area]->getModule();
 
-		$response =& PXResponse::getInstance();
+		$response = PXResponse::getInstance();
 		$response->dontCache();
 
 		$this->nextLocation = $module->userAction();
@@ -27,7 +27,7 @@ class PXEngineAction extends PXEngine {
 			$nextLocation = '/';
 		}
 
-		$response =& PXResponse::getInstance();
+		$response = PXResponse::getInstance();
 		$response->redirect($nextLocation);
 	}
 }
