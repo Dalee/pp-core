@@ -3,16 +3,18 @@
 require_once PPLIBPATH . 'Config/Description/db.class.inc';
 
 abstract class NLAbstractSQLDatabase {
-	
-	var $connectArray = array(
+	/** @var ObjectCache */
+	public $cache = null;
+	protected $connectArray = array(
 		'host' => 'localhost',
 		'user' => '',
 		'port' => '',
 		'password' => '',
 		'dbname' => 'test',
-		'encoding' => ''
+		'encoding' => DEFAULT_CHARSET
 	);
-	function __construct($dbDescription) {
+
+	public function __construct($dbDescription) {
 	}
 
 	function connect() {
@@ -71,7 +73,7 @@ abstract class NLAbstractSQLDatabase {
 		return "Error!";
 	}
 
-	function escapeString($string) {
+	function EscapeString($string) {
 		return addslashes($string);
 	}
 

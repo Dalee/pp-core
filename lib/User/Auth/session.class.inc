@@ -65,7 +65,7 @@ class PXAuthSession extends PXAuthSecure {
 	}
 
 	protected function encodeSession() {
-		$public_key  = md5(join("--", array(mt_rand(), time(), $this->login, $this->passwdToDB($this->passwd))));
+		$public_key  = md5(join("--", array(mt_rand(), time(), $this->login, self::passwdToDB($this->passwd))));
 		$private_key = $this->privateKey($public_key, $this->_user->data);
 
 		// save session into database
@@ -77,7 +77,7 @@ class PXAuthSession extends PXAuthSecure {
 	protected function validatePassword($passwd, $uArray) {
 		// check login attempts before password validation to prevent enumerate passwords via bruteforce
 		// reset login attempts only when valid password entered
-		return $this->checkLoginAttempts($uArray) && $this->passwdToDB($this->passwd) == $uArray['passwd'] && $this->resetLoginAttempts($uArray);
+		return $this->checkLoginAttempts($uArray) && self::passwdToDB($this->passwd) == $uArray['passwd'] && $this->resetLoginAttempts($uArray);
 	}
 
 	protected function resetPasswd() {

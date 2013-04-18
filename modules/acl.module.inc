@@ -210,7 +210,7 @@ class PXModuleAcl extends PXModule {
 	}
 
 	function _getSidCriteria($sid) {
-		$andwhat = array('blank' => '(TRUE)');
+		$andwhat = array('blank' => '1 = 1');
 		switch (true) {
 			case $sid === null or $sid === '*':break;
 			default:
@@ -224,7 +224,7 @@ class PXModuleAcl extends PXModule {
 	function _getRules($sid = null, $limit = null) {
 		$criterias = $this->_getSidCriteria($sid);
 		$criterias[] = sprintf('"objectrule" = \'%s\'', $this->objectRule);
-		$where = join('AND', $criterias);
+		$where = join(' AND ', $criterias);
 		$limit = ($limit) ? array((int)$limit, 0) : null;
 
 		$tmp = $this->db->query(sprintf('SELECT * FROM "%s" WHERE %s ORDER BY "%s" ASC;', $this->sqlTable, $where, $this->orderingField), false, $limit);

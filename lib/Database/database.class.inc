@@ -855,7 +855,7 @@ class PXDatabase extends NLSQLDatabaseAdapter implements IPXDatabase {
 
 
 	function cloneContentObject(&$format, $objectData, $status=false) {
-		$audit =& PXAuditLogger::getLogger($this->app, $this);
+		$audit = PXAuditLogger::getLogger($this->app, $this);
 
 		if(is_array($objectData) && isset($objectData['id']) && is_numeric($objectData['id']) && $objectData['id'] > 0) {
 			$donorObject = $objectData;

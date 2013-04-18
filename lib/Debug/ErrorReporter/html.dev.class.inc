@@ -66,13 +66,13 @@ HTML;
 	}
 
 	function traceToHtml($trace) {
-		return join("\n", array_map(array(&$this, '_errorToHTML'), $trace));
+		return join("\n", array_map(array($this, '_errorToHTML'), $trace));
 	}
 
 	function _errorToHTML($error){
 		$function  = str_replace('->', '&rarr;', $error['function']);
 
-		$arguments = join(', ', array_map(array(&$this, '_argsToHTML'), $error['args']));
+		$arguments = join(', ', array_map(array($this, '_argsToHTML'), $error['args']));
 
 		return <<<ERROR_ROW
 			<tr>

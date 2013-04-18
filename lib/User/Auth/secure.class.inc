@@ -14,7 +14,7 @@ class PXAuthSecure extends PXAuthInterface {
 			return;
 		}
 
-		if ($this->passwdToDB($this->passwd) == $uArray['passwd'] || $this->passwd == $this->encodePasswd($uArray['passwd'], false)) {
+		if (self::passwdToDB($this->passwd) == $uArray['passwd'] || $this->passwd == $this->encodePasswd($uArray['passwd'], false)) {
 			$this->fillUserFields($uArray);
 		}
 	}
@@ -30,7 +30,7 @@ class PXAuthSecure extends PXAuthInterface {
 		return $tmp;
 	}
 
-	function passwdToDB($passwd){
+	public static function passwdToDB($passwd) {
 		return md5($passwd);
 	}
 

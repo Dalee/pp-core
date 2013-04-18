@@ -14,7 +14,7 @@ class PXAuthPlain extends PXAuthInterface {
 			return;
 		}
 
-		if ($this->passwdToDB($this->passwd) == $uArray['passwd'] || $this->passwd == $this->encodePasswd($uArray['passwd'])) {
+		if (self::passwdToDB($this->passwd) == $uArray['passwd'] || $this->passwd == $this->encodePasswd($uArray['passwd'])) {
 			 $this->fillUserFields($uArray);
 		}
 	}

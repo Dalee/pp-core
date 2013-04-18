@@ -65,7 +65,7 @@ class PXAuthInterface {
 		return $passwd;
 	}
 
-	function passwdToDB($passwd) {
+	public static function passwdToDB($passwd) {
 		return $passwd;
 	}
 
