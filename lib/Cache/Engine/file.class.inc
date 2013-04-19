@@ -5,7 +5,7 @@ class PXCacheFile implements IPXCache {
 	protected $orderLevel = 0;
 
 	function PXCacheFile($cacheDomain = null, $defaultExpire = 3600) {
-		$this->cache_dir = BASEPATH.'/tmp/cache/';
+		$this->cache_dir = CACHE_PATH.'/';
 
 		if ($cacheDomain !== null) {
 			$this->cache_dir .= $cacheDomain .'/';

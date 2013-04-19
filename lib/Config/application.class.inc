@@ -648,7 +648,7 @@ class PXApplication {
 	}
 
 	private static function _cacheFilename($name){
-		return BASEPATH.'/tmp/cache/config/'.strtolower($name);
+		return CACHE_PATH.'/config/'.strtolower($name);
 	}
 
 	private static function parseIniFile($file) {

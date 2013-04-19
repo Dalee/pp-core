@@ -29,7 +29,7 @@ class PXUserHTMLLayout extends PXLayoutInterface  {
 			'plugins', # Smarty default
 		);
 
-		$this->smarty->compile_dir   = BASEPATH.'/tmp/cache/smarty_templates_c';
+		$this->smarty->compile_dir   = CACHE_PATH.'/smarty_templates_c';
 
 		MakeDirIfNotExists($this->smarty->compile_dir);
 

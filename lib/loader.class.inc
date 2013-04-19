@@ -17,12 +17,12 @@ class PXLoader {
 		$diff = array_diff($o->load_map, $o->cached_map);
 
 		if(!empty($diff)) {
-			file_put_contents(BASEPATH . "/tmp/cache/loader", serialize($o));
+			file_put_contents(CACHE_PATH."/loader", serialize($o));
 		}
 	}
 
 	public static function getInstance($path=null) {
-		if(!is_object(self::$inst) && file_exists($cache_path = BASEPATH . "/tmp/cache/loader")) {
+		if(!is_object(self::$inst) && file_exists($cache_path = CACHE_PATH."/loader")) {
 			self::$inst = @unserialize(file_get_contents($cache_path));
 			self::$inst->cached_map = self::$inst->load_map;
 		}
