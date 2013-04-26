@@ -19,11 +19,11 @@ class CssConvertImageUrlMinifierPlugin extends aCssMinifierPlugin {
 	 * @return boolean Return TRUE to break the processing of this token; FALSE to continue
 	 */
 	public function apply(aCssToken &$token) {
-		if (!in_array($token->Property, $this->include) || !preg_match($this->reMatch, $token->Value, $m)) {
+		if (!in_array($token->Property, $this->include) || !preg_match($this->reMatch, $token->Value, $m) || false !== strpos($token->Value, 'data:image/')) {
 			return false;
 		}
 
-		if (substr($m[1], 0, 1) === '.') {
+		if (substr($m[1], 0, 1) === '.' || ($m[1][0] !== '/')) {
 			$re = sprintf('@^%s[^/]+/htdocs/@', preg_quote(BASEPATH, '@'));
 			$m[1] = preg_replace($re, '/', realpath(dirname($this->configuration['sourceFile']).'/'.$m[1]));
 		}
