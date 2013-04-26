@@ -18,6 +18,8 @@ if (!defined('BASEPATH')) {
  * @property-read array $cdn_domains FQDNs list
  * @property-read bool $inline_images Trigger for inlining images
  * @property-read int $inline_images_max_treshold Maximal size in bytes to force inlining of images
+ * @property-read bool $delayed_print Lazy print of makeBundles. True by default
+ * @property-read array $delayed_assets 
  */
 final class PXHTMLAssets {
 
@@ -53,6 +55,13 @@ final class PXHTMLAssets {
 				break;
 			case 'assets_gzip_on':
 				$v = (int)($this->getProperty('CONFIG.ASSETS_GZIP_ON', 0));
+				break;
+			case 'delayed_print':
+				$v = parseBool($this->getProperty('CONFIG.ASSETS_DELAYED_PRINT', 1));
+				break;
+
+			case 'delayed_assets':
+				$v = self::$delayed;
 				break;
 
 			case 'inlineimages_enabled':
@@ -182,6 +191,29 @@ final class PXHTMLAssets {
 		return $filePath;
 	}
 
+	public function applyDelayed ($content) {
+		$from = array();
+		$to = array();
+
+		foreach ($this->delayed_assets as $type => $list) {
+			foreach ($list as $group => $true) {
+				$from[] = $this->makePlaceholder($type, $group);
+				$to[] = $this->import(array(
+					'tag' => $type,
+					'asset_group' => $group,
+					'asset_print' => true,
+					'asset_print_delayed' => true,
+				));
+			}
+		}
+
+		return str_replace($from, $to, $content);
+	}
+
+	public function makePlaceholder ($type, $group) {
+		return sprintf('<!--# asset %s %s #-->', $type, $group);
+	}
+
 	/**
 	 * cdnize uri if possible
 	 * @param string $uri of some resource (img, js, css, font, swf)
@@ -206,6 +238,7 @@ final class PXHTMLAssets {
 
 	// import uniquely
 	protected static $imported = array();
+	protected static $delayed = array();
 
 	protected static $tags = array(
 		'style' => array(
@@ -238,7 +271,7 @@ final class PXHTMLAssets {
 		$tag_key = $params['tag'];
 		$tag_key = isset($types[$tag_key])? $tag_key : (in_array($tag_key, $types) ? array_search($tag_key, $types) : null);
 
-		if ((empty($params['src']) && empty($params['print_asset'])) || empty(self::$tags[$tag_key])) {
+		if ((empty($params['src']) && empty($params['print_asset']) && empty($params['asset_print'])) || empty(self::$tags[$tag_key])) {
 			return;
 		}
 
@@ -256,6 +289,8 @@ final class PXHTMLAssets {
 				case 'noasset':
 				case 'asset_group':
 				case 'print_asset':
+				case 'asset_print':
+				case 'asset_print_delayed':
 				case 'inline':
 				case 'unique':
 					break;
@@ -272,8 +307,11 @@ final class PXHTMLAssets {
 		$assetH       = null;
 		$assets_group = isset($params['asset_group']) ? $params['asset_group'] : null;
 		$assets_dir   = ''; //FIXME
+		$assets_print = !empty($params['print_asset']) || !empty($params['asset_print']);
 
 		$inline       = isset($params['inline']) ? $params['inline'] : null;
+
+		$assets_delayed = $this->delayed_print && empty($params['asset_print_delayed']);
 
 		if ($asset_mode) {
 			$assetH = PXHtmlAssetsBundler::getInstance(BASEPATH . '/site/htdocs' . $assets_dir, $this->allowedPaths);
@@ -291,12 +329,18 @@ final class PXHTMLAssets {
 				}
 				break;
 
-			case $assetH && !empty($params['print_asset']):
+			case $assetH && $assets_print && $assets_delayed:
+				$out = $this->makePlaceholder($tag_data['type'], $assets_group);
+				self::$delayed[$tag_data['type']][$assets_group] = true;
+				$print_tag = true;
+				break;
+
+			case $assetH && $assets_print:
 				list($fullPath, $localPath, $mtime) = $assetH->makeAssetsBundle($tag_data['type'], $tag_data['delimiter'], $assets_group);
 				if (!empty($localPath)) {
 					$asset_id      = $mtime;
 					$params['src'] = $assets_dir . $localPath;
-					$print_tag    = true; //allow write result asset tag in asset mode
+					$print_tag = true; //allow write result asset tag in asset mode
 					$is_bundle = true;
 				}
 				break;
@@ -316,8 +360,8 @@ final class PXHTMLAssets {
 				}
 				break;
 
-			case !(empty($params['print_asset']) || $asset_mode):
-				$print_tag = false; //skip empty print of {html_import print_asset=1 ...} when asset_mode turned off
+			case $assets_print && !$asset_mode:
+				$print_tag = false; //skip empty print of {html_import asset_print=1 ...} when asset_mode turned off
 				break;
 
 			default:
@@ -333,9 +377,11 @@ final class PXHTMLAssets {
 			return '';
 		}
 
-		$out = '';
 
-		if ($inline) {
+		if (!empty($out)) {
+			// dummy
+
+		} elseif ($inline) {
 			$out = sprintf($tag_data['pattern_inline'], $params['content'], $extra_attributes);
 
 		} else {
