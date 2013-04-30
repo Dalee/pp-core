@@ -129,18 +129,12 @@
 			$destinationFileFormat[] = $fileData['relative'];
 		}
 		$destinationFileFormat[] = $fileData['filename'];
-		$destinationFile = implode('/', $destinationFileFormat);
+		$destinationFile = implode('/', array_filter($destinationFileFormat));
 		return $destinationFile;
 	}
 
 	function buildTargetPathIfNeeded($prefix, $fileData) {
-		$destinationDirFormat = array();
-		$destinationDirFormat[] = WORKPATH;
-		$destinationDirFormat[] = $prefix;
-		if (!empty($fileData['relative'])) {
-			$destinationDirFormat[] = $fileData['relative'];
-		}
-		$destinationDir = implode('/', $destinationDirFormat);
+		$destinationDir = pathinfo(buildDestinationFilePath($prefix, $fileData), PATHINFO_DIRNAME);
 		if (!file_exists($destinationDir)) {
 			if (!(mkdir($destinationDir, 0777, true))) {
 				print ("Unable to create: {$destinationDir}");
@@ -258,20 +252,19 @@
 	/**
 	 * CSS processing
 	 *
-	 * @todo: add support of '/blocks/*?/*?.css files
 	 */
-	$treePart->build(SOURCEPATH . '/css');
-	$fileList = $treePart->getFileList('*.css');
+	$treePart->build(SOURCEPATH);
+	$fileList = (array)$treePart->getFileList('*.css');
 
-	foreach($fileList as $_ => $fileData) {
+	foreach ($fileList as $_ => $fileData) {
 		$sourceFile = $fileData['fullpath'];
-		$destinationFile = buildDestinationFilePath('css', $fileData);
+		$destinationFile = buildDestinationFilePath(null, $fileData);
 
 		if (!isNeedProcessing($fileData, $sourceFile, $destinationFile)) { // filter by .assetsignore
 			continue;
 		}
 
-		buildTargetPathIfNeeded('css', $fileData);
+		MakeDirIfNotExists(pathinfo($destinationFile, PATHINFO_DIRNAME));
 		$tempFile = tempnam(BASEPATH . 'tmp', 'css');
 		print ("Processing {$sourceFile} thru {$tempFile} to {$destinationFile}\n");
 		$resultData = CssMin::minify(
@@ -291,19 +284,20 @@
 	/**
 	 * Javascript processing
 	 *
+	 * @todo: add support of '/blocks/*?/*?.css files
 	 */
-	$treePart->build(SOURCEPATH . '/js');
-	$fileList = $treePart->getFileList('*.js');
+	$treePart->build(SOURCEPATH);
+	$fileList = (array)$treePart->getFileList('*.js');
 
 	foreach ($fileList as $_ => $fileData) {
 		$sourceFile = $fileData['fullpath'];
-		$destinationFile = buildDestinationFilePath('js', $fileData);
+		$destinationFile = buildDestinationFilePath('', $fileData);
 
 		if (!isNeedProcessing($fileData, $sourceFile, $destinationFile)) {
 			continue;
 		}
 
-		buildTargetPathIfNeeded('js', $fileData);
+		MakeDirIfNotExists(pathinfo($destinationFile, PATHINFO_DIRNAME));
 		$tempFile = tempnam(BASEPATH . 'tmp', 'js');
 		print ("Processing {$sourceFile} thru {$tempFile} to {$destinationFile}\n");
 

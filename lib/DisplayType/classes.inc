@@ -19,6 +19,7 @@ require_once PPLIBPATH . 'DisplayType/File/linkToFile.class.inc';
 
 require_once PPLIBPATH . 'DisplayType/Dropdown/dropdown.class.inc';
 require_once PPLIBPATH . 'DisplayType/Dropdown/multiDropdown.class.inc';
+require_once PPLIBPATH . 'DisplayType/Dropdown/multiTreeDropdown.class.inc';
 require_once PPLIBPATH . 'DisplayType/Dropdown/parentDropdown.class.inc';
 require_once PPLIBPATH . 'DisplayType/Dropdown/selfParentDropdown.class.inc';
 require_once PPLIBPATH . 'DisplayType/Dropdown/treeDropdown.class.inc';

@@ -42,8 +42,9 @@
 				return;
 			}
 			$isSafe = false;
+			$namepath = realpath($name);
 			foreach ($this->allowedPaths as $base) {
-				if (strpos(realpath($name), realpath($base)) === 0) {
+				if (strpos($namepath, realpath($base)) === 0) {
 					$isSafe = true;
 					break;
 				}
@@ -80,7 +81,7 @@
 			}
 
 			// Clean up asset container for future
-			$this->bundles[$type][$group] = array();
+			unset($this->bundles[$type][$group]);
 
 			return array($bundleFullPath, $bundleRelPath, filemtime($bundleFullPath));
 		}

@@ -16,7 +16,7 @@ class PXDisplayTypeMultiDropDown extends PXDisplayTypeDropdown {
 		
 		$value = array_key_exists(0, (array)$value) && $value[0] == "NULL" ? "" : $value;
 
-		return NLAbstractHTMLForm::BuildDropDown($field->name . "[]", $value, $field->values->GetList(), true, $size);
+		return NLAbstractHTMLForm::BuildDropDown($field->name . "[]", $value, $this->getListFromField($field), true, $size);
 	}
 
 	function _filterNULL($value) {
@@ -33,9 +33,6 @@ class PXDisplayTypeMultiDropDown extends PXDisplayTypeDropdown {
 
 		$values = $field->values->values;
 		$values = array_intersect_key($values, array_flip($value));
-
 		return !empty($values) ? join(", ", GetColFromTable($values, $displayField)) : '';
 	}
 }
-
-?>
