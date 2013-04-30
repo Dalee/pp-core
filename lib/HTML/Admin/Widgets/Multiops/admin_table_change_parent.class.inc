@@ -5,11 +5,11 @@
 		}
 
 		function _getAllowedSections() {
-			$param                       = array('datatype' => $this->parentWidget->dtype);
-			
+			$param = array('datatype' => $this->parentWidget->dtype);
+			$object = NULL;
 			list($format, $parentFormat) = PXDisplayTypeParentdropdown::getFormats($param);
-			$tree                        = PXDisplayTypeParentdropdown::getParentTree($object = null,$parentFormat);
-			$parents                     = $tree->getPlainTree(null);
+			$tree = PXDisplayTypeParentdropdown::getParentTree($object, $parentFormat);
+			$parents = $tree->getPlainTree(null);
 			
 			foreach($parents as $k => $v){
 				@$allowed = $tree->leafs[$k]->content['allowed'];

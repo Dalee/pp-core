@@ -7,15 +7,15 @@
  */
 class PXDisplayTypeHidden extends PXDisplayType {
 	function buildRow($field, $object, $param=NULL) {
-		$value = (isset($object[$field->name]) && !is_array($object[$field->name])) ? htmlspecialchars($object[$field->name]) : NULL;
+		$value = (isset($object[$field->name]) && !is_array($object[$field->name])) ? htmlspecialchars($object[$field->name], ENT_COMPAT|ENT_HTML401, DEFAULT_CHARSET) : NULL;
 		return NLAbstractHTMLForm::BuildHidden($field->name, $value);
 	}
 
-	function getRow($even) {
+	function getRow($even = false) {
 		return $even;
 	}
 
-	function preModifyObject($field, $object, $param=NULL) {
+	function preModifyObject($field, &$object, $param=NULL) {
 		return (bool)$param['skipHidden'];
 	}
 

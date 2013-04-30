@@ -29,7 +29,7 @@ class PXUserHTMLLayout extends PXLayoutInterface  {
 			'plugins', # Smarty default
 		);
 
-		$this->smarty->compile_dir   = BASEPATH.'/tmp/cache/smarty_templates_c';
+		$this->smarty->compile_dir   = CACHE_PATH.'/smarty_templates_c';
 
 		MakeDirIfNotExists($this->smarty->compile_dir);
 
@@ -131,7 +131,7 @@ class PXUserHTMLLayout extends PXLayoutInterface  {
 		$this->smarty->assign_by_ref($varName, $variable);
 	}
 
-	function assignRequest(&$request) {
+	function assignRequest($request) {
 		$this->smarty->_get     = $request->GetAllGetData();
 		$this->smarty->_post    = $request->GetAllPostData();
 		$this->smarty->_cookies = $request->GetAllCookieData();

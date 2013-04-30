@@ -72,8 +72,8 @@ class PXAuditLogger {
 		static $instance;
 
 		if ($instance === null) {
-			$app = & PXRegistry::getApp();
-			$db  = & PXRegistry::getDb();
+			$app = PXRegistry::getApp();
+			$db  = PXRegistry::getDb();
 
 			$class = $app->getProperty('LOGGER_CLASS', 'PXAuditLogger');
 			$instance = new $class($app, $db);
@@ -140,7 +140,7 @@ class PXAuditLogger {
 	 */
 	 function on(){
 	 	if(PXAuditLogger::disabled()){
-	 		$self = & PXAuditLogger::getLogger();
+	 		$self = PXAuditLogger::getLogger();
 	 		$self->logger->setLevel($self->logLevel);
 	 	}
 	 }
@@ -149,7 +149,7 @@ class PXAuditLogger {
 	 * Static метод, отключение логгера
 	 */
 	 function off(){
-	 	$self = & PXAuditLogger::getLogger();
+	 	$self = PXAuditLogger::getLogger();
 	 	$self->logger->setLevel($self->logger->NONE);
 	 }
 	 
@@ -157,7 +157,7 @@ class PXAuditLogger {
 	 * Static метод, возвращает true если лог не ведётся
 	 */
 	 function disabled(){
-	 	$self = & PXAuditLogger::getLogger();
+	 	$self = PXAuditLogger::getLogger();
 	 	return $self->logger->NONE == $self->logger->getLevel();
 	 }
 }

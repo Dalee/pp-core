@@ -8,7 +8,7 @@ class PXEngineAdminPopup extends PXEngineAdminIndex {
 		$this->modules = self::getModule($this->app, $this->area);
 	}
 
-	function fillLayout() {
+	function fillLayout($area = NULL) { /* E_STRICT */
 		$this->layout->setGetVarToSave('area', $this->area);
 	}
 

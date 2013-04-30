@@ -55,7 +55,7 @@ class NLLogger {
 			$tmp = explode('.',strrev($name), 2);
 			if ($tmp[1] !== '') {
 				$tmp_name = strrev($tmp[1]);
-				$instances[$name]->parent =& NLLogger::getLogger($tmp_name);
+				$instances[$name]->parent = NLLogger::getLogger($tmp_name);
 			}
 		}
 

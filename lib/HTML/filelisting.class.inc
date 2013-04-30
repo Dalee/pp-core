@@ -2,7 +2,7 @@
 class PXHTMLFileListingLink extends PXHTMLFileListing {
 	function PXHTMLFileListingLink($href, $side, $name) {
 		$this->PXHTMLFileListing($href, $side);
-		$this->name = htmlspecialchars($name);
+		$this->name = htmlspecialchars($name, ENT_COMPAT|ENT_HTML401, DEFAULT_CHARSET);
 	}
 
 	function htmlHeader() {
@@ -62,7 +62,7 @@ HTML;
 
 class PXHTMLFileListing {
 	function PXHTMLFileListing($href, $side) {
-		$href = htmlspecialchars($href);
+		$href = htmlspecialchars($href, ENT_COMPAT|ENT_HTML401, DEFAULT_CHARSET);
 		$this->base = $href.'&'.$side.'dir=';
 
 		$this->href = $href;
@@ -195,8 +195,8 @@ HTML;
 			$f->writable,                 // isWrite
 			$f->deletable,                // isDelete
 			$f->binary,                   // isBinary
-			"'".htmlspecialchars(str_replace("'", "", $this->catalog))."'",       // dir
-			"'".htmlspecialchars(str_replace("'", "", $this->href))."'",          // href
+			"'".htmlspecialchars(str_replace("'", "", $this->catalog), ENT_COMPAT|ENT_HTML401, DEFAULT_CHARSET)."'",       // dir
+			"'".htmlspecialchars(str_replace("'", "", $this->href), ENT_COMPAT|ENT_HTML401, DEFAULT_CHARSET)."'",          // href
 			"'".$this->side."'",          // side
 			$f->copyable."); return false;"
 		);

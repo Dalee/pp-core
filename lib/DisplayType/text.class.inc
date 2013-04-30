@@ -12,7 +12,7 @@
  */
 class PXDisplayTypeText extends PXDisplayType {
 	function buildInput($field, $object, $param=NULL) {
-		$value     = isset($object[$field->name]) ? htmlspecialchars($object[$field->name]) : NULL;
+		$value     = isset($object[$field->name]) ? htmlspecialchars($object[$field->name], ENT_COMPAT|ENT_HTML401, DEFAULT_CHARSET) : NULL;
 		$height    = isset($field->displayTypeArgs[1])  ? (int)$field->displayTypeArgs[1]   : 0;
 		$maxlength = !empty($field->displayTypeArgs[2]) ? (int)$field->displayTypeArgs[2]   : NULL;
 		$wrap      = !empty($field->displayTypeArgs[3]) ? trim($field->displayTypeArgs[3])  : "physical";

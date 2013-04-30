@@ -69,7 +69,9 @@ class PXInputDropDown extends PXAdminWidget {
 			unset($selected[$k]);
 		}
 
-		return sprintf('<option value="%s"%s>%s</option>', quot($value), $isSelected ? ' selected' : '', htmlspecialchars($title));
+		return sprintf('<option value="%s"%s>%s</option>', quot($value), $isSelected ? ' selected' : '',
+			htmlspecialchars($title, ENT_COMPAT|ENT_HTML401, DEFAULT_CHARSET)
+		);
 	}
 }
 ?>

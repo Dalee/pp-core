@@ -32,7 +32,7 @@ class PXResponse {
 		$this->setContentType('text/html', $charset);
 	}
 
-	function &getInstance() {
+	static function &getInstance() {
 		static $instance;
 
 		if (is_null($instance)) {

@@ -16,7 +16,8 @@ class PXDisplayTypeFlash extends PXDisplayTypeImage {
 		return $this->buildCellHtml($object[$field->name], $field->name.$object['id'], $maxWidth, $maxHeight);
 	}
 
-	function buildCellHtml($value, $id, $maxWidth, $maxHeight) {
+	function buildCellHtml() {
+		list($value, $id, $maxWidth, $maxHeight) = func_get_args(); // PHP54 args contract violation
 		if(!isset($value['path'])) {
 			return '';
 		}

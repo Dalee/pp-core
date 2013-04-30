@@ -24,7 +24,7 @@ class PXStorageType {
 	 *
 	 * @return String
 	 */
-	function objectsSortOrder($field, $object, $param=NULL) {
+	function objectsSortOrder($field, $object, &$param) {
 		return $field->description;
 	}
 
@@ -121,7 +121,7 @@ class PXStorageType {
 	 *
 	 * @return String
 	 */
-	function proceedFile($field, &$object, &$param) {
+	function proceedFile($field, &$object, &$param, $allowed = null) {
 		return null;
 	}
 

@@ -10,7 +10,7 @@ class PXAuthSession extends PXAuthSecure {
 	protected $_request;
 	protected $_db;
 	
-	function __construct(&$app, &$request, &$user, &$db) {
+	public function __construct($app, $request, $user, $db, $authParams = null) {
 		$this->_app     = $app;
 		$this->_user    = $user;
 		$this->_request = $request;
@@ -20,10 +20,10 @@ class PXAuthSession extends PXAuthSecure {
 			$this->session_lifetime = 1800;
 		}
 		
-		parent::PXAuthSecure($app, $request, $user, $db);
+		parent::__construct($app, $request, $user, $db, $authParams);
 	}
 
-	function encodePasswd($passwd) {}
+	function encodePasswd($passwd, $toMd5=true) {}
 
 	function auth() {
 		setcookie('login',  $this->login, USER_SESSION_INTERVAL, '/', '');
@@ -65,7 +65,7 @@ class PXAuthSession extends PXAuthSecure {
 	}
 
 	protected function encodeSession() {
-		$public_key  = md5(join("--", array(mt_rand(), time(), $this->login, $this->passwdToDB($this->passwd))));
+		$public_key  = md5(join("--", array(mt_rand(), time(), $this->login, self::passwdToDB($this->passwd))));
 		$private_key = $this->privateKey($public_key, $this->_user->data);
 
 		// save session into database
@@ -77,7 +77,7 @@ class PXAuthSession extends PXAuthSecure {
 	protected function validatePassword($passwd, $uArray) {
 		// check login attempts before password validation to prevent enumerate passwords via bruteforce
 		// reset login attempts only when valid password entered
-		return $this->checkLoginAttempts($uArray) && $this->passwdToDB($this->passwd) == $uArray['passwd'] && $this->resetLoginAttempts($uArray);
+		return $this->checkLoginAttempts($uArray) && self::passwdToDB($this->passwd) == $uArray['passwd'] && $this->resetLoginAttempts($uArray);
 	}
 
 	protected function resetPasswd() {
@@ -92,7 +92,9 @@ class PXAuthSession extends PXAuthSecure {
 		
 		$private_key = $this->privateKey($session, $uArray);
 		
-		if(!($session = reset($this->_db->query(sprintf("SELECT * FROM %s WHERE mtime >= NOW() - INTERVAL '%d seconds' AND sid = '%s' LIMIT 1", $this->session_store, $this->session_lifetime, $private_key), true)))) {
+		//FIXME: NOW() must be in driver
+		$res = $this->_db->query(sprintf("SELECT * FROM %s WHERE mtime >= NOW() - INTERVAL '%d seconds' AND sid = '%s' LIMIT 1", $this->session_store, $this->session_lifetime, $private_key), true);
+		if(!($session = reset($res))) {
 			$this->resetPasswd(); // reset staled session cookie
 			return false;
 		}

@@ -2,7 +2,7 @@
 class PXAuthDomain extends PXAuthInterface {
 	private $authParams;	
 
-	function PXAuthDomain(&$app, &$request, &$user, &$db, $authParams) {
+	public function __construct($app, $request, $user, $db, $authParams = null) {
 		$this->authParams = $authParams;
 		$this->domain = $this->_loadDomain();
 

@@ -8,7 +8,7 @@
  */
 class PXDisplayTypeParentdropdown extends PXDisplayTypeDropdown {
 	function buildInput($field, $object, $param=NULL) {
-		$value    = isset($object[$field->name]) ? htmlspecialchars($object[$field->name]) : NULL;
+		$value    = isset($object[$field->name]) ? htmlspecialchars($object[$field->name], ENT_COMPAT|ENT_HTML401, DEFAULT_CHARSET) : NULL;
 		list($format,$parentFormat) = parent::getFormats($param);
 
 		$tree     = parent::getParentTree($object,$parentFormat);

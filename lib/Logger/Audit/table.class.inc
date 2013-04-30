@@ -2,7 +2,7 @@
 class PXAdminAuditTable extends PXAdminTableSimple {
 	function PXAdminAuditTable($cols) {
 		parent::PXAdminTableSimple($cols);
-		$this->app =& PXRegistry::getApp();
+		$this->app = PXRegistry::getApp();
 		$this->setDict('datatypes', $this->app->types);
 	}
 

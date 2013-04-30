@@ -68,7 +68,7 @@ class PXProfiler {
 		return array_pop($this->_stack);
 	}
 
-	function finalize() {
+	static function finalize() {
 		if (PXProfiler::Disabled()) {
 			return array();
 		}

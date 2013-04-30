@@ -64,7 +64,7 @@ class PXErrorReporter {
 	static
 	function shutdown() {
 		$reporter =& PXErrorReporter::getInstance();
-		if($reporter->hasErrors()) {
+		if(PXErrorReporter::hasErrors()) {
 			$reporter->sendReport();
 		}
 	}
@@ -125,6 +125,7 @@ class PXErrorReporter {
 		return sizeof($this->errors) == 1;
 	}
 
+	static
 	function hasErrors() {
 		$reporter =& PXErrorReporter::getInstance();
 		return sizeof($reporter->errors) > 0;

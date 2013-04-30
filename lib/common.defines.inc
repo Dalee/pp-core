@@ -3,6 +3,11 @@
 // Default timezone settings for formated date output
 date_default_timezone_set('Europe/Moscow');
 
+// php5.4 htmlspecialchars flag ENT_HTML401
+if (!defined('ENT_HTML401')) {
+	define('ENT_HTML401', 0);
+}
+
 // Определение не на винде ли мы запущены
 if(!defined('IS_WIN')) {
 	define('IS_WIN', (substr(PHP_OS, 0, 3) == 'WIN'));
@@ -51,6 +56,7 @@ $includePath = array(
 	BASEPATH,
 	'.',
 	BASEPATH.'/libpp/vendor',
+	BASEPATH.'/libpp/vendor/PEAR',
 	get_include_path(),
 	'/usr/local/lib/php/'
 );
@@ -166,5 +172,6 @@ if (!IS_WIN) {
 }
 
 define('HTDOCS_PATH', BASEPATH.'/site/htdocs');
+define('CACHE_PATH', BASEPATH.'/tmp/cache.'.strval(PHP_VERSION_ID).'.'.strtolower(DEFAULT_CHARSET));
 
 ?>

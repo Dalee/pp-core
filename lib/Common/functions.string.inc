@@ -304,7 +304,7 @@ function htmlspecialcharsArray($array) {
 		if (is_array($v)) {
 			$array[$k] = htmlspecialcharsArray($v);
 		} else {
-			$array[$k] = htmlspecialchars($v);
+			$array[$k] = htmlspecialchars($v, ENT_COMPAT|ENT_HTML401, DEFAULT_CHARSET);
 		}
 	}
 	return $array;
@@ -928,7 +928,7 @@ function myconv($from, $to, $string, $be_quiet = true) {
 	$key = $onebyte ? "$from~$to": $to;
 
 	if (!array_key_exists($key, $tables)) {
-		$fname = (defined('BASEPATH') ? BASEPATH . '/tmp/cache/myconv' : ini_get('upload_tmp_dir')) . '/recode-table-' . $key;
+		$fname = (defined('CACHE_PATH') ? CACHE_PATH . '/myconv' : ini_get('upload_tmp_dir')) . '/recode-table-' . $key;
 		$tables[$key] = array();
 
 		if (is_file($fname)) {

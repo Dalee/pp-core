@@ -7,7 +7,7 @@ class PXDisplayTypeStaticOrDrop extends PXDisplayType {
 	var $send_test    = 21;
 	
 	function buildInput($field, $object, $param=NULL) {
-		$value   = isset($object[$field->name]) ? htmlspecialchars($object[$field->name]) : NULL;
+		$value   = isset($object[$field->name]) ? htmlspecialchars($object[$field->name], ENT_COMPAT|ENT_HTML401, DEFAULT_CHARSET) : NULL;
 		$values = isset($field->values) ? $field->values->GetList() : array();
 		$fvalues = $field->values->values;
 		

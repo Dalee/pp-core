@@ -7,12 +7,12 @@ class PXTriggerDatabaseSearchIndex extends PXAbstractDatabaseTrigger {
 		$this->writeExp('U', $objId, $format);
 	}
 
-	function OnDeleteObject(&$db, &$objId, &$format) {
+	function OnDeleteObject(&$db, &$objId, &$format, &$object) {
 		if (!isset($format->fields['index'])) return;
 		$this->writeExp('D', $objId, $format);
 	}
 
-	function OnModifyObject(&$db, &$objId, &$format, &$object, &$dbFields, &$dbValues) {
+	function OnModifyObject(&$db, &$objId, &$format, &$object, &$dbFields, &$dbValues, &$objectInDB) {
 		if (!isset($format->fields['index'])) return;
 		if (!$object['index']) {
 			$this->writeExp('D', $objId, $format);

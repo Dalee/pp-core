@@ -214,7 +214,8 @@ class PXMultiRegions {
 		// если регион не был определен для пользовательской части выставляем первый
 		// ситуация когда нет региона ошибочна.
 		if ($id < 1) {
-			return reset(array_keys($this->getRegionsData()));
+			$arr = array_keys($this->getRegionsData());
+			return reset($arr);
 		}
 
 		return $id;
@@ -489,7 +490,8 @@ class PXMultiRegions {
 			$this->db->query("select {$reflex_field} from {$format->id} where id = '{$object['id']}'");
 
 		if (!empty($getReflexId)) {
-			$object[$reflex_field] = reset(reset($getReflexId));
+			$arr = reset($getReflexId);
+			$object[$reflex_field] = reset($arr);
 		}
 
 		$pattern = '

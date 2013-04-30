@@ -102,7 +102,8 @@ abstract class PXUser {
 	}
 
 	function getPrimaryAuthMethod($type = null){
-		return 'PXAuth' . ucfirst(reset($this->getAuthMethods($type)));
+		$authMethods = $this->getAuthMethods($type);
+		return 'PXAuth' . ucfirst(reset($authMethods));
 	}
 }
 ?>

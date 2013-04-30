@@ -59,7 +59,7 @@ class PXTriggerDatabaseMultipleregions extends PXAbstractDatabaseTrigger {
 	}
 
 
-	function OnBeforeModifyObject(&$db, $objId, &$format, &$object, &$dbFields, &$dbValues, &$objectInDB) {
+	function OnBeforeModifyObject(&$db, &$objId, &$format, &$object, &$dbFields, &$dbValues, &$objectInDB) {
 		$regions = $this->getRegions();
 
 		$isRegionalObject  = $regions->isRegionalObject($format);
@@ -194,10 +194,10 @@ class PXTriggerDatabaseMultipleregions extends PXAbstractDatabaseTrigger {
 		return $permit;
 	}
 
-	function OnModifyLinks(&$db, &$objId, &$formatId, &$links) { // simple
+	function OnModifyLinks(&$db, &$objId, &$formatId, &$links, $linkedFormat) { // simple
 	}
 
-	function OnBeforeMoveObject(&$db, $objId, &$format, &$objectInDB) {
+	function OnBeforeMoveObject(&$db, &$objId, &$format, &$objectInDB) {
 		$regions = $this->getRegions();
 
 		#fixme
@@ -277,7 +277,7 @@ class PXTriggerDatabaseMultipleregions extends PXAbstractDatabaseTrigger {
 		return PXRegistry::getApp()->isAdminEngine() && PXRegistry::getRequest()->issetVar(PXMultiRegions::REGION_MARK . "_objectform");
 	}
 
-	function OnBeforeNormalizePathBuildQuery($objectFormat, $exObjectFormat, &$table, $object) {
+	function OnBeforeNormalizePathBuildQuery($objectFormat, $exObjectFormat, &$table, $object = null) {
 		$regions      = $this->getRegions();
 		$regionsField = PXMultiRegions::REGION_MARK;
 

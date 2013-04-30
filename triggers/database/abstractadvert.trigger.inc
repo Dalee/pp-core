@@ -37,13 +37,13 @@ class PXTriggerDatabaseAbstractAdvert extends PXAbstractDatabaseTrigger {
 		}
 	}
 
-	function OnModifyObject(&$db, &$objId, &$format, &$object, &$dbFields, &$dbValues) {
+	function OnModifyObject(&$db, &$objId, &$format, &$object, &$dbFields, &$dbValues, &$objectInDB) {
 		if ($format->id == 'adplace' || $format->id == 'adbanner') {
 			$this->adSync($format->id, $object);
 		}
 	}
 
-	function OnModifyLinks(&$db, &$objId, &$formatId) {
+	function OnModifyLinks(&$db, &$objId, &$formatId, &$arLinks, $linkedFormat) {
 		if ($formatId == 'adplace' || $formatId == 'adbanner') {
 			$object = $this->db->GetObjectById($this->db->app->types[$formatId], $objId);
 			$this->adSync($formatId, $object);

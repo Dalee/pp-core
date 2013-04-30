@@ -3,7 +3,7 @@ class PXAuditViewer {
 	function PXAuditViewer($filters, $cols) {
 		$this->cols = $cols;
 		$this->filters = $filters;
-		$this->db =& PXRegistry::getDb();
+		$this->db = PXRegistry::getDb();
 	}
 
 	function filterToSQL($filters) {
@@ -67,15 +67,16 @@ class PXAuditViewer {
 		$offset  = ($page-1) * $onPage;
 		$limit_pair = ($count > $onPage) ? array($onPage, $offset) : NULL;
 
-		$selectSQL = "SELECT \"" . implode("\",\"", $this->cols) . "\" FROM log_audit_view " . $this->filterToSQL($this->filters) ."ORDER BY id DESC";
-
+		$cols = array_map(array($this->db, 'mapFields'), $this->cols);
+		$selectSQL = "SELECT " . implode(", ", $cols) . " FROM log_audit_view " . $this->filterToSQL($this->filters) ."ORDER BY id DESC";
+		
 		return $this->db->query($selectSQL, false, $limit_pair);
 	}
 
 	function getErrorLevels() {
 		$levels = array();
 
-		$app =& PXRegistry::getApp();
+		$app = PXRegistry::getApp();
 
 		if(isset($app->directory['error-type']->values)) {
 			$levels = GetColFromTableWithIndexs($app->directory['error-type']->values, 'title');

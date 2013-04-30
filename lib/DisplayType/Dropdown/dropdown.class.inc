@@ -11,14 +11,10 @@ class PXDisplayTypeDropdown extends PXDisplayType {
 	
 	var $format;
 	var $parentFormat;
-
-	protected function getListFromField($field) {
-		return $field->values->GetList();
-	}
-
+	
 	function buildInput($field, $object, $param=NULL) {
-		$value = isset($object[$field->name]) ? htmlspecialchars($object[$field->name]) : NULL;
-		return NLAbstractHTMLForm::BuildDropDown($field->name, $value, $this->getListFromField($field));
+		$value = isset($object[$field->name]) ? htmlspecialchars($object[$field->name], ENT_COMPAT|ENT_HTML401, DEFAULT_CHARSET) : NULL;
+		return NLAbstractHTMLForm::BuildDropDown($field->name, $value, $field->values->GetList());
 	}
 
 	function buildCell($field, $object, $param=NULL) {
@@ -35,7 +31,7 @@ class PXDisplayTypeDropdown extends PXDisplayType {
 	}
 
 	
-	function getFormats(&$param) {
+	public static function getFormats(&$param) {
 		$format = '';
 		$parentFormat = '';
 		if (count($param) && isset($param['datatype']) && is_object($param['datatype'])) {
@@ -45,7 +41,7 @@ class PXDisplayTypeDropdown extends PXDisplayType {
 		return array($format,$parentFormat);
 	}
 	
-	function getParentTree(&$object,$parentFormat) {
+	public static function getParentTree(&$object,$parentFormat) {
 		if(!isset(self::$trees[$parentFormat])){
 			$db  = PXRegistry::getDb();
 			$app = PXRegistry::getApp();
@@ -66,3 +62,4 @@ class PXDisplayTypeDropdown extends PXDisplayType {
 		}
 	}
 }
+?>

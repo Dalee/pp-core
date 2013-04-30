@@ -2,7 +2,7 @@
 
 class PXTriggerLayoutMultiCreatepathmodify extends PXAbstractLayoutTrigger {
 
-	function onBeforePathCreated($tree, &$id) {
+	function OnBeforePathCreated($tree, $id) {
 
 		// check for not existance node in tree
 		if (!(isset($tree->leafs) && empty($tree->leafs[$id]))) {

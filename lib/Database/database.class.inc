@@ -858,7 +858,7 @@ class PXDatabase extends NLSQLDatabaseAdapter implements IPXDatabase {
 
 
 	function cloneContentObject(&$format, $objectData, $status=false) {
-		$audit =& PXAuditLogger::getLogger($this->app, $this);
+		$audit = PXAuditLogger::getLogger($this->app, $this);
 
 		if(is_array($objectData) && isset($objectData['id']) && is_numeric($objectData['id']) && $objectData['id'] > 0) {
 			$donorObject = $objectData;
@@ -1379,10 +1379,9 @@ SQL;
 SQL;
 
 		$limit = is_numeric($limit) && is_numeric($offset) ? array($limit, $offset) : NULL;
-
 		$resTable = $this->Query($query, false, $limit);
 		$retTable = array();
-		$param = array('db'=>&$this, 'format'=>$reference->name);
+		$param = array('db'=>$this, 'format'=>$reference->name);
 
 		foreach ($resTable as $element) {
 			$title = $element[$linkedFormat.'title'];

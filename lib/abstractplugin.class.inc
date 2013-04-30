@@ -81,8 +81,8 @@ class PXAbstractPlugin {
 		if (file_exists($f)) {
 			require_once  $f;
 		} else {
-			@unlinkDir(BASEPATH . "/tmp/cache/config");
-			@unlink(BASEPATH . "/tmp/cache/loader");
+			@unlinkDir(CACHE_PATH . "/config");
+			@unlink(CACHE_PATH . "/loader");
 		}
 	}
 }

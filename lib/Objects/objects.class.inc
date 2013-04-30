@@ -43,7 +43,8 @@ class PXObjects extends PXContentObjects {
 	}
 
 	function getAllowedChilds() {
-		return PXRegistry::getApp()->getAllowedChilds($this->currentType, $this->getCurrent());
+		$currentObject = $this->getCurrent();
+		return PXRegistry::getApp()->getAllowedChilds($this->currentType, $currentObject);
 	}
 
 	function add($type, $objsArray) {

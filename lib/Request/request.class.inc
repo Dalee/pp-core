@@ -27,7 +27,7 @@ class PXRequest {
 		$this->httpMethod = $this->GetHttpMethod();
 		$this->host       = $this->GetHttpHost();
 		$this->remoteAddr = $this->GetRemoteAddr();
-		$this->path       = $this->GetOriginalPath();
+		$this->path       = self::GetOriginalPath(); //PHP54/52: <static> is better but for 52 using <self>
 
 		$this->getData    = new NLGetData();
 		$this->postData   = new NLPostData();
@@ -62,7 +62,8 @@ class PXRequest {
 
 	static function GetOriginalPath() {
 		// We need to use REQUEST_URI but not SCRIPT_NAME variable because SCRIPT_NAME is not available when mod_rewrite is enabling in .htaccess
-		return reset(explode("?", $_SERVER['REQUEST_URI'], 2));
+		$parts = explode("?", $_SERVER['REQUEST_URI'], 2);
+		return reset($parts);
 	}
 
 	function SetPath($path) {
@@ -249,7 +250,7 @@ class PXRequest {
 	 * @return Int
 	 */
 	static function IsIpInSubnet($ip, $subnet) {
-		list($net,$mask) = split("/",$subnet);
+		list($net,$mask) = explode("/",$subnet);
 
 		$lnet   = ip2long($net);
 		$lip    = ip2long($ip);

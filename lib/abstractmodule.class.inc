@@ -47,7 +47,7 @@ abstract class PXModule implements PXModuleIF {
 		PXRegistry::assignToObject($this);
 	}
 
-	function getAclModuleActions() {
+	public static function getAclModuleActions() {
 		return array('viewmenu' => 'Показывать в меню', 'admin' => 'Доступ в админке');
 	}
 

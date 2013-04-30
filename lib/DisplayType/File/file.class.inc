@@ -23,7 +23,8 @@ class PXDisplayTypeFile extends PXDisplayType {
 		return $this->buildCellHtml($object[$field->name]);
 	}
 
-	function buildCellHtml($fileArray) {
+	function buildCellHtml() {
+		list($fileArray) = func_get_args(); // PHP54 args contract violation
 		if(!isset($fileArray['fullpath'])) {
 			return '';
 		}

@@ -1,6 +1,7 @@
 <?php
 class PXAuthPlain extends PXAuthInterface {
-	function PXAuthPlain(&$app, &$request, &$user, &$db) {
+	
+	public function __construct($app, $request, $user, $db, $authParams = null) {
 		$this->login();
 		$this->passwd();
 	
@@ -13,7 +14,7 @@ class PXAuthPlain extends PXAuthInterface {
 			return;
 		}
 
-		if ($this->passwdToDB($this->passwd) == $uArray['passwd'] || $this->passwd == $this->encodePasswd($uArray['passwd'])) {
+		if (self::passwdToDB($this->passwd) == $uArray['passwd'] || $this->passwd == $this->encodePasswd($uArray['passwd'])) {
 			 $this->fillUserFields($uArray);
 		}
 	}
@@ -27,7 +28,7 @@ class PXAuthPlain extends PXAuthInterface {
 		setcookie('passwd', 0, 0, '/', '');
 	}
 
-	function encodePasswd($passwd) {
+	function encodePasswd($passwd, $toMd5=true) {
 		return md5('rewqr'.$passwd);
 	}
 }

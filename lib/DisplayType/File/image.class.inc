@@ -25,7 +25,8 @@ class PXDisplayTypeImage extends PXDisplayType {
 		return $this->buildCellHtml($object[$field->name], $maxWidth, $maxHeight);
 	}
 	
-	function buildCellHtml($value, $maxWidth, $maxHeight) {
+	function buildCellHtml() {
+		list($value, $maxWidth, $maxHeight) = func_get_args(); // PHP54 args contract violation
 		$html  = '<div class="imagepreview image-in-cell"><div class="small" style="width: '.$maxWidth.'px; height: '.$maxHeight.'px;">';
 
 		if(isset($value['path'])) {

@@ -1,9 +1,9 @@
 <?php
 class PXAuthInterface {
-	var $login;
-	var $passwd;
+	public $login;
+	public $passwd;
 
-	function PXAuth(&$app, &$request, &$user, &$db, $authParams) {
+	public function __construct($app, $request, $user, $db, $authParams = null) {
 	}
 
 	protected function fillUserFields($uArray) {
@@ -61,11 +61,11 @@ class PXAuthInterface {
 		return true;
 	}
 
-	function encodePasswd($passwd) {
+	function encodePasswd($passwd, $toMd5=true) {
 		return $passwd;
 	}
 
-	function passwdToDB($passwd) {
+	public static function passwdToDB($passwd) {
 		return $passwd;
 	}
 

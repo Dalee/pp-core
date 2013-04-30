@@ -1,6 +1,7 @@
 <?php
 class PXAuthRambler extends PXAuthInterface {
-	function PXAuthRambler(&$app, &$request, &$user, &$db) {
+	
+	public function __construct($app, $request, $user, $db, $authParams = null) {
 		if (isset($_COOKIE['rsid'])) {
 			$this->login();
 			$uArray = $this->findUser();

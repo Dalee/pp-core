@@ -53,7 +53,7 @@ class PXModuleCsvImport extends PXModule {
 				break;
 
 			case 'success':
-				$html .= $this->_Success($request, $app, $db);
+				$html .= $this->_Success();
 				break;
 
 			default:
@@ -63,9 +63,13 @@ class PXModuleCsvImport extends PXModule {
 		$layout->Assign("INNER.0.0", $html);
 	}
 
-	function _Success(&$request, &$app, &$db) {
+	function _Success() {
+		$request = $this->request;
+		$app     = $this->app;
+		$db      = $this->db;
+
 		$html  = '<h2>Импорт данных &laquo;'.$app->types[$this->settings['datatype']]->title.'&raquo; успешно произведен</h2>';
-		$html .= '<p>В базу внесено <strong>'.htmlspecialchars($request->GetVar('quantity')).'</strong> объектов.</p>';
+		$html .= '<p>В базу внесено <strong>'.htmlspecialchars($request->GetVar('quantity'), ENT_COMPAT|ENT_HTML401, DEFAULT_CHARSET).'</strong> объектов.</p>';
 		return $html;
 	}
 
@@ -92,7 +96,11 @@ class PXModuleCsvImport extends PXModule {
 		return $redir_to;
 	}
 
-	function ImportToDB($csv, &$app, &$db, &$request) {
+	function ImportToDB($csv) {
+		$request = $this->request;
+		$app     = $this->app;
+		$db      = $this->db;
+
 		$objects = array();
 		$fields  = array();
 		$parent  = NULL;

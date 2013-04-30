@@ -7,7 +7,7 @@
  * storageType string
  */
 class PXStorageTypeString extends PXStorageType {
-	function objectsSortOrder($field, $object, &$param) {
+	function objectsSortOrder($field, $object, &$param = NULL) { /* E_STRICT */
 		return $this->objectsSortOrderString($field, $object, $param);
 	}
 
