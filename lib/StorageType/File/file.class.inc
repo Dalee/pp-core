@@ -35,6 +35,8 @@ class PXStorageTypeFile extends PXStorageTypeAbstractFile {
 					$filename = _TranslitFilename($fileArray['name']);
 				}
 
+				// ModifyContent: если мы загружаем новый файл, мы трем все файлы
+				// в директории, и копируем туда новый
 				if(!is_null($filename)) {
 					MakeDirIfNotExists($basedir);
 					$d = dir($basedir);
@@ -61,14 +63,24 @@ class PXStorageTypeFile extends PXStorageTypeAbstractFile {
 			}
 		}
 
-		if($invalidateCache){
+		if ($invalidateCache) {
 			unlinkDirTreeIfEmpty($basedir);
 			$_ = $is_static_call ? self::removeFromCache($ai) : $this->removeFromCache($ai);
 		}
 
-		if (!$is_static_call) {
-			$fileArray = $this->normalize($field, $object, $param);
+		if ($is_static_call) {
+			return null;
 		}
+
+		// пишем в объект общий результат нормализации
+		// включая поля tmp_name, error_code, mime_type, etc..
+		$fileArray = $this->normalize($field, $object, $param);
+
+		// в функцию добавления/обновления объекта возвращаем
+		// только конкретную нормализацию файлового поля объекта
+		// без временных полей.
+		$normalized = array_filter($this->__normalize($field, $object, $param));
+		return count($normalized) ? $normalized : null;
 	}
 
 	function __normalize($field, $object, &$param, $allowed = null) {
@@ -85,6 +97,7 @@ class PXStorageTypeFile extends PXStorageTypeAbstractFile {
 		$file =  array(
 			'filename' => isset($fileName) ? $fileName              : NULL,
 			'path'     => isset($fileName) ? $basedir.$fileName     : NULL,
+			'uri'      => isset($fileName) ? $basedir.$fileName     : NULL, // URI for SecureFile
 			'type'     => (isset($fileName) && is_file($d->name.'/'.$fileName)) ? mime_content_type($d->name.'/'.$fileName) : NULL,
 			'size'     => (isset($fileName) && is_file($d->name.'/'.$fileName)) ? filesize($d->name.'/'.$fileName)          : 0
 		);

@@ -368,9 +368,12 @@ class PXDatabase extends NLSQLDatabaseAdapter implements IPXDatabase {
 
 	protected function _createSelector($format) {
 		$selector = NULL;
+		$has_sys_meta = false;
+
 		foreach ($format->fields as $k=>$v) {
 			$p = array();
 			if($v->storageType->notInDb($v, null, $p)) {
+				$has_sys_meta = true;
 				continue;
 			}
 
@@ -382,6 +385,9 @@ class PXDatabase extends NLSQLDatabaseAdapter implements IPXDatabase {
 		}
 
 		$selector .= $format->id.'.sys_created, '.$format->id.'.sys_modified, '.$format->id.'.sys_order';
+		if ($has_sys_meta) {
+			$selector .= sprintf(', %s.%s', $format->id, 'sys_meta');
+		}
 
 		if ($format->id != DT_USER) {
 			$selector .= ', '.$format->id.'.sys_owner';
@@ -678,6 +684,7 @@ class PXDatabase extends NLSQLDatabaseAdapter implements IPXDatabase {
 
 			$this->_NormalizeObjectAttribute($k, $object, $v, $dbFields, $dbValues);
 		}
+
 		// sys fields
 		$dbFields[] = 'sys_created';
 		$dbFields[] = 'sys_modified';
@@ -709,20 +716,56 @@ class PXDatabase extends NLSQLDatabaseAdapter implements IPXDatabase {
 			}
 		}
 
+		// формируем список полей которые не будут сохранены в базу данных
+		// ориентируемся на результат выполнения notInDb, для файловых
+		// и виртуальных полей метод должен возвращать true.
+		$cuttedFieldDiff = array_diff(array_keys($format->fields), $dbFields);
+		$sysMetaFieldList = array();
+		foreach($cuttedFieldDiff as $k) {
+			if($format->fields[$k]->storageType->notInDb($format->fields[$k], $object)) {
+				$sysMetaFieldList[] = $k;
+			}
+		}
+
 		if($permitAdd){
+			// открываем транзакцию
+			$this->transactionBegin();
 			$newId = $this->InsertObject($format->id, $dbFields, $dbValues);
 			if ($newId < 0) {
 				$errString = $this->GetError();
 				$audit->error($errString, $format->id .'/'.getFromArray($object, 'parent'));
+				$this->transactionRollback();
 				$this->FatalError($errString);
 			}
-			$this->ModifyingQuery('UPDATE '.$format->id.' SET sys_order = id WHERE id = '.$newId);
 
 			$object['id'] = $newId;
+
+			// обходим все поля, в попытке найти что-то похожее на файл
+			$sysMetaField = array();
 			foreach ($format->fields as $k=>$v) {
 				$p = array('id'=>$newId, 'format'=>$format->id);
-				$v->storageType->proceedFile($v, $object, $p);
+				$proceedFileResult = $v->storageType->proceedFile($v, $object, $p);
+
+				if(in_array($k, $sysMetaFieldList) && $proceedFileResult) {
+					$sysMetaField[$k] = $proceedFileResult;
+				}
 			}
+
+			// обновляем sys_meta, если есть что туда записать.
+			$sqlUpdateRule = array();
+			$sqlUpdateRule[] = "sys_order = id";
+			if (count($sysMetaField) > 0) {
+				$sqlUpdateRule[] = sprintf(
+					"sys_meta = %s",
+					$this->MapData(
+						json_encode_koi($sysMetaField)
+					)
+				);
+			}
+
+			$sqlUpdateRule = implode(', ', $sqlUpdateRule);
+			$this->ModifyingQuery(sprintf('UPDATE %s SET %s WHERE id = %s', $format->id, $sqlUpdateRule, $newId));
+			$this->transactionCommit();
 
 			$object['sys_order'] = $newId;
 
@@ -950,18 +993,31 @@ class PXDatabase extends NLSQLDatabaseAdapter implements IPXDatabase {
 			}
 		}
 
+		// формируем список полей которые не будут сохранены в базу данных
+		// ориентируемся на результат выполнения notInDb, для файловых
+		// и виртуальных полей метод должен возвращать true.
+		$cuttedFieldDiff = array_diff(array_keys($format->fields), $dbFields);
+		$sysMetaFieldList = array();
+		foreach($cuttedFieldDiff as $k) {
+			if($format->fields[$k]->storageType->notInDb($format->fields[$k], $object)) {
+				$sysMetaFieldList[] = $k;
+			}
+		}
+
 		$permitModify = true;
 		foreach ($this->triggers as $t){
 			$permitModify = $t->getTrigger()->OnBeforeModifyObject($this, $object['id'], $format, $object, $dbFields, $dbValues, $objectInDB);
 			if(!$permitModify) break;
 		}
 
-		if($permitModify){
+		if ($permitModify) {
 			$dbFields[] = 'sys_modified';
 			$dbValues[] = '##now##';
+			$this->transactionBegin();
 			$result = $this->UpdateObjectByID($format->id, $object['id'], $dbFields, $dbValues);
 			if ($result <  0) {
 				$audit->error($this->GetError(), $format->id .'/'. $object['id']);
+				$this->transactionRollback();
 				$this->FatalError($this->GetError());
 			}
 			if ($format->struct == 'tree' && isset($objectInDB['parent']) && $objectInDB['parent'] != $object['parent']) {
@@ -976,11 +1032,31 @@ class PXDatabase extends NLSQLDatabaseAdapter implements IPXDatabase {
 				}
 
 			}
+
+			$sysMetaField = array();
 			foreach ($format->fields as $k=>$v) {
 				$p = array('id'=>$object['id'], 'format'=>$format->id);
 				$v->storageType->proceedFile($v, $object, $p);
+
+				$proceedFileResult = $v->storageType->proceedFile($v, $object, $p);
+				if(in_array($k, $sysMetaFieldList) && $proceedFileResult) {
+					$sysMetaField[$k] = $proceedFileResult;
+				}
 			}
-			
+
+			// обновляем sys_meta, если есть что туда записать.
+			if (count($sysMetaField) > 0) {
+				$sqlUpdateRule = sprintf(
+					"sys_meta = %s",
+					$this->MapData(
+						json_encode_koi($sysMetaField)
+					)
+				);
+				$query = sprintf('UPDATE %s SET %s WHERE id = %s', $format->id, $sqlUpdateRule, $object['id']);
+				$this->ModifyingQuery($query);
+			}
+
+			$this->transactionCommit();
 			$object['sys_order'] = isset($objectInDB['sys_order']) ? $objectInDB['sys_order'] : null;
 			
 			foreach ($this->triggers as $t)
@@ -1215,6 +1291,10 @@ class PXDatabase extends NLSQLDatabaseAdapter implements IPXDatabase {
 			'db'       =>& $this
 		);
 
+		// очень странное поведение, но, normalizeObjectAttribute на самом деле пишет
+		// новые ключи в dbFields и в dbValues, базовый метод PXStorageType не осуществляет записи в эти атрибуты.
+		// у тех типов данных которые сохраняются в базе присутствует собственная имплементация метода
+		// normalizeObjectAttribute
 		list($v, $dbFields, $dbValues) = $field->storageType->normalizeObjectAttribute($field, $object, $p);
 		return $v;
 	}
@@ -1659,28 +1739,26 @@ SQL;
 			$table[$k]['sys_created']  = $this->importDateTime($table[$k]['sys_created']);
 			$table[$k]['sys_modified'] = $this->importDateTime($table[$k]['sys_modified']);
 
+			if (!$withoutNotInDB) {
+				if (!empty($table[$k]['sys_meta'])) {
+					$sysMeta = json_decode_koi($table[$k]['sys_meta'], true);
+
+					// загружаем сохраненные мета-поля, в случае их
+					// отсутствия (например работаем в режиме ноды кластера)
+					// выставлям поля как если бы был доступ site/htdocs/ai
+					foreach($sysMeta as $sysMetaKey => $sysMetaValue) {
+						if (!array_key_exists($sysMetaKey, $table[$k])) {
+							$table[$k][$sysMetaKey] = $sysMetaValue;
+						}
+					}
+				}
+			}
+
 			if (count($format->childs)) {
 				if (!empty($table[$k][OBJ_FIELD_CHILDREN])) {
 					$table[$k][OBJ_FIELD_CHILDREN] = unserialize($table[$k][OBJ_FIELD_CHILDREN]);
 				} else {
 					$table[$k][OBJ_FIELD_CHILDREN] = array();
-				}
-			}
-			/*
-			 * TODO: make trigger here instead of obsoleted handlers !
-			 * output handlers are deprecated !
-			*/
-			
-			if (isset($format->outputHandler)) {
-				$file = strtolower($format->outputHandler).'.outputhandler.inc';
-				if (file_exists(BASEPATH.'/local/lib/handlers/'.$file)) {
-					include_once BASEPATH.'/local/lib/handlers/'.$file;
-				} elseif (file_exists(BASEPATH.'/libpp/lib/handlers/'.$file)) {
-					include_once BASEPATH.'/libpp/lib/handlers/'.$file;
-				}
-				$function = 'PXOutputHandler'.$format->outputHandler;
-				if (function_exists($function)) {
-					$function($format, $table[$k], $this);
 				}
 			}
 		}
