@@ -10,35 +10,55 @@
 	ini_set('display_errors', '1'); 
 	$engine = new PXEngineSbin();
 
-	$skipTypes = array (
-		'sgroup',
-		'suser',
-	);
-
 	// process every object in database and update sys_meta tag
 	$app = PXRegistry::getApp();
 	$db = PXRegistry::getDb();
+	$limit = 100;
 
-	$limit = 50;
 	foreach($app->types as $type) {
-		if (in_array($type->id, $skipTypes)) {
+		// is we need to run on this type?
+		$dummyObject = array();
+		$needProcess = false;
+		foreach ($type->fields as $k => $v) {
+			if ($v->storageType->notInDb($v, $dummyObject)) {
+				$needProcess = true;
+				break;
+			}
+		}
+
+		if(!$needProcess) {
+			Label(sprintf("No need to be processed: %s", $type->id));
 			continue;
 		}
 		
-		Label(sprintf("processing: %s", $type->id));
-		$totalObjects = $db->getObjects($type, null, DB_SELECT_COUNT);
+		Label(sprintf("Processing: %s", $type->id));
 		$offset = 0;
+		$queryFmt = 'UPDATE %s SET %s WHERE id = %s';
 
-		WorkProgress(false, $totalObjects, $limit);
-		while ( $offset < $totalObjects ) {
-			$objectList = $db->getObjectsLimited($type, null, $limit, $offset);
+		while ( ($objectList = $db->getObjectsLimited($type, null, $limit, $offset)) ) {
 			foreach($objectList as $object) {
-				$db->ModifyContentObject($type, $object);
+				WorkProgress(false);
+
+				$sysMetaField = array();
+				foreach ($type->fields as $k => $v) {
+					if ($v->storageType->notInDb($v, $object)) {
+						$p = array('id' => $object['id'], 'format' => $type->id);
+						if ( ($proceedFileResult = $v->storageType->proceedFile($v, $object, $p)) ) {
+							$sysMetaField[$k] = $proceedFileResult;
+						}
+					}
+				}
+
+				$metaField = (count($sysMetaField) > 0) ? $db->MapData(json_encode_koi($sysMetaField)) : 'NULL';
+				$metaField = sprintf("sys_meta = %s", $metaField);
+
+				// fire!
+				$query = sprintf($queryFmt, $type->id, $metaField, $object['id']);
+				$db->query($query);
 			}
+
 			$offset += $limit;
-			WorkProgress();
 		}
 		WorkProgress(true);
-		break;
 	}
 ?>

@@ -1739,17 +1739,16 @@ SQL;
 			$table[$k]['sys_created']  = $this->importDateTime($table[$k]['sys_created']);
 			$table[$k]['sys_modified'] = $this->importDateTime($table[$k]['sys_modified']);
 
-			if (!$withoutNotInDB) {
-				if (!empty($table[$k]['sys_meta'])) {
-					$sysMeta = json_decode_koi($table[$k]['sys_meta'], true);
+			if (!empty($table[$k]['sys_meta'])) {
+				$sysMeta = json_decode_koi($table[$k]['sys_meta'], true);
+				$sysMeta = is_array($sysMeta) ? $sysMeta : array();
 
-					// загружаем сохраненные мета-поля, в случае их
-					// отсутствия (например работаем в режиме ноды кластера)
-					// выставлям поля как если бы был доступ site/htdocs/ai
-					foreach($sysMeta as $sysMetaKey => $sysMetaValue) {
-						if (!array_key_exists($sysMetaKey, $table[$k])) {
-							$table[$k][$sysMetaKey] = $sysMetaValue;
-						}
+				// загружаем сохраненные мета-поля, в случае их
+				// отсутствия (например работаем в режиме ноды кластера)
+				// выставлям поля как если бы был доступ site/htdocs/ai
+				foreach($sysMeta as $sysMetaKey => $sysMetaValue) {
+					if (!array_key_exists($sysMetaKey, $table[$k])) {
+						$table[$k][$sysMetaKey] = $sysMetaValue;
 					}
 				}
 			}
