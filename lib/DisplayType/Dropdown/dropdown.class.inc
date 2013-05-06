@@ -12,6 +12,10 @@ class PXDisplayTypeDropdown extends PXDisplayType {
 	var $format;
 	var $parentFormat;
 	
+	protected function getListFromField($field) {
+		return $field->values->GetList();
+	}
+
 	function buildInput($field, $object, $param=NULL) {
 		$value = isset($object[$field->name]) ? htmlspecialchars($object[$field->name], ENT_COMPAT|ENT_HTML401, DEFAULT_CHARSET) : NULL;
 		return NLAbstractHTMLForm::BuildDropDown($field->name, $value, $field->values->GetList());
