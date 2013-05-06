@@ -2,6 +2,10 @@
 <?php
 	set_time_limit(0);
 	require_once dirname(__FILE__).'/../../libpp/lib/maincommon.inc';
+	$localcommon = BASEPATH.'local/lib/maincommon.inc';
+	if (file_exists($localcommon)) {
+		require_once($localcommon);
+	}
 
 	ini_set('display_errors', '1'); 
 	$engine = new PXEngineSbin();
