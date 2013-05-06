@@ -108,9 +108,20 @@ class PXStorageTypeFilesarray extends PXStorageTypeAbstractFile {
 			$_ = $is_static_call ? self::removeFromCache($ai) : $this->removeFromCache($ai);
 		}
 
-		if (!$is_static_call) {
-			$fileArray = $this->normalize($field, $object, $param);
+		if ($is_static_call) {
+			return null;
 		}
+
+		// пишем в объект общий результат нормализации
+		// включая поля tmp_name, error_code, mime_type, etc..
+		// необходимо для триггеров
+		$fileArray = $this->normalize($field, $object, $param);
+
+		// в функцию добавления/обновления объекта возвращаем
+		// только конкретную нормализацию файлового поля объекта
+		// без временных полей.
+		$normalized = array_filter($this->__normalize($field, $object, $param)); // it's always safe
+		return count($normalized) ? $normalized : null;
 	}
 
 	function __normalize($field, $object, &$param, $allowed = null) {
@@ -128,7 +139,8 @@ class PXStorageTypeFilesarray extends PXStorageTypeAbstractFile {
 			$httpPath = $basedir.$entry;
 
 			$filesArray[$entry] = array(
-				'path' => isset($httpPath) ? $httpPath : NULL,
+				'path'     => isset($httpPath) ? $httpPath : NULL,
+				'uri'      => isset($httpPath) ? $httpPath : NULL, // same as in PXStorageTypeFile, for SecureFile
 				'filename' => $entry,
 				'size'     => filesize($diskPath),
 				'type'     => mime_content_type($diskPath),

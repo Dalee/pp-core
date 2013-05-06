@@ -74,6 +74,7 @@ class PXStorageTypeFile extends PXStorageTypeAbstractFile {
 
 		// пишем в объект общий результат нормализации
 		// включая поля tmp_name, error_code, mime_type, etc..
+		// необходимо для триггеров
 		$fileArray = $this->normalize($field, $object, $param);
 
 		// в функцию добавления/обновления объекта возвращаем
