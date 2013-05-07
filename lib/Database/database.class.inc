@@ -1747,7 +1747,7 @@ SQL;
 				// отсутствия (например работаем в режиме ноды кластера)
 				// выставлям поля как если бы был доступ site/htdocs/ai
 				foreach($sysMeta as $sysMetaKey => $sysMetaValue) {
-					if (!array_key_exists($sysMetaKey, $table[$k])) {
+					if (empty($table[$k][$sysMetaKey])) {
 						$table[$k][$sysMetaKey] = $sysMetaValue;
 					}
 				}
