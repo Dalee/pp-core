@@ -32,10 +32,19 @@
 		}
 		
 		Label(sprintf("Processing: %s", $type->id));
-		$offset = 0;
-		$queryFmt = 'UPDATE %s SET %s WHERE id = %s';
+		$queryUpdateFmt = 'UPDATE %s SET %s WHERE id = %s';
+		$querySelectFmt = 'SELECT * FROM %s WHERE id > %d ORDER BY id ASC LIMIT %d';
+		$lastId = 0;
 
-		while ( ($objectList = $db->getObjectsLimited($type, null, $limit, $offset)) ) {
+
+		while ( true ) {
+			$selector = sprintf($querySelectFmt, $type->id, $lastId, $limit);
+			$objectList = $db->Query($selector);
+			if (empty($objectList)) {
+				break;
+			}
+
+			$db->_NormalizeTable($objectList, $type, false);
 			foreach($objectList as $object) {
 				WorkProgress(false);
 
@@ -53,11 +62,10 @@
 				$metaField = sprintf("sys_meta = %s", $metaField);
 
 				// fire!
-				$query = sprintf($queryFmt, $type->id, $metaField, $object['id']);
+				$lastId = $object['id'];
+				$query = sprintf($queryUpdateFmt, $type->id, $metaField, $lastId);
 				$db->query($query);
 			}
-
-			$offset += $limit;
 		}
 		WorkProgress(true);
 	}
