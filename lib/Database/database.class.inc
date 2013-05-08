@@ -1727,19 +1727,24 @@ SQL;
 	 */
 	function _NormalizeTable(&$table, $format, $withoutNotInDB = false) {
 		foreach ($table as $k=>$v) {
+
+			$isMetaPresent = empty($v['sys_meta']) ? false : true;
+
 			foreach ($format->fields as $fk=>$fv) {
 				$p = array('db'=>&$this, 'format'=>$format->id);
 
-				if($withoutNotInDB && $fv->storageType->notInDb($fv, $table[$k], $p)){
+				$notInDb = $fv->storageType->notInDb($fv, $table[$k], $p);
+				if (($withoutNotInDB && $notInDb) || ($isMetaPresent && $notInDb)) {
 					continue;
 				}
+
 				$table[$k][$fk] = $fv->storageType->normalize($fv, $table[$k], $p);
 			}
 
 			$table[$k]['sys_created']  = $this->importDateTime($table[$k]['sys_created']);
 			$table[$k]['sys_modified'] = $this->importDateTime($table[$k]['sys_modified']);
 
-			if (!empty($table[$k]['sys_meta'])) {
+			if ($isMetaPresent) {
 				$sysMeta = json_decode_koi($table[$k]['sys_meta'], true);
 				$sysMeta = is_array($sysMeta) ? $sysMeta : array();
 
