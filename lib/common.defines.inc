@@ -8,8 +8,25 @@ if (!defined('ENT_HTML401')) {
 	define('ENT_HTML401', 0);
 }
 
+// PHP 5.2.6 compatibility
+if (!defined('PHP_MAJOR_VERSION')) {
+	define('PHP_MAJOR_VERSION', 5);
+}
+if (!defined('PHP_MINOR_VERSION')) {
+	define('PHP_MINOR_VERSION', 2);
+}
+if (!defined('PHP_VERSION_ID')) {
+	define('PHP_VERSION_ID', 50206);
+}
+if (!defined('PHP_RELEASE_VERSION')) {
+	define('PHP_RELEASE_VERSION', 6); // PHP 5.2.6
+}
+if (!defined('PHP_EXTRA_VERSION')) {
+	define('PHP_EXTRA_VERSION', '');
+}
+
 // Определение не на винде ли мы запущены
-if(!defined('IS_WIN')) {
+if (!defined('IS_WIN')) {
 	define('IS_WIN', (substr(PHP_OS, 0, 3) == 'WIN'));
 }
 
