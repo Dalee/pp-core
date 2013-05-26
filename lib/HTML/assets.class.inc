@@ -236,7 +236,7 @@ final class PXHTMLAssets {
 
 // worker here below
 
-	// import uniquely
+	// import uniquely - do we need it here? or just in bundler?
 	protected static $imported = array();
 	protected static $delayed = array();
 

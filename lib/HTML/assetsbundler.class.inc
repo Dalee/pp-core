@@ -25,6 +25,8 @@
 			// deny cloning
 		}
 
+		// uniquely importing
+		protected static $imported = array();
 
 		// builder
 		private $bundles = array();
@@ -43,6 +45,9 @@
 			}
 			$isSafe = false;
 			$namepath = realpath($name);
+			if (isset(self::$imported[$namepath])) {
+				return;
+			}
 			foreach ($this->allowedPaths as $base) {
 				if (strpos($namepath, realpath($base)) === 0) {
 					$isSafe = true;
@@ -52,6 +57,7 @@
 			if (!$isSafe) {
 				return;
 			}
+			self::$imported[$namepath] = true;
 			$this->bundles[$type][$group][] = $name;
 		}
 
@@ -64,7 +70,7 @@
 
 			$bundleContent = array();
 			foreach ($this->bundles[$type][$group] as $name) {
-				$bundleContent[] = file_get_contents($name);
+				$bundleContent[] = sprintf("\n/* %s */\n%s", pathinfo($name, PATHINFO_FILENAME), file_get_contents($name));
 			}
 			$bundleContent = join($delim, $bundleContent);
 
