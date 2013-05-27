@@ -27,7 +27,9 @@ class PXStructLeaf implements Iterator {
 		if(isset($this->data->{$key})) {
 			return $this->data->{$key};
 		}
-
+		if (!isset($this->data->content[$key])) {
+			return null;
+		}
 		return $this->data->content[$key];
 	}
 
