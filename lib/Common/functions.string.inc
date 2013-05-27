@@ -1328,3 +1328,20 @@ function _stripBadFileChars($fname) {
 	return str_replace(array('..' . DIRECTORY_SEPARATOR, DIRECTORY_SEPARATOR, chr(0)), '', $fname);
 }
 
+
+if (!is_callable('mb_substr')) {
+	// ffs!
+	function mb_substr() {
+		$a = func_get_args();
+		return call_user_func_array('substr', $a);
+	}
+	function mb_strpos() {
+		$a = func_get_args();
+		return call_user_func_array('strpos', $a);
+	}
+	function mb_strlen() {
+		$a = func_get_args();
+		return call_user_func_array('strlen', $a);
+	}
+}
+
