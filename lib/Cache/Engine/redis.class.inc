@@ -58,7 +58,8 @@ class PXCacheRedis implements IPXCache {
 	}
 	
 	public function clear() {
-		// Kill em all? Really?
+		if(!$this->impl) return false;
+		return $this->impl->flushDB();
 	}
 }
 ?>
