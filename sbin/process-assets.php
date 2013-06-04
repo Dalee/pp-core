@@ -309,6 +309,7 @@
 			$cmd[] = $compressorBinary; // /usr/bin/yui-compressor
 			$cmd[] = $sourceFile;   // .../asset-....(js|css)
 			$cmd[] = "--type js";
+			$cmd[] = "--charset=koi8-r";
 			$cmd[] = "-o";
 			$cmd[] = $tempFile;
 
