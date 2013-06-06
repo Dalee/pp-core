@@ -1036,7 +1036,7 @@ class PXDatabase extends NLSQLDatabaseAdapter implements IPXDatabase {
 			$sysMetaField = array();
 			foreach ($format->fields as $k=>$v) {
 				$p = array('id'=>$object['id'], 'format'=>$format->id);
-				$v->storageType->proceedFile($v, $object, $p);
+				//$v->storageType->proceedFile($v, $object, $p);
 
 				$proceedFileResult = $v->storageType->proceedFile($v, $object, $p);
 				if(in_array($k, $sysMetaFieldList) && $proceedFileResult) {
@@ -1045,16 +1045,14 @@ class PXDatabase extends NLSQLDatabaseAdapter implements IPXDatabase {
 			}
 
 			// обновляем sys_meta, если есть что туда записать.
-			if (count($sysMetaField) > 0) {
-				$sqlUpdateRule = sprintf(
-					"sys_meta = %s",
-					$this->MapData(
-						json_encode_koi($sysMetaField)
-					)
-				);
-				$query = sprintf('UPDATE %s SET %s WHERE id = %s', $format->id, $sqlUpdateRule, $object['id']);
-				$this->ModifyingQuery($query);
-			}
+			$sqlUpdateRule = sprintf(
+				"sys_meta = %s",
+				count($sysMetaField) > 0
+					? $this->MapData(json_encode_koi($sysMetaField))
+					: 'NULL'
+			);
+			$query = sprintf('UPDATE %s SET %s WHERE id = %s', $format->id, $sqlUpdateRule, $object['id']);
+			$this->ModifyingQuery($query);
 
 			$this->transactionCommit();
 			$object['sys_order'] = isset($objectInDB['sys_order']) ? $objectInDB['sys_order'] : null;
