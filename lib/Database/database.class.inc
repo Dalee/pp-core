@@ -1735,6 +1735,7 @@ SQL;
 
 				$notInDb = $fv->storageType->notInDb($fv, $table[$k], $p);
 				if (($withoutNotInDB && $notInDb) || ($isMetaPresent && $notInDb)) {
+					$table[$k][$fk] = null;
 					continue;
 				}
 
