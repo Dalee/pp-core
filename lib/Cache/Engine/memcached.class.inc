@@ -1,0 +1,65 @@
+<?php
+class PXCacheMemcached implements IPXCache {
+	private $_mcHandler;
+	private $expirationTime;
+	private $cacheNamespace;
+	
+	public  $host = 'localhost';
+	public  $port = 11211;
+	
+	function __construct($cacheDomain = null, $defaultExpire = 3600, $connectorArgs = null) {
+		extension_loaded("memcached") or FatalError(get_class($this) . " error: memcached extension doesn't loaded or installed");
+		$this->expirationTime = (int)$defaultExpire;
+		$this->cacheNamespace = md5(BASEPATH . $cacheDomain);
+		@list($host, $port)   = explode(':', $connectorArgs, 2);
+		$this->host           = strlen($host) ? $host : $this->host;
+		$this->port           = ($port = (int)$port) > 0 ? $port : $this->port;
+		$this->_mcHandler     = $this->connect();
+	}
+	
+	private function connect() {
+		$mcObject = new Memcached($this->cacheNamespace);
+		
+		if (!count($mcObject->getServerList())) {
+			//Persistent connection settings must be set only once!
+			$mcObject->setOptions(
+				array(
+					Memcached::OPT_HASH => Memcached::HASH_MURMUR,
+					Memcached::OPT_BINARY_PROTOCOL => true,
+					Memcached::OPT_PREFIX_KEY => $this->cacheNamespace,
+					Memcached::OPT_TCP_NODELAY => true //for small data packets
+				)
+			);
+			//TODO: multiple servers support NNADA?!
+			$mcObject->addServer($this->host, $this->port) or FatalError(
+				get_class($this) . " error: could not add Memcached server at {$this->host}:{$this->port} !"
+			);
+		}
+		
+		return $mcObject;
+	}
+	
+	function exists($key) {
+		$this->_mcHandler->get(md5($key));
+		return $this->_mcHandler->getResultCode() !== Memcached::RES_NOTFOUND;
+	}
+	
+	function save($key, $data, $expTime = null){
+		$expTime = (int)$expTime;
+		$this->_mcHandler->set(md5($key), $data, $expTime > 0 ? $expTime : $this->expirationTime);
+	}
+	
+	function load($key) {
+		$res = $this->_mcHandler->get(md5($key));
+		return $this->_mcHandler->getResultCode() == Memcached::RES_NOTFOUND ? null : $res;
+	}
+	
+	function delete($key) {
+		$this->_mcHandler->delete(md5($key));
+	}
+	
+	function clear() {
+		$this->_mcHandler->flush();
+	}
+}
+?>
