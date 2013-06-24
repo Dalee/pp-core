@@ -56,7 +56,7 @@ class PXFieldDescription {
 
 					case 'listed':
 						$listed = strtoupper($value);
-						$this->listed = $listed == 'TRUE' ? true : false;
+						$this->listed = $listed == 'TRUE';
 						break;
 
 					case 'defaultvalue':
@@ -71,7 +71,7 @@ class PXFieldDescription {
 
 					case 'noindex': 
 						$noindex = strtoupper($value); 
-						$this->noindex = $noindex == 'TRUE' ? true : false;
+						$this->noindex = $noindex == 'TRUE';
 						break;
 
 					default:

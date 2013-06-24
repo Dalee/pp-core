@@ -267,7 +267,7 @@ class NLMSSQLDatabase extends NLAbstractSQLDatabase {
 	}
 
 	function importBoolean($string) {
-		 return ($string == '1') ? true : false;
+		 return $string == '1';
 	}
 
 	function exportDateTime($string) {

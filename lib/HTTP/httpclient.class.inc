@@ -207,7 +207,7 @@ class NLHTTPClient {
 	}
 
 	function CloseConnect() {
-		$tmp = @fclose($this->connection) ? true : false;
+		$tmp = @!!fclose($this->connection);
 		$this->connection = false;
 		return $tmp;
 	}

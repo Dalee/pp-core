@@ -486,7 +486,7 @@ class PXModuleObjects extends PXModule {
 
 	function actionChangeStatus() {
 		$object = $this->db->getObjectById($this->datatype, $this->request->getId());
-		$object['status'] = ($object['status'] == true) ? false : true;
+		$object['status'] = !$object['status'];
 		$this->db->modifyContentObject($this->datatype, $object);
 
 		$this->returnToReferer();

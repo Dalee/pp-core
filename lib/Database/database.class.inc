@@ -385,6 +385,7 @@ class PXDatabase extends NLSQLDatabaseAdapter implements IPXDatabase {
 		}
 
 		$selector .= $format->id.'.sys_created, '.$format->id.'.sys_modified, '.$format->id.'.sys_order';
+
 		if ($has_sys_meta) {
 			$selector .= sprintf(', %s.%s', $format->id, 'sys_meta');
 		}
@@ -716,18 +717,17 @@ class PXDatabase extends NLSQLDatabaseAdapter implements IPXDatabase {
 			}
 		}
 
-		// формируем список полей которые не будут сохранены в базу данных
-		// ориентируемся на результат выполнения notInDb, для файловых
-		// и виртуальных полей метод должен возвращать true.
-		$cuttedFieldDiff = array_diff(array_keys($format->fields), $dbFields);
-		$sysMetaFieldList = array();
-		foreach($cuttedFieldDiff as $k) {
-			if($format->fields[$k]->storageType->notInDb($format->fields[$k], $object)) {
-				$sysMetaFieldList[] = $k;
-			}
-		}
-
 		if($permitAdd){
+			// формируем список полей которые не будут сохранены в базу данных
+			// ориентируемся на результат выполнения notInDb, для файловых
+			// и виртуальных полей метод должен возвращать true.
+			$cuttedFieldDiff = array_diff(array_keys($format->fields), $dbFields);
+			$sysMetaFieldList = array();
+			foreach($cuttedFieldDiff as $k) {
+				if($format->fields[$k]->storageType->notInDb($format->fields[$k], $object)) {
+					$sysMetaFieldList[] = $k;
+				}
+			}
 			// открываем транзакцию
 			$this->transactionBegin();
 			$newId = $this->InsertObject($format->id, $dbFields, $dbValues);
@@ -993,17 +993,6 @@ class PXDatabase extends NLSQLDatabaseAdapter implements IPXDatabase {
 			}
 		}
 
-		// формируем список полей которые не будут сохранены в базу данных
-		// ориентируемся на результат выполнения notInDb, для файловых
-		// и виртуальных полей метод должен возвращать true.
-		$cuttedFieldDiff = array_diff(array_keys($format->fields), $dbFields);
-		$sysMetaFieldList = array();
-		foreach($cuttedFieldDiff as $k) {
-			if($format->fields[$k]->storageType->notInDb($format->fields[$k], $object)) {
-				$sysMetaFieldList[] = $k;
-			}
-		}
-
 		$permitModify = true;
 		foreach ($this->triggers as $t){
 			$permitModify = $t->getTrigger()->OnBeforeModifyObject($this, $object['id'], $format, $object, $dbFields, $dbValues, $objectInDB);
@@ -1011,6 +1000,17 @@ class PXDatabase extends NLSQLDatabaseAdapter implements IPXDatabase {
 		}
 
 		if ($permitModify) {
+			// формируем список полей которые не будут сохранены в базу данных
+			// ориентируемся на результат выполнения notInDb, для файловых
+			// и виртуальных полей метод должен возвращать true.
+			$cuttedFieldDiff = array_diff(array_keys($format->fields), $dbFields);
+			$sysMetaFieldList = array();
+			foreach($cuttedFieldDiff as $k) {
+				if($format->fields[$k]->storageType->notInDb($format->fields[$k], $object)) {
+					$sysMetaFieldList[] = $k;
+				}
+			}
+			
 			$dbFields[] = 'sys_modified';
 			$dbValues[] = '##now##';
 			$this->transactionBegin();
@@ -1726,7 +1726,7 @@ SQL;
 	function _NormalizeTable(&$table, $format, $withoutNotInDB = false) {
 		foreach ($table as $k=>$v) {
 
-			$isMetaPresent = empty($v['sys_meta']) ? false : true;
+			$isMetaPresent = !empty($v['sys_meta']);
 
 			foreach ($format->fields as $fk=>$fv) {
 				$p = array('db'=>&$this, 'format'=>$format->id);

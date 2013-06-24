@@ -423,11 +423,11 @@ class PXAdminTable extends PXAdminComplexWidget {
 	}
 
 	function isFirstOnPage ($row) {
-		return $row == 0 && ($this->position & MASK_FIRST_PAGE) ? true : false;
+		return $row == 0 && ($this->position & MASK_FIRST_PAGE);
 	}
 
 	function isLastOnPage ($row) {
-		return $row == sizeof($this->data)-1 && $this->position & MASK_LAST_PAGE ? true : false;
+		return $row == sizeof($this->data)-1 && ($this->position & MASK_LAST_PAGE);
 	}
 
 	function setCaption($text) {

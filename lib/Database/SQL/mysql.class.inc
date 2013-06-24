@@ -228,7 +228,7 @@ class NLMYSQLDatabase extends NLAbstractSQLDatabase {
 	}
 
 	function importBoolean($string) {
-		return ($string == 't' || $string == '1') ? true : false;
+		return $string == 't' || $string == '1';
 	}
 
 	function DateTimeString($value) {
