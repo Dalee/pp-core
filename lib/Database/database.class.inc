@@ -1030,13 +1030,11 @@ class PXDatabase extends NLSQLDatabaseAdapter implements IPXDatabase {
 					$query = 'UPDATE '.$format->id.' SET pid=NULL WHERE id='.$object['id'];
 					$this->ModifyingQuery($query);
 				}
-
 			}
 
 			$sysMetaField = array();
 			foreach ($format->fields as $k=>$v) {
 				$p = array('id'=>$object['id'], 'format'=>$format->id);
-				//$v->storageType->proceedFile($v, $object, $p);
 
 				$proceedFileResult = $v->storageType->proceedFile($v, $object, $p);
 				if(in_array($k, $sysMetaFieldList) && $proceedFileResult) {
@@ -1044,15 +1042,19 @@ class PXDatabase extends NLSQLDatabaseAdapter implements IPXDatabase {
 				}
 			}
 
-			// обновляем sys_meta, если есть что туда записать.
-			$sqlUpdateRule = sprintf(
-				"sys_meta = %s",
-				count($sysMetaField) > 0
-					? $this->MapData(json_encode_koi($sysMetaField))
-					: 'NULL'
-			);
-			$query = sprintf('UPDATE %s SET %s WHERE id = %s', $format->id, $sqlUpdateRule, $object['id']);
-			$this->ModifyingQuery($query);
+			if (count($sysMetaFieldList) > 0) {
+				// обновляем sys_meta, если есть что туда записать,
+				// а так же, если у объекта вообще есть поля типа notInDb! Иначе нарушается логика!
+				// см. логику выборки в методе createSelector() (проверка has_sys_meta)!
+				$sqlUpdateRule = sprintf(
+					"sys_meta = %s",
+					count($sysMetaField) > 0
+						? $this->MapData(json_encode_koi($sysMetaField))
+						: 'NULL'
+				);
+				$query = sprintf('UPDATE %s SET %s WHERE id = %s', $format->id, $sqlUpdateRule, $object['id']);
+				$this->ModifyingQuery($query);
+			}
 
 			$this->transactionCommit();
 			$object['sys_order'] = isset($objectInDB['sys_order']) ? $objectInDB['sys_order'] : null;
