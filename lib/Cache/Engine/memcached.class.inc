@@ -18,7 +18,8 @@ class PXCacheMemcached implements IPXCache {
 	}
 	
 	private function connect() {
-		$mcObject = new Memcached($this->cacheNamespace);
+		//Avoid persistent connections from cronruns! Non-threadsafe!
+		$mcObject = new Memcached($this->cacheNamespace . getmypid()); //threadsafe cronjob protection
 		
 		if (!count($mcObject->getServerList())) {
 			//Persistent connection settings must be set only once!
