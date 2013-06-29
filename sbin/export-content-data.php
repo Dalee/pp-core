@@ -15,16 +15,18 @@ $app = PXRegistry::getApp();
 $db = PXRegistry::getDb();
 
 
-
 // defaults
 $limit = 100;
 $skipTypes = array(
 	'suser',
 	'sgroup',
-	'sys_regions',
 	'adbanner',
 	'adplace',
 	'adcampaign'
+);
+
+$sysTypes = array(
+	'sys_regions'
 );
 
 $export = array();
@@ -40,17 +42,21 @@ foreach ($app->types as $typeKey => $type) {
 	if ($parentType && in_array($parentType->id, $skipTypes)) continue;
 
 	// fetch all data for type
-	$export['data'][$type->id] = $db->getObjects($type, null);
+	$exportKey = in_array($type->id, $sysTypes)? 'sys_data' : 'data';
+	$export[$exportKey][$type->id] = $db->getObjects($type, null);
 
 	// fetch schema data - todo.
 	// $export['schema']
 }
 
 // fetch references
-/*foreach ($app->references as $k => $v) {
+/*
+$export['reference_data'] = array();
+foreach ($app->references as $k => $v) {
 	if (in_array($v['from'], $skipTypes) || in_array($v['to'], $skipTypes)) continue;
 	// todo: make it if you need it
-}*/
+}
+*/
 
 // fetch file data
 $outpath = tempnam(BASEPATH.'/tmp', 'pp.export');
