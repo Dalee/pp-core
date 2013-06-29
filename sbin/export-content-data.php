@@ -39,8 +39,6 @@ foreach ($app->types as $typeKey => $type) {
 	}
 	if ($parentType && in_array($parentType->id, $skipTypes)) continue;
 
-	if (in_array($typeKey, array('struct'))) continue;
-
 	// fetch all data for type
 	$export['data'][$type->id] = $db->getObjects($type, null);
 
