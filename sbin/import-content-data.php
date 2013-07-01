@@ -21,6 +21,12 @@ function mime_type($filename) {
 	return $mime;
 }
 
+if (!is_callable('mb_strtolower')) {
+	function mb_strtolower($str) {
+		return strtolower($str);
+	}
+}
+
 ini_set('display_errors', '1');
 $engine = new PXEngineSbin();
 
@@ -28,17 +34,30 @@ $app = PXRegistry::getApp();
 $db = PXRegistry::getDb();
 
 // prepare args (strip flags)
-$args = $argv;
+$_param_names = array('p' => 'prefix',);
+$_flag_names = array('i' => 'ignore-missed-fields',);
+$args = array();
 $flags = array();
-foreach ($args as $k => $arg) {
+$params = array();
+reset($args);
+$i = 0;
+while (($arg = next($argv)) !== false) {
+	$i ++;
+	$k = key($args);
 	if ($arg[0] === '-') {
-		empty($flags[$arg[1]]) && $flags[$arg[1]] = 0;
-		$flags[$arg[1]]++;
-		unset($args[$k]);
+		if (isset($_param_names[$arg[1]])) {
+			empty($argv[$k+1]) && usage('Missed value for parameter '.$arg[0].$arg[1]);
+			$params[$_param_names[$arg[1]]] = next($argv);
+		} elseif (isset($_flag_names[$arg[1]])) {
+			empty($flags[$_flag_names[$arg[1]]]) && $flags[$_flag_names[$arg[1]]] = 0;
+			$flags[$_flag_names[$arg[1]]]++;
+		}
+	} else {
+		$args[] = $arg;
 	}
+	($i < 15) || die('too many params');
 }
-$args = array_values(array_filter($args));
-
+array_unshift($args, $argv[0]);
 
 // defaults
 $limit = 100;
@@ -46,7 +65,6 @@ $system_datatypes = array(
 	'struct',
 	'suser',
 	'sgroup',
-	'sys_regions',
 	'adbanner',
 	'adplace',
 	'adcampaign'
@@ -58,6 +76,9 @@ $system_fields = array(
 	'sys_meta' => 3,
 	'sys_owner' => 4,
 	'allowed' => 5
+);
+$system_struct_types = array(
+	'redirect' => 1
 );
 
 function usage($err = null) {
@@ -81,8 +102,56 @@ function wrong_schemas($err) {
 	die(1);
 }
 
+// sync sys_regions
+$sys_regions_map = false;
+if (isset($import['sys_data']['sys_regions'])) {
+	if (empty($app->types['sys_regions'])) {
+		wrong_schemas('System regions relation doesn\'t exist in the local database. You should fix it manually.');
+	}
+	Label ('Syncing system regions data');
+	$outer_sys_regions = $import['sys_data']['sys_regions'];
+	$inner_sys_regions = $db->getObjects($app->types['sys_regions'], null);
+	$sys_regions_map = array();
+
+	$hardcoded_alias_sets = array(
+		array('МегаФон в России', 'МегаФон Головной офис'),
+		array('Республика Карачаево-Черкесия', 'Республика Карачаево-Черкессия'),
+		array('Норильск и Таймырский МР', 'Таймырский МР'),
+	);
+	foreach ($outer_sys_regions as $outer_region) {
+		$found_alias_set = false;
+		foreach ($hardcoded_alias_sets as $alias_set) {
+			if (in_array($outer_region['title'], $alias_set)) {
+				$found_alias_set = $alias_set;
+				break;
+			}
+		}
+		foreach ($inner_sys_regions as $inner_region) {
+			// if titles equal or title alias equal to inner region title
+			if (mb_strtolower($inner_region['title']) != mb_strtolower($outer_region['title']) && !($found_alias_set && in_array($inner_region['title'], $found_alias_set))) {
+				continue;
+			}
+			$sys_regions_map[$outer_region['id']] = $inner_region['id'];
+			break;
+		}
+		// fail back
+		if (empty($sys_regions_map[$outer_region['id']])) {
+			Label('Region was not found in the local database');
+			d20($outer_region, $found_alias_set);die;
+		}
+	}
+}
+
+/*Label('Synchronization results:');
+foreach ($sys_regions_map as $oldreg => $newreg) {
+	Label(sprintf('%2.d.%-30.s - %2.d.%-30.s', $oldreg, $outer_sys_regions[$oldreg]['title'], $newreg, $inner_sys_regions[$newreg]['title']));
+}
+//*/
+
 // check schemas of data
 $oldIdParentMap = array();
+$oldIdSysReflexIdMap = array();
+Label('Checking for scheme compatibility');
 foreach ($import['data'] as $typeKey => $objects) {
 	empty($app->types[$typeKey]) && wrong_schemas('Undefined datatype "'.$typeKey.'".');
 
@@ -91,6 +160,7 @@ foreach ($import['data'] as $typeKey => $objects) {
 	$oldIdParentMap[$typeKey] = array();
 	foreach ($objects as $object) {
 		$oldIdParentMap[$typeKey][$object['id']] = isset($object['parent'])? $object['parent'] : 0;
+		$oldIdSysReflexIdMap[$typeKey][$object['id']] = isset($object['sys_reflex_id'])? $object['sys_reflex_id'] : 0;
 		if ($next) continue;
 		foreach ($object as $k => $v) {
 			// skip system fields and pass valid
@@ -98,7 +168,7 @@ foreach ($import['data'] as $typeKey => $objects) {
 				continue;
 			}
 			// throw warn if flag -i set and field of system datatype
-			if (in_array($typeKey, $system_datatypes) && !empty($flags['i'])) {
+			if (in_array($typeKey, $system_datatypes) && !empty($flags['ignore-missed-fields'])) {
 				Label('Warn: Unexistent field "'.$k.'" at datatype "'.$typeKey.'".');
 				$next = 1;
 			// throw exception if didn't
@@ -106,6 +176,29 @@ foreach ($import['data'] as $typeKey => $objects) {
 				wrong_schemas('Unexistent field "'.$k.'" at datatype "'.$typeKey.'".');
 			}
 		}
+	}
+}
+if (isset($import['data']['struct'])) {
+	$structTypes = $app->directory['struct-type']->values;
+	$objects =& $import['data']['struct'];
+	$templatepath = LOCALPATH.'templates/lt/';
+	foreach ($objects as $id => &$object) {
+		$stype = $object['type'];
+		if (isset($system_struct_types[$stype])) {
+			continue;
+		}
+		if (!empty($params['prefix']) && isset($structTypes[$params['prefix'].'/'.$stype])) {
+			$stype = $params['prefix'].'/'.$stype;
+		}
+		if (!isset($structTypes[$stype])) {
+			$err = 'Missed struct type "'.$object['type'].'" at struct#'.$object['id'];
+			empty($flags['ignore-missed-fields'])? wrong_schemas($err) : Label('Warn: '.$err);
+		}
+		if (!file_exists($templatepath.$stype.'.tmpl')) {
+			$err = 'Missed template for struct type "'.$object['type'].'" at struct#'.$object['id'];
+			empty($flags['ignore-missed-fields'])? wrong_schemas($err) : Label('Warn: '.$err);
+		}
+		$object['type'] = $stype;
 	}
 }
 
@@ -168,11 +261,13 @@ foreach ($order as $typeKey => $order) {
 	while (!empty($objects)) {
 		$object = array_shift($objects);
 		$oldId = $object['id'];
-		if (isset($object['parent'])) {
+
+		// update parent field if exist
+		if (isset($object['parent']) && empty($object['__parent__fixed'])) {
 			if (isset($idMap[$type->parent][$object['parent']])) {
 				$object['parent'] = $idMap[$type->parent][$object['parent']];
+				$object['__parent__fixed'] = true;
 			} else if (isset($oldIdParentMap[$type->parent][$object['parent']])) {
-				// $objects[$object['parent']]
 				array_push($objects, $object);
 				continue;
 			} else {
@@ -180,10 +275,31 @@ foreach ($order as $typeKey => $order) {
 				rollback_n_die('Parent '.$type->parent.'#'.$object['parent'].' for object '.$typeKey.'#'.$object['id'].' not exist.', $object);
 			}
 		}
-		unset($object['id']);
-		if (isset($object['type']) && $object['type'] == 'devices' && $object['pathname'] == 'uslugi_svyazi__telefoniya_vnutri_s1') {
-			//	d2($object);
+
+		// update sys_reflex_id field
+		if (!empty($object['sys_reflex_id']) && empty($object['__sys_reflex_id__fixed'])) {
+			if (isset($idMap[$typeKey][$object['sys_reflex_id']])) {
+				$object['sys_reflex_id'] = $idMap[$typeKey][$object['sys_reflex_id']];
+				$object['__sys_reflex_id__fixed'] = true;
+			} else if (isset($oldIdSysReflexIdMap[$typeKey][$object['sys_reflex_id']])) {
+				array_push($objects, $object);
+				continue;
+			} else {
+				d20($oldIdSysReflexIdMap[$type->id]);
+				rollback_n_die('SysReflexId '.$typeKey.'#'.$object['sys_reflex_id'].' for object '.$typeKey.'#'.$object['id'].' not exist.', $object);
+			}
 		}
+
+		// update sys_regions field
+		if (isset($object['sys_regions'])) {
+			foreach ($object['sys_regions'] as $k => $oldRegionId) {
+				$object['sys_regions'][$k] = isset($sys_regions_map[$oldRegionId])? $sys_regions_map[$oldRegionId] : null;
+			}
+			$object['sys_regions'] = array_values(array_filter($object['sys_regions']));
+		}
+
+		// and drop id before creating new object
+		unset($object['id']);
 
 		$obj = array_merge($app->initContentObject($typeKey), $object);
 		WorkProgress(false, $count);
@@ -198,9 +314,9 @@ foreach ($order as $typeKey => $order) {
 		}
 
 		/* array (
-    		[name] => 'cat_grass_and_green_background-1024x768.jpg'
-    		[type] => 'image/jpeg'
-    		[tmp_name] => '/var/tmp/phpVXi96P' ) */
+			[name] => 'cat_grass_and_green_background-1024x768.jpg'
+			[type] => 'image/jpeg'
+			[tmp_name] => '/var/tmp/phpVXi96P' ) */
 		// prepare files
 		unset ($obj['sys_meta']);
 		foreach ($file_fields as $fk) {
@@ -218,33 +334,15 @@ foreach ($order as $typeKey => $order) {
 			);
 		}
 
-		if (($typeKey == 'spend_icon' && in_array($oldId, array(1,2,3,4,5,6,7,8,9))) || ($typeKey == 'news' and in_array($oldId, array(2,3,8,9,10,11)))) {
-			//d20($file_fields);
-			//d2($obj);
-		}
 		// add content object
 		$idMap[$typeKey][$oldId] = $obj['id'] = @$db->addContentObject($type, $obj);
 		$db->modifyObjectSysVars($type, $obj);
-		$objx = $db->getObjectById($type, $obj['id']);
-
-		// put files in place
-		/*foreach ($file_fields as $fk) {
-			if (empty($object[$fk]) || empty($object[$fk]['path']) || !file_exists($object[$fk]['path'])) continue;
-
-			// fixup it: ai generation path can be different
-			$input_file = $outpath . $object[$fk]['path'];
-			$out_file = HTDOCS_PATH . sprintf('ai/%s/%d/%s');
-			if (file_exists($file)) { // clean if no file. broken data
-				$objects[$id][$fk] = null;
-			} else {
-				$dest = $outpath . $object[$fk]['path'];
-				MakeDirIfNotExists(dirname($dest));
-				copy($file, $dest);
-			}
-		}*/
-		if (($typeKey == 'spend_icon' && in_array($oldId, array(1,2,3,4,5,6,7,8,9))) || ($typeKey == 'news' and in_array($oldId, array(2,3,8,9,10,11)))) {
-			//d2($objx);die;
+		if (!empty($object['sys_reflex_id'])) { // untested behaviour! checkit up asap
+			$objx = $db->getObjectById($type, $obj['id']);
+			d20($objx);
+			rollback_n_die();
 		}
+
 	}
 	WorkProgress(true);
 }
@@ -257,6 +355,7 @@ $db->transactionCommit();
 // d20($import['data']);die;
 
 die;
+
 
 // fetch file data
 $outpath = tempnam(BASEPATH.'/tmp', 'pp.export');
