@@ -6,6 +6,7 @@ interface IPXCache {
 	function load($objectKey);
 	function delete($objectKey);
 	function clear();
+	function increment($numberKey, $offset = 1 , $initial = 0, $expirationTime = null);
 }
 
 ?>

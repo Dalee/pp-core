@@ -30,7 +30,13 @@ class PXCacheApc implements IPXCache {
 	function delete($key){
 		return apc_delete($this->key($key));
 	}
-	
+
+	public function increment($key, $offset = 1 , $initial = 0, $expTime = null) {
+		$key = $this->key($key);
+		apc_exists($key) || apc_store($key, $initial, (int)$expTime);
+		return apc_inc($key, $offset);
+	}
+
 	function clear(){
 		return apc_clear_cache("user");
 	}

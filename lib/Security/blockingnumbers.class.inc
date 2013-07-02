@@ -9,64 +9,78 @@ class NLBlockingNumbers {
 	var $key;
 	var $value;
 	var $isblocking;
+	var $storage;
 
-	function NLBlockingNumbers($path = null) {
-		if (is_null($path)) $path = BASEPATH . '/tmp/blocking_nums/';
-		$this->path       = preg_replace('|//+|', '/', rtrim(trim($path), '/'));
+	const STORAGE_PROPERTY = 'BLOCKING_NUMBERS_STORAGE';
+
+	protected static $_storage = null;
+
+	protected static function getStorage() {
+		if (self::$_storage ) {
+			return self::$_storage ;
+		}
+
+		try {
+			$app = PXRegistry::getApp();
+			$storage  = $app->getProperty(self::STORAGE_PROPERTY, 'file');
+		} catch (Exception $e) {
+			$path       = pp_fetch_file(pp_base_paths('etc'), 'properties.ini');
+			$properties = parse_ini_file($path, true);
+			$storage    = isset($properties[self::STORAGE_PROPERTY]) ? $properties[self::STORAGE_PROPERTY] : '';
+		}
+		$storage || $storage = 'file';
+
+		return self::$_storage  = ObjectCache::get($storage, 'captcha');
+	}
+
+	function NLBlockingNumbers($path = null, $storage = null) {
+		$this->storage    = isset($storage) ? $storage : self::getStorage();
+		$this->path       = empty($path) ? 'captcha' : $path;
 		$this->isblocking = true;
 		$this->key        = -1;
 		$this->value      = "";
 	}
 
 	function CreateNew($chars = 4, $alphabet = '0123456789') {
-		MakeDirIfNotExists($this->path);
-		$old_max_key = 0;
+		if (!$this->storage) {
+			return false;
+		}
 
-		if (!$f = @fopen($this->path . '.lastid', 'a+')) return false;
-		flock($f, LOCK_EX);
-
-		list(,,,,,,,$size) = fstat($f);
-		if ($size) $old_max_key = intval(fread($f,$size));
-		$this->key = $old_max_key + 1;
+		$this->key = $lastid = $this->storage->increment($this->key('lastid'));
 
 		$this->value = '';
 		$n = strlen($alphabet);
-		for($i = 0; $i < $chars; $i++) {
-			$this->value .= $alphabet{mt_rand(0, $n-1)};
+		for ($i = 0; $i < $chars; $i++) {
+			$this->value .= $alphabet[mt_rand(0, $n-1)];
 		}
 
-		if (!$fk = @fopen($this->path . '/' . $this->key, 'w')) {
-			fclose($f);
-			return false;
-		}
-		fwrite($fk, $this->value);
-		fclose($fk);
+		$this->storage->save($this->key($lastid), $this->value);
 
-		ftruncate($f, 0);
-		fseek($f, 0);
-		fwrite($f, $this->key);
-		fclose($f);
 		return true;
 	}
 
 	function CheckValueByKey($key, $checkValue, $removeKey = true) {
 		$key = (int)$key;
-		$r = @file_get_contents($this->path . '/' . $key);
-		if ($removeKey) $this->RemoveKey($key);
-		return ($r !== false) and ($r === $checkValue);
+		$val = $this->storage->load($this->key($key));
+
+		if ($removeKey) {
+			$this->storage->delete($this->key($key));
+		}
+
+		return $val === $checkValue;
 	}
 
 	function GetValueByKey($key) {
 		$key = (int)$key;
-		if(file_exists($this->path . '/' . $key)) {
-			return file_get_contents($this->path . '/' . $key);
-		} else {
-			return NULL;
-		}
+		return $this->storage->load($this->key($key));
 	}
 
 	function RemoveKey($key) {
-		@unlink($this->path . '/' . (int)$key);
+		$this->storage->delete($this->key($key));
+	}
+
+	protected function key($key){
+		return $this->path . '.' . $key;
 	}
 }
 ?>

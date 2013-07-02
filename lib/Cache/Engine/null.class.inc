@@ -5,5 +5,6 @@ class PXCacheNull implements IPXCache {
 	function load($objectKey) {}
 	function delete($objectKey) {}
 	function clear() {}
+	function increment($key, $offset = 1 , $initial = 0, $expTime = null) {return $initial;}
 }
 ?>

@@ -10,9 +10,9 @@ class PXCacheFile implements IPXCache {
 		if ($cacheDomain !== null) {
 			$this->cache_dir .= $cacheDomain .'/';
 		}
-		
+
 		$this->setExpire((int)$defaultExpire);
-		
+
 		$this->_createCacheDir();
 	}
 
@@ -45,6 +45,31 @@ class PXCacheFile implements IPXCache {
 		return $this->_doLoad($fileName);
 	}
 
+	function increment($numberKey, $offset = 1 , $initial = 0, $expTime = null) {
+		$fileName = $this->_getFilename($numberKey);
+		$fp = @fopen($fileName, 'a+b');
+
+		if ($fp !== false) {
+			if (flock($fp, LOCK_EX)) {
+				if (!$this->_isExpired($fp)) { // note: valid until 2038 ;)
+					$data = '';
+					while(!feof($fp)) $data .= fread($fp, 8192);
+				}
+				isset($data) || $data = $initial;
+				$data += $offset;
+				fseek($fp, 0, SEEK_SET);
+				fwrite($fp, (time() + ($expTime ? $expTime : $this->expire)) . $data);
+				flock($fp, LOCK_UN);
+			}
+
+			fclose($fp);
+		}
+		if(!isset($data)) {
+			FatalError('Reading/writing file error "'.$fileName . '"');
+		}
+		return isset($data) ? $data : $initial;
+	}
+
 	function loadStaled($objectId) {
 		$fileName = $this->_getFilename($objectId);
 		return $this->_doLoad($fileName, 'expired');
@@ -66,7 +91,7 @@ class PXCacheFile implements IPXCache {
 				$expired = $this->_isExpired($fp);
 				flock($fp, LOCK_UN);
 			}
-			
+
 			fclose($fp);
 		}
 

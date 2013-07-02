@@ -59,6 +59,10 @@ class PXCacheMemcached implements IPXCache {
 		$this->_mcHandler->delete(md5($key));
 	}
 	
+	function increment($key, $offset = 1 , $initial = 0, $expTime = null) {
+		$this->_mcHandler->increment(md5($key), $offset, $initial, (int)$expTime);
+	}
+
 	function clear() {
 		$this->_mcHandler->flush();
 	}
