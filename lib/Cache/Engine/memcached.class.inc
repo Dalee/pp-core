@@ -63,6 +63,7 @@ class PXCacheMemcached implements IPXCache {
 
 	function increment($key, $offset = 1 , $initial = 0, $expTime = null) {
 		$k = $this->key($key);
+		$this->exists($key) || $this->save($key, $initial, $expTime);
 		$this->_mcHandler->increment($this->key($key), $offset, $initial, (int)$expTime);
 		return $this->load($key); // increment returns -1 sometimes
 	}
