@@ -10,7 +10,8 @@
 		default:
 		case 'get_image':
 			$k = (int)$request->GetVar('k');
-			if(($str = $bn->GetValueByKey($k)) == ''){
+			if (($str = $bn->GetValueByKey($k)) == '') {
+				// trigger_error('Blocking number '.$k.' was not found');
 				$response = & PXResponse::getInstance();
 				$response->notFound();
 				$response->send();

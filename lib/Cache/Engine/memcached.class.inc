@@ -53,7 +53,7 @@ class PXCacheMemcached implements IPXCache {
 	}
 
 	function load($key) {
-		$res = $this->_mcHandler->get($this->key($key));
+		$res = $this->_mcHandler->get($this->key($key)); // look at that: https://github.com/php-memcached-dev/php-memcached/issues/21
 		return $this->_mcHandler->getResultCode() == Memcached::RES_NOTFOUND ? null : $res;
 	}
 
@@ -62,10 +62,10 @@ class PXCacheMemcached implements IPXCache {
 	}
 
 	function increment($key, $offset = 1 , $initial = 0, $expTime = null) {
+		($expTime > 0) || ($expTime = $this->expirationTime);
 		$k = $this->key($key);
-		$this->exists($key) || $this->save($key, $initial, $expTime);
-		$this->_mcHandler->increment($this->key($key), $offset, $initial, (int)$expTime);
-		return $this->load($key); // increment returns -1 sometimes
+		$this->_mcHandler->add($k, $initial, $expTime);
+		return $this->_mcHandler->increment($this->key($key), $offset, $initial, $expTime);
 	}
 
 	protected function key($key) {

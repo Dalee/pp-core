@@ -57,6 +57,7 @@ class PXCacheFile implements IPXCache {
 				}
 				isset($data) || $data = $initial;
 				$data += $offset;
+				ftruncate($fp, 0);
 				fseek($fp, 0, SEEK_SET);
 				fwrite($fp, (time() + ($expTime ? $expTime : $this->expire)) . $data);
 				flock($fp, LOCK_UN);
