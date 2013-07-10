@@ -11,17 +11,17 @@ class PXRequest {
 	var $postData;
 	var $cookieData;
 
-	protected $rootPathsList = array( 
-		'index.html', 
-		'index.shtml', 
-		'index.phtml', 
-		'index.php', 
-		'index.php3', 
-		'index.php4', 
-		'default.htm', 
-		'default.asp', 
-		'index.jsp' 
-	); 
+	protected $rootPathsList = array(
+		'index.html',
+		'index.shtml',
+		'index.phtml',
+		'index.php',
+		'index.php3',
+		'index.php4',
+		'default.htm',
+		'default.asp',
+		'index.jsp'
+	);
 
 	function __construct() {
 		$this->httpMethod = $this->GetHttpMethod();
@@ -95,7 +95,7 @@ class PXRequest {
 		$tmpArray = explode("/", $this->path);
 		$path = array();
 		foreach ($tmpArray as $tmp) {
-			if (!strlen($tmp) || 
+			if (!strlen($tmp) ||
 				in_array(
 					$tmp,
 					$this->rootPathsList,
@@ -342,7 +342,7 @@ class PXRequest {
 		} elseif (file_exists(BASEPATH.'/libpp/handlers/'.$file)) {
 			include_once BASEPATH.'/libpp/handlers/'.$file;
 		}
-	}	
+	}
 
 	function doHandler(&$field, &$object_field, $handler, $extraArgs) {
 		$function = 'PXInputHandler'.$handler;
@@ -423,13 +423,18 @@ class PXRequest {
 		if(!$currentOrder) {
 			return $default_sort;
 		}
+		$order = array();
+		$multipleOrders = explode(",", $currentOrder);
+		foreach($multipleOrders as $currentOrder) {
+			list($field_name, $sort_dir) = array_pad(explode(" ", trim($currentOrder), 2), 2, '');
+			$sort_dir = strtoupper(trim($sort_dir)) == 'DESC' ? ' DESC' : '';
+			if(!(isset($fields[$field_name]) && $fields[$field_name]->listed) && $field_name != 'sys_order') {
+				continue;
+			}
 
-		$order = explode(" ", $currentOrder, 2);
-
-		if(isset($order[1]) && strtoupper($order[1]) != 'DESC') unset($order[1]);
-		if(!in_array($order[0], array_keys($fields))) $order[0] = null;
-
-		return is_null($order[0]) || !$fields[$order[0]]->listed ? $default_sort : trim(implode(" ", $order));
+			$order[] = $field_name . $sort_dir;
+		}
+		return empty($order) ? $default_sort : join(",", $order);
 	}
 
 	/* From PXUserRequest */
