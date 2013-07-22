@@ -238,6 +238,7 @@ class PXDatabase extends NLSQLDatabaseAdapter implements IPXDatabase {
 
 		$location = $this->ParseWhereTemplate($location, $object, $format);
 
+		$directory->filter = array_filter($directory->filter);
 		if(sizeof($directory->filter)) {
 			$tmpWhere = array();
 			if(strlen($location)) {
