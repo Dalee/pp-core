@@ -24,14 +24,14 @@ function json_encode_koi($value, $options = 0) {
 
 	switch(PHP_MINOR_VERSION) {
 		case 2:
-			json_encode($value);
+			$value = json_encode($value);
 			break;
 		case 3:
 		case 4:
-			json_encode($value, $options);
+			$value = json_encode($value, $options);
 			break;
 	}
-	
+
 	return $value;
 }
 
@@ -46,13 +46,13 @@ function json_encode_koi($value, $options = 0) {
 function json_decode_koi($value, $assoc = false, $depth = 512, $options = 0) {
 	switch(PHP_MINOR_VERSION) {
 		case 2:
-			json_decode($value, $assoc);
+			$value = json_decode($value, $assoc);
 			break;
 		case 3:
-			json_decode($value, $assoc, $depth);
+			$value = json_decode($value, $assoc, $depth);
 			break;
 		case 4:
-			json_decode($value, $assoc, $depth, $options);
+			$value = json_decode($value, $assoc, $depth, $options);
 			break;
 	}
 	
