@@ -102,6 +102,22 @@ function wrong_schemas($err) {
 	die(1);
 }
 
+$additionalFieldsMap = array(
+	'sys_regions' => array(
+		array('name' => 'sys_reflex_id', 'storagetype' => 'integer')
+	)
+);
+
+function addPseudoField($app, $type, $data) {
+	$attr = new SimpleXMLElement("<attribute/>");
+	foreach($data as $k => $v) {
+		$attr->addAttribute($k, $v);
+	}
+	$field = new PXFieldDescription(new PXmlSimplexmlNode($attr), $app, $type);
+	$type->addField($field);
+}
+
+
 // sync sys_regions
 $sys_regions_map = false;
 if (isset($import['sys_data']['sys_regions'])) {
@@ -156,6 +172,16 @@ foreach ($import['data'] as $typeKey => $objects) {
 	empty($app->types[$typeKey]) && wrong_schemas('Undefined datatype "'.$typeKey.'".');
 
 	$type = $app->types[$typeKey];
+
+	//append extra fields like sys_reflex_id to selection
+	foreach($additionalFieldsMap as $k => $v) {
+		if (isset($type->fields[$k])) {
+			foreach($v as $pseudoField) {
+				addPseudoField($app, $type, $pseudoField);
+			}
+		}
+	}
+	
 	$next = 0;
 	$oldIdParentMap[$typeKey] = array();
 	foreach ($objects as $object) {
@@ -180,9 +206,9 @@ foreach ($import['data'] as $typeKey => $objects) {
 }
 if (isset($import['data']['struct'])) {
 	$structTypes = $app->directory['struct-type']->values;
-	$objects =& $import['data']['struct'];
 	$templatepath = LOCALPATH.'templates/lt/';
-	foreach ($objects as $id => &$object) {
+	$objects = & $import['data']['struct'];
+	foreach ($objects as $id => $object) {
 		$stype = $object['type'];
 		if (isset($system_struct_types[$stype])) {
 			continue;
@@ -198,7 +224,10 @@ if (isset($import['data']['struct'])) {
 			$err = 'Missed template for struct type "'.$object['type'].'" at struct#'.$object['id'];
 			empty($flags['ignore-missed-fields'])? wrong_schemas($err) : Label('Warn: '.$err);
 		}
-		$object['type'] = $stype;
+		// MAGIC BUG in php appears ahead in 'while (!empty($objects)) {$object = array_shift($objects); ...', 
+		// if using 'foreach ($objects as $id => &$object) { ... }' statement, strange simultaneous array corruption
+		// FUCK php! C# forever ;)
+		$objects[$id]['type'] = $stype;
 	}
 }
 
@@ -246,15 +275,16 @@ Label('Pushing data to the database');
 $idMap = array();
 foreach ($order as $typeKey => $order) {
 	empty($idMap[$typeKey]) && ($idMap[$typeKey] = array());
-	$objects = $import['data'][$typeKey];
-	Label(sprintf('Adding %d objects of "%s" datatype.', count($objects), $typeKey));
+	$objects = array_values($import['data'][$typeKey]);
 	$count = count($objects);
+	Label(sprintf('Adding %d objects of "%s" datatype.', $count, $typeKey));
+	
 	$type = $app->types[$typeKey];
 
 	// calc file fields
 	$file_fields = array();
 	foreach ($type->fields as $fk => $field) {
-		if (! $field->storageType instanceof PXStorageTypeFile) continue;
+		if (! ($field->storageType instanceof PXStorageTypeFile) ) continue;
 		$file_fields[] = $fk;
 	}
 
@@ -267,8 +297,8 @@ foreach ($order as $typeKey => $order) {
 			if (isset($idMap[$type->parent][$object['parent']])) {
 				$object['parent'] = $idMap[$type->parent][$object['parent']];
 				$object['__parent__fixed'] = true;
-			} else if (isset($oldIdParentMap[$type->parent][$object['parent']])) {
-				array_push($objects, $object);
+			} else if (isset($oldIdParentMap[$type->parent][$object['parent']])) {if($object['id'] == 175) die;
+				$objects[] = $object;
 				continue;
 			} else {
 				d20($oldIdParentMap[$type->parent]);
@@ -282,7 +312,7 @@ foreach ($order as $typeKey => $order) {
 				$object['sys_reflex_id'] = $idMap[$typeKey][$object['sys_reflex_id']];
 				$object['__sys_reflex_id__fixed'] = true;
 			} else if (isset($oldIdSysReflexIdMap[$typeKey][$object['sys_reflex_id']])) {
-				array_push($objects, $object);
+				$objects[] = $object;
 				continue;
 			} else {
 				d20($oldIdSysReflexIdMap[$type->id]);
@@ -297,7 +327,7 @@ foreach ($order as $typeKey => $order) {
 			}
 			$object['sys_regions'] = array_values(array_filter($object['sys_regions']));
 		}
-
+		
 		// and drop id before creating new object
 		unset($object['id']);
 
@@ -337,11 +367,12 @@ foreach ($order as $typeKey => $order) {
 		// add content object
 		$idMap[$typeKey][$oldId] = $obj['id'] = @$db->addContentObject($type, $obj);
 		$db->modifyObjectSysVars($type, $obj);
+		/*FUCK THIS SHIT! Save the fuckin sys_reflex_id anyway!!!
 		if (!empty($object['sys_reflex_id'])) { // untested behaviour! checkit up asap
 			$objx = $db->getObjectById($type, $obj['id']);
 			d20($objx);
 			rollback_n_die();
-		}
+		}*/
 
 	}
 	WorkProgress(true);
@@ -354,7 +385,7 @@ Label('Done');
 $db->transactionCommit();
 // d20($import['data']);die;
 
-die;
+die; //DIE MOTHERFUCKER DIE!!!
 
 
 // fetch file data
