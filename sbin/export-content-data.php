@@ -31,6 +31,21 @@ $sysTypes = array(
 
 $export = array();
 
+$additionalFieldsMap = array(
+	'sys_regions' => array(
+		array('name' => 'sys_reflex_id', 'storagetype' => 'integer')
+	)
+);
+
+function addPseudoField($app, $type, $data) {
+	$attr = new SimpleXMLElement("<attribute/>");
+	foreach($data as $k => $v) {
+		$attr->addAttribute($k, $v);
+	}
+	$field = new PXFieldDescription(new PXmlSimplexmlNode($attr), $app, $type);
+	$type->addField($field);
+}
+
 // fetch common data
 foreach ($app->types as $typeKey => $type) {
 	if (in_array($type->id, $skipTypes)) continue;
@@ -40,6 +55,15 @@ foreach ($app->types as $typeKey => $type) {
 //		d20($type);die;
 	}
 	if ($parentType && in_array($parentType->id, $skipTypes)) continue;
+
+	//append extra fields like sys_reflex_id to selection
+	foreach($additionalFieldsMap as $k => $v) {
+		if (isset($type->fields[$k])) {
+			foreach($v as $pseudoField) {
+				addPseudoField($app, $type, $pseudoField);
+			}
+		}
+	}
 
 	// fetch all data for type
 	$exportKey = in_array($type->id, $sysTypes)? 'sys_data' : 'data';
