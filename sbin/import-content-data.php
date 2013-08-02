@@ -297,7 +297,7 @@ foreach ($order as $typeKey => $order) {
 			if (isset($idMap[$type->parent][$object['parent']])) {
 				$object['parent'] = $idMap[$type->parent][$object['parent']];
 				$object['__parent__fixed'] = true;
-			} else if (isset($oldIdParentMap[$type->parent][$object['parent']])) {if($object['id'] == 175) die;
+			} else if (isset($oldIdParentMap[$type->parent][$object['parent']])) {
 				$objects[] = $object;
 				continue;
 			} else {
