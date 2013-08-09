@@ -1322,3 +1322,10 @@ form.simpleform .field button.warn:active {
 form.simpleform select {
 	margin-left: 3px;
 }
+
+.objects .hidden {
+	color: rgb(221,221,221);
+}
+.objects .shown {
+	color: #000;
+}

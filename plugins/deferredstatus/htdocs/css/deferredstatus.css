@@ -1,0 +1,7 @@
+
+.objects .hidden {
+	color: rgb(221,221,221);
+}
+.objects .shown {
+	color: #000;
+}

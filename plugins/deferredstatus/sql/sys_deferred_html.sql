@@ -1,0 +1,5 @@
+
+ALTER TABLE html
+ADD COLUMN sys_deferred_state INTEGER,
+ADD COLUMN sys_deferred_since TIMESTAMP WITHOUT TIME ZONE,
+ADD COLUMN sys_deferred_until TIMESTAMP WITHOUT TIME ZONE;
