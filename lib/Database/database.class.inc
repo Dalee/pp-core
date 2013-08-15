@@ -1771,6 +1771,14 @@ SQL;
 	}
 
 	/**
+		Интерфейс к преобразованию SQL выборки к объекту datatype
+		@access public
+	*/
+	public function resultToObject($resTable, $format, $mode) {
+		return $this->_PrepareResult($resTable, $format, $mode);
+	}
+
+	/**
 	 * Нет документации
 	 * @access protected
 	 * @todo docme (check params documentation)
