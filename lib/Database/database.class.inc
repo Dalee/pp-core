@@ -1423,6 +1423,9 @@ SQL;
 		$linkedFormat = $reference->getOther($format);
 		$query = '';
 
+		if (is_array($id)) {
+			$id = implode(',', array_map('intval', $id));
+		}
 		if ($linkedFormat === $format) {
 			$format .= '_';
 			$query = <<<SQL
@@ -1437,7 +1440,7 @@ SQL;
 				WHERE
 					{$reference->name}.{$format}id = {$linkedFormat}.id
 						AND
-					{$reference->name}.{$linkedFormat}id = {$id}
+					{$reference->name}.{$linkedFormat}id in ({$id})
 
 				UNION
 
@@ -1456,7 +1459,7 @@ SQL;
 				WHERE
 					{$reference->name}.{$linkedFormat}id = {$linkedFormat}.id
 						AND
-					{$reference->name}.{$format}id = {$id}
+					{$reference->name}.{$format}id in ({$id})
 SQL;
 
 		$limit = is_numeric($limit) && is_numeric($offset) ? array($limit, $offset) : NULL;
