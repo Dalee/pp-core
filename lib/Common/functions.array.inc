@@ -51,9 +51,9 @@ function GetColFromTable($table, $rowName) {
 }
 
 //grouping hash by key
-function groupArrayByCol($table, $rowNameOrCallBack, $allowEmptyKeys = false) {
+function groupArrayByCol($table, $rowNameOrCallBack, $allowEmptyKeys = false, $fixCallableRowName = false) {
 	$tmp = array();
-	$is_callable = is_callable($rowNameOrCallBack);
+	$is_callable = !$fixCallableRowName && is_callable($rowNameOrCallBack);
 
 	foreach($table as $k => $row) {
 		$rowName = $is_callable
