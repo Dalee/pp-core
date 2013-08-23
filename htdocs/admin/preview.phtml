@@ -1,14 +1,15 @@
 <?php
 
 	include_once '../../lib/mainuser.inc';
-	if (!PXRegistry::getUser()) {
-		PXRegistry::getResponse()->redirect('/');
-	}
 
 	require_once('../../lib/Database/previewdb.class.inc');
 	require_once('../../lib/Engine/preview.class.inc');
 
 	$engine = new PXPreviewEngine(PXRegistry::getRequest()->GetVar('q','/'));
+
+	if (!PXRegistry::getUser()->isAdmin()) {
+		PXRegistry::getResponse()->redirect('/');
+	}
 
 	$engine->runModules();
 
