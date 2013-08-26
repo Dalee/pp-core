@@ -5,7 +5,17 @@
 	require_once('../../lib/Database/previewdb.class.inc');
 	require_once('../../lib/Engine/preview.class.inc');
 
-	$engine = new PXPreviewEngine(PXRegistry::getRequest()->GetVar('q','/'));
+	$path = PXRegistry::getRequest()->GetVar('q','/');
+	switch(true) {
+		case substr($path, 0, 7) == 'http://':
+			$path = ' '.$path;
+		case substr($path, 0, 8) == 'https://':
+			$path = substr($path, 8);
+			$path = explode('/', $path, 2);
+			$path = '/' . $path[1];
+	}
+	
+	$engine = new PXPreviewEngine($path);
 
 	if (!PXRegistry::getUser()->isAdmin()) {
 		PXRegistry::getResponse()->redirect('/');
