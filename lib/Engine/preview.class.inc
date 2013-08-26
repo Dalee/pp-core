@@ -6,13 +6,14 @@ class PXPreviewEngine extends PXEngineIndex {
 
 	private $path;
 
-	function __construct($path) {
-		parent::__construct();
+	public function __construct($path) {
 		$this->path = $path;
+		parent::__construct();
 	}
 
 	protected function initApplication() {
 		parent::initApplication();
 		$this->request->setPath($this->path);
 	}
+
 }
