@@ -374,7 +374,7 @@ class PXDatabase extends NLSQLDatabaseAdapter implements IPXDatabase {
 		foreach ($format->fields as $k=>$v) {
 			$p = array();
 			if($v->storageType->notInDb($v, null, $p)) {
-				$has_sys_meta = true;
+				$has_sys_meta = $has_sys_meta || $v->storageType->inMeta($v, null, $p);
 				continue;
 			}
 
@@ -720,12 +720,12 @@ class PXDatabase extends NLSQLDatabaseAdapter implements IPXDatabase {
 
 		if($permitAdd){
 			// формируем список полей которые не будут сохранены в базу данных
-			// ориентируемся на результат выполнения notInDb, для файловых
+			// ориентируемся на результат выполнения inMeta, для файловых
 			// и виртуальных полей метод должен возвращать true.
 			$cuttedFieldDiff = array_diff(array_keys($format->fields), $dbFields);
 			$sysMetaFieldList = array();
 			foreach($cuttedFieldDiff as $k) {
-				if($format->fields[$k]->storageType->notInDb($format->fields[$k], $object)) {
+				if($format->fields[$k]->storageType->inMeta($format->fields[$k], $object)) {
 					$sysMetaFieldList[] = $k;
 				}
 			}
@@ -1002,12 +1002,12 @@ class PXDatabase extends NLSQLDatabaseAdapter implements IPXDatabase {
 
 		if ($permitModify) {
 			// формируем список полей которые не будут сохранены в базу данных
-			// ориентируемся на результат выполнения notInDb, для файловых
+			// ориентируемся на результат выполнения inMeta, для файловых
 			// и виртуальных полей метод должен возвращать true.
 			$cuttedFieldDiff = array_diff(array_keys($format->fields), $dbFields);
 			$sysMetaFieldList = array();
 			foreach($cuttedFieldDiff as $k) {
-				if($format->fields[$k]->storageType->notInDb($format->fields[$k], $object)) {
+				if($format->fields[$k]->storageType->inMeta($format->fields[$k], $object)) {
 					$sysMetaFieldList[] = $k;
 				}
 			}
@@ -1045,7 +1045,7 @@ class PXDatabase extends NLSQLDatabaseAdapter implements IPXDatabase {
 
 			if (count($sysMetaFieldList) > 0) {
 				// обновляем sys_meta, если есть что туда записать,
-				// а так же, если у объекта вообще есть поля типа notInDb! Иначе нарушается логика!
+				// а так же, если у объекта вообще есть поля типа inMeta! Иначе нарушается логика!
 				// см. логику выборки в методе createSelector() (проверка has_sys_meta)!
 				$sqlUpdateRule = sprintf(
 					"sys_meta = %s",
@@ -1729,7 +1729,7 @@ SQL;
 	 * @todo docme (check params documentation)
 	 * @access public
 	 */
-	function _NormalizeTable(&$table, $format, $withoutNotInDB = false) {
+	function _NormalizeTable(&$table, $format, $withoutMeta = false) {
 		foreach ($table as $k=>$v) {
 
 			$isMetaPresent = !empty($v['sys_meta']);
@@ -1737,8 +1737,8 @@ SQL;
 			foreach ($format->fields as $fk=>$fv) {
 				$p = array('db'=>&$this, 'format'=>$format->id);
 
-				$notInDb = $fv->storageType->notInDb($fv, $table[$k], $p);
-				if (($withoutNotInDB && $notInDb) || ($isMetaPresent && $notInDb)) {
+				$inMeta = $fv->storageType->inMeta($fv, $table[$k], $p);
+				if ($inMeta && ($withoutMeta || $isMetaPresent)) {
 					$table[$k][$fk] = null;
 					continue;
 				}

@@ -114,6 +114,7 @@ class PXStorageType {
 
 	/**
 	 * Сохраняет файлы из $_FILES в site/htdocs/ai
+	 * Подготавливает данные к сохранению в базу
 	 *
 	 * @param PXFieldDescription $field
 	 * @param Array              $object
@@ -122,7 +123,7 @@ class PXStorageType {
 	 * @return String
 	 */
 	function proceedFile($field, &$object, &$param, $allowed = null) {
-		return null;
+		return isset($object[$field->name]) ? $object[$field->name] : NULL;
 	}
 
 
@@ -170,6 +171,20 @@ class PXStorageType {
 	 */
 	function notInDb($field, $object, $param=NULL) {
 		return false;
+	}
+
+	/**
+	 * Вызывается при работе с полем sys_meta
+	 * Возвращает необходима ли выгрузка/сохранение значения в sys_meta
+	 *
+	 * @param PXFieldDescription $field
+	 * @param Array              $object
+	 * @param Array|NULL         $param
+	 *
+	 * @return Boolean
+	 */
+	function inMeta($field, $object, $param=NULL) {
+		return $this->notInDb($field, $object, $param);
 	}
 
 	/**

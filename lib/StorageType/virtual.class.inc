@@ -14,5 +14,9 @@ class PXStorageTypeVirtual extends PXStorageType {
 	function notInDb($field, $object, $param=NULL) {
 		return true;
 	}
+
+	function inMeta($field, $object, $param=NULL) {
+		return false;
+	}
 }
 ?>
