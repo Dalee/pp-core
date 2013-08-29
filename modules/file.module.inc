@@ -247,7 +247,7 @@ HTML;
 
 		$this->catObject = new PXFileListing($this->settings);
 
-		$this->redir  = ($outSide !== $this->area ? 'popup.phtml?action='.$outSide.'&name='.$this->request->getVar('name').'&' : 'index.phtml?');
+		$this->redir  = ($outSide !== $this->area ? 'popup.phtml?action='.$outSide.'&name='.$this->request->getVar('name').'&' : './?');
 		$this->redir .= 'area='.$this->area.'&ldir='.$lDir.'&rdir='.$rDir;
 
 		$catalog       = ($rSide != 'r' ? $lDir : $rDir);
