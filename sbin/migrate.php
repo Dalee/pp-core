@@ -183,12 +183,8 @@
 			$cmd_joined = implode(" ", $cmd);
 
 			putenv("PGPASSWORD={$this->passwd}");
-			if(!$silent) {
-				putenv("PGOPTIONS=--client-min-messages=warning");	
-			}
 			system($cmd_joined, $status);
 			putenv("PGPASSWORD=");
-			putenv("PGOPTIONS=");
 
 			unlink($dst);
 			$status = intval($status);
