@@ -14,11 +14,14 @@ class NLMailMessage {
 	var $log;
 	var $addHeaders;
 	var $charset;
- 
+
 	var $_errorMessage;
 	var $_validateEmails;
 	var $_checkMailFields;
- 
+
+	var $_listHeadersFields;
+	var $listHeaders;
+
 	function NLMailMessage($logFile=NULL) {
 		$this->fromName         = NULL;
 		$this->fromEmail        = NULL;
@@ -38,6 +41,8 @@ class NLMailMessage {
 		$this->_validateEmails  = true;
 		$this->_checkMailFields = array('fromEmail', 'replyEmail', 'bccEmail', 'ccEmail', 'toEmail');
 		$this->needAttachFiles  = false;
+		$this->_listHeadersFields = array('help', 'subscribe', 'unsubscribe', 'owner', 'archive');
+		$this->listHeaders      = array();
 	}
  
 	function setCharset($charset) {
@@ -83,6 +88,13 @@ class NLMailMessage {
 		$this->multipart = 'related';
 	}
 
+	function setListHeaders($list, $variables = null) {
+		$this->listHeaders = array_intersect_key((array)$list, array_flip($this->_listHeadersFields));
+		foreach ($this->listHeaders as $k => $v) {
+			$this->listHeaders[$k] = $this->parseTemplate($v, $variables);
+		}
+	}
+
 	function setBody($string) {
 		$string = str_replace("\xd", '', $string);
 		$this->body = $string;
@@ -113,50 +125,50 @@ class NLMailMessage {
 		if(!is_array($variables)) {
 			return $text;
 		}
- 
+
 		foreach($variables as $k=>$v) {
 			$text = str_replace('%'.strtoupper($k).'%', (string)$v, $text);
 		}
- 
+
 		$text = preg_replace("/(?<!\%)\%[^%]+?\%/si", '', $text);
-		
+
 		$text = str_replace('%%', '%', $text);
-		
+
 		return $text;
 	}
- 
+
 	function setReturnPath($string) {
 		$this->returnPath = $string;
 	}
- 
+
 	function addFile($file, $name, $type='application/octet-stream', $source='', $inline = false) {
 		$id = uniqid(rand(), true);
- 
+
 		if(isset($this->files[$name])) {
 			return $this->files[$name]['id'];
 		}
- 
+
 		$this->files[$name] = array('file'=>$file, 'name'=>$name, 'id'=>$id, 'type'=>$type, 'source'=>$source, 'inline?' => $inline);
 		return 'cid:'.$id;
 	}
- 
+
 	function createSmtpMail() {
 		if (!$this->replyEmail) {
 			$this->replyEmail = $this->fromEmail;
 		}
- 
+
 		$this->_checkEmails();
 		$this->_strip();
 		$this->_sendImagesAsAttaches();
- 
+
 		$this->addHeaders = $this->_writeSmtpHeaders();
- 
+
 		$contentType = $this->format == 'html' ? 'text/html' : 'text/plain';
- 
+
 		if (sizeof($this->files)) {
 			$this->body  = $this->_attachText($this->body, $contentType);
 			$this->addHeaders .= $this->_writeMimeHeaders();
- 
+
 			foreach ($this->files as $f) {
 				$this->body .= $this->_attachFile($f['file'], $f['name'], $f['id'], $f['type'], $f['source'], $f['inline?']);
 			}
@@ -165,12 +177,12 @@ class NLMailMessage {
 			$this->addHeaders .= "Content-Type: ".$contentType."; charset=".$this->charset."\n";
 			$this->addHeaders .= "Content-Transfer-Encoding: 8bit";
 		}
- 
+
 		$_subject = $this->_getSubject();
- 
+
 		return $_subject;
 	}
- 
+
 	function _getSubject() {
 		if (strlen($this->subject)) {
 			if (preg_match("/[À-ÿ]/", $this->subject)) {
@@ -310,7 +322,18 @@ class NLMailMessage {
 		if (isset($this->bccEmail)) {
 			$addHeaders .= "BCC: {$this->bccEmail}\n";
 		}
- 
+
+		if (!empty($this->listHeaders)) {
+			foreach ($this->listHeaders as $type => $values) {
+				if (empty($values) || !in_array(strtolower($type), array('help', 'subscribe', 'unsubscribe', 'owner', 'archive'))) {
+					continue;
+				}
+				$values = "<" . join('>, <', (array)$values) . ">";
+				$type = ucfirst(strtolower($type));
+				$addHeaders .= "List-{$type}: {$values}\n";
+			}
+		}
+
 		$addHeaders .= "MIME-Version: 1.0\n";
 		return $addHeaders;
 	}
