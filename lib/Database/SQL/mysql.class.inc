@@ -227,7 +227,7 @@ class NLMYSQLDatabase extends NLAbstractSQLDatabase {
 	 * Named transactions (savepoints) functions
 	 */
 	function savepointCreate($id) {
-		$this->Query('SAVEPOINT');
+		$this->Query('SAVEPOINT '.$id);
 	}
 
 	function savepointRelease($id) {
