@@ -252,17 +252,55 @@ class NLPGSQLDatabase extends NLAbstractSQLDatabase {
 	 * Transaction related functions
 	 *
 	 */
+	protected $insideTransaction = false;
+	protected $transactionsStack = array();
+
 	function transactionBegin() {
-		$this->Query('BEGIN',true);
+		if (!$this->insideTransaction) {
+			$this->Query('BEGIN',true);
+			$this->insideTransaction = true;
+		} else { // emulating nested transactions
+			$savepointId = uniqid('px_');
+			$this->savepointCreate($savepointId);
+			$this->transactionsStack[] = $savepointId;
+		}
 	}
 
 	function transactionCommit() {
-		$this->Query('END',true);
+		if (empty($this->transactionsStack)) {
+			$this->Query('END',true);
+			$this->insideTransaction = false;
+		} else { // emulating nested transactions
+			$savepointId = array_pop($this->transactionsStack);
+			$this->savepointRelease($savepointId);
+		}
 	}
 
 	function transactionRollback() {
-		$this->Query('ROLLBACK',true);
+		if (empty($this->transactionsStack)) {
+			$this->Query('ROLLBACK',true);
+			$this->insideTransaction = false;
+		} else { // emulating nested transactions
+			$savepointId = array_pop($this->transactionsStack);
+			$this->savepointRollbackTo($savepointId);
+		}
 	}
+
+	/**
+	 * Named transactions (savepoints) related functions
+	 */
+	function savepointCreate($id) {
+		$this->Query('SAVEPOINT '.$id, true);
+	}
+
+	function savepointRelease($id) {
+		$this->Query('RELEASE SAVEPOINT '.$id, true);
+	}
+
+	function savepointRollbackTo($id) {
+		$this->Query('ROLLBACK TO '.$id, true);
+	}
+
 
 	function importDateTime($string) {
 		return $string;

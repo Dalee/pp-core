@@ -95,6 +95,15 @@ abstract class NLAbstractSQLDatabase {
 	function transactionRollback() {
 	}
 
+	function savepointCreate($name) {
+	}
+
+	function savepointRelease($name) {
+	}
+
+	function savepointRollbackTo($name) {
+	}
+
 	function LIKE($condition, $percs){
 		return $this->_searchMethod("LIKE", $condition, $percs);
 	}

@@ -210,18 +210,34 @@ class NLMYSQLDatabase extends NLAbstractSQLDatabase {
 	 */
 	function transactionBegin() {
 		//TODO Check for storage engine is really transaction-safe?
-		$this->Query('START TRANSACTION');
+		$this->Query('START TRANSACTION', 1);
 	}
 
 	function transactionCommit() {
 		//TODO Check for storage engine is really transaction-safe?
-		$this->Query('COMMIT');
+		$this->Query('COMMIT', 1);
 	}
 
 	function transactionRollback() {
 		//TODO Check for storage engine is really transaction-safe?
-		$this->Query('ROLLBACK');
+		$this->Query('ROLLBACK', 1);
 	}
+
+	/**
+	 * Named transactions (savepoints) functions
+	 */
+	function savepointCreate($id) {
+		$this->Query('SAVEPOINT');
+	}
+
+	function savepointRelease($id) {
+		$this->Query('RELEASE SAVEPOINT '.$id);
+	}
+
+	function savepointRollbackTo($id) {
+		$this->Query('ROLLBACK TO '.$id);
+	}
+
 
 	function exportFloat($string) {
 		return str_replace(',', '.', $string);

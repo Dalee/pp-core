@@ -275,5 +275,7 @@
 			$fieldValues = implode(', ', array_map(array($this, "MapData"), array_values($fields)));
 			return sprintf("INSERT INTO %s (%s) VALUES(%s)", $table, $fieldNames, $fieldValues);
 		}
+
+		//todo: add transactions and savepoints (http://www.sqlite.org/lang_transaction.html http://www.sqlite.org/lang_savepoint.html)
 	}
 ?>
