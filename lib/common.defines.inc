@@ -35,6 +35,9 @@ if(!isset($_SERVER['REQUEST_METHOD'])) {
 	$_SERVER['DOCUMENT_ROOT'] = realpath(dirname(__FILE__).'/../../');
 }
 
+// cli
+defined('IS_CLI') || define('IS_CLI', PHP_SAPI === 'cli');
+
 // Определение BASEPATH - это полный путь к корню сайта
 if(!defined('BASEPATH')) {
 	if (IS_WIN) {

@@ -1,30 +1,37 @@
 <?php
 
+function pp_loaded() {
+	return class_exists('PXRegistry');
+}
+
 /**
  * pp_paths returns proxima's base paths or full paths for subpath
  * @param string $sub subpath
  * @return array
  */
-function pp_base_paths($sub = null) {
-	$sub && $sub = ltrim(trim($sub,'/') . '/', '/');
+function pp_base_paths($sub = null, $withPlugins = false) {
+	$sub && $sub = ltrim(trim($sub, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR, DIRECTORY_SEPARATOR);
+	$ck = $sub . intval($withPlugins);
 
 	static $cache = array();
-	if (!empty($cache[$sub])) {
-		return $cache[$sub];
+	if (!empty($cache[$ck])) {
+		return $cache[$ck];
 	}
 
 	$r = array();
 
-	$r[] = SHAREDPATH . $sub; // uncomment it if possible
+	$r[] = SHAREDPATH . $sub;
 	$r[] = LOCALPATH . $sub;
 
-//	foreach (pp_modules() as $module) { // probably we can integrate it somehow
-//		$r[] = $module->path . $sub;
-//	}
+	if ($withPlugins && pp_loaded()) {
+		foreach (pp_plugins() as $plugin) { // probably we can integrate it somehow
+			$r[$plugin['tag']] = $plugin['path'] . $sub;
+		}
+	}
 
 	$r[] = PPPATH . $sub;
 
-	$cache[$sub] = $r;
+	$cache[$ck] = $r;
 
 	return $r;
 }
@@ -48,7 +55,7 @@ function pp_fetch_file($where, $what, $postfix = '', $ext = '.inc') {
 	// normalize paths
 	$fullwhere = array();
 	foreach ($where as $k => $wherev) {
-		if (empty($wherev[0]) || $wherev[0] != '/') {
+		if (empty($wherev[0]) || $wherev[0] != DIRECTORY_SEPARATOR) {
 			$fullwhere = array_merge($fullwhere, pp_base_paths($wherev));
 		} else {
 			$fullwhere[] = $wherev;
@@ -80,4 +87,23 @@ function pp_fetch_file($where, $what, $postfix = '', $ext = '.inc') {
 	}
 
 	return false;
+}
+
+/**
+ * fetchs all active plugins and some info about them
+ */
+function pp_plugins() {
+	if (!pp_loaded()) {
+		return array();
+	}
+
+	$result = array();
+	foreach (PXRegistry::getApp()->plugins as $tag => $plugin) {
+		$result[] = array(
+			'tag' => $tag,
+			'name' => $plugin->getName(),
+			'path' => pathinfo($plugin->getPathToPlugin(), PATHINFO_DIRNAME) . DIRECTORY_SEPARATOR,
+		);
+	}
+	return $result;
 }

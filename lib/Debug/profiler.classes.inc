@@ -144,6 +144,10 @@ class PXProfilerStruct {
 		
 		return $time . $level . $text;
 	}
+
+	function __toString() {
+		return $this->toString();
+	}
 }
 
 class PXProfilerStructWithMemory extends PXProfilerStruct {
@@ -162,7 +166,7 @@ class PXProfilerStructWithMemory extends PXProfilerStruct {
 	}
 
 	function toString() {
-		return sprintf('%16.2f%16.2f', $this->memory['start'], $this->memory['delta']) . parent::toString();
+		return sprintf('%15.2f% 15.2f', $this->memory['start'], $this->memory['delta']) . parent::toString();
 	}
 }
 
