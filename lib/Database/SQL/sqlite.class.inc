@@ -276,6 +276,53 @@
 			return sprintf("INSERT INTO %s (%s) VALUES(%s)", $table, $fieldNames, $fieldValues);
 		}
 
-		//todo: add transactions and savepoints (http://www.sqlite.org/lang_transaction.html http://www.sqlite.org/lang_savepoint.html)
+		/**
+		 * Transaction related functions
+		 * @todo test transactions http://www.sqlite.org/lang_transaction.html
+		 */
+		function transactionBegin() {
+			$this->query('BEGIN', true);
+		}
+
+		function transactionCommit() {
+			$this->query('COMMIT', true);
+		}
+
+		function transactionRollback() {
+			$this->query('ROLLBACK', true);
+		}
+
+		/**
+		 * Named transactions (savepoints) related functions
+		 * @todo test savepoints http://www.sqlite.org/lang_transaction.html
+		 */
+		function savepointCreate($id) {
+			$this->query('SAVEPOINT '.$id, true);
+		}
+
+		function savepointRelease($id) {
+			$this->query('RELEASE SAVEPOINT '.$id, true);
+		}
+
+		function savepointRollbackTo($id) {
+			$this->query('ROLLBACK TO '.$id, true);
+		}
+
+		/**
+		 * if and case statements
+		 */
+		function ifStatement($when, $then, $else = null) {
+			$else = $else? "ELSE ({$else})" : '';
+			return sprintf("CASE WHEN (%s) THEN (%s) %s END", $when, $then, $else);
+		}
+
+		function caseStatement($arr, $else = null) {
+			$else = $else? "ELSE ({$else})" : '';
+			$whenthens = '';
+			foreach ((array)$arr as $when => $then) {
+				$whenthens .= sprintf('WHEN (%s) THEN (%s) ', $when, $then);
+			}
+			return sprintf("CASE %s %s END", $whenthens, $else);
+		}
 	}
 ?>

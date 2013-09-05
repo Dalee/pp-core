@@ -302,6 +302,24 @@ class NLMYSQLDatabase extends NLAbstractSQLDatabase {
 		return (is_array($result) ? (int)current(current($result)) : 0);
 	}
 
+
+	/**
+	 * if and case statements
+	 */
+	function ifStatement($when, $then, $else = null) {
+		$else = is_null($else)? 'NULL' : $else;
+		return sprintf("IF (%s, %s, %s)", $when, $then, $else);
+	}
+
+	function caseStatement($arr, $else = null) {
+		$else = $else? "ELSE ({$else})" : '';
+		$whenthens = '';
+		foreach ((array)$arr as $when => $then) {
+			$whenthens .= sprintf('WHEN (%s) THEN (%s) ', $when, $then);
+		}
+		return sprintf("CASE %s %s END", $whenthens, $else);
+	}
+
 	function loggerSqlFormat() {
 		return false;
 	}

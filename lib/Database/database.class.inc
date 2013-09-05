@@ -291,7 +291,7 @@ class PXDatabase extends NLSQLDatabaseAdapter implements IPXDatabase {
 			}
 		}
 		
-		PXProfiler::begin('GET DATA: ' . $format->id . '[' . $status . ', ' . $where . ']-[' .  (is_array($limit) ? implode('.', $limit) : '') . ']-[' . $order . ']');
+		PXProfiler::begin('GET DATA: ' . $format->id . '[' . (is_null($status)?'N':($status?'t':'f')) . ', "' . $where . '"]-[' .  (is_array($limit) ? implode('.', $limit) : '') . ']-[' . $order . ']');
 		$where = $this->joinWhere($format, $status, $where);
 
 		$order_by = null;

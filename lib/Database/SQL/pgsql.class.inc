@@ -381,6 +381,20 @@ class NLPGSQLDatabase extends NLAbstractSQLDatabase {
 			join(",", array_filter($values, "is_numeric")));
 	}
 
+	function ifStatement($when, $then, $else = null) {
+		$else = $else? "ELSE ({$else})" : '';
+		return sprintf("CASE WHEN (%s) THEN (%s) %s END", $when, $then, $else);
+	}
+
+	function caseStatement($arr, $else = null) {
+		$else = $else? "ELSE ({$else})" : '';
+		$whenthens = '';
+		foreach ((array)$arr as $when => $then) {
+			$whenthens .= sprintf('WHEN (%s) THEN (%s) ', $when, $then);
+		}
+		return sprintf("CASE %s %s END", $whenthens, $else);
+	}
+
 	function vacuumTable($tableName) {
 		$this->query("VACUUM ".$tableName, true);
 		$this->query("VACUUM ANALYZE ".$tableName, true);
