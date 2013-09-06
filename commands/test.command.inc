@@ -191,7 +191,7 @@ help;
 		$plug = null;
 		foreach ($units as $k => $unit) {
 			if ($unit['plugin'] !== $plug) {
-				con_subhead($unit['plugin']);
+				con_subhead($plug = $unit['plugin']);
 			}
 			$file = $unit['path'];
 			$count = static::countTests($file);
