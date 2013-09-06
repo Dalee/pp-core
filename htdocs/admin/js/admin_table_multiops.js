@@ -1,7 +1,7 @@
 $(function(/*Enable all multi-selectors*/) {
 	$('div.multiselect-all input').livequery(function(){ 
 		$(this).removeAttr('disabled').click(function(){
-			$(this).parent().nextAll('table.objects').find('td.c input:checkbox, td.c3 input:checkbox').attr('checked', $(this).attr('checked'))
+			$(this).parent().nextAll('table.objects').find('td.c input:checkbox, td.c3 input:checkbox').attr('checked', $(this).is(':checked'))
 		})
 	})
 })
