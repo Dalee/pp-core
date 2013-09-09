@@ -138,11 +138,38 @@ class PXTriggerDatabaseAbstractAdvert extends PXAbstractDatabaseTrigger {
 		return (empty($object['flash']['path'])) ? $object['type']."_gif" : $object['type']."_flash";
 	}
 
+	/** reload file */
+	protected $reloadFD = null;
+
+	protected function lockReload() {
+		if ($this->reloadFD) {
+			trigger_error('Reload flag was locked already.');
+			return;
+		}
+		$this->reloadFD = fopen($this->path."/reload", "r");
+		if (!flock($this->reloadFD, LOCK_EX)) {
+			fclose($this->reloadFD);
+			$this->reloadFD = null;
+			trigger_error("Couldn't get the lock of reload flag!");
+		}
+	}
+
+	protected function unlockReload() {
+		if (!$this->reloadFD) {
+			trigger_error('Try to unlock nonlocked reload flag');
+			return;
+		}
+		if (!flock($this->reloadFD, LOCK_UN) || !fclose($this->reloadFD)) {
+			trigger_error('Error while unlocking reload flag');
+		}
+		$this->reloadFD = null;
+	}
+
 	protected function touchReload() {
 		touch($this->path.'/reload');
-		sleep(1);
+		usleep(0.3e+9); // let it be 0.3 sec instead of sleep(1). but wtf?
 	}
-	 
+
 	function adSync($format, $object) {
 		if($object != null) {
 			if (isset($object['dynamic'])) {
@@ -152,16 +179,14 @@ class PXTriggerDatabaseAbstractAdvert extends PXAbstractDatabaseTrigger {
 			if (!isset($object['reference']) || !trim($object['reference'])) {
 				$object['reference'] = '#';
 			}
-			
-			$fd = fopen($this->path."/reload", "r");
-			flock($fd, LOCK_EX);
+
+			$this->lockReload();
 
 			$this->$format($object);
 
-			flock($fd, LOCK_UN);
-			fclose($fd);
-
 			$this->touchReload();
+
+			$this->unlockReload();
 		}
 	}
 }
