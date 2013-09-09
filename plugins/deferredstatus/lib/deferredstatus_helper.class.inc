@@ -77,6 +77,11 @@ class PXDeferredStatusHelper {
 		$now = time();
 
 		switch (true) {
+			case $since === false && $until === false: // Даты не проставлены, ставим состояние "Отключено"
+				$state = 'off';
+				break;
+			case self::stateTag($v['sys_deferred_state']) == 'off': // Даты проставлены, но состояние "Отключено" - ничего не делаем
+				return;
 			case $now < $since: // $since date will be tomorrow
 				$state = 'prepared';
 				$v['status'] = false;
