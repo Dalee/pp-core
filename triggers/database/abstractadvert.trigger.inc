@@ -167,7 +167,7 @@ class PXTriggerDatabaseAbstractAdvert extends PXAbstractDatabaseTrigger {
 
 	protected function touchReload() {
 		touch($this->path.'/reload');
-		usleep(0.3e+9); // let it be 0.3 sec instead of sleep(1). but wtf?
+		usleep(0.3e+6); // let it be 0.3 sec instead of sleep(1). but wtf?
 	}
 
 	function adSync($format, $object) {
