@@ -6,7 +6,7 @@ class PXInputTextarea extends PXAdminWidget {
 	public $maxlength;
 	public $wrap;
 
-	function PXInputTextarea($name, $value, $height, $maxlength = null, $wrap = "physical") {
+	function PXInputTextarea($name, $value, $height, $maxlength = null, $wrap = "soft") {
 		$this->value     = $value;
 		$this->name      = $name;
 		$this->height    = $height;

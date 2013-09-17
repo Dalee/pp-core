@@ -8,14 +8,14 @@
  *             если height = 0, то строится <input type="text">
  *             если height > 0, то строится <textarea> и height это ее высота в пикселях
  *             cell_maxlength определяет максимальное число символов, выводимых в ячейке
- *             wrap определяет тип переноса в textarea - physical (по умолчанию), virtual, hard, soft, off
+ *             wrap определяет тип переноса в textarea - physical, virtual, hard, soft (по умолчанию), off
  */
 class PXDisplayTypeText extends PXDisplayType {
 	function buildInput($field, $object, $param=NULL) {
 		$value     = isset($object[$field->name]) ? htmlspecialchars($object[$field->name], ENT_COMPAT|ENT_HTML401, DEFAULT_CHARSET) : NULL;
 		$height    = isset($field->displayTypeArgs[1])  ? (int)$field->displayTypeArgs[1]   : 0;
 		$maxlength = !empty($field->displayTypeArgs[2]) ? (int)$field->displayTypeArgs[2]   : NULL;
-		$wrap      = !empty($field->displayTypeArgs[3]) ? trim($field->displayTypeArgs[3])  : "physical";
+		$wrap      = !empty($field->displayTypeArgs[3]) ? trim($field->displayTypeArgs[3])  : "soft";
 
 		return NLAbstractHTMLForm::BuildText($field->name, $value, $height, $maxlength, $wrap);
 	}

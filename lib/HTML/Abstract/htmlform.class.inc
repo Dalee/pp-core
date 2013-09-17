@@ -22,7 +22,7 @@ class NLAbstractHTMLForm {
 		return '<form action="'.$action.'" method="'.$method.'" enctype="'.$enctype.'" class="edit">';
 	}
 
-	static 
+	static
 	function BuildFormEnd() {
 		return '</form>';
 	}
@@ -95,7 +95,7 @@ class NLAbstractHTMLForm {
 	}
 
 	static
-	function BuildText($name, $value, $height, $maxlength=null, $wrap = "physical") {
+	function BuildText($name, $value, $height, $maxlength=null, $wrap = "soft") {
 		if ($height > 0) {
 			$input = new PXInputTextarea($name, $value, $height, $maxlength, $wrap);
 		} else {
