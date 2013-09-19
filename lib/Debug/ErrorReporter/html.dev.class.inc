@@ -6,7 +6,9 @@ class PXErrorReporterHTMLDev extends PXErrorReporter {
 		$traceHTML = $this->traceToHtml($error['trace']);
 		$error['message'] = $error['message'];
 
-		echo <<<HTML
+		$response = PXResponse::getInstance();
+		$response->unavailable();
+		$response->send(<<<HTML
 			<html class="error-debug">
 				<head>
 					<title>{$error['message']} &#8212; Fatal Error</title>
@@ -33,7 +35,8 @@ class PXErrorReporterHTMLDev extends PXErrorReporter {
 					</div>
 				</body>
 			</html>
-HTML;
+HTML
+		);
 	}
 
 	function warning($error) {

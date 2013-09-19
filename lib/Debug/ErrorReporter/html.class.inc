@@ -12,7 +12,7 @@ class PXErrorReporterHTML extends PXErrorReporter {
 	}
 
 	function fatalWarning($error) {
-		$response    = & PXResponse::getInstance();
+		$response    = PXResponse::getInstance();
 		$host        = quot(PXRequest::GetHttpHost());
 		$uri         = quot(urldecode(PXRequest::GetRequestUri()));
 		$response->unavailable();
