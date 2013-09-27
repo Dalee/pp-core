@@ -7,6 +7,9 @@
  * storageType boolean
  */
 class PXStorageTypeBoolean extends PXStorageType {
+
+	const defaultSQLType = 'BOOL';
+
 	function getFromRequest($field, $object, &$param) {
 		return (bool)$object[$field->name];
 	}
