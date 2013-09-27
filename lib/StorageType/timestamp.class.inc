@@ -7,6 +7,9 @@
  * storageType timestamp
  */
 class PXStorageTypeTimestamp extends PXStorageType {
+
+	const defaultSQLType = 'TIMESTAMP';
+
 	function normalizeObjectAttribute($field, $object, &$param) {
 		$object[$field->name] = $object[$field->name]=== 'null' ? NULL : $param['db']->exportDateTime($object[$field->name]);
 		$v = $this->normalizeObjectAttributeString($field, $object, $param);

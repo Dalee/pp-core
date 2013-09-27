@@ -7,9 +7,12 @@
  * storageType flatintarray
  */
 class PXStorageTypeFlatIntArray extends PXStorageTypeIntArray {
+
+	const defaultSQLType = 'INTEGER[]';
+
 	protected function prepareValue($value) {
-		$value{0} = '[';
-		$value{strlen($value) - 1} = ']';
+		$value[0] = '[';
+		$value[strlen($value) - 1] = ']';
 		return $value;
 	}
 }

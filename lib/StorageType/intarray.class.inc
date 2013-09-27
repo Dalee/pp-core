@@ -8,6 +8,9 @@
  * storageType intarray
  */
 class PXStorageTypeIntArray extends PXStorageTypeArray {
+
+	const defaultSQLType = 'INTEGER[]';
+
 	protected static $brackets = array(array('{', '}'), array('[', ']'));
 
 	function valueToDB($k, $v) {

@@ -1,7 +1,7 @@
 <?php
 class PXErrorReporterTextDev extends PXErrorReporter {
 	function _addError($code, $message, $file, $line, $traceFromLine=2) {
-		if(IS_WIN) {
+		if(IS_WIN && function_exists('myconv')) {
 			$message = myconv('k', 'd', $message);
 		}
 

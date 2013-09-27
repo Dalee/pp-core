@@ -7,6 +7,9 @@
  * storageType pk
  */
 class PXStorageTypePk extends PXStorageTypeInteger {
+
+	const defaultSQLType = 'SERIAL PRIMARY KEY';
+
 	function objectsSortOrder($field, $object, &$param = NULL) { /* E_STRICT */
 		return PXStorageType::objectsSortOrder($field, $object, $param);
 	}

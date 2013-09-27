@@ -7,6 +7,9 @@
  * storageType integer
  */
 class PXStorageTypeInteger extends PXStorageType {
+
+	const defaultSQLType = 'INTEGER';
+
 	function getFromRequest($field, $object, &$param) {
 		$k = $field->name;
 		return (!(is_null($object[$k]) || $object[$k] === '')) ? (int)$object[$k] : NULL;

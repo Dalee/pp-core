@@ -9,6 +9,9 @@
  * storageType array
  */
 class PXStorageTypeArray extends PXStorageType {
+
+	const defaultSQLType = 'VARCHAR[]';
+
 	const STATE_BEGIN    = 1;
 	const STATE_INARRAY  = 2;
 	const STATE_OUTARRAY = 3;

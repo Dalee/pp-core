@@ -6,6 +6,7 @@
 	 * ./libpp/sbin/migrate.php create hello_world
 	 * ./libpp/sbin/migrate.php c hello_world
 	 * ./libpp/sbin/migrate.php c -- "ALTER TABLE hello ADD COLUMN world VARCHAR;"
+	 * ./libpp/sbin/migrate.php create struct --dry-run
 	 *
 	 * ./libpp/sbin/migrate.php migrate
 	 * ./libpp/sbin/migrate.php m
@@ -23,13 +24,13 @@
 	set_time_limit(0);
 
 	define('BASEDIR', realpath(dirname(__FILE__).'/../../'));
+	define('BASEPATH', BASEDIR);
+	define('PPLIBPATH', BASEDIR.'/libpp/lib/');
 	define('MIGRATEDIR', BASEDIR.'/local/etc/sql');
 	define('DATABASEINI', BASEDIR.'/site/etc/database.ini');
+	define('DATATYPESXML', BASEDIR.'/local/etc/datatypes.xml');
 
-	function d2($var) {
-		$s = print_r($var, true);
-		echo $s."\n";
-	}
+	require_once (PPLIBPATH.'/Debug/functions.inc');
 
 	/**
 	 *
@@ -54,8 +55,7 @@
 			if(!empty($data['encoding'])) $this->encoding = $data['encoding'];
 
 			if(empty($data['dbname'])) {
-				print "ERROR: dbname is not set in database.ini\n";
-				exit(1);
+				$this->fatal("dbname is not set in database.ini");
 			}
 			$this->dbname = $data['dbname'];
 		}
@@ -111,8 +111,7 @@
 						Database::TABLE_NAME)
 				);
 				if(!$stmt->execute()) {
-					print "Failed to create migrations table\n";
-					exit(1);
+					$this->fatal("Failed to create migrations table");
 				}
 				$stmt->closeCursor();
 			}
@@ -124,15 +123,13 @@
 			foreach ($filenames as $_ => $filename) {
 				if(!$stmt_check->execute(array($filename))) {
 					$this->pdo->rollBack();
-					print "Failed to check filename {$filename} in database\n";
-					exit(1);
+					$this->fatal("Failed to check filename {$filename} in database", 1);
 				}
 				if($stmt_check->rowCount() == 0) {
 					$stmt_check->closeCursor();
 					if(!$stmt_insert->execute(array($filename))) {
 						$this->pdo->rollBack();
-						print "Failed to insert filename: {$filename}\n";
-						exit(1);
+						$this->fatal("Failed to insert filename: {$filename}", 1);
 					}
 					print "Marked {$filename} as already applied\n";
 					$stmt_insert->closeCursor();
@@ -205,7 +202,7 @@
 			$obj = null;
 			switch($data['dbtype']) {
 				case 'pgsql': $obj = new PostgreSQL($data); break;
-				case 'mysql': print "Not supported, yet."; exit(1); break;
+				case 'mysql': $this->fatal("Not supported, yet.", 1); break;
 			}
 			return $obj;
 		}
@@ -286,20 +283,17 @@
 		 */
 		protected function connect() {
 			if(!file_exists(DATABASEINI)) {
-				print "No database.ini file found\n";
-				exit(1);
+				$this->fatal("No database.ini file found", 1);
 			}
 
 			$data = parse_ini_file(DATABASEINI, true);
 			if(empty($data['database'])) {
-				print "No [database] section found\n";
-				exit(1);
+				$this->fatal("No [database] section found", 1);
 			}
 
 			$this->db = DBFactory::get($data['database']);
 			if(is_null($this->db)) {
-				print "Failed to get database object\n";
-				exit(1);
+				$this->fatal("Failed to get database object", 1);
 			}
 		}
 
@@ -327,8 +321,7 @@
 		 */
 		protected function log() {
 			if(!$this->db->settedup()) {
-				$this->display("Setup is not performed, please run: setup");
-				exit(1);
+				$this->fatal("Setup is not performed, please run: setup", 1);
 			}
 
 			$applied = $this->db->getAll();
@@ -350,47 +343,60 @@
 		 *
 		 */
 		protected function create() {
-			if($this->argc < 3) {
-				$this->display("Migration name absent");
-				exit(1);
+			if (!$this->db->settedup()) {
+				$this->fatal("Setup is not performed, please run: setup");
+			}
+
+			// fetch flags if exists
+			if ($dryrun = array_search('--dry-run', $this->argv)) {
+				unset($this->argv[$dryrun]);
+				$dryrun = true;
+			}
+			$this->argv = array_values($this->argv);
+			$this->argc = count($this->argv);
+
+			// go on
+			if ($this->argc < 3) {
+				$this->fatal("Migration name absent", 5);
 			}
 			// special behavior of -- name
 			if($this->argv[2] == '--') {
 				$first_query_string = trim($this->argv[3], " \t\n\r;");
 				if (empty($first_query_string)) {
-					$this->display("Special '--' filename requires query argument");
-					exit(3);
+					$this->fatal("Special '--' filename requires query argument", 3);
 				}
 				list($query) = explode(';', $first_query_string);
 				$this->argv[2] = preg_replace('/[^a-z0-9\-]+/', '_', strtolower($query));
-			}
-			if(!$this->db->settedup()) {
-				$this->display("Setup is not performed, please run: setup");
+
+			} else if ($this->argc === 3) {
+				$this->argv[3] = $this->_sqlCreateTableByMigration($this->argv[2]);
+				$this->argv[2] = 'create_table_'.preg_replace('/[^a-z0-9\-]+/', '_', $this->argv[2]);
+				$this->argc = 4;
 			}
 
 			$name = strtolower($this->argv[2]);
 			if(!preg_match('/^[a-z0-9_-]+$/', $name)) {
-				$this->display("Incorrect name: {$name}. Allowed: a-z, 0-9, _, and -");
-				exit(1);
+				$this->fatal("Incorrect name: {$name}. Allowed: a-z, 0-9, _, and -");
 			}
 
-			$data = "--// Created by: {$this->login}\n\n";
+			$data = "-- // Created by: {$this->login}\n\n";
 			$name = sprintf("%s_%s", date('YmdHis'), $name);
 
 			// put command line sql data
 			if (!empty($this->argv[3])) {
-				$data .= join("\n", array_slice($this->argv, 3));
+				$data .= join(PHP_EOL, array_slice($this->argv, 3));
 			} else {
-				$data .= "--sql commands for up goes here\n";
+				$data .= "-- sql commands for up goes here";
 			}
+			$data .= PHP_EOL;
 
 			$filename = MIGRATEDIR.'/'.$name.'.sql';
-			if(file_exists($filename)) {
-				$this->display("Strange, but migration already exists");
-				exit(1);
+			if (file_exists($filename)) {
+				$this->fatal("Strange, but migration already exists", 1);
 			}
 
-			file_put_contents($filename, $data);
+			$dryrun && printf("Storing file %s:%s%s", $filename, PHP_EOL, $data);
+			$dryrun || file_put_contents($filename, $data);
 
 			$filename = str_replace(BASEDIR.'/', './', $filename);
 			$this->display("Created: {$filename}");
@@ -422,8 +428,7 @@
 		 */
 		protected function migrate() {
 			if(!$this->db->settedup()) {
-				$this->display("Setup is not performed, please run: setup");
-				exit(1);
+				$this->fatal("Setup is not performed, please run: setup");
 			}
 
 			$applied = $this->db->getAll();
@@ -431,24 +436,21 @@
 
 			$pending = array_diff($available, $applied);
 			if(empty($pending)) {
-				$this->display("No pending migrations");
-				exit(0);
+				$this->fatal("No pending migrations", 0);
 			}
 
 			foreach($pending as $_ => $filename) {
 				if($this->db->migrate($filename, $this->silent)) {
 					$this->display("Successfully migrated: {$filename}");
 				} else {
-					$this->display("Failed to migrate: {$filename}");
-					exit(1);
+					$this->fatal("Failed to migrate: {$filename}", 1);
 				}
 			}
 		}
 
 		protected function execute() {
 			if ($this->argc < 3) {
-				$this->display("Migration name absent");
-				exit(1);
+				$this->fatal("Migration name absent", 1);
 			}
 
 			$applied = $this->db->getAll();
@@ -460,12 +462,10 @@
 			$lastcreated && ($wildcard = reset($pending));
 
 			if (!preg_match('/^[a-z0-9_\-\?\*]+(\.sql)?$/', $wildcard)) {
-				$this->display("Incorrect name: {$wildcard}. Allowed: a-z, 0-9, _, and -, and wildcards");
-				exit(1);
+				$this->fatal("Incorrect name: {$wildcard}. Allowed: a-z, 0-9, _, and -, and wildcards", 1);
 			}
 			if (!$this->db->settedup()) {
-				$this->display("Setup is not performed, please run: setup");
-				exit(2);
+				$this->fatal("Setup is not performed, please run: setup", 2);
 			}
 
 			if (strpos($wildcard, '*') === false) {
@@ -476,8 +476,7 @@
 			}
 			$available = $this->getAll($wildcard);
 			if (empty($available)) {
-				$this->display("Migration '{$wildcard}' was not found.");
-				exit(3);
+				$this->fatal("Migration '{$wildcard}' was not found.", 3);
 			}
 			$filename = reset($available);
 
@@ -498,8 +497,7 @@
 				if ($this->db->migrate($filename, $this->silent)) {
 					$this->display("Successfully migrated: {$filename}");
 				} else {
-					$this->display("Failed to migrate: {$filename}");
-					exit(1);
+					$this->fatal("Failed to migrate: {$filename}", 4);
 				}
 			}
 		}
@@ -510,10 +508,8 @@
 		 */
 		protected function rollback() {
 			if(!$this->db->settedup()) {
-				$this->display("Setup is not performed, please run: setup");
-				exit(1);
+				$this->fatal("Setup is not performed, please run: setup", 1);
 			}
-
 		}
 
 		/**
@@ -524,6 +520,12 @@
 				print($message."\n");
 			}
 		}
+		protected function fatal($message, $code = 1) {
+			if (!$this->silent) {
+				print ('ERROR: '.$message."\n");
+			}
+			exit((int)$code);
+		}
 
 		protected function prompt($message) {
 			if (!$this->silent) {
@@ -531,6 +533,69 @@
 				return `read __tmp && echo \$__tmp`;
 			}
 			return false;
+		}
+
+		protected function _sqlCreateTableByMigration($name) {
+			require_once (BASEDIR . '/libpp/lib/XML/classes.inc');
+			require_once (BASEDIR . '/libpp/lib/StorageType/classes.inc');
+			foreach (glob(BASEDIR . '/local/lib/StorageType/*.class.inc') as $stf) {
+				require_once ($stf);
+			}
+
+			$xml = PXml::load(DATATYPESXML);
+			@list ($datatype) = $xml->xpath('/model/datatypes/datatype[@name="'.$name.'"]');
+			if (!$datatype || $datatype->name != $name) {
+				$this->fatal('Datatype '.addslashes($name).' not exists');
+			}
+
+			$sys_fields = array(
+				'sys_order' => 'INTEGER',
+				'sys_owner' => 'INTEGER DEFAULT NULL REFERENCES suser ON DELETE SET NULL ON UPDATE CASCADE',
+				'sys_created' => 'TIMESTAMP DEFAULT now()',
+				'sys_modified' => 'TIMESTAMP DEFAULT now()',
+				'sys_meta' => 'VARCHAR',
+			);
+
+			// collect fields data
+			$fields = array();
+
+			// load storagetypes here to determine their datatypes
+			$attributes = array_merge((array)$datatype->xpath('attribute|group/attribute'));
+			foreach ($attributes as $att) {
+				list ($storageType) = explode('|', $att->storagetype);
+				$class = PXStorageType::getClassByName($storageType);
+				if ($class == 'PXStorageType') {
+					$this->error("Unexpected storage type: {$storageType}", 9);
+				}
+				try {
+					if (call_user_func_array(array($class, 'notInDb'), array(null, null))) continue;
+				} catch (Exception $e) {
+					// dummy
+				}
+				$sqltype = constant("{$class}::defaultSQLType");
+				$sqltype || ($sqltype = 'VARCHAR');
+				$fields[$att->name] = $sqltype;
+			}
+
+			// fix parent
+			if ($datatype->parent) {
+				$fields['parent'] = isset($fields['parent'])? $fields['parent'] : 'INTEGER';
+				$fields['parent'] .= ' DEFAULT NULL REFERENCES '.($datatype->parent).' ON DELETE CASCADE ON UPDATE CASCADE';
+			}
+			$fields += $sys_fields;
+
+			// need to call trigger here: onMigrateCreateTable or something instead of hack
+			if (isset($fields['sys_regions'])) {
+				$fields['sys_reflex_id'] = 'INTEGER';
+			}
+
+			foreach ($fields as $key => $field) {
+				$fields[$key] = sprintf('  %-16s %s', $key, $field);
+			}
+
+			$statement = sprintf('CREATE TABLE %s (%s%s%2$s) WITH OIDS;', $datatype->name, PHP_EOL, join(",".PHP_EOL, $fields));
+
+			return $statement;
 		}
 	}
 

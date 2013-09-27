@@ -41,11 +41,6 @@ require_once PPLIBPATH . 'HTML/interface.class.inc';
 
 require_once PPLIBPATH . 'Engine/classes.inc';
 
-require_once PPLIBPATH . 'XML/abstract.classes.inc';
-require_once PPLIBPATH . 'XML/domxml.classes.inc';
-require_once PPLIBPATH . 'XML/simplexml.classes.inc';
-require_once PPLIBPATH . 'XML/xml.class.inc';
-require_once PPLIBPATH . 'XML/XSLT/classes.inc';
-
+require_once PPLIBPATH . 'XML/classes.inc';
 
 spl_autoload_register(array('PXAbstractPlugin', 'autoload'));

@@ -4,6 +4,9 @@
  * (и что-то еще) полей объекта с определенным storageType
  */
 class PXStorageType {
+
+	const defaultSQLType = 'VARCHAR';
+
 	var $field;
 	var $name;
 	var $triggers;
