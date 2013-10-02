@@ -360,7 +360,7 @@
 				$this->fatal("Migration name absent", 5);
 			}
 			// special behavior of -- name
-			if($this->argv[2] == '--') {
+			if ($this->argv[2] == '--') {
 				$first_query_string = trim($this->argv[3], " \t\n\r;");
 				if (empty($first_query_string)) {
 					$this->fatal("Special '--' filename requires query argument", 3);
@@ -542,11 +542,6 @@
 				require_once ($stf);
 			}
 
-			$xml = PXml::load(DATATYPESXML);
-			@list ($datatype) = $xml->xpath('/model/datatypes/datatype[@name="'.$name.'"]');
-			if (!$datatype || $datatype->name != $name) {
-				$this->fatal('Datatype '.addslashes($name).' not exists');
-			}
 
 			$sys_fields = array(
 				'sys_order' => 'INTEGER',
@@ -556,7 +551,36 @@
 				'sys_meta' => 'VARCHAR',
 			);
 
-			// collect fields data
+			// try to collect fields data by datatype or just use defaults
+			$xml = PXml::load(DATATYPESXML);
+			@list ($datatype) = $xml->xpath('/model/datatypes/datatype[@name="'.$name.'"]');
+			if ($datatype && $datatype->name == $name) {
+				// $this->fatal('Datatype '.addslashes($name).' not exists');
+				$fields = $this->_makeFieldsByDatatype($datatype);
+			} else {
+				$fields = array(
+					'id' => 'SERIAL PRIMARY KEY',
+					'title' => 'VARCHAR',
+				);
+			}
+
+			$fields += $sys_fields;
+
+			// need to call trigger here: onMigrateCreateTable or something instead of hack
+			if (isset($fields['sys_regions'])) {
+				$fields['sys_reflex_id'] = 'INTEGER';
+			}
+
+			foreach ($fields as $key => $field) {
+				$fields[$key] = sprintf('  %-16s %s', $key, $field);
+			}
+
+			$statement = sprintf('CREATE TABLE %s (%s%s%2$s) WITH OIDS;', $datatype->name, PHP_EOL, join(",".PHP_EOL, $fields));
+
+			return $statement;
+		}
+
+		protected function _makeFieldsByDatatype($datatype) {
 			$fields = array();
 
 			// load storagetypes here to determine their datatypes
@@ -582,20 +606,8 @@
 				$fields['parent'] = isset($fields['parent'])? $fields['parent'] : 'INTEGER';
 				$fields['parent'] .= ' DEFAULT NULL REFERENCES '.($datatype->parent).' ON DELETE CASCADE ON UPDATE CASCADE';
 			}
-			$fields += $sys_fields;
 
-			// need to call trigger here: onMigrateCreateTable or something instead of hack
-			if (isset($fields['sys_regions'])) {
-				$fields['sys_reflex_id'] = 'INTEGER';
-			}
-
-			foreach ($fields as $key => $field) {
-				$fields[$key] = sprintf('  %-16s %s', $key, $field);
-			}
-
-			$statement = sprintf('CREATE TABLE %s (%s%s%2$s) WITH OIDS;', $datatype->name, PHP_EOL, join(",".PHP_EOL, $fields));
-
-			return $statement;
+			return $fields;
 		}
 	}
 
