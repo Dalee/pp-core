@@ -63,6 +63,11 @@
 		abstract public function setup($filenames);
 		abstract public function migrate($filename, $silent);
 		abstract public function settedUp();
+
+		protected function fatal($message, $code = 1) {
+			print ('ERROR: '.$message."\n");
+			exit((int)$code);
+		}
 	}
 
 	/**
@@ -129,7 +134,7 @@
 					$stmt_check->closeCursor();
 					if(!$stmt_insert->execute(array($filename))) {
 						$this->pdo->rollBack();
-						$this->fatal("Failed to insert filename: {$filename}", 1);
+						$this->fatal("Failed to insert file: {$filename}.\nDB Error: " . json_encode($this->pdo->errorInfo()), 1);
 					}
 					print "Marked {$filename} as already applied\n";
 					$stmt_insert->closeCursor();
@@ -202,7 +207,7 @@
 			$obj = null;
 			switch($data['dbtype']) {
 				case 'pgsql': $obj = new PostgreSQL($data); break;
-				case 'mysql': $this->fatal("Not supported, yet.", 1); break;
+				case 'mysql': print("Not supported, yet.\n"); exit(1); break;
 			}
 			return $obj;
 		}
