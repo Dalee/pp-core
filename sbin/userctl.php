@@ -206,7 +206,7 @@ foreach($options as $option => $value) {
 				}
 
 				if(!isValidPasswd($passwd)) {
-					$errors .= "Password must be from 3 to 16 symbols\n";
+					$errors .= "Password must be from 3 to 16 symbols and should be visible\n";
 				}
 
 				$check = get_group_by_id($group_id);
