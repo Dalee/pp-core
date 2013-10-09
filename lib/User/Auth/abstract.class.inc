@@ -35,7 +35,7 @@ class PXAuthInterface {
 		$f = $request->getVar($field);
 		$f = call_user_func_array(array($this, "parse".ucfirst($field)), array($f));
 
-		if(!strlen($f) || !is_string($f)) {
+		if(!is_string($f) || !strlen($f)) {
 			$f = (string) $request->getCookieVar($field);
 		}
 
@@ -52,7 +52,7 @@ class PXAuthInterface {
 	}
 
 	/**
-	 * Метод-триггер, вызывается в PXUser::checkAuth() после загрузки правил acl, 
+	 * Метод-триггер, вызывается в PXUser::checkAuth() после загрузки правил acl,
 	 * позволяет выполнить дополнительные проверки.
 	 *
 	 * @return bool
@@ -70,19 +70,11 @@ class PXAuthInterface {
 	}
 
 	function parseLogin($login){
-		if(!is_string($login)) {
-			return;
-		}
-
-		return preg_replace('/[^\w\.\@\-]/', '', substr($login, 0, 255));
+		return is_string($login) ? preg_replace('/[^\w\.\@\-]/', '', substr($login, 0, 255)) : null;
 	}
 
 	function parsePasswd($password){
-		if(!is_string($password)) {
-			return;
-		}
-
-		return preg_replace('/[^\w\.\@\,\-]/', '', substr($password, 0, 255));
+		return is_string($password) ? $password : null;
 	}
 
 	protected function login(){

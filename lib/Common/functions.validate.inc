@@ -21,7 +21,8 @@ function isValidLogin($string, $min=2, $max=16) {
 }
 
 function isValidPasswd($string, $min=3, $max=16) {
-	return (bool) preg_match('/^[a-z0-9_\-\.]{'.$min.','.$max.'}$/is', $string);
+	$len = strlen($string);
+	return $min <= $len && $len <= $max && ctype_graph($string);
 }
 
 function isValidString($string, $min=1, $max=1024) {
