@@ -1,5 +1,10 @@
 <?php
 class PXml {
+	const NONE = 0;
+	const ELEMENT = 1;
+	const ATTRIBUTE = 2;
+	const DOC = 9;
+
 	public $xml;
 
 	function PXml($xmlEntity){

@@ -373,6 +373,9 @@ class PXApplication {
 			$sourceitem = trim($domDirectory->getAttribute('source-item'));
 			$curDir->sourceItem = strlen($sourceitem) ? $sourceitem : './*';
 
+			$sourcedatafields = trim($domDirectory->getAttribute('source-data-fields'));
+			$curDir->sourceDataFields = strlen($sourcedatafields) ? $sourcedatafields : '@* != "id"';
+
 			if ($curDir->load == 'automatic' && $curDir->schema == 'xml') {
 				$this->LoadXMLDirectory($curDir, false);
 			}
@@ -392,6 +395,7 @@ class PXApplication {
 		$idField       = $directory->sourceKeyField;
 		$titleField    = $directory->sourceDisplayField;
 		$xitem         = $directory->sourceItem;
+		$dataFields    = $directory->sourceDataFields;
 
 		if (!($dom2 = PXml::load($file))) {
 			FatalError("Ошибка в файле справочника <EM>$file</EM>");
@@ -416,14 +420,26 @@ class PXApplication {
 						'title' => utf8_decode($node->nodeXValue($titleField))
 					);
 
-					$attrs = $node->attributes();
+					$data = $node->xpath($dataFields);
 
 					// Structure attributes fix
-					foreach ($attrs as $attr_val) {
-						if ($attr_val->name == 'id') {
+					foreach ($data as $dataNode) {
+						$key = $dataNode->nodeName();
+						if ($dataNode->nodeType() == PXml::ATTRIBUTE) {
+							$directory->values[$id][$key] = utf8_decode($dataNode->nodeValue());
 							continue;
 						}
-						$directory->values[$id][$attr_val->name] = utf8_decode($attr_val->value);
+
+						$item = array();
+						foreach ($dataNode->attributes() as $val) {
+							$item[$val->name] = utf8_decode($val->value);
+						}
+						foreach ($dataNode->childNodes() as $val) {
+							$item[$val->nodeName()] = utf8_decode($val->nodeValue());
+						}
+
+						empty($directory->values[$id][$key]) && ($directory->values[$id][$key] = array());
+						$directory->values[$id][$key][] = $item;
 					}
 				}
 

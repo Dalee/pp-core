@@ -21,6 +21,7 @@ class PXDirectoryDescription {
 	var $sourceKeyField;
 	var $sourceDisplayField;
 	var $sourceItem;
+	var $sourceDataFields;
 
 	public function __construct($name) {
 		$this->name        = $name;

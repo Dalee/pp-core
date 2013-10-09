@@ -22,9 +22,9 @@ class PXmlSimplexml extends PXmlAbstract implements IPXml {
 }
 
 class PXmlSimplexmlNode extends PXmlAbstractNode implements IPXmlNode {
+
 	function PXmlSimplexmlNode($node){
 		parent::PXmlAbstractNode($node);
-		$this->_nodeType = 1;
 	}
 
 	function nodeName(){
@@ -37,7 +37,7 @@ class PXmlSimplexmlNode extends PXmlAbstractNode implements IPXmlNode {
 	}
 
 	function nodeValue(){
-		if(isset($this->_nodeValue)){
+		if (isset($this->_nodeValue)) {
 			return $this->_nodeValue;
 		}
 
@@ -46,11 +46,31 @@ class PXmlSimplexmlNode extends PXmlAbstractNode implements IPXmlNode {
 	}
 
 	function nodeType(){
+		if (isset($this->_nodeType)) {
+			return $this->_nodeType;
+		}
+
+		$n = $this->_node;
+		switch (true) {
+			case $n->xpath('/*') == array($n);
+				$this->_nodeType = PXml::DOC;
+				break;
+			case ($n->xpath('.') == array($n)):
+				$this->_nodeType = PXml::ELEMENT;
+				break;
+			case $n->attributes() === null:
+			case $n[0] == $n:
+				$this->_nodeType = PXml::ATTRIBUTE;
+				break;
+			default:
+				$this->_nodeType = PXml::NONE;
+				break;
+		}
 		return $this->_nodeType;
 	}
 
 	function nodeXValue($xpath) {
-		list ($node) = $this->_node->xpath($xpath) + array(0 => '');
+		list ($node) = (array)($this->_node->xpath($xpath)) + array(0 => '');
 		return (string)$node;
 	}
 
