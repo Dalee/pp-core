@@ -149,7 +149,7 @@ foreach($options as $option => $value) {
 				}
 
 				if(!isValidPasswd($ARGV[3])) {
-					incorrect_param("Password must be from 3 to 16 symbols and contain only alphabetical, digits, \".\", \"-\", and \"_\"\n");
+					incorrect_param("Password must be from 3 to 16 symbols\n");
 				}
 
 				$userdata['passwd'] = get_encoded_password($ARGV[3]);
@@ -206,7 +206,7 @@ foreach($options as $option => $value) {
 				}
 
 				if(!isValidPasswd($passwd)) {
-					$errors .= "Password must be from 3 to 16 symbols and contain only alphabetical, digits, \".\", \"-\", and \"_\"\n";
+					$errors .= "Password must be from 3 to 16 symbols\n";
 				}
 
 				$check = get_group_by_id($group_id);

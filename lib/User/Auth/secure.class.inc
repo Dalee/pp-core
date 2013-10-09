@@ -10,7 +10,7 @@ class PXAuthSecure extends PXAuthInterface {
 	}
 
 	protected function _proceedAuth($uArray) {
-		if(!(count($uArray) && strlen($this->passwd))) {
+		if(!isset($uArray['passwd']) || !strlen($this->passwd)) {
 			return;
 		}
 

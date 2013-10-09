@@ -23,7 +23,7 @@ class PXAuthSession extends PXAuthSecure {
 		parent::__construct($app, $request, $user, $db, $authParams);
 	}
 
-	function encodePasswd($passwd, $toMd5=true) {}
+	function encodePasswd($passwd, $toMd5=true) { return null; }
 
 	function auth() {
 		setcookie('login',  $this->login, USER_SESSION_INTERVAL, '/', '');
@@ -42,7 +42,7 @@ class PXAuthSession extends PXAuthSecure {
 
 	protected function parseSid($sid) {
 		if(!is_string($sid)) {
-			return;
+			return null;
 		}
 
 		return preg_replace('/^[^0-9a-z]{32}$/i', '', substr($sid, 0, 32));
@@ -53,8 +53,6 @@ class PXAuthSession extends PXAuthSecure {
 			case empty($uArray):
 				return;
 			case strlen($this->passwd) && $this->validatePassword($this->passwd, $uArray):
-				$this->fillUserFields($uArray);
-				break;
 			case strlen($this->sid) && $this->validateSession($this->sid, $uArray):
 				$this->fillUserFields($uArray);
 				break;
@@ -112,8 +110,8 @@ class PXAuthSession extends PXAuthSecure {
 	}
 
 	protected function checkLoginAttempts($uArray) {
-		/* TODO: check for login attempts here, like this: 
-			if(!empty($uArray[$this->suser_login_attempts_field]) && $uArray[$this->suser_login_attempts_field] > N) { 
+		/* TODO: check for login attempts here, like this:
+			if(!empty($uArray[$this->suser_login_attempts_field]) && $uArray[$this->suser_login_attempts_field] > N) {
 				do something, ex. check captcha code
 				hint: maybe using here external validators for customizing local projects ?
 			}
