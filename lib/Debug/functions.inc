@@ -117,8 +117,21 @@ function d2_shortObject($variable) {
 	}
 	$showAble->__methods = $methods;
 
-	foreach(get_object_vars($variable) as $k=>$v) {
-		$showAble->$k = d2_type2string($v);
+	foreach ($classref->getProperties() as $propref) {
+		$name = ($propref->isStatic()?'::':'')
+		      . ($propref->isPrivate()? '=' : ($propref->isProtected()? '-' : '+'))
+		      . $propref->name
+		      . ($propref->isDefault()? '' : '^');
+
+		unset($v);
+		if ($propref->isPublic()) {
+			$v = $propref->getValue($variable);
+		} elseif (phpversion() >= 5.3) {
+			$propref->setAccessible(true);
+			$v = $propref->getValue($variable);
+		}
+		// echo '<pre>';var_dump(Reflection::export(new ReflectionObject($variable)));die;
+		$showAble->$name = isset($v)? d2_type2string($v) : '*protected';
 	}
 
 	return $showAble;
