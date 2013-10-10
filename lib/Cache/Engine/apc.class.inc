@@ -9,8 +9,13 @@ class PXCacheApc implements IPXCache {
 		$this->cacheDomain    = BASEPATH . $cacheDomain;
 	}
 	
-	private function key($key){
-		return md5($this->cacheDomain.$key);
+	private function key($key, $glob = false) {
+		if(is_array($key)) {
+			$keyPart   = $this->key(array_shift($key));
+			$groupPart = $this->key(array_shift($key));
+			return $groupPart . '_' . $keyPart;
+		}
+		return !$glob ? md5($this->cacheDomain.$key) : '#^' . md5($this->cacheDomain.$key) . '_\w+$#';
 	}
 	
 	function exists($key){
@@ -26,7 +31,7 @@ class PXCacheApc implements IPXCache {
 		$res = apc_fetch($this->key($key), $success);
 		return $success ? $res : null;
 	}
-	
+
 	function delete($key){
 		return apc_delete($this->key($key));
 	}
@@ -37,8 +42,14 @@ class PXCacheApc implements IPXCache {
 		return apc_inc($key, $offset);
 	}
 
-	function clear(){
+	function clear() {
 		return apc_clear_cache("user");
+	}
+
+	public function deleteGroup($group) {
+		foreach (new APCIterator('user', $this->key($group, true), APC_ITER_KEY) as $key) {
+			 apc_delete($key);
+		}
 	}
 }
 ?>

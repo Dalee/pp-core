@@ -103,6 +103,21 @@ class PXCacheFile implements IPXCache {
 		$this->_cleanDir($this->cache_dir.'/');
 	}
 
+	function deleteGroup($gorup) {
+		$fileGlob = $this->_getFilename($gorup, true);
+		$files = glob($fileGlob, GLOB_MARK | GLOB_NOSORT);
+
+		foreach($files as $file) {
+			if(pathinfo($file, PATHINFO_BASENAME) == '.' || pathinfo($file, PATHINFO_BASENAME) == '..') {
+				continue;
+			}
+			if(is_dir($file)){
+				$this->_cleanDir($file.'/');
+			} else {
+				@unlink($file);
+			}
+		}
+	}
 	/*
 	   protected:
 	*/
@@ -113,27 +128,33 @@ class PXCacheFile implements IPXCache {
 				if($file == '.' || $file == '..') {
 					continue;
 				}
-
-				@unlink($dirName.$file);
+				$file = $dirName.$file;
+				if(is_dir($file)){
+					$this->_cleanDir($file.'/');
+				} else {
+					@unlink($file);
+				}
 			}
 
 			closedir($handle);
 		}
 	}
 
-	protected function _getFilename($str) {
-		$md5 = md5($str);
+	protected function _getFilename($str, $glob = false) {
+		if (is_array($str)) {
+			$key = array_shift($str);
+			$group = array_shift($str);
+			$md5 = md5($group).md5($key);
+		} else {
+			$md5 = md5($str) . ($glob ? '*' : '');
+		}
 
 		if($this->orderLevel) {
-			$prefix = '';
-
-			for($i=0; $i < $this->orderLevel; $i++) {
-				$prefix .= $md5{0}.'/';
-				$md5     = substr($md5, 1);
-			}
+			$prefix = explode('',$md5, $this->orderLevel + 1);
+			$md5 = array_pop($prefix);
+			$prefix = join('/', $prefix) . '/';
 
 			MakeDirIfNotExists($this->cache_dir.$prefix);
-
 			$md5 = $prefix.$md5;
 		}
 

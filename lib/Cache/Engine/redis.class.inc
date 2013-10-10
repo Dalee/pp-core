@@ -31,8 +31,13 @@ class PXCacheRedis implements IPXCache {
 		}
 	}
 
-	private function key($key) {
-		return md5($key);
+	private function key($key, $glob = false) {
+		if(is_array($key)) {
+			$keyPart   = $this->key(array_shift($key));
+			$groupPart = $this->key(array_shift($key));
+			return $groupPart . '_' . $keyPart;
+		}
+		return md5($key) . ($glob ? '_*' : '');
 	}
 
 	public function exists($key) {
@@ -42,7 +47,7 @@ class PXCacheRedis implements IPXCache {
 
 	public function save($key, $data, $expTime = null) {
 		if(!$this->impl) return false;
-		return $this->impl->set($this->key($key), $data, $expTime);
+		return $this->impl->set($key, $data, $expTime);
 	}
 
 	public function load($key) {
@@ -67,6 +72,16 @@ class PXCacheRedis implements IPXCache {
 	public function clear() {
 		if(!$this->impl) return false;
 		return $this->impl->flushDB();
+	}
+
+	public function deleteGroup($group){
+		if(!$this->impl) return false;
+		$keys = $this->impl->keys($this->key($group, true));
+		$ok = true;
+		foreach($key as $keys) {
+			$ok = $this->impl->delete($key) && $ok;
+		}
+		return $ok;
 	}
 }
 ?>

@@ -298,13 +298,13 @@ class PXDatabase extends NLSQLDatabaseAdapter implements IPXDatabase {
 
 		if ($mode == DB_SELECT_COUNT) {
 			$selector = 'count(' . $format->id . '.id)';
-
 		} else {
 			$selector     = $this->_createSelector($format);
 			$order        = is_null($order) ? $format->order : $order;
 			$first_is_fun = preg_match('#^\s*\w+\s*\(#S', $order);
 			$order_by     = ($first_is_fun ? '' : $format->id . '.') . $order;
 		}
+
 		foreach ($this->triggers as $t){
 			$t->getTrigger()->OnBeforeGetDataBuildQuery($this, $format, $mode, $selector, $where, $order_by, $limit);
 		}
@@ -316,14 +316,14 @@ class PXDatabase extends NLSQLDatabaseAdapter implements IPXDatabase {
 		foreach ($this->triggers as $t){
 			$t->getTrigger()->OnGetDataBuildQuery($this, $format, $mode, $query, $selector, $where, $order_by, $limit);
 		}
-		
+
 		$queryIden = $this->_getCacheIden($query, $mode, $limit);
-		$data = $this->cache->load($queryIden);
+		$data = $this->cache->load(array($queryIden, $format->id));
 
 		if ($data === null) {
-			$sqlRes = $this->Query($query, false, $limit);
+			$sqlRes = $this->Query($query, true, $limit);
 			$data = $this->_PrepareResult($sqlRes, $format, $mode);
-			$this->cache->save($queryIden, $data);
+			$this->cache->save(array($queryIden, $format->id), $data);
 		}
 
 		PXProfiler::end();
@@ -731,7 +731,7 @@ class PXDatabase extends NLSQLDatabaseAdapter implements IPXDatabase {
 			}
 			// открываем транзакцию
 			$this->transactionBegin();
-			$newId = $this->InsertObject($format->id, $dbFields, $dbValues);
+			$newId = $this->InsertObject($format->id, $dbFields, $dbValues, false);
 			if ($newId < 0) {
 				$errString = $this->GetError();
 				$audit->error($errString, $format->id .'/'.getFromArray($object, 'parent'));
@@ -765,7 +765,8 @@ class PXDatabase extends NLSQLDatabaseAdapter implements IPXDatabase {
 			}
 
 			$sqlUpdateRule = implode(', ', $sqlUpdateRule);
-			$this->ModifyingQuery(sprintf('UPDATE %s SET %s WHERE id = %s', $format->id, $sqlUpdateRule, $newId));
+			$this->ModifyingQuery(sprintf('UPDATE %s SET %s WHERE id = %s', $format->id, $sqlUpdateRule, $newId), null, null, false);
+			$this->cache->deleteGroup($format->id);
 			$this->transactionCommit();
 
 			$object['sys_order'] = $newId;
@@ -892,6 +893,7 @@ class PXDatabase extends NLSQLDatabaseAdapter implements IPXDatabase {
 		PXProfiler::end();
 
 		$res = $this->ModifyingCopy($format->id, $copyCols, $copyTable);
+		$this->cache->deleteGroup($format->id);
 		$audit->info('Добавлено '.$idx.' объектов', $format->id);
 
 		PXProfiler::end();
@@ -1015,7 +1017,9 @@ class PXDatabase extends NLSQLDatabaseAdapter implements IPXDatabase {
 			$dbFields[] = 'sys_modified';
 			$dbValues[] = '##now##';
 			$this->transactionBegin();
-			$result = $this->UpdateObjectByID($format->id, $object['id'], $dbFields, $dbValues);
+			$result = $this->UpdateObjectByID($format->id, $object['id'], $dbFields, $dbValues, false);
+			$this->cache->deleteGroup($format->id);
+
 			if ($result <  0) {
 				$audit->error($this->GetError(), $format->id .'/'. $object['id']);
 				$this->transactionRollback();
@@ -1025,11 +1029,11 @@ class PXDatabase extends NLSQLDatabaseAdapter implements IPXDatabase {
 				$childs        = $this->getObjectsByParent($format, NULL, $objectInDB['parent'], DB_SELECT_TREE);
 				$objectsToMove = $childs->GetDescendants($object['id']);
 				$query = 'UPDATE '.$format->id.' SET parent='.(is_null($object['parent']) ? 'NULL' : $object['parent']).' WHERE id IN ('.implode(', ', $objectsToMove).')';
-				$this->ModifyingQuery($query);
+				$this->ModifyingQuery($query, null, null, false);
 
 				if(isset($format->pid)) {
 					$query = 'UPDATE '.$format->id.' SET pid=NULL WHERE id='.$object['id'];
-					$this->ModifyingQuery($query);
+					$this->ModifyingQuery($query, null, null, false);
 				}
 			}
 
@@ -1054,7 +1058,7 @@ class PXDatabase extends NLSQLDatabaseAdapter implements IPXDatabase {
 						: 'NULL'
 				);
 				$query = sprintf('UPDATE %s SET %s WHERE id = %s', $format->id, $sqlUpdateRule, $object['id']);
-				$this->ModifyingQuery($query);
+				$this->ModifyingQuery($query, null, null, false);
 			}
 
 			$this->transactionCommit();
@@ -1102,11 +1106,12 @@ class PXDatabase extends NLSQLDatabaseAdapter implements IPXDatabase {
 			$dbValues[] = serialize($object[OBJ_FIELD_CHILDREN]);
 		}
 		if (count($dbFields)) {
-			$result = $this->UpdateObjectByID($format->id, $object['id'], $dbFields, $dbValues);
+			$result = $this->UpdateObjectByID($format->id, $object['id'], $dbFields, $dbValues, false);
 			if ($result <  0) {
 				$this->FatalError($this->GetError());
 			}
-			
+			$this->cache->deleteGroup($format->id);
+
 			foreach ($this->triggers as $t)
 				$t->getTrigger()->OnModifyObjectSysVars($this, $object['id'], $format, $object, $dbFields, $dbValues, $objectInDB);
 
@@ -1149,7 +1154,8 @@ class PXDatabase extends NLSQLDatabaseAdapter implements IPXDatabase {
 
 		if($permitDelete) {
 			$query  = 'DELETE FROM '.$format->id.' WHERE id IN ('.implode(', ', $objectsToDelete).')';
-			$this->ModifyingQuery($query);
+			$this->ModifyingQuery($query, null, null, false);
+			$this->cache->deleteGroup($format->id);
 
 			$d = new NLDir(BASEPATH.'/site/htdocs/ai/'.$format->id.'/'.$objectId.'/');
 			$d->Delete();
@@ -1263,9 +1269,10 @@ class PXDatabase extends NLSQLDatabaseAdapter implements IPXDatabase {
 			$nearObject = current($nearObject);
 			$this->transactionBegin();
 				$qry = sprintf('UPDATE %s SET sys_order = sys_order + 1 WHERE sys_order %s %d', $format->id, $down ? '>' : '>=', $nearObject['sys_order']);
-				$this->ModifyingQuery($qry);
+				$this->ModifyingQuery($qry, null, null, false);
 				$qry = sprintf('UPDATE %s SET sys_order = %d WHERE %1$s.id = %d', $format->id, $nearObject['sys_order'] + ($down ? 1 : 0), $objectInDB['id']);
-				$this->ModifyingQuery($qry);
+				$this->ModifyingQuery($qry, null, null, false);
+				$this->cache->deleteGroup($format->id);
 			$this->transactionCommit();
 
 			foreach ($this->triggers as $t) {
@@ -1421,6 +1428,10 @@ SQL;
 	 */
 	 function getLinksLimited($reference, $format, $id, $limit, $offset) {
 		$linkedFormat = $reference->getOther($format);
+
+		$origType     = $this->app->types[$format];
+		$linkedType   = $this->app->types[$linkedFormat];
+
 		$query = '';
 
 		if (is_array($id)) {
@@ -1463,7 +1474,14 @@ SQL;
 SQL;
 
 		$limit = is_numeric($limit) && is_numeric($offset) ? array($limit, $offset) : NULL;
-		$resTable = $this->Query($query, false, $limit);
+		$queryIden = $this->_getCacheIden($query, DB_SELECT_TABLE, $limit);
+		$resTable = $this->cache->load(array($queryIden, $reference->name));
+
+		if ($resTable === null) {
+			$resTable = $this->Query($query, true, $limit);
+			$this->cache->save(array($queryIden, $reference->name), $resTable);
+		}
+
 		$retTable = array();
 		$param = array('db'=>$this, 'format'=>$reference->name);
 
@@ -1550,7 +1568,13 @@ SQL;
 
 SQL;
 
-		$resTable = $this->query($query);
+		$queryIden = $this->_getCacheIden($query, DB_SELECT_TABLE, null);
+		$resTable = $this->cache->load(array($queryIden, $reference->name));
+
+		if ($resTable === null) {
+			$resTable = $this->Query($query, true);
+			$this->cache->save(array($queryIden, $reference->name), $resTable);
+		}
 
 		return $resTable[0]['count'];
 	}
@@ -1685,7 +1709,7 @@ SQL;
 			}
 
 			if(strlen($query)) {
-				$this->ModifyingQuery($query);
+				$this->ModifyingQuery($query, null, null, false);
 			}
 
 			$data = array();
@@ -1716,6 +1740,7 @@ SQL;
 			if (count($data)) {
 				$this->ModifyingCopy($reference->name, array_keys(reset($data)), $data);
 			}
+			$this->cache->deleteGroup($reference->name);
 			$this->transactionCommit();
 
 			foreach ($this->triggers as $t)

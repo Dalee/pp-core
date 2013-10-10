@@ -207,9 +207,9 @@ class NLPGSQLDatabase extends NLAbstractSQLDatabase {
 		return $table;
 	}
 
-	function InsertObject($table, $fields, $values) {
+	function InsertObject($table, $fields, $values, $flushCache = true) {
 		$query = "INSERT INTO {$table} (\"".implode('", "', $fields)."\") VALUES (".implode(', ', array_map(array($this, '__mapInsertData'), $values)).")";
-		$id    = $this->modifyingQuery($query, $table, 'id');
+		$id    = $this->modifyingQuery($query, $table, 'id', $flushCache);
 		return $id;
 	}
 
@@ -242,9 +242,9 @@ class NLPGSQLDatabase extends NLAbstractSQLDatabase {
 		return pg_escape_string($s);
 	}
 
-	function UpdateObjectById($table, $objectId, $fields, $values) {
+	function UpdateObjectById($table, $objectId, $fields, $values, $flushCache = true) {
 		$query = "UPDATE {$table} SET ".implode(', ', array_map(array($this, '__mapUpdateData'), $fields, $values))." WHERE id={$objectId}";
-		return $this->ModifyingQuery($query);
+		return $this->ModifyingQuery($query, null, null, $flushCache);
 		return NULL;
 	}
 

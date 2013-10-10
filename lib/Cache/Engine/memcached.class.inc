@@ -61,6 +61,25 @@ class PXCacheMemcached implements IPXCache {
 		$this->_mcHandler->delete($this->key($key));
 	}
 
+	function deleteGroup($group) {
+		$prefix = $this->key($group, true);
+		$prefLen = strlen($prefix);
+		$allKeys = $this->_mcHandler->getAllKeys();
+		if(empty($allKeys)){
+			return;
+		}
+		$toDelete = array();
+		foreach($allKeys as $key) {
+			if(substr($key, 0, $prefLen) == $prefix){
+				$toDelete[] = $key;
+			}
+		}
+		if(empty($toDelete)) {
+			return;
+		}
+		$this->_mcHandler->deleteMulti($toDelete);
+	}
+
 	function increment($key, $offset = 1 , $initial = 0, $expTime = null) {
 		($expTime > 0) || ($expTime = $this->expirationTime);
 		$k = $this->key($key);
@@ -68,8 +87,13 @@ class PXCacheMemcached implements IPXCache {
 		return $this->_mcHandler->increment($this->key($key), $offset, $initial, $expTime);
 	}
 
-	protected function key($key) {
-		return md5($key);
+	private function key($key, $glob = false) {
+		if(is_array($key)) {
+			$keyPart   = $this->key(array_shift($key));
+			$groupPart = $this->key(array_shift($key));
+			return $groupPart . '_' . $keyPart;
+		}
+		return md5($key) . ($glob ? '_' : '');
 	}
 
 	function clear() {
