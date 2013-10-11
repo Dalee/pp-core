@@ -546,6 +546,12 @@
 			foreach (glob(BASEDIR . '/local/lib/StorageType/*.class.inc') as $stf) {
 				require_once ($stf);
 			}
+			foreach (glob(BASEDIR . '/libpp/plugins/*/storageTypes/*.class.inc') as $stf) {
+				require_once ($stf);
+			}
+			foreach (glob(BASEDIR . '/local/plugins/*/storageTypes/*.class.inc') as $stf) {
+				require_once ($stf);
+			}
 
 
 			$sys_fields = array(
@@ -594,7 +600,7 @@
 				list ($storageType) = explode('|', $att->storagetype);
 				$class = PXStorageType::getClassByName($storageType);
 				if ($class == 'PXStorageType') {
-					$this->error("Unexpected storage type: {$storageType}", 9);
+					$this->fatal("Unexpected storage type: {$storageType}", 9);
 				}
 				try {
 					if (call_user_func_array(array($class, 'notInDb'), array(null, null))) continue;
