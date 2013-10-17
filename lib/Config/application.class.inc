@@ -374,7 +374,7 @@ class PXApplication {
 			$curDir->sourceItem = strlen($sourceitem) ? $sourceitem : './*';
 
 			$sourcedatafields = trim($domDirectory->getAttribute('source-data-fields'));
-			$curDir->sourceDataFields = strlen($sourcedatafields) ? $sourcedatafields : '@* != "id"';
+			$curDir->sourceDataFields = strlen($sourcedatafields) ? $sourcedatafields : '@*[local-name() != "id"]';
 
 			if ($curDir->load == 'automatic' && $curDir->schema == 'xml') {
 				$this->LoadXMLDirectory($curDir, false);
@@ -512,7 +512,7 @@ class PXApplication {
 	}
 
 	function setModules($module) {
-		$this->modules[$module->getName()] = $module; 
+		$this->modules[$module->getName()] = $module;
 	}
 
 	/*
