@@ -766,7 +766,7 @@ class PXDatabase extends NLSQLDatabaseAdapter implements IPXDatabase {
 
 			$sqlUpdateRule = implode(', ', $sqlUpdateRule);
 			$this->ModifyingQuery(sprintf('UPDATE %s SET %s WHERE id = %s', $format->id, $sqlUpdateRule, $newId), null, null, false);
-			$this->cache->deleteGroup($format->id);
+			$this->clearObjectTypeCache($format->id);
 			$this->transactionCommit();
 
 			$object['sys_order'] = $newId;
@@ -893,7 +893,7 @@ class PXDatabase extends NLSQLDatabaseAdapter implements IPXDatabase {
 		PXProfiler::end();
 
 		$res = $this->ModifyingCopy($format->id, $copyCols, $copyTable);
-		$this->cache->deleteGroup($format->id);
+		$this->clearObjectTypeCache($format->id);
 		$audit->info('Добавлено '.$idx.' объектов', $format->id);
 
 		PXProfiler::end();
@@ -1018,7 +1018,7 @@ class PXDatabase extends NLSQLDatabaseAdapter implements IPXDatabase {
 			$dbValues[] = '##now##';
 			$this->transactionBegin();
 			$result = $this->UpdateObjectByID($format->id, $object['id'], $dbFields, $dbValues, false);
-			$this->cache->deleteGroup($format->id);
+			$this->clearObjectTypeCache($format->id);
 
 			if ($result <  0) {
 				$audit->error($this->GetError(), $format->id .'/'. $object['id']);
@@ -1110,7 +1110,7 @@ class PXDatabase extends NLSQLDatabaseAdapter implements IPXDatabase {
 			if ($result <  0) {
 				$this->FatalError($this->GetError());
 			}
-			$this->cache->deleteGroup($format->id);
+			$this->clearObjectTypeCache($format->id);
 
 			foreach ($this->triggers as $t)
 				$t->getTrigger()->OnModifyObjectSysVars($this, $object['id'], $format, $object, $dbFields, $dbValues, $objectInDB);
@@ -1155,7 +1155,7 @@ class PXDatabase extends NLSQLDatabaseAdapter implements IPXDatabase {
 		if($permitDelete) {
 			$query  = 'DELETE FROM '.$format->id.' WHERE id IN ('.implode(', ', $objectsToDelete).')';
 			$this->ModifyingQuery($query, null, null, false);
-			$this->cache->deleteGroup($format->id);
+			$this->clearObjectTypeCache($format->id);
 
 			$d = new NLDir(BASEPATH.'/site/htdocs/ai/'.$format->id.'/'.$objectId.'/');
 			$d->Delete();
@@ -1272,7 +1272,7 @@ class PXDatabase extends NLSQLDatabaseAdapter implements IPXDatabase {
 				$this->ModifyingQuery($qry, null, null, false);
 				$qry = sprintf('UPDATE %s SET sys_order = %d WHERE %1$s.id = %d', $format->id, $nearObject['sys_order'] + ($down ? 1 : 0), $objectInDB['id']);
 				$this->ModifyingQuery($qry, null, null, false);
-				$this->cache->deleteGroup($format->id);
+				$this->clearObjectTypeCache($format->id);
 			$this->transactionCommit();
 
 			foreach ($this->triggers as $t) {
@@ -1740,7 +1740,7 @@ SQL;
 			if (count($data)) {
 				$this->ModifyingCopy($reference->name, array_keys(reset($data)), $data);
 			}
-			$this->cache->deleteGroup($reference->name);
+			$this->clearLinksCache($reference->name);
 			$this->transactionCommit();
 
 			foreach ($this->triggers as $t)
@@ -1932,5 +1932,18 @@ SQL;
 		return $this->dbDriver->importBoolean($string);
 	}
 	
+	protected function clearObjectTypeCache($format) {
+		$this->cache->deleteGroup($format);
+		foreach($this->app->references as $ref){
+			if($ref->from != $format && $ref->to != $format) {
+				continue;
+			}
+			$this->clearLinksCache($ref->name);
+		}
+	}
+
+	protected function clearLinksCache($reference) {
+		$this->cache->deleteGroup($reference);
+	}
 }
 ?>

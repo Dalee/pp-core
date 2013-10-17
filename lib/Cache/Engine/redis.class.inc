@@ -47,7 +47,7 @@ class PXCacheRedis implements IPXCache {
 
 	public function save($key, $data, $expTime = null) {
 		if(!$this->impl) return false;
-		return $this->impl->set($key, $data, $expTime);
+		return $this->impl->set($this->key($key), $data, $expTime);
 	}
 
 	public function load($key) {
