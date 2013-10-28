@@ -256,8 +256,16 @@ table.objects tr.selected td, table.objects tr.selected a, table.objects-table t
 	background-color: #385A94;
 	color: #FFFFFF;
 }
+table.objects tr.selected:nth-child(2n+1) td, table.objects tr.selected:nth-child(2n+1) a, table.objects-table tr.selected:nth-child(2n+1) td, table.objects-table:nth-child(2n+1) tr.selected a {
+	background-color: #385A94;
+	color: #FFFFFF;
+}
+
 
 table.objects tr.selected td, table.objects-table tr.selected td {
+	border-color: #FFFFFF;
+}
+table.objects tr.selected:nth-child(2n+1) td, table.objects-table tr.selected:nth-child(2n+1) td {
 	border-color: #FFFFFF;
 }
 
@@ -531,11 +539,6 @@ table.mainform tr.even td, table.mainform tr.even  th {
 table.objects tr:nth-child(2n+1) td,
 table.mainform tr:nth-child(2n+1) td {
 	background-color: #F0F2F4;
-}
-
-table.objects tr:nth-child(2n+1).selected td,
-table.mainform tr:nth-child(2n+1).selected td {
-	color: black;
 }
 
 table.mainform td input, table.mainform td textarea {
