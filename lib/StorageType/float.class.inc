@@ -7,6 +7,9 @@
  * storageType float
  */
 class PXStorageTypeFloat extends PXStorageType {
+
+	const defaultSQLType = 'DECIMAL(16, 4)';
+
 	function getFromRequest($field, $object, &$param) {
 		$k = $field->name;
 		return (!(is_null($object[$k]) || $object[$k] === '')) ? parseFloat($object[$k]) : NULL;
