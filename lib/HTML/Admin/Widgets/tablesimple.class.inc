@@ -73,9 +73,8 @@ class PXAdminTableSimple extends PXAdminWidget {
 		$_  = '';
 		$i = 0;
 		foreach($this->data as $row) {
-			$even = $i++ % 2;
 			$id = isset($row['id']) ? $row['id'] : 0;
-			$_ .= '<tr'.($this->showEven && $even ? ' class="even"': '').($this->tableId && $id ? ' id="'.$this->tableId.'-'.$id.'"' : '').'>';
+			$_ .= '<tr'.($this->tableId && $id ? ' id="'.$this->tableId.'-'.$id.'"' : '').'>';
 
 			if ($id) {
 				$_ .= $this->cellCTRL($id);
