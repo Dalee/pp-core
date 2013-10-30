@@ -875,8 +875,8 @@ function myconv($from, $to, $string, $be_quiet = true) {
 		}
 	}
 
-	$from = (isset($one2enc[$from])) ? $one2enc[$from] : $from;
-	$to   = (isset($one2enc[$to]))   ? $one2enc[$to]   : $to;
+	$from = strtolower((isset($one2enc[$from])) ? $one2enc[$from] : $from);
+	$to   = strtolower((isset($one2enc[$to]))   ? $one2enc[$to]   : $to);
 
 	if ($from == $to) {
 		return $string;
