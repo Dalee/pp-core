@@ -295,7 +295,7 @@ final class PXHTMLAssets {
 				case 'unique':
 					break;
 				default:
-					$extra_params[] = sprintf('%s="%s"', convertStringToDashed($param), htmlspecialchars($value));
+					$extra_params[] = sprintf('%s="%s"', convertStringToDashed($param), htmlspecialchars($value, ENT_COMPAT|ENT_HTML401, DEFAULT_CHARSET));
 			}
 		}
 
