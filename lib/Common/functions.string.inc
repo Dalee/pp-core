@@ -598,19 +598,6 @@ function substrUTF8($str, $from, $length) {
 }
 
 function myconv($from, $to, $string, $be_quiet = true) {
-	if(isAsciiString($string)) {
-		return $string;
-	}
-
-	if(!function_exists('iconv')) {
-		FatalError('Can\'t find ICONV');
-	}
-
-	// FIXME: it hack
-	if (is_string($string) && isUtfString($string)) {
-		$from = 'u';
-	}
-
 	static $entities = array(/*{{{*/
 		160 => "&nbsp;",
 		161 => "&iexcl;",
@@ -873,6 +860,19 @@ function myconv($from, $to, $string, $be_quiet = true) {
 		'u' => 'utf-8',
 	);/*}}}*/
 	static $tables = array();
+
+	if(isAsciiString($string)) {
+		return $string;
+	}
+
+	if(!function_exists('iconv')) {
+		FatalError('Can\'t find ICONV');
+	}
+
+	// FIXME: it hack
+	if (is_string($string) && isUtfString($string)) {
+		$from = 'u';
+	}
 
 	if (array_key_exists($from, $one2enc)) $from = $one2enc[$from];
 	if (array_key_exists($to,   $one2enc)) $to   = $one2enc[$to];
