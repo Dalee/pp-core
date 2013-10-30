@@ -5,7 +5,7 @@ class PXModuleAdminPreview extends PXModule {
 		$response = PXResponse::getInstance();
 		$response->dontCache();
 
-		$response->setContentType('text/html', 'utf-8');
+		$response->setContentType('text/html', CHARSET_UTF8);
 
 		$format = $this->request->getVar('format');
 		$id     = intval($this->request->getVar('id'));
