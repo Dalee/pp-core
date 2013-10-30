@@ -18,7 +18,7 @@ class PXDisplayTypeTableStatic extends PXDisplayTypeStatic {
 
 			foreach($row as $cell) {
 				is_array($cell) && $cell = print_r($cell, true);
-				$safe && $cell = htmlentities($cell, ENT_COMPAT, 'koi8-r');
+				$safe && $cell = htmlentities($cell, ENT_COMPAT, DEFAULT_CHARSET);
 				$_html .= '<td>';
 				$_html .= $cell;
 				$_html .= '</td>';

@@ -1,10 +1,10 @@
 <?php
 
 function __json_encode_koi_k2u(&$value) {
-	$value = myconv('k', 'u', $value);
+	$value = myconv(DEFAULT_CHARSET, CHARSET_UTF8, $value);
 }
 function __json_encode_koi_u2k(&$value) {
-	$value = myconv('u', 'k', $value);
+	$value = myconv(CHARSET_UTF8, DEFAULT_CHARSET, $value);
 }
 
 /**

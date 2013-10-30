@@ -37,7 +37,7 @@ class NLMailMessage {
 		$this->boundary         = strtoupper(uniqid(time()));
 		$this->_errorMessage    = NULL;
 		$this->log              = $logFile;
-		$this->charset          = 'koi8-r';
+		$this->charset          = DEFAULT_CHARSET;
 		$this->_validateEmails  = true;
 		$this->_checkMailFields = array('fromEmail', 'replyEmail', 'bccEmail', 'ccEmail', 'toEmail');
 		$this->needAttachFiles  = false;

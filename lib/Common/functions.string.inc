@@ -9,9 +9,11 @@
  * @subpackage  Common
  */
 
+// FIXME: deprecated
 function SortRussianByTitle($a, $b) {
 	if ($a == $b) return 0;
-	return (convert_cyr_string($a['title'], 'k', 'w') < convert_cyr_string($b['title'], 'k', 'w')) ? -1 : 1;
+	$tmp = strcmp(myconv($a['title'], DEFAULT_CHARSET, CHARSET_WINDOWS), myconv($b['title'], DEFAULT_CHARSET, CHARSET_WINDOWS));
+	return ($tmp < 0);
 }
 
 function NumericCmp($a, $b) {
@@ -78,6 +80,7 @@ function wapUtf8Cyr($str) {
 	return strtr($str, $trans);
 }
 
+// FIXME: deprecated
 function utfDecode($string) {
 	return utfEncode($string, 'decode');
 }
@@ -851,31 +854,33 @@ function myconv($from, $to, $string, $be_quiet = true) {
 		8364 => "&euro;",
 	);/*}}}*/
 	static $one2enc = array(/*{{{*/
-		'k' => 'koi8-r',
-		'w' => 'windows-1251',
-		'i' => 'iso-8859-5',
-		'a' => 'cp866',
-		'd' => 'cp866',
-		'm' => 'mac-cyrillic',
-		'u' => 'utf-8',
+		'k' => CHARSET_KOI8R,
+		'w' => CHARSET_WINDOWS,
+		'i' => CHARSET_ISO,
+		'a' => CHARSET_ANSI,
+		'd' => CHARSET_DOS,
+		'm' => CHARSET_MAC,
+		'u' => CHARSET_UTF8,
 	);/*}}}*/
 	static $tables = array();
-
-	if(isAsciiString($string)) {
-		return $string;
-	}
 
 	if(!function_exists('iconv')) {
 		FatalError('Can\'t find ICONV');
 	}
 
-	// FIXME: it hack
-	if (is_string($string) && isUtfString($string)) {
-		$from = 'u';
+	foreach (array($from, $to) as $_ => $enc_test) {
+		if ((! array_key_exists($enc_test, $one2enc)) &&
+			(! in_array($enc_test, $one2enc))) {
+			FatalError(sprintf('Unknown encoding: %s', $enc_test));
+		}
 	}
 
-	if (array_key_exists($from, $one2enc)) $from = $one2enc[$from];
-	if (array_key_exists($to,   $one2enc)) $to   = $one2enc[$to];
+	$from = (isset($one2enc[$from])) ? $one2enc[$from] : $from;
+	$to   = (isset($one2enc[$to]))   ? $one2enc[$to]   : $to;
+
+	if ($from == $to) {
+		return $string;
+	}
 
 	// are charsets valid?
 	$prev_track_errors = ini_get('track_errors');
@@ -905,15 +910,11 @@ function myconv($from, $to, $string, $be_quiet = true) {
 		unset($res);
 	}
 
-	if($from == $to) {
-		return $string;
-	}
-
 	// check if string can be converted from $from encoding to ucs-2be
 	ini_set('track_errors', true);
 	$php_errormsg = false;
 	set_error_handler("_myconvErrorHandler", E_NOTICE);
-	@iconv($from, 'ucs-2be', $string);
+	@iconv($from, CHARSET_UCS2BE, $string);
 	restore_error_handler();
 	ini_set('track_errors', $prev_track_errors);
 	if ($php_errormsg) {
@@ -924,7 +925,7 @@ function myconv($from, $to, $string, $be_quiet = true) {
 	}
 
 	// test if input enc is one-byte chr(224) = cyrillic letter a-small
-	$onebyte = (strlen(@iconv('windows-1251', $from, chr(224))) < 2);
+	$onebyte = (strlen(@iconv(CHARSET_WINDOWS, $from, chr(224))) < 2);
 	$key = $onebyte ? "$from~$to": $to;
 
 	if (!array_key_exists($key, $tables)) {
@@ -944,7 +945,7 @@ function myconv($from, $to, $string, $be_quiet = true) {
 					if (strlen($c)) {
 						$tables[$key][chr($i)] = $c;
 					} else {
-						$c = @iconv($from, 'ucs-2be', chr($i));
+						$c = @iconv($from, CHARSET_UCS2BE, chr($i));
 						if (strlen($c)) {
 							$c = unpack('n', $c);
 							$c = reset($c);
@@ -961,7 +962,7 @@ function myconv($from, $to, $string, $be_quiet = true) {
 				}
 
 				for ($i = 0; $i < 256; $i++) {
-					$c = @iconv($to, 'ucs-2be', chr($i));
+					$c = @iconv($to, CHARSET_UCS2BE, chr($i));
 					if (!strlen($c)) continue;
 					$tables[$key][$c] = chr($i);
 				}
@@ -975,7 +976,7 @@ function myconv($from, $to, $string, $be_quiet = true) {
 		}
 	}
 
-	return strtr($onebyte ? $string : iconv($from, 'ucs-2be', $string), $tables[$key]);
+	return strtr($onebyte ? $string : iconv($from, CHARSET_UCS2BE, $string), $tables[$key]);
 }
 
 /*
@@ -1171,7 +1172,7 @@ function utf8_urldecodeCallback($p) {
 	$dec = hexdec($hex);
 
 	if (is_callable('iconv')) {
-		$c = @iconv('UCS-2BE', 'KOI8-R', pack('n', $dec));
+		$c = @iconv(CHARSET_UCS2BE, DEFAULT_CHARSET, pack('n', $dec));
 
 	} else {
 		if ($dec < 128) {
@@ -1278,7 +1279,7 @@ function money2str($money, $stripkop=false) {
 	return preg_replace("/\s{2,}/",' ',implode(' ',$o));
 }
 
-function convertCyrillicObjectToUtf($object, $from_charset = 'k') {
+function convertCyrillicObjectToUtf($object, $from_charset = DEFAULT_CHARSET) {
 	if (is_array($object)) {
 		$encoded = array();
 
@@ -1295,7 +1296,7 @@ function convertCyrillicObjectToUtf($object, $from_charset = 'k') {
 		}
 
 	} elseif (is_string($object)) {
-		$object = myconv($from_charset, 'u', $object);
+		$object = myconv($from_charset, CHARSET_UTF8, $object);
 	}
 
 	return $object;

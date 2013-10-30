@@ -2,7 +2,7 @@
 class PXErrorReporterTextDev extends PXErrorReporter {
 	function _addError($code, $message, $file, $line, $traceFromLine=2) {
 		if(IS_WIN && function_exists('myconv')) {
-			$message = myconv('k', 'd', $message);
+			$message = myconv(DEFAULT_CHARSET, CHARSET_DOS, $message);
 		}
 
 		parent::_addError($code, $message, $file, $line, $traceFromLine);
@@ -35,7 +35,7 @@ class PXErrorReporterTextDev extends PXErrorReporter {
 TRACE_LINE;
 
 		if(IS_WIN) {
-			$traceLineText = myconv('k', 'd', $traceLineText);
+			$traceLineText = myconv(DEFAULT_CHARSET, CHARSET_DOS, $traceLineText);
 		}
 
 		return implode(

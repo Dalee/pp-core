@@ -10,7 +10,7 @@ class NLHTTPVarsData {
 
 	function __construct($needToStripTags = false, $needToConvert=true) {
 		$this->raw              = array();
-		$this->clientCharset    = isset($_SERVER['CHARSET']) ? strtolower($_SERVER['CHARSET']{0}) : 'w';
+		$this->clientCharset    = isset($_SERVER['CHARSET']) ? strtolower($_SERVER['CHARSET']{0}) : CHARSET_WINDOWS;
 
 		$this->_needToConvert   = $needToConvert;
 		$this->_needToStripTags = $needToStripTags;
@@ -21,15 +21,16 @@ class NLHTTPVarsData {
 			case 'éöóêåí':
 			case 'ëçèìåï':
 			case '??????':
-				return 'w';
+				return CHARSET_WINDOWS;
 				break;
 
 			case 'ÊÃÕËÅÎ':
-				return 'k';
+				return CHARSET_DEFAULT;
 				break;
 
+			// FIXME: in case of UTF-8, this line is dead line (double check before kill it)
 			case chr(208).chr(185).chr(209).chr(134).chr(209).chr(131).chr(208).chr(186).chr(208).chr(181).chr(208).chr(189):
-				return 'u';
+				return CHARSET_UTF8;
 				break;
 		}
 	}
@@ -38,11 +39,11 @@ class NLHTTPVarsData {
 		foreach ($this->raw as $k=>$v) {
 			// FIXME! temporary hack
 			if($needFixIisRewrite && is_string($v)) {
-				$this->raw[$k] = $v = myconv('utf-8', 'iso-8859-1', $v);
+				$this->raw[$k] = $v = myconv(CHARSET_UTF8, CHARSET_LATIN1, $v);
 			}
 
 			if (is_string($v) && !isAsciiString($v) && isUtfString($v)) {
-				$this->clientCharset = 'u';
+				$this->clientCharset = CHARSET_UTF8;
 			}
 		}
 	}
@@ -65,7 +66,7 @@ class NLHTTPVarsData {
 	function _NormalizeData($needFixIisRewrite=false) {
 		$this->_unEscape($this->raw);
 
-		$this->clientCharset = 'w';
+		$this->clientCharset = CHARSET_WINDOWS;
 
 		$this->charSet($needFixIisRewrite);
 
@@ -93,7 +94,7 @@ class NLHTTPVarsData {
 			}
 
 			if ($this->_needToConvert) {
-				$data = myconv($this->clientCharset, 'k', $data);
+				$data = myconv($this->clientCharset, DEFAULT_CHARSET, $data);
 			}
 		}
 	}

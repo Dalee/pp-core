@@ -157,7 +157,7 @@ class PXSearch {
 		$s = preg_replace("/<SCRIPT.*?\\/SCRIPT>/is", '', $s); //
 		$s = preg_replace("/<.*?>/s", ' ', $s);
 		$s = preg_replace("/&nbsp;/is", ' ', $s);
-		$s = html_entity_decode($s, ENT_QUOTES); // FIXME: 'KOI8-R' ?
+		$s = html_entity_decode($s, ENT_QUOTES, DEFAULT_CHARSET);
 		$s = preg_replace("/&.*?;/s", ' ', $s);
 		return $s;
 	}

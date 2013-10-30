@@ -18,7 +18,7 @@ function Label($str, $alwaysPrint=false) {
 	}
 
 	if(IS_WIN) {
-		$str = convert_cyr_string($str, 'k', 'd');
+		$str = myconv(DEFAULT_CHARSET, CHARSET_DOS, $str);
 	}
 
 	echo "\r".$timer."\t".$str."\n";

@@ -195,7 +195,7 @@ function _test_format($out) {
 	$out = json_encode($out, JSON_PRETTY_PRINT);
 	$out = preg_replace_callback('/(?:\\\\u[0-9a-fA-Z]{4})+/', function ($v) {
 		$v = strtr($v[0], array('\\u' => ''));
-		return mb_convert_encoding(pack('H*', $v), 'UTF-8', 'UTF-16BE');
+		return mb_convert_encoding(pack('H*', $v), CHARSET_UTF8, CHARSET_UTF16BE);
 	}, $out);
 	return $out;
 }

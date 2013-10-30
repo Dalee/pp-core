@@ -227,7 +227,7 @@ class PXResponse {
 			$value = serialize($value);
 		}
 
-		$value = convert_cyr_string($value, 'k', 'w');
+		$value = myconv(DEFAULT_CHARSET, CHARSET_WINDOWS, $value);
 		if (!is_numeric($expire)) {
 			$expire = 0;
 		}

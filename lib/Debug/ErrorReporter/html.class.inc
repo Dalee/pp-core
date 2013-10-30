@@ -131,7 +131,7 @@ SORT_FUNCTION
 		$mail->setSubject($subject);
 		$mail->setTo($this->toEmail, $this->toEmail);
 		$mail->setFormat('html');
-		$mail->setCharset('utf-8');
+		$mail->setCharset(CHARSET_UTF8);
 
 		$errorsListHTML = array();
 		foreach($this->errors as $errPos=>$error) {
@@ -199,7 +199,7 @@ HTML;
 
 		$this->addEnvironments();
 
-		$mail->setBody(myconv('k', 'u', $body));
+		$mail->setBody(myconv(DEFAULT_CHARSET, CHARSET_UTF8, $body));
 		$mail->send();
 	}
 
@@ -260,7 +260,7 @@ HTML;
 
 		$xml[] = '</environments>';
 
-		$html = $this->applyXSLT(myconv('k', 'u', implode("\n", $xml)));
+		$html = $this->applyXSLT(myconv(DEFAULT_CHARSET, CHARSET_UTF8, implode("\n", $xml)));
 
 		$this->mail->addFile(null, 'environments.debug_html', 'text/html', $html);
 	}
@@ -268,7 +268,7 @@ HTML;
 	function attachError($error, $errPos) {
 		if($errPos < 15) {
 			$xml  = $this->errorToXML($error);
-			$html = $this->applyXSLT(myconv('k', 'u', $xml));
+			$html = $this->applyXSLT(myconv(DEFAULT_CHARSET, CHARSET_UTF8, $xml));
 			$this->mail->addFile(null, 'error_'.($errPos + 1).'.debug_html', 'text/html', $html);
 		}
 	}

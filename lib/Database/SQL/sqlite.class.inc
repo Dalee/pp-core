@@ -16,7 +16,7 @@
 		/** @var PDO */
 		protected $connection = null;
 		protected $allowedOptions = array('dbname');
-		private $_internalEncoding = 'utf-8';
+		private $_internalEncoding = CHARSET_UTF8;
 
 		public function __construct($dbDescription) {
 			$this->setCache($dbDescription->cache);

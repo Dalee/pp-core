@@ -198,14 +198,14 @@ class PXUserHTMLLang {
 
 	function _reconv($value, $encoding) {
 		if ($encoding == 'utf8') {
-			$this->charset = 'u';
+			$this->charset = CHARSET_UTF8;
 		}
 		array_walk_recursive($value, array($this, '_myconv'));
 		return $value;
 	}
 
 	function _myconv(&$v) {
-		$v = myconv('k', $this->charset, $v);
+		$v = myconv(DEFAULT_CHARSET, $this->charset, $v);
 	}
 
 	function parseDateToTime($string) {

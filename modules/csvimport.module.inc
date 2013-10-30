@@ -269,7 +269,7 @@ HTML;
 	function _PrepareString($str) {
 		if (!($length = strlen($str))) return NULL;
 		$str = strtr($str, $this->htmlEsc);
-		$str = convert_cyr_string($str, 'w', 'k');
+		$str = myconv(CHARSET_WINDOWS, DEFAULT_CHARSET, $str);
 		$str = str_replace("\\", '&#92;', $str);
 		$str = str_replace("\n", ' ', $str);
 		$str = str_replace("\\n", "\n", $str);

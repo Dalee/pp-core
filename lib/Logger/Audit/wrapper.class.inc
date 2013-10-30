@@ -68,7 +68,7 @@ class PXAdminAuditWrapper {
 		unset($param['date']);
 
 		foreach($param as $k => $v) {
-			$param[$k] = myconv('k', 'u', $param[$k]); 
+			$param[$k] = myconv(DEFAULT_CHARSET, CHARSET_UTF8, $param[$k]);
 		}
 
 		$pager = new PXAdminPager($this->page, $this->onPage, $this->count, '',  $param);

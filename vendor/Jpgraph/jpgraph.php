@@ -505,9 +505,9 @@ class LanguageConv {
     function Convert($aTxt,$aFF) {
 	if( LANGUAGE_CYRILLIC ) {
 	    if( CYRILLIC_FROM_WINDOWS ) {
-		$aTxt = convert_cyr_string($aTxt, "w", "k"); 
+		$aTxt = myconv(CHARSET_WINDOWS, DEFAULT_CHARSET, $aTxt); 
 	    }
-	    $isostring = convert_cyr_string($aTxt, "k", "i");
+	    $isostring = myconv(DEFAULT_CHARSET, CHARSET_ISO, $aTxt);
 	    $unistring = LanguageConv::iso2uni($isostring);
 	    return $unistring;
 	}
@@ -520,10 +520,7 @@ class LanguageConv {
 	    return $this->g2312->gb2utf8($aTxt);
 	}
 	elseif( $aFF === FF_CHINESE ) {
-	    if( !function_exists('iconv') ) {
-		JpGraphError::Raise('Usage of FF_CHINESE (FF_BIG5) font family requires that your PHP setup has the iconv() function. By default this is not compiled into PHP (needs the "--width-iconv" when configured).');
-	    }
-	    return iconv('BIG5','UTF-8',$aTxt);
+	    return myconv('BIG5',CHARSET_UTF8,$aTxt);
 	}
 	else 
 	    return $aTxt;

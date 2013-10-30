@@ -139,12 +139,12 @@ function d2_shortObject($variable) {
 
 function d2_encode($dump) {
 	if(NOT_CLI) {
-		$dump = htmlentities($dump, ENT_NOQUOTES, 'KOI8-R');
+		$dump = htmlentities($dump, ENT_NOQUOTES, DEFAULT_CHARSET);
 	}
 
 	if(substr(PHP_OS, 0, 3) == 'WIN') {
-		$enc = NOT_CLI ? 'w' : 'd';
-		$dump = myconv('k', $enc, $dump);
+		$enc = NOT_CLI ? CHARSET_WINDOWS : CHARSET_DOS;
+		$dump = myconv(DEFAULT_CHARSET, $enc, $dump);
 	}
 
 	return $dump;
@@ -198,7 +198,7 @@ function DLog($var, $full = true, $overwrite = 1, $fileName = '') {
 	}
 	$started = true;
 	file_put_contents($fileName, '['.date('d.m.Y H:i:s')."]\r\n", $mode);
-	file_put_contents($fileName, html_entity_decode(D3($var, $full)), FILE_APPEND);
+	file_put_contents($fileName, html_entity_decode(D3($var, $full), ENT_COMPAT | ENT_HTML401, DEFAULT_CHARSET), FILE_APPEND);
 	file_put_contents($fileName, "\r\n\r\n", FILE_APPEND);
 }
 ?>
