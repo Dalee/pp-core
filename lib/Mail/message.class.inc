@@ -34,7 +34,7 @@ class NLMailMessage {
 		$this->files            = array();
 		$this->format           = 'text';
 		$this->multipart        = 'mixed';
-		$this->boundary         = strtoupper(uniqid(time()));
+		$this->boundary         = mb_strtoupper(uniqid(time()));
 		$this->_errorMessage    = NULL;
 		$this->log              = $logFile;
 		$this->charset          = DEFAULT_CHARSET;
@@ -55,7 +55,7 @@ class NLMailMessage {
 	}
  
 	function setTo($name, $email) {
-		$this->toName  = strlen($name) ? $name : $email;
+		$this->toName  = mb_strlen($name) ? $name : $email;
 		$this->toEmail = $email;
 	}
  
@@ -127,7 +127,7 @@ class NLMailMessage {
 		}
 
 		foreach($variables as $k=>$v) {
-			$text = str_replace('%'.strtoupper($k).'%', (string)$v, $text);
+			$text = str_replace('%'.mb_strtoupper($k).'%', (string)$v, $text);
 		}
 
 		$text = preg_replace("/(?<!\%)\%[^%]+?\%/si", '', $text);
@@ -184,7 +184,7 @@ class NLMailMessage {
 	}
 
 	function _getSubject() {
-		if (strlen($this->subject)) {
+		if (mb_strlen($this->subject)) {
 			if (preg_match("/[À-ÿ]/", $this->subject)) {
 				$_subject = "=?".$this->charset."?B?".base64_encode($this->subject)."?=";
 			} else {
@@ -228,14 +228,14 @@ class NLMailMessage {
 		ini_set('track_errors', 1);
 		$oldError = error_reporting(0);
  
-		if (!strlen($this->getError()) && @mail($this->toEmail, $_subject, $this->body, $this->addHeaders)) {
+		if (!mb_strlen($this->getError()) && @mail($this->toEmail, $_subject, $this->body, $this->addHeaders)) {
 			error_reporting($oldError);
  
 			$this->log(true);
 			return true;
 		} else {
 			error_reporting($oldError);
-			if (!strlen($this->getError())) {
+			if (!mb_strlen($this->getError())) {
 				$this->setError(@$php_errormsg);
 			}
  
@@ -253,7 +253,7 @@ class NLMailMessage {
 				$this->toEmail,
 				$this->fromEmail,
 				$this->subject,
-				strlen($this->body),
+				mb_strlen($this->body),
 				$this->getError()
 			);
  
@@ -287,13 +287,13 @@ class NLMailMessage {
 	}
  
 	function _attachFile($file, $name, $id, $type='application/octet-stream', $source='', $inline = false) {
-		if(strlen($source)) {
+		if(mb_strlen($source)) {
 			$encoded = $this->_encodeString($source);
 		} else {
 			$encoded = $this->_encodeFile($file);
 		}
  
-		if (strlen($name)) {
+		if (mb_strlen($name)) {
 			$file = $name;
 		}
  
@@ -325,11 +325,11 @@ class NLMailMessage {
 
 		if (!empty($this->listHeaders)) {
 			foreach ($this->listHeaders as $type => $values) {
-				if (empty($values) || !in_array(strtolower($type), array('help', 'subscribe', 'unsubscribe', 'owner', 'archive'))) {
+				if (empty($values) || !in_array(mb_strtolower($type), array('help', 'subscribe', 'unsubscribe', 'owner', 'archive'))) {
 					continue;
 				}
 				$values = "<" . join('>, <', (array)$values) . ">";
-				$type = ucfirst(strtolower($type));
+				$type = mb_ucfirst(mb_strtolower($type));
 				$addHeaders .= "List-{$type}: {$values}\n";
 			}
 		}
@@ -390,7 +390,7 @@ class NLMailMessage {
 		}
 
 		foreach($images[3] as $i){
-			if(strpos($i, '&d=audit') !== false) {
+			if(mb_strpos($i, '&d=audit') !== false) {
 				continue;
 			}
 
