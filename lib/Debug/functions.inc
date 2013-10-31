@@ -35,7 +35,7 @@ function D($variable) { // H - HTML, T - text version
 			break;
 
 		default:
-			echo 'string('.strlen($variable).')'.$variable;
+			echo 'string('.mb_strlen($variable).')'.$variable;
 			break;
 	}
 
@@ -142,7 +142,7 @@ function d2_encode($dump) {
 		$dump = htmlentities($dump, ENT_NOQUOTES, DEFAULT_CHARSET);
 	}
 
-	if(substr(PHP_OS, 0, 3) == 'WIN') {
+	if(mb_substr(PHP_OS, 0, 3) == 'WIN') {
 		$enc = NOT_CLI ? CHARSET_WINDOWS : CHARSET_DOS;
 		$dump = myconv(DEFAULT_CHARSET, $enc, $dump);
 	}
