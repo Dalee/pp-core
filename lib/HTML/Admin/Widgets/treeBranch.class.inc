@@ -159,7 +159,7 @@ class PXAdminTreeBranch extends PXAdminWidget {
 	function toChildsLink($html) {
 		$href = $this->htmlTree->childsLink($this->leaf->id);
 
-		if(strlen($href)) {
+		if(mb_strlen($href)) {
 			$_ = $this->leaf->content['status'] ? '' : ' class="hide"';
 			$html = '<a href="'.$href.'"'.$_.'>'.$html.'</a>';
 		}

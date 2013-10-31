@@ -200,17 +200,12 @@ class PXUserHTMLLang {
 		if ($encoding == 'utf8') {
 			$this->charset = CHARSET_UTF8;
 		}
-		array_walk_recursive($value, array($this, '_myconv'));
-		return $value;
-	}
-
-	function _myconv(&$v) {
-		$v = myconv(DEFAULT_CHARSET, $this->charset, $v);
+		return convertCyrillicObjectToUtf($value);
 	}
 
 	function parseDateToTime($string) {
-		if(strlen($string)) {
-			if(strlen($string) == 10 && is_numeric($string)) {
+		if(mb_strlen($string)) {
+			if(mb_strlen($string) == 10 && is_numeric($string)) {
 				return $string;
 			}
 

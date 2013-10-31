@@ -28,7 +28,7 @@ class PXAdminTree extends PXAdminWidget {
 	}
 
 	function canChangeOrder() {
-		return strpos($this->datatype->order, 'sys_order') !== false;
+		return mb_strpos($this->datatype->order, 'sys_order') !== false;
 	}
 
 	function setChildLink($chVarName) {
@@ -89,7 +89,7 @@ class PXAdminTree extends PXAdminWidget {
 	}
 
 	function htmlCaption() {
-		if (!strlen($this->caption)) {
+		if (!mb_strlen($this->caption)) {
 			return '';
 		}
 
