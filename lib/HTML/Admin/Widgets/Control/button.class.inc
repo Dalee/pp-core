@@ -17,8 +17,8 @@ class PXControlButton extends PXAdminWidget {
 	}
 
 	function html() {
-		$cssClass = strlen($this->cssClass)    ? ' class="'.$this->cssClass.'"'      : '';
-		$onClick  = strlen($this->onClickCode) ? ' onclick="'.$this->onClickCode.'"' : '';
+		$cssClass = mb_strlen($this->cssClass)    ? ' class="'.$this->cssClass.'"'      : '';
+		$onClick  = mb_strlen($this->onClickCode) ? ' onclick="'.$this->onClickCode.'"' : '';
 
 		return '<button'.$cssClass.$onClick.$this->disable.'>'.$this->value.'</button>';
 	}

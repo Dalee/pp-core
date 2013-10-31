@@ -26,11 +26,11 @@ class PXInputDateTime extends PXAdminWidget {
 			$matches = array();
 
 			$value = trim($value);
-			$value = substr($value, 0, 19);
+			$value = mb_substr($value, 0, 19);
 
 			preg_match("/^((\d{1,2}).(\d{1,2}).(\d{4}))?\s?((\d{1,2})(:(\d{1,2})(:(\d{1,2}))?)?)?/", trim($value), $matches);
 
-			if(isset($matches[1]) && strlen($matches[1])) {
+			if(isset($matches[1]) && mb_strlen($matches[1])) {
 				$date['day'   ] = $matches[2];
 				$date['month' ] = $matches[3];
 				$date['year'  ] = $matches[4];

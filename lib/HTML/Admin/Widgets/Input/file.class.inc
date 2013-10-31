@@ -44,7 +44,7 @@ HTML;
 
 			$html .= '<br>';
 
-			$picName = substr($this->value['path'], strrpos($this->value['path'], '/')+1);
+			$picName = mb_substr($this->value['path'], mb_strrpos($this->value['path'], '/')+1);
 			$html .= '<input class="checkbox" type="checkbox" id="'.$this->name.'_remove'.$this->distension.'" name="'.$this->name.'_remove['.$picName.']"'.$this->disable.'>';
 			$html .= '<label for="'.$this->name.'_remove'.$this->distension.'">удалить файл</label>';
 		}
@@ -61,7 +61,7 @@ HTML;
 		
 		$html .= $this->preview();
 
-		$html .= '<input class="file" type="file" id="'.$this->name.$this->distension.'" name="'.$this->name.(!is_null($this->entry) && strlen($this->entry) ? '_edit' : '').$this->distension.'"'.$this->disable.' onpropertychange="Preview(this.value, \''.$this->type.'\', \''.$this->name.$this->distension.'\');"><br>';
+		$html .= '<input class="file" type="file" id="'.$this->name.$this->distension.'" name="'.$this->name.(!is_null($this->entry) && mb_strlen($this->entry) ? '_edit' : '').$this->distension.'"'.$this->disable.' onpropertychange="Preview(this.value, \''.$this->type.'\', \''.$this->name.$this->distension.'\');"><br>';
 		
 		$html .= $this->param();
 

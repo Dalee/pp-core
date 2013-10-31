@@ -50,11 +50,11 @@ class PXAdminTableObjects extends PXAdminObjects  {
 		);
 
 		$method = 'getObjects';
-		if (strlen($this->loadMethod)) {
+		if (mb_strlen($this->loadMethod)) {
 			$method .= $this->loadMethod;
 			$args[] = $where;
 
-		} elseif(strlen($where)) {
+		} elseif(mb_strlen($where)) {
 			$method .= 'ByWhere';
 			$args[] = $where;
 		}

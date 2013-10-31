@@ -48,7 +48,7 @@ HTML;
 	function _listLink($f) {
 		$_ = '<td></td>';
 
-		if($f->isDir || !$f->alias || !strlen($f->alias)) {
+		if($f->isDir || !$f->alias || !mb_strlen($f->alias)) {
 			return $_;
 		}
 
@@ -233,10 +233,10 @@ HTML;
 		}
 
 		$owner = posix_getpwuid(fileowner($filepath));
-		$oct = substr(decoct(fileperms($filepath)), -3);
+		$oct = mb_substr(decoct(fileperms($filepath)), -3);
 
-		for($i=0; $i<3; $i++) {
-			switch($oct{$i}) {
+		for ($i=0; $i<3; $i++) {
+			switch(mb_substr($oct, $i, 1)) {
 				case '7': $str = 'rwx'; break;
 				case '6': $str = 'rw-'; break;
 				case '5': $str = 'r-x'; break;

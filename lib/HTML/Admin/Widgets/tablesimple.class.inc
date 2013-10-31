@@ -62,7 +62,7 @@ class PXAdminTableSimple extends PXAdminWidget {
 	}
 
 	function htmlCaption() {
-		if(!strlen($this->caption)) {
+		if(!mb_strlen($this->caption)) {
 			return '';
 		}
 

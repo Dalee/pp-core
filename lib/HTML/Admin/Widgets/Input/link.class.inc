@@ -9,7 +9,7 @@ class PXInputLinkToFile extends PXAdminWidget {
 	}
 
 	function html() {
-		$lastDir = isset($_COOKIE['fileManagerDir']) && strlen(trim($_COOKIE['fileManagerDir'])) ? 'htdocs'.trim($_COOKIE['fileManagerDir']) : '';
+		$lastDir = isset($_COOKIE['fileManagerDir']) && mb_strlen(trim($_COOKIE['fileManagerDir'])) ? 'htdocs'.trim($_COOKIE['fileManagerDir']) : '';
 
 		$html  = '<div class="imagepreview">';
 		$html .= '<input type="hidden" name="'.$this->name.'[filename]" id="'.$this->name.'_filename" value="'.$this->value['filename'].'">';
