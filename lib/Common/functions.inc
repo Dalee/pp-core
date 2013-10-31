@@ -13,6 +13,7 @@ if (!defined('IS_WIN')) {
 	define('IS_WIN', (bool)(substr(PHP_OS, 0, 3) == 'WIN'));
 }
 
+require_once PPLIBPATH . 'Common/functions.compatibility.inc';
 require_once PPLIBPATH . 'Common/functions.pp.inc';
 require_once PPLIBPATH . 'Common/functions.etc.inc';
 require_once PPLIBPATH . 'Common/functions.file.inc';

@@ -17,9 +17,11 @@
 	ini_set('memory_limit', '512M');
 	umask(0);
 
-	// require_once (BASEPATH . 'libpp/lib/common.defines.inc');
+	//require_once (BASEPATH . 'libpp/lib/common.defines.inc');
 	require_once (BASEPATH . 'libpp/lib/HTML/inlineimage.class.inc');
 	require_once (BASEPATH . 'libpp/vendor/CSSMin/CssMin.php');
+	require_once (BASEPATH . 'libpp/lib/Common/functions.compatibility.inc');
+	require_once (BASEPATH . 'libpp/lib/Common/functions.string.inc');
 	require_once (BASEPATH . 'libpp/lib/Common/functions.pp.inc');
 	require_once (BASEPATH . 'libpp/lib/Common/functions.file.inc');
 	require_once (BASEPATH . 'libpp/lib/Common/functions.etc.inc');
@@ -63,10 +65,10 @@
 		}
 
 		protected function foundedFile($fileName, $fullPath) {
-			$subdirPath = ltrim(substr($fullPath, strlen($this->rootPath)), '/');
+			$subdirPath = ltrim(mb_substr($fullPath, mb_strlen($this->rootPath), 0), '/');
 
-			$diff = strlen($subdirPath);
-			$subdirPath = trim(substr($subdirPath, 0, $diff - strlen($fileName)), '/');
+			$diff = mb_strlen($subdirPath);
+			$subdirPath = trim(mb_substr($subdirPath, 0, ($diff - mb_strlen($fileName))), '/');
 
 			return array (
 				'filename' => $fileName,
@@ -89,7 +91,7 @@
 				if ($fileName === '.' || $fileName === '..') {
 					continue;
 				}
-				if (substr($fileName, 0, 1) === '.') {
+				if (mb_substr($fileName, 0, 1) === '.') {
 					continue;
 				}
 
@@ -150,8 +152,8 @@
 		foreach ($lines as $line) {
 			// according to http://www.kernel.org/pub/software/scm/git/docs/gitignore.html
 			// A line starting with # serves as a comment.
-			if (strpos($line, '#') !== false) {
-				$line = substr($line, 0, strpos($line, '#'));
+			if (mb_strpos($line, '#') !== false) {
+				$line = mb_substr($line, 0, mb_strpos($line, '#'));
 			}
 			$line = trim($line);
 			// A blank line matches no files, so it can serve as a separator for readability.
@@ -168,11 +170,11 @@
 			$wc = ltrim($wc, "\t !");
 
 			// If the pattern ends with a slash, it is removed for the purpose of the following description, but it would only find a match with a directory. In other words, foo/ will match a directory foo and paths underneath it, but will not match a regular file or a symbolic link foo (this is consistent with the way how pathspec works in general in git).
-			if (substr($wc, -1, 1) === '/') {
+			if (mb_substr($wc, -1, 1) === '/') {
 				$wc = $wc . '*';
 
 			// If the pattern does not contain a slash /, git treats it as a shell glob pattern and checks for a match against the pathname relative to the location of the .gitignore file (relative to the toplevel of the work tree if not from a .gitignore file).
-			} else if (strpos($wc, '/') === false) {
+			} else if (mb_strpos($wc, '/') === false) {
 				// dummy
 
 			// Otherwise, git treats the pattern as a shell glob suitable for consumption by fnmatch(3) with the FNM_PATHNAME flag: wildcards in the pattern will not match a / in the pathname. For example, "Documentation/*.html" matches "Documentation/git.html" but not "Documentation/ppc/ppc.html" or "tools/perf/Documentation/perf.html".
@@ -181,7 +183,7 @@
 			}
 
 			// A leading slash matches the beginning of the pathname. For example, "/*.c" matches "cat-file.c" but not "mozilla-sha1/sha1.c".
-			$wc = (substr($wc, 0, 1) === '/') ? ($wc) : ('*' . $wc);
+			$wc = (mb_substr($wc, 0, 1) === '/') ? ($wc) : ('*' . $wc);
 
 			$pattern = $wc;
 			$wildcards[] = compact('line', 'pattern', 'flag', 'negate');
@@ -218,7 +220,7 @@
 
 
 	function moveFileToTargetDir($tempFile, $destinationFile) {
-		if (!file_exists($tempFile) || !strlen(file_get_contents($tempFile))) {
+		if (!file_exists($tempFile) || !mb_strlen(file_get_contents($tempFile))) {
 			unlink($tempFile);
 			echo "ALARM: Empty file in result of processing " . $destinationFile . PHP_EOL;
 			return false;

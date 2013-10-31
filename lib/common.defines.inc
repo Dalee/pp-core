@@ -131,15 +131,18 @@ define('CHARSET_UTF16BE',            'utf-16be');
 
 // current default proxima charset
 define('DEFAULT_CHARSET',            CHARSET_KOI8R);
-define('DEFAULT_LOCALE',             serialize(array('Russian_Russia.20866', 'ru_RU.KOI8-R', 'KOI8-R')));
+define('DEFAULT_LOCALE',             json_encode(array('Russian_Russia.20866', 'ru_RU.KOI8-R', 'KOI8-R')));
 //define('DEFAULT_CHARSET',            CHARSET_UTF8);
-//define('DEFAULT_LOCALE',             serialize(array('Russian_Russia.UTF-8', 'ru_RU.UTF-8', 'UTF-8')));
+//define('DEFAULT_LOCALE',             json_encode(array('Russian_Russia.UTF-8', 'ru_RU.UTF-8', 'UTF-8')));
 
-$tmp = setlocale(LC_ALL, unserialize(DEFAULT_LOCALE));
-if ($tmp === false) {
-	// TODO: fire error or warning
+if (setlocale(LC_ALL, json_decode(DEFAULT_LOCALE)) === false) {
+	FatalError(sprintf('Unable to set setlocale: %s', DEFAULT_LOCALE));
 }
-unset($tmp);
+if (function_exists('mb_internal_encoding')) {
+	if (mb_internal_encoding(DEFAULT_CHARSET) === false) {
+		FatalError(sprintf('Unable to internal encoding to: %s', DEFAULT_CHARSET));
+	}
+}
 
 // разрешенные форматы изображений
 define('ENUM_ALLOWED_IMAGETYPES', serialize(array(

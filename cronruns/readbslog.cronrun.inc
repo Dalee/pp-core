@@ -162,7 +162,7 @@ class PXCronRunReadBSLog extends PXAbstractCronRun {
 	}
 
 	function _parseLine($s, $file) {
-		if (!strlen($s)) {
+		if (empty($s)) {
 			return;
 		}
 
