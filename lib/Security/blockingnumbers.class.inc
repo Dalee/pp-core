@@ -49,7 +49,7 @@ class NLBlockingNumbers {
 		$this->key = $lastid = $this->storage->increment($this->key('lastid'));
 
 		$this->value = '';
-		$n = strlen($alphabet);
+		$n = mb_strlen($alphabet);
 		for ($i = 0; $i < $chars; $i++) {
 			$this->value .= $alphabet[mt_rand(0, $n-1)];
 		}
