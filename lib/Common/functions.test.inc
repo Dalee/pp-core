@@ -41,7 +41,7 @@ function t($name, $callback, $expected = true) {
 			file_put_contents($left, _test_format($expected)."\n");
 			file_put_contents($right, _test_format($result)."\n");
 			if ($diffmode == 'sidebyside') {
-				echo str_pad('Expected:', 128/2, ' ') . str_pad('Got:', 128/2, ' ') . PHP_EOL;
+				echo mb_str_pad('Expected:', 128/2, ' ') . mb_str_pad('Got:', 128/2, ' ') . PHP_EOL;
 				echo `colordiff "$left" "$right" -y -i -d`;
 			} else {
 				echo `colordiff "$left" "$right" -u -i -d`;
@@ -115,7 +115,7 @@ function _tt_letter($n, $leftPad = 0) {
 	for ($r = ""; $n >= 0; $n = intval($n / 26) - 1) {
 		$r = chr($n%26 + 0x61) . $r;
 	}
-	$leftPad && ($r = str_pad($r, $leftPad, ' ', STR_PAD_LEFT));
+	$leftPad && ($r = mb_str_pad($r, $leftPad, ' ', STR_PAD_LEFT));
 	return $r;
 }
 
@@ -160,12 +160,12 @@ function _tt_class($aim) {
 function _parsePhpDocTest($phpdoc) {
 	$tests = array();
 	$pos = 0;
-	while ($pos = strpos($phpdoc, '@test ', $pos)) {
-		$end = strpos($phpdoc, "\n", $pos + 1);
+	while ($pos = mb_strpos($phpdoc, '@test ', $pos)) {
+		$end = mb_strpos($phpdoc, "\n", $pos + 1);
 		//$end = strpos($phpdoc, '@test', $pos + 1) ?: strpos($phpdoc, '@', $pos + 1) ?: strpos($phpdoc, '**/', $pos + 1);
-		($end === false) && $end = strlen($phpdoc);
+		($end === false) && $end = mb_strlen($phpdoc);
 
-		$data = substr($phpdoc, $pos + 5, $end - $pos - 5);
+		$data = mb_substr($phpdoc, $pos + 5, $end - $pos - 5);
 		list ($expression, $title) = array_pad(explode('---', $data), 2, null);
 		list ($params, $result) = array_pad(explode('>>>', $expression), 2, 'null');
 		$test = (array)json_decode(trim($params), 1);
@@ -194,7 +194,7 @@ function _test_prepare(&$out) {
 function _test_format($out) {
 	$out = json_encode($out, JSON_PRETTY_PRINT);
 	$out = preg_replace_callback('/(?:\\\\u[0-9a-fA-Z]{4})+/', function ($v) {
-		$v = strtr($v[0], array('\\u' => ''));
+		$v = mb_strtr($v[0], array('\\u' => ''));
 		return mb_convert_encoding(pack('H*', $v), CHARSET_UTF8, CHARSET_UTF16BE);
 	}, $out);
 	return $out;

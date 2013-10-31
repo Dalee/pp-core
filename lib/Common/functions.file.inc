@@ -219,7 +219,7 @@ function AppendStringToFile($fileName, $string) {
 if (!function_exists("mime_content_type")) {
 	function mime_content_type($file, $type = 'mime') { //without Fileinfo extension constants FILEINFO_* are undefined
 		if(function_exists("finfo_file") && file_exists('/etc/magic')) {
-			$tmp = finfo_file(finfo_open(constant('FILEINFO_' . strtoupper($type)), '/etc/magic'), $file);
+			$tmp = finfo_file(finfo_open(constant('FILEINFO_' . mb_strtoupper($type)), '/etc/magic'), $file);
 		} else {
 			$tmp = exec(sprintf("file -bi '%s'", escapeshellcmd($file)));
 		}
@@ -263,7 +263,7 @@ function parse_csv_string($source, $delim=';', $withColumnNames=false) {
 	foreach($strings as $line=>$string) {
 		$string = trim($string);
 
-		if(!strlen($string)) {
+		if(!mb_strlen($string)) {
 			continue;
 		}
 
@@ -286,8 +286,8 @@ function parse_csv_string($source, $delim=';', $withColumnNames=false) {
 			if ($nquotes > 0) {
 				// Remove first and last quotes, then merge pairs of quotes
 				$qstr =& $elements[$i];
-				$qstr = substr_replace($qstr, '', strpos($qstr, '"'), 1);
-				$qstr = substr_replace($qstr, '', strrpos($qstr, '"'), 1);
+				$qstr = substr_replace($qstr, '', mb_strpos($qstr, '"'), 1);
+				$qstr = substr_replace($qstr, '', mb_strrpos($qstr, '"'), 1);
 				$qstr = str_replace('""', '"', $qstr);
 			}
 		}

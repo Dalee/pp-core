@@ -21,7 +21,7 @@ function isValidLogin($string, $min=2, $max=16) {
 }
 
 function isValidPasswd($string, $min=3, $max=16) {
-	$len = strlen($string);
+	$len = mb_strlen($string);
 	return $min <= $len && $len <= $max && ctype_graph($string);
 }
 
