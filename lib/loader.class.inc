@@ -37,16 +37,16 @@ class PXLoader {
 
 	
 	public static function find($class) {
-		return @self::getInstance()->load_map[strtolower($class)];
+		return @self::getInstance()->load_map[mb_strtolower($class)];
 	}
 
 	public function setPath($path) {
-		$this->path = strlen($path) ? $path : $this->path;
+		$this->path = mb_strlen($path) ? $path : $this->path;
 		return $this;
 	}
 
 	public function load($class, $path=null) {
-		$this->load_map[strtolower($class)] = 
+		$this->load_map[mb_strtolower($class)] = 
 			realpath(sprintf("%s/%s", $this->path, $path));
 
 		return $this;

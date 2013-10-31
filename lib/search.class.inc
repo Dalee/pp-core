@@ -8,7 +8,7 @@ function SortByRelevant($a, $b) {
 }
 
 function _yo2ye($s) {
-	return strtr($s, "£≥", "≈Â");
+	return mb_strtr($s, "£≥", "≈Â");
 }
 
 class PXSearch {
@@ -109,7 +109,7 @@ class PXSearch {
 	}
 
 	function getStemByWord($word) {
-		if (strlen($word) <= 2 || strlen($word) > 30) {
+		if (mb_strlen($word) <= 2 || mb_strlen($word) > 30) {
 			return NULL;
 		}
 
