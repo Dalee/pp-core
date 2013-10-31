@@ -143,7 +143,7 @@ class PXFileListing {
 		}
 		
 		foreach($this->_roots as $root) {
-			if(strpos($this->_getRealPath($catalog), $this->_getRealPath($root)) === 0 && strlen($root) <= strlen($catalog)) {
+			if(mb_strpos($this->_getRealPath($catalog), $this->_getRealPath($root)) === 0 && mb_strlen($root) <= mb_strlen($catalog)) {
 				return true;
 			}
 		}
@@ -163,7 +163,7 @@ class PXFileListing {
 	}
 
 	function _isSmbShare($path) {
-		return strpos($path, '\\\\') === 0;
+		return mb_strpos($path, '\\\\') === 0;
 	}
 
 	function _fullPath($catalog) {
@@ -230,7 +230,7 @@ class PXFileListingItem {
 
 	function _Type() {
 		preg_match('|[^/.\\\\]+$|', $this->name, $tmp);
-		$this->type = isset($tmp[0]) ? strtolower($tmp[0]) : '';
+		$this->type = isset($tmp[0]) ? mb_strtolower($tmp[0]) : '';
 	}
 
 	function _Size() {
@@ -259,7 +259,7 @@ class PXFileListingItem {
 
 		$htdocsPrefix = null;
 		foreach(array('site', 'local', 'libpp') as $prefix) {
-			if(strpos($this->catalog, $prefix.'/htdocs') === 0) {
+			if(mb_strpos($this->catalog, $prefix.'/htdocs') === 0) {
 				$htdocsPrefix = $prefix.'/htdocs';
 				break;
 			}
