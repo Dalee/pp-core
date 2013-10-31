@@ -104,14 +104,15 @@ class NLCaptcha {
 	function addText($text, $fonts, $fSize) {
 		$fontRatio = $this->ratio['font'];
 
-		for ($i=0; $i<strlen($text); $i++) {
+		$text_len = mb_strlen($text);
+		for ($i=0; $i < $text_len; $i++) {
 			$size  =  mt_rand($fSize,$fSize*1.15) * $fontRatio;
 			$dx    =  $i*$fSize + mt_rand(4, 6);
 			$dy    = ($this->height > 3*$fSize) ? 20 + mt_rand(15, 45) / $fontRatio : mt_rand($fSize*1.17, $fSize*1.5);
 
 			$angle = mt_rand(-10,10) / $fontRatio;
 
-			ImageTTFText($this->im, $size, $angle,  $dx,  $dy, $this->ica[mt_rand(1, 10)], $fonts[mt_rand(0,sizeof($fonts) - 1 )], substr($text, $i, 1));
+			ImageTTFText($this->im, $size, $angle,  $dx,  $dy, $this->ica[mt_rand(1, 10)], $fonts[mt_rand(0,sizeof($fonts) - 1 )], mb_substr($text, $i, 1));
 		}
 
 
@@ -224,4 +225,3 @@ class NLCaptcha {
 		return ImagePolygon($image, $points, 4, $color);
 	}
 }
-?>
