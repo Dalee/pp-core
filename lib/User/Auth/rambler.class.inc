@@ -33,11 +33,11 @@ class PXAuthRambler extends PXAuthInterface {
 	function _getRamblerData($checkUrl) {
 		$data = @file_get_contents('http://'.$checkUrl);
 
-		if (!strlen($data)) {
+		if (! mb_strlen($data)) {
 			$data = @file_get_contents('http://www.index20.ru/'.$checkUrl);
 		}
 
-		if (!strlen($data)) {
+		if (! mb_strlen($data)) {
 			return 0;
 		}
 
@@ -49,7 +49,7 @@ class PXAuthRambler extends PXAuthInterface {
 	function _parseRamblerResponse($data) {
 		$res = array();
 		foreach (explode("\n", $data) as $t) {
-			if (!strlen($t)) continue;
+			if (! mb_strlen($t)) continue;
 			$vv = explode("\t", $t);
 			$res[$vv[0]] = $vv[1];
 		}

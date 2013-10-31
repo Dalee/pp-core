@@ -20,7 +20,7 @@ class PXAuthInterface {
 	}
 
 	protected function findUser() {
-		if(!strlen($this->login)) {
+		if (! mb_strlen($this->login)) {
 			return null;
 		}
 
@@ -35,7 +35,7 @@ class PXAuthInterface {
 		$f = $request->getVar($field);
 		$f = call_user_func_array(array($this, "parse".ucfirst($field)), array($f));
 
-		if(!is_string($f) || !strlen($f)) {
+		if ((! is_string($f)) || (! mb_strlen($f))) {
 			$f = (string) $request->getCookieVar($field);
 		}
 
@@ -70,7 +70,7 @@ class PXAuthInterface {
 	}
 
 	function parseLogin($login){
-		return is_string($login) ? preg_replace('/[^\w\.\@\-]/', '', substr($login, 0, 255)) : null;
+		return is_string($login) ? preg_replace('/[^\w\.\@\-]/', '', mb_substr($login, 0, 255)) : null;
 	}
 
 	function parsePasswd($password){

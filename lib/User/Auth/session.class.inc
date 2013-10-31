@@ -16,14 +16,14 @@ class PXAuthSession extends PXAuthSecure {
 		$this->_request = $request;
 		$this->_db      = $db;
 		
-		if (!($this->session_lifetime = (int)ini_get("session.gc_maxlifetime"))) {
+		if (! ($this->session_lifetime = (int)ini_get("session.gc_maxlifetime"))) {
 			$this->session_lifetime = 1800;
 		}
 		
 		parent::__construct($app, $request, $user, $db, $authParams);
 	}
 
-	function encodePasswd($passwd, $toMd5=true) { return null; }
+	function encodePasswd($passwd, $toMd5 = true) { return null; }
 
 	function auth() {
 		setcookie('login',  $this->login, USER_SESSION_INTERVAL, '/', '');
@@ -45,18 +45,18 @@ class PXAuthSession extends PXAuthSecure {
 			return null;
 		}
 
-		return preg_replace('/^[^0-9a-z]{32}$/i', '', substr($sid, 0, 32));
+		return preg_replace('/^[^0-9a-z]{32}$/i', '', mb_substr($sid, 0, 32));
 	}
 
 	protected function _proceedAuth($uArray) {
 		switch(true) {
 			case empty($uArray):
 				return;
-			case strlen($this->passwd) && $this->validatePassword($this->passwd, $uArray):
-			case strlen($this->sid) && $this->validateSession($this->sid, $uArray):
+			case mb_strlen($this->passwd) && $this->validatePassword($this->passwd, $uArray):
+			case mb_strlen($this->sid) && $this->validateSession($this->sid, $uArray):
 				$this->fillUserFields($uArray);
 				break;
-			case strlen($this->passwd):
+			case mb_strlen($this->passwd):
 				$this->incrementLoginAttempts($uArray);
 				break;
 		}
@@ -92,7 +92,7 @@ class PXAuthSession extends PXAuthSecure {
 		
 		//FIXME: NOW() must be in driver
 		$res = $this->_db->query(sprintf("SELECT * FROM %s WHERE mtime >= NOW() - INTERVAL '%d seconds' AND sid = '%s' LIMIT 1", $this->session_store, $this->session_lifetime, $private_key), true);
-		if(!($session = reset($res))) {
+		if(! ($session = reset($res))) {
 			$this->resetPasswd(); // reset staled session cookie
 			return false;
 		}
@@ -120,7 +120,7 @@ class PXAuthSession extends PXAuthSecure {
 	}
 
 	protected function resetLoginAttempts($uArray) {
-		if (!empty($uArray[$this->suser_login_attempts_field])) {
+		if (! empty($uArray[$this->suser_login_attempts_field])) {
 			// reset with cache flush
 			$this->_db->modifyingQuery(sprintf("UPDATE %s SET suser_login_attempts = 0 WHERE id = '%d'", DT_USER, $uArray['id']));
 		}

@@ -10,7 +10,7 @@ class PXAuthSecure extends PXAuthInterface {
 	}
 
 	protected function _proceedAuth($uArray) {
-		if(!isset($uArray['passwd']) || !strlen($this->passwd)) {
+		if ((! isset($uArray['passwd'])) || (! mb_strlen($this->passwd))) {
 			return;
 		}
 
@@ -19,12 +19,12 @@ class PXAuthSecure extends PXAuthInterface {
 		}
 	}
 
-	function encodePasswd($passwd, $toMd5=true) {
+	function encodePasswd($passwd, $toMd5 = true) {
 		$md = $toMd5 ? md5($passwd) : $passwd;
 		$tmp = '';
 
-		for($i=0; $i<strlen($md);$i++) {
-			$tmp .= dechex(hexdec($md{$i}) ^ $i);
+		for ($i=0; $i < mb_strlen($md); $i++) {
+			$tmp .= dechex(hexdec(mb_substr($md, $i, 1)) ^ $i);
 		}
 
 		return $tmp;

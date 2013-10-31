@@ -10,7 +10,7 @@ class PXAuthPlain extends PXAuthInterface {
 	}
 
 	private function proceedAuth($uArray) {
-		if(!(count($uArray) && strlen($this->passwd))) {
+		if(! (count($uArray) && mb_strlen($this->passwd))) {
 			return;
 		}
 
