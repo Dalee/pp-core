@@ -17,6 +17,14 @@ if (! function_exists('mb_str_pad')) {
 	}
 }
 
+if (! function_exists('mb_ucfirst')) {
+	function mb_ucfirst($string) {
+		$l = mb_substr($string, 0, 1);
+		$l = mb_strtoupper($l);
+		return $l.mb_substr($string, 1);
+	}
+}
+
 // mbstring compatibility layer
 if (! defined('MB_OVERLOAD_STRING')) {
 	define('MB_DISABLED', true);

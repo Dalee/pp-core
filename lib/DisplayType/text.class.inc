@@ -23,7 +23,7 @@ class PXDisplayTypeText extends PXDisplayType {
 	function buildCell($field, $object, $param=NULL) {
 		$trunc = isset($field->displayTypeArgs[2]) && (int)$field->displayTypeArgs[2] > 0 ? (int)$field->displayTypeArgs[2] : 50;
 		$value = strip_tags($object[$field->name]);
-		$value = strlen($value) > $trunc ? substr($value, 0, $trunc).'&hellip;' : $value;
+		$value = mb_strlen($value) > $trunc ? mb_substr($value, 0, $trunc).'&hellip;' : $value;
 		
 		return $this->getSubDirectoryIfExists($field, $object, $value);
 	}
