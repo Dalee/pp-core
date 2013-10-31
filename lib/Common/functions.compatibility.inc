@@ -67,6 +67,16 @@ if (! defined('MB_OVERLOAD_STRING')) {
 		return call_user_func_array('strtolower', $a);
 	}
 
+	function mb_strstr() {
+		$a = func_get_args();
+		return call_user_func_array('strstr', $a);
+	}
+
+	function mb_stristr() {
+		$a = func_get_args();
+		return call_user_func_array('stristr', $a);
+	}
+
 	function mb_parse_str() {
 		$a = func_get_args();
 		return call_user_func_array('parse_str', $a);

@@ -80,10 +80,6 @@ class PXRequest {
 		if (preg_match('#\.(' . join('|', array_map('preg_quote', unserialize(ENUM_ALLOWED_PATHNAMES))) . ')/+$#', $path)) {
 			return true;
 		}
-		/*REMOVEME: perform this check is unnecessary / Double slash check
-		if (strpos($path, '//') !== false) {
-			return true;
-		}*/
 		// 'index.php' and etc. check (shouldn't occur in the middle)
 		if (preg_match('#/(' . join('|', array_map('preg_quote', $this->rootPathsList)) . ')/#', $path)) {
 			return true;
@@ -95,7 +91,7 @@ class PXRequest {
 		$tmpArray = explode("/", $this->path);
 		$path = array();
 		foreach ($tmpArray as $tmp) {
-			if (!strlen($tmp) ||
+			if (!mb_strlen($tmp) ||
 				in_array(
 					$tmp,
 					$this->rootPathsList,
@@ -112,7 +108,7 @@ class PXRequest {
 
 	static function GetHttpHost() {
 		if (isset($_SERVER['HTTP_X_HOST'])) {
-			if (strstr($_SERVER['HTTP_X_HOST'], ",")) {
+			if (mb_strstr($_SERVER['HTTP_X_HOST'], ",")) {
 				$host = trim(end(explode(",", $_SERVER['HTTP_X_HOST'])));
 			} else {
 				$host = $_SERVER['HTTP_X_HOST'];
@@ -129,7 +125,7 @@ class PXRequest {
 
 	static function GetRemoteAddr() {
 		if (isset($_SERVER['HTTP_X_REAL_IP'])) {
-			if (strstr($_SERVER['HTTP_X_REAL_IP'], ",")) {
+			if (mb_strstr($_SERVER['HTTP_X_REAL_IP'], ",")) {
 				$real_ip = trim(end(explode(",", $_SERVER['HTTP_X_REAL_IP'])));
 			} else {
 				$real_ip = $_SERVER['HTTP_X_REAL_IP'];
@@ -209,7 +205,7 @@ class PXRequest {
 	}
 
 	function SetVar($varName, $value) {
-		$functionName = 'Set'.strtoupper($varName{0}).substr($varName, 1);
+		$functionName = 'Set'.mb_strtoupper($varName{0}).mb_substr($varName, 1);
 
 		if (method_exists($this, $functionName)) {
 			$value = call_user_func(array(&$this, $functionName), $value);
@@ -254,11 +250,11 @@ class PXRequest {
 
 		$lnet   = ip2long($net);
 		$lip    = ip2long($ip);
-		$binnet = str_pad(decbin($lnet), 32, "0", STR_PAD_LEFT);
+		$binnet = mb_str_pad(decbin($lnet), 32, "0", STR_PAD_LEFT);
 
-		$firstpart = substr($binnet, 0, $mask);
-		$binip     = str_pad(decbin($lip), 32, "0", STR_PAD_LEFT);
-		$firstip   = substr($binip, 0, $mask);
+		$firstpart = mb_substr($binnet, 0, $mask);
+		$binip     = mb_str_pad(decbin($lip), 32, "0", STR_PAD_LEFT);
+		$firstip   = mb_substr($binip, 0, $mask);
 
 		return (int)(strcmp($firstpart, $firstip) === 0);
 	}
@@ -287,7 +283,7 @@ class PXRequest {
 		if ($leafStatus) {
 			foreach ($leafStatus as $l=>$s) {
 				if ($s == 'open') {
-					$openLeaf[] = substr($l, 6);
+					$openLeaf[] = mb_substr($l, 6);
 				}
 			}
 		}
@@ -335,7 +331,7 @@ class PXRequest {
 	}
 
 	function include_handler($handler) {
-		$file = strtolower($handler).".inputhandler.inc";
+		$file = mb_strtolower($handler).".inputhandler.inc";
 
 		if (file_exists(BASEPATH.'/local/handlers/'.$file)) {
 			include_once BASEPATH.'/local/handlers/'.$file;
@@ -427,7 +423,7 @@ class PXRequest {
 		$multipleOrders = explode(",", $currentOrder);
 		foreach($multipleOrders as $currentOrder) {
 			list($field_name, $sort_dir) = array_pad(explode(" ", trim($currentOrder), 2), 2, '');
-			$sort_dir = strtoupper(trim($sort_dir)) == 'DESC' ? ' DESC' : '';
+			$sort_dir = mb_strtoupper(trim($sort_dir)) == 'DESC' ? ' DESC' : '';
 			if(!(isset($fields[$field_name]) && $fields[$field_name]->listed) && $field_name != 'sys_order') {
 				continue;
 			}
@@ -441,7 +437,7 @@ class PXRequest {
 	function getHostAndDir() {
 		$a = $this->getPath();
 		array_unshift($a, $this->getHttpHost());
-		if (sizeof($a) > 1 && strstr($a[sizeof($a)-1], ".")) {
+		if (sizeof($a) > 1 && mb_strstr($a[sizeof($a)-1], ".")) {
 			array_pop($a);
 		}
 		return $a;
@@ -450,7 +446,7 @@ class PXRequest {
 	function getFile() {
 		$a = $this->getPath();
 		if (count($a)) {
-			if (strstr($a[sizeof($a)-1], ".")) {
+			if (mb_strstr($a[sizeof($a)-1], ".")) {
 				return $a[sizeof($a)-1];
 			}
 		}
@@ -459,7 +455,7 @@ class PXRequest {
 	}
 
 	function isIndexFile($file = '') {
-		return in_array(strlen($file) ? $file : $this->getFile(), $this->rootPathsList, true);
+		return in_array(mb_strlen($file) ? $file : $this->getFile(), $this->rootPathsList, true);
 	}
 
 	function getPart() {
@@ -468,7 +464,7 @@ class PXRequest {
 	}
 
 	function isXmlHttpRequest() {
-		return (bool) stristr(self::getServerVar('HTTP_X_REQUESTED_WITH'), 'XMLHttpRequest');
+		return (bool) mb_stristr(self::getServerVar('HTTP_X_REQUESTED_WITH'), 'XMLHttpRequest');
 	}
 
 	static public function getServerVar($name, $default=null) {
