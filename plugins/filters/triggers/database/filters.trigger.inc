@@ -43,15 +43,15 @@ class PXTriggerDatabaseFilters extends PXAbstractDatabaseTrigger {
 				default:
 					$value = urldecode($value);
 					
-					$left  = substr($value, 0, 1) != '^' ? P_LEFT : 0;
-					$right = substr($value, -1)   != '$' ? P_RIGHT : 0;
+					$left  = mb_substr($value, 0, 1) != '^' ? P_LEFT : 0;
+					$right = mb_substr($value, -1)   != '$' ? P_RIGHT : 0;
 					
 					if (!$left) {
-						$value = substr($value, 1);
+						$value = mb_substr($value, 1);
 					}
 					
 					if (!$right) {
-						$value = substr($value, 0, strlen($value) - 1);
+						$value = mb_substr($value, 0, mb_strlen($value) - 1);
 					}
 					$_where[] = sprintf("%s.%s %s", $format->id, $name, $db->like($db->escapeString($value), $left | $right));
 			}
