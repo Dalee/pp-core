@@ -506,7 +506,7 @@ class PXModuleRegister extends PXAbstractModule {
 	}
 
 	protected function _uniqueFieldValidator($field, $value, &$errors, &$userData){
-		if(strlen(trim($value))){
+		if(mb_strlen(trim($value))){
 			$user =& $this->loadModel('user', array($field => trim($value)));
 
 			if(!count($user) or $this->user->id > 0 && key($user) == $this->user->id){
@@ -520,7 +520,7 @@ class PXModuleRegister extends PXAbstractModule {
 	protected function _reqFieldValidator($field, $value, &$errors, &$userData){
 		if(is_array($value)){
 			foreach($value as $everyField){
-				if(!strlen(trim($everyField))){
+				if(!mb_strlen(trim($everyField))){
 					$errors[$field]['req'] = true;
 					break;
 				}
@@ -529,7 +529,7 @@ class PXModuleRegister extends PXAbstractModule {
 			return;
 		}
 
-		if(!strlen(trim($value))){
+		if(!mb_strlen(trim($value))){
 			$errors[$field]['req'] = true;
 		}
 	}
@@ -590,7 +590,7 @@ class PXModuleRegister extends PXAbstractModule {
 	// {{{ Routes block
 	// common
 	protected function _defaultRouteRedirect($destination, $urlArgs){
-		return $this->registerPath .'?view=' . $destination . (strlen($urlArgs) ? '&' . $urlArgs : '');
+		return $this->registerPath .'?view=' . $destination . (mb_strlen($urlArgs) ? '&' . $urlArgs : '');
 	}
 
 	// register controller
@@ -617,7 +617,7 @@ class PXModuleRegister extends PXAbstractModule {
 
 	// activation controller
 	protected function _activationRoute($urlArgs){
-		return 'http://' . $this->request->GetHttpHost() . "/action.phtml?area={$this->area}&action=activation" . (strlen($urlArgs) ? '&' . $urlArgs : '');
+		return 'http://' . $this->request->GetHttpHost() . "/action.phtml?area={$this->area}&action=activation" . (mb_strlen($urlArgs) ? '&' . $urlArgs : '');
 	}
 
 	protected function _activationsuccessRoute($urlArgs){
@@ -630,7 +630,7 @@ class PXModuleRegister extends PXAbstractModule {
 
 	// remind controller
 	protected function _remindRoute($urlArgs){
-		return 'http://' . $this->request->GetHttpHost() . $this->registerPath . '?view=remind' . (strlen($urlArgs) ? '&' . $urlArgs : '');
+		return 'http://' . $this->request->GetHttpHost() . $this->registerPath . '?view=remind' . (mb_strlen($urlArgs) ? '&' . $urlArgs : '');
 	}
 
 	protected function _remindsuccessRoute($urlArgs){
@@ -662,5 +662,3 @@ class PXModuleRegister extends PXAbstractModule {
 	}
 	// }}} Mail templates data assigners block
 }
-
-?>

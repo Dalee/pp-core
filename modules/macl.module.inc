@@ -16,7 +16,7 @@ class PXModuleMAcl extends PXModuleAcl {
 			if (!class_exists($module->class, false)) {
 				$path = $module->getPathToClass();
 
-				if(!strlen($path) && !file_exists($path)) {
+				if(!mb_strlen($path) && !file_exists($path)) {
 					FatalError(sprintf("Can't find file with '%s' module", $name));
 				}
 
@@ -57,4 +57,3 @@ class PXModuleMAcl extends PXModuleAcl {
 		return $result;
 	}
 }
-?>

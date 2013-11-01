@@ -18,10 +18,10 @@ class PXModuleSearch extends PXModule {
 		$text = strip_tags($text);
 
 		// substr
-		if (strlen($text) > 100) {
+		if (mb_strlen($text) > 100) {
 			$more  = $this->layout->getLangVar('more');
 
-			$text = substr($text, 0, 200);
+			$text = mb_substr($text, 0, 200);
 			$text .= '&hellip; <a href="'.$href.'">'.$more.'</a>';
 		}
 
@@ -37,7 +37,7 @@ class PXModuleSearch extends PXModule {
 	function getSearchText() {
 		$query = trim($this->request->getVar('text'));
 
-		if(!strlen($query)) {
+		if(!mb_strlen($query)) {
 			return '';
 		}
 
@@ -106,7 +106,7 @@ class PXModuleSearch extends PXModule {
 		$this->word = trim($this->request->GetVar('word'));
 		$this->searchForm();
 
-		if (strlen($this->word)) {
+		if (mb_strlen($this->word)) {
 			$allCount = 0;
 
 			$checkedTypes = $this->request->getVar('d', array());
@@ -125,7 +125,7 @@ class PXModuleSearch extends PXModule {
 	}
 
 	function __sortTypes($a, $b) {
-		return strcoll($a->title, $b->title);
+		return strcmp($a->title, $b->title);
 	}
 
 	function searchForm() {
@@ -205,4 +205,3 @@ HTML;
 
 	}
 }
-?>

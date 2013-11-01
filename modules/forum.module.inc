@@ -388,7 +388,7 @@ class PXModuleForum extends PXModule {
 	}
 
 	function _setForumData() {
-		if (strpos($this->request->GetVar('result', ''), 'error') === 0) {
+		if (mb_strpos($this->request->GetVar('result', ''), 'error') === 0) {
 			if (array_key_exists('registerErrors', $_SESSION)) {
 				$this->layout->assign('forumModifyErrors', $_SESSION['registerErrors']);
 			}
@@ -783,7 +783,7 @@ class PXModuleForum extends PXModule {
 
 			case 'citeall':
 				$s = trim($body);
-				if (strlen($s)) {
+				if (mb_strlen($s)) {
 					$s = "[$q$a]" . $s . "[/$q]\n";
 				}
 				break;
@@ -792,7 +792,7 @@ class PXModuleForum extends PXModule {
 
 			default:
 				$s = trim(bracketActivate($body, $this->forumSettings['bbTags'], 'quote'));
-				if (strlen($s)) {
+				if (mb_strlen($s)) {
 					$s = "[$q$a]" . $s . "[/$q]\n";
 				}
 		}
@@ -810,8 +810,8 @@ class PXModuleForum extends PXModule {
 	}
 
 	function _prepareForumVar($string, $maxLen=4096) {
-		if (strlen($string) > $maxLen) {
-			$string = substr($string, 0, $maxLen)."&hellip;";
+		if (mb_strlen($string) > $maxLen) {
+			$string = mb_substr($string, 0, $maxLen)."&hellip;";
 		}
 
 		$tr = array(
@@ -863,13 +863,13 @@ class PXModuleForum extends PXModule {
 
 function bmc_wordwrap($str, $cols=80, $cut="\n") {
 	global $bmc_vars;
-	$len     = strlen($str);
+	$len     = mb_strlen($str);
 	$tag     = 0;
 	$wordlen = 0;
 	$result  = NULL;
 
-	for ($i=0; $i<$len; $i++) {
-		$chr = $str{$i};
+	for ($i=0; $i < $len; $i++) {
+		$chr = mb_substr($str, $i, 1);
 
 		if ($chr == '<' || $chr == '&') {
 			$tag++;
@@ -932,7 +932,7 @@ function bracketActivate($text, &$tags, $strip = false) {
 	$pos = 0;
 
 	while (preg_match('#(.*?)\[(/?)(' . implode('|',array_keys($tags)) .')(?:=((?>[^]]{1,64})(?>[^] ]*)))?\]#s',$text, $r, PREG_OFFSET_CAPTURE, $pos)) {
-		$pos = $r[0][1] + strlen($r[0][0]);
+		$pos = $r[0][1] + mb_strlen($r[0][0]);
 
 		if ($r[2][0] === '') { // opening tag
 			if (($tmp = array_pop($stack)) === null) {
@@ -965,7 +965,7 @@ function bracketActivate($text, &$tags, $strip = false) {
 
 					} elseif ($tmp['p']) {
 						if ($tags[$tmp['t']]['url'] & 2) {
-							if (!strpos($tmp['p'], '://')) $tmp['p'] = 'http://' . $tmp['p'];
+							if (!mb_strpos($tmp['p'], '://')) $tmp['p'] = 'http://' . $tmp['p'];
 						}
 
 						$openTag  = str_replace(array('{#1}','{1}','{/1}'),array($tmp['p']),$tags[$tmp['t']]['o']);
@@ -993,7 +993,7 @@ function bracketActivate($text, &$tags, $strip = false) {
 	foreach ($stack as $v) {
 		$s .= (($v['t'] and !$strip) ? '[' . $v['t'] . ']' : '') . $v['s'];
 	}
-	$s .= substr($text,$pos);
+	$s .= mb_substr($text,$pos);
 
 	return $s;
 }

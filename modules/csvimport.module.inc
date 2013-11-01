@@ -125,7 +125,7 @@ class PXModuleCsvImport extends PXModule {
 
 			$valid = 0;
 			foreach($line as $d) {
-				if(strlen($d)) $valid++;
+				if(mb_strlen($d)) $valid++;
 			}
 
 			if(!$valid) continue;
@@ -267,7 +267,9 @@ HTML;
 	}
 
 	function _PrepareString($str) {
-		if (!($length = strlen($str))) return NULL;
+		if (!($length = mb_strlen($str))) {
+			return NULL;
+		}
 		$str = strtr($str, $this->htmlEsc);
 		$str = myconv(CHARSET_WINDOWS, DEFAULT_CHARSET, $str);
 		$str = str_replace("\\", '&#92;', $str);
@@ -277,7 +279,6 @@ HTML;
 		$str = str_replace("--%--", ";", $str);
 		$str = str_replace("'", "&#146;", $str);
 		$str = ereg_replace("\"([^\"]|$)", "\\1", $str);
-		// (VERY SLOW!!!) $str = str_replace('#', '', preg_replace("/(([^#]+)#){2}/", "\\1", $str));
 		$str = addslashes($str);
 		$str = trim($str);
 		return $str;
