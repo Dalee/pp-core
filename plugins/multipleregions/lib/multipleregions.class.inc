@@ -157,7 +157,7 @@ class PXMultiRegions {
 				if(!strcmp($uri, $uriPart)) {
 					$id = intval($regionData['id']);
 					if($updatePath) {
-						$newPath = substr(ltrim($this->request->GetOriginalPath(), '/'), strlen($uriPart));
+						$newPath = mb_substr(ltrim($this->request->GetOriginalPath(), '/'), mb_strlen($uriPart));
 						$this->request->SetPath($newPath);
 					}
 					break;
@@ -168,7 +168,7 @@ class PXMultiRegions {
 	}
 	
 	function getUserRidByHost($forHost) {
-		$host = preg_replace("#:\d{2,5}$#", '', strlen($forHost) ? $forHost : $this->request->getHttpHost());
+		$host = preg_replace("#:\d{2,5}$#", '', mb_strlen($forHost) ? $forHost : $this->request->getHttpHost());
 		$id   = 0;
 
 		foreach ($this->getRegionsData() as $region) {
@@ -185,11 +185,11 @@ class PXMultiRegions {
 			}
 
 			foreach ($regions as $k => $r) {
-				if (!strstr($r, '*')) {
+				if (!mb_strstr($r, '*')) {
 					continue;
 				}
 
-				$mask = strtr($r, array('.' => '\.', '*' => '[a-z0-9\-]+'));
+				$mask = mb_strtr($r, array('.' => '\.', '*' => '[a-z0-9\-]+'));
 
 				if (preg_match('#^'.$mask.'$#i', $host)) {
 					$id = $region['id'];

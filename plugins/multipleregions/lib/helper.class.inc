@@ -69,7 +69,7 @@ class PXMultipleRegionsHelper {
 
 		if (!(isset($data->leafs[$rid]->content[$field]) &&
 				is_scalar($data->leafs[$rid]->content[$field]) ?
-				strlen($data->leafs[$rid]->content[$field]) :
+				mb_strlen($data->leafs[$rid]->content[$field]) :
 				!empty($data->leafs[$rid]->content[$field])) &&
 			($parent = $data->leafs[$rid]->parent())) {
 
@@ -114,7 +114,7 @@ class PXMultipleRegionsHelper {
 
 		$engPrfx = PXRegistry::getApp()->getProperty('ENGLISH_HOST_PREFIX', 'english');
 
-		if (strstr($host, $engPrfx)) {
+		if (mb_strstr($host, $engPrfx)) {
 			$host = substr_replace($host, $engPrfx . '.' , '');
 			$isEng = true;
 		}

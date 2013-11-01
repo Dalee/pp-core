@@ -143,7 +143,7 @@ class PXCorpRegions {
 	}
 
 	static function findUrl($host, $regionId) {
-		$host = strtolower($host);
+		$host = mb_strtolower($host);
 
 		$regionData = self::getRegionData($regionId);
 		$urls       = explode(',', $regionData['url']);
@@ -187,7 +187,7 @@ class PXCorpRegions {
 
 				$possibleHost = join('.', array_reverse($possibleHost));
 
-				if ($count > $intersection['count'] && !strstr($possibleHost, '*')) {
+				if ($count > $intersection['count'] && !mb_strstr($possibleHost, '*')) {
 					$intersection['count'] = $count;
 					$intersection['url']   = $possibleHost;
 				}
@@ -197,7 +197,7 @@ class PXCorpRegions {
 		}
 
 		// cuz that $langVersion here we can't instantly prepend any other domain prefixes (pda., m., etc.)
-		$newHost = $langVersion . (strlen($newHost) ? $newHost : $host);
+		$newHost = $langVersion . (mb_strlen($newHost) ? $newHost : $host);
 
 		if (count(explode('.', $newHost)) == 2) { // special behaviour for cases like 'domain.name'
 			$newHost = 'www.' . $newHost;
@@ -235,7 +235,7 @@ class PXCorpRegions {
 		
 		while(($sid = array_pop($path)) < 0);
 		
-		if(strpos($pathname, '.')){
+		if(mb_strpos($pathname, '.')){
 			$db = PXRegistry::getDb();
 			$query = array();
 			$allowedFormats = PXRegistry::getApp()->getAllowedChilds(DT_STRUCT, $tree->leafs[$sid]);
@@ -284,7 +284,7 @@ class PXCorpRegions {
 		if(!empty($pathnames)){
 			$where = array();
 			foreach($pathnames as $pathname){
-				strlen($pathname) && $where[] = sprintf("'%s'",$db->escapeString($pathname));
+				mb_strlen($pathname) && $where[] = sprintf("'%s'",$db->escapeString($pathname));
 			}
 			$where = sprintf('pathname IN (%s)', join(',',array_unique($where)));
 			$tree = $db->getObjectsByWhere(PXRegistry::getTypes(DT_STRUCT), true, $where, DB_SELECT_TREE);
@@ -299,7 +299,7 @@ class PXCorpRegions {
 	static function isLangHost($host) {
 		//TODO: for multiple languages there must be EMUN with site languages
 		$langPrefix = PXRegistry::getApp()->getProperty('ENGLISH_HOST_PREFIX', 'english');
-		return strstr($host, $langPrefix . '.') ? $langPrefix : '';
+		return mb_strstr($host, $langPrefix . '.') ? $langPrefix : '';
 	}
 	
 	static function isRegionalObject($format_id){
