@@ -11,8 +11,8 @@ class PXDisplayTypeHidden extends PXDisplayType {
 		return NLAbstractHTMLForm::BuildHidden($field->name, $value);
 	}
 
-	function getRow($even = false) {
-		return $even;
+	public static function getRow() {
+		return false;
 	}
 
 	function preModifyObject($field, &$object, $param=NULL) {

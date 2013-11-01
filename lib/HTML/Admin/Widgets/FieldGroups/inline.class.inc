@@ -3,7 +3,7 @@ class PXWidgetFieldGroupsInlineView extends PXWidgetFieldGroups {
 	function PXWidgetFieldGroupsInlineView($groupName, $group, &$dType, &$object) {
 		parent::PXWidgetFieldGroups($groupName, $group, $dType, $object);
 	}
-	
+
 	function html(){
 		static $callCount = 0;
 		$html = '<table class="mainform">';
@@ -23,4 +23,3 @@ class PXWidgetFieldGroupsInlineView extends PXWidgetFieldGroups {
 		return $html;
 	}
 }
-?>

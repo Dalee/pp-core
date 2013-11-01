@@ -113,7 +113,7 @@ class PXDisplayType {
 	 *
 	 * @return Boolean
 	 */
-	function getRow() {
+	public static function getRow() {
 		static $even = false;
 
 		$even = !$even;

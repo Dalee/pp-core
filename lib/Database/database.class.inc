@@ -1380,7 +1380,7 @@ class PXDatabase extends NLSQLDatabaseAdapter implements IPXDatabase {
 				}
 
 				if ($reiteration > 0) {
-					if (is_numeric(strpos($url, '.'))) {
+					if (strpos($url, '.') !== false) {
 						if (is_numeric($url{strrpos($url, '.')-1})) {
 							$url = substr($url, 0, strrpos($url, '.')-1).($url{strrpos($url, '.')-1} + 1).substr($url, strrpos($url, '.'));
 						} else {

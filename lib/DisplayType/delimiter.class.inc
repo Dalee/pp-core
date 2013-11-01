@@ -7,7 +7,7 @@
  */
 class PXDisplayTypeDelimiter extends PXDisplayType {
 	function buildRow($field, $object, $param=NULL) {
-		$even = $this->getRow(false);
+		$even = PXDisplayType::getRow();
 
 		$html = "\n";
 		$html .= '<tr'.(!$even ? ' class="even"' : '' ).'>';
@@ -18,4 +18,3 @@ class PXDisplayTypeDelimiter extends PXDisplayType {
 		return $html;
 	}
 }
-?>
