@@ -11,7 +11,7 @@ class PXCronRunDeferredStatus extends PXAbstractCronRun {
 		$this->name = 'Отложенная публикация объектов';
 	}
 
-	function Run($app, $db, $tree, $matchedTime, $matchedRule) {
+	function Run(&$app, &$db, &$tree, $matchedTime, $matchedRule) {
 
 		$this->plugin = $app->plugins['deferredstatus'];
 
