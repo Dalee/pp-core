@@ -220,7 +220,7 @@ table.objects td.null {
 table.objects tr.even td.null {
 	color: #C8CDD5;
 }
-table.objects tr:nth-child(2n+1) td.null {
+table.objects tr:nth-child(2n) td.null {
 	color: #C8CDD5;
 }
 
@@ -256,7 +256,7 @@ table.objects tr.selected td, table.objects tr.selected a, table.objects-table t
 	background-color: #385A94;
 	color: #FFFFFF;
 }
-table.objects tr.selected:nth-child(2n+1) td, table.objects tr.selected:nth-child(2n+1) a, table.objects-table tr.selected:nth-child(2n+1) td, table.objects-table:nth-child(2n+1) tr.selected a {
+table.objects tr.selected:nth-child(2n) td, table.objects tr.selected:nth-child(2n) a, table.objects-table tr.selected:nth-child(2n) td, table.objects-table tr.selected:nth-child(2n) a {
 	background-color: #385A94;
 	color: #FFFFFF;
 }
@@ -265,7 +265,7 @@ table.objects tr.selected:nth-child(2n+1) td, table.objects tr.selected:nth-chil
 table.objects tr.selected td, table.objects-table tr.selected td {
 	border-color: #FFFFFF;
 }
-table.objects tr.selected:nth-child(2n+1) td, table.objects-table tr.selected:nth-child(2n+1) td {
+table.objects tr.selected:nth-child(2n) td, table.objects-table tr.selected:nth-child(2n) td {
 	border-color: #FFFFFF;
 }
 
@@ -536,8 +536,8 @@ table.mainform tr.even td, table.mainform tr.even  th {
 	background-color: #F0F2F4;
 }
 
-table.objects tr:nth-child(2n+1) td,
-table.mainform tr:nth-child(2n+1) td {
+table.objects tr:nth-child(2n) td,
+table.mainform tr:nth-child(2n) td {
 	background-color: #F0F2F4;
 }
 
