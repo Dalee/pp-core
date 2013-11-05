@@ -130,7 +130,7 @@ class NLMailMessage {
 			$text = str_replace('%'.mb_strtoupper($k).'%', (string)$v, $text);
 		}
 
-		$text = preg_replace("/(?<!\%)\%[^%]+?\%/si", '', $text);
+		$text = preg_replace("/(?<!\%)\%[^%]+?\%/si".REGEX_MOD, '', $text);
 
 		$text = str_replace('%%', '%', $text);
 
@@ -185,7 +185,7 @@ class NLMailMessage {
 
 	function _getSubject() {
 		if (mb_strlen($this->subject)) {
-			if (preg_match("/[À-ÿ]/", $this->subject)) {
+			if (preg_match("/[À-ÿ]/".REGEX_MOD, $this->subject)) {
 				$_subject = "=?".$this->charset."?B?".base64_encode($this->subject)."?=";
 			} else {
 				$_subject = $this->subject;
@@ -383,7 +383,7 @@ class NLMailMessage {
 		}
 
 		$text = $this->body;
-		preg_match_all('#(?:<(img|td|link)[^>]+(src|background|href))="(https?://.+?)"#', $text, $images);
+		preg_match_all('#(?:<(img|td|link)[^>]+(src|background|href))="(https?://.+?)"#'.REGEX_MOD, $text, $images);
 
 		if(!isset($images[3])) {
 			return;

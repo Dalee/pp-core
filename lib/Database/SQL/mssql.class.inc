@@ -256,7 +256,7 @@ class NLMSSQLDatabase extends NLAbstractSQLDatabase {
 
 	function importDateTime($string) {
 		$m = array();
-		preg_match("/^(\d+)-(\d+)-(\d+) (\d+):(\d+):(\d+)/", $string, $m);
+		preg_match("/^(\d+)-(\d+)-(\d+) (\d+):(\d+):(\d+)/".REGEX_MOD, $string, $m);
 
 		if(sizeof($m) == 7) {
 			return "{$m[3]}.{$m[2]}.{$m[1]} {$m[4]}:{$m[5]}:{$m[6]}";
@@ -272,7 +272,7 @@ class NLMSSQLDatabase extends NLAbstractSQLDatabase {
 
 	function exportDateTime($string) {
 		$m = array();
-		preg_match("/^(\d+)\.(\d+)\.(\d+) (\d+):(\d+):(\d+)/", $string, $m);
+		preg_match("/^(\d+)\.(\d+)\.(\d+) (\d+):(\d+):(\d+)/".REGEX_MOD, $string, $m);
 
 		if(sizeof($m) == 7) {
 			return "{$m[1]}-{$m[2]}-{$m[3]} {$m[4]}:{$m[5]}:{$m[6]}";

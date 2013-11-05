@@ -63,7 +63,7 @@ class PXStorageTypeFilesarray extends PXStorageTypeAbstractFile {
 			// if type in allowed list
 			} elseif (in_array($fileArray['type'][0], array_keys($allowed))) {
 				$tmp = _TranslitFilename($fileArray['name'][0]);
-				$tmp = preg_replace('/\.\w+$/', '', $tmp);
+				$tmp = preg_replace('/\.\w+$/'.REGEX_MOD, '', $tmp);
 
 				if (in_array($fileArray['type'][0], array_keys($allowed))) {
 					$filename = $basedir.'/'.$tmp.'.'.$allowed[$fileArray['type'][0]];

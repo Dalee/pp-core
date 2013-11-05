@@ -28,7 +28,7 @@ class PXInputDateTime extends PXAdminWidget {
 			$value = trim($value);
 			$value = mb_substr($value, 0, 19);
 
-			preg_match("/^((\d{1,2}).(\d{1,2}).(\d{4}))?\s?((\d{1,2})(:(\d{1,2})(:(\d{1,2}))?)?)?/", trim($value), $matches);
+			preg_match("/^((\d{1,2}).(\d{1,2}).(\d{4}))?\s?((\d{1,2})(:(\d{1,2})(:(\d{1,2}))?)?)?/".REGEX_MOD, trim($value), $matches);
 
 			if(isset($matches[1]) && mb_strlen($matches[1])) {
 				$date['day'   ] = $matches[2];

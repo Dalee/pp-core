@@ -13,7 +13,7 @@ class PXAdminAuditTable extends PXAdminTableSimple {
 	function cell($row, $col) {
 		if($col == 'source') {
 			if (mb_strpos($row[$col], '/')) {
-				preg_match('|(\w+)/?(\d+)?|', $row[$col], $matches);
+				preg_match('|(\w+)/?(\d+)?|'.REGEX_MOD, $row[$col], $matches);
 
 				if(sizeof($matches) == 3) {
 					$row[$col] = $this->__link('popup.phtml?area=objects&format='.$matches[1].'&id='.$matches[2].'&action=main', $this->_getDatatypeTitle($matches[1]).'/'.$matches[2]);

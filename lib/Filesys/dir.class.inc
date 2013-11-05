@@ -77,10 +77,10 @@ class NLDir {
 	function _prepare($catalog) {
 		$ds = DIRECTORY_SEPARATOR;
 
-		$catalog = preg_replace('|^\\\\|', '||', $catalog);
+		$catalog = preg_replace('|^\\\\|'.REGEX_MOD, '||', $catalog);
 
 		$catalog = str_replace('\\', '/', $catalog);
-		$catalog = preg_replace('|\/{2,}|', '/', $catalog);
+		$catalog = preg_replace('|\/{2,}|'.REGEX_MOD, '/', $catalog);
 
 		$catalog = str_replace('/',  $ds, $catalog);
 		$catalog = str_replace('||', '\\\\', $catalog);

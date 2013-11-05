@@ -189,10 +189,10 @@ class PXDatabase extends NLSQLDatabaseAdapter implements IPXDatabase {
 	function ParseWhereTemplate($where, $object, $format) {
 		if(strpos($where, 'THIS.') !== false) {
 			if(is_array($object)) {
-				preg_match_all('/THIS\.([A-Z0-9\-_]+)/', $where, $backhref);
+				preg_match_all('/THIS\.([A-Z0-9\-_]+)/'.REGEX_MOD, $where, $backhref);
 
 				foreach($backhref[1] as $b) {
-					if(array_key_exists(strtolower($b), $object)) {
+					if(array_key_exists(mb_strtolower($b), $object)) {
 						if(is_null($format)) {
 							$replace = $this->MapData($object[strtolower($b)]);
 						} else {
@@ -212,7 +212,7 @@ class PXDatabase extends NLSQLDatabaseAdapter implements IPXDatabase {
 		}
 
 		if(strpos($where, 'PROPERTY.') !== false) {
-			preg_match_all('/PROPERTY\.([A-Z0-9_]+)/', $where, $backhref);
+			preg_match_all('/PROPERTY\.([A-Z0-9_]+)/'.REGEX_MOD, $where, $backhref);
 			foreach($backhref[1] as $b) {
 				$prop = $this->app->GetProperty($b);
 
@@ -301,7 +301,7 @@ class PXDatabase extends NLSQLDatabaseAdapter implements IPXDatabase {
 		} else {
 			$selector     = $this->_createSelector($format);
 			$order        = is_null($order) ? $format->order : $order;
-			$first_is_fun = preg_match('#^\s*\w+\s*\(#S', $order);
+			$first_is_fun = preg_match('#^\s*\w+\s*\(#S'.REGEX_MOD, $order);
 			$order_by     = ($first_is_fun ? '' : $format->id . '.') . $order;
 		}
 
@@ -1232,7 +1232,7 @@ class PXDatabase extends NLSQLDatabaseAdapter implements IPXDatabase {
 			$this->FatalError($errString);
 		}
 
-		$swap = !!preg_match('#sys_order\s+DESC#i', $format->order);
+		$swap = !!preg_match('#sys_order\s+DESC#i'.REGEX_MOD, $format->order);
 		$down = ($swap xor ($direction == 'down'));
 		
 		$where = array();
@@ -1317,7 +1317,7 @@ class PXDatabase extends NLSQLDatabaseAdapter implements IPXDatabase {
 	 * @todo MOVEITASAP!
 	 */
 	function _NormalizeObjectPathName($format, $object, &$pathnames) {
-		$url = strtolower(_TranslitModern($object['pathname']));
+		$url = mb_strtolower(_TranslitModern($object['pathname']));
 
 		// part 1: make url if doesn't set
 		if (!$url) {
@@ -1331,7 +1331,7 @@ class PXDatabase extends NLSQLDatabaseAdapter implements IPXDatabase {
 			}
 		}
 
-		if (!$url) $url = strtolower(_TranslitModern(substr(preg_replace('/\&.+?\;/', '', $object['title']), 0, 32)));
+		if (!$url) $url = mb_strtolower(_TranslitModern(mb_substr(preg_replace('/\&.+?\;/'.REGEX_MOD, '', $object['title']), 0, 32)));
 		if (!$url) $url = sprintf('%08d', rand(0, 100000000));
 
 		// part 2: triming bad chars - very readable... gj.

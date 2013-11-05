@@ -168,7 +168,7 @@ class NLHTTPClient {
 
 	function GetLastStatus() {
 		if(isset($this->replyHeaders[0]) && mb_strlen($this->replyHeaders[0])) {
-			preg_match('|^HTTP/1\\.\\d (\\d{3}) |', $this->replyHeaders[0], $tmp);
+			preg_match('|^HTTP/1\\.\\d (\\d{3}) |'.REGEX_MOD, $this->replyHeaders[0], $tmp);
 			$this->status = $tmp[1];
 
 		} else {
@@ -180,7 +180,7 @@ class NLHTTPClient {
 
 	function FindAuthorizationType() {
 		foreach($this->replyHeaders as $h) {
-			preg_match('#^WWW-Authenticate:\\s?(BASIC|DIGEST).*?$#i', $h, $tmp);
+			preg_match('#^WWW-Authenticate:\\s?(BASIC|DIGEST).*?$#i'.REGEX_MOD, $h, $tmp);
 
 			if(isset($tmp[1]) && mb_strlen($tmp[1])) {
 				return $tmp[1];
@@ -192,7 +192,7 @@ class NLHTTPClient {
 
 	function FindLocation() {
 		foreach($this->replyHeaders as $h) {
-			preg_match('|^Location:\\s?(.*?)$|i', $h, $tmp);
+			preg_match('|^Location:\\s?(.*?)$|i'.REGEX_MOD, $h, $tmp);
 
 			if(isset($tmp[1]) && mb_strlen($tmp[1])) {
 				if(mb_strpos($tmp[1], 'http://') === 0 || mb_strpos($tmp[1], 'https://') === 0) {

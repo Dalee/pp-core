@@ -57,7 +57,7 @@ class NLHTTPVarsData {
 			}
 
 		} else {
-			if(preg_match('/^(%u\d{4})+$/', $data)) {
+			if(preg_match('/^(%u\d{4})+$/'.REGEX_MOD, $data)) {
 				$data = utf8_urldecode($data);
 			}
 		}

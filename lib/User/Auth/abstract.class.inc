@@ -70,7 +70,7 @@ class PXAuthInterface {
 	}
 
 	function parseLogin($login){
-		return is_string($login) ? preg_replace('/[^\w\.\@\-]/', '', mb_substr($login, 0, 255)) : null;
+		return is_string($login) ? preg_replace('/[^\w\.\@\-]/'.REGEX_MOD, '', mb_substr($login, 0, 255)) : null;
 	}
 
 	function parsePasswd($password){

@@ -52,7 +52,7 @@ class PXCronRule {
 		$this->valid = false;
 		$this->asString = $ruleString;
 
-		$params = preg_split('/\s+/', $ruleString);
+		$params = preg_split('/\s+/'.REGEX_MOD, $ruleString);
 
 		if (count($params) != 5) {
 			return;
@@ -115,7 +115,7 @@ class PXCronRule {
 		foreach ($params as $k) {
 			$step = 1;
 
-			if (preg_match('#^(.+?)/(\d+)$#', $k, $m)) {
+			if (preg_match('#^(.+?)/(\d+)$#'.REGEX_MOD, $k, $m)) {
 				$k    = $m[1];
 				$step = (int) $m[2];
 
@@ -124,7 +124,7 @@ class PXCronRule {
 				}
 			}
 
-			if (preg_match('#^(\d+)-(\d+)$#', $k, $m)) {
+			if (preg_match('#^(\d+)-(\d+)$#'.REGEX_MOD, $k, $m)) {
 				if ($m[1] >= $m[2]) {
 					return NULL;
 				}
@@ -137,7 +137,7 @@ class PXCronRule {
 					$result[$i] = true;
 				}
 
-			} else if (preg_match('#^(\d+|\*)$#', $k, $m)) {
+			} else if (preg_match('#^(\d+|\*)$#'.REGEX_MOD, $k, $m)) {
 				if ($m[1] == '*') {
 					for ($i = $min; $i <= $max; $i += $step) {
 						$result[$i] = true;

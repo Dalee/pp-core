@@ -256,7 +256,7 @@ class NLAbstractLayout {
 		}
 
 		// delete labels without content
-		$this->html = preg_replace('/\{\w[\w\d_\.]+[\w\d]\}/', '', $this->html);
+		$this->html = preg_replace('/\{\w[\w\d_\.]+[\w\d]\}/'.REGEX_MOD, '', $this->html);
 
 		return $this->html;
 	}

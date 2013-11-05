@@ -93,7 +93,7 @@ class PXSession {
 			case isset($_SESSION) && session_name() != $sessionName :
 				$this->close();
 			case !isset($_SESSION) :
-				$sid = preg_match("#^[0-9A-F]{32}$#i", $request->getCookieVar($sessionName), $m) ? $m[0] : md5(uniqid(mt_rand(), true));
+				$sid = preg_match("#^[0-9A-F]{32}$#i".REGEX_MOD, $request->getCookieVar($sessionName), $m) ? $m[0] : md5(uniqid(mt_rand(), true));
 				session_id($sid);
 				$this->setSessionName($sessionName);
 				

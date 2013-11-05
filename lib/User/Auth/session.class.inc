@@ -45,7 +45,7 @@ class PXAuthSession extends PXAuthSecure {
 			return null;
 		}
 
-		return preg_replace('/^[^0-9a-z]{32}$/i', '', mb_substr($sid, 0, 32));
+		return preg_replace('/^[^0-9a-z]{32}$/i'.REGEX_MOD, '', mb_substr($sid, 0, 32));
 	}
 
 	protected function _proceedAuth($uArray) {

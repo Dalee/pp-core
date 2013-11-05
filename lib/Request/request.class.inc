@@ -77,11 +77,11 @@ class PXRequest {
 	function IsBadPath() {
 		$path = $this->GetPathAsString();
 		// Terminal slash check
-		if (preg_match('#\.(' . join('|', array_map('preg_quote', unserialize(ENUM_ALLOWED_PATHNAMES))) . ')/+$#', $path)) {
+		if (preg_match('#\.(' . join('|', array_map('preg_quote', unserialize(ENUM_ALLOWED_PATHNAMES))) . ')/+$#'.REGEX_MOD, $path)) {
 			return true;
 		}
 		// 'index.php' and etc. check (shouldn't occur in the middle)
-		if (preg_match('#/(' . join('|', array_map('preg_quote', $this->rootPathsList)) . ')/#', $path)) {
+		if (preg_match('#/(' . join('|', array_map('preg_quote', $this->rootPathsList)) . ')/#'.REGEX_MOD, $path)) {
 			return true;
 		}
 		return false;
@@ -120,7 +120,7 @@ class PXRequest {
 			return NULL;
 		}
 
-		return preg_replace('/:.+$/', '', $host);
+		return preg_replace('/:.+$/'.REGEX_MOD, '', $host);
 	}
 
 	static function GetRemoteAddr() {

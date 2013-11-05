@@ -200,7 +200,7 @@ class PXDisplayType {
 
 	static public
 	function parseConfig($attrNode, $fieldNode, $type) {
-		$name = preg_replace('/\|.+$/', '', $attrNode->value);
+		$name = preg_replace('/\|.+$/'.REGEX_MOD, '', $attrNode->value);
 
 		$cls = self::getClassByName($name, $type);
 		$args = call_user_func(array($cls, 'parseConfigArguments'), $attrNode, $fieldNode);

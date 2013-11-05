@@ -59,7 +59,7 @@ class PXFileListing {
 	}
 
 	function html() {
-		$up      = preg_replace('|[^/]+/$|', '', $this->_catalog);
+		$up      = preg_replace('|[^/]+/$|'.REGEX_MOD, '', $this->_catalog);
 
 		$canBrowse = $this->_isValid($this->_catalog);
 		$canUp     = $this->_isValid($up);
@@ -156,7 +156,7 @@ class PXFileListing {
 		$tmp = str_replace('//', '||', $tmp);
 		$tmp = str_replace('\\', '/', $tmp);
 		$tmp .= '/';
-		$tmp = preg_replace('|/{2,}|', '/', $tmp);
+		$tmp = preg_replace('|/{2,}|'.REGEX_MOD, '/', $tmp);
 		$tmp = str_replace('||', '\\\\', $tmp);
 
 		return $tmp;
@@ -229,7 +229,7 @@ class PXFileListingItem {
 	}
 
 	function _Type() {
-		preg_match('|[^/.\\\\]+$|', $this->name, $tmp);
+		preg_match('|[^/.\\\\]+$|'.REGEX_MOD, $this->name, $tmp);
 		$this->type = isset($tmp[0]) ? mb_strtolower($tmp[0]) : '';
 	}
 

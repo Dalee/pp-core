@@ -27,7 +27,7 @@ class PXStorageTypeTimestamp extends PXStorageType {
 
 	function createPathname($field, $object, &$param) {
 		if (isset($object[$field->name])) {
-			return preg_replace("/^(\d{2})\.(\d{2})\.(\d{4})\s(\d{2}):(\d{2}):(\d{2}).*/", "$3$2$1-$4$5", trim($object[$field->name]));
+			return preg_replace("/^(\d{2})\.(\d{2})\.(\d{4})\s(\d{2}):(\d{2}):(\d{2}).*/".REGEX_MOD, "$3$2$1-$4$5", trim($object[$field->name]));
 		}
 	}
 }

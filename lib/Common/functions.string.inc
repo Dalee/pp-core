@@ -224,7 +224,7 @@ function squeeze($inputString, $onlyTheseChars = null, $caseMatters = true){
 	if(mb_strlen($inputString) > 1){
 		$pattern  = $onlyTheseChars ? '['.preg_quote($onlyTheseChars, '#').']' : '.';
 		$caseFlag = $caseMatters    ? '' : 'i';
-		$inputString = preg_replace("#({$pattern})(?=\\1)#{$caseFlag}",'',$inputString);
+		$inputString = preg_replace("#({$pattern})(?=\\1)#{$caseFlag}".REGEX_MOD,'',$inputString);
 	}
 	return $inputString;
 }
@@ -851,7 +851,7 @@ function myconv($from, $to, $string, $be_quiet = true) {
 function wordWrapHtmlSafe($str, $width = 60, $break = "\n", $nobreak = "", $nobr = "pre", $utf = false) {
 	// Split HTML content into an array delimited by < and >
 	// The flags save the delimeters and remove empty variables
-	$content = preg_split("/([<>])/", $str, -1, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY);
+	$content = preg_split("/([<>])/".REGEX_MOD, $str, -1, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY);
 
 	// Transform protected element lists into arrays
 	$nobreak = explode(" ", $nobreak);
@@ -951,7 +951,7 @@ function fixWordLength($string, $length = 10) {
 	$endPattern = '\s\d\?\)!,.\-;:\'"`';
 	
 	// replace htmlentities
-	$entityPattern = '/(&#\d+;|&\w+;)/';
+	$entityPattern = '/(&#\d+;|&\w+;)/'.REGEX_MOD;
 	$entityReplacement = chr(2);
 	
 	preg_match_all($entityPattern, $string, $replacement);
@@ -960,21 +960,21 @@ function fixWordLength($string, $length = 10) {
 	$string = preg_replace($entityPattern, $entityReplacement, $string);
 
 	$hyphens = $string;
-	$hyphens = preg_replace('/([\s,.-])/i', '$1' . $doubleDelim, $hyphens);
-	$hyphens = preg_replace('/([пиЪй])/i' , '$1' . $doubleDelim, $hyphens);
+	$hyphens = preg_replace('/([\s,.-])/i'.REGEX_MOD, '$1' . $doubleDelim, $hyphens);
+	$hyphens = preg_replace('/([пиЪй])/i'.REGEX_MOD , '$1' . $doubleDelim, $hyphens);
 
-	$hyphens = preg_replace('/(' . $vowel .')(' . $vowel . ')([^' . $endPattern . '])/i',                             '$1' . $doubleDelim . '$2$3', $hyphens);
-	$hyphens = preg_replace('/(' . $vowel    . $notvowel . ')(' . $notvowel . $vowel .')/i',                          '$1' . $delim .       '$2', $hyphens);
-	$hyphens = preg_replace('/(' . $notvowel . $vowel    . ')(' . $notvowel . $vowel . ')/i',                         '$1' . $delim .       '$2', $hyphens);
-	$hyphens = preg_replace('/(' . $vowel    . $notvowel . ')(' . $notvowel . $notvowel . $vowel . ')/i',             '$1' . $delim .       '$2', $hyphens);
-	$hyphens = preg_replace('/(' . $vowel    . $notvowel . $notvowel . ')(' . $notvowel . $notvowel . $vowel . ')/i', '$1' . $delim .       '$2', $hyphens);
+	$hyphens = preg_replace('/(' . $vowel .')(' . $vowel . ')([^' . $endPattern . '])/i'.REGEX_MOD,								'$1' . $doubleDelim . '$2$3', $hyphens);
+	$hyphens = preg_replace('/(' . $vowel    . $notvowel . ')(' . $notvowel . $vowel .')/i'.REGEX_MOD,							'$1' . $delim .       '$2', $hyphens);
+	$hyphens = preg_replace('/(' . $notvowel . $vowel    . ')(' . $notvowel . $vowel . ')/i'.REGEX_MOD,							'$1' . $delim .       '$2', $hyphens);
+	$hyphens = preg_replace('/(' . $vowel    . $notvowel . ')(' . $notvowel . $notvowel . $vowel . ')/i'.REGEX_MOD,				'$1' . $delim .       '$2', $hyphens);
+	$hyphens = preg_replace('/(' . $vowel    . $notvowel . $notvowel . ')(' . $notvowel . $notvowel . $vowel . ')/i'.REGEX_MOD,	'$1' . $delim .       '$2', $hyphens);
 	
 	// second time (to catch close standing syllables)
-	$hyphens = preg_replace('/(' . $vowel .')(' . $vowel . ')([^' . $endPattern . '])/i',                             '$1' . $doubleDelim . '$2$3', $hyphens);
-	$hyphens = preg_replace('/(' . $vowel    . $notvowel . ')(' . $notvowel . $vowel . ')/i',                         '$1' . $delim .       '$2', $hyphens);
-	$hyphens = preg_replace('/(' . $notvowel . $vowel    . ')(' . $notvowel . $vowel . ')/i',                         '$1' . $delim .       '$2', $hyphens);
-	$hyphens = preg_replace('/(' . $vowel    . $notvowel . ')(' . $notvowel . $notvowel . $vowel . ')/i',             '$1' . $delim .       '$2', $hyphens);
-	$hyphens = preg_replace('/(' . $vowel    . $notvowel . $notvowel . ')(' . $notvowel . $notvowel . $vowel . ')/i', '$1' . $delim .       '$2', $hyphens);
+	$hyphens = preg_replace('/(' . $vowel .')(' . $vowel . ')([^' . $endPattern . '])/i'.REGEX_MOD,                             '$1' . $doubleDelim . '$2$3', $hyphens);
+	$hyphens = preg_replace('/(' . $vowel    . $notvowel . ')(' . $notvowel . $vowel . ')/i'.REGEX_MOD,                         '$1' . $delim .       '$2', $hyphens);
+	$hyphens = preg_replace('/(' . $notvowel . $vowel    . ')(' . $notvowel . $vowel . ')/i'.REGEX_MOD,                         '$1' . $delim .       '$2', $hyphens);
+	$hyphens = preg_replace('/(' . $vowel    . $notvowel . ')(' . $notvowel . $notvowel . $vowel . ')/i'.REGEX_MOD,             '$1' . $delim .       '$2', $hyphens);
+	$hyphens = preg_replace('/(' . $vowel    . $notvowel . $notvowel . ')(' . $notvowel . $notvowel . $vowel . ')/i'.REGEX_MOD, '$1' . $delim .       '$2', $hyphens);
 	
 	$syllables = explode($delim, $hyphens);
 
@@ -986,7 +986,7 @@ function fixWordLength($string, $length = 10) {
 
 		if (mb_strlen(trim($tmp)) > $length || $end == ' ') {
 			$tmp = $s;
-			if (!preg_match("/([{$endPattern}])/i", $end)) {
+			if (!preg_match("/([{$endPattern}])/i".REGEX_MOD, $end)) {
 				$string .= "&shy;";
 			}
 		}
@@ -1142,7 +1142,7 @@ function money2str($money, $stripkop=false) {
 		$o[] = $kop;
 		$o[] = NumericEndingsRussian($kop,$forms[ 0][ 0],$forms[ 0][1],$forms[ 0][2]);
 	}
-	return preg_replace("/\s{2,}/",' ',implode(' ',$o));
+	return preg_replace("/\s{2,}/".REGEX_MOD, ' ', implode(' ', $o));
 }
 
 function convertCyrillicObjectToUtf($object, $from_charset = DEFAULT_CHARSET) {
@@ -1175,19 +1175,19 @@ function convertStringToPascalCase ($s) {
 
 // Converts "AbcDef" string to "abcDef"
 function convertStringToCamelCase ($s) {
-	return preg_replace_callback('/[\-_][a-z]/i', '__convertStringToCamelCase_helper', $s);
+	return preg_replace_callback('/[\-_][a-z]/i'.REGEX_MOD, '__convertStringToCamelCase_helper', $s);
 }
 function __convertStringToCamelCase_helper($a) { return mb_strtoupper($a[0][1]); }
 
 // Converts "AbcDef" string to "abc_def"
 function convertStringToUnderscored ($s) {
-	return ltrim(preg_replace_callback('/(?:[A-Z]|(?:-)[a-z])/', '__convertStringToUnderscored_helper', $s), '_');
+	return ltrim(preg_replace_callback('/(?:[A-Z]|(?:-)[a-z])/'.REGEX_MOD, '__convertStringToUnderscored_helper', $s), '_');
 }
 function __convertStringToUnderscored_helper($a) { return '_' . mb_strtolower(substr($a[0], -1, 1)); }
 
 // Converts "AbcDef" string to "abc-def"
 function convertStringToDashed ($s) {
-	return ltrim(preg_replace_callback('/(?:[A-Z]|(?:_)[a-z])/', '__convertStringToDashed_helper', $s), '-');
+	return ltrim(preg_replace_callback('/(?:[A-Z]|(?:_)[a-z])/'.REGEX_MOD, '__convertStringToDashed_helper', $s), '-');
 }
 function __convertStringToDashed_helper($a) { return '-' . mb_strtolower(substr($a[0], -1, 1)); }
 

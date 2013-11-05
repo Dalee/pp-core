@@ -228,7 +228,7 @@ if (!function_exists("mime_content_type")) {
 }
 
 function MakeDirIfNotExists($dirName, $perm = NULL) {
-	$dirName = preg_replace('|[/\\\\]+|', DIRECTORY_SEPARATOR, $dirName);
+	$dirName = preg_replace('|[/\\\\]+|'.REGEX_MOD, DIRECTORY_SEPARATOR, $dirName);
 	$fullDirName = '';
 
 	$dirPath = explode(DIRECTORY_SEPARATOR, $dirName);
