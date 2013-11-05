@@ -99,9 +99,9 @@ class NLDir {
 		$pathElements = explode(DIRECTORY_SEPARATOR, $this->name);
 
 		if(!IS_WIN) {
-			$path = substr($this->name, 0, 1);
+			$path = mb_substr($this->name, 0, 1);
 		} else {
-			$path = substr($this->name, 0, 3);
+			$path = mb_substr($this->name, 0, 3);
 			array_shift($pathElements);
 		}
 

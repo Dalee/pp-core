@@ -23,7 +23,7 @@ class PXStorageTypeImage extends PXStorageTypeFile {
 			return;
 		}
 
-		if (!in_array(strtolower(substr($tmp[0], -3)), $allowedImageTypes)) {
+		if (!in_array(mb_strtolower(mb_substr($tmp[0], -3)), $allowedImageTypes)) {
 			return;
 		}
 

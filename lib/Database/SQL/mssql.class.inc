@@ -231,7 +231,7 @@ class NLMSSQLDatabase extends NLAbstractSQLDatabase {
 					$query .= "{$c} != '{$v}' AND ";
 				}
 			}
-			$query = substr($query, 0, -4);
+			$query = mb_substr($query, 0, -4);
 			$query .= ")";
 		}
 		$query .= ")";

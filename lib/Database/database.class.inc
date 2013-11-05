@@ -628,7 +628,7 @@ class PXDatabase extends NLSQLDatabaseAdapter implements IPXDatabase {
 			$p = array('formatId'=>$format->id, 'word'=>$word);
 			$whereClause .= $v->storageType->searchLikeQuery($v, array(), $p);
 		}
-		$whereClause = substr($whereClause, 0, -4);
+		$whereClause = mb_substr($whereClause, 0, -4);
 		if(!strlen($whereClause)) {
 			return $this->emptyResult($mode);
 		}
@@ -1349,7 +1349,7 @@ class PXDatabase extends NLSQLDatabaseAdapter implements IPXDatabase {
 			$allowed = array_flip(unserialize(ENUM_ALLOWED_PATHNAMES));
 			$dotpos = strrpos($url, '.');
 
-			if (!$dotpos || !isset($allowed[substr($url, ++$dotpos)])) {
+			if (!$dotpos || !isset($allowed[mb_substr($url, ++$dotpos)])) {
 				$url .= '.html';
 			}
 		}
@@ -1379,6 +1379,7 @@ class PXDatabase extends NLSQLDatabaseAdapter implements IPXDatabase {
 					$reiteration = (int)$this->IsUniqueColsCombination($condTables, $condCols, $exception);
 				}
 
+				// FIXME: very ugly code. No need mb_* functions here, working under _Translit'ed string
 				if ($reiteration > 0) {
 					if (strpos($url, '.') !== false) {
 						if (is_numeric($url{strrpos($url, '.')-1})) {
