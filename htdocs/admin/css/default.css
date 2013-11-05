@@ -682,6 +682,10 @@ table.datagrid td {
 	padding: 0;
 }
 
+table.datagrid th {
+	width: auto;
+}
+
 button.addrow {
 	float: right;
 }
