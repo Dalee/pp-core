@@ -135,7 +135,7 @@ define('DEFAULT_LOCALE',             json_encode(array('Russian_Russia.20866', '
 define('REGEX_MOD', 				 '');
 //define('DEFAULT_CHARSET',            CHARSET_UTF8);
 //define('DEFAULT_LOCALE',             json_encode(array('Russian_Russia.UTF-8', 'ru_RU.UTF-8', 'UTF-8')));
-//define('REGEX_MOD', 				 'u'); // in case of UTF-8
+//define('REGEX_MOD', 				   'u'); // UTF-8 mod for regexp
 
 if (setlocale(LC_ALL, json_decode(DEFAULT_LOCALE)) === false) {
 	FatalError(sprintf('Unable to set setlocale: %s', DEFAULT_LOCALE));
