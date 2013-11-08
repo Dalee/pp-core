@@ -149,11 +149,11 @@ class PXAdminTable extends PXAdminComplexWidget {
 
 			$rowPos = 0;
 			foreach ($this->data as $rowKey=>$row){
-				$up    = $this->isFirstOnPage($rowPos) || !is_numeric(strpos($this->dtype->order, 'sys_order')) ? 0 : 1;
-				$down  = $this->isLastOnPage($rowPos) || !is_numeric(strpos($this->dtype->order, 'sys_order')) ? 0 : 1;
+				$up    = $this->isFirstOnPage($rowPos) || !is_numeric(mb_strpos($this->dtype->order, 'sys_order')) ? 0 : 1;
+				$down  = $this->isLastOnPage($rowPos) || !is_numeric(mb_strpos($this->dtype->order, 'sys_order')) ? 0 : 1;
 
 				if (isset($row[$this->titleKey])) {
-					$menuTitle = (strlen($row[$this->titleKey]) > 10) ? trim(substr($row[$this->titleKey], 0, 10)).'&hellip;' : $row[$this->titleKey];
+					$menuTitle = (mb_strlen($row[$this->titleKey]) > 10) ? trim(mb_substr($row[$this->titleKey], 0, 10)).'&hellip;' : $row[$this->titleKey];
 					$menuTitle = str_replace('"', '', str_replace("'", '', $menuTitle));
 					$menuTitle = str_replace("\n", '', str_replace("\r", '', $menuTitle));
 				} else {
@@ -396,7 +396,7 @@ class PXAdminTable extends PXAdminComplexWidget {
 	}
 
 	function _buildShowOnSiteLink($row){
-		if(!isset($row['parent']) || !isset($row['pathname']) || !strlen($row['pathname'])) {
+		if(!isset($row['parent']) || !isset($row['pathname']) || !mb_strlen($row['pathname'])) {
 			return '';
 		}
 
@@ -435,7 +435,7 @@ class PXAdminTable extends PXAdminComplexWidget {
 	}
 
 	function htmlCaption() {
-		if (!strlen($this->caption )) {
+		if (!mb_strlen($this->caption )) {
 			return '';
 		}
 

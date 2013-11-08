@@ -156,7 +156,7 @@ class PXResponse {
 			'charset' => NULL
 		);
 
-		if (strlen($charset)) {
+		if (mb_strlen($charset)) {
 			$this->contentType['charset'] = $charset;
 			$contentType .= ';charset='.$charset;
 		}
@@ -165,7 +165,7 @@ class PXResponse {
 	}
 
 	function downloadFile($filename, $contentType = null, $dispositionType = 'attachment', $charset=null) {
-		if (strlen($contentType)) {
+		if (mb_strlen($contentType)) {
 			$this->setContentType($contentType, $charset);
 		}
 		$this->addHeader('Content-Disposition', $dispositionType . '; filename="'. $filename .'"');
@@ -173,7 +173,7 @@ class PXResponse {
 
 	function send($content = null, $http_version_1_1 = true) {
 		if (!headers_sent()) {
-			if ($this->isError() || strlen($content)) {
+			if ($this->isError() || mb_strlen($content)) {
 				// FIXME: we really need HTTP/1.1 ?
 				// to fix troubles with Transfer-Encoding: chunked
 				// (Apache uses it when Content-Length header missed for 1.1)
@@ -182,14 +182,15 @@ class PXResponse {
 				header(sprintf('HTTP/1.%d %s', (int)$http_version_1_1, $this->status));
 			}
 
-			if (strlen($content)) {
+			if (mb_strlen($content)) {
+				// NOTICE: no mb_ here
 				$this->setLength(strlen($content));
 			}
 
 			$this->_sendHeaders();
 		}
 
-		if (strlen($content)) {
+		if (mb_strlen($content)) {
 			echo $content;
 		}
 	}
@@ -227,7 +228,7 @@ class PXResponse {
 			$value = serialize($value);
 		}
 
-		$value = convert_cyr_string($value, 'k', 'w');
+		$value = myconv(DEFAULT_CHARSET, CHARSET_WINDOWS, $value);
 		if (!is_numeric($expire)) {
 			$expire = 0;
 		}

@@ -30,7 +30,7 @@ class NLMailVEvent {
 		if ($eventContent) $content .= $eventContent . "\n";
 		$content .= "END:VCALENDAR\n";
 		
-		return iconv("koi8-r", "utf-8", $content);
+		return myconv(DEFAULT_CHARSET, CHARSET_UTF8, $content);
 	}
 	
 	function _createEvent() {

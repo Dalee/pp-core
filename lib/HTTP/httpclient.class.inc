@@ -23,10 +23,10 @@ class NLHTTPClient {
 		} else {
 			$tmp = parse_url($proxy);
 
-			$this->proxy['host'] = isset($tmp['host']) && strlen($tmp['host']) ? $tmp['host'] : '';
+			$this->proxy['host'] = isset($tmp['host']) && mb_strlen($tmp['host']) ? $tmp['host'] : '';
 			$this->proxy['port'] = isset($tmp['port']) && $tmp['port'] > 0     ? $tmp['port'] : '80';
-			$this->proxy['user'] = isset($tmp['user']) && strlen($tmp['user']) ? $tmp['user'] : 'anonymous';
-			$this->proxy['pass'] = isset($tmp['pass']) && strlen($tmp['pass']) ? $tmp['pass'] : '';
+			$this->proxy['user'] = isset($tmp['user']) && mb_strlen($tmp['user']) ? $tmp['user'] : 'anonymous';
+			$this->proxy['pass'] = isset($tmp['pass']) && mb_strlen($tmp['pass']) ? $tmp['pass'] : '';
 		}
 
 		$this->timeout           = $timeout;
@@ -43,7 +43,7 @@ class NLHTTPClient {
 				$host = $this->proxy['host'];
 				$port = $this->proxy['port'];
 
-				if($this->proxy['user'] != 'anonymous' || strlen($this->proxy['pass'])) {
+				if($this->proxy['user'] != 'anonymous' || mb_strlen($this->proxy['pass'])) {
 					$this->headers[] = "Proxy-Authorization: Basic " . base64_encode ($this->proxy['user'].":".$this->proxy['pass']);
 				}
 			}
@@ -78,19 +78,19 @@ class NLHTTPClient {
 		unset($this->replyHeaders);
 		unset($this->replyBody);
 
-		$host    = isset($tmp['host'])  && strlen($tmp['host'])  ? $tmp['host'] : '';
+		$host    = isset($tmp['host'])  && mb_strlen($tmp['host'])  ? $tmp['host'] : '';
 		$port    = isset($tmp['port'])  && $tmp['port'] > 0      ? $tmp['port'] : '80';
-		$path    = isset($tmp["path"])  && strlen($tmp["path"])  ? $tmp["path"] : '/';
-		$path   .= isset($tmp["query"]) && strlen($tmp["query"]) ? '?'.$tmp["query"] : '';
+		$path    = isset($tmp["path"])  && mb_strlen($tmp["path"])  ? $tmp["path"] : '/';
+		$path   .= isset($tmp["query"]) && mb_strlen($tmp["query"]) ? '?'.$tmp["query"] : '';
 
 		$this->headers[] = "GET ".($fullPath ? 'http://'.$host: '').$path." HTTP/1.0";
 		$this->headers[] = "Host: ".$host;
 
-		if(is_string($auth) && strlen($auth)) {
-			$user = isset($tmp['user']) && strlen($tmp['user']) ? $tmp['user'] : 'anonymous';
-			$pass = isset($tmp['pass']) && strlen($tmp['pass']) ? $tmp['pass'] : '';
+		if(is_string($auth) && mb_strlen($auth)) {
+			$user = isset($tmp['user']) && mb_strlen($tmp['user']) ? $tmp['user'] : 'anonymous';
+			$pass = isset($tmp['pass']) && mb_strlen($tmp['pass']) ? $tmp['pass'] : '';
 
-			switch(strtolower($auth)) {
+			switch(mb_strtolower($auth)) {
 				case 'basic':
 					$this->headers[] = 'Authorization: Basic '.base64_encode($user.':'.$pass);
 					break;
@@ -115,8 +115,8 @@ class NLHTTPClient {
 			$this->CloseConnect();
 			
 			$this->reply        = $tmp;
-			$this->replyHeaders = explode("\r\n", substr($this->reply, 0, strpos($this->reply,"\r\n\r\n")));
-			$this->replyBody    = substr($this->reply, strpos($this->reply,"\r\n\r\n")+4);
+			$this->replyHeaders = explode("\r\n", mb_substr($this->reply, 0, mb_strpos($this->reply,"\r\n\r\n")));
+			$this->replyBody    = mb_substr($this->reply, mb_strpos($this->reply,"\r\n\r\n")+4);
 
 			switch($this->GetLastStatus()) {
 				case '200':
@@ -167,8 +167,8 @@ class NLHTTPClient {
 	}
 
 	function GetLastStatus() {
-		if(isset($this->replyHeaders[0]) && strlen($this->replyHeaders[0])) {
-			preg_match('|^HTTP/1\\.\\d (\\d{3}) |', $this->replyHeaders[0], $tmp);
+		if(isset($this->replyHeaders[0]) && mb_strlen($this->replyHeaders[0])) {
+			preg_match('|^HTTP/1\\.\\d (\\d{3}) |'.REGEX_MOD, $this->replyHeaders[0], $tmp);
 			$this->status = $tmp[1];
 
 		} else {
@@ -180,9 +180,9 @@ class NLHTTPClient {
 
 	function FindAuthorizationType() {
 		foreach($this->replyHeaders as $h) {
-			preg_match('#^WWW-Authenticate:\\s?(BASIC|DIGEST).*?$#i', $h, $tmp);
+			preg_match('#^WWW-Authenticate:\\s?(BASIC|DIGEST).*?$#i'.REGEX_MOD, $h, $tmp);
 
-			if(isset($tmp[1]) && strlen($tmp[1])) {
+			if(isset($tmp[1]) && mb_strlen($tmp[1])) {
 				return $tmp[1];
 			}
 		}
@@ -192,10 +192,10 @@ class NLHTTPClient {
 
 	function FindLocation() {
 		foreach($this->replyHeaders as $h) {
-			preg_match('|^Location:\\s?(.*?)$|i', $h, $tmp);
+			preg_match('|^Location:\\s?(.*?)$|i'.REGEX_MOD, $h, $tmp);
 
-			if(isset($tmp[1]) && strlen($tmp[1])) {
-				if(strpos($tmp[1], 'http://') === 0 || strpos($tmp[1], 'https://') === 0) {
+			if(isset($tmp[1]) && mb_strlen($tmp[1])) {
+				if(mb_strpos($tmp[1], 'http://') === 0 || mb_strpos($tmp[1], 'https://') === 0) {
 					return $tmp[1];
 				} else {
 					return 'http://'.$this->host.$tmp[1];

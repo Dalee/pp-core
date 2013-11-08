@@ -13,7 +13,7 @@ class PXCacheMemcached implements IPXCache {
 		$this->expirationTime = (int)$defaultExpire;
 		$this->cacheNamespace = md5(BASEPATH . $cacheDomain);
 		@list($host, $port)   = explode(':', $connectorArgs, 2);
-		$this->host           = strlen($host) ? $host : $this->host;
+		$this->host           = mb_strlen($host) ? $host : $this->host;
 		$this->port           = ($port = (int)$port) > 0 ? $port : $this->port;
 		$this->_mcHandler     = $this->connect();
 	}
@@ -63,14 +63,14 @@ class PXCacheMemcached implements IPXCache {
 
 	function deleteGroup($group) {
 		$prefix = $this->key($group, true);
-		$prefLen = strlen($prefix);
+		$prefLen = mb_strlen($prefix);
 		$allKeys = $this->_mcHandler->getAllKeys();
 		if(empty($allKeys)){
 			return;
 		}
 		$toDelete = array();
 		foreach($allKeys as $key) {
-			if(substr($key, 0, $prefLen) == $prefix){
+			if(mb_substr($key, 0, $prefLen) == $prefix){
 				$toDelete[] = $key;
 			}
 		}

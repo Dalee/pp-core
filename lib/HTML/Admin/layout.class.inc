@@ -45,7 +45,7 @@ class PXAdminHTMLLayout extends NLAbstractLayout {
 	}
 
 	function assignTitle($title = NULL) {
-		$title = ((is_null($title) || !strlen(trim($title))) ? '' : strtr($title, array('<' => '&lt;', '>' => '&gt;')).' / ')."Proxima CMS Портал";
+		$title = ((is_null($title) || !mb_strlen(trim($title))) ? '' : mb_strtr($title, array('<' => '&lt;', '>' => '&gt;')).' / ')."Proxima CMS Портал";
 		$this->Assign("OUTER.TITLE", $title);
 	}
 
@@ -187,7 +187,7 @@ class PXAdminHTMLLayout extends NLAbstractLayout {
 	}
 
 	function _renderScript($body, $template, $singleton){
-		if(!strlen($body) || ($singleton && isset($this->_scripts[$hash = md5($body)]))) {
+		if(!mb_strlen($body) || ($singleton && isset($this->_scripts[$hash = md5($body)]))) {
 			return false;
 		}
 

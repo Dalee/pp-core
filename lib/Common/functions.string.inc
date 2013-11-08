@@ -9,163 +9,28 @@
  * @subpackage  Common
  */
 
-function SortRussianByTitle($a, $b) {
-	if ($a == $b) return 0;
-	return (convert_cyr_string($a['title'], 'k', 'w') < convert_cyr_string($b['title'], 'k', 'w')) ? -1 : 1;
-}
-
 function NumericCmp($a, $b) {
 	if ($a == $b) return 0;
 	return ($a < $b) ? -1 : 1;
 }
 
-function _PrepareWMLText($string) {
-	$string = preg_replace("/\\$\s*(\d+([,|.]\d+)?)/si", "\\1 у.е.", $string);
-
-	if(preg_match_all("/<a\s.*?(href=\"(.+?)\").*?>(.+?)<\/a>/si", $string, $urls)) {
-		$string = preg_replace("/<a\s.*?href=\"(.+?)\".*?>(.+?)<\/a>/si", "[a \\1]\\2[/a]", $string);
-	}
-
-	$string = strip_tags($string);
-	$string = nl2br($string);
-
-	$string = preg_replace("/\[a (.*?)\](.*?)\[\/a\]/si", "<a href=\"\\1\">\\2</a>", $string);
-
-	return $string;
-}
-
-function wapUtf8Cyr($str) {
-	static $trans = array(
-		'а' => '&#x0430;', 'б' => '&#x0431;', 'в' => '&#x0432;', 'г' => '&#x0433;', 'д' => '&#x0434;',
-		'е' => '&#x0435;', 'ж' => '&#x0436;', 'з' => '&#x0437;', 'и' => '&#x0438;', 'й' => '&#x0439;',
-		'к' => '&#x043A;', 'л' => '&#x043B;', 'м' => '&#x043C;', 'н' => '&#x043D;', 'о' => '&#x043E;',
-		'п' => '&#x043F;', 'р' => '&#x0440;', 'с' => '&#x0441;', 'т' => '&#x0442;', 'у' => '&#x0443;',
-		'ф' => '&#x0444;', 'х' => '&#x0445;', 'ц' => '&#x0446;', 'ч' => '&#x0447;', 'ш' => '&#x0448;',
-		'щ' => '&#x0449;', 'ъ' => '&#x044A;', 'ы' => '&#x044B;', 'ь' => '&#x044C;', 'э' => '&#x044D;',
-		'ю' => '&#x044E;', 'я' => '&#x044F;',
-
-		'А' => '&#x0410;', 'Б' => '&#x0411;', 'В' => '&#x0412;', 'Г' => '&#x0413;', 'Д' => '&#x0414;',
-		'Е' => '&#x0415;', 'Ж' => '&#x0416;', 'З' => '&#x0417;', 'И' => '&#x0418;', 'Й' => '&#x0419;',
-		'К' => '&#x041A;', 'Л' => '&#x041B;', 'М' => '&#x041C;', 'Н' => '&#x041D;', 'О' => '&#x041E;',
-		'П' => '&#x041F;', 'Р' => '&#x0420;', 'С' => '&#x0421;', 'Т' => '&#x0422;', 'У' => '&#x0423;',
-		'Ф' => '&#x0424;', 'Х' => '&#x0425;', 'Ц' => '&#x0426;', 'Ч' => '&#x0427;', 'Ш' => '&#x0428;',
-		'Щ' => '&#x0429;', 'Ъ' => '&#x042A;', 'Ы' => '&#x042B;', 'Ь' => '&#x042C;', 'Э' => '&#x042D;',
-		'Ю' => '&#x042E;', 'Я' => '&#x042F;',
-
-		'&nbsp;'   => ' ',
-		'&laquo;'  => '&#x00AB;',
-		'&raquo;'  => '&#x00BB;',
-		'&bdquo;'  => '&#x0093;',
-		'&ldquo;'  => '&#x0084;',
-//		'&rdquo;'  => '&#x0093;',
-		'&rdquo;'  => '\'',
-		'&#8212;'  => '-',
-		'&mdash;'  => '-',
-		'&ndash;'  => '-',
-		'&#150;'   => '-',
-		'&#8211;'  => '&#x2013;',
-		'&hellip;' => '...',
-		'&#8217;'  => '&#x2019;',
-		'&#8470;'  => '&#x2116;',
-
-//		'&' => '&#x0026;', '$' => '&#xFE69; &#xFF04;', '#' => '&#x0023;',
-//		'&' => '&#x0026;', '$' => '&#xFF04;', '#' => '&#x0023;',
-		'&' => '&#x0026;', '#' => '&#x0023;',
-
-		'&#x2190;' => '&#x003C;', '&#x2191;' => '&#x003C;', '&#x2192;' => '&#x003E;', '&#x2193;' => '&#x003E;',
-	);
-
-	return strtr($str, $trans);
-}
-
-function utfDecode($string) {
-	return utfEncode($string, 'decode');
-}
-
-function utfEncode($string, $direction = 'encode') {
-	static $tran = array(
-		"%A8"=>"%D0%81", "%B8"=>"%D1%91", "%C0"=>"%D0%90", "%C1"=>"%D0%91", "%C2"=>"%D0%92", "%C3"=>"%D0%93",
-		"%C4"=>"%D0%94", "%C5"=>"%D0%95", "%C6"=>"%D0%96", "%C7"=>"%D0%97", "%C8"=>"%D0%98", "%C9"=>"%D0%99",
-		"%CA"=>"%D0%9A", "%CB"=>"%D0%9B", "%CC"=>"%D0%9C", "%CD"=>"%D0%9D", "%CE"=>"%D0%9E", "%CF"=>"%D0%9F",
-		"%D0"=>"%D0%A0", "%D1"=>"%D0%A1", "%D2"=>"%D0%A2", "%D3"=>"%D0%A3", "%D4"=>"%D0%A4", "%D5"=>"%D0%A5",
-		"%D6"=>"%D0%A6", "%D7"=>"%D0%A7", "%D8"=>"%D0%A8", "%D9"=>"%D0%A9", "%DA"=>"%D0%AA", "%DB"=>"%D0%AB",
-		"%DC"=>"%D0%AC", "%DD"=>"%D0%AD", "%DE"=>"%D0%AE", "%DF"=>"%D0%AF", "%E0"=>"%D0%B0", "%E1"=>"%D0%B1",
-		"%E2"=>"%D0%B2", "%E3"=>"%D0%B3", "%E4"=>"%D0%B4", "%E5"=>"%D0%B5", "%E6"=>"%D0%B6", "%E7"=>"%D0%B7",
-		"%E8"=>"%D0%B8", "%E9"=>"%D0%B9", "%EA"=>"%D0%BA", "%EB"=>"%D0%BB", "%EC"=>"%D0%BC", "%ED"=>"%D0%BD",
-		"%EE"=>"%D0%BE", "%EF"=>"%D0%BF", "%F0"=>"%D1%80", "%F1"=>"%D1%81", "%F2"=>"%D1%82", "%F3"=>"%D1%83",
-		"%F4"=>"%D1%84", "%F5"=>"%D1%85", "%F6"=>"%D1%86", "%F7"=>"%D1%87", "%F8"=>"%D1%88", "%F9"=>"%D1%89",
-		"%FA"=>"%D1%8A", "%FB"=>"%D1%8B", "%FC"=>"%D1%8C", "%FD"=>"%D1%8D", "%FE"=>"%D1%8E", "%FF"=>"%D1%8F",
-	);
-
-	static $typo = array(
-		"%C2%A7"=>"&#167;",
-		"%C2%A9"=>"&#169;",
-		"%C2%AB"=>"&#171;",
-		"%C2%AE"=>"&#174;",
-		"%C2%B0"=>"&#176;",
-		"%C2%B1"=>"&#177;",
-		"%C2%BB"=>"&#187;",
-		"%E2%80%93"=>"&#150;",
-		"%E2%80%94"=>"&#151;",
-		"%E2%80%9C"=>"&#147;",
-		"%E2%80%9D"=>"&#148;",
-		"%E2%80%9E"=>"&#132;",
-		"%E2%80%A6"=>"&#133;",
-		"%E2%84%96"=>"&#8470;",
-		"%E2%84%A2"=>"&#153;",
-		"%C2%A4"=>"&curren;",
-		"%C2%B6"=>"&para;",
-		"%C2%B7"=>"&middot;",
-		"%E2%80%98"=>"&#145;",
-		"%E2%80%99"=>"&#146;",
-		"%E2%80%A2"=>"&#149;",
-	);
-
-	static $rtypo = array(
-		"%84"=>"%E2%80%9E",
-		"%85"=>"%E2%80%A6",
-		"%91"=>"%E2%80%98",
-		"%92"=>"%E2%80%99",
-		"%93"=>"%E2%80%9C",
-		"%94"=>"%E2%80%9D",
-		"%95"=>"%E2%80%A2",
-		"%96"=>"%E2%80%93",
-		"%97"=>"%E2%80%94",
-		"%99"=>"%E2%84%A2",
-		"%A7"=>"%C2%A7",
-		"%A9"=>"%C2%A9",
-		"%AB"=>"%C2%AB",
-		"%AE"=>"%C2%AE",
-		"%B0"=>"%C2%B0",
-		"%B1"=>"%C2%B1",
-		"%BB"=>"%C2%BB",
-	);
-
-	if ($direction == "encode") {
-		$tran = array_merge($tran,$rtypo);
-		$string = strtr(urlencode($string),$tran);
-	} else {
-		$rtran = array_flip($tran);
-		$rtran = array_merge($rtran,$typo);
-		$string = strtr(urlencode($string),$rtran);
-	}
-
-	return urldecode($string);
-}
 
 function _StrToLower($text) {
-	$text  = strtolower($text);
-	$trans = array('ю' => 'Ю', 'а' => 'А', 'б' => 'Б', 'ц' => 'Ц', 'д' => 'Д', 'е' => 'Е', 'ё' => 'Ё', 'ф' => 'Ф', 'г' => 'Г', 'х' => 'Х', 'и' => 'И', 'й' => 'Й', 'к' => 'К', 'л' => 'Л', 'м' => 'М', 'н' => 'Н', 'о' => 'О', 'п' => 'П', 'я' => 'Я', 'р' => 'Р', 'с' => 'С', 'т' => 'Т', 'у' => 'У', 'ж' => 'Ж', 'в' => 'В', 'ь' => 'Ь', 'ы' => 'Ы', 'з' => 'З', 'ш' => 'Ш', 'э' => 'Э', 'щ' => 'Щ', 'ч' => 'Ч', 'ъ' => 'Ъ');
-	$trans = array_flip($trans);
-	$text  = strtr($text, $trans);
+	$text  = mb_strtolower($text);
+	if (defined('MB_DISABLED')) {
+		$trans = array('ю' => 'Ю', 'а' => 'А', 'б' => 'Б', 'ц' => 'Ц', 'д' => 'Д', 'е' => 'Е', 'ё' => 'Ё', 'ф' => 'Ф', 'г' => 'Г', 'х' => 'Х', 'и' => 'И', 'й' => 'Й', 'к' => 'К', 'л' => 'Л', 'м' => 'М', 'н' => 'Н', 'о' => 'О', 'п' => 'П', 'я' => 'Я', 'р' => 'Р', 'с' => 'С', 'т' => 'Т', 'у' => 'У', 'ж' => 'Ж', 'в' => 'В', 'ь' => 'Ь', 'ы' => 'Ы', 'з' => 'З', 'ш' => 'Ш', 'э' => 'Э', 'щ' => 'Щ', 'ч' => 'Ч', 'ъ' => 'Ъ');
+		$trans = array_flip($trans);
+		$text  = mb_strtr($text, $trans);
+	}
 	return $text;
 }
 
 function _StrToUpper($text) {
-	$text  = strtoupper($text);
-	$trans = array('ю' => 'Ю', 'а' => 'А', 'б' => 'Б', 'ц' => 'Ц', 'д' => 'Д', 'е' => 'Е', 'Ё' => 'ё', 'ф' => 'Ф', 'г' => 'Г', 'х' => 'Х', 'и' => 'И', 'й' => 'Й', 'к' => 'К', 'л' => 'Л', 'м' => 'М', 'н' => 'Н', 'о' => 'О', 'п' => 'П', 'я' => 'Я', 'р' => 'Р', 'с' => 'С', 'т' => 'Т', 'у' => 'У', 'ж' => 'Ж', 'в' => 'В', 'ь' => 'Ь', 'ы' => 'Ы', 'з' => 'З', 'ш' => 'Ш', 'э' => 'Э', 'щ' => 'Щ', 'ч' => 'Ч', 'ъ' => 'Ъ');
-//	$trans = array_flip($trans);
-	$text  = strtr($text, $trans);
+	$text  = mb_strtoupper($text);
+	if (defined('MB_DISABLED')) {
+		$trans = array('ю' => 'Ю', 'а' => 'А', 'б' => 'Б', 'ц' => 'Ц', 'д' => 'Д', 'е' => 'Е', 'Ё' => 'ё', 'ф' => 'Ф', 'г' => 'Г', 'х' => 'Х', 'и' => 'И', 'й' => 'Й', 'к' => 'К', 'л' => 'Л', 'м' => 'М', 'н' => 'Н', 'о' => 'О', 'п' => 'П', 'я' => 'Я', 'р' => 'Р', 'с' => 'С', 'т' => 'Т', 'у' => 'У', 'ж' => 'Ж', 'в' => 'В', 'ь' => 'Ь', 'ы' => 'Ы', 'з' => 'З', 'ш' => 'Ш', 'э' => 'Э', 'щ' => 'Щ', 'ч' => 'Ч', 'ъ' => 'Ъ');
+		$text  = mb_strtr($text, $trans);
+	}
 	return $text;
 }
 
@@ -184,7 +49,7 @@ function _Translit($text) {
 		'ч' => 'ch', 'ш' => 'sh', 'щ' => 'sch', 'ъ' => '',  'ы' => 'y',  'ь' => '',
 		'э' => 'e',  'ю' => 'yu', 'я' => 'ya'
 	);
-	$text = strtr($text, $trans);
+	$text = mb_strtr($text, $trans);
 	return $text;
 }
 
@@ -219,8 +84,8 @@ function _TranslitFilename($text) {
 		"\n" => ''
 	);
 
-	$text = strtr(trim($text), $trans);
-	return substr($text, 0, 255); //max filename length in most common filesystems
+	$text = mb_strtr(trim($text), $trans);
+	return mb_substr($text, 0, 255); //max filename length in most common filesystems
 }
 
 function _TranslitUnique($text) {
@@ -238,7 +103,7 @@ function _TranslitUnique($text) {
 		'ч' => 'ch',  'ш' => 'sh', 'щ' => 'sch', 'ъ' => '',  'ы' => 'y',  'ь' => '',
 		'э' => 'je',  'ю' => 'yu', 'я' => 'ya'
 	);
-	$text = strtr($text, $trans);
+	$text = mb_strtr($text, $trans);
 	return $text;
 }
 
@@ -257,7 +122,7 @@ function _UnTranslitUnique($text) {
 		'ч' => 'ch',  'ш' => 'sh', 'щ' => 'sch', 'ы' => 'y',
 		'э' => 'je',  'ю' => 'yu', 'я' => 'ya'
 	));
-	$text = strtr($text, $trans);
+	$text = mb_strtr($text, $trans);
 	return $text;
 }
 
@@ -277,18 +142,17 @@ function _TranslitModern($text) {
 		'ч' => 'ch', 'ш' => 'sh', 'щ' => 'sch', 'ъ' => '',  'ы' => 'y',  'ь' => '',
 		'э' => 'e',  'ю' => 'yu', 'я' => 'ya',  "\xbf" => 'N'
 	);
-	$text = strtr($text, $trans);
+	$text = mb_strtr($text, $trans);
 	return $text;
 }
 
 function NumericEndingsRussian($count, $one, $two, $zero) {
-	$i = (int) substr( $count, -1 );
+	$i = (int) mb_substr( $count, -1 );
 	$s = (int) $count;
 	$x = $s;
 	if ( $x > 99 ) {
-		$x = substr( $s, -2 );
+		$x = mb_substr( $s, -2 );
 	}
-
 	if ( $x >= 5 && $x <= 20 || $i >=5 || $i == 0 ) {
 		return $zero;
 	}
@@ -344,7 +208,7 @@ function Strip1251($s) {
 		'&#8211;' => '-',
 		'&#8212;' => '-'
 	);
-	return strtr($s, $ent);
+	return mb_strtr($s, $ent);
 }
 
  /**
@@ -357,10 +221,10 @@ function Strip1251($s) {
   * @return String
   */
 function squeeze($inputString, $onlyTheseChars = null, $caseMatters = true){
-	if(strlen($inputString) > 1){
+	if(mb_strlen($inputString) > 1){
 		$pattern  = $onlyTheseChars ? '['.preg_quote($onlyTheseChars, '#').']' : '.';
 		$caseFlag = $caseMatters    ? '' : 'i';
-		$inputString = preg_replace("#({$pattern})(?=\\1)#{$caseFlag}",'',$inputString);
+		$inputString = preg_replace("#({$pattern})(?=\\1)#{$caseFlag}".REGEX_MOD,'',$inputString);
 	}
 	return $inputString;
 }
@@ -392,11 +256,11 @@ function str_lireplace($search, $replacement, $subject, $limit = 1){
   */
   
 function _strReplaceLimited($search, $replacement, $subject, $limit = 1, $caseMatters = true){
-	$replaced = 0; $limit = (int)$limit; $len = strlen($search);
+	$replaced = 0; $limit = (int)$limit; $len = mb_strlen($search);
 	if($caseMatters){
-		$strp = 'strpos';
+		$strp = 'mb_strpos';
 	} else {
-		$strp = 'stripos';
+		$strp = 'mb_stripos';
 	}
 	
 	while($replaced++ < $limit && ($pos = $strp($subject, $search)) !== false){
@@ -436,7 +300,7 @@ function appendParamToUrl($url, $k, $v, $fragment = false, $num_save = false) {
 			$url .= $qk.'='.urlencode($qv).'&';
 		}
 	}
-	$url = substr($url, 0, -1);
+	$url = mb_substr($url, 0, -1);
 	if ($fragment === false) {
 		if (isset($tmp['fragment'])) $url .= '#' . $tmp['fragment'];
 	} else {
@@ -481,13 +345,13 @@ function removeParamFromUrl($url, $k, $fragment = false, $removeAll = false, $nu
 			$url .= $qk.'='.urlencode($qv).'&';
 		}
 	}
-	$url = substr($url, 0, -1);
+	$url = mb_substr($url, 0, -1);
 	if ($fragment === false  and isset($tmp['fragment'])) $url .= '#' . $tmp['fragment'];
 	return $url;
 }
 
 function parseStrMagic($str, &$arr) {
-	parse_str($str, $arr);
+	mb_parse_str($str, $arr);
 	if (get_magic_quotes_gpc()) {
 		$arr = stripSlashesDeep($arr);
 	}
@@ -506,6 +370,7 @@ function multiLevelVarsToString($name, $arrayVars, $leaf=null, $num_save=false) 
 	return !empty($t) ? join ('&', $t) : '';
 }
 
+// NOTICE: no need here to use mb_ functions here
 function generateRandomString($length) {
 	$tmp = "0123456789ABCDEF";
 	$string = NULL;
@@ -515,6 +380,7 @@ function generateRandomString($length) {
 	return $string;
 }
 
+// NOTICE: no need here to use mb_ functions here
 function isUtfString($str) {
 	$len = strlen($str);
 	for ($i = 0; $i < $len; $i++) {
@@ -538,9 +404,10 @@ function isUtfString($str) {
 	return true;
 }
 
+// no need here to use preg_ with UTF-8 modifier
 function isAsciiString($AStr) {
 	static $ptrASCII = '[\x00-\x7F]';
-	return preg_match("/^{$ptrASCII}*$/sS", $AStr);
+	return (bool)preg_match("/^{$ptrASCII}*$/sS", $AStr);
 }
 
 /*
@@ -555,6 +422,7 @@ function isAsciiString($AStr) {
  * 
  * The function returns always a correct UTF8-encoded string.
  */
+// NOTICE: no need to use mb_ functions here
 function substrUTF8($str, $from, $length) {
 	$len = strlen($str);
 	$chars = 0;
@@ -597,20 +465,8 @@ function substrUTF8($str, $from, $length) {
 	return $out;
 }
 
+// NOTICE: no need to use mb_ functions here..
 function myconv($from, $to, $string, $be_quiet = true) {
-	if(isAsciiString($string)) {
-		return $string;
-	}
-
-	if(!function_exists('iconv')) {
-		FatalError('Can\'t find ICONV');
-	}
-
-	// FIXME: it hack
-	if (is_string($string) && isUtfString($string)) {
-		$from = 'u';
-	}
-
 	static $entities = array(/*{{{*/
 		160 => "&nbsp;",
 		161 => "&iexcl;",
@@ -864,18 +720,33 @@ function myconv($from, $to, $string, $be_quiet = true) {
 		8364 => "&euro;",
 	);/*}}}*/
 	static $one2enc = array(/*{{{*/
-		'k' => 'koi8-r',
-		'w' => 'windows-1251',
-		'i' => 'iso-8859-5',
-		'a' => 'cp866',
-		'd' => 'cp866',
-		'm' => 'mac-cyrillic',
-		'u' => 'utf-8',
+		'k' => CHARSET_KOI8R,
+		'w' => CHARSET_WINDOWS,
+		'i' => CHARSET_ISO,
+		'a' => CHARSET_ANSI,
+		'd' => CHARSET_DOS,
+		'm' => CHARSET_MAC,
+		'u' => CHARSET_UTF8,
 	);/*}}}*/
 	static $tables = array();
 
-	if (array_key_exists($from, $one2enc)) $from = $one2enc[$from];
-	if (array_key_exists($to,   $one2enc)) $to   = $one2enc[$to];
+	if(!function_exists('iconv')) {
+		FatalError('Can\'t find ICONV');
+	}
+
+	foreach (array($from, $to) as $_ => $enc_test) {
+		if ((! array_key_exists($enc_test, $one2enc)) &&
+			(! in_array($enc_test, $one2enc))) {
+			FatalError(sprintf('Unknown encoding: %s', $enc_test));
+		}
+	}
+
+	$from = strtolower((isset($one2enc[$from])) ? $one2enc[$from] : $from);
+	$to   = strtolower((isset($one2enc[$to]))   ? $one2enc[$to]   : $to);
+
+	if ($from == $to) {
+		return $string;
+	}
 
 	// are charsets valid?
 	$prev_track_errors = ini_get('track_errors');
@@ -905,15 +776,11 @@ function myconv($from, $to, $string, $be_quiet = true) {
 		unset($res);
 	}
 
-	if($from == $to) {
-		return $string;
-	}
-
 	// check if string can be converted from $from encoding to ucs-2be
 	ini_set('track_errors', true);
 	$php_errormsg = false;
 	set_error_handler("_myconvErrorHandler", E_NOTICE);
-	@iconv($from, 'ucs-2be', $string);
+	@iconv($from, CHARSET_UCS2BE, $string);
 	restore_error_handler();
 	ini_set('track_errors', $prev_track_errors);
 	if ($php_errormsg) {
@@ -924,7 +791,7 @@ function myconv($from, $to, $string, $be_quiet = true) {
 	}
 
 	// test if input enc is one-byte chr(224) = cyrillic letter a-small
-	$onebyte = (strlen(@iconv('windows-1251', $from, chr(224))) < 2);
+	$onebyte = (strlen(@iconv(CHARSET_WINDOWS, $from, chr(224))) < 2);
 	$key = $onebyte ? "$from~$to": $to;
 
 	if (!array_key_exists($key, $tables)) {
@@ -944,7 +811,7 @@ function myconv($from, $to, $string, $be_quiet = true) {
 					if (strlen($c)) {
 						$tables[$key][chr($i)] = $c;
 					} else {
-						$c = @iconv($from, 'ucs-2be', chr($i));
+						$c = @iconv($from, CHARSET_UCS2BE, chr($i));
 						if (strlen($c)) {
 							$c = unpack('n', $c);
 							$c = reset($c);
@@ -961,7 +828,7 @@ function myconv($from, $to, $string, $be_quiet = true) {
 				}
 
 				for ($i = 0; $i < 256; $i++) {
-					$c = @iconv($to, 'ucs-2be', chr($i));
+					$c = @iconv($to, CHARSET_UCS2BE, chr($i));
 					if (!strlen($c)) continue;
 					$tables[$key][$c] = chr($i);
 				}
@@ -975,7 +842,7 @@ function myconv($from, $to, $string, $be_quiet = true) {
 		}
 	}
 
-	return strtr($onebyte ? $string : iconv($from, 'ucs-2be', $string), $tables[$key]);
+	return strtr($onebyte ? $string : iconv($from, CHARSET_UCS2BE, $string), $tables[$key]);
 }
 
 /*
@@ -984,7 +851,7 @@ function myconv($from, $to, $string, $be_quiet = true) {
 function wordWrapHtmlSafe($str, $width = 60, $break = "\n", $nobreak = "", $nobr = "pre", $utf = false) {
 	// Split HTML content into an array delimited by < and >
 	// The flags save the delimeters and remove empty variables
-	$content = preg_split("/([<>])/", $str, -1, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY);
+	$content = preg_split("/([<>])/".REGEX_MOD, $str, -1, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY);
 
 	// Transform protected element lists into arrays
 	$nobreak = explode(" ", $nobreak);
@@ -1033,8 +900,8 @@ function wordWrapHtmlSafe($str, $width = 60, $break = "\n", $nobreak = "", $nobr
 					} else {
 
 						// If this is a closing tag for a protected element, unset the flag
-						if (in_array(substr($value, 1), $innbk)) unset($innbk[count($innbk)]);
-						if (in_array(substr($value, 1), $innbr)) unset($innbr[count($innbr)]);
+						if (in_array(mb_substr($value, 1), $innbk)) unset($innbk[count($innbk)]);
+						if (in_array(mb_substr($value, 1), $innbr)) unset($innbr[count($innbr)]);
 					}
 
 				// Else if we're outside any tags...
@@ -1052,11 +919,11 @@ function wordWrapHtmlSafe($str, $width = 60, $break = "\n", $nobreak = "", $nobr
 							if (preg_match("/^(.*?\s|^)(([^\s&]|&(\w{2,5}|#\d{2,4});){".$width."})(?!(".preg_quote($break, "/")."|\s))(.*)$/s$utf", $value, $match)) {
 
 								// Determine the last "safe line-break" character within this match
-								for ($x = 0, $ledge = 0; $x < strlen($lbrks); $x++) $ledge = max($ledge, strrpos($match[2], $lbrks{$x}));
-								if (!$ledge) $ledge = strlen($match[2]) - 1;
+								for ($x = 0, $ledge = 0; $x < mb_strlen($lbrks); $x++) $ledge = max($ledge, mb_strrpos($match[2], $lbrks{$x}));
+								if (!$ledge) $ledge = mb_strlen($match[2]) - 1;
 
 								// Insert the modified string
-								$value = $match[1].substr($match[2], 0, $ledge + 1).$break.substr($match[2], $ledge + 1).$match[6];
+								$value = $match[1].mb_substr($match[2], 0, $ledge + 1).$break.mb_substr($match[2], $ledge + 1).$match[6];
 							}
 
 						// Loop while overlimit strings are still being found
@@ -1084,7 +951,7 @@ function fixWordLength($string, $length = 10) {
 	$endPattern = '\s\d\?\)!,.\-;:\'"`';
 	
 	// replace htmlentities
-	$entityPattern = '/(&#\d+;|&\w+;)/';
+	$entityPattern = '/(&#\d+;|&\w+;)/'.REGEX_MOD;
 	$entityReplacement = chr(2);
 	
 	preg_match_all($entityPattern, $string, $replacement);
@@ -1093,21 +960,21 @@ function fixWordLength($string, $length = 10) {
 	$string = preg_replace($entityPattern, $entityReplacement, $string);
 
 	$hyphens = $string;
-	$hyphens = preg_replace('/([\s,.-])/i', '$1' . $doubleDelim, $hyphens);
-	$hyphens = preg_replace('/([ъьйы])/i' , '$1' . $doubleDelim, $hyphens);
+	$hyphens = preg_replace('/([\s,.-])/i'.REGEX_MOD, '$1' . $doubleDelim, $hyphens);
+	$hyphens = preg_replace('/([ъьйы])/i'.REGEX_MOD , '$1' . $doubleDelim, $hyphens);
 
-	$hyphens = preg_replace('/(' . $vowel .')(' . $vowel . ')([^' . $endPattern . '])/i',                             '$1' . $doubleDelim . '$2$3', $hyphens);
-	$hyphens = preg_replace('/(' . $vowel    . $notvowel . ')(' . $notvowel . $vowel .')/i',                          '$1' . $delim .       '$2', $hyphens);
-	$hyphens = preg_replace('/(' . $notvowel . $vowel    . ')(' . $notvowel . $vowel . ')/i',                         '$1' . $delim .       '$2', $hyphens);
-	$hyphens = preg_replace('/(' . $vowel    . $notvowel . ')(' . $notvowel . $notvowel . $vowel . ')/i',             '$1' . $delim .       '$2', $hyphens);
-	$hyphens = preg_replace('/(' . $vowel    . $notvowel . $notvowel . ')(' . $notvowel . $notvowel . $vowel . ')/i', '$1' . $delim .       '$2', $hyphens);
+	$hyphens = preg_replace('/(' . $vowel .')(' . $vowel . ')([^' . $endPattern . '])/i'.REGEX_MOD,								'$1' . $doubleDelim . '$2$3', $hyphens);
+	$hyphens = preg_replace('/(' . $vowel    . $notvowel . ')(' . $notvowel . $vowel .')/i'.REGEX_MOD,							'$1' . $delim .       '$2', $hyphens);
+	$hyphens = preg_replace('/(' . $notvowel . $vowel    . ')(' . $notvowel . $vowel . ')/i'.REGEX_MOD,							'$1' . $delim .       '$2', $hyphens);
+	$hyphens = preg_replace('/(' . $vowel    . $notvowel . ')(' . $notvowel . $notvowel . $vowel . ')/i'.REGEX_MOD,				'$1' . $delim .       '$2', $hyphens);
+	$hyphens = preg_replace('/(' . $vowel    . $notvowel . $notvowel . ')(' . $notvowel . $notvowel . $vowel . ')/i'.REGEX_MOD,	'$1' . $delim .       '$2', $hyphens);
 	
 	// second time (to catch close standing syllables)
-	$hyphens = preg_replace('/(' . $vowel .')(' . $vowel . ')([^' . $endPattern . '])/i',                             '$1' . $doubleDelim . '$2$3', $hyphens);
-	$hyphens = preg_replace('/(' . $vowel    . $notvowel . ')(' . $notvowel . $vowel . ')/i',                         '$1' . $delim .       '$2', $hyphens);
-	$hyphens = preg_replace('/(' . $notvowel . $vowel    . ')(' . $notvowel . $vowel . ')/i',                         '$1' . $delim .       '$2', $hyphens);
-	$hyphens = preg_replace('/(' . $vowel    . $notvowel . ')(' . $notvowel . $notvowel . $vowel . ')/i',             '$1' . $delim .       '$2', $hyphens);
-	$hyphens = preg_replace('/(' . $vowel    . $notvowel . $notvowel . ')(' . $notvowel . $notvowel . $vowel . ')/i', '$1' . $delim .       '$2', $hyphens);
+	$hyphens = preg_replace('/(' . $vowel .')(' . $vowel . ')([^' . $endPattern . '])/i'.REGEX_MOD,                             '$1' . $doubleDelim . '$2$3', $hyphens);
+	$hyphens = preg_replace('/(' . $vowel    . $notvowel . ')(' . $notvowel . $vowel . ')/i'.REGEX_MOD,                         '$1' . $delim .       '$2', $hyphens);
+	$hyphens = preg_replace('/(' . $notvowel . $vowel    . ')(' . $notvowel . $vowel . ')/i'.REGEX_MOD,                         '$1' . $delim .       '$2', $hyphens);
+	$hyphens = preg_replace('/(' . $vowel    . $notvowel . ')(' . $notvowel . $notvowel . $vowel . ')/i'.REGEX_MOD,             '$1' . $delim .       '$2', $hyphens);
+	$hyphens = preg_replace('/(' . $vowel    . $notvowel . $notvowel . ')(' . $notvowel . $notvowel . $vowel . ')/i'.REGEX_MOD, '$1' . $delim .       '$2', $hyphens);
 	
 	$syllables = explode($delim, $hyphens);
 
@@ -1115,11 +982,11 @@ function fixWordLength($string, $length = 10) {
 
 	foreach ($syllables as $s) {
 		$tmp .= $s;
-		$end = substr($string, -1);
+		$end = mb_substr($string, -1);
 
-		if (strlen(trim($tmp)) > $length || $end == ' ') {
+		if (mb_strlen(trim($tmp)) > $length || $end == ' ') {
 			$tmp = $s;
-			if (!preg_match("/([{$endPattern}])/i", $end)) {
+			if (!preg_match("/([{$endPattern}])/i".REGEX_MOD, $end)) {
 				$string .= "&shy;";
 			}
 		}
@@ -1171,7 +1038,7 @@ function utf8_urldecodeCallback($p) {
 	$dec = hexdec($hex);
 
 	if (is_callable('iconv')) {
-		$c = @iconv('UCS-2BE', 'KOI8-R', pack('n', $dec));
+		$c = @iconv(CHARSET_UCS2BE, DEFAULT_CHARSET, pack('n', $dec));
 
 	} else {
 		if ($dec < 128) {
@@ -1203,7 +1070,7 @@ if (!function_exists("lcfirst")) {
 }
 
 function quot($string, $double = true) {
-	return strtr($string, $double ? array('"' => '&quot;') : array("'" => "&#039;"));
+	return mb_strtr($string, $double ? array('"' => '&quot;') : array("'" => "&#039;"));
 }
 
 /**
@@ -1233,7 +1100,7 @@ function money2str($money, $stripkop=false) {
 	$rub = number_format($tmp[ 0], 0,'','-');
 	if ($rub== 0) $out[] = $nol;
 	// нормализация копеек
-	$kop = isset($tmp[1]) ? substr(str_pad($tmp[1], 2, '0', STR_PAD_RIGHT), 0,2) : '00';
+	$kop = isset($tmp[1]) ? mb_substr(mb_str_pad($tmp[1], 2, '0', STR_PAD_RIGHT), 0,2) : '00';
 	$segments = explode('-', $rub);
 	$offset = sizeof($segments);
 	if ((int)$rub== 0) { // если 0 рублей
@@ -1249,11 +1116,11 @@ function money2str($money, $stripkop=false) {
 				continue;
 			}
 			// нормализация
-			$ri = str_pad($ri, 3, '0', STR_PAD_LEFT);
+			$ri = mb_str_pad($ri, 3, '0', STR_PAD_LEFT);
 			// получаем циферки для анализа
-			$r1 = (int)substr($ri, 0,1); //первая цифра
-			$r2 = (int)substr($ri,1,1); //вторая
-			$r3 = (int)substr($ri,2,1); //третья
+			$r1 = (int)mb_substr($ri, 0,1); //первая цифра
+			$r2 = (int)mb_substr($ri,1,1); //вторая
+			$r3 = (int)mb_substr($ri,2,1); //третья
 			$r22= (int)$r2.$r3; //вторая и третья
 			// разгребаем порядки
 			if ($ri>99) $o[] = $str[100][$r1]; // Сотни
@@ -1275,10 +1142,10 @@ function money2str($money, $stripkop=false) {
 		$o[] = $kop;
 		$o[] = NumericEndingsRussian($kop,$forms[ 0][ 0],$forms[ 0][1],$forms[ 0][2]);
 	}
-	return preg_replace("/\s{2,}/",' ',implode(' ',$o));
+	return preg_replace("/\s{2,}/".REGEX_MOD, ' ', implode(' ', $o));
 }
 
-function convertCyrillicObjectToUtf($object, $from_charset = 'k') {
+function convertCyrillicObjectToUtf($object, $from_charset = DEFAULT_CHARSET) {
 	if (is_array($object)) {
 		$encoded = array();
 
@@ -1295,7 +1162,7 @@ function convertCyrillicObjectToUtf($object, $from_charset = 'k') {
 		}
 
 	} elseif (is_string($object)) {
-		$object = myconv($from_charset, 'u', $object);
+		$object = myconv($from_charset, CHARSET_UTF8, $object);
 	}
 
 	return $object;
@@ -1308,40 +1175,22 @@ function convertStringToPascalCase ($s) {
 
 // Converts "AbcDef" string to "abcDef"
 function convertStringToCamelCase ($s) {
-	return preg_replace_callback('/[\-_][a-z]/i', '__convertStringToCamelCase_helper', $s);
+	return preg_replace_callback('/[\-_][a-z]/i'.REGEX_MOD, '__convertStringToCamelCase_helper', $s);
 }
-function __convertStringToCamelCase_helper($a) { return strtoupper($a[0][1]); }
+function __convertStringToCamelCase_helper($a) { return mb_strtoupper($a[0][1]); }
 
 // Converts "AbcDef" string to "abc_def"
 function convertStringToUnderscored ($s) {
-	return ltrim(preg_replace_callback('/(?:[A-Z]|(?:-)[a-z])/', '__convertStringToUnderscored_helper', $s), '_');
+	return ltrim(preg_replace_callback('/(?:[A-Z]|(?:-)[a-z])/'.REGEX_MOD, '__convertStringToUnderscored_helper', $s), '_');
 }
-function __convertStringToUnderscored_helper($a) { return '_' . strtolower(substr($a[0], -1, 1)); }
+function __convertStringToUnderscored_helper($a) { return '_' . mb_strtolower(substr($a[0], -1, 1)); }
 
 // Converts "AbcDef" string to "abc-def"
 function convertStringToDashed ($s) {
-	return ltrim(preg_replace_callback('/(?:[A-Z]|(?:_)[a-z])/', '__convertStringToDashed_helper', $s), '-');
+	return ltrim(preg_replace_callback('/(?:[A-Z]|(?:_)[a-z])/'.REGEX_MOD, '__convertStringToDashed_helper', $s), '-');
 }
-function __convertStringToDashed_helper($a) { return '-' . strtolower(substr($a[0], -1, 1)); }
+function __convertStringToDashed_helper($a) { return '-' . mb_strtolower(substr($a[0], -1, 1)); }
 
 function _stripBadFileChars($fname) {
 	return str_replace(array('..' . DIRECTORY_SEPARATOR, DIRECTORY_SEPARATOR, chr(0)), '', $fname);
 }
-
-
-if (!is_callable('mb_substr')) {
-	// ffs!
-	function mb_substr() {
-		$a = func_get_args();
-		return call_user_func_array('substr', $a);
-	}
-	function mb_strpos() {
-		$a = func_get_args();
-		return call_user_func_array('strpos', $a);
-	}
-	function mb_strlen() {
-		$a = func_get_args();
-		return call_user_func_array('strlen', $a);
-	}
-}
-

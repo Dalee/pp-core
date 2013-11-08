@@ -13,12 +13,12 @@ function Label($str, $alwaysPrint=false) {
 
 	$timer = sprintf('% 4.2f', getMicroTime() - $start);
 
-	if(strlen($timer) < 7) {
-		$timer = str_repeat(' ', (7 - strlen($timer))).$timer;
+	if(mb_strlen($timer) < 7) {
+		$timer = str_repeat(' ', (7 - mb_strlen($timer))).$timer;
 	}
 
 	if(IS_WIN) {
-		$str = convert_cyr_string($str, 'k', 'd');
+		$str = myconv(DEFAULT_CHARSET, CHARSET_DOS, $str);
 	}
 
 	echo "\r".$timer."\t".$str."\n";
@@ -54,7 +54,7 @@ function WorkProgress($finish = FALSE, $total = 0, $step = 1, $showTimes = false
 	if ($finish) {
 		// clear string
 		echo "\r";
-		echo " \t".str_repeat(' ', min(strlen((string) $counter) + 6 + strlen((string) $lastTotal) + ($timer ? 50 : 0), 72));
+		echo " \t".str_repeat(' ', min(mb_strlen((string) $counter) + 6 + mb_strlen((string) $lastTotal) + ($timer ? 50 : 0), 72));
 
 		echo "\r";
 		$progress = $counter = $lastTotal = 0;

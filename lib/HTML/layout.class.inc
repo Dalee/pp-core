@@ -64,8 +64,8 @@ class PXUserHTMLLayout extends PXLayoutInterface  {
 
 		$request     = PXRegistry::getRequest();
 
-		$currentPage = $request->GetVar('page', $this->getVar('FP_' . strtoupper($param['format']) . '_DEFAULT_PAGE', 1));
-		$currentPage = (int)preg_replace('/[^0-9]+/', '', $currentPage);
+		$currentPage = $request->GetVar('page', $this->getVar('FP_' . mb_strtoupper($param['format']) . '_DEFAULT_PAGE', 1));
+		$currentPage = (int)preg_replace('/[^0-9]+/'.REGEX_MOD, '', $currentPage);
 		$currentPage = $currentPage > 0 ? $currentPage : 1;
 
 		if ($currentPage > $maxPage) {
@@ -84,8 +84,8 @@ class PXUserHTMLLayout extends PXLayoutInterface  {
 	}
 
 	function autopager($param, &$smarty) {
-		$total      = $this->getVar('FP_' . strtoupper($param['format']) . '_TOTAL');
-		$a_per_page = $this->getVar('FP_' . strtoupper($param['format']) . '_PER_PAGE');
+		$total      = $this->getVar('FP_' . mb_strtoupper($param['format']) . '_TOTAL');
+		$a_per_page = $this->getVar('FP_' . mb_strtoupper($param['format']) . '_PER_PAGE');
 
 		if (!isset($total) || !isset($a_per_page)) {
 			return '';
@@ -98,7 +98,7 @@ class PXUserHTMLLayout extends PXLayoutInterface  {
 		$total = sizeof($param['objects']);
 
 		/* Нужна ли постраничка? */
-		$p = strtoupper($param['format']).'_PER_PAGE';
+		$p = mb_strtoupper($param['format']).'_PER_PAGE';
 
 		$app = PXRegistry::getApp();
 		$a_per_page = $app->GetProperty($p, $total);

@@ -394,7 +394,7 @@ HTML;
 	}
 
 	function uploadFileFromWeb($url) {
-		if ($url && strlen($url) && preg_match('#^https?://#', $url) && is_writable($this->catalog)) {
+		if ($url && mb_strlen($url) && preg_match('#^https?://#', $url) && is_writable($this->catalog)) {
 			if($fp = @fopen($url, 'r')) {
 				$fileSource = '';
 
@@ -404,7 +404,7 @@ HTML;
 
 				fclose($fp);
 
-				if(strlen($fileSource)) {
+				if(mb_strlen($fileSource)) {
 					$filename = tempnam($this->catalog, 'file');
 
 					if($fp1 = @fopen($filename, 'w')) {
@@ -437,8 +437,8 @@ HTML;
 
 					if(isset($map[$fileAttr[2]])) {
 						$subname = str_replace($this->catalog, '', $filename);
-						if(strpos($subname, '.')) {
-							$subname = substr($subname, 0, strpos($subname, '.'));
+						if(mb_strpos($subname, '.')) {
+							$subname = mb_substr($subname, 0, mb_strpos($subname, '.'));
 							rename($filename, $this->catalog.$subname.".".$map[$fileAttr[2]]);
 							$filename = $this->catalog.$subname.".".$map[$fileAttr[2]];
 						} else {

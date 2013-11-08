@@ -140,7 +140,7 @@ class PXProfilerStruct {
 	function toString() {
 		$time    = sprintf('%8.4f', $this->time['delta']);
 		$level   = str_repeat("\t", $this->level + 1);
-		$text    = preg_replace('/[\n\t]/', ' ', $this->eventName);
+		$text    = preg_replace('/[\n\t]/'.REGEX_MOD, ' ', $this->eventName);
 		
 		return $time . $level . $text;
 	}

@@ -52,13 +52,13 @@ function TypoAll($text, $isHTML = true) {
 		*/
 
 		// комментарии
-		$text = preg_replace_callback('{<!--.*?-->}s', 'yyyTypo', $text);
+		$text = preg_replace_callback('{<!--.*?-->}s'.REGEX_MOD, 'yyyTypo', $text);
 
 		$PrivateTags = "title|script|style|pre|textarea";
-		$text = preg_replace_callback('{<\s*('.$PrivateTags.')[\s>].*?<\s*/\s*\1\s*>}is', 'yyyTypo', $text);
+		$text = preg_replace_callback('{<\s*('.$PrivateTags.')[\s>].*?<\s*/\s*\1\s*>}is'.REGEX_MOD, 'yyyTypo', $text);
 
 		// обычные теги
-		$text = preg_replace_callback('{<(?:[^\'"\>]+|".*?"|\'.*?\')+>}s','yyyTypo',$text);
+		$text = preg_replace_callback('{<(?:[^\'"\>]+|".*?"|\'.*?\')+>}s'.REGEX_MOD,'yyyTypo',$text);
 	}
 
 
@@ -75,12 +75,12 @@ function TypoAll($text, $isHTML = true) {
 			ещё одной кавычки
 	*/
 	$prequote = '\s\(\[\{";-';
-	$text = preg_replace('{^"}', LAQUO, $text);
-	$text = preg_replace('{(?<=['.$prequote.'])"}', LAQUO, $text);
+	$text = preg_replace('{^"}'.REGEX_MOD, LAQUO, $text);
+	$text = preg_replace('{(?<=['.$prequote.'])"}'.REGEX_MOD, LAQUO, $text);
 
 	// а это для тех, кто нарушает ВЕЛИКОЕ ПРАВИЛО
-	$text = preg_replace('{^((?:'.TAG1.'\d+'.TAG2.')+)"}', '\1'.LAQUO, $text);
-	$text = preg_replace('{(?<=['.$prequote.'])((?:'.TAG1.'\d+'.TAG2.')+)"}', '\1'.LAQUO, $text);
+	$text = preg_replace('{^((?:'.TAG1.'\d+'.TAG2.')+)"}'.REGEX_MOD, '\1'.LAQUO, $text);
+	$text = preg_replace('{(?<=['.$prequote.'])((?:'.TAG1.'\d+'.TAG2.')+)"}'.REGEX_MOD, '\1'.LAQUO, $text);
 
 	/*
 		Закрывающиеся кавычки - все остальные
@@ -90,35 +90,35 @@ function TypoAll($text, $isHTML = true) {
 
 	// исправляем ошибки в расстановке кавычек типа ""... и ...""
 	// (предполагаем, что не более двух-трёх кавык подряд)
-	$text = preg_replace('{'.LAQUO.RAQUO.'}', LAQUO.LAQUO, $text);
-	$text = preg_replace('{'.RAQUO.LAQUO.'}', RAQUO.RAQUO, $text);
+	$text = preg_replace('{'.LAQUO.RAQUO.'}'.REGEX_MOD, LAQUO.LAQUO, $text);
+	$text = preg_replace('{'.RAQUO.LAQUO.'}'.REGEX_MOD, RAQUO.RAQUO, $text);
 
 	//    вложенные кавыки
 	$i=0; // - это защита от зацикливания (оно возможно в случае неправильно расставленных кавычек)
-	while (($i++<10) && preg_match('{'.LAQUO.'(?:[^'.RAQUO.']*?)'.LAQUO.'}', $text))
-		$text = preg_replace('{'.LAQUO.'([^'.RAQUO.']*?)'.LAQUO.'(.*?)'.RAQUO.'}s', LAQUO.'\1'.LDQUO.'\2'.RDQUO, $text);
+	while (($i++<10) && preg_match('{'.LAQUO.'(?:[^'.RAQUO.']*?)'.LAQUO.'}'.REGEX_MOD, $text))
+		$text = preg_replace('{'.LAQUO.'([^'.RAQUO.']*?)'.LAQUO.'(.*?)'.RAQUO.'}s'.REGEX_MOD, LAQUO.'\1'.LDQUO.'\2'.RDQUO, $text);
 
 	$i=0;
-	while (($i++<10) && preg_match('{'.RAQUO.'(?:[^'.LAQUO.']*?)'.RAQUO.'}', $text))
-		$text = preg_replace('{'.RAQUO.'([^'.LAQUO.']*?)'.RAQUO.'}', RDQUO.'\1'.RAQUO, $text);
+	while (($i++<10) && preg_match('{'.RAQUO.'(?:[^'.LAQUO.']*?)'.RAQUO.'}'.REGEX_MOD, $text))
+		$text = preg_replace('{'.RAQUO.'([^'.LAQUO.']*?)'.RAQUO.'}'.REGEX_MOD, RDQUO.'\1'.RAQUO, $text);
 
 	// с кавычками закончили, займёмся мелкой типографикой
 	// тире:
-	$text = preg_replace('{^-+(?=\s)}',MDASH,$text);
-	$text = preg_replace('{(?<=[\s'.TAG2.'])-+(?=\s)}',MDASH,$text);
-	$text = str_replace(' '.MDASH,'&nbsp;'.MDASH,$text);
+	$text = preg_replace('{^-+(?=\s)}'.REGEX_MOD, MDASH, $text);
+	$text = preg_replace('{(?<=[\s'.TAG2.'])-+(?=\s)}'.REGEX_MOD, MDASH, $text);
+	$text = str_replace(' '.MDASH, '&nbsp;'.MDASH, $text);
 	// ndash:
-	$text = preg_replace('{(?<=\d)-(?=\d)}',NDASH,$text);
+	$text = preg_replace('{(?<=\d)-(?=\d)}'.REGEX_MOD, NDASH, $text);
 	// ...:
-	$text = str_replace('...',HELLIP,$text);
+	$text = str_replace('...', HELLIP, $text);
 	// апостроф:
-	$text = preg_replace('{(?<=\S)\'}',APOS,$text);
+	$text = preg_replace('{(?<=\S)\'}'.REGEX_MOD, APOS, $text);
 
 
 	if ($isHTML) {
 		// возвращаем взятое обратно
-		while (preg_match('{'.TAG1.'.+?'.TAG2.'}', $text))
-			$text = preg_replace_callback('{'.TAG1.'(.+?)'.TAG2.'}', 'zzzTypo', $text);
+		while (preg_match('{'.TAG1.'.+?'.TAG2.'}'.REGEX_MOD, $text))
+			$text = preg_replace_callback('{'.TAG1.'(.+?)'.TAG2.'}'.REGEX_MOD, 'zzzTypo', $text);
 	}
 
 	// заменяем коды символов на HTML-entities.

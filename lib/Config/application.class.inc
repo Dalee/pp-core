@@ -187,9 +187,9 @@ class PXApplication {
 		foreach (array_reverse($filenames) as $filename) {
 			$source = ReadFileToString($filename);
 
-			$source = preg_replace('|^((\s*)include\s+(.+?))$|ime', "__ReplaceIncludeWhenParseLangYaml('$1', '$2', '$3');", $source);   // делаем include
-			$source = preg_replace('/\t/',          ' ' ,         $source);   // я люблю табы для читабельности, но по стандарту ямла это должны быть пробелы
-			$source = preg_replace('/(\r?\n){2,}/', "\n",         $source);   // и лишние переводы строк. и хотя спик их не любит, по стандарту ямла это норма, если документ выделен в потоке в блок --- ...
+			$source = preg_replace('|^((\s*)include\s+(.+?))$|ime'.REGEX_MOD,	"__ReplaceIncludeWhenParseLangYaml('$1', '$2', '$3');", $source);   // делаем include
+			$source = preg_replace('/\t/'.REGEX_MOD,          ' ' ,         	$source);   // я люблю табы для читабельности, но по стандарту ямла это должны быть пробелы
+			$source = preg_replace('/(\r?\n){2,}/'.REGEX_MOD, "\n",         	$source);   // и лишние переводы строк. и хотя спик их не любит, по стандарту ямла это норма, если документ выделен в потоке в блок --- ...
 
 			// Spyc'у не нравятся мои конфиги, поэтому их стоит немного переделать
 			require_once PPPATH . 'vendor/spyc/spyc.php5';

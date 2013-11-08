@@ -33,6 +33,6 @@ HTML;
 			</span>
 HTML;
 
-		return preg_replace('/>\s+</', '><', $html);
+		return preg_replace('/>\s+</'.REGEX_MOD, '><', $html);
 	}
 }

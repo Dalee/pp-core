@@ -81,7 +81,7 @@ class NLAbstractHTMLForm {
 		}
 
 		$href .= $key.'='.$value.'&';
-		$href = substr($href, 0, -1);
+		$href = mb_substr($href, 0, -1);
 
 		return $href;
 	}

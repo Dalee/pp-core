@@ -101,7 +101,7 @@
 			unset($attrData['nocdn']);
 			foreach ($attrData as $key => $value) {
 				$key = convertStringToDashed($key);
-				$attrStrings[] = $key . '="' . htmlspecialchars($value) . '"';
+				$attrStrings[] = $key . '="' . htmlspecialchars($value, ENT_COMPAT|ENT_HTML401, DEFAULT_CHARSET) . '"';
 			}
 
 			return implode(' ', $attrStrings);

@@ -41,10 +41,10 @@ function con_colors_array() {
 
 	if (empty($colors)) {
 		foreach (get_defined_constants() as $k => $v) {
-			if (strpos($k, 'CON_COLOR_') === 0) {
-				$colors['fg:'.strtolower(substr($k, 10))] = $v;
-			} elseif (strpos($k, 'CON_BGCOLOR_') === 0) {
-				$colors['bg:'.strtolower(substr($k, 12))] = $v;
+			if (mb_strpos($k, 'CON_COLOR_') === 0) {
+				$colors['fg:'.mb_strtolower(mb_substr($k, 10))] = $v;
+			} elseif (mb_strpos($k, 'CON_BGCOLOR_') === 0) {
+				$colors['bg:'.mb_strtolower(mb_substr($k, 12))] = $v;
 			}
 		}
 		$colors['end'] = CON_EOC;
@@ -57,10 +57,10 @@ function con_colors_debug() {
 	$bgs = array();
 	$fgs = array();
 	foreach (get_defined_constants() as $k => $v) {
-		if (strpos($k, 'CON_COLOR_') === 0) {
-			$fgs[strtolower(substr($k, 10))] = $v;
-		} elseif (strpos($k, 'CON_BGCOLOR_') === 0) {
-			$bgs[strtolower(substr($k, 12))] = $v;
+		if (mb_strpos($k, 'CON_COLOR_') === 0) {
+			$fgs[mb_strtolower(mb_substr($k, 10))] = $v;
+		} elseif (mb_strpos($k, 'CON_BGCOLOR_') === 0) {
+			$bgs[mb_strtolower(mb_substr($k, 12))] = $v;
 		}
 	}
 
@@ -68,14 +68,14 @@ function con_colors_debug() {
 	echo str_repeat(' ', 12);
 	foreach ($fgs as $fg => $fgc) {
 		echo ($fg[0] == 'l' || $fg[0] == 'd')
-			? (strtoupper(substr($fg, 0, 2)) . $fg[2])
-			: ucfirst(substr($fg, 0, 3));
+			? (mb_strtoupper(mb_substr($fg, 0, 2)) . $fg[2])
+			: mb_ucfirst(mb_substr($fg, 0, 3));
 	}
 	echo PHP_EOL;
 
 	// colors table
 	foreach ($bgs as $bg => $bgc) {
-		echo str_pad(substr($bg, 0, 10), 10) . ': ';
+		echo mb_str_pad(mb_substr($bg, 0, 10), 10) . ': ';
 		foreach ($fgs as $fg => $fgc) {
 			echo $fgc . $bgc . ' aA';
 		}
@@ -123,7 +123,7 @@ function con_printf($message) {
 }
 
 function _con_dump($args) {
-	if (count($args) < 2 || strpos($args[0], '%') !== false) {
+	if (count($args) < 2 || mb_strpos($args[0], '%') !== false) {
 		return;
 	}
 	con_printf('{fg:dgray}<<<"dump"{end}{nl}');
@@ -180,11 +180,11 @@ function con_text($text) {
 }
 
 function con_head($title, $width = CON_COLS) {
-	echo con_message(str_pad(' ' . $title . ' ', $width, '=', STR_PAD_BOTH), CON_COLOR_LBLUE) . PHP_EOL;
+	echo con_message(mb_str_pad(' ' . $title . ' ', $width, '=', STR_PAD_BOTH), CON_COLOR_LBLUE) . PHP_EOL;
 }
 
 function con_subhead($title, $width = CON_COLS) {
-	echo con_message(str_pad(' ' . $title . ' ', $width, '-', STR_PAD_BOTH), CON_COLOR_LGRAY) . PHP_EOL;
+	echo con_message(mb_str_pad(' ' . $title . ' ', $width, '-', STR_PAD_BOTH), CON_COLOR_LGRAY) . PHP_EOL;
 }
 
 function con_table($caption, $data, $rows = null) {
@@ -264,7 +264,7 @@ function con_parse_args($argv = null, array $aliases = array()) {
 	if (!empty($argv) && ($script = BASEPATH.$argv[0])
 		&& file_exists($script)
 		&& is_executable($script)
-		&& strpos(realpath($script), BASEPATH) === 0) {
+		&& mb_strpos(realpath($script), BASEPATH) === 0) {
 		array_shift($argv);
 	}
 
@@ -324,13 +324,13 @@ function con_parse_args($argv = null, array $aliases = array()) {
 				array_unshift($argv, $arg);
 				break;
 			// oneletter option with value
-			case $isshortkey && strlen($arg) > 2 && $arg[2] == '=':
-				list ($k, $v) = explode('=', substr($arg, 1), 2);
+			case $isshortkey && mb_strlen($arg) > 2 && $arg[2] == '=':
+				list ($k, $v) = explode('=', mb_substr($arg, 1), 2);
 				$setoption($k, $v);
 				break;
 			// flags pack in one arg: -abcdef
-			case $isshortkey && strlen($arg) > 2:
-				for ($i=1, $l=strlen($arg); $i<$l; $i++) {
+			case $isshortkey && mb_strlen($arg) > 2:
+				for ($i=1, $l=mb_strlen($arg); $i<$l; $i++) {
 					$setflag($arg[$i]);
 				}
 				break;
@@ -339,13 +339,13 @@ function con_parse_args($argv = null, array $aliases = array()) {
 				$key = $arg[1];
 				break;
 			// long option with value
-			case $islongkey && strlen($arg) > 3 && strpos($arg, '='):
-				list ($k, $v) = explode('=', substr($arg, 2), 2);
+			case $islongkey && mb_strlen($arg) > 3 && mb_strpos($arg, '='):
+				list ($k, $v) = explode('=', mb_substr($arg, 2), 2);
 				$setoption($k, $v);
 				break;
 			// long param key
 			case $islongkey:
-				$key = substr($arg, 2);
+				$key = mb_substr($arg, 2);
 				break;
 		}
 	}

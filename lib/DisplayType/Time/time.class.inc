@@ -15,7 +15,7 @@ class PXDisplayTypeTime extends PXDisplayTypeTimestamp {
 	}
 
 	function buildCell($field, $object, $param=NULL) {
-		return substr($object[$field->name], 11);
+		return mb_substr($object[$field->name], 11);
 	}
 }
 ?>

@@ -7,13 +7,13 @@
  */
 class PXDisplayTypePassword extends PXDisplayType {
 	function buildInput($field, $object, $param=NULL) {
-		$value = isset($object[$field->name]) && strlen($object[$field->name]) ? $object[$field->name] : NULL;
+		$value = isset($object[$field->name]) && mb_strlen($object[$field->name]) ? $object[$field->name] : NULL;
 		return NLAbstractHTMLForm::BuildPassword($field->name, $value);
 	}
 
 	function buildCell($field, $object, $param=NULL) {
 		$ret = '';
-		if (strlen($object[$field->name]) > 0) {
+		if (mb_strlen($object[$field->name]) > 0) {
 			$obj = new PXDisplayTypeCheckbox($this->display, $this->name); /* E_STRICT remove */
 			$ret = $obj->buildCell($field, array($field->name => true), $param);
 		}
@@ -23,8 +23,8 @@ class PXDisplayTypePassword extends PXDisplayType {
 	function getFromRequest($field, $object, $param=NULL) {
 		$tmp = $param['request']->postData->_GetArrayVar($field->name);
 
-		$value = (isset($tmp['type']) && isset($tmp['retype']) && strlen($tmp['type']) && ($tmp['type'] === $tmp['retype'])) ? trim($tmp['type']) : null;
-		if(strlen($value) && !is_null($value)) {
+		$value = (isset($tmp['type']) && isset($tmp['retype']) && mb_strlen($tmp['type']) && ($tmp['type'] === $tmp['retype'])) ? trim($tmp['type']) : null;
+		if(mb_strlen($value) && !is_null($value)) {
 			$authmethodname = PXRegistry::getUser()->getPrimaryAuthMethod(empty($field->displayTypeArgs[0]) ? null : $field->displayTypeArgs[0]);
 			is_callable(array($authmethodname, 'passwdToDB')) or FatalError("Can't process password with {$authmethodname}::passwdToDB() !");
 			$value = call_user_func(array($authmethodname, 'passwdToDB'), $value);
@@ -38,7 +38,7 @@ class PXDisplayTypePassword extends PXDisplayType {
 	}
 
 	function preModifyObject($field, &$object, $param=NULL) {
-		if(!strlen($object[$field->name])) {
+		if(!mb_strlen($object[$field->name])) {
 			return true;
 		}
 

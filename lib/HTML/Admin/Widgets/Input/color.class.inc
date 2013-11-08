@@ -11,9 +11,9 @@ class PXInputColor extends PXAdminWidget {
 	function html() {
 		$name = $this->name;
 
-		$red   = hexdec(substr($this->value, 0, 2));
-		$green = hexdec(substr($this->value, 2, 2));
-		$blue  = hexdec(substr($this->value, 4, 2));
+		$red   = hexdec(mb_substr($this->value, 0, 2));
+		$green = hexdec(mb_substr($this->value, 2, 2));
+		$blue  = hexdec(mb_substr($this->value, 4, 2));
 
 		return <<<HTML
 			<div class="colorselect">

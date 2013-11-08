@@ -139,7 +139,7 @@ HTML;
 		$param = $this->request->getAllGetData();
 
 		foreach($param as $k => $v) {
-			$param[$k] = myconv('k', 'u', $param[$k]);
+			$param[$k] = myconv(DEFAULT_CHARSET, CHARSET_UTF8, $param[$k]);
 		}
 
 		$pager = new PXAdminPager($page, $onPage, $count, '',  $param);

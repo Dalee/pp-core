@@ -59,7 +59,7 @@ class PXFileListing {
 	}
 
 	function html() {
-		$up      = preg_replace('|[^/]+/$|', '', $this->_catalog);
+		$up      = preg_replace('|[^/]+/$|'.REGEX_MOD, '', $this->_catalog);
 
 		$canBrowse = $this->_isValid($this->_catalog);
 		$canUp     = $this->_isValid($up);
@@ -143,7 +143,7 @@ class PXFileListing {
 		}
 		
 		foreach($this->_roots as $root) {
-			if(strpos($this->_getRealPath($catalog), $this->_getRealPath($root)) === 0 && strlen($root) <= strlen($catalog)) {
+			if(mb_strpos($this->_getRealPath($catalog), $this->_getRealPath($root)) === 0 && mb_strlen($root) <= mb_strlen($catalog)) {
 				return true;
 			}
 		}
@@ -156,14 +156,14 @@ class PXFileListing {
 		$tmp = str_replace('//', '||', $tmp);
 		$tmp = str_replace('\\', '/', $tmp);
 		$tmp .= '/';
-		$tmp = preg_replace('|/{2,}|', '/', $tmp);
+		$tmp = preg_replace('|/{2,}|'.REGEX_MOD, '/', $tmp);
 		$tmp = str_replace('||', '\\\\', $tmp);
 
 		return $tmp;
 	}
 
 	function _isSmbShare($path) {
-		return strpos($path, '\\\\') === 0;
+		return mb_strpos($path, '\\\\') === 0;
 	}
 
 	function _fullPath($catalog) {
@@ -229,8 +229,8 @@ class PXFileListingItem {
 	}
 
 	function _Type() {
-		preg_match('|[^/.\\\\]+$|', $this->name, $tmp);
-		$this->type = isset($tmp[0]) ? strtolower($tmp[0]) : '';
+		preg_match('|[^/.\\\\]+$|'.REGEX_MOD, $this->name, $tmp);
+		$this->type = isset($tmp[0]) ? mb_strtolower($tmp[0]) : '';
 	}
 
 	function _Size() {
@@ -259,7 +259,7 @@ class PXFileListingItem {
 
 		$htdocsPrefix = null;
 		foreach(array('site', 'local', 'libpp') as $prefix) {
-			if(strpos($this->catalog, $prefix.'/htdocs') === 0) {
+			if(mb_strpos($this->catalog, $prefix.'/htdocs') === 0) {
 				$htdocsPrefix = $prefix.'/htdocs';
 				break;
 			}

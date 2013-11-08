@@ -59,7 +59,7 @@ abstract class PXmlAbstract implements IPXml {
 				$xmlObject = $testingObject;
 				break;
 
-			case is_callable($fileLoader) && (file_exists($testingObject) || strlen(getFromArray(parse_url($testingObject), 'scheme'))):
+			case is_callable($fileLoader) && (file_exists($testingObject) || mb_strlen(getFromArray(parse_url($testingObject), 'scheme'))):
 				$xmlObject = @$fileLoader($testingObject);
 				break;
 
@@ -98,7 +98,7 @@ abstract class PXmlAbstractNode implements IPXmlNode {
 		if(isset($this->_xml) && is_a($this->_xml, 'PXmlAbstract')){
 			return;
 		}
-		$klass      = substr(get_class($this), 0, -4);
+		$klass      = mb_substr(get_class($this), 0, -4);
 		$this->_xml = new $klass($this->_node);
 	}
 	

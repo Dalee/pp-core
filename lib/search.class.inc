@@ -8,7 +8,7 @@ function SortByRelevant($a, $b) {
 }
 
 function _yo2ye($s) {
-	return strtr($s, "£³", "Åå");
+	return mb_strtr($s, "£³", "Åå");
 }
 
 class PXSearch {
@@ -78,7 +78,7 @@ class PXSearch {
 	}
 
 	function loadStopwords($s) {
-		preg_match_all("/\w+/s", $s, $m);
+		preg_match_all("/\w+/s".REGEX_MOD, $s, $m);
 		$this->stopwords = array();
 		foreach ($m[0] as $v) {
 			$this->stopwords[$v] = true;
@@ -109,7 +109,7 @@ class PXSearch {
 	}
 
 	function getStemByWord($word) {
-		if (strlen($word) <= 2 || strlen($word) > 30) {
+		if (mb_strlen($word) <= 2 || mb_strlen($word) > 30) {
 			return NULL;
 		}
 
@@ -154,11 +154,11 @@ class PXSearch {
 	}
 
 	function strip($s) {
-		$s = preg_replace("/<SCRIPT.*?\\/SCRIPT>/is", '', $s); //
-		$s = preg_replace("/<.*?>/s", ' ', $s);
-		$s = preg_replace("/&nbsp;/is", ' ', $s);
-		$s = html_entity_decode($s, ENT_QUOTES); // FIXME: 'KOI8-R' ?
-		$s = preg_replace("/&.*?;/s", ' ', $s);
+		$s = preg_replace("/<SCRIPT.*?\\/SCRIPT>/is".REGEX_MOD, '', $s); //
+		$s = preg_replace("/<.*?>/s".REGEX_MOD, ' ', $s);
+		$s = preg_replace("/&nbsp;/is".REGEX_MOD, ' ', $s);
+		$s = html_entity_decode($s, ENT_QUOTES, DEFAULT_CHARSET);
+		$s = preg_replace("/&.*?;/s".REGEX_MOD, ' ', $s);
 		return $s;
 	}
 
@@ -255,8 +255,8 @@ SQL;
 
 	private
 	function _getStemsArray($query) {
-		$query = preg_replace("/&(#\d+|[a-z]+);/s", '', $query);
-		preg_match_all("/\w+/s", _StrToLower(_yo2ye($query)), $tmp);
+		$query = preg_replace("/&(#\d+|[a-z]+);/s".REGEX_MOD, '', $query);
+		preg_match_all("/\w+/s".REGEX_MOD, _StrToLower(_yo2ye($query)), $tmp);
 		return array_unique($this->getStemsByArray(array_unique($tmp[0])));
 	}
 

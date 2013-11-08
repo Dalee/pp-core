@@ -117,13 +117,34 @@ define('SYSTEM_USER', $system_user);
 error_reporting(E_ALL);
 define('DEBUG', true);
 
+// charset based defines
+define('CHARSET_KOI8R',              'koi8-r');
+define('CHARSET_WINDOWS',            'windows-1251');
+define('CHARSET_ISO',                'iso-8859-5');
+define('CHARSET_LATIN1',             'iso-8859-1');
+define('CHARSET_ANSI',               'cp866');
+define('CHARSET_DOS',                CHARSET_ANSI);
+define('CHARSET_MAC',                'mac-cyrillic');
+define('CHARSET_UTF8',               'utf-8');
+define('CHARSET_UCS2BE',             'ucs-2be');
+define('CHARSET_UTF16BE',            'utf-16be');
 
-// Выставляем правильно локаль в koi8 (в PP2 перейдем на UTF, да?)
-$tmp = setlocale(LC_ALL, array('Russian_Russia.20866', 'ru_RU.KOI8-R', 'KOI8-R'));
-if ($tmp === false) {
-	// TODO: fire error or warning
+// current default proxima charset
+define('DEFAULT_CHARSET',            CHARSET_KOI8R);
+define('DEFAULT_LOCALE',             json_encode(array('Russian_Russia.20866', 'ru_RU.KOI8-R', 'KOI8-R')));
+define('REGEX_MOD', 				 '');
+//define('DEFAULT_CHARSET',            CHARSET_UTF8);
+//define('DEFAULT_LOCALE',             json_encode(array('Russian_Russia.UTF-8', 'ru_RU.UTF-8', 'UTF-8')));
+//define('REGEX_MOD', 				   'u'); // UTF-8 mod for regexp
+
+if (setlocale(LC_ALL, json_decode(DEFAULT_LOCALE)) === false) {
+	FatalError(sprintf('Unable to set setlocale: %s', DEFAULT_LOCALE));
 }
-unset($tmp);
+if (function_exists('mb_internal_encoding')) {
+	if (mb_internal_encoding(DEFAULT_CHARSET) === false) {
+		FatalError(sprintf('Unable to internal encoding to: %s', DEFAULT_CHARSET));
+	}
+}
 
 // разрешенные форматы изображений
 define('ENUM_ALLOWED_IMAGETYPES', serialize(array(
@@ -158,8 +179,6 @@ define('PP_CHILDREN_FETCH_NONE',     3);
 define('PP_CHILDREN_FETCH_PAGED',    4); 
 
 define('DEFAULT_CHILDREN_PER_PAGE',  20);
-
-define('DEFAULT_CHARSET',            'koi8-r');
 
 define('P_LEFT',  1);
 define('P_RIGHT', 2);

@@ -69,7 +69,7 @@ function pp_fetch_file($where, $what, $postfix = '', $ext = '.inc') {
 		}
 		foreach ($what as $file) {
 			foreach ($postfix as $p) {
-				if (substr($file, -4) != $p . $ext) {
+				if (mb_substr($file, -4) != $p . $ext) {
 					$filenames = array(
 						$path . $file . $p . $ext,
 						$path . $file

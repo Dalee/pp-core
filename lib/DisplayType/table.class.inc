@@ -24,9 +24,13 @@ class PXDisplayTypeTable extends PXDisplayType {
 		$value  = isset($object[$field->name]) ? htmlspecialcharsArray($object[$field->name]) : array();
 
 		$html = '';
-		for ($i = 0, $l = count($value); $i < $l && strlen($html) < 30; $i++) {
-			!empty($html) && $html .= '; ';
-			$html .= join(', ', (array)$value[$i]);
+		$html_len = 0;
+
+		for ($i = 0, $l = count($value); $i < $l && $html_len < 30; $i++) {
+			$html .= (! empty($html)) ? '; ' : '';
+			$html .= join(', ', (array) $value[$i]);
+
+			$html_len = mb_strlen($html);
 		}
 		($i < $l) && $html .= '; ...';
 

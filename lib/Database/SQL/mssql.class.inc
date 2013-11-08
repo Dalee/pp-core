@@ -13,7 +13,7 @@ class NLMSSQLDatabase extends NLAbstractSQLDatabase {
 		$this->setConnectParams($dbDescription);
 		
 		$this->connected       = false;
-		$this->servercoding    = (isset($_SERVER['SERVER_PORT']) ? 'w' : 'd');
+		$this->servercoding    = (isset($_SERVER['SERVER_PORT']) ? CHARSET_WINDOWS : CHARSET_DOS);
 	}
 
 	function Connect() {
@@ -50,7 +50,7 @@ class NLMSSQLDatabase extends NLAbstractSQLDatabase {
 	}
 
 	function Query($query, $donotusecache = false, $limitpair = NULL, $xxxx=false) {
-		$query = convert_cyr_string($query, 'k', $this->servercoding);
+		$query = myconv(DEFAULT_CHARSET, $this->servercoding, $query);
 
 		PXProfiler::begin('SQL: '.$query);
 
@@ -94,7 +94,7 @@ class NLMSSQLDatabase extends NLAbstractSQLDatabase {
 						if (is_string($v)) {
 							if ($v === " ") $v = ''; // FIXME: Fix bug #26315 http://bugs.php.net/bug.php?id=26315
 							// may be change to fetch_array
-							$tmp[$k] = convert_cyr_string($v, $this->servercoding, 'k');
+							$tmp[$k] = myconv($this->servercoding, DEFAULT_CHARSET, $v);
 						}
 					}
 
@@ -120,7 +120,7 @@ class NLMSSQLDatabase extends NLAbstractSQLDatabase {
 		}
 
 		if ($this->connected) {
-			$query = convert_cyr_string($query, 'k', $this->servercoding);
+			$query = myconv(DEFAULT_CHARSET, $this->servercoding, $query);
 			ini_set('track_errors', 1);
 
 			if (($res = mssql_query($query, $this->connection)) === false) {
@@ -231,7 +231,7 @@ class NLMSSQLDatabase extends NLAbstractSQLDatabase {
 					$query .= "{$c} != '{$v}' AND ";
 				}
 			}
-			$query = substr($query, 0, -4);
+			$query = mb_substr($query, 0, -4);
 			$query .= ")";
 		}
 		$query .= ")";
@@ -256,7 +256,7 @@ class NLMSSQLDatabase extends NLAbstractSQLDatabase {
 
 	function importDateTime($string) {
 		$m = array();
-		preg_match("/^(\d+)-(\d+)-(\d+) (\d+):(\d+):(\d+)/", $string, $m);
+		preg_match("/^(\d+)-(\d+)-(\d+) (\d+):(\d+):(\d+)/".REGEX_MOD, $string, $m);
 
 		if(sizeof($m) == 7) {
 			return "{$m[3]}.{$m[2]}.{$m[1]} {$m[4]}:{$m[5]}:{$m[6]}";
@@ -272,7 +272,7 @@ class NLMSSQLDatabase extends NLAbstractSQLDatabase {
 
 	function exportDateTime($string) {
 		$m = array();
-		preg_match("/^(\d+)\.(\d+)\.(\d+) (\d+):(\d+):(\d+)/", $string, $m);
+		preg_match("/^(\d+)\.(\d+)\.(\d+) (\d+):(\d+):(\d+)/".REGEX_MOD, $string, $m);
 
 		if(sizeof($m) == 7) {
 			return "{$m[1]}-{$m[2]}-{$m[3]} {$m[4]}:{$m[5]}:{$m[6]}";

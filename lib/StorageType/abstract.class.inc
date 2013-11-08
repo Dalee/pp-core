@@ -218,13 +218,13 @@ class PXStorageType {
 	function getClassByName($name) {
 		$baseClass = 'PXStorageType';
 
-		$inputClass  = $baseClass.ucfirst(strtolower($name));
+		$inputClass  = $baseClass.mb_ucfirst(mb_strtolower($name));
 		return class_exists($inputClass) ? $inputClass : $baseClass;
 	}
 
 	static public
 	function parseConfig($attrNode, $fieldNode) {
-		$name = preg_replace('/\|.+$/', '', $attrNode->value);
+		$name = preg_replace('/\|.+$/'.REGEX_MOD, '', $attrNode->value);
 
 		$cls = self::getClassByName($name);
 		$args = call_user_func(array($cls, 'parseConfigArguments'), $attrNode, $fieldNode);

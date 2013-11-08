@@ -3,7 +3,7 @@ class PXModuleRSSEngine extends PXModule {
 	function __construct($area, $settings) {
 		parent::__construct($area, $settings);
 
-		$this->encoding = 'utf-8';
+		$this->encoding = CHARSET_UTF8;
 	}
 
 	function _GetChannel() {
@@ -30,7 +30,7 @@ class PXModuleRSSEngine extends PXModule {
 		$trans_tbl['&hellip;'] = "&#8230;";
 
 		foreach($trans_tbl as $k=>$v) {
-			$trans_tbl[$k] = myconv('w', 'u', $v);
+			$trans_tbl[$k] = myconv(CHARSET_WINDOWS, CHARSET_UTF8, $v);
 		}
 
 		$string = strtr($string, $trans_tbl);
@@ -70,7 +70,7 @@ class PXModuleRSSEngine extends PXModule {
 		$xml = preg_replace("/<a(.*?)href=\"\//i",  '<a$1href="'.$channel['link'].'/',  $xml);
 		$xml = preg_replace("/<img(.*?)src=\"\//i", '<img$1src="'.$channel['link'].'/', $xml);
 
-		$xml = myconv('k', $this->encoding{0}, $xml);
+		$xml = myconv(DEFAULT_CHARSET, $this->encoding, $xml);
 		$xml = $this->unhtmlentities($xml);
 
 		$response = PXResponse::getInstance();

@@ -12,8 +12,8 @@ class PXAdminAuditTable extends PXAdminTableSimple {
 
 	function cell($row, $col) {
 		if($col == 'source') {
-			if (strpos($row[$col], '/')) {
-				preg_match('|(\w+)/?(\d+)?|', $row[$col], $matches);
+			if (mb_strpos($row[$col], '/')) {
+				preg_match('|(\w+)/?(\d+)?|'.REGEX_MOD, $row[$col], $matches);
 
 				if(sizeof($matches) == 3) {
 					$row[$col] = $this->__link('popup.phtml?area=objects&format='.$matches[1].'&id='.$matches[2].'&action=main', $this->_getDatatypeTitle($matches[1]).'/'.$matches[2]);
@@ -22,7 +22,7 @@ class PXAdminAuditTable extends PXAdminTableSimple {
 					$row[$col] = $this->__link('?area=dicts&sid='.$matches[1], $this->_getDatatypeTitle($matches[1]));
 				}
 
-			} elseif(strlen($row[$col])) {
+			} elseif(mb_strlen($row[$col])) {
 				$row[$col] = $this->__link('?area=dicts&sid='.$row[$col], $this->_getDatatypeTitle($row[$col]));
 			}
 		}

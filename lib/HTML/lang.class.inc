@@ -198,23 +198,18 @@ class PXUserHTMLLang {
 
 	function _reconv($value, $encoding) {
 		if ($encoding == 'utf8') {
-			$this->charset = 'u';
+			$this->charset = CHARSET_UTF8;
 		}
-		array_walk_recursive($value, array($this, '_myconv'));
-		return $value;
-	}
-
-	function _myconv(&$v) {
-		$v = myconv('k', $this->charset, $v);
+		return convertCyrillicObjectToUtf($value);
 	}
 
 	function parseDateToTime($string) {
-		if(strlen($string)) {
-			if(strlen($string) == 10 && is_numeric($string)) {
+		if(mb_strlen($string)) {
+			if(mb_strlen($string) == 10 && is_numeric($string)) {
 				return $string;
 			}
 
-			preg_match("/^(\d{2})\.(\d{2})\.(\d{4})\s+(\d{2}):(\d{2}):(\d{2})(\.\d+)?$/si", trim($string), $date);
+			preg_match("/^(\d{2})\.(\d{2})\.(\d{4})\s+(\d{2}):(\d{2}):(\d{2})(\.\d+)?$/si".REGEX_MOD, trim($string), $date);
 			return mktime($date[4], $date[5], $date[6], $date[2], $date[1], $date[3]);
 
 		} else {

@@ -110,7 +110,7 @@ class PXFieldDescription {
 				$value = utf8_decode($value);
 				$value = trim($value);
 
-				$this->defaultValue .= preg_replace('/^\t+/m', '', $value);
+				$this->defaultValue .= preg_replace('/^\t+/m'.REGEX_MOD, '', $value);
 			}
 		}
 	}

@@ -31,7 +31,7 @@
 					{assign var=class value='0001'}
 				{/if}
 	
-				<tr{if $class|@strlen} class="long{$class}"{/if} title="level {$call->level} &#8212; {$call->eventName|escape}">
+				<tr{if $class|@mb_strlen} class="long{$class}"{/if} title="level {$call->level} &#8212; {$call->eventName|escape}">
 					{if $call->memory.start}
 						<td>{$call->memory.start|number_format:2:",":" "}</td>
 						<td>{$call->memory.delta|number_format:2:",":" "}</td>

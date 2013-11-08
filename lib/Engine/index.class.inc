@@ -63,6 +63,7 @@ class PXEngineIndex extends PXEngine {
 		$this->layout->assign('requestUri',     PXRegistry::getRequest()->getRequestUri());
 		$this->layout->assign('requestReferer', PXRegistry::getRequest()->getHttpReferer());
 		$this->layout->assign('requestPath',    PXRegistry::getRequest()->getPathAsString());
+		$this->layout->assign('REGEX_MOD',      REGEX_MOD);
 	}
 
 	function html() {

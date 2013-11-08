@@ -213,7 +213,7 @@ class PXAdminForm extends PXAdminComplexWidget {
 			$v = current($group);
 			unset($v['id']);
 
-			$viewKlass = sprintf('PXWidgetFieldGroups%sView', ucfirst(strtolower($view = (empty($this->format->groups[$k]['view']) ? $defaultView : $this->format->groups[$k]['view']))));
+			$viewKlass = sprintf('PXWidgetFieldGroups%sView', ucfirst(mb_strtolower($view = (empty($this->format->groups[$k]['view']) ? $defaultView : $this->format->groups[$k]['view']))));
 			if(!class_exists($viewKlass)){
 				FatalError("Unknown group view '{$view}' (undefined widget class '{$viewKlass}') in datatype '{$this->format->id}'");
 			}
@@ -223,8 +223,8 @@ class PXAdminForm extends PXAdminComplexWidget {
 
 		if (isset($this->object['sys_created']) || isset($this->object['sys_modified']) || isset($this->object['ownerlogin'])) {
 			$html[] = '<dl class="sysinfo">';
-			$html[] = isset($this->object['sys_created'])  ? '<dt>Создан:  </dt><dd>'.substr($this->object['sys_created'],  0, 19).'</dd>' : '';
-			$html[] = isset($this->object['sys_modified']) ? '<dt>Изменен: </dt><dd>'.substr($this->object['sys_modified'], 0, 19).'</dd>' : '';
+			$html[] = isset($this->object['sys_created'])  ? '<dt>Создан:  </dt><dd>'.mb_substr($this->object['sys_created'],  0, 19).'</dd>' : '';
+			$html[] = isset($this->object['sys_modified']) ? '<dt>Изменен: </dt><dd>'.mb_substr($this->object['sys_modified'], 0, 19).'</dd>' : '';
 			$html[] = isset($this->object['ownerlogin'])   ? '<dt>Владелец:</dt><dd>'.$this->object['ownerlogin'].'</dd>'                  : '';
 			$html[] = '</dl>';
 		}
@@ -331,7 +331,7 @@ HTML;
 				$html .= NLAbstractHTMLForm::BuildHidden($reference->name.'['.$iteration.']['.$v['id'].'][id]', $v['id']);
 				$html .= NLAbstractHTMLForm::BuildCheckBox($reference->name.'['.$iteration.']['.$v['id'].'][on]', $linksIsset, NULL, $reference->name.'-'.$iteration.'-'.$v['id']);
  
-				$menuTitle = (strlen($v['title']) > 10) ? trim(substr($v['title'], 0, 10)).'&hellip;' : $v['title'];
+				$menuTitle = (mb_strlen($v['title']) > 10) ? trim(mb_substr($v['title'], 0, 10)).'&hellip;' : $v['title'];
 				$context = 'Context(event, \'edit\', '.$v['id'].', '.(int)($v['status']).', \''.$formatTo->id.'\',  \''.$menuTitle.'\', \'\', 1, 0, 0); return false;';
 				$html .= '<a oncontextMenu="'.$context.'" href="javascript:EditContent(\''.$formatTo->id.'\', \''.$v['id'].'\')">';
 				$html .= '<img src="i/icon/edit.gif" alt="Изменить &laquo;'.$v['id'].'&raquo;"></a>';

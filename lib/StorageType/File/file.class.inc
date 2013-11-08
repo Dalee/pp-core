@@ -25,7 +25,7 @@ class PXStorageTypeFile extends PXStorageTypeAbstractFile {
 					$allowed = $param['allowed'];
 
 					$tmp = _TranslitFilename($fileArray['name']);
-					$tmp = preg_replace('/\.\w+$/', '', $tmp);
+					$tmp = preg_replace('/\.\w+$/'.REGEX_MOD, '', $tmp);
 
 					if(in_array($fileArray['type'], array_keys($allowed))) {
 						$filename = $tmp.'.'.$allowed[$fileArray['type']];

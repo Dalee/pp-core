@@ -158,7 +158,7 @@ final class PXHTMLAssets {
 
 		// because of bug in php 5.4.6 and above we must strip host manually
 		// todo: this can be bug with user:pass values. but i think we don't need it here
-		if (!preg_match('#^(?:(?P<scheme>https?:)?//(?P<host>[^/]+))?(?P<relative>/.+?)$#', ltrim($url), $murl)) {
+		if (!preg_match('#^(?:(?P<scheme>https?:)?//(?P<host>[^/]+))?(?P<relative>/.+?)$#'.REGEX_MOD, ltrim($url), $murl)) {
 			return null;
 		}
 
@@ -295,7 +295,7 @@ final class PXHTMLAssets {
 				case 'unique':
 					break;
 				default:
-					$extra_params[] = sprintf('%s="%s"', convertStringToDashed($param), htmlspecialchars($value));
+					$extra_params[] = sprintf('%s="%s"', convertStringToDashed($param), htmlspecialchars($value, ENT_COMPAT|ENT_HTML401, DEFAULT_CHARSET));
 			}
 		}
 

@@ -176,11 +176,11 @@ class PXDisplayType {
 			$temp = isset($dirObject[$directory->displayField]) ? $dirObject[$directory->displayField] : '';
 		}
 
-		return strlen($temp) ? $temp : $value;
+		return mb_strlen($temp) ? $temp : $value;
 	}
 
 	static protected
-	function parseConfigArguments($attrNode, $fieldNode) {
+	function parseConfigArguments($attrNode, $fieldNode) {;
 		$args = explode("|", utf8_decode($attrNode->value));
 		$name = $args[0];
 
@@ -194,13 +194,13 @@ class PXDisplayType {
 		$baseClass = 'PXDisplayType';
 
 		$autoload = $type->app->engine->engineClass() != PX_ENGINE_USER;
-		$inputClass  = $baseClass.ucfirst(strtolower($name));
+		$inputClass  = $baseClass.mb_ucfirst(mb_strtolower($name));
 		return class_exists($inputClass, $autoload) ? $inputClass : $baseClass;
 	}
 
 	static public
 	function parseConfig($attrNode, $fieldNode, $type) {
-		$name = preg_replace('/\|.+$/', '', $attrNode->value);
+		$name = preg_replace('/\|.+$/'.REGEX_MOD, '', $attrNode->value);
 
 		$cls = self::getClassByName($name, $type);
 		$args = call_user_func(array($cls, 'parseConfigArguments'), $attrNode, $fieldNode);

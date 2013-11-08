@@ -43,8 +43,8 @@ function parseFloat ($s) {
 		return floatval($s);
 	}
 
-	$s = preg_replace('/[,.]/', '.', strval($s));
-	$s = preg_replace('/[^.0-9-]/', ' ', $s);
+	$s = preg_replace('/[,.]/'.REGEX_MOD, '.', strval($s));
+	$s = preg_replace('/[^.0-9-]/'.REGEX_MOD, ' ', $s);
 
 	return floatval($s);
 }
