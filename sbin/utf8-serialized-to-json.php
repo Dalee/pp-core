@@ -210,6 +210,11 @@
 				$attrs = $nodeAttribute->attributes();
 				$this->attributes[] = new DatatypeAttribute($attrs);
 			}
+			$nodeList = $node->xpath('group/attribute');
+			foreach ($nodeList as $_ => $nodeAttribute) {
+				$attrs = $nodeAttribute->attributes();
+				$this->attributes[] = new DatatypeAttribute($attrs);
+			}
 		}
 
 		public function getName() {

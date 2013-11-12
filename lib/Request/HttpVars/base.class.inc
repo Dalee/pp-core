@@ -25,7 +25,7 @@ class NLHTTPVarsData {
 				break;
 
 			case 'йцукен':
-				return CHARSET_DEFAULT;
+				return DEFAULT_CHARSET;
 				break;
 
 			// FIXME: in case of UTF-8, this line is dead line (double check before kill it)

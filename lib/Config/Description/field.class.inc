@@ -39,7 +39,7 @@ class PXFieldDescription {
 						break;
 
 					case 'description':
-						$this->description = utf8_decode($value);
+						$this->description = pp_simplexml_decode_string($value);
 						break;
 
 					case 'storagetype':
@@ -55,12 +55,12 @@ class PXFieldDescription {
 						break;
 
 					case 'listed':
-						$listed = strtoupper($value);
+						$listed = mb_strtoupper($value);
 						$this->listed = $listed == 'TRUE';
 						break;
 
 					case 'defaultvalue':
-						$this->defaultValue = utf8_decode($value);
+						$this->defaultValue = pp_simplexml_decode_string($value);
 						break;
 
 					case 'source':
@@ -70,7 +70,7 @@ class PXFieldDescription {
 						break;
 
 					case 'noindex': 
-						$noindex = strtoupper($value); 
+						$noindex = mb_strtoupper($value); 
 						$this->noindex = $noindex == 'TRUE';
 						break;
 
@@ -87,7 +87,7 @@ class PXFieldDescription {
 
 		if(sizeof($groups) > 0) {
 			$groupName = $groups[0]->attributes();
-			$this->groupName = utf8_decode($groupName[0]->value);
+			$this->groupName = pp_simplexml_decode_string($groupName[0]->value);
 		}
 	}
 
@@ -96,7 +96,7 @@ class PXFieldDescription {
 
 		if(sizeof($commentsNode) > 0) {
 			foreach($commentsNode as $comment) {
-				$this->comments .= utf8_decode($comment->nodeValue());
+				$this->comments .= pp_simplexml_decode_string($comment->nodeValue());
 			}
 		}
 	}
@@ -107,7 +107,7 @@ class PXFieldDescription {
 		if(sizeof($defaultValueNode) > 0) {
 			foreach($defaultValueNode as $value) {
 				$value = $value->nodeValue();
-				$value = utf8_decode($value);
+				$value = pp_simplexml_decode_string($value);
 				$value = trim($value);
 
 				$this->defaultValue .= preg_replace('/^\t+/m'.REGEX_MOD, '', $value);

@@ -1,5 +1,23 @@
 <?php
 
+//
+function pp_simplexml_decode_string($value) {
+	// hack-hack
+	if (DEFAULT_CHARSET !== CHARSET_UTF8) {
+		return utf8_decode($value);
+	}
+	$value = strval($value);
+	return myconv(CHARSET_UTF8, DEFAULT_CHARSET, $value);
+}
+
+function pp_simplexml_encode_string($value) {
+	if (DEFAULT_CHARSET !== CHARSET_UTF8) {
+		return utf8_encode($value);
+	}
+	$value = strval($value);
+	return myconv(DEFAULT_CHARSET, CHARSET_UTF8, $value);
+}
+
 // no function, but strtr is most cases are utf-8 safe
 if (! function_exists('mb_strtr')) {
 	function mb_strtr($string, $from, $to = null) {

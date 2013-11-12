@@ -3,27 +3,51 @@
 Константы для удобства. Коды соответствуют символам в win-кодировке, но это
 "совпадение":) - на самом деле, скрипт кросскодировочный (win и koi).
 */
+if ((DEFAULT_CHARSET === CHARSET_KOI8R) || (DEFAULT_CHARSET === CHARSET_WINDOWS)) {
+	define("TAG1",   "\xAC");
+	define("TAG2",   "\xAD");
+	define("LAQUO",  "\xAB");
+	define("RAQUO",  "\xBB");
 
-define("TAG1",   "\xAC");
-define("TAG2",   "\xAD");
-define("LAQUO",  "\xAB");
-define("RAQUO",  "\xBB");
+	define("LDQUO",  "\x84");
+	define("RDQUO",  "\x93");
 
-define("LDQUO",  "\x84");
-define("RDQUO",  "\x93");
+	define("LDQUO1",  "\x91");
+	define("RDQUO1",  "\x92");
 
-define("LDQUO1",  "\x91");
-define("RDQUO1",  "\x92");
+	define("RDQUO2", "\x94");
+	define("MDASH",  "\x97");
+	define("NDASH",  "\x96");
+	define("APOS",   "\xB4");
+	define("HELLIP", "\x85");
+	define("NUMBER", "\x98");
+	define("TM",     "\x99");
+	define("REG",    "\xAE");
+	define("BULL",   "\x95");
+}
 
-define("RDQUO2", "\x94");
-define("MDASH",  "\x97");
-define("NDASH",  "\x96");
-define("APOS",   "\xB4");
-define("HELLIP", "\x85");
-define("NUMBER", "\x98");
-define("TM",     "\x99");
-define("REG",    "\xAE");
-define("BULL",   "\x95");
+if (DEFAULT_CHARSET === CHARSET_UTF8) {
+	define("TAG1",   "\xC2\xAC"); // NOT SIGN
+	define("TAG2",   "\xC2\xAD"); // SOFT HYPHEN
+	define("LAQUO",  "\xC2\xAB"); // LEFT-POINTING DOUBLE ANGLE QUOTATION MARK
+	define("RAQUO",  "\xC2\xBB"); // RIGHT-POINTING DOUBLE ANGLE QUOTATION MARK
+
+	define("LDQUO",  "\xE2\x80\x9E"); // DOUBLE LOW-9 QUOTATION MARK
+	define("RDQUO",  "\xE2\x80\x9C"); // RIGHT DOUBLE QUOTATION MARK
+
+	define("LDQUO1", "\xE2\x80\x98"); // SINGLE TURNED COMMA QUOTATION MARK
+	define("RDQUO1", "\xE2\x80\x99"); // RIGHT SINGLE QUOTATION MARK
+
+	define("RDQUO2", "\xE2\x80\x9C"); // LEFT DOUBLE QUOTATION MARK
+	define("MDASH",  "\xE2\x80\x94"); // EM DASH
+	define("NDASH",  "\xE2\x80\x93"); // EN DASH
+	define("APOS",   "\xD2\x91");     // CYRILLIC SMALL LETTER GHE WITH UPTURN
+	define("HELLIP", "\xE2\x80\xA6"); // HORIZONTAL ELLIPSIS
+	define("NUMBER", "\xE2\x84\x96"); // NUMERO SIGN
+	define("TM",     "\xE2\x84\xA2"); // TRADE MARK SIGN
+	define("REG",    "\xC2\xAE");     // REGISTERED SIGN
+	define("BULL",   "\xE2\x80\xA2"); // BULLET
+}
 
 // функция-заменялка для тегов
 
@@ -122,11 +146,13 @@ function TypoAll($text, $isHTML = true) {
 	}
 
 	// заменяем коды символов на HTML-entities.
-	$text = str_replace(
-		array(LAQUO,RAQUO,LDQUO,RDQUO,RDQUO2,MDASH,NDASH,HELLIP,APOS, NUMBER, LDQUO1,RDQUO1, TM, REG, BULL),
-		array('&laquo;','&raquo;','&bdquo;','&ldquo;','&rdquo;','&#8212;','&#8211;','&hellip;','&#8217;', '&#8470;','&ldquo;','&rdquo;', '&trade;', '&reg;', '&bull;'),
-		$text
-	);
+	if (DEFAULT_CHARSET !== CHARSET_UTF8) {
+		$text = str_replace(
+			array(LAQUO,RAQUO,LDQUO,RDQUO,RDQUO2,MDASH,NDASH,HELLIP,APOS, NUMBER, LDQUO1,RDQUO1, TM, REG, BULL),
+			array('&laquo;','&raquo;','&bdquo;','&ldquo;','&rdquo;','&#8212;','&#8211;','&hellip;','&#8217;', '&#8470;','&ldquo;','&rdquo;', '&trade;', '&reg;', '&bull;'),
+			$text
+		);
+	}
 	return $text;
 }
 
@@ -145,7 +171,7 @@ function TypoAllRecursive($mixed, $isHTML = true) {
 function UnTypoAll($text) {
 	$text = str_replace(
 		array('&laquo;','&raquo;','&bdquo;','&ldquo;','&rdquo;','&#8212;','&#8211;','&hellip;','&#8217;', '&#8470;','&ldquo;','&rdquo;'),
-		array('"', '"', '"', '"', '"', '-', '-', '...', "'", "\x98", '"', '"'),
+		array('"', '"', '"', '"', '"', '-', '-', '...', "'", NUMBER, '"', '"'),
 		$text
 	);
 

@@ -181,7 +181,7 @@ class PXDisplayType {
 
 	static protected
 	function parseConfigArguments($attrNode, $fieldNode) {;
-		$args = explode("|", utf8_decode($attrNode->value));
+		$args = explode("|", pp_simplexml_decode_string($attrNode->value));
 		$name = $args[0];
 
 		array_shift($args);

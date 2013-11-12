@@ -31,7 +31,7 @@ class PXModuleDescription {
 	function setAttrs($attrs) {
 		foreach($attrs as $item) {
 			$name = $item->name;
-			$this->$name = utf8_decode($item->value);
+			$this->$name = pp_simplexml_decode_string($item->value);
 		}
 	}
 
