@@ -30,12 +30,35 @@ class PXStorageTypeSerialized extends PXStorageType {
 
 	function normalize($field, $object, &$param) {
 		$k = $field->name;
+		$w = $object[$k];
 		$v = null;
-		if ($object[$k]) {
-			// NOTICE: no mb_* is correct here
-			$sign = substr($object[$k], 0, 2);
-			$v = ($sign === 'a:') ? unserialize($object[$k]) : json_decode_koi($object[$k]);
+
+		// skip empties and nulls
+		if ($w && $w !== 'null' && $w !== 'N;') {
+
+			// the first byte can be one of [b, i, d, s, a, O, C, N, r, R].
+			// the second byte can be one of [:, ;].
+			// see http://www.phpinternalsbook.com/classes_objects/serialization.html
+			// but json more simpler to check so we will do it.
+			$fb   = $w[0];
+			$sb   = $w[1];
+			$lb   = substr($w, -1); // last byte
+
+			// json_encoded data. not hardened check
+			$json = ctype_digit($fb) || (!ctype_alpha($fb) && !ctype_alpha($fb));
+			// null equals 'N;', all other /^\w:.*;$/
+			$srlz = ctype_alpha($fb) && $sb === ':' && ($lb === ';' || $lb === '}');
+
+			if ($srlz) {
+				$v = unserialize($w);
+			}
+			elseif ($json) {
+				$v = json_decode_koi($w);
+			}
+
 		}
+
 		return $v;
 	}
+
 }
