@@ -22,7 +22,7 @@ class PXTriggerDescription {
 
 	function setAttrs($attributes) {
 		foreach($attributes as $item) {
-			$this->{$item->name} = utf8_decode($item->value);
+			$this->{$item->name} = pp_simplexml_decode_string($item->value);
 		}
 	}
 

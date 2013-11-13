@@ -417,7 +417,7 @@ class PXApplication {
 
 					$directory->values[$id] = array(
 						'id'    => $id,
-						'title' => utf8_decode($node->nodeXValue($titleField))
+						'title' => pp_simplexml_decode_string($node->nodeXValue($titleField))
 					);
 
 					$data = $node->xpath($dataFields);
@@ -426,16 +426,16 @@ class PXApplication {
 					foreach ($data as $dataNode) {
 						$key = $dataNode->nodeName();
 						if ($dataNode->nodeType() == PXml::ATTRIBUTE) {
-							$directory->values[$id][$key] = utf8_decode($dataNode->nodeValue());
+							$directory->values[$id][$key] = pp_simplexml_decode_string($dataNode->nodeValue());
 							continue;
 						}
 
 						$item = array();
 						foreach ($dataNode->attributes() as $val) {
-							$item[$val->name] = utf8_decode($val->value);
+							$item[$val->name] = pp_simplexml_decode_string($val->value);
 						}
 						foreach ($dataNode->childNodes() as $val) {
-							$item[$val->nodeName()] = utf8_decode($val->nodeValue());
+							$item[$val->nodeName()] = pp_simplexml_decode_string($val->nodeValue());
 						}
 
 						empty($directory->values[$id][$key]) && ($directory->values[$id][$key] = array());
@@ -481,7 +481,7 @@ class PXApplication {
 			$nodes = $domModule->childNodes();
 			foreach ($nodes as $node) {
 				if (!$node->isXmlNode()) continue;
-				$module->settings[$node->nodeName()][] = utf8_decode($node->nodeValue());
+				$module->settings[$node->nodeName()][] = pp_simplexml_decode_string($node->nodeValue());
 			}
 
 			foreach ($module->settings as $k=>$v) {

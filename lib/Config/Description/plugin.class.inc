@@ -24,7 +24,7 @@ class PXPluginDescription {
 
 	function setAttrs($attrs) {
 		foreach ($attrs as $item) {
-			$this->{$item->name} = utf8_decode($item->value);
+			$this->{$item->name} = pp_simplexml_decode_string($item->value);
 		}
 	}
 

@@ -32,7 +32,7 @@ class PXTypeDescriptionProperties extends PXTypeDescription {
 		}
 		list($sectionName, ) = $this->getSectionAndName($dataDesc['name']);
 
-		$dataDesc['description'] = isset($dataDesc['description']) ? utf8_encode($dataDesc['description']) : $dataDesc['name'];
+		$dataDesc['description'] = isset($dataDesc['description']) ? pp_simplexml_encode_string($dataDesc['description']) : $dataDesc['name'];
 		$dataDesc['storagetype'] = isset($dataDesc['storagetype']) ? $dataDesc['storagetype'] : 'string';
 		$dataDesc['displaytype'] = isset($dataDesc['displaytype']) ? $dataDesc['displaytype'] : 'TEXT';
 		$app = PXRegistry::getApp();

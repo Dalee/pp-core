@@ -112,10 +112,10 @@ class PXTypeDescription {
 				foreach($groupNode->attributes() as $attr){
 					switch ($attr->name) {
 						case 'name':
-							$name = utf8_decode($attr->value);
+							$name = pp_simplexml_decode_string($attr->value);
 							break;
 						case 'view':
-							$view = utf8_decode($attr->value);
+							$view = pp_simplexml_decode_string($attr->value);
 							break;
 					}
 				}
@@ -194,7 +194,7 @@ class PXTypeDescription {
 		foreach ($attrs as $attr) {
 			switch ($attr->name) {
 				case 'name'          : $this->id            = $attr->value; break;
-				case 'description'   : $this->title         = utf8_decode($attr->value); break;
+				case 'description'   : $this->title         = pp_simplexml_decode_string($attr->value); break;
 				case 'orderby'       : $this->order         = $attr->value; break;
 				case 'parent'        : $this->parent        = $attr->value; break;
 				case 'bydefault'     : $this->byDefault     = self::_mapByDefaults($attr->value); break;
