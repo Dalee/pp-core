@@ -110,6 +110,13 @@
 			return $result;
 		}
 
+		public function copyField($tableName, $srcField, $dstField) {
+			$this->pdo->beginTransaction();
+			$query = sprintf('UPDATE %s SET %s = %s', $tableName, $dstField, $srcField);
+			$this->pdo->exec($query);
+			$this->pdo->commit();
+		}
+
 		public function getRowsLimited($tableName, $fieldList, $offset) {
 			$query = sprintf('SELECT %s FROM %s ORDER BY id ASC LIMIT ? OFFSET ?',  implode(', ', $fieldList), $tableName);
 			if (! ($stmt = $this->pdo->prepare($query))) {
@@ -130,7 +137,7 @@
 			return $result;
 		}
 
-		public function bulkUpdate($tableName, $jsonName, $valueList) {
+		public function bulkUpdate($tableName, $fieldName, $valueList) {
 			$query = sprintf('UPDATE %s SET %s = ? WHERE id = ?', $tableName, $jsonName);
 			if (! ($stmt = $this->pdo->prepare($query))) {
 				d2($this->pdo->errorInfo());
@@ -146,14 +153,17 @@
 		}
 
 		public function createField($tableName, $fieldName, $fieldType, $fieldNull = 'DEFAULT NULL') {
+			$this->pdo->beginTransaction();
 			$result = $this->pdo->exec(
 				sprintf('ALTER TABLE "%s" ADD COLUMN "%s" %s %s', $tableName, $fieldName, $fieldType, $fieldNull)
 			);
 			if ($result === false) {
 				$errorInfo = $this->pdo->errorInfo();
+				$this->pdo->rollBack();
 				printf("Error altering table: %s\n", $errorInfo[2]);
 				exit(1);
 			}
+			$this->pdo->commit();
 		}
 	}
 
@@ -297,7 +307,7 @@
 			$this->db = DBFactory::get();
 		}
 
-		protected function analyzeFields() {
+		protected function createFieldsAndAnalyze() {
 			$datatypes = $this->datatype->getNodeList();
 			$updateTableFieldList = array();
 
@@ -305,6 +315,7 @@
 			foreach ($datatypes as $_ => $datatype) {
 				$tableName  = $datatype->getName();
 				$attributes = $datatype->getAttributes();
+				$fieldList = $this->db->getFields($tableName);
 				
 				foreach ($attributes as $_ => $attribute) {
 					$storagetype = $attribute->getStorageType();
@@ -312,9 +323,14 @@
 						continue;
 					}
 
+					$backupField = (in_array($backupField, $fieldList)) ? 
+						null : 
+						sprintf('%s__backup', $attribute->getName());
+
 					$updateTableFieldList[] = array(
 						$tableName,
-						$attribute->getName()
+						$attribute->getName(),
+						$backupField
 					);
 				}
 			}
@@ -322,7 +338,7 @@
 			return $updateTableFieldList;
 		}
 
-		protected function convertBulk($tableName, $fieldName) {
+		protected function convertBulk($tableName, $fieldName, $backupField) {
 			if (in_array($tableName, $this->skipTables)) {
 				printf("[SKIP] - {$tableName}\n");
 				return;
@@ -355,9 +371,14 @@
 		}
 
 		public function run() {
-			$updateTableFieldList = $this->analyzeFields();
+			$updateTableFieldList = $this->createFieldsAndAnalyze();
 			foreach ($updateTableFieldList as $_ => $meta) {
-				$this->convertBulk($meta[0], $meta[1]);
+				if (! is_null($meta[2])) {
+					printf("backing up {$tableName}");
+					$this->db->createField($meta[0], $meta[2], 'text');
+					$this->db->copyField($meta[0], $meta[1], $meta[2]);
+				}
+				$this->convertBulk($meta[0], $meta[1], $meta[2]);
 			}
 		}
 	}
