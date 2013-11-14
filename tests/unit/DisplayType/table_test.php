@@ -25,7 +25,7 @@ class TableTest extends UnitTestCase {
 		$text .= '<td><input type="text" name="test_field[0][]" value="" ></td>';
 		$text .= '<td><input type="text" name="test_field[0][]" value="" ></td>';
 		$text .= '<td><input type="text" name="test_field[0][]" value="" ></td>';
-		$text .= '</tr></table><button class="addrow" onclick="AddRowNew(\'test_field\'); return false;">Добавить</button>';
+		$text .= '</tr></table><button class="addrow" onclick="AddRowNew(\'test_field\'); return false;">п■п╬п╠п╟п╡п╦я┌я▄</button>';
 		
 		$res  = $this->table->buildInput($this->field, $this->object);
 		$this->assertEqual($text,  $res);
@@ -37,7 +37,7 @@ class TableTest extends UnitTestCase {
 		$textarea .= '<td><textarea name="test_field[0][]" wrap="physical" style="height:1px;"></textarea></td>';
 		$textarea .= '<td><textarea name="test_field[0][]" wrap="physical" style="height:1px;"></textarea></td>';
 		$textarea .= '<td><textarea name="test_field[0][]" wrap="physical" style="height:1px;"></textarea></td>';
-		$textarea .= '</tr></table><button class="addrow" onclick="AddRowNew(\'test_field\'); return false;">Добавить</button>';
+		$textarea .= '</tr></table><button class="addrow" onclick="AddRowNew(\'test_field\'); return false;">п■п╬п╠п╟п╡п╦я┌я▄</button>';
 		
 		$res  = $this->table->buildInput($this->field, $this->object);
 		$this->assertEqual($textarea,  $res);

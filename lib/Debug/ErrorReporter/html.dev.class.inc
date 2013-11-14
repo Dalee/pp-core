@@ -24,10 +24,10 @@ class PXErrorReporterHTMLDev extends PXErrorReporter {
 					<div class="error-debug-show_table">
 						<table class="error-trace">
 							<tr>
-								<th width="25%">Файл:</th>
-								<th width="10%">Строка:</th>
-								<th>Функция:</th>
-								<th>Параметры:</th>
+								<th width="25%">п╓п╟п╧п╩:</th>
+								<th width="10%">п║я┌я─п╬п╨п╟:</th>
+								<th>п╓я┐п╫п╨я├п╦я▐:</th>
+								<th>п÷п╟я─п╟п╪п╣я┌я─я▀:</th>
 							</tr>
 
 							{$traceHTML}
@@ -56,10 +56,10 @@ HTML
 
 				<table class="error-trace">
 					<tr>
-						<th width="25%">Файл:</th>
-						<th width="10%">Строка:</th>
-						<th>Функция:</th>
-						<th>Параметры:</th>
+						<th width="25%">п╓п╟п╧п╩:</th>
+						<th width="10%">п║я┌я─п╬п╨п╟:</th>
+						<th>п╓я┐п╫п╨я├п╦я▐:</th>
+						<th>п÷п╟я─п╟п╪п╣я┌я─я▀:</th>
 					</tr>
 
 					{$traceHTML}

@@ -5,10 +5,10 @@ class PXDeferredStatusHelper {
 	protected static $activeStates = array(2, 3);
 
 	protected static $sysdeferredlist_values = array(
-		1 => array('id' => 1,  'tag' => 'off',       'title' => 'Отключено'),
-		2 => array('id' => 2,  'tag' => 'prepared' , 'title' => 'К публикации'),
-		3 => array('id' => 3,  'tag' => 'published', 'title' => 'Опубликовано'),
-		9 => array('id' => 9,  'tag' => 'done',      'title' => 'Снято'),
+		1 => array('id' => 1,  'tag' => 'off',       'title' => 'п·я┌п╨п╩я▌я┤п╣п╫п╬'),
+		2 => array('id' => 2,  'tag' => 'prepared' , 'title' => 'п  п©я┐п╠п╩п╦п╨п╟я├п╦п╦'),
+		3 => array('id' => 3,  'tag' => 'published', 'title' => 'п·п©я┐п╠п╩п╦п╨п╬п╡п╟п╫п╬'),
+		9 => array('id' => 9,  'tag' => 'done',      'title' => 'п║п╫я▐я┌п╬'),
 	);
 
 	protected static $sysdeferredlist_tagmap;
@@ -77,10 +77,10 @@ class PXDeferredStatusHelper {
 		$now = time();
 
 		switch (true) {
-			case $since === false && $until === false: // Даты не проставлены, ставим состояние "Отключено"
+			case $since === false && $until === false: // п■п╟я┌я▀ п╫п╣ п©я─п╬я│я┌п╟п╡п╩п╣п╫я▀, я│я┌п╟п╡п╦п╪ я│п╬я│я┌п╬я▐п╫п╦п╣ "п·я┌п╨п╩я▌я┤п╣п╫п╬"
 				$state = 'off';
 				break;
-			case self::stateTag($v['sys_deferred_state']) == 'off': // Даты проставлены, но состояние "Отключено" - ничего не делаем
+			case self::stateTag($v['sys_deferred_state']) == 'off': // п■п╟я┌я▀ п©я─п╬я│я┌п╟п╡п╩п╣п╫я▀, п╫п╬ я│п╬я│я┌п╬я▐п╫п╦п╣ "п·я┌п╨п╩я▌я┤п╣п╫п╬" - п╫п╦я┤п╣пЁп╬ п╫п╣ п╢п╣п╩п╟п╣п╪
 				return;
 			case $now < $since: // $since date will be tomorrow
 				$state = 'prepared';

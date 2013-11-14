@@ -16,7 +16,7 @@ class PXEngineAdminPopup extends PXEngineAdminIndex {
 		PXProfiler::begin('RUN MODULES');
 
 		if (!$this->hasAdminModules()) {
-			return $this->layout->assignError($this->templateMainArea, 'îÅÔ ÄÏÓÔÕĞÁ');
+			return $this->layout->assignError($this->templateMainArea, 'ĞĞµÑ‚ Ğ´Ğ¾ÑÑ‚ÑƒĞ¿Ğ°');
 		}
 
 		if(!$this->checkArea($this->area)) {

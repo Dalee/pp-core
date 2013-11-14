@@ -1,8 +1,8 @@
 <?php
 /*
 TODO:
- - подсветка новых сообщений
- - модерирование
+ - п©п╬п╢я│п╡п╣я┌п╨п╟ п╫п╬п╡я▀я┘ я│п╬п╬п╠я┴п╣п╫п╦п╧
+ - п╪п╬п╢п╣я─п╦я─п╬п╡п╟п╫п╦п╣
 */
 
 class PXModuleForum extends PXModule {
@@ -98,7 +98,7 @@ class PXModuleForum extends PXModule {
 
 	function _checkCorrectQuery() {
 		if ($this->rqFile != 'index.html' || $this->forumBaseId != $this->tree->current->id) {
-			$this->moduleError = 'Некорректный запрос.';
+			$this->moduleError = 'п²п╣п╨п╬я─я─п╣п╨я┌п╫я▀п╧ п╥п╟п©я─п╬я│.';
 			return false;
 		}
 
@@ -106,23 +106,23 @@ class PXModuleForum extends PXModule {
 	}
 
 	function indexSettings() {
-		$this->forumTitle = 'Настройки интерфейса';
+		$this->forumTitle = 'п²п╟я│я┌я─п╬п╧п╨п╦ п╦п╫я┌п╣я─я└п╣п╧я│п╟';
 		$this->_checkCorrectQuery();
 	}
 
 	function indexProfile() {
-		$this->forumTitle = 'Персональные данные';
+		$this->forumTitle = 'п÷п╣я─я│п╬п╫п╟п╩я▄п╫я▀п╣ п╢п╟п╫п╫я▀п╣';
 		if (!$this->_checkCorrectQuery()) {
 			return;
 		}
 
 		if (!$this->user->IsAuthed()) {
-			$this->moduleError = 'Редактирование персональных данных возможно только для авторизовавшегося пользователя';
+			$this->moduleError = 'п═п╣п╢п╟п╨я┌п╦я─п╬п╡п╟п╫п╦п╣ п©п╣я─я│п╬п╫п╟п╩я▄п╫я▀я┘ п╢п╟п╫п╫я▀я┘ п╡п╬п╥п╪п╬п╤п╫п╬ я┌п╬п╩я▄п╨п╬ п╢п╩я▐ п╟п╡я┌п╬я─п╦п╥п╬п╡п╟п╡я┬п╣пЁп╬я│я▐ п©п╬п╩я▄п╥п╬п╡п╟я┌п╣п╩я▐';
 		}
 	}
 
 	function indexRegister() {
-		$this->forumTitle = 'Регистрация';
+		$this->forumTitle = 'п═п╣пЁп╦я│я┌я─п╟я├п╦я▐';
 		$this->_checkCorrectQuery();
 	}
 
@@ -134,7 +134,7 @@ class PXModuleForum extends PXModule {
 		$u = $this->db->getObjectsByFieldLimited($this->app->types['suser'], "TRUE", 'title', $this->request->GetVar('id'), 1, 0);
 
 		if (!count($u)) {
-			$this->moduleError = 'Нет такого пользователя.';
+			$this->moduleError = 'п²п╣я┌ я┌п╟п╨п╬пЁп╬ п©п╬п╩я▄п╥п╬п╡п╟я┌п╣п╩я▐.';
 			return;
 		}
 
@@ -142,18 +142,18 @@ class PXModuleForum extends PXModule {
 		$forumUser['__unix']     = DateGermanToUnix($forumUser['sys_created']);
 		$forumUser['__messages'] = $this->db->GetObjectsByField($this->app->types[$this->dtMessages], "TRUE", 'sys_owner', $forumUser['id'], DB_SELECT_COUNT);
 
-		$this->forumTitle = 'Информация о пользователе '.$forumUser[$this->userTitle];
+		$this->forumTitle = 'п≤п╫я└п╬я─п╪п╟я├п╦я▐ п╬ п©п╬п╩я▄п╥п╬п╡п╟я┌п╣п╩п╣ '.$forumUser[$this->userTitle];
 		$this->layout->assign('forumUser', $forumUser);
 	}
 
 	function indexNewmessage() { 
 		$rqMid = $this->request->GetVar('mid');
 		if (!$rqMid) {
-			$this->forumTitle = 'Создание новой темы';
+			$this->forumTitle = 'п║п╬п╥п╢п╟п╫п╦п╣ п╫п╬п╡п╬п╧ я┌п╣п╪я▀';
 			return;
 		}
 
-		$this->forumTitle = 'Ответ на сообщение';
+		$this->forumTitle = 'п·я┌п╡п╣я┌ п╫п╟ я│п╬п╬п╠я┴п╣п╫п╦п╣';
 
 		if (!$message = $this->_getMessage($rqMid)) {
 			return;
@@ -179,7 +179,7 @@ class PXModuleForum extends PXModule {
 
 	function indexEditmessage() {
 		if (!$rqMid = $this->request->GetVar('mid')) {
-			$this->moduleError = 'Нет такого сообщения';
+			$this->moduleError = 'п²п╣я┌ я┌п╟п╨п╬пЁп╬ я│п╬п╬п╠я┴п╣п╫п╦я▐';
 			return;
 		}
 
@@ -192,7 +192,7 @@ class PXModuleForum extends PXModule {
 		$message = reset($message);
 
 		if ($message['sys_owner'] != $this->user->id) {
-			$this->moduleError = 'Вы не можете редактировать чужие сообщения';
+			$this->moduleError = 'п▓я▀ п╫п╣ п╪п╬п╤п╣я┌п╣ я─п╣п╢п╟п╨я┌п╦я─п╬п╡п╟я┌я▄ я┤я┐п╤п╦п╣ я│п╬п╬п╠я┴п╣п╫п╦я▐';
 			return;
 		}
 
@@ -201,11 +201,11 @@ class PXModuleForum extends PXModule {
 		}
 
 		if (time() - $this->forumSettings['timetoedit'] > $message['__created_unix'] and $this->request->GetVar('result') !== 'ok') {
-			$this->moduleError = 'Срок редактирования сообщения закончился';
+			$this->moduleError = 'п║я─п╬п╨ я─п╣п╢п╟п╨я┌п╦я─п╬п╡п╟п╫п╦я▐ я│п╬п╬п╠я┴п╣п╫п╦я▐ п╥п╟п╨п╬п╫я┤п╦п╩я│я▐';
 			return;
 		}
 
-		$this->forumTitle = 'Редактирование сообщения';
+		$this->forumTitle = 'п═п╣п╢п╟п╨я┌п╦я─п╬п╡п╟п╫п╦п╣ я│п╬п╬п╠я┴п╣п╫п╦я▐';
 		$this->layout->Assign('forumEditMessage', $message);
 	}
 
@@ -361,7 +361,7 @@ class PXModuleForum extends PXModule {
 		$message = $this->db->getObjectById($this->app->types[$this->dtMessages], $rqMid);
 
 		if (!is_array($message) || !isset($message['id']) || !$message['status']) {
-			$this->moduleError = 'Нет такого сообщения';
+			$this->moduleError = 'п²п╣я┌ я┌п╟п╨п╬пЁп╬ я│п╬п╬п╠я┴п╣п╫п╦я▐';
 			return false;
 		}
 
@@ -372,7 +372,7 @@ class PXModuleForum extends PXModule {
 		$topic = $this->db->getObjectById($this->app->types[$this->dtTopics], $id);
 
 		if ($topic['locked']) {
-			$this->moduleError = 'Тема закрыта. Вы не можете писать в эту тему.';
+			$this->moduleError = 'п╒п╣п╪п╟ п╥п╟п╨я─я▀я┌п╟. п▓я▀ п╫п╣ п╪п╬п╤п╣я┌п╣ п©п╦я│п╟я┌я▄ п╡ я█я┌я┐ я┌п╣п╪я┐.';
 			return false;
 		}
 
@@ -407,7 +407,7 @@ class PXModuleForum extends PXModule {
 
 	function _setError($message) {
 		$this->layout->assign('forumCase',  'error');
-		$this->layout->assign('forumTitle', 'Ошибка');
+		$this->layout->assign('forumTitle', 'п·я┬п╦п╠п╨п╟');
 		$this->layout->assign('forumError', $message);
 	}
 
@@ -432,7 +432,7 @@ class PXModuleForum extends PXModule {
 		if (method_exists($this, $methodName)) {
 			call_user_func(array(&$this, $methodName));
 		} else {
-			$this->moduleError = 'Некорректный запрос';
+			$this->moduleError = 'п²п╣п╨п╬я─я─п╣п╨я┌п╫я▀п╧ п╥п╟п©я─п╬я│';
 		}
 
 		$this->_setForumData();
@@ -601,7 +601,7 @@ class PXModuleForum extends PXModule {
 						break;
 					}
 
-					// Создаем тему
+					// п║п╬п╥п╢п╟п╣п╪ я┌п╣п╪я┐
 					$object    = $this->createTopic($user, $app->types[$this->dtTopics], $rqFid, $rqTitle);
 					$topicId   = $db->AddContentObject($app->types[$this->dtTopics], $object);
 					$tObject   = $db->GetObjectById($app->types[$this->dtTopics], $topicId);
@@ -622,7 +622,7 @@ class PXModuleForum extends PXModule {
 						break;
 					}
 
-					// Создаем мессадж
+					// п║п╬п╥п╢п╟п╣п╪ п╪п╣я│я│п╟п╢п╤
 					$tObject   = $db->GetObjectById($app->types[$this->dtTopics], $mObject['parent']);
 					$object    = $this->createMessage($user, $app->types[$this->dtMessages], $mObject['parent'], $rqMid, $rqTitle, $rqBody, $request->getRemoteAddr());
 					$messageId = $db->AddContentObject($app->types[$this->dtMessages], $object);
@@ -891,35 +891,35 @@ function bmc_wordwrap($str, $cols=80, $cut="\n") {
 	return $result;
 }
 
-// Функция обратного вызова для preg_replace_callback().
+// п╓я┐п╫п╨я├п╦я▐ п╬п╠я─п╟я┌п╫п╬пЁп╬ п╡я▀п╥п╬п╡п╟ п╢п╩я▐ preg_replace_callback().
 function hrefCallback($p) {
 	if (!empty($p[1])) {
 		return $p[0];
 	}
 
-	// Преобразуем спецсимволы в HTML-представление.
+	// п÷я─п╣п╬п╠я─п╟п╥я┐п╣п╪ я│п©п╣я├я│п╦п╪п╡п╬п╩я▀ п╡ HTML-п©я─п╣п╢я│я┌п╟п╡п╩п╣п╫п╦п╣.
 	$name = htmlspecialchars($p[0], ENT_COMPAT|ENT_HTML401, DEFAULT_CHARSET);
-	// Если нет протокола, добавляем его в начало строки.
+	// п∙я│п╩п╦ п╫п╣я┌ п©я─п╬я┌п╬п╨п╬п╩п╟, п╢п╬п╠п╟п╡п╩я▐п╣п╪ п╣пЁп╬ п╡ п╫п╟я┤п╟п╩п╬ я│я┌я─п╬п╨п╦.
 	$href = !empty($p[2])? $name : "http://$name";
-	// Формируем ссылку.
-	return '<a href="'.$href.'" target="_blank" title="Ссылка откроется в новом окне">'.$name.'</a>';
+	// п╓п╬я─п╪п╦я─я┐п╣п╪ я│я│я▀п╩п╨я┐.
+	return '<a href="'.$href.'" target="_blank" title="п║я│я▀п╩п╨п╟ п╬я┌п╨я─п╬п╣я┌я│я▐ п╡ п╫п╬п╡п╬п╪ п╬п╨п╫п╣">'.$name.'</a>';
 }
 
-// Заменяет ссылки на их HTML-эквиваленты ("подчеркивает ссылки").
+// п≈п╟п╪п╣п╫я▐п╣я┌ я│я│я▀п╩п╨п╦ п╫п╟ п╦я┘ HTML-я█п╨п╡п╦п╡п╟п╩п╣п╫я┌я▀ ("п©п╬п╢я┤п╣я─п╨п╦п╡п╟п╣я┌ я│я│я▀п╩п╨п╦").
 function hrefActivate($text) {
   return preg_replace_callback(
     '{
-      ((?:src|href)=.)?   # если это src чего-нибудь, то не надо
+      ((?:src|href)=.)?   # п╣я│п╩п╦ я█я┌п╬ src я┤п╣пЁп╬-п╫п╦п╠я┐п╢я▄, я┌п╬ п╫п╣ п╫п╟п╢п╬
       (?:
-        (\w+://)          # протокол с двумя слэшами
-        |                 # - или -
-        www\.             # просто начинается на www
+        (\w+://)          # п©я─п╬я┌п╬п╨п╬п╩ я│ п╢п╡я┐п╪я▐ я│п╩я█я┬п╟п╪п╦
+        |                 # - п╦п╩п╦ -
+        www\.             # п©я─п╬я│я┌п╬ п╫п╟я┤п╦п╫п╟п╣я┌я│я▐ п╫п╟ www
       )
-      [\w-]+(\.[\w-]+)*   # имя хоста
-      \S*                 # URI (но БЕЗ кавычек)
-      (?:                 # последний символ должен быть...
-          (?<! [[:punct:]] )  # НЕ пунктуацией
-        | (?<= [-/&+*]     )  # но допустимо окончание на -/&+*
+      [\w-]+(\.[\w-]+)*   # п╦п╪я▐ я┘п╬я│я┌п╟
+      \S*                 # URI (п╫п╬ п▒п∙п≈ п╨п╟п╡я▀я┤п╣п╨)
+      (?:                 # п©п╬я│п╩п╣п╢п╫п╦п╧ я│п╦п╪п╡п╬п╩ п╢п╬п╩п╤п╣п╫ п╠я▀я┌я▄...
+          (?<! [[:punct:]] )  # п²п∙ п©я┐п╫п╨я┌я┐п╟я├п╦п╣п╧
+        | (?<= [-/&+*]     )  # п╫п╬ п╢п╬п©я┐я│я┌п╦п╪п╬ п╬п╨п╬п╫я┤п╟п╫п╦п╣ п╫п╟ -/&+*
       )
     }xi',
     "hrefCallback",

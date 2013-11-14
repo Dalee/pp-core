@@ -20,9 +20,9 @@ class FlashTest extends UnitTestCase {
             '<div><script type="text/javascript">ShowFlash(\'i/l.swf?path=i/v.swf\', 100, 100, \'test_fieldsrc\');</script></div>';
             '<input class="file" type="file" id="test_field" name="test_field" onpropertychange="Preview(this.value, \'flash\', \'test_field\');">';
             '<br>';
-            '<input id="test_fieldwidth"  type="text" readonly value="" ><span>ширина</span>';
-            '<input id="test_fieldheight" type="text" readonly value=""><span>высота</span>';
-            '<input id="test_fieldsize"   type="text" readonly value=""><span>размер</span>';
+            '<input id="test_fieldwidth"  type="text" readonly value="" ><span>я┬п╦я─п╦п╫п╟</span>';
+            '<input id="test_fieldheight" type="text" readonly value=""><span>п╡я▀я│п╬я┌п╟</span>';
+            '<input id="test_fieldsize"   type="text" readonly value=""><span>я─п╟п╥п╪п╣я─</span>';
             '</div>';
          */
 

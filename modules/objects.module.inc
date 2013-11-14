@@ -102,7 +102,7 @@ class PXModuleObjects extends PXModule {
 		$object   = $this->popupGetObject();
 
 		if (!$this->user->isAdmin() || empty($object)) {
-			return $this->layout->assignError('OUTER.CONTENT', 'Нет доступа');
+			return $this->layout->assignError('OUTER.CONTENT', 'п²п╣я┌ п╢п╬я│я┌я┐п©п╟');
 		}
 
 		$action = $this->request->getAction();
@@ -124,9 +124,9 @@ class PXModuleObjects extends PXModule {
 		if (!empty($this->datatype->parent) && empty($object['parent']) && $this->datatype->struct != 'tree') {
 			$parentDatatype = $this->app->types[$this->datatype->parent];
 			PXDecorativeWidgetsCollection::addToCollection(
-				"<em class='warning'>Внимание!</em> " .
-				"Объект типа '<b>{$this->datatype->title}</b>' может не быть создан вне контекста объекта '<b>{$parentDatatype->title}</b>'.<br/>" .
-				"Рекомендуется не использовать данный функционал для создания объектов данного типа.",
+				"<em class='warning'>п▓п╫п╦п╪п╟п╫п╦п╣!</em> " .
+				"п·п╠я┼п╣п╨я┌ я┌п╦п©п╟ '<b>{$this->datatype->title}</b>' п╪п╬п╤п╣я┌ п╫п╣ п╠я▀я┌я▄ я│п╬п╥п╢п╟п╫ п╡п╫п╣ п╨п╬п╫я┌п╣п╨я│я┌п╟ п╬п╠я┼п╣п╨я┌п╟ '<b>{$parentDatatype->title}</b>'.<br/>" .
+				"п═п╣п╨п╬п╪п╣п╫п╢я┐п╣я┌я│я▐ п╫п╣ п╦я│п©п╬п╩я▄п╥п╬п╡п╟я┌я▄ п╢п╟п╫п╫я▀п╧ я└я┐п╫п╨я├п╦п╬п╫п╟п╩ п╢п╩я▐ я│п╬п╥п╢п╟п╫п╦я▐ п╬п╠я┼п╣п╨я┌п╬п╡ п╢п╟п╫п╫п╬пЁп╬ я┌п╦п©п╟.",
 				'PXAdminForm',
 				'notices',
 				PXAdminForm::NOTICES_CONTENT
@@ -166,7 +166,7 @@ class PXModuleObjects extends PXModule {
 			}
 		} else {
 			if(!sizeof($object = $this->db->getObjectById($this->datatype, $rId))){
-				FatalError('Объект не существует !');
+				FatalError('п·п╠я┼п╣п╨я┌ п╫п╣ я│я┐я┴п╣я│я┌п╡я┐п╣я┌ !');
 			}
 
 			if(!$this->user->can('admin', $this->datatype, $object)) {
@@ -194,11 +194,11 @@ class PXModuleObjects extends PXModule {
 			if(isset($object) && isset($object['title'])) {
 				$title = '&laquo;'.substr(strip_tags($object['title']), 0, 32).'&raquo; &#8212; ';
 			}
-			$title .= ' Редактирование';
+			$title .= ' п═п╣п╢п╟п╨я┌п╦я─п╬п╡п╟п╫п╦п╣';
 		} else {
-			$title = 'Добавление';
+			$title = 'п■п╬п╠п╟п╡п╩п╣п╫п╦п╣';
 		}
-		$title .= ' объекта формата &laquo;'.strip_tags($this->datatype->title).'&raquo;';
+		$title .= ' п╬п╠я┼п╣п╨я┌п╟ я└п╬я─п╪п╟я┌п╟ &laquo;'.strip_tags($this->datatype->title).'&raquo;';
 		return $title;
 	}
 
@@ -360,7 +360,7 @@ class PXModuleObjects extends PXModule {
 		$donor = $this->request->getContentObject($this->datatype);
 
 		if(!is_numeric($donor['id']) || !$donor['id']) {
-			FatalError('Клонировать можно только существующие объекты');
+			FatalError('п п╩п╬п╫п╦я─п╬п╡п╟я┌я▄ п╪п╬п╤п╫п╬ я┌п╬п╩я▄п╨п╬ я│я┐я┴п╣я│я┌п╡я┐я▌я┴п╦п╣ п╬п╠я┼п╣п╨я┌я▀');
 		}
 
 		$cloneId = $this->db->cloneContentObject($this->datatype, $donor['id']);
@@ -369,7 +369,7 @@ class PXModuleObjects extends PXModule {
 
 	function actionChildren() {
 		if (!count($this->datatype->childs)) {
-			FatalError("В этом разделе невозможно назначать потомков");
+			FatalError("п▓ я█я┌п╬п╪ я─п╟п╥п╢п╣п╩п╣ п╫п╣п╡п╬п╥п╪п╬п╤п╫п╬ п╫п╟п╥п╫п╟я┤п╟я┌я▄ п©п╬я┌п╬п╪п╨п╬п╡");
 		}
 
 		$object = $this->request->getObjectSysVars($this->datatype, array(OBJ_FIELD_CHILDREN));
@@ -446,7 +446,7 @@ class PXModuleObjects extends PXModule {
 	}
 
 	function appendCharCheck(){
-		$this->nextLocation .= '&charcheck='.urlencode('йцукен');
+		$this->nextLocation .= '&charcheck='.urlencode('п╧я├я┐п╨п╣п╫');
 	}
 
 	function appendLinksExistFlag(){

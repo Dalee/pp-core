@@ -1,10 +1,10 @@
 <?php
 /**
- * ÷ÙÐÁÄÁÀÝÉÊ ÓÐÉÓÏË Ó ÄÅÒÅ×ÏÍ ÏÂßÅËÔÏ× ÜÔÏÇÏ PXTypeDescription ÔÉÐÁ (ËÁË ÐÒÁ×ÉÌÏ ÐÏÌÅ pid)
+ * Ð’Ñ‹Ð¿Ð°Ð´Ð°ÑŽÑ‰Ð¸Ð¹ ÑÐ¿Ð¸ÑÐ¾Ðº Ñ Ð´ÐµÑ€ÐµÐ²Ð¾Ð¼ Ð¾Ð±ÑŠÐµÐºÑ‚Ð¾Ð² ÑÑ‚Ð¾Ð³Ð¾ PXTypeDescription Ñ‚Ð¸Ð¿Ð° (ÐºÐ°Ðº Ð¿Ñ€Ð°Ð²Ð¸Ð»Ð¾ Ð¿Ð¾Ð»Ðµ pid)
  *
  * storageType integet
  * displayType SELFPARENTDROPDOWN|width
- *             width ÎÅ ÉÓÐÏÌØÚÕÅÔÓÑ
+ *             width Ð½Ðµ Ð¸ÑÐ¿Ð¾Ð»ÑŒÐ·ÑƒÐµÑ‚ÑÑ
  */
 class PXDisplayTypeSelfparentdropdown extends PXDisplayTypeParentdropdown {
 	function buildInput($field, $object, $param=NULL) {

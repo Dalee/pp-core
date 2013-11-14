@@ -1,26 +1,26 @@
 <?php
-/**Вернуть данные и таблицы в виде массива*/
+/**п▓п╣я─п╫я┐я┌я▄ п╢п╟п╫п╫я▀п╣ п╦ я┌п╟п╠п╩п╦я├я▀ п╡ п╡п╦п╢п╣ п╪п╟я│я│п╦п╡п╟*/
 define('DB_SELECT_TABLE', 1);
 
-/**Вернуть количество строк COUNT()*/
+/**п▓п╣я─п╫я┐я┌я▄ п╨п╬п╩п╦я┤п╣я│я┌п╡п╬ я│я┌я─п╬п╨ COUNT()*/
 define('DB_SELECT_COUNT', 2);
 
-/**Вернуть данные и таблицы в виде дерева, исключая orphaned ветки */
+/**п▓п╣я─п╫я┐я┌я▄ п╢п╟п╫п╫я▀п╣ п╦ я┌п╟п╠п╩п╦я├я▀ п╡ п╡п╦п╢п╣ п╢п╣я─п╣п╡п╟, п╦я│п╨п╩я▌я┤п╟я▐ orphaned п╡п╣я┌п╨п╦ */
 define('DB_SELECT_TREE',  4);
 
-/**Вернуть данные и таблицы в виде LIST*/
+/**п▓п╣я─п╫я┐я┌я▄ п╢п╟п╫п╫я▀п╣ п╦ я┌п╟п╠п╩п╦я├я▀ п╡ п╡п╦п╢п╣ LIST*/
 define('DB_SELECT_LIST',  8);
 
-/**Вернуть данные и таблицы в виде дерева, включая orphaned ветки в корневой раздел*/
+/**п▓п╣я─п╫я┐я┌я▄ п╢п╟п╫п╫я▀п╣ п╦ я┌п╟п╠п╩п╦я├я▀ п╡ п╡п╦п╢п╣ п╢п╣я─п╣п╡п╟, п╡п╨п╩я▌я┤п╟я▐ orphaned п╡п╣я┌п╨п╦ п╡ п╨п╬я─п╫п╣п╡п╬п╧ я─п╟п╥п╢п╣п╩*/
 define('DB_SELECT_FULL_TREE',  16);
 
 define('DB_SELECT_WITHOUT_EXTERNALS',  32);
 
-/**Значение не NULL*/
+/**п≈п╫п╟я┤п╣п╫п╦п╣ п╫п╣ NULL*/
 define('NOT_NULL', '~~___IS_NOT_NULL___~~');
 
 /**
- * Класс работы с БД
+ * п п╩п╟я│я│ я─п╟п╠п╬я┌я▀ я│ п▒п■
  */
 
 require_once PPLIBPATH . 'Database/interface.inc';
@@ -51,7 +51,7 @@ class PXDatabase extends NLSQLDatabaseAdapter implements IPXDatabase {
 	public $throwException = false;
 
 	/**
-	 * Конструктор класса
+	 * п п╬п╫я│я┌я─я┐п╨я┌п╬я─ п╨п╩п╟я│я│п╟
 	 *
 	 * @param PXApplication $app {@link $app} reference to PXApplication
 	 */
@@ -78,9 +78,9 @@ class PXDatabase extends NLSQLDatabaseAdapter implements IPXDatabase {
 	}
 
 	/**
-	 * Функуция перегружает функцию родительского класса.
-	 * Родительский query возвращает массив в случае успеха и отрицательное целое в случае неуспеха.
-	 * Эта функция обрабатывает отрицательное целое и всегда возвращает массив
+	 * п╓я┐п╫п╨я┐я├п╦я▐ п©п╣я─п╣пЁя─я┐п╤п╟п╣я┌ я└я┐п╫п╨я├п╦я▌ я─п╬п╢п╦я┌п╣п╩я▄я│п╨п╬пЁп╬ п╨п╩п╟я│я│п╟.
+	 * п═п╬п╢п╦я┌п╣п╩я▄я│п╨п╦п╧ query п╡п╬п╥п╡я─п╟я┴п╟п╣я┌ п╪п╟я│я│п╦п╡ п╡ я│п╩я┐я┤п╟п╣ я┐я│п©п╣я┘п╟ п╦ п╬я┌я─п╦я├п╟я┌п╣п╩я▄п╫п╬п╣ я├п╣п╩п╬п╣ п╡ я│п╩я┐я┤п╟п╣ п╫п╣я┐я│п©п╣я┘п╟.
+	 * п╜я┌п╟ я└я┐п╫п╨я├п╦я▐ п╬п╠я─п╟п╠п╟я┌я▀п╡п╟п╣я┌ п╬я┌я─п╦я├п╟я┌п╣п╩я▄п╫п╬п╣ я├п╣п╩п╬п╣ п╦ п╡я│п╣пЁп╢п╟ п╡п╬п╥п╡я─п╟я┴п╟п╣я┌ п╪п╟я│я│п╦п╡
 	 *
 	 * @param String $query SQL-query
 	 * @param Boolean $donotusecache
@@ -91,7 +91,7 @@ class PXDatabase extends NLSQLDatabaseAdapter implements IPXDatabase {
 		$resTable = parent::query($query, $donotusecache, $limitpair);
 
 		if ($resTable == ERROR_DB_CANNOTCONNECT) {
-			$this->FatalError('Невозможно подсоединиться к БД');
+			$this->FatalError('п²п╣п╡п╬п╥п╪п╬п╤п╫п╬ п©п╬п╢я│п╬п╣п╢п╦п╫п╦я┌я▄я│я▐ п╨ п▒п■');
 
 		} elseif ($resTable == ERROR_DB_BADQUERY) {
 			$this->FatalError($this->getError());
@@ -101,7 +101,7 @@ class PXDatabase extends NLSQLDatabaseAdapter implements IPXDatabase {
 	}
 
 	/**
-	 * Загружает каталоги (directories) помеченные в datatypes.xml как schema="sql" && load="automatic"
+	 * п≈п╟пЁя─я┐п╤п╟п╣я┌ п╨п╟я┌п╟п╩п╬пЁп╦ (directories) п©п╬п╪п╣я┤п╣п╫п╫я▀п╣ п╡ datatypes.xml п╨п╟п╨ schema="sql" && load="automatic"
 	 * @see LoadSQLDirectory
 	 *
 	 * @param Array $directories reference to PXDirectoryDescription objects array
@@ -115,11 +115,11 @@ class PXDatabase extends NLSQLDatabaseAdapter implements IPXDatabase {
 	}
 
 	/**
-	 * Загружает справочники (directories)
+	 * п≈п╟пЁя─я┐п╤п╟п╣я┌ я│п©я─п╟п╡п╬я┤п╫п╦п╨п╦ (directories)
 	 *
 	 * @uses LoadDirectory
 	 *
-	 * @todo docme подробнее
+	 * @todo docme п©п╬п╢я─п╬п╠п╫п╣п╣
 	 *
 	 * @param Mixed $format
 	 */
@@ -136,7 +136,7 @@ class PXDatabase extends NLSQLDatabaseAdapter implements IPXDatabase {
 	}
 	
 	/**
-	 * Загружает справочник (directories) в зависимости от типа
+	 * п≈п╟пЁя─я┐п╤п╟п╣я┌ я│п©я─п╟п╡п╬я┤п╫п╦п╨ (directories) п╡ п╥п╟п╡п╦я│п╦п╪п╬я│я┌п╦ п╬я┌ я┌п╦п©п╟
 	 *
 	 * @uses LoadSQLDirectory, PXApplication::LoadXMLDirectory
 	 *
@@ -175,12 +175,12 @@ class PXDatabase extends NLSQLDatabaseAdapter implements IPXDatabase {
 
 
 	/**
-	 * Парсит WHERE в справочниках
+	 * п÷п╟я─я│п╦я┌ WHERE п╡ я│п©я─п╟п╡п╬я┤п╫п╦п╨п╟я┘
 	 *
 	 * @uses MapData
 	 * @uses _NormalizeObjectAttribute
 	 *
-	 * @todo docme подробнее
+	 * @todo docme п©п╬п╢я─п╬п╠п╫п╣п╣
 	 *
 	 * @param Mixed $where
 	 * @param Mixed $object
@@ -228,8 +228,8 @@ class PXDatabase extends NLSQLDatabaseAdapter implements IPXDatabase {
 	}
 
 	/**
-	 * Загружает по ссылке справочник (directory)  помеченный в datatypes.xml как schema="sql"
-	 * Использует {@link PXDatabase::_GetData()} для загрузки каталогов из базы данных
+	 * п≈п╟пЁя─я┐п╤п╟п╣я┌ п©п╬ я│я│я▀п╩п╨п╣ я│п©я─п╟п╡п╬я┤п╫п╦п╨ (directory)  п©п╬п╪п╣я┤п╣п╫п╫я▀п╧ п╡ datatypes.xml п╨п╟п╨ schema="sql"
+	 * п≤я│п©п╬п╩я▄п╥я┐п╣я┌ {@link PXDatabase::_GetData()} п╢п╩я▐ п╥п╟пЁя─я┐п╥п╨п╦ п╨п╟я┌п╟п╩п╬пЁп╬п╡ п╦п╥ п╠п╟п╥я▀ п╢п╟п╫п╫я▀я┘
 	 *
 	 * @param PXDirectoryDescription $directory
 	 */
@@ -271,10 +271,10 @@ class PXDatabase extends NLSQLDatabaseAdapter implements IPXDatabase {
 	}
 
 	/**
-	 * Конструирует и исполняет запрос в БД, возвращает массив с данными
-	 * Использует {@link NLSQLDatabaseAdapter::Query()} для запросов
+	 * п п╬п╫я│я┌я─я┐п╦я─я┐п╣я┌ п╦ п╦я│п©п╬п╩п╫я▐п╣я┌ п╥п╟п©я─п╬я│ п╡ п▒п■, п╡п╬п╥п╡я─п╟я┴п╟п╣я┌ п╪п╟я│я│п╦п╡ я│ п╢п╟п╫п╫я▀п╪п╦
+	 * п≤я│п©п╬п╩я▄п╥я┐п╣я┌ {@link NLSQLDatabaseAdapter::Query()} п╢п╩я▐ п╥п╟п©я─п╬я│п╬п╡
 	 *
-	 * @todo docme (проверить параметры)
+	 * @todo docme (п©я─п╬п╡п╣я─п╦я┌я▄ п©п╟я─п╟п╪п╣я┌я─я▀)
 	 *
 	 * @param PXTypeDescription $format
 	 * @param Integer $mode         request mode. Default = {@link DB_SELECT_TABLE}
@@ -399,8 +399,8 @@ class PXDatabase extends NLSQLDatabaseAdapter implements IPXDatabase {
 	}
 
 	/**
-	 * Возвращает массив данных из БД для заданного типа объектов {@link PXTypeDescription}.
-	 * Использует {@link PXDatabase::_GetData()} для запросов.
+	 * п▓п╬п╥п╡я─п╟я┴п╟п╣я┌ п╪п╟я│я│п╦п╡ п╢п╟п╫п╫я▀я┘ п╦п╥ п▒п■ п╢п╩я▐ п╥п╟п╢п╟п╫п╫п╬пЁп╬ я┌п╦п©п╟ п╬п╠я┼п╣п╨я┌п╬п╡ {@link PXTypeDescription}.
+	 * п≤я│п©п╬п╩я▄п╥я┐п╣я┌ {@link PXDatabase::_GetData()} п╢п╩я▐ п╥п╟п©я─п╬я│п╬п╡.
 	 *
 	 * @param PXTypeDescription $format
 	 * @param Integer $id
@@ -411,7 +411,7 @@ class PXDatabase extends NLSQLDatabaseAdapter implements IPXDatabase {
 			return array();
 		}
 		if (!is_numeric($id)) {
-			$this->FatalError('Попытка SQL-Injection!');
+			$this->FatalError('п÷п╬п©я▀я┌п╨п╟ SQL-Injection!');
 		}
 
 		$data = $this->_GetData($format, null, DB_SELECT_TABLE, $format->id.'.id = '.$id);
@@ -424,8 +424,8 @@ class PXDatabase extends NLSQLDatabaseAdapter implements IPXDatabase {
 	}
 
 	/**
-	 * Возвращает объекты из БД по массиву числовых значений для поля (Integer)
-	 * Использует {@link NLSQLDatabaseAdapter::Query()} для запросов
+	 * п▓п╬п╥п╡я─п╟я┴п╟п╣я┌ п╬п╠я┼п╣п╨я┌я▀ п╦п╥ п▒п■ п©п╬ п╪п╟я│я│п╦п╡я┐ я┤п╦я│п╩п╬п╡я▀я┘ п╥п╫п╟я┤п╣п╫п╦п╧ п╢п╩я▐ п©п╬п╩я▐ (Integer)
+	 * п≤я│п©п╬п╩я▄п╥я┐п╣я┌ {@link NLSQLDatabaseAdapter::Query()} п╢п╩я▐ п╥п╟п©я─п╬я│п╬п╡
 	 *
 	 * @param PXTypeDescription     $format
 	 * @param String $status        objects status ('TRUE' | 'FALSE')
@@ -439,12 +439,12 @@ class PXDatabase extends NLSQLDatabaseAdapter implements IPXDatabase {
 	}
 	function getObjectsByIntArrayLimited($format, $status, $field, array $intArray, $limit, $offset, $mode=DB_SELECT_TABLE, $order=NULL) {
 		if (!isset($format->fields[$field])) {
-			$this->FatalError(sprintf('В модели "%s" отсутствует поле "%s"!', $format->id, $field));
+			$this->FatalError(sprintf('п▓ п╪п╬п╢п╣п╩п╦ "%s" п╬я┌я│я┐я┌я│я┌п╡я┐п╣я┌ п©п╬п╩п╣ "%s"!', $format->id, $field));
 		}
 
 		foreach ($intArray as $val) {
 			if (!is_numeric($val)) {
-				$this->FatalError('Попытка SQL-Injection!');
+				$this->FatalError('п÷п╬п©я▀я┌п╨п╟ SQL-Injection!');
 			}
 		}
 
@@ -459,8 +459,8 @@ class PXDatabase extends NLSQLDatabaseAdapter implements IPXDatabase {
 	}
 
 	/**
-	 * Возвращает объекты из БД по массиву id (Integer)
-	 * Использует {@link NLSQLDatabaseAdapter::Query()} для запросов
+	 * п▓п╬п╥п╡я─п╟я┴п╟п╣я┌ п╬п╠я┼п╣п╨я┌я▀ п╦п╥ п▒п■ п©п╬ п╪п╟я│я│п╦п╡я┐ id (Integer)
+	 * п≤я│п©п╬п╩я▄п╥я┐п╣я┌ {@link NLSQLDatabaseAdapter::Query()} п╢п╩я▐ п╥п╟п©я─п╬я│п╬п╡
 	 *
 	 * @param PXTypeDescription     $format
 	 * @param String $status        objects status ('TRUE' | 'FALSE')
@@ -473,8 +473,8 @@ class PXDatabase extends NLSQLDatabaseAdapter implements IPXDatabase {
 	}
 
 	/**
-	 * Возвращает массив данных из БД для заданного типа объектов {@link PXTypeDescription}.
-	 * Использует {@link PXDatabase::_GetData()} для запросов
+	 * п▓п╬п╥п╡я─п╟я┴п╟п╣я┌ п╪п╟я│я│п╦п╡ п╢п╟п╫п╫я▀я┘ п╦п╥ п▒п■ п╢п╩я▐ п╥п╟п╢п╟п╫п╫п╬пЁп╬ я┌п╦п©п╟ п╬п╠я┼п╣п╨я┌п╬п╡ {@link PXTypeDescription}.
+	 * п≤я│п©п╬п╩я▄п╥я┐п╣я┌ {@link PXDatabase::_GetData()} п╢п╩я▐ п╥п╟п©я─п╬я│п╬п╡
 	 *
 	 * @param PXTypeDescription $format
 	 * @param String $status            objects status ('TRUE' | 'FALSE')
@@ -489,8 +489,8 @@ class PXDatabase extends NLSQLDatabaseAdapter implements IPXDatabase {
 	}
 
 	/**
-	 * Возвращает массив из БД для заданного типа объектов {@link PXTypeDescription}.
-	 * Использует {@link PXDatabase::_GetData()} для запросов.
+	 * п▓п╬п╥п╡я─п╟я┴п╟п╣я┌ п╪п╟я│я│п╦п╡ п╦п╥ п▒п■ п╢п╩я▐ п╥п╟п╢п╟п╫п╫п╬пЁп╬ я┌п╦п©п╟ п╬п╠я┼п╣п╨я┌п╬п╡ {@link PXTypeDescription}.
+	 * п≤я│п©п╬п╩я▄п╥я┐п╣я┌ {@link PXDatabase::_GetData()} п╢п╩я▐ п╥п╟п©я─п╬я│п╬п╡.
 	 *
 	 * @param PXTypeDescription $format
 	 * @param String $status    objects status ('TRUE' | 'FALSE')
@@ -511,15 +511,15 @@ class PXDatabase extends NLSQLDatabaseAdapter implements IPXDatabase {
 		} elseif (is_array($parent)) {
 			return $this->getObjectsByIntArrayLimited($format, $status, 'parent', $parent, $limit, $offset, $mode, $order);
 		} else {
-			$this->FatalError('Попытка SQL-Injection!');
+			$this->FatalError('п÷п╬п©я▀я┌п╨п╟ SQL-Injection!');
 		}
 
 		return $this->_GetData($format, $status, $mode, $whereClause, array($limit, $offset), $order);
 	}
 
 	/**
-	 * Возвращает массив из БД для заданного типа объектов {@link PXTypeDescription}.
-	 * Использует {@link PXDatabase::_GetData()} для запросов.
+	 * п▓п╬п╥п╡я─п╟я┴п╟п╣я┌ п╪п╟я│я│п╦п╡ п╦п╥ п▒п■ п╢п╩я▐ п╥п╟п╢п╟п╫п╫п╬пЁп╬ я┌п╦п©п╟ п╬п╠я┼п╣п╨я┌п╬п╡ {@link PXTypeDescription}.
+	 * п≤я│п©п╬п╩я▄п╥я┐п╣я┌ {@link PXDatabase::_GetData()} п╢п╩я▐ п╥п╟п©я─п╬я│п╬п╡.
 	 *
 	 * @param PXTypeDescription $format
 	 * @param String $status    objects status ('TRUE' | 'FALSE')
@@ -539,8 +539,8 @@ class PXDatabase extends NLSQLDatabaseAdapter implements IPXDatabase {
 
 
 	/**
-	 * Возвращает массив из БД для заданного типа объектов {@link PXTypeDescription}.
-	 * Использует {@link PXDatabase::_GetData()} для запросов.
+	 * п▓п╬п╥п╡я─п╟я┴п╟п╣я┌ п╪п╟я│я│п╦п╡ п╦п╥ п▒п■ п╢п╩я▐ п╥п╟п╢п╟п╫п╫п╬пЁп╬ я┌п╦п©п╟ п╬п╠я┼п╣п╨я┌п╬п╡ {@link PXTypeDescription}.
+	 * п≤я│п©п╬п╩я▄п╥я┐п╣я┌ {@link PXDatabase::_GetData()} п╢п╩я▐ п╥п╟п©я─п╬я│п╬п╡.
 	 *
 	 * @param PXTypeDescription $format
 	 * @param String $status    objects status ('TRUE' | 'FALSE')
@@ -566,7 +566,7 @@ class PXDatabase extends NLSQLDatabaseAdapter implements IPXDatabase {
 
 		$whereClause = array();
 		foreach ($field as $k => $v) {
-			//заменяет спец.значения на соотв. sql-выражения
+			//п╥п╟п╪п╣п╫я▐п╣я┌ я│п©п╣я├.п╥п╫п╟я┤п╣п╫п╦я▐ п╫п╟ я│п╬п╬я┌п╡. sql-п╡я▀я─п╟п╤п╣п╫п╦я▐
 			switch (1) {
 				case is_null($v):
 					$val = ' IS NULL';
@@ -608,9 +608,9 @@ class PXDatabase extends NLSQLDatabaseAdapter implements IPXDatabase {
 	}
 
 	/**
-	 * Возвращает массив данных из БД для заданного типа объектов {@link PXTypeDescription}.
-	 * Производит поиск $world по ВСЕМ полям указанным в $format.
-	 * Использует {@link PXDatabase::_GetData()} для запросов.
+	 * п▓п╬п╥п╡я─п╟я┴п╟п╣я┌ п╪п╟я│я│п╦п╡ п╢п╟п╫п╫я▀я┘ п╦п╥ п▒п■ п╢п╩я▐ п╥п╟п╢п╟п╫п╫п╬пЁп╬ я┌п╦п©п╟ п╬п╠я┼п╣п╨я┌п╬п╡ {@link PXTypeDescription}.
+	 * п÷я─п╬п╦п╥п╡п╬п╢п╦я┌ п©п╬п╦я│п╨ $world п©п╬ п▓п║п∙п° п©п╬п╩я▐п╪ я┐п╨п╟п╥п╟п╫п╫я▀п╪ п╡ $format.
+	 * п≤я│п©п╬п╩я▄п╥я┐п╣я┌ {@link PXDatabase::_GetData()} п╢п╩я▐ п╥п╟п©я─п╬я│п╬п╡.
 	 *
 	 * @param PXTypeDescription $format
 	 * @param String $status    objects status ('TRUE' | 'FALSE')
@@ -651,12 +651,12 @@ class PXDatabase extends NLSQLDatabaseAdapter implements IPXDatabase {
 	}
 
 	/**
-	 * Добавляет объект в БД.
-	 * Перед добавлением объект преобразуется к необходимому storage type.
-	 * Перед добавлением объекта вызываются триггеры. Если хотя бы один OnBeforeAddObject
-	 * триггер вернёт false, добавление не произойдёт.
-	 * После успешного добавления объекта вызываются триггеры OnAddObject.
-	 * Метод использует {@link PXDatabase::InsertObject} для добавления объектов.
+	 * п■п╬п╠п╟п╡п╩я▐п╣я┌ п╬п╠я┼п╣п╨я┌ п╡ п▒п■.
+	 * п÷п╣я─п╣п╢ п╢п╬п╠п╟п╡п╩п╣п╫п╦п╣п╪ п╬п╠я┼п╣п╨я┌ п©я─п╣п╬п╠я─п╟п╥я┐п╣я┌я│я▐ п╨ п╫п╣п╬п╠я┘п╬п╢п╦п╪п╬п╪я┐ storage type.
+	 * п÷п╣я─п╣п╢ п╢п╬п╠п╟п╡п╩п╣п╫п╦п╣п╪ п╬п╠я┼п╣п╨я┌п╟ п╡я▀п╥я▀п╡п╟я▌я┌я│я▐ я┌я─п╦пЁпЁп╣я─я▀. п∙я│п╩п╦ я┘п╬я┌я▐ п╠я▀ п╬п╢п╦п╫ OnBeforeAddObject
+	 * я┌я─п╦пЁпЁп╣я─ п╡п╣я─п╫я▒я┌ false, п╢п╬п╠п╟п╡п╩п╣п╫п╦п╣ п╫п╣ п©я─п╬п╦п╥п╬п╧п╢я▒я┌.
+	 * п÷п╬я│п╩п╣ я┐я│п©п╣я┬п╫п╬пЁп╬ п╢п╬п╠п╟п╡п╩п╣п╫п╦я▐ п╬п╠я┼п╣п╨я┌п╟ п╡я▀п╥я▀п╡п╟я▌я┌я│я▐ я┌я─п╦пЁпЁп╣я─я▀ OnAddObject.
+	 * п°п╣я┌п╬п╢ п╦я│п©п╬п╩я▄п╥я┐п╣я┌ {@link PXDatabase::InsertObject} п╢п╩я▐ п╢п╬п╠п╟п╡п╩п╣п╫п╦я▐ п╬п╠я┼п╣п╨я┌п╬п╡.
 	 *
 	 * @see InsertObject
 	 * @see ModifyingQuery
@@ -668,7 +668,7 @@ class PXDatabase extends NLSQLDatabaseAdapter implements IPXDatabase {
 		$audit = PXAuditLogger::getLogger($this->app, $this);
 
 		if (!$this->user->can(array('write', 'add'), $format, $object)) {
-			$errString = 'Отказано в доступе при попытке создать объект типа <em>'.$format->id.'</em>';
+			$errString = 'п·я┌п╨п╟п╥п╟п╫п╬ п╡ п╢п╬я│я┌я┐п©п╣ п©я─п╦ п©п╬п©я▀я┌п╨п╣ я│п╬п╥п╢п╟я┌я▄ п╬п╠я┼п╣п╨я┌ я┌п╦п©п╟ <em>'.$format->id.'</em>';
 			$audit->error($errString, $format->id .'/0');
 			$this->FatalError($errString);
 		}
@@ -719,9 +719,9 @@ class PXDatabase extends NLSQLDatabaseAdapter implements IPXDatabase {
 		}
 
 		if($permitAdd){
-			// формируем список полей которые не будут сохранены в базу данных
-			// ориентируемся на результат выполнения inMeta, для файловых
-			// и виртуальных полей метод должен возвращать true.
+			// я└п╬я─п╪п╦я─я┐п╣п╪ я│п©п╦я│п╬п╨ п©п╬п╩п╣п╧ п╨п╬я┌п╬я─я▀п╣ п╫п╣ п╠я┐п╢я┐я┌ я│п╬я┘я─п╟п╫п╣п╫я▀ п╡ п╠п╟п╥я┐ п╢п╟п╫п╫я▀я┘
+			// п╬я─п╦п╣п╫я┌п╦я─я┐п╣п╪я│я▐ п╫п╟ я─п╣п╥я┐п╩я▄я┌п╟я┌ п╡я▀п©п╬п╩п╫п╣п╫п╦я▐ inMeta, п╢п╩я▐ я└п╟п╧п╩п╬п╡я▀я┘
+			// п╦ п╡п╦я─я┌я┐п╟п╩я▄п╫я▀я┘ п©п╬п╩п╣п╧ п╪п╣я┌п╬п╢ п╢п╬п╩п╤п╣п╫ п╡п╬п╥п╡я─п╟я┴п╟я┌я▄ true.
 			$cuttedFieldDiff = array_diff(array_keys($format->fields), $dbFields);
 			$sysMetaFieldList = array();
 			foreach($cuttedFieldDiff as $k) {
@@ -729,7 +729,7 @@ class PXDatabase extends NLSQLDatabaseAdapter implements IPXDatabase {
 					$sysMetaFieldList[] = $k;
 				}
 			}
-			// открываем транзакцию
+			// п╬я┌п╨я─я▀п╡п╟п╣п╪ я┌я─п╟п╫п╥п╟п╨я├п╦я▌
 			$this->transactionBegin();
 			$newId = $this->InsertObject($format->id, $dbFields, $dbValues, false);
 			if ($newId < 0) {
@@ -741,7 +741,7 @@ class PXDatabase extends NLSQLDatabaseAdapter implements IPXDatabase {
 
 			$object['id'] = $newId;
 
-			// обходим все поля, в попытке найти что-то похожее на файл
+			// п╬п╠я┘п╬п╢п╦п╪ п╡я│п╣ п©п╬п╩я▐, п╡ п©п╬п©я▀я┌п╨п╣ п╫п╟п╧я┌п╦ я┤я┌п╬-я┌п╬ п©п╬я┘п╬п╤п╣п╣ п╫п╟ я└п╟п╧п╩
 			$sysMetaField = array();
 			foreach ($format->fields as $k=>$v) {
 				$p = array('id'=>$newId, 'format'=>$format->id);
@@ -752,7 +752,7 @@ class PXDatabase extends NLSQLDatabaseAdapter implements IPXDatabase {
 				}
 			}
 
-			// обновляем sys_meta, если есть что туда записать.
+			// п╬п╠п╫п╬п╡п╩я▐п╣п╪ sys_meta, п╣я│п╩п╦ п╣я│я┌я▄ я┤я┌п╬ я┌я┐п╢п╟ п╥п╟п©п╦я│п╟я┌я▄.
 			$sqlUpdateRule = array();
 			$sqlUpdateRule[] = "sys_order = id";
 			if (count($sysMetaField) > 0) {
@@ -775,18 +775,18 @@ class PXDatabase extends NLSQLDatabaseAdapter implements IPXDatabase {
 				$t->getTrigger()->OnAddObject($this, $newId, $format, $object, $dbFields, $dbValues);
 			}
 
-			$audit->info('Объект добавлен', $format->id .'/'. $newId);
+			$audit->info('п·п╠я┼п╣п╨я┌ п╢п╬п╠п╟п╡п╩п╣п╫', $format->id .'/'. $newId);
 		}
 
 		return $newId;
 	}
 
 	/**
-	 * Добавляет объекты в БД.
+	 * п■п╬п╠п╟п╡п╩я▐п╣я┌ п╬п╠я┼п╣п╨я┌я▀ п╡ п▒п■.
 	 *
-	 * Перед добавлением преобразуются к необходимому storage type.
-	 * После добавления объектов триггеры НЕ вызываются.
-	 * Использует {@link PXDatabase::InsertObject} для добавления объектов.
+	 * п÷п╣я─п╣п╢ п╢п╬п╠п╟п╡п╩п╣п╫п╦п╣п╪ п©я─п╣п╬п╠я─п╟п╥я┐я▌я┌я│я▐ п╨ п╫п╣п╬п╠я┘п╬п╢п╦п╪п╬п╪я┐ storage type.
+	 * п÷п╬я│п╩п╣ п╢п╬п╠п╟п╡п╩п╣п╫п╦я▐ п╬п╠я┼п╣п╨я┌п╬п╡ я┌я─п╦пЁпЁп╣я─я▀ п²п∙ п╡я▀п╥я▀п╡п╟я▌я┌я│я▐.
+	 * п≤я│п©п╬п╩я▄п╥я┐п╣я┌ {@link PXDatabase::InsertObject} п╢п╩я▐ п╢п╬п╠п╟п╡п╩п╣п╫п╦я▐ п╬п╠я┼п╣п╨я┌п╬п╡.
 	 *
 	 * @see InsertObject
 	 * @see ModifyingQuery
@@ -810,15 +810,15 @@ class PXDatabase extends NLSQLDatabaseAdapter implements IPXDatabase {
 				$objectInDB = $this->getObjectById($this->types[$format->parent], $parentId);
 
 				if (!count($objectInDB)) {
-					$this->FatalError('Попытка добавить объект в несуществующий раздел');
+					$this->FatalError('п÷п╬п©я▀я┌п╨п╟ п╢п╬п╠п╟п╡п╦я┌я▄ п╬п╠я┼п╣п╨я┌ п╡ п╫п╣я│я┐я┴п╣я│я┌п╡я┐я▌я┴п╦п╧ я─п╟п╥п╢п╣п╩');
 				}
 
 				if ($format->id != $format->parent && !in_array($format->id, $this->app->GetAllowedChildsKeys($format->parent, $objectInDB))) {
-					$this->FatalError('Объект данного типа не может быть добавлен в данный раздел');
+					$this->FatalError('п·п╠я┼п╣п╨я┌ п╢п╟п╫п╫п╬пЁп╬ я┌п╦п©п╟ п╫п╣ п╪п╬п╤п╣я┌ п╠я▀я┌я▄ п╢п╬п╠п╟п╡п╩п╣п╫ п╡ п╢п╟п╫п╫я▀п╧ я─п╟п╥п╢п╣п╩');
 				}
 
 				if (!$this->user->can(array('write', 'add'), $format, array('id' => 0, 'parent' => $parentId))) {
-					$errString = 'Отказано в доступе при попытке создать объект типа <em>'.$format->id.'</em>';
+					$errString = 'п·я┌п╨п╟п╥п╟п╫п╬ п╡ п╢п╬я│я┌я┐п©п╣ п©я─п╦ п©п╬п©я▀я┌п╨п╣ я│п╬п╥п╢п╟я┌я▄ п╬п╠я┼п╣п╨я┌ я┌п╦п©п╟ <em>'.$format->id.'</em>';
 					$audit->error($errString, $format->id .'/0');
 					$this->FatalError($errString);
 				}
@@ -894,7 +894,7 @@ class PXDatabase extends NLSQLDatabaseAdapter implements IPXDatabase {
 
 		$res = $this->ModifyingCopy($format->id, $copyCols, $copyTable);
 		$this->clearObjectTypeCache($format->id);
-		$audit->info('Добавлено '.$idx.' объектов', $format->id);
+		$audit->info('п■п╬п╠п╟п╡п╩п╣п╫п╬ '.$idx.' п╬п╠я┼п╣п╨я┌п╬п╡', $format->id);
 
 		PXProfiler::end();
 
@@ -937,14 +937,14 @@ class PXDatabase extends NLSQLDatabaseAdapter implements IPXDatabase {
 			$t->getTrigger()->onCloneObject($this, $format, $object, $donorObject);
 		}
 
-		$audit->info('Объект клонирован', $format->id .'/'. $donorObject['id']);
+		$audit->info('п·п╠я┼п╣п╨я┌ п╨п╩п╬п╫п╦я─п╬п╡п╟п╫', $format->id .'/'. $donorObject['id']);
 
 		return $object['id'];
 	}
 
 	/**
-	 * Изменяет хранящийся в БД объект
-	 * Работает по аналогии с {@link PXDatabase::AddContentObject()}
+	 * п≤п╥п╪п╣п╫я▐п╣я┌ я┘я─п╟п╫я▐я┴п╦п╧я│я▐ п╡ п▒п■ п╬п╠я┼п╣п╨я┌
+	 * п═п╟п╠п╬я┌п╟п╣я┌ п©п╬ п╟п╫п╟п╩п╬пЁп╦п╦ я│ {@link PXDatabase::AddContentObject()}
 	 *
 	 * @see AddContentObject
 	 *
@@ -954,20 +954,20 @@ class PXDatabase extends NLSQLDatabaseAdapter implements IPXDatabase {
 	function ModifyContentObject($format, $object, $skipHidden = false) {
 		$audit = PXAuditLogger::getLogger($this->app, $this);
 		if (!$this->user->can(array('write', 'modify'), $format, $object)) {
-			$errString = 'Отказано в доступе при попытке модифицировать объект типа <em>'.$format->id.'</em>';
+			$errString = 'п·я┌п╨п╟п╥п╟п╫п╬ п╡ п╢п╬я│я┌я┐п©п╣ п©я─п╦ п©п╬п©я▀я┌п╨п╣ п╪п╬п╢п╦я└п╦я├п╦я─п╬п╡п╟я┌я▄ п╬п╠я┼п╣п╨я┌ я┌п╦п©п╟ <em>'.$format->id.'</em>';
 			$audit->error($errString, $format->parent .'/'. $object['parent']);
 			$this->FatalError($errString);
 		}
 
 		$objectInDB = $this->getObjectById($format, $object['id']);
 		if (!count($objectInDB)) {
-			$errString = 'Попытка модифицировать отсутствующий объект';
+			$errString = 'п÷п╬п©я▀я┌п╨п╟ п╪п╬п╢п╦я└п╦я├п╦я─п╬п╡п╟я┌я▄ п╬я┌я│я┐я┌я│я┌п╡я┐я▌я┴п╦п╧ п╬п╠я┼п╣п╨я┌';
 			$audit->error($errString, $format->id .'/'.$object['id']);
 			$this->FatalError($errString);
 		}
 
 		if (!$this->user->can(array('write', 'modify'), $format, $objectInDB)) {
-			$errString = 'Отказано в доступе при попытке модифицировать объект типа <em>'.$format->id.'</em>';
+			$errString = 'п·я┌п╨п╟п╥п╟п╫п╬ п╡ п╢п╬я│я┌я┐п©п╣ п©я─п╦ п©п╬п©я▀я┌п╨п╣ п╪п╬п╢п╦я└п╦я├п╦я─п╬п╡п╟я┌я▄ п╬п╠я┼п╣п╨я┌ я┌п╦п©п╟ <em>'.$format->id.'</em>';
 			$audit->error($errString, $format->parent .'/'. $object['parent']);
 			$this->FatalError($errString);
 		}
@@ -1003,9 +1003,9 @@ class PXDatabase extends NLSQLDatabaseAdapter implements IPXDatabase {
 		}
 
 		if ($permitModify) {
-			// формируем список полей которые не будут сохранены в базу данных
-			// ориентируемся на результат выполнения inMeta, для файловых
-			// и виртуальных полей метод должен возвращать true.
+			// я└п╬я─п╪п╦я─я┐п╣п╪ я│п©п╦я│п╬п╨ п©п╬п╩п╣п╧ п╨п╬я┌п╬я─я▀п╣ п╫п╣ п╠я┐п╢я┐я┌ я│п╬я┘я─п╟п╫п╣п╫я▀ п╡ п╠п╟п╥я┐ п╢п╟п╫п╫я▀я┘
+			// п╬я─п╦п╣п╫я┌п╦я─я┐п╣п╪я│я▐ п╫п╟ я─п╣п╥я┐п╩я▄я┌п╟я┌ п╡я▀п©п╬п╩п╫п╣п╫п╦я▐ inMeta, п╢п╩я▐ я└п╟п╧п╩п╬п╡я▀я┘
+			// п╦ п╡п╦я─я┌я┐п╟п╩я▄п╫я▀я┘ п©п╬п╩п╣п╧ п╪п╣я┌п╬п╢ п╢п╬п╩п╤п╣п╫ п╡п╬п╥п╡я─п╟я┴п╟я┌я▄ true.
 			$cuttedFieldDiff = array_diff(array_keys($format->fields), $dbFields);
 			$sysMetaFieldList = array();
 			foreach($cuttedFieldDiff as $k) {
@@ -1048,9 +1048,9 @@ class PXDatabase extends NLSQLDatabaseAdapter implements IPXDatabase {
 			}
 
 			if (count($sysMetaFieldList) > 0) {
-				// обновляем sys_meta, если есть что туда записать,
-				// а так же, если у объекта вообще есть поля типа inMeta! Иначе нарушается логика!
-				// см. логику выборки в методе createSelector() (проверка has_sys_meta)!
+				// п╬п╠п╫п╬п╡п╩я▐п╣п╪ sys_meta, п╣я│п╩п╦ п╣я│я┌я▄ я┤я┌п╬ я┌я┐п╢п╟ п╥п╟п©п╦я│п╟я┌я▄,
+				// п╟ я┌п╟п╨ п╤п╣, п╣я│п╩п╦ я┐ п╬п╠я┼п╣п╨я┌п╟ п╡п╬п╬п╠я┴п╣ п╣я│я┌я▄ п©п╬п╩я▐ я┌п╦п©п╟ inMeta! п≤п╫п╟я┤п╣ п╫п╟я─я┐я┬п╟п╣я┌я│я▐ п╩п╬пЁп╦п╨п╟!
+				// я│п╪. п╩п╬пЁп╦п╨я┐ п╡я▀п╠п╬я─п╨п╦ п╡ п╪п╣я┌п╬п╢п╣ createSelector() (п©я─п╬п╡п╣я─п╨п╟ has_sys_meta)!
 				$sqlUpdateRule = sprintf(
 					"sys_meta = %s",
 					count($sysMetaField) > 0
@@ -1067,14 +1067,14 @@ class PXDatabase extends NLSQLDatabaseAdapter implements IPXDatabase {
 			foreach ($this->triggers as $t)
 				$t->getTrigger()->OnModifyObject($this, $object['id'], $format, $object, $dbFields, $dbValues, $objectInDB);
 
-			$audit->info('Объект изменен', $format->id .'/'. $object['id']);
+			$audit->info('п·п╠я┼п╣п╨я┌ п╦п╥п╪п╣п╫п╣п╫', $format->id .'/'. $object['id']);
 		}
 		return NULL;
 	}
 
 	/**
-	 * Изменяет системные параметры объекта хранящегося в БД ('sys_allowed', 'sys_accessmod', 'sys_accessput')
-	 * Использует {@link PXDatabase::UpdateObjectByID} для доступа к объектам.
+	 * п≤п╥п╪п╣п╫я▐п╣я┌ я│п╦я│я┌п╣п╪п╫я▀п╣ п©п╟я─п╟п╪п╣я┌я─я▀ п╬п╠я┼п╣п╨я┌п╟ я┘я─п╟п╫я▐я┴п╣пЁп╬я│я▐ п╡ п▒п■ ('sys_allowed', 'sys_accessmod', 'sys_accessput')
+	 * п≤я│п©п╬п╩я▄п╥я┐п╣я┌ {@link PXDatabase::UpdateObjectByID} п╢п╩я▐ п╢п╬я│я┌я┐п©п╟ п╨ п╬п╠я┼п╣п╨я┌п╟п╪.
 	 *
 	 * @see OBJ_FIELD_CHILDREN
 	 *
@@ -1086,7 +1086,7 @@ class PXDatabase extends NLSQLDatabaseAdapter implements IPXDatabase {
 		$objectInDB = $this->getObjectById($format, $object['id']);
 		
 		if (!count($objectInDB)) {
-			$this->FatalError('Попытка модифицировать отсутствующий объект');
+			$this->FatalError('п÷п╬п©я▀я┌п╨п╟ п╪п╬п╢п╦я└п╦я├п╦я─п╬п╡п╟я┌я▄ п╬я┌я│я┐я┌я│я┌п╡я┐я▌я┴п╦п╧ п╬п╠я┼п╣п╨я┌');
 		}
 		
 		if(isset($objectInDB['parent']) && !isset($object['parent'])){
@@ -1094,7 +1094,7 @@ class PXDatabase extends NLSQLDatabaseAdapter implements IPXDatabase {
 		}
 		
 		if (!$this->user->can(array('write', 'modify'), $format, $object)) {
-			$errString = 'Отказано в доступе при попытке модифицировать объект типа <em>'.$format->id.'</em>';
+			$errString = 'п·я┌п╨п╟п╥п╟п╫п╬ п╡ п╢п╬я│я┌я┐п©п╣ п©я─п╦ п©п╬п©я▀я┌п╨п╣ п╪п╬п╢п╦я└п╦я├п╦я─п╬п╡п╟я┌я▄ п╬п╠я┼п╣п╨я┌ я┌п╦п©п╟ <em>'.$format->id.'</em>';
 			$audit->error($errString, $format->parent .'/'. (isset($object['parent']) ? $object['parent'] : ''));
 			$this->FatalError($errString);
 		}
@@ -1115,15 +1115,15 @@ class PXDatabase extends NLSQLDatabaseAdapter implements IPXDatabase {
 			foreach ($this->triggers as $t)
 				$t->getTrigger()->OnModifyObjectSysVars($this, $object['id'], $format, $object, $dbFields, $dbValues, $objectInDB);
 
-			$audit->info('Изменены системные параметры объекта', $format->id .'/'. $object['id']);
+			$audit->info('п≤п╥п╪п╣п╫п╣п╫я▀ я│п╦я│я┌п╣п╪п╫я▀п╣ п©п╟я─п╟п╪п╣я┌я─я▀ п╬п╠я┼п╣п╨я┌п╟', $format->id .'/'. $object['id']);
 		}
 	}
 
 	/**
-	 * Удаляет объект (и его childrens) из БД.
-	 * Использует {@link PXDatabase::ModifyingQuery} для удаления.
-	 * Перед и после удаления вызываются триггеры. Если хотя бы один OnBeforeDeleteObject
-	 * триггер вернёт false, удаление не произойдёт.
+	 * пёп╢п╟п╩я▐п╣я┌ п╬п╠я┼п╣п╨я┌ (п╦ п╣пЁп╬ childrens) п╦п╥ п▒п■.
+	 * п≤я│п©п╬п╩я▄п╥я┐п╣я┌ {@link PXDatabase::ModifyingQuery} п╢п╩я▐ я┐п╢п╟п╩п╣п╫п╦я▐.
+	 * п÷п╣я─п╣п╢ п╦ п©п╬я│п╩п╣ я┐п╢п╟п╩п╣п╫п╦я▐ п╡я▀п╥я▀п╡п╟я▌я┌я│я▐ я┌я─п╦пЁпЁп╣я─я▀. п∙я│п╩п╦ я┘п╬я┌я▐ п╠я▀ п╬п╢п╦п╫ OnBeforeDeleteObject
+	 * я┌я─п╦пЁпЁп╣я─ п╡п╣я─п╫я▒я┌ false, я┐п╢п╟п╩п╣п╫п╦п╣ п╫п╣ п©я─п╬п╦п╥п╬п╧п╢я▒я┌.
 	 *
 	 *
 	 * @param PXTypeDescription $format
@@ -1132,9 +1132,9 @@ class PXDatabase extends NLSQLDatabaseAdapter implements IPXDatabase {
 	function DeleteContentObject($format, $objectId) {
 		$audit = PXAuditLogger::getLogger($this->app, $this);
 		$objectInDB = $this->getObjectById($format, $objectId);
-		if (!count($objectInDB)) $this->FatalError('Попытка удалить отсутствующий объект');
+		if (!count($objectInDB)) $this->FatalError('п÷п╬п©я▀я┌п╨п╟ я┐п╢п╟п╩п╦я┌я▄ п╬я┌я│я┐я┌я│я┌п╡я┐я▌я┴п╦п╧ п╬п╠я┼п╣п╨я┌');
 		if (!$this->user->can(array('write', 'delete'), $format, $objectInDB)) {
-			$errString = 'Отказано в доступе при попытке удалить объект типа <em>'.$format->id.'</em>';
+			$errString = 'п·я┌п╨п╟п╥п╟п╫п╬ п╡ п╢п╬я│я┌я┐п©п╣ п©я─п╦ п©п╬п©я▀я┌п╨п╣ я┐п╢п╟п╩п╦я┌я▄ п╬п╠я┼п╣п╨я┌ я┌п╦п©п╟ <em>'.$format->id.'</em>';
 			$audit->error($errString, $format->parent .'/'. $objectInDB['id']);
 			$this->FatalError($errString);
 		}
@@ -1162,13 +1162,13 @@ class PXDatabase extends NLSQLDatabaseAdapter implements IPXDatabase {
 			foreach ($this->triggers as $t)
 				$t->getTrigger()->OnDeleteObject($this, $objectId, $format, $objectInDB);
 
-			$audit->info('Объект удален', $format->id .'/'. $objectId);
+			$audit->info('п·п╠я┼п╣п╨я┌ я┐п╢п╟п╩п╣п╫', $format->id .'/'. $objectId);
 		}
 	}
 
 	/**
-	 * Поднимает объект в списке на одну позицию
-	 * Использует {@link PXDatabase::_moveContentObject}
+	 * п÷п╬п╢п╫п╦п╪п╟п╣я┌ п╬п╠я┼п╣п╨я┌ п╡ я│п©п╦я│п╨п╣ п╫п╟ п╬п╢п╫я┐ п©п╬п╥п╦я├п╦я▌
+	 * п≤я│п©п╬п╩я▄п╥я┐п╣я┌ {@link PXDatabase::_moveContentObject}
 	 *
 	 * @see sys_order
 	 *
@@ -1180,8 +1180,8 @@ class PXDatabase extends NLSQLDatabaseAdapter implements IPXDatabase {
 	}
 
 	/**
-	 * Опускает объект в списке на одну позицию
-	 * Использует {@link PXDatabase::_moveContentObject}
+	 * п·п©я┐я│п╨п╟п╣я┌ п╬п╠я┼п╣п╨я┌ п╡ я│п©п╦я│п╨п╣ п╫п╟ п╬п╢п╫я┐ п©п╬п╥п╦я├п╦я▌
+	 * п≤я│п©п╬п╩я▄п╥я┐п╣я┌ {@link PXDatabase::_moveContentObject}
 	 *
 	 * @see sys_order
 	 *
@@ -1193,8 +1193,8 @@ class PXDatabase extends NLSQLDatabaseAdapter implements IPXDatabase {
 	}
 
 	/**
-	 * Изменяет позицию объект в списке нужное количество раз
-	 * Использует {@link PXDatabase::_moveContentObject}
+	 * п≤п╥п╪п╣п╫я▐п╣я┌ п©п╬п╥п╦я├п╦я▌ п╬п╠я┼п╣п╨я┌ п╡ я│п©п╦я│п╨п╣ п╫я┐п╤п╫п╬п╣ п╨п╬п╩п╦я┤п╣я│я┌п╡п╬ я─п╟п╥
+	 * п≤я│п©п╬п╩я▄п╥я┐п╣я┌ {@link PXDatabase::_moveContentObject}
 	 *
 	 * @see sys_order
 	 *
@@ -1211,8 +1211,8 @@ class PXDatabase extends NLSQLDatabaseAdapter implements IPXDatabase {
 	}
 
 	/**
-	 * Изменяет позицию объект в списке
-	 * Использует {@link PXDatabase::ModifyingQuery}
+	 * п≤п╥п╪п╣п╫я▐п╣я┌ п©п╬п╥п╦я├п╦я▌ п╬п╠я┼п╣п╨я┌ п╡ я│п©п╦я│п╨п╣
+	 * п≤я│п©п╬п╩я▄п╥я┐п╣я┌ {@link PXDatabase::ModifyingQuery}
 	 *
 	 * @see sys_order
 	 *
@@ -1224,10 +1224,10 @@ class PXDatabase extends NLSQLDatabaseAdapter implements IPXDatabase {
 		$audit = PXAuditLogger::getLogger($this->app, $this);
 
 		$objectInDB = $this->getObjectById($format, $objectId);
-		if (!count($objectInDB)) $this->FatalError('Попытка модифицировать отсутствующий объект');
+		if (!count($objectInDB)) $this->FatalError('п÷п╬п©я▀я┌п╨п╟ п╪п╬п╢п╦я└п╦я├п╦я─п╬п╡п╟я┌я▄ п╬я┌я│я┐я┌я│я┌п╡я┐я▌я┴п╦п╧ п╬п╠я┼п╣п╨я┌');
 
 		if (!$this->user->can(array('write', 'modify'), $format, $objectInDB)) {
-			$errString = 'Отказано в доступе при попытке модифицировать объект типа <em>'.$format->id.'</em>';
+			$errString = 'п·я┌п╨п╟п╥п╟п╫п╬ п╡ п╢п╬я│я┌я┐п©п╣ п©я─п╦ п©п╬п©я▀я┌п╨п╣ п╪п╬п╢п╦я└п╦я├п╦я─п╬п╡п╟я┌я▄ п╬п╠я┼п╣п╨я┌ я┌п╦п©п╟ <em>'.$format->id.'</em>';
 			$audit->error($errString, $format->id .'/'. $objectInDB['id']);
 			$this->FatalError($errString);
 		}
@@ -1278,13 +1278,13 @@ class PXDatabase extends NLSQLDatabaseAdapter implements IPXDatabase {
 			foreach ($this->triggers as $t) {
 				$t->getTrigger()->OnMoveObject($this, $objectId, $format, $objectInDB);
 			}
-			$audit->info('Объект перемещен в списке', $format->id .'/'. $objectId);
+			$audit->info('п·п╠я┼п╣п╨я┌ п©п╣я─п╣п╪п╣я┴п╣п╫ п╡ я│п©п╦я│п╨п╣', $format->id .'/'. $objectId);
 		}
 	}
 
 
 	/**
-	 * Нормализует атрибут объекта
+	 * п²п╬я─п╪п╟п╩п╦п╥я┐п╣я┌ п╟я┌я─п╦п╠я┐я┌ п╬п╠я┼п╣п╨я┌п╟
 	 *
 	 * @param String            $k
 	 * @param Array             $object
@@ -1299,17 +1299,17 @@ class PXDatabase extends NLSQLDatabaseAdapter implements IPXDatabase {
 			'db'       =>& $this
 		);
 
-		// очень странное поведение, но, normalizeObjectAttribute на самом деле пишет
-		// новые ключи в dbFields и в dbValues, базовый метод PXStorageType не осуществляет записи в эти атрибуты.
-		// у тех типов данных которые сохраняются в базе присутствует собственная имплементация метода
+		// п╬я┤п╣п╫я▄ я│я┌я─п╟п╫п╫п╬п╣ п©п╬п╡п╣п╢п╣п╫п╦п╣, п╫п╬, normalizeObjectAttribute п╫п╟ я│п╟п╪п╬п╪ п╢п╣п╩п╣ п©п╦я┬п╣я┌
+		// п╫п╬п╡я▀п╣ п╨п╩я▌я┤п╦ п╡ dbFields п╦ п╡ dbValues, п╠п╟п╥п╬п╡я▀п╧ п╪п╣я┌п╬п╢ PXStorageType п╫п╣ п╬я│я┐я┴п╣я│я┌п╡п╩я▐п╣я┌ п╥п╟п©п╦я│п╦ п╡ я█я┌п╦ п╟я┌я─п╦п╠я┐я┌я▀.
+		// я┐ я┌п╣я┘ я┌п╦п©п╬п╡ п╢п╟п╫п╫я▀я┘ п╨п╬я┌п╬я─я▀п╣ я│п╬я┘я─п╟п╫я▐я▌я┌я│я▐ п╡ п╠п╟п╥п╣ п©я─п╦я│я┐я┌я│я┌п╡я┐п╣я┌ я│п╬п╠я│я┌п╡п╣п╫п╫п╟я▐ п╦п╪п©п╩п╣п╪п╣п╫я┌п╟я├п╦я▐ п╪п╣я┌п╬п╢п╟
 		// normalizeObjectAttribute
 		list($v, $dbFields, $dbValues) = $field->storageType->normalizeObjectAttribute($field, $object, $p);
 		return $v;
 	}
 
 	/**
-	 * Нормализует PathName объекта
-	 * Использует {@link PXDatabase::ModifyingQuery}
+	 * п²п╬я─п╪п╟п╩п╦п╥я┐п╣я┌ PathName п╬п╠я┼п╣п╨я┌п╟
+	 * п≤я│п©п╬п╩я▄п╥я┐п╣я┌ {@link PXDatabase::ModifyingQuery}
 	 *
 	 * @param PXTypeDescription $format
 	 * @param Array             $object     object id
@@ -1419,7 +1419,7 @@ SQL;
 
 	/**
 	 *
-	 * Использует {@link PXDatabase::Query}
+	 * п≤я│п©п╬п╩я▄п╥я┐п╣я┌ {@link PXDatabase::Query}
 	 *
 	 * @todo docme (check params documentation)
 	 *
@@ -1517,7 +1517,7 @@ SQL;
 
 	/**
 	 *
-	 * Использует {@link PXDatabase::Query}
+	 * п≤я│п©п╬п╩я▄п╥я┐п╣я┌ {@link PXDatabase::Query}
 	 *
 	 * @todo docme (check params documentation)
 	 *
@@ -1531,7 +1531,7 @@ SQL;
 
 	/**
 	 *
-	 * Использует {@link PXDatabase::Query}
+	 * п≤я│п©п╬п╩я▄п╥я┐п╣я┌ {@link PXDatabase::Query}
 	 *
 	 * @todo docme (check params documentation)
 	 *
@@ -1625,7 +1625,7 @@ SQL;
 
 	/**
 	 *
-	 * Использует {@link PXDatabase::Query}
+	 * п≤я│п©п╬п╩я▄п╥я┐п╣я┌ {@link PXDatabase::Query}
 	 *
 	 * @todo docme (check params documentation)
 	 *
@@ -1643,24 +1643,24 @@ SQL;
 		$linkedFormat = $reference->getOther($format);
 
 		$objectInDB = $this->getObjectById($this->types[$format], $id);
-		if (!count($objectInDB)) $this->FatalError('Попытка модифицировать отсутствующий объект');
+		if (!count($objectInDB)) $this->FatalError('п÷п╬п©я▀я┌п╨п╟ п╪п╬п╢п╦я└п╦я├п╦я─п╬п╡п╟я┌я▄ п╬я┌я│я┐я┌я│я┌п╡я┐я▌я┴п╦п╧ п╬п╠я┼п╣п╨я┌');
 
 		if (!$this->user->can(array('write', 'modify'), $this->types[$format], $objectInDB)) {
-			$errString = 'Отказано в доступе при попытке модифицировать объект типа <em>'.$format.'</em>';
+			$errString = 'п·я┌п╨п╟п╥п╟п╫п╬ п╡ п╢п╬я│я┌я┐п©п╣ п©я─п╦ п©п╬п©я▀я┌п╨п╣ п╪п╬п╢п╦я└п╦я├п╦я─п╬п╡п╟я┌я▄ п╬п╠я┼п╣п╨я┌ я┌п╦п©п╟ <em>'.$format.'</em>';
 			$audit->error($errString, $format .'/'. $objectInDB['id']);
 			$this->FatalError($errString);
 		}
 		$tmp = array();
 		foreach ($links as $k=>$v) {
 			if(is_string($k) && !ctype_digit($k)) {
-				$this->FatalError('Попытка SQL-Injection!');
+				$this->FatalError('п÷п╬п©я▀я┌п╨п╟ SQL-Injection!');
 			}
 			if (isset($v['on'])) $tmp[] = $k;
 		}
 		$objectsToLink = $this->getObjectsByIdArray($this->types[$linkedFormat], NULL, $tmp);
 		foreach ($objectsToLink as $objectToLink) {
 			if (!$this->user->can(array('write', 'modify'), $this->types[$linkedFormat], $objectToLink) && !$this->user->can('linkto', $this->types[$linkedFormat], $objectToLink)) {
-				$errString = 'Отказано в доступе при попытке привязать объект типа <em>'.$linkedFormat.'</em> к объекту типа <em>'.$format.'</em>';
+				$errString = 'п·я┌п╨п╟п╥п╟п╫п╬ п╡ п╢п╬я│я┌я┐п©п╣ п©я─п╦ п©п╬п©я▀я┌п╨п╣ п©я─п╦п╡я▐п╥п╟я┌я▄ п╬п╠я┼п╣п╨я┌ я┌п╦п©п╟ <em>'.$linkedFormat.'</em> п╨ п╬п╠я┼п╣п╨я┌я┐ я┌п╦п©п╟ <em>'.$format.'</em>';
 				$audit->error($errString, $linkedFormat .'/'. $objectToLink['id']);
 				$this->FatalError($errString);
 			}
@@ -1750,7 +1750,7 @@ SQL;
 	}
 
 	/**
-	 * Нет документации
+	 * п²п╣я┌ п╢п╬п╨я┐п╪п╣п╫я┌п╟я├п╦п╦
 	 *
 	 * @todo docme (check params documentation)
 	 * @access public
@@ -1779,9 +1779,9 @@ SQL;
 				$sysMeta = json_decode_koi($table[$k]['sys_meta'], true);
 				$sysMeta = is_array($sysMeta) ? $sysMeta : array();
 
-				// загружаем сохраненные мета-поля, в случае их
-				// отсутствия (например работаем в режиме ноды кластера)
-				// выставлям поля как если бы был доступ site/htdocs/ai
+				// п╥п╟пЁя─я┐п╤п╟п╣п╪ я│п╬я┘я─п╟п╫п╣п╫п╫я▀п╣ п╪п╣я┌п╟-п©п╬п╩я▐, п╡ я│п╩я┐я┤п╟п╣ п╦я┘
+				// п╬я┌я│я┐я┌я│я┌п╡п╦я▐ (п╫п╟п©я─п╦п╪п╣я─ я─п╟п╠п╬я┌п╟п╣п╪ п╡ я─п╣п╤п╦п╪п╣ п╫п╬п╢я▀ п╨п╩п╟я│я┌п╣я─п╟)
+				// п╡я▀я│я┌п╟п╡п╩я▐п╪ п©п╬п╩я▐ п╨п╟п╨ п╣я│п╩п╦ п╠я▀ п╠я▀п╩ п╢п╬я│я┌я┐п© site/htdocs/ai
 				foreach($sysMeta as $sysMetaKey => $sysMetaValue) {
 					if (empty($table[$k][$sysMetaKey])) {
 						$table[$k][$sysMetaKey] = $sysMetaValue;
@@ -1800,7 +1800,7 @@ SQL;
 	}
 
 	/**
-		Интерфейс к преобразованию SQL выборки к объекту datatype
+		п≤п╫я┌п╣я─я└п╣п╧я│ п╨ п©я─п╣п╬п╠я─п╟п╥п╬п╡п╟п╫п╦я▌ SQL п╡я▀п╠п╬я─п╨п╦ п╨ п╬п╠я┼п╣п╨я┌я┐ datatype
 		@access public
 	*/
 	public function resultToObject($resTable, $format, $mode) {
@@ -1808,7 +1808,7 @@ SQL;
 	}
 
 	/**
-	 * Нет документации
+	 * п²п╣я┌ п╢п╬п╨я┐п╪п╣п╫я┌п╟я├п╦п╦
 	 * @access protected
 	 * @todo docme (check params documentation)
 	 */
@@ -1916,14 +1916,14 @@ SQL;
 			}
 
 			if ($permitCheck === false || !count($parentObject)) {
-				$errString = 'Попытка переместить объект в несуществующий раздел';
+				$errString = 'п÷п╬п©я▀я┌п╨п╟ п©п╣я─п╣п╪п╣я│я┌п╦я┌я▄ п╬п╠я┼п╣п╨я┌ п╡ п╫п╣я│я┐я┴п╣я│я┌п╡я┐я▌я┴п╦п╧ я─п╟п╥п╢п╣п╩';
 				$audit->error($errString, $format->id .'/'.$object['id']);
 				$this->FatalError($errString);
 			}
 		}
 
 		if ($format->id != $format->parent && !in_array($format->id, $this->app->GetAllowedChildsKeys($format->parent, $parentObject))) {
-			$errString = 'Объект данного типа не может быть добавлен в данный раздел';
+			$errString = 'п·п╠я┼п╣п╨я┌ п╢п╟п╫п╫п╬пЁп╬ я┌п╦п©п╟ п╫п╣ п╪п╬п╤п╣я┌ п╠я▀я┌я▄ п╢п╬п╠п╟п╡п╩п╣п╫ п╡ п╢п╟п╫п╫я▀п╧ я─п╟п╥п╢п╣п╩';
 			$audit->error($errString, $format->parent .'/'. $object['parent']);
 			$this->FatalError($errString);
 		}

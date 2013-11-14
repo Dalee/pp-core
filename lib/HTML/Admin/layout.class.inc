@@ -29,7 +29,7 @@ class PXAdminHTMLLayout extends NLAbstractLayout {
 		$this->NLAbstractLayout();
 		$this->setOuterLayout($outerLayout);
 		$this->assignTitle();
-		$this->setOuterLogo('i/admin.gif', 'Proxima CMS Портал', 250, 36);
+		$this->setOuterLogo('i/admin.gif', 'Proxima CMS п÷п╬я─я┌п╟п╩', 250, 36);
 		$this->assignVersion();
 		$this->types = $types;
 
@@ -45,7 +45,7 @@ class PXAdminHTMLLayout extends NLAbstractLayout {
 	}
 
 	function assignTitle($title = NULL) {
-		$title = ((is_null($title) || !mb_strlen(trim($title))) ? '' : mb_strtr($title, array('<' => '&lt;', '>' => '&gt;')).' / ')."Proxima CMS Портал";
+		$title = ((is_null($title) || !mb_strlen(trim($title))) ? '' : mb_strtr($title, array('<' => '&lt;', '>' => '&gt;')).' / ')."Proxima CMS п÷п╬я─я┌п╟п╩";
 		$this->Assign("OUTER.TITLE", $title);
 	}
 
@@ -119,7 +119,7 @@ class PXAdminHTMLLayout extends NLAbstractLayout {
 
 		if ($count > $objectsOnPage && $objectsOnPage > 0) {
 			$html .= '<DIV style="padding: 2px;">';
-			$html .= '<STRONG style="color: #385A94;">Страницы:</STRONG> ';
+			$html .= '<STRONG style="color: #385A94;">п║я┌я─п╟п╫п╦я├я▀:</STRONG> ';
 
 			$allPages = ceil($count/$objectsOnPage)+1;
 			$start    = (ceil($page/10)-1)*10+1;
@@ -141,7 +141,7 @@ class PXAdminHTMLLayout extends NLAbstractLayout {
 
 			if (isset($prev)) {
 				$html .= '<A href="'.$this->_BuildHref($objectFormat.'_page', $prev).'">';
-				$html .= '<IMG src="i/icon/left.gif" width="4" height="7" border="0" hspace="4" alt="Страница '.$prev.'">';
+				$html .= '<IMG src="i/icon/left.gif" width="4" height="7" border="0" hspace="4" alt="п║я┌я─п╟п╫п╦я├п╟ '.$prev.'">';
 				$html .= '</A>';
 			}
 
@@ -152,12 +152,12 @@ class PXAdminHTMLLayout extends NLAbstractLayout {
 					$html .= 'background-color: #385A94; color: #FFFFFF; font-weight: bold;';
 				}
 
-				$html .= '" href="'.$this->_BuildHref($objectFormat.'_page', $i).'" title="Страница '.$i.'">'.$i.'</A> ';
+				$html .= '" href="'.$this->_BuildHref($objectFormat.'_page', $i).'" title="п║я┌я─п╟п╫п╦я├п╟ '.$i.'">'.$i.'</A> ';
 			}
 
 			if (isset($next) && $next > 0) {
 				$html .= '<A href="'.$this->_BuildHref($objectFormat.'_page', $next).'">';
-				$html .= '<IMG src="i/icon/right.gif" width="4" height="7" border="0" hspace="4" alt="Страница '.$next.'">';
+				$html .= '<IMG src="i/icon/right.gif" width="4" height="7" border="0" hspace="4" alt="п║я┌я─п╟п╫п╦я├п╟ '.$next.'">';
 				$html .= '</A>';
 			}
 
@@ -202,11 +202,11 @@ class PXAdminHTMLLayout extends NLAbstractLayout {
 		$format = PXRegistry::getTypes($format);
 
 		$this->assign($label, <<<HTML
-			<h2>Для добавления в раздел информации необходимо указать разрешенные форматы</h2>
+			<h2>п■п╩я▐ п╢п╬п╠п╟п╡п╩п╣п╫п╦я▐ п╡ я─п╟п╥п╢п╣п╩ п╦п╫я└п╬я─п╪п╟я├п╦п╦ п╫п╣п╬п╠я┘п╬п╢п╦п╪п╬ я┐п╨п╟п╥п╟я┌я▄ я─п╟п╥я─п╣я┬п╣п╫п╫я▀п╣ я└п╬я─п╪п╟я┌я▀</h2>
 
 			<ul>
 				<li>
-					<a href="javascript:EditContent('{$format->id}', '{$id}', 'children')">Разрешенные форматы раздела</a>
+					<a href="javascript:EditContent('{$format->id}', '{$id}', 'children')">п═п╟п╥я─п╣я┬п╣п╫п╫я▀п╣ я└п╬я─п╪п╟я┌я▀ я─п╟п╥п╢п╣п╩п╟</a>
 				</li>
 			</ul>
 HTML

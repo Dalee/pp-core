@@ -17,13 +17,13 @@ class PXAdminPager extends PXAdminComplexWidget {
 	);
 
 	/**
-	 * ëÏÎÓÔÒÕËÔÏÒ ËÌÁÓÓÁ PXAdminPager.
-	 * éÎÉÃÉÁÌÉÚÉÒÕÅÔ ÐÏÌÑ ËÌÁÓÓÁ. ÎÅÏÂÈÏÄÉÍÙÅ ÄÌÑ ÐÏÓÔÒÏÅÎÉÑ ÐÏÓÔÒÁÎÉÞÎÏÊ ÎÁ×ÉÇÁÃÉÉ.
-	 * @param Integer $cur - ÔÅËÕÝÁÑ ÓÔÒÁÎÉÃÁ, ÎÕÍÅÒÁÃÉÑ ÎÁÞÉÎÁÅÔÓÑ Ó 1 !
-	 * @param Integer $rows - ÐÏ ÓËÏÌØËÏ ÚÁÐÉÓÅÊ ×Ù×ÏÄÉÔØ ÎÁ ÓÔÒÁÎÉÃÕ
-	 * @param Integer $count - ÏÂÝÅÅ ËÏÌÉÞÅÓÔ×Ï ÚÁÐÉÓÅÊ
-	 * @param String  $pager_name - ÉÍÑ ÐÅÒÅÍÅÎÎÏÊ ÄÌÑ ÐÏÓÔÒÁÎÉÞÎÏÊ ÎÁ×ÉÇÁÃÉÉ, ËÏÎËÁÔÅÎÉÒÕÅÔÓÑ Ó '_page'
-	 * @param Array   $getData - ÍÁÓÓÉ× Ó GET ÐÅÒÅÍÅÎÎÙÍÉ, ËÏÔÏÒÙÅ ÎÁÄÏ ÄÏÂÁ×ÌÑÔØ × ÓÓÙÌËÉ ÐÏÓÔÒÁÎÉÞÎÏÊ ÎÁ×ÉÇÁÃÉÉ, ÏÂÙÞÎÏ ÂÅÒ£ÔÓÑ ÉÚ ÐÏÌÑ $layout->getData
+	 * ÐšÐ¾Ð½ÑÑ‚Ñ€ÑƒÐºÑ‚Ð¾Ñ€ ÐºÐ»Ð°ÑÑÐ° PXAdminPager.
+	 * Ð˜Ð½Ð¸Ñ†Ð¸Ð°Ð»Ð¸Ð·Ð¸Ñ€ÑƒÐµÑ‚ Ð¿Ð¾Ð»Ñ ÐºÐ»Ð°ÑÑÐ°. Ð½ÐµÐ¾Ð±Ñ…Ð¾Ð´Ð¸Ð¼Ñ‹Ðµ Ð´Ð»Ñ Ð¿Ð¾ÑÑ‚Ñ€Ð¾ÐµÐ½Ð¸Ñ Ð¿Ð¾ÑÑ‚Ñ€Ð°Ð½Ð¸Ñ‡Ð½Ð¾Ð¹ Ð½Ð°Ð²Ð¸Ð³Ð°Ñ†Ð¸Ð¸.
+	 * @param Integer $cur - Ñ‚ÐµÐºÑƒÑ‰Ð°Ñ ÑÑ‚Ñ€Ð°Ð½Ð¸Ñ†Ð°, Ð½ÑƒÐ¼ÐµÑ€Ð°Ñ†Ð¸Ñ Ð½Ð°Ñ‡Ð¸Ð½Ð°ÐµÑ‚ÑÑ Ñ 1 !
+	 * @param Integer $rows - Ð¿Ð¾ ÑÐºÐ¾Ð»ÑŒÐºÐ¾ Ð·Ð°Ð¿Ð¸ÑÐµÐ¹ Ð²Ñ‹Ð²Ð¾Ð´Ð¸Ñ‚ÑŒ Ð½Ð° ÑÑ‚Ñ€Ð°Ð½Ð¸Ñ†Ñƒ
+	 * @param Integer $count - Ð¾Ð±Ñ‰ÐµÐµ ÐºÐ¾Ð»Ð¸Ñ‡ÐµÑÑ‚Ð²Ð¾ Ð·Ð°Ð¿Ð¸ÑÐµÐ¹
+	 * @param String  $pager_name - Ð¸Ð¼Ñ Ð¿ÐµÑ€ÐµÐ¼ÐµÐ½Ð½Ð¾Ð¹ Ð´Ð»Ñ Ð¿Ð¾ÑÑ‚Ñ€Ð°Ð½Ð¸Ñ‡Ð½Ð¾Ð¹ Ð½Ð°Ð²Ð¸Ð³Ð°Ñ†Ð¸Ð¸, ÐºÐ¾Ð½ÐºÐ°Ñ‚ÐµÐ½Ð¸Ñ€ÑƒÐµÑ‚ÑÑ Ñ '_page'
+	 * @param Array   $getData - Ð¼Ð°ÑÑÐ¸Ð² Ñ GET Ð¿ÐµÑ€ÐµÐ¼ÐµÐ½Ð½Ñ‹Ð¼Ð¸, ÐºÐ¾Ñ‚Ð¾Ñ€Ñ‹Ðµ Ð½Ð°Ð´Ð¾ Ð´Ð¾Ð±Ð°Ð²Ð»ÑÑ‚ÑŒ Ð² ÑÑÑ‹Ð»ÐºÐ¸ Ð¿Ð¾ÑÑ‚Ñ€Ð°Ð½Ð¸Ñ‡Ð½Ð¾Ð¹ Ð½Ð°Ð²Ð¸Ð³Ð°Ñ†Ð¸Ð¸, Ð¾Ð±Ñ‹Ñ‡Ð½Ð¾ Ð±ÐµÑ€Ñ‘Ñ‚ÑÑ Ð¸Ð· Ð¿Ð¾Ð»Ñ $layout->getData
 	 */
 	function PxAdminPager($cur, $rows = 1, $count = 1, $pager_name = '', $get_data = null){
 		if($pager_name instanceof PXTypeDescription) {
@@ -70,7 +70,7 @@ class PXAdminPager extends PXAdminComplexWidget {
 
 			if (isset($prev)) {
 				$html .= '<a href="'.$this->_BuildHref($this->_pagerName.'_page', $prev).'">';
-				$html .= '<img src="i/icon/left.gif" width="4" height="7" border="0" hspace="4" alt="óÔÒÁÎÉÃÁ '.$prev.'">';
+				$html .= '<img src="i/icon/left.gif" width="4" height="7" border="0" hspace="4" alt="Ð¡Ñ‚Ñ€Ð°Ð½Ð¸Ñ†Ð° '.$prev.'">';
 				$html .= '</a>';
 			}
 
@@ -81,12 +81,12 @@ class PXAdminPager extends PXAdminComplexWidget {
 					$html .= ' class="selected"';
 				}
 
-				$html .= ' href="'.$this->_BuildHref($this->_pagerName.'_page', $i).'" title="óÔÒÁÎÉÃÁ '.$i.'">'.$i.'</a>';
+				$html .= ' href="'.$this->_BuildHref($this->_pagerName.'_page', $i).'" title="Ð¡Ñ‚Ñ€Ð°Ð½Ð¸Ñ†Ð° '.$i.'">'.$i.'</a>';
 			}
 
 			if (isset($next) && $next > 0) {
 				$html .= '<a href="'.$this->_BuildHref($this->_pagerName.'_page', $next).'">';
-				$html .= '<img src="i/icon/right.gif" width="4" height="7" border="0" hspace="4" alt="óÔÒÁÎÉÃÁ '.$next.'">';
+				$html .= '<img src="i/icon/right.gif" width="4" height="7" border="0" hspace="4" alt="Ð¡Ñ‚Ñ€Ð°Ð½Ð¸Ñ†Ð° '.$next.'">';
 				$html .= '</a>';
 			}
 

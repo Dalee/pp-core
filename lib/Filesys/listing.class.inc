@@ -287,7 +287,7 @@ class PXFileListingItemCatalog extends PXFileListingItem {
 	}
 
 	function _Size() {
-		$this->size = 'ËÁÔÁÌÏÇ';
+		$this->size = 'ÐºÐ°Ñ‚Ð°Ð»Ð¾Ð³';
 	}
 
 	function _isDir() {

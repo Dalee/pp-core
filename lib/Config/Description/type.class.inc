@@ -1,7 +1,7 @@
 <?php
 /**
-* ëÌÁÓÓ - ÈÒÁÎÉÌÉÝÅ.
-* óÔÏÉÔÓÑ ÐÏ etc/datatype.xml /model/datatypes/datatype
+* ÐšÐ»Ð°ÑÑ - Ñ…Ñ€Ð°Ð½Ð¸Ð»Ð¸Ñ‰Ðµ.
+* Ð¡Ñ‚Ð¾Ð¸Ñ‚ÑÑ Ð¿Ð¾ etc/datatype.xml /model/datatypes/datatype
 *
 * @subpackage Application
 */
@@ -26,7 +26,7 @@ class PXTypeDescription {
 	}
 
 	/**
-	 * ÷ÏÚ×ÒÁÝÁÅÔ ÍÁÓÓÉ× ÔÉÐÏ× ÐÏÔÏÍËÏ× ÄÌÑ ÐÅÒÅÄÁÎÎÏÇÏ ÆÏÒÍÁÔÁ
+	 * Ð’Ð¾Ð·Ð²Ñ€Ð°Ñ‰Ð°ÐµÑ‚ Ð¼Ð°ÑÑÐ¸Ð² Ñ‚Ð¸Ð¿Ð¾Ð² Ð¿Ð¾Ñ‚Ð¾Ð¼ÐºÐ¾Ð² Ð´Ð»Ñ Ð¿ÐµÑ€ÐµÐ´Ð°Ð½Ð½Ð¾Ð³Ð¾ Ñ„Ð¾Ñ€Ð¼Ð°Ñ‚Ð°
 	 */
 	
 	function childTypes() {
@@ -95,7 +95,7 @@ class PXTypeDescription {
 	static function fillAppTypes($domDatatypes, &$app) {
 
 		if (!is_array($domDatatypes) || count($domDatatypes) == 0) {
-			FatalError("îÅ ÏÐÒÅÄÅÌÅÎÁ ÏÂßÅËÔÎÁÑ ÍÏÄÅÌØ ÐÒÏÅËÔÁ");
+			FatalError("ÐÐµ Ð¾Ð¿Ñ€ÐµÐ´ÐµÐ»ÐµÐ½Ð° Ð¾Ð±ÑŠÐµÐºÑ‚Ð½Ð°Ñ Ð¼Ð¾Ð´ÐµÐ»ÑŒ Ð¿Ñ€Ð¾ÐµÐºÑ‚Ð°");
 		}
 
 		foreach ($domDatatypes as $domDatatype) {
@@ -168,7 +168,7 @@ class PXTypeDescription {
 					$types[$v->parent]->childs[] = $k;
 
 				} else {
-					FatalError("ïûéâëá íïäåìé: {$v->id} ÎÅ ÍÏÖÅÔ ÂÙÔØ ÄÏÞÅÒÎÉÍ ÐÏ ÏÔÎÏÛÅÎÉÀ Ë {$v->parent}, ÏÐÉÓÁÎÉÅ {$v->parent} ÏÔÓÕÔÓÔ×ÕÅÔ");
+					FatalError("ÐžÐ¨Ð˜Ð‘ÐšÐ ÐœÐžÐ”Ð•Ð›Ð˜: {$v->id} Ð½Ðµ Ð¼Ð¾Ð¶ÐµÑ‚ Ð±Ñ‹Ñ‚ÑŒ Ð´Ð¾Ñ‡ÐµÑ€Ð½Ð¸Ð¼ Ð¿Ð¾ Ð¾Ñ‚Ð½Ð¾ÑˆÐµÐ½Ð¸ÑŽ Ðº {$v->parent}, Ð¾Ð¿Ð¸ÑÐ°Ð½Ð¸Ðµ {$v->parent} Ð¾Ñ‚ÑÑƒÑ‚ÑÑ‚Ð²ÑƒÐµÑ‚");
 				}
 			}
 		}
@@ -211,7 +211,7 @@ class PXTypeDescription {
 	}
 
 	/**
-	* ðÒÅÏÂÒÁÚÕÅÔ 'all', 'selected', 'none' × ÞÉÓÌÏ×ÙÅ ÚÎÁÞÅÎÉÑ.
+	* ÐŸÑ€ÐµÐ¾Ð±Ñ€Ð°Ð·ÑƒÐµÑ‚ 'all', 'selected', 'none' Ð² Ñ‡Ð¸ÑÐ»Ð¾Ð²Ñ‹Ðµ Ð·Ð½Ð°Ñ‡ÐµÐ½Ð¸Ñ.
 	* protected -> public, because used in PXAdminForm
 	*
 	* @see PP_CHILDREN_FETCH_ALL, PP_CHILDREN_FETCH_SELECTED, PP_CHILDREN_FETCH_NONE

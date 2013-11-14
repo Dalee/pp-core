@@ -8,7 +8,7 @@ class AbstractTest extends UnitTestCase {
 		
 		$this->field  = new MockPXFieldDescription();
 		$this->field->name = 'test_field';
-		$this->field->description = 'Ô–…”¡Œ…≈';
+		$this->field->description = '–û–ø–∏—Å–∞–Ω–∏–µ';
 		
 		$this->object['test_field'] = '';
 		
@@ -24,13 +24,13 @@ class AbstractTest extends UnitTestCase {
 		$param['dtype'] = 'dtype';
 		
 		$param['order'] = 'test_field DESC';
-		$html = '<a  class="down" href="url" title="Ûœ“‘…“œ◊¡‘ÿ –œ –œÃ¿ &bdquo;Ô–…”¡Œ…≈&ldquo;">Ô–…”¡Œ…≈</a>';
+		$html = '<a  class="down" href="url" title="–°–æ—Ä—Ç–∏—Ä–æ–≤–∞—Ç—å –ø–æ –ø–æ–ª—é &bdquo;–û–ø–∏—Å–∞–Ω–∏–µ&ldquo;">–û–ø–∏—Å–∞–Ω–∏–µ</a>';
 		
 		$res  = $this->abstract->objectsSortOrderString($this->field, $this->object, $param);
 		$this->assertEqual($html,  $res);
 		
 		$param['order'] = 'test_field';
-		$html = '<a  class="up" href="url" title="Ûœ“‘…“œ◊¡‘ÿ –œ –œÃ¿ &bdquo;Ô–…”¡Œ…≈&ldquo; ◊ œ¬“¡‘ŒœÕ –œ“—ƒÀ≈">Ô–…”¡Œ…≈</a>';
+		$html = '<a  class="up" href="url" title="–°–æ—Ä—Ç–∏—Ä–æ–≤–∞—Ç—å –ø–æ –ø–æ–ª—é &bdquo;–û–ø–∏—Å–∞–Ω–∏–µ&ldquo; –≤ –æ–±—Ä–∞—Ç–Ω–æ–º –ø–æ—Ä—è–¥–∫–µ">–û–ø–∏—Å–∞–Ω–∏–µ</a>';
 		
 		$res  = $this->abstract->objectsSortOrderString($this->field, $this->object, $param);
 		$this->assertEqual($html,  $res);

@@ -48,7 +48,7 @@ abstract class PXModule implements PXModuleIF {
 	}
 
 	public static function getAclModuleActions() {
-		return array('viewmenu' => 'Показывать в меню', 'admin' => 'Доступ в админке');
+		return array('viewmenu' => 'п÷п╬п╨п╟п╥я▀п╡п╟я┌я▄ п╡ п╪п╣п╫я▌', 'admin' => 'п■п╬я│я┌я┐п© п╡ п╟п╢п╪п╦п╫п╨п╣');
 	}
 
 	function buildAdminUrl() {
@@ -60,15 +60,15 @@ abstract class PXModule implements PXModuleIF {
 	}
 
 	function adminIndex() {
-		$this->layout->assignError('INNER.1.0', 'Функция <em>adminIndex</em> данного модуля не определена');
+		$this->layout->assignError('INNER.1.0', 'п╓я┐п╫п╨я├п╦я▐ <em>adminIndex</em> п╢п╟п╫п╫п╬пЁп╬ п╪п╬п╢я┐п╩я▐ п╫п╣ п╬п©я─п╣п╢п╣п╩п╣п╫п╟');
 	}
 
 	function adminPopup() {
-		$this->layout->assignError('OUTER.CONTENT', 'Функция <em>adminPopup</em> данного модуля не определена');
+		$this->layout->assignError('OUTER.CONTENT', 'п╓я┐п╫п╨я├п╦я▐ <em>adminPopup</em> п╢п╟п╫п╫п╬пЁп╬ п╪п╬п╢я┐п╩я▐ п╫п╣ п╬п©я─п╣п╢п╣п╩п╣п╫п╟');
 	}
 
 	function adminAction() {
-		FatalError("Функция <em>adminAction</em> данного модуля не определена");
+		FatalError("п╓я┐п╫п╨я├п╦я▐ <em>adminAction</em> п╢п╟п╫п╫п╬пЁп╬ п╪п╬п╢я┐п╩я▐ п╫п╣ п╬п©я─п╣п╢п╣п╩п╣п╫п╟");
 	}
 
 	function userIndex() {

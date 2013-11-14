@@ -1,5 +1,5 @@
 <?php
-// õÞÁÓÔÎÉË (attendee) ÏÔ×ÅÞÁÅÔ ÎÁ request ÓÏÂÙÔÉÑ
+// Ð£Ñ‡Ð°ÑÑ‚Ð½Ð¸Ðº (attendee) Ð¾Ñ‚Ð²ÐµÑ‡Ð°ÐµÑ‚ Ð½Ð° request ÑÐ¾Ð±Ñ‹Ñ‚Ð¸Ñ
 
 class NLMailReplyEvent extends NLMailVEvent {
 	

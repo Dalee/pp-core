@@ -31,7 +31,7 @@ class ColorTest extends UnitTestCase {
 		$html .= '<input type="hidden" id="colorGreentest_field"  value="0">';
 		$html .= '<input type="hidden" id="colorBluetest_field"   value="1">';
 
-		$html .= '<button title="ÉÚÍÅÎÉÔØ Ã×ÅÔ"';
+		$html .= '<button title="Ð¸Ð·Ð¼ÐµÐ½Ð¸Ñ‚ÑŒ Ñ†Ð²ÐµÑ‚"';
 		$html .= ' onclick="with(this.form)ctrlColorer.DoModal(this.form.colorDatatest_field, this.form.colorRedtest_field, this.form.colorGreentest_field, this.form.colorBluetest_field, document.getElementById(\'colorBGtest_field\'));"';
 		$html .= ' onFocus="this.blur();"></button>';
 

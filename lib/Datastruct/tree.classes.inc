@@ -59,7 +59,7 @@ class NLLeaf {
 }
 
 /**
- * Класс-репрезентация абстрактного дерева
+ * п п╩п╟я│я│-я─п╣п©я─п╣п╥п╣п╫я┌п╟я├п╦я▐ п╟п╠я│я┌я─п╟п╨я┌п╫п╬пЁп╬ п╢п╣я─п╣п╡п╟
  *
  * @author Michael Beloshapka <mb@dalee.ru>
  * @package ProximaPortal
@@ -73,12 +73,12 @@ class NLTree {
 	var $_titleField;
 
 	/**
-	 * Конструктор класса
+	 * п п╬п╫я│я┌я─я┐п╨я┌п╬я─ п╨п╩п╟я│я│п╟
 	 *
-	 * @param Array   $table       таблица данных, из которых будет строиться таблица
-	 * @param Integer $idField     название поля таблицы, в котором лежат id
-	 * @param Integer $parentField название поля таблицы, в котором лежат id родителей
-	 * @param Integer $titleField  название поля таблицы, в котором лежат названия объектов
+	 * @param Array   $table       я┌п╟п╠п╩п╦я├п╟ п╢п╟п╫п╫я▀я┘, п╦п╥ п╨п╬я┌п╬я─я▀я┘ п╠я┐п╢п╣я┌ я│я┌я─п╬п╦я┌я▄я│я▐ я┌п╟п╠п╩п╦я├п╟
+	 * @param Integer $idField     п╫п╟п╥п╡п╟п╫п╦п╣ п©п╬п╩я▐ я┌п╟п╠п╩п╦я├я▀, п╡ п╨п╬я┌п╬я─п╬п╪ п╩п╣п╤п╟я┌ id
+	 * @param Integer $parentField п╫п╟п╥п╡п╟п╫п╦п╣ п©п╬п╩я▐ я┌п╟п╠п╩п╦я├я▀, п╡ п╨п╬я┌п╬я─п╬п╪ п╩п╣п╤п╟я┌ id я─п╬п╢п╦я┌п╣п╩п╣п╧
+	 * @param Integer $titleField  п╫п╟п╥п╡п╟п╫п╦п╣ п©п╬п╩я▐ я┌п╟п╠п╩п╦я├я▀, п╡ п╨п╬я┌п╬я─п╬п╪ п╩п╣п╤п╟я┌ п╫п╟п╥п╡п╟п╫п╦я▐ п╬п╠я┼п╣п╨я┌п╬п╡
 	 */
 	function NLTree($table, $idField = 'id', $parentField = 'parent', $titleField = 'title', $saveOrphans=false) {
 		$this->_idField     = $idField;
@@ -195,7 +195,7 @@ class NLTree {
 		}
 
 		if ($id == 0) {
-			$t[NULL] = "Корень";
+			$t[NULL] = "п п╬я─п╣п╫я▄";
 		}
 
 		return $t;

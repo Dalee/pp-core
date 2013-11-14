@@ -19,14 +19,14 @@ class AclTest extends UnitTestCase {
 	
 	function testCheck() {
 
-		// Проверяем работоспособность при отключенном ACL
+		// п÷я─п╬п╡п╣я─я▐п╣п╪ я─п╟п╠п╬я┌п╬я│п©п╬я│п╬п╠п╫п╬я│я┌я▄ п©я─п╦ п╬я┌п╨п╩я▌я┤п╣п╫п╫п╬п╪ ACL
 		$this->acl->reload();
 		$this->acl->aclEnabled = false;
 
 		$this->assertTrue($this->acl->check('delete', null, null));
 		$this->assertTrue($this->acl->check('add', PXRegistry::getApp()->types['article'], array('id' => 20, 'parent' => 40)));
 
-		// Проверяем работоспособность при включенном ACL
+		// п÷я─п╬п╡п╣я─я▐п╣п╪ я─п╟п╠п╬я┌п╬я│п©п╬я│п╬п╠п╫п╬я│я┌я▄ п©я─п╦ п╡п╨п╩я▌я┤п╣п╫п╫п╬п╪ ACL
 		$this->acl->aclEnabled  = true;
 		$this->acl->reload();
 

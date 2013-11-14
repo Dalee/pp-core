@@ -1,5 +1,5 @@
 <?php
-// éÓÐÏÌØÚÕÅÔÓÑ ËÏÇÄÁ ÏÒÇÁÎÉÚÁÔÏÒ (organizer) ÏÔÍÅÎÑÅÔ ÐÒÅÄÌÏÖÅÎÉÅ (counter) ÕÞÁÓÔÎÉËÁ (attendee)
+// Ð˜ÑÐ¿Ð¾Ð»ÑŒÐ·ÑƒÐµÑ‚ÑÑ ÐºÐ¾Ð³Ð´Ð° Ð¾Ñ€Ð³Ð°Ð½Ð¸Ð·Ð°Ñ‚Ð¾Ñ€ (organizer) Ð¾Ñ‚Ð¼ÐµÐ½ÑÐµÑ‚ Ð¿Ñ€ÐµÐ´Ð»Ð¾Ð¶ÐµÐ½Ð¸Ðµ (counter) ÑƒÑ‡Ð°ÑÑ‚Ð½Ð¸ÐºÐ° (attendee)
 
 class NLMailDeclineCounterEvent extends NLMailVEvent {
 	

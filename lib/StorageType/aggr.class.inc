@@ -1,12 +1,12 @@
 <?php
 /**
- * "÷ÉÒÔÕÁÌØÎÏÅ" ÐÏÌÅ - ÁÇÒÅÇÁÔÏÒ ÄÌÑ ÒÁÚÌÉÞÎÙÈ ÐÏÌÅÊ ÏÂßÅËÔÁ
- * ÎÉÇÄÅ ÎÅ ÈÒÁÎÉÔÓÑ, ÚÎÁÞÅÎÉÅ ×ÙÞÉÓÌÑÅÔÓÑ × ÐÁÒÁÍÅÔÒÉÞÅÓËÉÈ ÍÅÔÏÄÁÈ (ÍÏÖÎÏ ÕËÁÚÙ×ÁÔØ Ó×ÏÉ ÌÏËÁÌØÎÙÅ ÆÕÎËÃÉÉ-ÁÇÒÅÇÁÔÏÒÙ)
+ * "Ð’Ð¸Ñ€Ñ‚ÑƒÐ°Ð»ÑŒÐ½Ð¾Ðµ" Ð¿Ð¾Ð»Ðµ - Ð°Ð³Ñ€ÐµÐ³Ð°Ñ‚Ð¾Ñ€ Ð´Ð»Ñ Ñ€Ð°Ð·Ð»Ð¸Ñ‡Ð½Ñ‹Ñ… Ð¿Ð¾Ð»ÐµÐ¹ Ð¾Ð±ÑŠÐµÐºÑ‚Ð°
+ * Ð½Ð¸Ð³Ð´Ðµ Ð½Ðµ Ñ…Ñ€Ð°Ð½Ð¸Ñ‚ÑÑ, Ð·Ð½Ð°Ñ‡ÐµÐ½Ð¸Ðµ Ð²Ñ‹Ñ‡Ð¸ÑÐ»ÑÐµÑ‚ÑÑ Ð² Ð¿Ð°Ñ€Ð°Ð¼ÐµÑ‚Ñ€Ð¸Ñ‡ÐµÑÐºÐ¸Ñ… Ð¼ÐµÑ‚Ð¾Ð´Ð°Ñ… (Ð¼Ð¾Ð¶Ð½Ð¾ ÑƒÐºÐ°Ð·Ñ‹Ð²Ð°Ñ‚ÑŒ ÑÐ²Ð¾Ð¸ Ð»Ð¾ÐºÐ°Ð»ÑŒÐ½Ñ‹Ðµ Ñ„ÑƒÐ½ÐºÑ†Ð¸Ð¸-Ð°Ð³Ñ€ÐµÐ³Ð°Ñ‚Ð¾Ñ€Ñ‹)
  *
  * displayType - various (ex. STATIC)
  * storageType virtual
  * storageTypeArgs - aggregator_name|aggregator_arg1|aggregator_arg2|...
- * ðÒÉÍÅÒ ×ÙÞÉÓÌÅÎÉÑ CTR ÄÌÑ adbanner datatype:
+ * ÐŸÑ€Ð¸Ð¼ÐµÑ€ Ð²Ñ‹Ñ‡Ð¸ÑÐ»ÐµÐ½Ð¸Ñ CTR Ð´Ð»Ñ adbanner datatype:
  * <attribute name="ctr" description="CTR" storagetype="aggr|div_percent|clicks|shows" displaytype="STATIC" defaultvalue="0" />
  */
 class PXStorageTypeAggr extends PXStorageTypeVirtual {

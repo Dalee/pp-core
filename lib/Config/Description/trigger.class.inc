@@ -1,7 +1,7 @@
 <?php
 /**
- * ëÌÁÓÓ - ÈÒÁÎÉÌÉÝÅ ÉÎÆÏÒÍÁÃÉÉ Ï ÔÒÉÇÇÅÒÁÈ ÓÉÓÔÅÍÙ.
- * óÔÏÉÔÓÑ ÐÏ etc/triggers.xml /triggers/type/trigger.
+ * ÐšÐ»Ð°ÑÑ - Ñ…Ñ€Ð°Ð½Ð¸Ð»Ð¸Ñ‰Ðµ Ð¸Ð½Ñ„Ð¾Ñ€Ð¼Ð°Ñ†Ð¸Ð¸ Ð¾ Ñ‚Ñ€Ð¸Ð³Ð³ÐµÑ€Ð°Ñ… ÑÐ¸ÑÑ‚ÐµÐ¼Ñ‹.
+ * Ð¡Ñ‚Ð¾Ð¸Ñ‚ÑÑ Ð¿Ð¾ etc/triggers.xml /triggers/type/trigger.
  *
  * @subpackage Application
  */
@@ -43,7 +43,7 @@ class PXTriggerDescription {
 	}
 
 	/**
-	* ðÏÄËÌÀÞÁÅÔ ÆÁÊÌ ÔÒÉÇÇÅÒÁ, ÐÒÏ×ÅÒÑÅÔ ÓÎÁÞÁÌÁ local/triggers, ÚÁÔÅÍ libpp/triggers
+	* ÐŸÐ¾Ð´ÐºÐ»ÑŽÑ‡Ð°ÐµÑ‚ Ñ„Ð°Ð¹Ð» Ñ‚Ñ€Ð¸Ð³Ð³ÐµÑ€Ð°, Ð¿Ñ€Ð¾Ð²ÐµÑ€ÑÐµÑ‚ ÑÐ½Ð°Ñ‡Ð°Ð»Ð° local/triggers, Ð·Ð°Ñ‚ÐµÐ¼ libpp/triggers
 	*/
 	function load() {
 		$file = $this->getPathToClass();
@@ -55,7 +55,7 @@ class PXTriggerDescription {
 		$this->klass = sprintf('PXTrigger%s%s', ucfirst($this->type), ucfirst($this->name));
 		
 		if(!(strlen($this->name) && class_exists($this->klass) && is_subclass_of($this->klass, sprintf("PXAbstract%sTrigger", $this->type)))){
-			FatalError("ôÒÉÇÇÅÒ '{$this->klass}' ÏÔÓÕÔÓÔ×ÕÅÔ ÉÌÉ ÅÇÏ ÉÎÔÅÒÆÅÊÓ ÎÅ ÓÏ×ÐÁÄÁÅÔ Ó ÔÉÐÏÍ '{$this->type}'");
+			FatalError("Ð¢Ñ€Ð¸Ð³Ð³ÐµÑ€ '{$this->klass}' Ð¾Ñ‚ÑÑƒÑ‚ÑÑ‚Ð²ÑƒÐµÑ‚ Ð¸Ð»Ð¸ ÐµÐ³Ð¾ Ð¸Ð½Ñ‚ÐµÑ€Ñ„ÐµÐ¹Ñ Ð½Ðµ ÑÐ¾Ð²Ð¿Ð°Ð´Ð°ÐµÑ‚ Ñ Ñ‚Ð¸Ð¿Ð¾Ð¼ '{$this->type}'");
 		}
 	}
 	

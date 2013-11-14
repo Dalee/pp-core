@@ -245,19 +245,19 @@ class PXTreeObjects implements PXContentObjectsInterface, ArrayAccess, Iterator 
 	}
 
 	function _findRoot($host) {
-		// "пустой" проект
+		// "п©я┐я│я┌п╬п╧" п©я─п╬п╣п╨я┌
 		if(!isset($this->tree->levels[1])) {
 			return;
 		}
 
-		// находим соответствие между хостом, на который мы зашли
-		// и корнем в дереве, который может быть нам нужен
+		// п╫п╟я┘п╬п╢п╦п╪ я│п╬п╬я┌п╡п╣я┌я│я┌п╡п╦п╣ п╪п╣п╤п╢я┐ я┘п╬я│я┌п╬п╪, п╫п╟ п╨п╬я┌п╬я─я▀п╧ п╪я▀ п╥п╟я┬п╩п╦
+		// п╦ п╨п╬я─п╫п╣п╪ п╡ п╢п╣я─п╣п╡п╣, п╨п╬я┌п╬я─я▀п╧ п╪п╬п╤п╣я┌ п╠я▀я┌я▄ п╫п╟п╪ п╫я┐п╤п╣п╫
 		$hostAlias = 'default';
 		if(isset($this->aliases[$host])) {
 			$hostAlias = $this->aliases[$host];
 		}
 
-		// если алиас "не нашли", может быть нужный хост есть среди корней?
+		// п╣я│п╩п╦ п╟п╩п╦п╟я│ "п╫п╣ п╫п╟я┬п╩п╦", п╪п╬п╤п╣я┌ п╠я▀я┌я▄ п╫я┐п╤п╫я▀п╧ я┘п╬я│я┌ п╣я│я┌я▄ я│я─п╣п╢п╦ п╨п╬я─п╫п╣п╧?
 		if($hostAlias == 'default') {
 			foreach($this->tree->levels[1] as $_rootId) {
 				if($this->tree->leafs[$_rootId]->content['pathname'] === $host) {
@@ -267,7 +267,7 @@ class PXTreeObjects implements PXContentObjectsInterface, ArrayAccess, Iterator 
 			}
 		}
 
-		// находим нужный корень и правим его pathname
+		// п╫п╟я┘п╬п╢п╦п╪ п╫я┐п╤п╫я▀п╧ п╨п╬я─п╣п╫я▄ п╦ п©я─п╟п╡п╦п╪ п╣пЁп╬ pathname
 		foreach($this->tree->levels[1] as $_rootId) {
 			if($this->tree->leafs[$_rootId]->content['pathname'] === $hostAlias) {
 				$this->tree->leafs[$_rootId]->content['__pathname'] = $this->tree->leafs[$_rootId]->content['pathname'];

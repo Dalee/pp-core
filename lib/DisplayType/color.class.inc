@@ -1,6 +1,6 @@
 <?php
 /**
- * ÷ÙÂÏÒÁ Ã×ÅÔÁ
+ * Ð’Ñ‹Ð±Ð¾Ñ€Ð° Ñ†Ð²ÐµÑ‚Ð°
  *
  * storageType string / VARCHAR(6)
  * displayType COLOR

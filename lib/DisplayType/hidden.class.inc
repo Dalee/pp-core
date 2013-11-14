@@ -1,8 +1,8 @@
 <?php
 /**
- * óËÒÙÔÏÅ ÐÏÌÅ
+ * Ð¡ÐºÑ€Ñ‹Ñ‚Ð¾Ðµ Ð¿Ð¾Ð»Ðµ
  *
- * storageType ÍÏÖÅÔ ÂÙÔØ ÌÀÂÙÍ, ÎÏ ËÁË ÐÒÁ×ÉÌÏ integer
+ * storageType Ð¼Ð¾Ð¶ÐµÑ‚ Ð±Ñ‹Ñ‚ÑŒ Ð»ÑŽÐ±Ñ‹Ð¼, Ð½Ð¾ ÐºÐ°Ðº Ð¿Ñ€Ð°Ð²Ð¸Ð»Ð¾ integer
  * displayType HIDDEN
  */
 class PXDisplayTypeHidden extends PXDisplayType {

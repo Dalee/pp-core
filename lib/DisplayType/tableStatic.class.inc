@@ -1,6 +1,6 @@
 <?php
 /**
- * static ôÁÂÌÉÃÁ
+ * static Ð¢Ð°Ð±Ð»Ð¸Ñ†Ð°
  *
  * storageType serialized
  * displayType TABLESTATIC

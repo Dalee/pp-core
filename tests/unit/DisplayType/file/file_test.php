@@ -20,15 +20,15 @@ class FileTest extends UnitTestCase {
         /*
             '<div class="imagepreview"><input class="file" type="file" id="test_field" name="test_field" onpropertychange="Preview(this.value, \'file\', \'test_field\');">';
             '<br>';
-            '<input type="text" readonly value="fname" ><span>имя</span>';
-            '<input type="text" readonly value="fsize" ><span>размер</span>';
-            '<input type="text" readonly value="ftype" ><span>тип</span>';
+            '<input type="text" readonly value="fname" ><span>п╦п╪я▐</span>';
+            '<input type="text" readonly value="fsize" ><span>я─п╟п╥п╪п╣я─</span>';
+            '<input type="text" readonly value="ftype" ><span>я┌п╦п©</span>';
             '<br>';
-            '<a href="fullpath" target="_blank" class="img-preview">просмотр</a> ';
-            '<button onclick="return ToClipboardMulti(\'fullpath\', 0, 0, \'file\')">HTML в буфер</button>';
+            '<a href="fullpath" target="_blank" class="img-preview">п©я─п╬я│п╪п╬я┌я─</a> ';
+            '<button onclick="return ToClipboardMulti(\'fullpath\', 0, 0, \'file\')">HTML п╡ п╠я┐я└п╣я─</button>';
             '<br>';
             '<input class="checkbox" type="checkbox" id="test_field_remove" name="test_field_remove[ullpath]">';
-            '<label for="test_field_remove">удалить файл</label>';
+            '<label for="test_field_remove">я┐п╢п╟п╩п╦я┌я▄ я└п╟п╧п╩</label>';
             '</div>';
          */
 
@@ -53,7 +53,7 @@ class FileTest extends UnitTestCase {
 	}
 	
 	function testBuildCell() {
-		$html = '<a href="fullpath" class="file fname">fname</a> 0Кб</br>';
+		$html = '<a href="fullpath" class="file fname">fname</a> 0п п╠</br>';
 		$res  = $this->file->buildCell($this->field, $this->object);
 		$this->assertEqual($html,  $res);
 	}

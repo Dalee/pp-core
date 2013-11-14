@@ -44,7 +44,7 @@ class PXUserAuthorized extends PXUser {
 		$authClass = 'PXAuth'.ucfirst(strtolower($rule));
 
 		if (!class_exists($authClass)) {
-			FatalError('Неизвестный способ авторизации ' . $authClass);
+			FatalError('п²п╣п╦п╥п╡п╣я│я┌п╫я▀п╧ я│п©п╬я│п╬п╠ п╟п╡я┌п╬я─п╦п╥п╟я├п╦п╦ ' . $authClass);
 		}
 
 		//PHP54 doesnt like temp objects passed by reference

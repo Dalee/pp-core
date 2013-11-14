@@ -70,16 +70,16 @@ class PXPublicRegionObjectCloner {
 		$regions_field = PXMultiRegions::REGION_MARK;
 
 
-		// ÐÏÄÇÏÔÏ×ËÁ Ë ËÌÏÎÉÒÏ×ÁÎÉÀ
-		// ÏÂßÅËÔ ÉÚ ÂÁÚÙ ÚÁÂÉ×ÁÅÍ sys_reflex_id (sri) É ÒÅÇÉÏÎÙ
-		// ÐÏÔÏÍÕ ÞÔÏ ÎÁÍ ÎÁÄÏ ÓËÌÏÎÉÒÏ×ÁÔØ ×ÓÀ ÓÔÁÒÕÀ ÉÎÆÏÒÍÁÃÉÀ ÐÌÀÓ sri É sys_regions
+		// Ð¿Ð¾Ð´Ð³Ð¾Ñ‚Ð¾Ð²ÐºÐ° Ðº ÐºÐ»Ð¾Ð½Ð¸Ñ€Ð¾Ð²Ð°Ð½Ð¸ÑŽ
+		// Ð¾Ð±ÑŠÐµÐºÑ‚ Ð¸Ð· Ð±Ð°Ð·Ñ‹ Ð·Ð°Ð±Ð¸Ð²Ð°ÐµÐ¼ sys_reflex_id (sri) Ð¸ Ñ€ÐµÐ³Ð¸Ð¾Ð½Ñ‹
+		// Ð¿Ð¾Ñ‚Ð¾Ð¼Ñƒ Ñ‡Ñ‚Ð¾ Ð½Ð°Ð¼ Ð½Ð°Ð´Ð¾ ÑÐºÐ»Ð¾Ð½Ð¸Ñ€Ð¾Ð²Ð°Ñ‚ÑŒ Ð²ÑÑŽ ÑÑ‚Ð°Ñ€ÑƒÑŽ Ð¸Ð½Ñ„Ð¾Ñ€Ð¼Ð°Ñ†Ð¸ÑŽ Ð¿Ð»ÑŽÑ sri Ð¸ sys_regions
 		
 		$objectInDB[$reflex_field] = $this->oid;
 		$objectInDB[$regions_field] = $allowedRegionsIds;
 
 
-		// ÉÝÅÍ ÒÏÄÉÔÅÌÑ-ËÌÏÎÁ
-		// ÅÓÌÉ ÏÂßÅËÔ ÕÖÅ ÐÒÅÎÁÄÌÅÖÉÔ ËÌÏÎÉÒÏ×ÁÎÎÏÍÕ ÒÏÄÉÔÅÌÀ ÔÏ ÅÇÏ ÎÁÄÏ ÐÏÍÅÓÔÉÔØ × ÒÏÄÉÔÅÌÑ-ËÌÏÎÁ
+		// Ð¸Ñ‰ÐµÐ¼ Ñ€Ð¾Ð´Ð¸Ñ‚ÐµÐ»Ñ-ÐºÐ»Ð¾Ð½Ð°
+		// ÐµÑÐ»Ð¸ Ð¾Ð±ÑŠÐµÐºÑ‚ ÑƒÐ¶Ðµ Ð¿Ñ€ÐµÐ½Ð°Ð´Ð»ÐµÐ¶Ð¸Ñ‚ ÐºÐ»Ð¾Ð½Ð¸Ñ€Ð¾Ð²Ð°Ð½Ð½Ð¾Ð¼Ñƒ Ñ€Ð¾Ð´Ð¸Ñ‚ÐµÐ»ÑŽ Ñ‚Ð¾ ÐµÐ³Ð¾ Ð½Ð°Ð´Ð¾ Ð¿Ð¾Ð¼ÐµÑÑ‚Ð¸Ñ‚ÑŒ Ð² Ñ€Ð¾Ð´Ð¸Ñ‚ÐµÐ»Ñ-ÐºÐ»Ð¾Ð½Ð°
 
 		if (isset($objectInDB['parent']) && $this->parentFormat) {
 			$findClonedParent = $this->db->getObjectsByField($this->parentFormat,
@@ -97,8 +97,8 @@ class PXPublicRegionObjectCloner {
 		$this->nid = $this->object['id'] =
 			$this->db->cloneContentObject($this->format, $objectInDB, !empty($this->objectInDB['status']));
 
-		// ÐÏÓÌÅ ËÌÏÎÉÒÏ×ÁÎÉÑ ÏÂßÅËÔÁ ÉÚ ÂÁÚÙ ÎÁËÁÔÙ×ÁÅÍ ÎÁ ÎÏ×ÙÊ ÏÂßÅËÔ ÉÚÍÅÎÅÎÉÑ ÐÏÌØÚÏ×ÁÔÅÌÑ
-		// ÐÒÏÓÔÁ×ÌÑÅÍ ÅÍÕ ÒÅÇÉÏÎÙ ËÏÔÏÒÙÅ ÏÎ ÒÅÁÌØÎÏ ×ÙÂÒÁÌ × ÆÏÒÍÅ
+		// Ð¿Ð¾ÑÐ»Ðµ ÐºÐ»Ð¾Ð½Ð¸Ñ€Ð¾Ð²Ð°Ð½Ð¸Ñ Ð¾Ð±ÑŠÐµÐºÑ‚Ð° Ð¸Ð· Ð±Ð°Ð·Ñ‹ Ð½Ð°ÐºÐ°Ñ‚Ñ‹Ð²Ð°ÐµÐ¼ Ð½Ð° Ð½Ð¾Ð²Ñ‹Ð¹ Ð¾Ð±ÑŠÐµÐºÑ‚ Ð¸Ð·Ð¼ÐµÐ½ÐµÐ½Ð¸Ñ Ð¿Ð¾Ð»ÑŒÐ·Ð¾Ð²Ð°Ñ‚ÐµÐ»Ñ
+		// Ð¿Ñ€Ð¾ÑÑ‚Ð°Ð²Ð»ÑÐµÐ¼ ÐµÐ¼Ñƒ Ñ€ÐµÐ³Ð¸Ð¾Ð½Ñ‹ ÐºÐ¾Ñ‚Ð¾Ñ€Ñ‹Ðµ Ð¾Ð½ Ñ€ÐµÐ°Ð»ÑŒÐ½Ð¾ Ð²Ñ‹Ð±Ñ€Ð°Ð» Ð² Ñ„Ð¾Ñ€Ð¼Ðµ
 
 		$this->object[$regions_field] =
 			array_intersect($this->object[$regions_field], $allowedRegionsIds);
@@ -138,7 +138,7 @@ class PXPublicRegionObjectCloner {
 
 	private function denyEditValidate() {
 		if(isset($this->objectInDB[self::DENY_EDIT_FIELD]) && !empty($this->objectInDB[self::DENY_EDIT_FIELD])) {
-			$this->trigger->fireError('ôÏÌØËÏ ÆÅÄÅÒÁÌØÎÏÅ ÒÅÄÁËÔÉÒÏ×ÁÎÉÅ!');
+			$this->trigger->fireError('Ð¢Ð¾Ð»ÑŒÐºÐ¾ Ñ„ÐµÐ´ÐµÑ€Ð°Ð»ÑŒÐ½Ð¾Ðµ Ñ€ÐµÐ´Ð°ÐºÑ‚Ð¸Ñ€Ð¾Ð²Ð°Ð½Ð¸Ðµ!');
 		}
 	}
 }

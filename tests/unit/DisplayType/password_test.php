@@ -17,8 +17,8 @@ class PasswordTest extends UnitTestCase {
 		$html  = '<div class="password">';
 		$html .= '<input type="password" name="test_field[type]"   onfocus="startCheckPassword(this, \'test_field\')">';
 		$html .= '<input type="password" name="test_field[retype]" onfocus="startCheckPassword(this, \'test_field\')">';
-		$html .= '<input type="checkbox" name="test_field[delete]" id="test_field[delete]" class="checkbox"><label for="test_field[delete]">удалить пароль</label>';
-		$html .= ' <span>Длина пароля должна быть не менее 6 символов. Хороший пароль должен включать в себя строчные и заглавные буквы латинского алфавита, а также цифры.</span>';
+		$html .= '<input type="checkbox" name="test_field[delete]" id="test_field[delete]" class="checkbox"><label for="test_field[delete]">я┐п╢п╟п╩п╦я┌я▄ п©п╟я─п╬п╩я▄</label>';
+		$html .= ' <span>п■п╩п╦п╫п╟ п©п╟я─п╬п╩я▐ п╢п╬п╩п╤п╫п╟ п╠я▀я┌я▄ п╫п╣ п╪п╣п╫п╣п╣ 6 я│п╦п╪п╡п╬п╩п╬п╡. п╔п╬я─п╬я┬п╦п╧ п©п╟я─п╬п╩я▄ п╢п╬п╩п╤п╣п╫ п╡п╨п╩я▌я┤п╟я┌я▄ п╡ я│п╣п╠я▐ я│я┌я─п╬я┤п╫я▀п╣ п╦ п╥п╟пЁп╩п╟п╡п╫я▀п╣ п╠я┐п╨п╡я▀ п╩п╟я┌п╦п╫я│п╨п╬пЁп╬ п╟п╩я└п╟п╡п╦я┌п╟, п╟ я┌п╟п╨п╤п╣ я├п╦я└я─я▀.</span>';
 		$html .= '</div>';
 
 		$res  = $this->password->buildInput($this->field, $this->object);
@@ -28,7 +28,7 @@ class PasswordTest extends UnitTestCase {
 		$this->assertPattern('#input\s+type="password"\s+name="test_field\[retype\]"#m',  $res);
 		$this->assertPattern('#input\s+type="checkbox"\s+name="test_field\[delete\]"#m',  $res);
 
-		// длина пароля < 32 
+		// п╢п╩п╦п╫п╟ п©п╟я─п╬п╩я▐ < 32 
 		$this->object['test_field'] = 'qwerty';
 		$res  = $this->password->buildInput($this->field, $this->object);
 
@@ -37,7 +37,7 @@ class PasswordTest extends UnitTestCase {
 	}
 	
 	function testBuildCell() {
-		$html = '<div class="truecheck" title="да"></div>';
+		$html = '<div class="truecheck" title="п╢п╟"></div>';
 		$this->object['test_field'] = md5('qwerty');
 		
 		$res  = $this->password->buildCell($this->field, $this->object);

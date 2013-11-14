@@ -75,8 +75,8 @@ class PXTriggerDatabaseMultipleregions extends PXAbstractDatabaseTrigger {
 
 		$permit = $regions->checkRegionAccess($format, $objectInDB) && $regions->checkRegionAccessToParent($format, $objectInDB);
 
-		// ËÌÏÎÉÒÏ×ÁÎÉÅ ×ÏÚÍÏÖÎÏ ÔÏÌØËÏ ÉÚ ÁÄÍÉÎÉËÉ
-		// ÒÅËÕÒÓÉ×ÎÏÅ ËÌÏÎÉÒÏ×ÁÎÉÅ ÚÁĞÅÒÅİÅÎÏ
+		// ĞºĞ»Ğ¾Ğ½Ğ¸Ñ€Ğ¾Ğ²Ğ°Ğ½Ğ¸Ğµ Ğ²Ğ¾Ğ·Ğ¼Ğ¾Ğ¶Ğ½Ğ¾ Ñ‚Ğ¾Ğ»ÑŒĞºĞ¾ Ğ¸Ğ· Ğ°Ğ´Ğ¼Ğ¸Ğ½Ğ¸ĞºĞ¸
+		// Ñ€ĞµĞºÑƒÑ€ÑĞ¸Ğ²Ğ½Ğ¾Ğµ ĞºĞ»Ğ¾Ğ½Ğ¸Ñ€Ğ¾Ğ²Ğ°Ğ½Ğ¸Ğµ Ğ·Ğ°Ğ¿ĞµÑ€ĞµÑ‰ĞµĞ½Ğ¾
 		if (!$permit && $isRegionalObject && PXRegistry::getApp()->isAdminEngine()) {
 
 			if ($this->isRegionalCloning) {
@@ -170,8 +170,8 @@ class PXTriggerDatabaseMultipleregions extends PXAbstractDatabaseTrigger {
 
 		$permit = $regions->checkRegionAccess($format, $objectInDB) && $regions->checkRegionAccessToParent($format, $objectInDB);
 
-		// ËÌÏÎÉÒÏ×ÁÎÉÅ ×ÏÚÍÏÖÎÏ ÔÏÌØËÏ ÉÚ ÁÄÍÉÎÉËÉ
-		// ÒÅËÕÒÓÉ×ÎÏÅ ËÌÏÎÉÒÏ×ÁÎÉÅ ÚÁĞÅÒÅİÅÎÏ
+		// ĞºĞ»Ğ¾Ğ½Ğ¸Ñ€Ğ¾Ğ²Ğ°Ğ½Ğ¸Ğµ Ğ²Ğ¾Ğ·Ğ¼Ğ¾Ğ¶Ğ½Ğ¾ Ñ‚Ğ¾Ğ»ÑŒĞºĞ¾ Ğ¸Ğ· Ğ°Ğ´Ğ¼Ğ¸Ğ½Ğ¸ĞºĞ¸
+		// Ñ€ĞµĞºÑƒÑ€ÑĞ¸Ğ²Ğ½Ğ¾Ğµ ĞºĞ»Ğ¾Ğ½Ğ¸Ñ€Ğ¾Ğ²Ğ°Ğ½Ğ¸Ğµ Ğ·Ğ°Ğ¿ĞµÑ€ĞµÑ‰ĞµĞ½Ğ¾
 		if (!$permit && $isRegionalObject && PXRegistry::getApp()->isAdminEngine()) {
 
 			if ($this->isRegionalCloning) {
@@ -210,7 +210,7 @@ class PXTriggerDatabaseMultipleregions extends PXAbstractDatabaseTrigger {
 			$cloner->moveObject($regions->getAllowedRegionsIds());
 
 			$this->isRegionalCloning = null;
-			$permit = true; //íÙ ËÌÏÎÉÒÏ×ÁÌÉ ÏÂßÅËÔ, $objectInDB ÔÅĞÅÒØ ÓÏÄÅÒÖÉÔ ËÌÏÎ, ËÏÔÏÒÙÊ ÎÅÏÂÈÏÄÉÍÏ ĞÏÚ×ÏÌÉÔØ-ÔÁËÉ ĞÅÒÅÄ×ÉÎÕÔØ.
+			$permit = true; //ĞœÑ‹ ĞºĞ»Ğ¾Ğ½Ğ¸Ñ€Ğ¾Ğ²Ğ°Ğ»Ğ¸ Ğ¾Ğ±ÑŠĞµĞºÑ‚, $objectInDB Ñ‚ĞµĞ¿ĞµÑ€ÑŒ ÑĞ¾Ğ´ĞµÑ€Ğ¶Ğ¸Ñ‚ ĞºĞ»Ğ¾Ğ½, ĞºĞ¾Ñ‚Ğ¾Ñ€Ñ‹Ğ¹ Ğ½ĞµĞ¾Ğ±Ñ…Ğ¾Ğ´Ğ¸Ğ¼Ğ¾ Ğ¿Ğ¾Ğ·Ğ²Ğ¾Ğ»Ğ¸Ñ‚ÑŒ-Ñ‚Ğ°ĞºĞ¸ Ğ¿ĞµÑ€ĞµĞ´Ğ²Ğ¸Ğ½ÑƒÑ‚ÑŒ.
 		} elseif(!$permit) {
 			$this->fireError();
 		}
@@ -309,7 +309,7 @@ class PXTriggerDatabaseMultipleregions extends PXAbstractDatabaseTrigger {
 		return PXMultiRegions::getInstance();
 	}
 
-	function fireError($message='äÏÓÔÕĞ Ë ÜÔÏÍÕ ÏÂßÅËÔÕ/ÄÅÊÓÔ×ÉÀ ÚÁĞÒÅİÅÎ !') {
+	function fireError($message='Ğ”Ğ¾ÑÑ‚ÑƒĞ¿ Ğº ÑÑ‚Ğ¾Ğ¼Ñƒ Ğ¾Ğ±ÑŠĞµĞºÑ‚Ñƒ/Ğ´ĞµĞ¹ÑÑ‚Ğ²Ğ¸Ñ Ğ·Ğ°Ğ¿Ñ€ĞµÑ‰ĞµĞ½ !') {
 		$app = PXRegistry::getApp();
 		if(!$app->isAdminEngine()) {
 			return;

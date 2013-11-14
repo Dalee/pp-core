@@ -35,7 +35,7 @@ class PXFiltersAdminWidget extends PXAdminWidget {
 		
 		$filters = $request->getVar('filters', array());
 
-		$filters_html = '<p>Используйте ^ для поиска в начале строки, $ &mdash; в конце строки.</p>';
+		$filters_html = '<p>п≤я│п©п╬п╩я▄п╥я┐п╧я┌п╣ ^ п╢п╩я▐ п©п╬п╦я│п╨п╟ п╡ п╫п╟я┤п╟п╩п╣ я│я┌я─п╬п╨п╦, $ &mdash; п╡ п╨п╬п╫я├п╣ я│я┌я─п╬п╨п╦.</p>';
 		
 		foreach ($this->dtype->fields as $field) {
 			if (!$field->listed || !$field->storageType->filterable()) continue;
@@ -46,9 +46,9 @@ class PXFiltersAdminWidget extends PXAdminWidget {
 					$spformat = '<label><input type="radio" name="filters[' . $this->dtype->id . '][' . $field->name .']" value="%s"%s/>%s</label> ';
 					
 					$filters_html .= '<div>';
-					$filters_html .= sprintf($spformat, '',  empty($filter_value) ? ' checked="checked"' : '', 'Все');
-					$filters_html .= sprintf($spformat, 'f', $filter_value == 'f' ? ' checked="checked"' : '', 'Нет');
-					$filters_html .= sprintf($spformat, 't', $filter_value == 't' ? ' checked="checked"' : '', 'Да');
+					$filters_html .= sprintf($spformat, '',  empty($filter_value) ? ' checked="checked"' : '', 'п▓я│п╣');
+					$filters_html .= sprintf($spformat, 'f', $filter_value == 'f' ? ' checked="checked"' : '', 'п²п╣я┌');
+					$filters_html .= sprintf($spformat, 't', $filter_value == 't' ? ' checked="checked"' : '', 'п■п╟');
 					$filters_html .= sprintf('&ndash; <label>%s</label></div>', $field->description);
 					break;
 				default:
@@ -60,10 +60,10 @@ class PXFiltersAdminWidget extends PXAdminWidget {
 			$filters_html .= $additionalFilter->html();
 		}
 		
-		$filters_html .= '<button class="run_f">Применить</button>';
+		$filters_html .= '<button class="run_f">п÷я─п╦п╪п╣п╫п╦я┌я▄</button>';
 
 		if (!empty($filters[$this->dtype->id])) {
-			$filters_html .= sprintf('<button dtype="%s" class="clr_f">Сбросить</button>', $this->dtype->id);
+			$filters_html .= sprintf('<button dtype="%s" class="clr_f">п║п╠я─п╬я│п╦я┌я▄</button>', $this->dtype->id);
 		}
 
 		$collapsed = !empty($filters[$this->dtype->id]) ? '' : ' collapsed';
@@ -71,7 +71,7 @@ class PXFiltersAdminWidget extends PXAdminWidget {
 		$result =
 <<<HTML
 			<fieldset class="filters{$collapsed}">
-				<legend><span>&nbsp;&nbsp;&nbsp;</span> Фильтры</legend>
+				<legend><span>&nbsp;&nbsp;&nbsp;</span> п╓п╦п╩я▄я┌я─я▀</legend>
 				<div class="wrap">
 					$filters_html
 				</div>
@@ -122,7 +122,7 @@ $(function() {
 			}
 		}
 	
-		join.push('charcheck=' + encodeURIComponent('йцукен'));
+		join.push('charcheck=' + encodeURIComponent('п╧я├я┐п╨п╣п╫'));
 
 		window.location.search = '?' +  join.join('&');
 		return false;
@@ -195,7 +195,7 @@ class PXOnPageAdminWidget extends PXAdminWidget {
 
 	function html() {
 		if ($this->flag == 'before') {
-			return '<span style="float: left; margin-left: 2px"> Страница: </span>';
+			return '<span style="float: left; margin-left: 2px"> п║я┌я─п╟п╫п╦я├п╟: </span>';
 		} elseif($this->flag == 'after'){
 			return  $this->onPageControll();
 		}
@@ -217,7 +217,7 @@ class PXOnPageAdminWidget extends PXAdminWidget {
 			$tmp[$i]  = sprintf("<a class='%s' href='%s'>%s</a>", $selected, NLAbstractLayout::buildHref($param, $t), $t);
 		}
 
-		return "Показывать на странице: " . join($tmp);
+		return "п÷п╬п╨п╟п╥я▀п╡п╟я┌я▄ п╫п╟ я│я┌я─п╟п╫п╦я├п╣: " . join($tmp);
 	}
 }
 

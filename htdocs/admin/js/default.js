@@ -183,7 +183,7 @@ function CloneContent(format, donor) {
 
 function MoveContent(format, id) {
 	try {
-		var shift = window.prompt('Укажите сдвиг позиции (отрицательные вниз, положительные вверх)', -1);
+		var shift = window.prompt('пёп╨п╟п╤п╦я┌п╣ я│п╢п╡п╦пЁ п©п╬п╥п╦я├п╦п╦ (п╬я┌я─п╦я├п╟я┌п╣п╩я▄п╫я▀п╣ п╡п╫п╦п╥, п©п╬п╩п╬п╤п╦я┌п╣п╩я▄п╫я▀п╣ п╡п╡п╣я─я┘)', -1);
 
 		if(shift === 0) {
 			return false;
@@ -277,7 +277,7 @@ function ToClipboardMulti(src, width, height, type) {
 	text = '';
 
 	if(type == 'file') {
-		text = '<a href="'+src+'">Скачать</a>';
+		text = '<a href="'+src+'">п║п╨п╟я┤п╟я┌я▄</a>';
 	}
 
 	if(type == 'image') {
@@ -325,7 +325,7 @@ function nl2p(text) {
 }
 
 function ContextCall(id, status, format, title) {
-	return Context('Edit', format, id, 'Изменить ' + title);
+	return Context('Edit', format, id, 'п≤п╥п╪п╣п╫п╦я┌я▄ ' + title);
 }
 
 function ContextEdit(id, status, format, title, alias, level, up, down) {
@@ -333,55 +333,55 @@ function ContextEdit(id, status, format, title, alias, level, up, down) {
 	var area = GetQueryVariable('area', 'main');
 
 	ret  = '<strong>'+title+'</strong>';
-	ret += '<a class="edit" href="javascript: EditContent(\''+format+'\', '+id+')">Изменить</a>';
-	ret += '<a class="copy" href="javascript: CloneContent(\''+format+'\', '+id+')">Клонировать</a>';
+	ret += '<a class="edit" href="javascript: EditContent(\''+format+'\', '+id+')">п≤п╥п╪п╣п╫п╦я┌я▄</a>';
+	ret += '<a class="copy" href="javascript: CloneContent(\''+format+'\', '+id+')">п п╩п╬п╫п╦я─п╬п╡п╟я┌я▄</a>';
 
 	if(level) {
-		ret += '<a class="del" href="action.phtml?id='+id+'&area=objects&action=directremove&format='+format+'" onclick="return window.confirm(\'Вы действительно хотите удалить '+title+'?\');">Удалить</a>';
+		ret += '<a class="del" href="action.phtml?id='+id+'&area=objects&action=directremove&format='+format+'" onclick="return window.confirm(\'п▓я▀ п╢п╣п╧я│я┌п╡п╦я┌п╣п╩я▄п╫п╬ я┘п╬я┌п╦я┌п╣ я┐п╢п╟п╩п╦я┌я▄ '+title+'?\');">пёп╢п╟п╩п╦я┌я▄</a>';
 	} else {
-		ret += '<span class="del">Удалить</span>';
+		ret += '<span class="del">пёп╢п╟п╩п╦я┌я▄</span>';
 	}
 
 	ret += '<div class="hr"></div>';
 
 	if (status != 1 && level) {
-		ret += '<a class="on" href="action.phtml?id='+id+'&area=objects&action=directstatus&format='+format+'">Опубликовать</a>';
+		ret += '<a class="on" href="action.phtml?id='+id+'&area=objects&action=directstatus&format='+format+'">п·п©я┐п╠п╩п╦п╨п╬п╡п╟я┌я▄</a>';
 	} else {
-		ret += '<span class="on">Опубликовать</span>';
+		ret += '<span class="on">п·п©я┐п╠п╩п╦п╨п╬п╡п╟я┌я▄</span>';
 	}
 
 	if(status == 1 && level) {
-		ret += '<a class="off" href="action.phtml?id='+id+'&area=objects&action=directstatus&format='+format+'">Скрыть</a>';
+		ret += '<a class="off" href="action.phtml?id='+id+'&area=objects&action=directstatus&format='+format+'">п║п╨я─я▀я┌я▄</a>';
 	} else {
-		ret += '<span class="off">Скрыть</span>';
+		ret += '<span class="off">п║п╨я─я▀я┌я▄</span>';
 	}
 
 	ret += '<div class="hr"></div>';
 
 	if(up) {
-		ret += '<a class="up" href="action.phtml?id='+id+'&area=objects&action=directup&format='+format+'">Поднять выше</a>';
+		ret += '<a class="up" href="action.phtml?id='+id+'&area=objects&action=directup&format='+format+'">п÷п╬п╢п╫я▐я┌я▄ п╡я▀я┬п╣</a>';
 	} else {
-		ret += '<span class="up">Поднять выше</span>';
+		ret += '<span class="up">п÷п╬п╢п╫я▐я┌я▄ п╡я▀я┬п╣</span>';
 	}
 
 	if(down) {
-		ret += '<a class="down" href="action.phtml?id='+id+'&area=objects&action=directdown&format='+format+'">Опустить ниже</a>';
+		ret += '<a class="down" href="action.phtml?id='+id+'&area=objects&action=directdown&format='+format+'">п·п©я┐я│я┌п╦я┌я▄ п╫п╦п╤п╣</a>';
 	} else {
-		ret += '<span class="down">Опустить ниже</span>';
+		ret += '<span class="down">п·п©я┐я│я┌п╦я┌я▄ п╫п╦п╤п╣</span>';
 	}
 
 	if(up || down) {
-		ret += '<a href="javascript:MoveContent(\''+format+'\', '+id+');">Изменить позицию на&hellip;</a>';
+		ret += '<a href="javascript:MoveContent(\''+format+'\', '+id+');">п≤п╥п╪п╣п╫п╦я┌я▄ п©п╬п╥п╦я├п╦я▌ п╫п╟&hellip;</a>';
 	} else {
-		ret += '<span>Изменить позицию на&hellip;</span>';
+		ret += '<span>п≤п╥п╪п╣п╫п╦я┌я▄ п©п╬п╥п╦я├п╦я▌ п╫п╟&hellip;</span>';
 	}
 
 	ret += '<div class="hr"></div>';
 
 	if (alias.length) {
-		ret += '<a class="alias" href="/admin/preview.phtml?q='+alias+'" target="_blank">Показать на сайте</a>';
+		ret += '<a class="alias" href="/admin/preview.phtml?q='+alias+'" target="_blank">п÷п╬п╨п╟п╥п╟я┌я▄ п╫п╟ я│п╟п╧я┌п╣</a>';
 	} else {
-		ret += '<span class="alias">Показать на сайте</span>';
+		ret += '<span class="alias">п÷п╬п╨п╟п╥п╟я┌я▄ п╫п╟ я│п╟п╧я┌п╣</span>';
 	}
 
 	return ret;
@@ -397,7 +397,7 @@ function Context(event) {
 
 	if (arguments.length > 1) {
 		if (arguments[1] == 'add') {
-			menu.innerHTML += '<strong>Добавить</strong>';
+			menu.innerHTML += '<strong>п■п╬п╠п╟п╡п╦я┌я▄</strong>';
 			for(i=3; i<arguments.length; i+=2) {
 				menu.innerHTML += ContextAdd(arguments[2], arguments[i], arguments[i+1]);
 			}
@@ -411,7 +411,7 @@ function Context(event) {
 	}
 
 	menu.innerHTML += '<div class="hr"></div>';
-	menu.innerHTML += '<a href="javascript: ContextHide();">Отмена</a>';
+	menu.innerHTML += '<a href="javascript: ContextHide();">п·я┌п╪п╣п╫п╟</a>';
 
 	menu.style.display = 'block';
 	x = _mousex + 12;

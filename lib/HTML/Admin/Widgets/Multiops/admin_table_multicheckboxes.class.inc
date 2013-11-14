@@ -17,7 +17,7 @@
 			$objectType = $this->parentWidget->dtype->id;
 			return <<<HTML
 				<div class="multiselect-all">
-					<input id="multiselector_{$objectType}" type="checkbox" disabled="disabled"><label for="multiselector_{$objectType}">Выбрать все объекты</label>
+					<input id="multiselector_{$objectType}" type="checkbox" disabled="disabled"><label for="multiselector_{$objectType}">п▓я▀п╠я─п╟я┌я▄ п╡я│п╣ п╬п╠я┼п╣п╨я┌я▀</label>
 				</div>
 HTML;
 		}

@@ -49,38 +49,38 @@ CREATE TABLE acl_objects (
 	objectrule	  VARCHAR
 ) WITH OIDS;
 
-INSERT INTO sgroup (title, status, allowed) VALUES ('Администраторы', true, 'a:1:{s:5:"suser";i:1;}');
-UPDATE suser SET parent = (SELECT id FROM sgroup WHERE title = 'Администраторы' LIMIT 1);
+INSERT INTO sgroup (title, status, allowed) VALUES ('п░п╢п╪п╦п╫п╦я│я┌я─п╟я┌п╬я─я▀', true, 'a:1:{s:5:"suser";i:1;}');
+UPDATE suser SET parent = (SELECT id FROM sgroup WHERE title = 'п░п╢п╪п╦п╫п╦я│я┌я─п╟я┌п╬я─я▀' LIMIT 1);
 
 INSERT INTO acl_objects (what, access, objectrule) 
 	VALUES ('read', 'allo', 'user');
 
 INSERT INTO acl_objects (sgroupid, what, access, objectrule) 
-	VALUES ((SELECT id FROM sgroup WHERE title = 'Администраторы' LIMIT 1), 'admin', 'allo', 'user');
+	VALUES ((SELECT id FROM sgroup WHERE title = 'п░п╢п╪п╦п╫п╦я│я┌я─п╟я┌п╬я─я▀' LIMIT 1), 'admin', 'allo', 'user');
 
 INSERT INTO acl_objects (sgroupid, what, access, objectrule) 
-	VALUES ((SELECT id FROM sgroup WHERE title = 'Администраторы' LIMIT 1), 'write', 'allo', 'user');
+	VALUES ((SELECT id FROM sgroup WHERE title = 'п░п╢п╪п╦п╫п╦я│я┌я─п╟я┌п╬я─я▀' LIMIT 1), 'write', 'allo', 'user');
 
 INSERT INTO acl_objects (sgroupid, what, access, objectrule) 
-	VALUES ((SELECT id FROM sgroup WHERE title = 'Администраторы' LIMIT 1), 'admin', 'allo', 'module');
+	VALUES ((SELECT id FROM sgroup WHERE title = 'п░п╢п╪п╦п╫п╦я│я┌я─п╟я┌п╬я─я▀' LIMIT 1), 'admin', 'allo', 'module');
 
 INSERT INTO acl_objects (objecttype, what, access, objectrule)  
 	VALUES ('auth', 'admin', 'allo', 'module');
 
 INSERT INTO acl_objects (sgroupid, objecttype, what, access, objectrule)  
-	VALUES ((SELECT id FROM sgroup WHERE title = 'Администраторы' LIMIT 1), 'main', 'viewmenu', 'allo', 'module');
+	VALUES ((SELECT id FROM sgroup WHERE title = 'п░п╢п╪п╦п╫п╦я│я┌я─п╟я┌п╬я─я▀' LIMIT 1), 'main', 'viewmenu', 'allo', 'module');
 
 INSERT INTO acl_objects (sgroupid, objecttype, what, access, objectrule)  
-	VALUES ((SELECT id FROM sgroup WHERE title = 'Администраторы' LIMIT 1), 'users', 'viewmenu', 'allo', 'module');
+	VALUES ((SELECT id FROM sgroup WHERE title = 'п░п╢п╪п╦п╫п╦я│я┌я─п╟я┌п╬я─я▀' LIMIT 1), 'users', 'viewmenu', 'allo', 'module');
 
 INSERT INTO acl_objects (sgroupid, objecttype, what, access, objectrule)  
-	VALUES ((SELECT id FROM sgroup WHERE title = 'Администраторы' LIMIT 1), 'acl', 'viewmenu', 'allo', 'module');
+	VALUES ((SELECT id FROM sgroup WHERE title = 'п░п╢п╪п╦п╫п╦я│я┌я─п╟я┌п╬я─я▀' LIMIT 1), 'acl', 'viewmenu', 'allo', 'module');
 
 INSERT INTO acl_objects (sgroupid, objecttype, what, access, objectrule)  
-	VALUES ((SELECT id FROM sgroup WHERE title = 'Администраторы' LIMIT 1), 'macl', 'viewmenu', 'allo', 'module');
+	VALUES ((SELECT id FROM sgroup WHERE title = 'п░п╢п╪п╦п╫п╦я│я┌я─п╟я┌п╬я─я▀' LIMIT 1), 'macl', 'viewmenu', 'allo', 'module');
 
 INSERT INTO acl_objects (sgroupid, objecttype, what, access, objectrule)  
-	VALUES ((SELECT id FROM sgroup WHERE title = 'Администраторы' LIMIT 1), 'objects', 'viewmenu', 'allo', 'module');
+	VALUES ((SELECT id FROM sgroup WHERE title = 'п░п╢п╪п╦п╫п╦я│я┌я─п╟я┌п╬я─я▀' LIMIT 1), 'objects', 'viewmenu', 'allo', 'module');
 
 
 UPDATE acl_objects SET sys_order = id;

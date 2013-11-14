@@ -50,7 +50,7 @@ class PXInputDropDown extends PXAdminWidget {
 		foreach ($selected as $unknown => $k) {
 			$optgroup && $html .= '<optgroup label="...">';
 
-			$html .= $this->htmlOption($unknown, sprintf('[нет в списке - "%s"]', $unknown), $selected, true);
+			$html .= $this->htmlOption($unknown, sprintf('[п╫п╣я┌ п╡ я│п©п╦я│п╨п╣ - "%s"]', $unknown), $selected, true);
 
 			$optgroup && $html .= '</optgroup>';
 		}

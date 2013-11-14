@@ -2,13 +2,13 @@
 
 /**
  * Deferred objects publication
- * Ô‘Ãœ÷≈ŒŒ¡— –’¬Ã…À¡√…— œ¬ﬂ≈À‘œ◊
+ * –û—Ç–ª–æ–∂–µ–Ω–Ω–∞—è –ø—É–±–ª–∏–∫–∞—Ü–∏—è –æ–±—ä–µ–∫—Ç–æ–≤
  */
 
 class PXCronRunDeferredStatus extends PXAbstractCronRun {
 
 	function __construct() {
-		$this->name = 'Ô‘Ãœ÷≈ŒŒ¡— –’¬Ã…À¡√…— œ¬ﬂ≈À‘œ◊';
+		$this->name = '–û—Ç–ª–æ–∂–µ–Ω–Ω–∞—è –ø—É–±–ª–∏–∫–∞—Ü–∏—è –æ–±—ä–µ–∫—Ç–æ–≤';
 	}
 
 	function Run(&$app, &$db, &$tree, $matchedTime, $matchedRule) {

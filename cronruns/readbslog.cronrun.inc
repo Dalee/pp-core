@@ -2,22 +2,22 @@
 class PXCronRunReadBSLog extends PXAbstractCronRun {
 	var $DATE_FORMAT   = 'd.m.Y H:00:00';              // date format here [d-m-Y H:i:s] german time format
 
-	var $RELOAD_FILE   = '/site/var/ad/in/reload'; // Файл по которому делается релоад. Относительно BASEPATH
-	var $BS_OUT_DIR    = '/site/var/ad/out/';      // Каталог с bs log files (входные). Относительно BASEPATH
-	var $LOGS_DIR      = '/site/var/ad/logs/';     // Каталог с результатами работы скрипта (выход). Относительно BASEPATH
+	var $RELOAD_FILE   = '/site/var/ad/in/reload'; // п╓п╟п╧п╩ п©п╬ п╨п╬я┌п╬я─п╬п╪я┐ п╢п╣п╩п╟п╣я┌я│я▐ я─п╣п╩п╬п╟п╢. п·я┌п╫п╬я│п╦я┌п╣п╩я▄п╫п╬ BASEPATH
+	var $BS_OUT_DIR    = '/site/var/ad/out/';      // п п╟я┌п╟п╩п╬пЁ я│ bs log files (п╡я┘п╬п╢п╫я▀п╣). п·я┌п╫п╬я│п╦я┌п╣п╩я▄п╫п╬ BASEPATH
+	var $LOGS_DIR      = '/site/var/ad/logs/';     // п п╟я┌п╟п╩п╬пЁ я│ я─п╣п╥я┐п╩я▄я┌п╟я┌п╟п╪п╦ я─п╟п╠п╬я┌я▀ я│п╨я─п╦п©я┌п╟ (п╡я▀я┘п╬п╢). п·я┌п╫п╬я│п╦я┌п╣п╩я▄п╫п╬ BASEPATH
 
 	protected $fLimit, $leaveSourceFile = false, $skipLog = false;
 
 	function PXCronRunReadBSLog() {
-		$this->name = 'Обработка логов баннерной системы';
+		$this->name = 'п·п╠я─п╟п╠п╬я┌п╨п╟ п╩п╬пЁп╬п╡ п╠п╟п╫п╫п╣я─п╫п╬п╧ я│п╦я│я┌п╣п╪я▀';
 
 		$this->result = array();
-		$this->files  = array(); // массив с файлами статистики
+		$this->files  = array(); // п╪п╟я│я│п╦п╡ я│ я└п╟п╧п╩п╟п╪п╦ я│я┌п╟я┌п╦я│я┌п╦п╨п╦
 
-		$this->audit  = array(); // статистика audit letters
-		$this->stats  = array(); // статистика показов/кликов
+		$this->audit  = array(); // я│я┌п╟я┌п╦я│я┌п╦п╨п╟ audit letters
+		$this->stats  = array(); // я│я┌п╟я┌п╦я│я┌п╦п╨п╟ п©п╬п╨п╟п╥п╬п╡/п╨п╩п╦п╨п╬п╡
 
-		$this->badLines = array(); // испорченные строчки в логе
+		$this->badLines = array(); // п╦я│п©п╬я─я┤п╣п╫п╫я▀п╣ я│я┌я─п╬я┤п╨п╦ п╡ п╩п╬пЁп╣
 
 		$this->total  = array(
 			'clicks' => 0,
@@ -74,8 +74,8 @@ class PXCronRunReadBSLog extends PXAbstractCronRun {
 
 		return array(
 			'status' => 0,
-			'note' => 'Успешно! (clicks/shows/audit: '.$this->total['clicks'].'/'.$this->total['shows'].'/'.$this->total['audit'].')'.(
-				sizeof($this->badLines) > 0 ? "\n\n".'Ошибки:'."\n".implode("\n", $this->badLines) : ''
+			'note' => 'пёя│п©п╣я┬п╫п╬! (clicks/shows/audit: '.$this->total['clicks'].'/'.$this->total['shows'].'/'.$this->total['audit'].')'.(
+				sizeof($this->badLines) > 0 ? "\n\n".'п·я┬п╦п╠п╨п╦:'."\n".implode("\n", $this->badLines) : ''
 			)
 		);
 	}
@@ -338,7 +338,7 @@ class PXCronRunReadBSLog extends PXAbstractCronRun {
 
 /*
 
-Описание форматов логов
+п·п©п╦я│п╟п╫п╦п╣ я└п╬я─п╪п╟я┌п╬п╡ п╩п╬пЁп╬п╡
 
 version1:
 
@@ -350,14 +350,14 @@ version2:
 	formal:
 	[unix timestamp] [ip address] [action] [placeid] [bannerid] [apache uid] [type] [template]
 
-	[unix timestamp] - обычный unix time от начала эпохи
-	[ip address]     - IP адрес в виде nnn.nnn.nnn.nnn
-	[action]         - ["show", "clk"] показ баннера, клик по баннеру
-	[placeid]        - id места показа в БД
-	[bannerid]       - id баннера в БД
-	[apache uid]     - уникальный id апача, хз зачем он тут ,-)
-	[type]           - тип баннера, или его размер "NNNxNNN"
-	[template]       - шаблон вывода баннера [gif, flash, audit... ?]
+	[unix timestamp] - п╬п╠я▀я┤п╫я▀п╧ unix time п╬я┌ п╫п╟я┤п╟п╩п╟ я█п©п╬я┘п╦
+	[ip address]     - IP п╟п╢я─п╣я│ п╡ п╡п╦п╢п╣ nnn.nnn.nnn.nnn
+	[action]         - ["show", "clk"] п©п╬п╨п╟п╥ п╠п╟п╫п╫п╣я─п╟, п╨п╩п╦п╨ п©п╬ п╠п╟п╫п╫п╣я─я┐
+	[placeid]        - id п╪п╣я│я┌п╟ п©п╬п╨п╟п╥п╟ п╡ п▒п■
+	[bannerid]       - id п╠п╟п╫п╫п╣я─п╟ п╡ п▒п■
+	[apache uid]     - я┐п╫п╦п╨п╟п╩я▄п╫я▀п╧ id п╟п©п╟я┤п╟, я┘п╥ п╥п╟я┤п╣п╪ п╬п╫ я┌я┐я┌ ,-)
+	[type]           - я┌п╦п© п╠п╟п╫п╫п╣я─п╟, п╦п╩п╦ п╣пЁп╬ я─п╟п╥п╪п╣я─ "NNNxNNN"
+	[template]       - я┬п╟п╠п╩п╬п╫ п╡я▀п╡п╬п╢п╟ п╠п╟п╫п╫п╣я─п╟ [gif, flash, audit... ?]
 
 	example:
 	1097241447 192.168.1.21 show 281470 281471 5113442241610AF8000007BA03035D02 123x123 gif

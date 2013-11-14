@@ -25,12 +25,12 @@ if (!defined('PHP_EXTRA_VERSION')) {
 	define('PHP_EXTRA_VERSION', '');
 }
 
-// Определение не на винде ли мы запущены
+// п·п©я─п╣п╢п╣п╩п╣п╫п╦п╣ п╫п╣ п╫п╟ п╡п╦п╫п╢п╣ п╩п╦ п╪я▀ п╥п╟п©я┐я┴п╣п╫я▀
 if (!defined('IS_WIN')) {
 	define('IS_WIN', (substr(PHP_OS, 0, 3) == 'WIN'));
 }
 
-// Определение корня сайта в случае запуска скрипта из консоли (CLI)
+// п·п©я─п╣п╢п╣п╩п╣п╫п╦п╣ п╨п╬я─п╫я▐ я│п╟п╧я┌п╟ п╡ я│п╩я┐я┤п╟п╣ п╥п╟п©я┐я│п╨п╟ я│п╨я─п╦п©я┌п╟ п╦п╥ п╨п╬п╫я│п╬п╩п╦ (CLI)
 if(!isset($_SERVER['REQUEST_METHOD'])) {
 	$_SERVER['DOCUMENT_ROOT'] = realpath(dirname(__FILE__).'/../../');
 }
@@ -38,7 +38,7 @@ if(!isset($_SERVER['REQUEST_METHOD'])) {
 // cli
 defined('IS_CLI') || define('IS_CLI', PHP_SAPI === 'cli');
 
-// Определение BASEPATH - это полный путь к корню сайта
+// п·п©я─п╣п╢п╣п╩п╣п╫п╦п╣ BASEPATH - я█я┌п╬ п©п╬п╩п╫я▀п╧ п©я┐я┌я▄ п╨ п╨п╬я─п╫я▌ я│п╟п╧я┌п╟
 if(!defined('BASEPATH')) {
 	if (IS_WIN) {
 		define('BASEPATH', rtrim(str_replace("\\\\", DIRECTORY_SEPARATOR, $_SERVER["DOCUMENT_ROOT"]), DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR);
@@ -47,7 +47,7 @@ if(!defined('BASEPATH')) {
 	}
 }
 
-// Объявляем PPPATH, LOCALPATH, SHAREDPATH
+// п·п╠я┼я▐п╡п╩я▐п╣п╪ PPPATH, LOCALPATH, SHAREDPATH
 defined('PPPATH')     || define('PPPATH',     BASEPATH . 'libpp' . DIRECTORY_SEPARATOR);
 defined('PPLIBPATH')  || define('PPLIBPATH',  PPPATH   . 'lib' . DIRECTORY_SEPARATOR);
 defined('LOCALPATH')  || define('LOCALPATH',  BASEPATH . 'local' . DIRECTORY_SEPARATOR);
@@ -69,7 +69,7 @@ if (isset($_SERVER['HTTP_X_REWRITE_URL'])) {
 	unset($_SERVER['HTTP_X_REWRITE_URL']);
 }
 
-// расширяем корневые каталоги для подключаемых файлов - только, нахуа?
+// я─п╟я│я┬п╦я─я▐п╣п╪ п╨п╬я─п╫п╣п╡я▀п╣ п╨п╟я┌п╟п╩п╬пЁп╦ п╢п╩я▐ п©п╬п╢п╨п╩я▌я┤п╟п╣п╪я▀я┘ я└п╟п╧п╩п╬п╡ - я┌п╬п╩я▄п╨п╬, п╫п╟я┘я┐п╟?
 $includePath = array(
 	BASEPATH.'/libpp/lib/',
 	BASEPATH.'/local/lib/',
@@ -100,7 +100,7 @@ if (file_exists(BASEPATH.'/site/etc/php.ini')) {
 		ini_set($key, $param);
 	}
 
-	// Включаем профайлер
+	// п▓п╨п╩я▌я┤п╟п╣п╪ п©я─п╬я└п╟п╧п╩п╣я─
 	if(isset($ini_params['profiler']) && $ini_params['profiler']) {
 		$profiler = true;
 	}
@@ -113,7 +113,7 @@ if (file_exists(BASEPATH.'/site/etc/php.ini')) {
 define('PROFILER', $profiler);
 define('SYSTEM_USER', $system_user);
 
-// Влючаем дебаг
+// п▓п╩я▌я┤п╟п╣п╪ п╢п╣п╠п╟пЁ
 error_reporting(E_ALL);
 define('DEBUG', true);
 
@@ -146,7 +146,7 @@ if (function_exists('mb_internal_encoding')) {
 	}
 }
 
-// разрешенные форматы изображений
+// я─п╟п╥я─п╣я┬п╣п╫п╫я▀п╣ я└п╬я─п╪п╟я┌я▀ п╦п╥п╬п╠я─п╟п╤п╣п╫п╦п╧
 define('ENUM_ALLOWED_IMAGETYPES', serialize(array(
 	'image/gif'   => 'gif',
 	'image/jpeg'  => 'jpg',
@@ -156,13 +156,13 @@ define('ENUM_ALLOWED_IMAGETYPES', serialize(array(
 )));
 
 
-// разрешенные форматы флешей
+// я─п╟п╥я─п╣я┬п╣п╫п╫я▀п╣ я└п╬я─п╪п╟я┌я▀ я└п╩п╣я┬п╣п╧
 define('ENUM_ALLOWED_FLASHTYPES', serialize(array(
 	'application/x-shockwave-flash'   => 'swf'
 )));
 
 
-// разрешенные расширения для pathname объектов контентного уровня
+// я─п╟п╥я─п╣я┬п╣п╫п╫я▀п╣ я─п╟я│я┬п╦я─п╣п╫п╦я▐ п╢п╩я▐ pathname п╬п╠я┼п╣п╨я┌п╬п╡ п╨п╬п╫я┌п╣п╫я┌п╫п╬пЁп╬ я┐я─п╬п╡п╫я▐
 define('ENUM_ALLOWED_PATHNAMES', serialize(array(
 	'html',
 	'htm',

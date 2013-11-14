@@ -125,7 +125,7 @@ class PXAdminTableSimple extends PXAdminWidget {
 			$_ .= '<a href="'.$url.'"';
 
 			if($c['confirm']) {
-				$_ .= ' onclick="return window.confirm(\'÷Ù ÄÅÊÓÔ×ÉÔÅÌØÎÏ ÒÅÛÉÌÉ '.$c['title'].'?\');"';
+				$_ .= ' onclick="return window.confirm(\'Ð’Ñ‹ Ð´ÐµÐ¹ÑÑ‚Ð²Ð¸Ñ‚ÐµÐ»ÑŒÐ½Ð¾ Ñ€ÐµÑˆÐ¸Ð»Ð¸ '.$c['title'].'?\');"';
 
 			} elseif ($c['popup']) {
 				$_ .= ' onclick="Popup(this.href, 760, 550); return false;"';

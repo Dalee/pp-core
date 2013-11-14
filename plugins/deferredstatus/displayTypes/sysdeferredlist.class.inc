@@ -41,7 +41,7 @@ class PXDisplayTypeSysDeferredList extends PXDisplayTypeRadioList {
 				break;
 			case $stateTag === 'published':
 				$class = 'shown';
-				$info = $human . ' до' . $untilS;
+				$info = $human . ' п╢п╬' . $untilS;
 				break;
 			case $stateTag === 'done':
 				$class = 'hidden';

@@ -1,8 +1,8 @@
 <?php
 /**
- * æÁÊÌ
- * ÈÒÁÎÉÔÓÑ × site/htdocs/ai/ôéð_äáîîùè/éä_ïâÿåëôá/éíñ_ðïìñ/éíñ_æáêìá
- * ÎÁÐÒÉÍÅÒ: site/htdocs/ai/news/123034/attach/rules.doc
+ * Ð¤Ð°Ð¹Ð»
+ * Ñ…Ñ€Ð°Ð½Ð¸Ñ‚ÑÑ Ð² site/htdocs/ai/Ð¢Ð˜ÐŸ_Ð”ÐÐÐÐ«Ð¥/Ð˜Ð”_ÐžÐ‘ÐªÐ•ÐšÐ¢Ð/Ð˜ÐœÐ¯_ÐŸÐžÐ›Ð¯/Ð˜ÐœÐ¯_Ð¤ÐÐ™Ð›Ð
+ * Ð½Ð°Ð¿Ñ€Ð¸Ð¼ÐµÑ€: site/htdocs/ai/news/123034/attach/rules.doc
  *
  * displayType FILE
  * storageType file
@@ -35,8 +35,8 @@ class PXStorageTypeFile extends PXStorageTypeAbstractFile {
 					$filename = _TranslitFilename($fileArray['name']);
 				}
 
-				// ModifyContent: ÅÓÌÉ ÍÙ ÚÁÇÒÕÖÁÅÍ ÎÏ×ÙÊ ÆÁÊÌ, ÍÙ ÔÒÅÍ ×ÓÅ ÆÁÊÌÙ
-				// × ÄÉÒÅËÔÏÒÉÉ, É ËÏÐÉÒÕÅÍ ÔÕÄÁ ÎÏ×ÙÊ
+				// ModifyContent: ÐµÑÐ»Ð¸ Ð¼Ñ‹ Ð·Ð°Ð³Ñ€ÑƒÐ¶Ð°ÐµÐ¼ Ð½Ð¾Ð²Ñ‹Ð¹ Ñ„Ð°Ð¹Ð», Ð¼Ñ‹ Ñ‚Ñ€ÐµÐ¼ Ð²ÑÐµ Ñ„Ð°Ð¹Ð»Ñ‹
+				// Ð² Ð´Ð¸Ñ€ÐµÐºÑ‚Ð¾Ñ€Ð¸Ð¸, Ð¸ ÐºÐ¾Ð¿Ð¸Ñ€ÑƒÐµÐ¼ Ñ‚ÑƒÐ´Ð° Ð½Ð¾Ð²Ñ‹Ð¹
 				if(!is_null($filename)) {
 					MakeDirIfNotExists($basedir);
 					$d = dir($basedir);
@@ -72,14 +72,14 @@ class PXStorageTypeFile extends PXStorageTypeAbstractFile {
 			return null;
 		}
 
-		// ÐÉÛÅÍ × ÏÂßÅËÔ ÏÂÝÉÊ ÒÅÚÕÌØÔÁÔ ÎÏÒÍÁÌÉÚÁÃÉÉ
-		// ×ËÌÀÞÁÑ ÐÏÌÑ tmp_name, error_code, mime_type, etc..
-		// ÎÅÏÂÈÏÄÉÍÏ ÄÌÑ ÔÒÉÇÇÅÒÏ×
+		// Ð¿Ð¸ÑˆÐµÐ¼ Ð² Ð¾Ð±ÑŠÐµÐºÑ‚ Ð¾Ð±Ñ‰Ð¸Ð¹ Ñ€ÐµÐ·ÑƒÐ»ÑŒÑ‚Ð°Ñ‚ Ð½Ð¾Ñ€Ð¼Ð°Ð»Ð¸Ð·Ð°Ñ†Ð¸Ð¸
+		// Ð²ÐºÐ»ÑŽÑ‡Ð°Ñ Ð¿Ð¾Ð»Ñ tmp_name, error_code, mime_type, etc..
+		// Ð½ÐµÐ¾Ð±Ñ…Ð¾Ð´Ð¸Ð¼Ð¾ Ð´Ð»Ñ Ñ‚Ñ€Ð¸Ð³Ð³ÐµÑ€Ð¾Ð²
 		$fileArray = $this->normalize($field, $object, $param);
 
-		// × ÆÕÎËÃÉÀ ÄÏÂÁ×ÌÅÎÉÑ/ÏÂÎÏ×ÌÅÎÉÑ ÏÂßÅËÔÁ ×ÏÚ×ÒÁÝÁÅÍ
-		// ÔÏÌØËÏ ËÏÎËÒÅÔÎÕÀ ÎÏÒÍÁÌÉÚÁÃÉÀ ÆÁÊÌÏ×ÏÇÏ ÐÏÌÑ ÏÂßÅËÔÁ
-		// ÂÅÚ ×ÒÅÍÅÎÎÙÈ ÐÏÌÅÊ.
+		// Ð² Ñ„ÑƒÐ½ÐºÑ†Ð¸ÑŽ Ð´Ð¾Ð±Ð°Ð²Ð»ÐµÐ½Ð¸Ñ/Ð¾Ð±Ð½Ð¾Ð²Ð»ÐµÐ½Ð¸Ñ Ð¾Ð±ÑŠÐµÐºÑ‚Ð° Ð²Ð¾Ð·Ð²Ñ€Ð°Ñ‰Ð°ÐµÐ¼
+		// Ñ‚Ð¾Ð»ÑŒÐºÐ¾ ÐºÐ¾Ð½ÐºÑ€ÐµÑ‚Ð½ÑƒÑŽ Ð½Ð¾Ñ€Ð¼Ð°Ð»Ð¸Ð·Ð°Ñ†Ð¸ÑŽ Ñ„Ð°Ð¹Ð»Ð¾Ð²Ð¾Ð³Ð¾ Ð¿Ð¾Ð»Ñ Ð¾Ð±ÑŠÐµÐºÑ‚Ð°
+		// Ð±ÐµÐ· Ð²Ñ€ÐµÐ¼ÐµÐ½Ð½Ñ‹Ñ… Ð¿Ð¾Ð»ÐµÐ¹.
 		$normalized = $this->__normalize($field, $object, $param);
 		$normalized = is_array($normalized) ? array_filter($normalized) : null;
 		return $normalized ? $normalized : null;

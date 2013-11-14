@@ -1,6 +1,6 @@
 <?php
 /**
- * äÁÔÁ É ×ÒÅÍÑ (Ó ËÁÌÅÎÄÁÒÅÍ)
+ * Ð”Ð°Ñ‚Ð° Ð¸ Ð²Ñ€ÐµÐ¼Ñ (Ñ ÐºÐ°Ð»ÐµÐ½Ð´Ð°Ñ€ÐµÐ¼)
  *
  * storageType timestamp
  * displayType TIMESTAMP

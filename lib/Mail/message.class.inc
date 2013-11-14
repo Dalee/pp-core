@@ -102,7 +102,7 @@ class NLMailMessage {
  
 	function setTemplate($filename, $withSubject=TRUE, $variables=NULL) {
 		if(!is_file($filename)) {
-			FatalError('æÁÊÌ '.$filename.' ÎÅ ÎÁÊÄÅÎ');
+			FatalError('Ð¤Ð°Ð¹Ð» '.$filename.' Ð½Ðµ Ð½Ð°Ð¹Ð´ÐµÐ½');
 		}
  
 		$template = file($filename);
@@ -185,7 +185,7 @@ class NLMailMessage {
 
 	function _getSubject() {
 		if (mb_strlen($this->subject)) {
-			if (preg_match("/[À-ÿ]/".REGEX_MOD, $this->subject)) {
+			if (preg_match("/[ÑŽ-Ðª]/".REGEX_MOD, $this->subject)) {
 				$_subject = "=?".$this->charset."?B?".base64_encode($this->subject)."?=";
 			} else {
 				$_subject = $this->subject;
@@ -362,7 +362,7 @@ class NLMailMessage {
 		}
 		foreach ($this->_checkMailFields as $field) {
 			if (isset($this->$field) && !isEmail($this->$field)) {
-				 $this->setError('úÁÄÁÎ ÎÅËÏÒÒÅËÔÎÙÊ e-mail '. $field);
+				 $this->setError('Ð—Ð°Ð´Ð°Ð½ Ð½ÐµÐºÐ¾Ñ€Ñ€ÐµÐºÑ‚Ð½Ñ‹Ð¹ e-mail '. $field);
 				 break;
 			}
 		}

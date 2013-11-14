@@ -1,8 +1,8 @@
 <?php
 /**
- * îÅÒÅÄÁËÔÉÒÕÅÍÏÅ ÐÏÌÅ
+ * ÐÐµÑ€ÐµÐ´Ð°ÐºÑ‚Ð¸Ñ€ÑƒÐµÐ¼Ð¾Ðµ Ð¿Ð¾Ð»Ðµ
  *
- * storageType ÍÏÖÅÔ ÂÙÔØ ÌÀÂÙÍ, ÎÏ ËÁË ÐÒÁ×ÉÌÏ integer ÉÌÉ string
+ * storageType Ð¼Ð¾Ð¶ÐµÑ‚ Ð±Ñ‹Ñ‚ÑŒ Ð»ÑŽÐ±Ñ‹Ð¼, Ð½Ð¾ ÐºÐ°Ðº Ð¿Ñ€Ð°Ð²Ð¸Ð»Ð¾ integer Ð¸Ð»Ð¸ string
  * displayType STATIC
  */
 class PXDisplayTypeStatic extends PXDisplayType {

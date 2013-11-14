@@ -2,7 +2,7 @@
 require_once(BASEPATH."libpp/lib/XML/simplexml.classes.inc");
 
 
-//FIXME: Добавить универсальный способ построения PXTypeDescription, а PXTypeDescriptionProperties убрать к чертям
+//FIXME: п■п╬п╠п╟п╡п╦я┌я▄ я┐п╫п╦п╡п╣я─я│п╟п╩я▄п╫я▀п╧ я│п©п╬я│п╬п╠ п©п╬я│я┌я─п╬п╣п╫п╦я▐ PXTypeDescription, п╟ PXTypeDescriptionProperties я┐п╠я─п╟я┌я▄ п╨ я┤п╣я─я┌я▐п╪
 
 class PXTypeDescriptionProperties extends PXTypeDescription {
 
@@ -13,7 +13,7 @@ class PXTypeDescriptionProperties extends PXTypeDescription {
 	
 	public function __construct($attributes) {
 		$this->id = 'properties';
-		$this->title = 'Настройки сайта';
+		$this->title = 'п²п╟я│я┌я─п╬п╧п╨п╦ я│п╟п╧я┌п╟';
 		$fields = array();
 		foreach ((array)$attributes as $formatString) {
 			$field = $this->getField($formatString);
@@ -28,7 +28,7 @@ class PXTypeDescriptionProperties extends PXTypeDescription {
 		parseStrMagic($formatString, $dataDesc);
 		
 		if(!isset($dataDesc['name'])) {
-			FatalError("В конфиге модуля для одного из полей отсутствует обязательный параметр name!");
+			FatalError("п▓ п╨п╬п╫я└п╦пЁп╣ п╪п╬п╢я┐п╩я▐ п╢п╩я▐ п╬п╢п╫п╬пЁп╬ п╦п╥ п©п╬п╩п╣п╧ п╬я┌я│я┐я┌я│я┌п╡я┐п╣я┌ п╬п╠я▐п╥п╟я┌п╣п╩я▄п╫я▀п╧ п©п╟я─п╟п╪п╣я┌я─ name!");
 		}
 		list($sectionName, ) = $this->getSectionAndName($dataDesc['name']);
 
@@ -53,7 +53,7 @@ class PXTypeDescriptionProperties extends PXTypeDescription {
 			unset($_tmpSource);
 		}
 		if(isset($sectionName)) {
-			$field->groupName = "Секция [${sectionName}]";
+			$field->groupName = "п║п╣п╨я├п╦я▐ [${sectionName}]";
 		}
 		return $field;
 	}
@@ -102,10 +102,10 @@ class PXModuleProperties extends PXModule {
 
 	protected function _checkForErrors() {
 		if(!isset($this->_settings['attribute']) || !sizeof($this->_settings['attribute'])) {
-			return "Сайт не предусматривает пользовательских настроек.";
+			return "п║п╟п╧я┌ п╫п╣ п©я─п╣п╢я┐я│п╪п╟я┌я─п╦п╡п╟п╣я┌ п©п╬п╩я▄п╥п╬п╡п╟я┌п╣п╩я▄я│п╨п╦я┘ п╫п╟я│я┌я─п╬п╣п╨.";
 		}
 		if(!is_writable(BASEPATH . '/site/etc/properties.ini')) {
-			return "Файл properties.ini не доступен для записи или не существует";
+			return "п╓п╟п╧п╩ properties.ini п╫п╣ п╢п╬я│я┌я┐п©п╣п╫ п╢п╩я▐ п╥п╟п©п╦я│п╦ п╦п╩п╦ п╫п╣ я│я┐я┴п╣я│я┌п╡я┐п╣я┌";
 		}
 		
 		return false;
@@ -154,7 +154,7 @@ class PXModuleProperties extends PXModule {
 			<form action="/admin/action.phtml" method="POST" enctype="multipart/form-data" class="autoheight">
 				<input type="hidden" name="area" value="properties">
 				{$objectForm}
-				<input type="submit" class="button" value="Сохранить">
+				<input type="submit" class="button" value="п║п╬я┘я─п╟п╫п╦я┌я▄">
 			</form>
 HTML;
 	}

@@ -26,7 +26,7 @@ class CheckBoxTest extends UnitTestCase {
 	}
 	
 	function testBuildCell() {
-		$resOn = '<div class="truecheck" title="ÄÁ"></div>';
+		$resOn = '<div class="truecheck" title="Ð´Ð°"></div>';
 		$resOff = '';
 		
 		$object = array('test_field' => true);

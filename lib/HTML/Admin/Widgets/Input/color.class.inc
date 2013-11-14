@@ -25,7 +25,7 @@ class PXInputColor extends PXAdminWidget {
 				<input type="hidden" id="colorGreen{$name}"  value="{$green}">
 				<input type="hidden" id="colorBlue{$name}"   value="{$blue}">
 
-				<button title="ÉÚÍÅÎÉÔØ Ã×ÅÔ" onclick="with(this.form) ctrlColorer.DoModal(
+				<button title="Ð¸Ð·Ð¼ÐµÐ½Ð¸Ñ‚ÑŒ Ñ†Ð²ÐµÑ‚" onclick="with(this.form) ctrlColorer.DoModal(
 					this.form.colorData{$name},
 					this.form.colorRed{$name},
 					this.form.colorGreen{$name},

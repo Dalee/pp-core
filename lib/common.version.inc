@@ -2,7 +2,7 @@
 
 $defaultVersion = 'v1.5';
 
-// версия и ревизия PP
+// п╡п╣я─я│п╦я▐ п╦ я─п╣п╡п╦п╥п╦я▐ PP
 $version  = file_exists(BASEPATH . '/libpp/VERSION')  ? file_get_contents(BASEPATH . '/libpp/VERSION')  : $defaultVersion;
 $version  = trim($version);
 $treeish  = preg_replace('/^.*\-(\d+\-[\d\w]+)$/'.REGEX_MOD, '$1', $version);

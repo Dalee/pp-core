@@ -27,11 +27,11 @@ class PXInputFile extends PXAdminWidget {
 		
 		return <<<HTML
 			<input type="text" readonly value="{$this->value['filename']}" >
-			<span>имя</span>
+			<span>п╦п╪я▐</span>
 			<input type="text" readonly value="{$this->value['size']}" >
-			<span>размер</span>
+			<span>я─п╟п╥п╪п╣я─</span>
 			<input type="text" readonly value="{$this->value['type']}" >
-			<span>тип</span>
+			<span>я┌п╦п©</span>
 HTML;
 	}
 
@@ -39,14 +39,14 @@ HTML;
 		if (!is_null($this->value['path'])) {
 			$html = '<br>';
 
-			$html .= '<a href="'.$this->value['path'].'" target="_blank" class="img-preview">просмотр</a> ';
-			$html .= '<button onclick="ToClipboardMulti(\''.$this->value['path'].'\', '.(int)$this->value['width'].', '.(int)$this->value['height'].', \''.$this->type.'\'); return false;"'.$this->disable.'>HTML в буфер</button>';
+			$html .= '<a href="'.$this->value['path'].'" target="_blank" class="img-preview">п©я─п╬я│п╪п╬я┌я─</a> ';
+			$html .= '<button onclick="ToClipboardMulti(\''.$this->value['path'].'\', '.(int)$this->value['width'].', '.(int)$this->value['height'].', \''.$this->type.'\'); return false;"'.$this->disable.'>HTML п╡ п╠я┐я└п╣я─</button>';
 
 			$html .= '<br>';
 
 			$picName = mb_substr($this->value['path'], mb_strrpos($this->value['path'], '/')+1);
 			$html .= '<input class="checkbox" type="checkbox" id="'.$this->name.'_remove'.$this->distension.'" name="'.$this->name.'_remove['.$picName.']"'.$this->disable.'>';
-			$html .= '<label for="'.$this->name.'_remove'.$this->distension.'">удалить файл</label>';
+			$html .= '<label for="'.$this->name.'_remove'.$this->distension.'">я┐п╢п╟п╩п╦я┌я▄ я└п╟п╧п╩</label>';
 		}
 		else {
 			$html = '';

@@ -211,11 +211,11 @@ class NLMSSQLDatabase extends NLAbstractSQLDatabase {
 
 	function IsUniqueColsCombination($tables, $colValues, $exception) {
 		if(!is_array($tables) || !sizeof($tables)) {
-			FatalError("Вы не указали проверяемые таблицы");
+			FatalError("п▓я▀ п╫п╣ я┐п╨п╟п╥п╟п╩п╦ п©я─п╬п╡п╣я─я▐п╣п╪я▀п╣ я┌п╟п╠п╩п╦я├я▀");
 		}
 
 		if(!is_array($colValues) || !sizeof($colValues)) {
-			FatalError("Вы не указали проверяемые столбцы");
+			FatalError("п▓я▀ п╫п╣ я┐п╨п╟п╥п╟п╩п╦ п©я─п╬п╡п╣я─я▐п╣п╪я▀п╣ я│я┌п╬п╩п╠я├я▀");
 		}
 
 		$query = "SELECT (0 ";

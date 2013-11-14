@@ -119,7 +119,7 @@ class PXModuleSearch extends PXModule {
 			}
 
 			if(!$allCount) {
-				$this->layout->append('INNER.1.0', '<h2 class="error">Ничего не найдено</h2>');
+				$this->layout->append('INNER.1.0', '<h2 class="error">п²п╦я┤п╣пЁп╬ п╫п╣ п╫п╟п╧п╢п╣п╫п╬</h2>');
 			}
 		}
 	}
@@ -164,20 +164,20 @@ HTML;
 		</style>
 
 		<form>
-			<h2>Поиск</h2>
+			<h2>п÷п╬п╦я│п╨</h2>
 
 			<input type="hidden" name="area"      value="{$this->area}">
-			<input type="hidden" name="charcheck" value="йцукен">
+			<input type="hidden" name="charcheck" value="п╧я├я┐п╨п╣п╫">
 
 			<input type="text" style="width:80%;" name="word" value="{$hword}">
 
-			<input type="submit" value="Найти">
+			<input type="submit" value="п²п╟п╧я┌п╦">
 
 			<fieldset>
-				<legend>искать по типам данных</legend>
+				<legend>п╦я│п╨п╟я┌я▄ п©п╬ я┌п╦п©п╟п╪ п╢п╟п╫п╫я▀я┘</legend>
 				{$datatypesHTML}
 
-				<button onclick="var inps = document.getElementsByTagName('fieldset')[0].getElementsByTagName('input'); for(i in inps) { inps[i].checked = !inps[i].checked; }; return false;">поменять выделение</button>
+				<button onclick="var inps = document.getElementsByTagName('fieldset')[0].getElementsByTagName('input'); for(i in inps) { inps[i].checked = !inps[i].checked; }; return false;">п©п╬п╪п╣п╫я▐я┌я▄ п╡я▀п╢п╣п╩п╣п╫п╦п╣</button>
 			</fieldset>
 		</form>
 HTML;

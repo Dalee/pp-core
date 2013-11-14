@@ -3,12 +3,12 @@
 require_once PPLIBPATH . 'DisplayType/text.class.inc';
 
 /**
- * Визуальный редактор
+ * п▓п╦п╥я┐п╟п╩я▄п╫я▀п╧ я─п╣п╢п╟п╨я┌п╬я─
  *
  * storageType string
  * displayType RICHEDIT|width|height
- *             width не используется
- *             height это высота в пикселях
+ *             width п╫п╣ п╦я│п©п╬п╩я▄п╥я┐п╣я┌я│я▐
+ *             height я█я┌п╬ п╡я▀я│п╬я┌п╟ п╡ п©п╦п╨я│п╣п╩я▐я┘
  */
 class PXDisplayTypeRichedit extends PXDisplayTypeText {
 	function buildInput($field, $object, $param=NULL) {

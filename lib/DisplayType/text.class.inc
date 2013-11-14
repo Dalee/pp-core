@@ -1,14 +1,14 @@
 <?php
 /**
- * Текстовое поле
+ * п╒п╣п╨я│я┌п╬п╡п╬п╣ п©п╬п╩п╣
  *
- * storageType string, integer или float
+ * storageType string, integer п╦п╩п╦ float
  * displayType TEXT|width|height|cell_maxlength|wrap
- *             width не используется
- *             если height = 0, то строится <input type="text">
- *             если height > 0, то строится <textarea> и height это ее высота в пикселях
- *             cell_maxlength определяет максимальное число символов, выводимых в ячейке
- *             wrap определяет тип переноса в textarea - physical, virtual, hard, soft (по умолчанию), off
+ *             width п╫п╣ п╦я│п©п╬п╩я▄п╥я┐п╣я┌я│я▐
+ *             п╣я│п╩п╦ height = 0, я┌п╬ я│я┌я─п╬п╦я┌я│я▐ <input type="text">
+ *             п╣я│п╩п╦ height > 0, я┌п╬ я│я┌я─п╬п╦я┌я│я▐ <textarea> п╦ height я█я┌п╬ п╣п╣ п╡я▀я│п╬я┌п╟ п╡ п©п╦п╨я│п╣п╩я▐я┘
+ *             cell_maxlength п╬п©я─п╣п╢п╣п╩я▐п╣я┌ п╪п╟п╨я│п╦п╪п╟п╩я▄п╫п╬п╣ я┤п╦я│п╩п╬ я│п╦п╪п╡п╬п╩п╬п╡, п╡я▀п╡п╬п╢п╦п╪я▀я┘ п╡ я▐я┤п╣п╧п╨п╣
+ *             wrap п╬п©я─п╣п╢п╣п╩я▐п╣я┌ я┌п╦п© п©п╣я─п╣п╫п╬я│п╟ п╡ textarea - physical, virtual, hard, soft (п©п╬ я┐п╪п╬п╩я┤п╟п╫п╦я▌), off
  */
 class PXDisplayTypeText extends PXDisplayType {
 	function buildInput($field, $object, $param=NULL) {

@@ -1,7 +1,7 @@
 <?php
 /**
- * äÁÔÁ É ×ÒÅÍÑ
- * ÷ ÂÁÚÅ ÍÏÖÅÔ ÈÒÁÎÉÔØÓÑ ËÁË TIMESTAMP
+ * Ð”Ð°Ñ‚Ð° Ð¸ Ð²Ñ€ÐµÐ¼Ñ
+ * Ð’ Ð±Ð°Ð·Ðµ Ð¼Ð¾Ð¶ÐµÑ‚ Ñ…Ñ€Ð°Ð½Ð¸Ñ‚ÑŒÑÑ ÐºÐ°Ðº TIMESTAMP
  *
  * displayType HIDDEN, STATIC, TIMESTAMP, TIME, DATE
  * storageType timestamp

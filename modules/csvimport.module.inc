@@ -35,17 +35,17 @@ class PXModuleCsvImport extends PXModule {
 		switch ($request->GetVar('status')) {
 			case 'error':
 				$html .= $this->_UploadTable();
-				$html .= '<h1 class="error">Ошибка</h1>';
-				$html .= '<p class="error">Импорт данных не состоялся.<BR>';
+				$html .= '<h1 class="error">п·я┬п╦п╠п╨п╟</h1>';
+				$html .= '<p class="error">п≤п╪п©п╬я─я┌ п╢п╟п╫п╫я▀я┘ п╫п╣ я│п╬я│я┌п╬я▐п╩я│я▐.<BR>';
 
 				switch($request->GetVar('error')) {
 					case 'notupload':
-						$html .= 'Файл не закачан';
+						$html .= 'п╓п╟п╧п╩ п╫п╣ п╥п╟п╨п╟я┤п╟п╫';
 						break;
 
 					case 'baddata':
 					case 'notdata':
-						$html .= 'Файл не содержит корректных данных';
+						$html .= 'п╓п╟п╧п╩ п╫п╣ я│п╬п╢п╣я─п╤п╦я┌ п╨п╬я─я─п╣п╨я┌п╫я▀я┘ п╢п╟п╫п╫я▀я┘';
 						break;
 				}
 
@@ -68,8 +68,8 @@ class PXModuleCsvImport extends PXModule {
 		$app     = $this->app;
 		$db      = $this->db;
 
-		$html  = '<h2>Импорт данных &laquo;'.$app->types[$this->settings['datatype']]->title.'&raquo; успешно произведен</h2>';
-		$html .= '<p>В базу внесено <strong>'.htmlspecialchars($request->GetVar('quantity'), ENT_COMPAT|ENT_HTML401, DEFAULT_CHARSET).'</strong> объектов.</p>';
+		$html  = '<h2>п≤п╪п©п╬я─я┌ п╢п╟п╫п╫я▀я┘ &laquo;'.$app->types[$this->settings['datatype']]->title.'&raquo; я┐я│п©п╣я┬п╫п╬ п©я─п╬п╦п╥п╡п╣п╢п╣п╫</h2>';
+		$html .= '<p>п▓ п╠п╟п╥я┐ п╡п╫п╣я│п╣п╫п╬ <strong>'.htmlspecialchars($request->GetVar('quantity'), ENT_COMPAT|ENT_HTML401, DEFAULT_CHARSET).'</strong> п╬п╠я┼п╣п╨я┌п╬п╡.</p>';
 		return $html;
 	}
 
@@ -169,7 +169,7 @@ class PXModuleCsvImport extends PXModule {
 		}
 		
 		if ($db->ModifyingQuery($sql) == ERROR_DB_BADQUERY) {
-			FatalError("Ошибка в запросе". $sql);
+			FatalError("п·я┬п╦п╠п╨п╟ п╡ п╥п╟п©я─п╬я│п╣". $sql);
 		}
 	}
 
@@ -216,12 +216,12 @@ class PXModuleCsvImport extends PXModule {
 
 	function _UploadTable() {
 		return <<<HTML
-			<h2>Импорт данных из CSV файла</h2>
+			<h2>п≤п╪п©п╬я─я┌ п╢п╟п╫п╫я▀я┘ п╦п╥ CSV я└п╟п╧п╩п╟</h2>
 
 			<form action="action.phtml" method="POST" enctype="multipart/form-data" class="autoheight">
 				<input type="hidden" name="area" value="{$this->area}">
 				<input type="file" name="file">
-				<input type="submit" class="button" value="Импортировать данные">
+				<input type="submit" class="button" value="п≤п╪п©п╬я─я┌п╦я─п╬п╡п╟я┌я▄ п╢п╟п╫п╫я▀п╣">
 			</form>
 HTML;
 	}

@@ -34,9 +34,9 @@ class PXErrorReporterHTML extends PXErrorReporter {
 					<p>Sorry, but fatal error occured and your request can not be contented</p>
 					<p>Please, inform <a href="mailto:{$this->toEmail}?subject=Error%20report%20from%20{$host}&body=%0A%0ARequest%20URI:%20{$uri}">site administrator</a> about it.</p>
 
-					<h1>Ошибка</h1>
-					<p>Извините, произошла ошибка, ваш запрос не может быть корректно завершен.</p>
-					<p>Пожалуйста, сообщите о ней <a href="mailto:{$this->toEmail}?subject=Сообщение%20об%20ошибке%20с%20сайта%20{$host}&body=%0A%0ARequest%20URI:%20{$uri}">администратору сайта</a>.</p>
+					<h1>п·я┬п╦п╠п╨п╟</h1>
+					<p>п≤п╥п╡п╦п╫п╦я┌п╣, п©я─п╬п╦п╥п╬я┬п╩п╟ п╬я┬п╦п╠п╨п╟, п╡п╟я┬ п╥п╟п©я─п╬я│ п╫п╣ п╪п╬п╤п╣я┌ п╠я▀я┌я▄ п╨п╬я─я─п╣п╨я┌п╫п╬ п╥п╟п╡п╣я─я┬п╣п╫.</p>
+					<p>п÷п╬п╤п╟п╩я┐п╧я│я┌п╟, я│п╬п╬п╠я┴п╦я┌п╣ п╬ п╫п╣п╧ <a href="mailto:{$this->toEmail}?subject=п║п╬п╬п╠я┴п╣п╫п╦п╣%20п╬п╠%20п╬я┬п╦п╠п╨п╣%20я│%20я│п╟п╧я┌п╟%20{$host}&body=%0A%0ARequest%20URI:%20{$uri}">п╟п╢п╪п╦п╫п╦я│я┌я─п╟я┌п╬я─я┐ я│п╟п╧я┌п╟</a>.</p>
 				</body>
 			</html>
 HTML

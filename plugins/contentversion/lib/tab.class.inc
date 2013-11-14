@@ -15,7 +15,7 @@ class PXVersionsTab extends PXAdminWidget {
 			return sprintf("<li %s><a href='%s'>%s</a><b></b></li>", 
 					($request->getAction() == "contentversion" ? "class='current'" : ""),
 					$href,
-					"Версии");
+					"п▓п╣я─я│п╦п╦");
 		}
 
 		return "";
