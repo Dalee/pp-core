@@ -130,12 +130,16 @@ define('CHARSET_UCS2BE',             'ucs-2be');
 define('CHARSET_UTF16BE',            'utf-16be');
 
 // current default proxima charset
-define('DEFAULT_CHARSET',            CHARSET_KOI8R);
-define('DEFAULT_LOCALE',             json_encode(array('Russian_Russia.20866', 'ru_RU.KOI8-R', 'KOI8-R')));
-define('REGEX_MOD', 				 '');
-//define('DEFAULT_CHARSET',            CHARSET_UTF8);
-//define('DEFAULT_LOCALE',             json_encode(array('Russian_Russia.UTF-8', 'ru_RU.UTF-8', 'UTF-8')));
-//define('REGEX_MOD', 				   'u'); // UTF-8 mod for regexp
+if (false) { // koi8
+	define('DEFAULT_CHARSET',            CHARSET_KOI8R);
+	define('DEFAULT_LOCALE',             json_encode(array('Russian_Russia.20866', 'ru_RU.KOI8-R', 'KOI8-R')));
+	define('REGEX_MOD',                  '');
+}
+else { // utf8
+	define('DEFAULT_CHARSET',            CHARSET_UTF8);
+	define('DEFAULT_LOCALE',             json_encode(array('Russian_Russia.UTF-8', 'ru_RU.UTF-8', 'UTF-8')));
+	define('REGEX_MOD',                  'u'); // UTF-8 mod for regexp
+}
 
 if (setlocale(LC_ALL, json_decode(DEFAULT_LOCALE)) === false) {
 	FatalError(sprintf('Unable to set setlocale: %s', DEFAULT_LOCALE));
