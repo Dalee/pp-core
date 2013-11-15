@@ -1,5 +1,5 @@
 <?php
-// ÷Ù×ÏÄÉÔ ÓÏÏÂÝÅÎÉÅ Ó ÕËÁÚÁÎÉÅÍ ×ÒÅÍÅÎÉ ×ÙÐÏÌÎÅÎÉÑ Ó ÔÏÞÎÏÓÔØÀ ÄÏ ÄÅÓÑÔËÏ× ÍÉÌÌÉÓÅËÕÎÄ
+// Ð’Ñ‹Ð²Ð¾Ð´Ð¸Ñ‚ ÑÐ¾Ð¾Ð±Ñ‰ÐµÐ½Ð¸Ðµ Ñ ÑƒÐºÐ°Ð·Ð°Ð½Ð¸ÐµÐ¼ Ð²Ñ€ÐµÐ¼ÐµÐ½Ð¸ Ð²Ñ‹Ð¿Ð¾Ð»Ð½ÐµÐ½Ð¸Ñ Ñ Ñ‚Ð¾Ñ‡Ð½Ð¾ÑÑ‚ÑŒÑŽ Ð´Ð¾ Ð´ÐµÑÑÑ‚ÐºÐ¾Ð² Ð¼Ð¸Ð»Ð»Ð¸ÑÐµÐºÑƒÐ½Ð´
 function Label($str, $alwaysPrint=false) {
 	if(isset($_SERVER['REQUEST_METHOD']) && !$alwaysPrint) {
 		return;
@@ -26,7 +26,7 @@ function Label($str, $alwaysPrint=false) {
 	return $timer;
 }
 
-// ïÔÏÂÒÁÖÁÅÔ ÉÎÄÉËÁÔÏÒ, ÓÞÉÔÁÀÝÉÊ ÃÉËÌÙ × ÃÉËÌÁÈ =)
+// ÐžÑ‚Ð¾Ð±Ñ€Ð°Ð¶Ð°ÐµÑ‚ Ð¸Ð½Ð´Ð¸ÐºÐ°Ñ‚Ð¾Ñ€, ÑÑ‡Ð¸Ñ‚Ð°ÑŽÑ‰Ð¸Ð¹ Ñ†Ð¸ÐºÐ»Ñ‹ Ð² Ñ†Ð¸ÐºÐ»Ð°Ñ… =)
 function WorkProgress($finish = FALSE, $total = 0, $step = 1, $showTimes = false) {
 	static $progress, $counter, $lastTotal;
 	static $timer, $firstStamp, $prevStamp;

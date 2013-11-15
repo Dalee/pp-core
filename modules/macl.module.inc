@@ -7,7 +7,7 @@ class PXModuleMAcl extends PXModuleAcl {
 	var $access;
 	var $objectRule     = 'module';
 	var $moduleName     = 'macl';
-	var $aclObjectTitle = 'Модуль';
+	var $aclObjectTitle = 'п°п╬п╢я┐п╩я▄';
 
 	function getAvailableActions() {
 		$actions = array('default' => PXModule::getAclModuleActions());
@@ -36,7 +36,7 @@ class PXModuleMAcl extends PXModuleAcl {
 			$types[$module->name] = $module->description == '' || $module->description == PXModuleDescription::EMPTY_DESCRIPTION ? $module->name : $module->description;
 		}
 
-		$types[null] = '-- любой --';
+		$types[null] = '-- п╩я▌п╠п╬п╧ --';
 
 		return $types;
 	}

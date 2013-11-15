@@ -49,8 +49,8 @@ class PXEngineAdminIndex extends PXEngineAdmin {
 	function checkArea($area) {
 		if (!isset($this->modules[$area])) {
 			$this->layout->setOneColumn();
-			$this->layout->assignError($this->templateMainArea, 'Некорректный параметр <em>area</em> = <em>' . strip_tags($area) . '</em>');
-			$this->layout->assignTitle('Некорректный параметр area');
+			$this->layout->assignError($this->templateMainArea, 'п²п╣п╨п╬я─я─п╣п╨я┌п╫я▀п╧ п©п╟я─п╟п╪п╣я┌я─ <em>area</em> = <em>' . strip_tags($area) . '</em>');
+			$this->layout->assignTitle('п²п╣п╨п╬я─я─п╣п╨я┌п╫я▀п╧ п©п╟я─п╟п╪п╣я┌я─ area');
 			return false;
 		}
 

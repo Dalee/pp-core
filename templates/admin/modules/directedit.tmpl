@@ -41,7 +41,7 @@ $(function() {
 				var format = this.getAttribute('pp:format');
 
 				var link = '/admin/popup.phtml?area=objects&id='+id+'&format='+format+'&action=main';
-				var text = " редактировать объект типа &laquo;"+ppTypes[format]+'&raquo; с id ' + id;
+				var text = " я─п╣п╢п╟п╨я┌п╦я─п╬п╡п╟я┌я▄ п╬п╠я┼п╣п╨я┌ я┌п╦п©п╟ &laquo;"+ppTypes[format]+'&raquo; я│ id ' + id;
 
 				$('<a href="'+link+'" class="pp-link">'+text+'</a>').prependTo(this).click(function(){
 					Popup(this.href);

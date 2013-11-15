@@ -25,9 +25,9 @@ function makeCall(method, action, objects){
 		data:     objects,
 		success:  function(data){
 			if(data.isok){
-				resultHandler(data.isok, ["OK","успешно"])
+				resultHandler(data.isok, ["OK","я┐я│п©п╣я┬п╫п╬"])
 			} else if(data.iserror){
-				resultHandler(data.iserror, ["ОШИБКА","неизвестная ошибка"])
+				resultHandler(data.iserror, ["п·п╗п≤п▒п п░","п╫п╣п╦п╥п╡п╣я│я┌п╫п╟я▐ п╬я┬п╦п╠п╨п╟"])
 			}
 			
 			if(!(data.norefresh || data.iserror))
@@ -37,7 +37,7 @@ function makeCall(method, action, objects){
 			$('body').toggleClass("queryInProgress")
 		},
 		error: function() {
-			alert("Oбработчик мультиопераций masschange не описан или произошла неизвестная ошибка");
+			alert("Oп╠я─п╟п╠п╬я┌я┤п╦п╨ п╪я┐п╩я▄я┌п╦п╬п©п╣я─п╟я├п╦п╧ masschange п╫п╣ п╬п©п╦я│п╟п╫ п╦п╩п╦ п©я─п╬п╦п╥п╬я┬п╩п╟ п╫п╣п╦п╥п╡п╣я│я┌п╫п╟я▐ п╬я┬п╦п╠п╨п╟");
 		}
 	});
 }

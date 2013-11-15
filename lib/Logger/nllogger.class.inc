@@ -12,10 +12,10 @@
 /**
  * NLLogger class.
  *
- * @todo 1. FileAppender - добавить максимальный размер файла, продумать ротацию логов --  mostly DONE
- * @todo 2. Дотестировать SyslogAppender, привести в порядок map, facilitymap, defines
- * @todo 3. Документация ?  --  DONE
- * @todo 4. MailAppender - отправка логов по email
+ * @todo 1. FileAppender - п╢п╬п╠п╟п╡п╦я┌я▄ п╪п╟п╨я│п╦п╪п╟п╩я▄п╫я▀п╧ я─п╟п╥п╪п╣я─ я└п╟п╧п╩п╟, п©я─п╬п╢я┐п╪п╟я┌я▄ я─п╬я┌п╟я├п╦я▌ п╩п╬пЁп╬п╡ --  mostly DONE
+ * @todo 2. п■п╬я┌п╣я│я┌п╦я─п╬п╡п╟я┌я▄ SyslogAppender, п©я─п╦п╡п╣я│я┌п╦ п╡ п©п╬я─я▐п╢п╬п╨ map, facilitymap, defines
+ * @todo 3. п■п╬п╨я┐п╪п╣п╫я┌п╟я├п╦я▐ ?  --  DONE
+ * @todo 4. MailAppender - п╬я┌п©я─п╟п╡п╨п╟ п╩п╬пЁп╬п╡ п©п╬ email
  * @todo 5. HTMLAppender ???
  */
 class NLLogger {

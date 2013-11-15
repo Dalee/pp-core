@@ -4,7 +4,7 @@ class PXDisplayTypeMultiRegions extends PXDisplayTypeBubbleText {
 
 	static $scriptsIncluded = false;
 	private static $countInCell = 2;
-	private static $chooseAll = '- ПУБЛИКОВАТЬ ВО ВСЕХ РЕГИОНАХ -';
+	private static $chooseAll = '- п÷пёп▒п⌡п≤п п·п▓п░п╒п╛ п▓п· п▓п║п∙п╔ п═п∙п⌠п≤п·п²п░п╔ -';
 	private $singleObject = false;
 
 	protected function _getValues($field, $object, $regions) {
@@ -159,16 +159,16 @@ class PXDisplayTypeMultiRegions extends PXDisplayTypeBubbleText {
 			$result = reset($allowedRegions);
 
 		} elseif (empty($diff)) {
-			$result = "все регионы";
+			$result = "п╡я│п╣ я─п╣пЁп╦п╬п╫я▀";
 			$isShowBubble = true;
 
 		} else {
 			if ($inObjectCount > self::$countInCell) {
 				$result = sprintf(
-					"%s + еще %s регио%s",
+					"%s + п╣я┴п╣ %s я─п╣пЁп╦п╬%s",
 					join(", ", array_slice($inObject, 0, self::$countInCell)),
 					$inObjectCount - self::$countInCell,
-					NumericEndingsRussian($inObjectCount - self::$countInCell, "н", "на", "нов")
+					NumericEndingsRussian($inObjectCount - self::$countInCell, "п╫", "п╫п╟", "п╫п╬п╡")
 				);
 
 				$isShowBubble = true;
@@ -247,9 +247,9 @@ CSS;
 
 	protected function helpText() {
 		$r = <<<help
-<p>По умолчанию при выборе макрорегиона автоматически выбираются его субрегионы.</p>
-<p>Но при зажатой клавише Alt автовыбор не активируется и выделяется только сам макрорегион без субрегионов.</p>
-<p>Так же, используйте зажатую клавижу Ctrl для последовательного выбора регионов, и Shift для выбора нескольких регионов подряд.</p>
+<p>п÷п╬ я┐п╪п╬п╩я┤п╟п╫п╦я▌ п©я─п╦ п╡я▀п╠п╬я─п╣ п╪п╟п╨я─п╬я─п╣пЁп╦п╬п╫п╟ п╟п╡я┌п╬п╪п╟я┌п╦я┤п╣я│п╨п╦ п╡я▀п╠п╦я─п╟я▌я┌я│я▐ п╣пЁп╬ я│я┐п╠я─п╣пЁп╦п╬п╫я▀.</p>
+<p>п²п╬ п©я─п╦ п╥п╟п╤п╟я┌п╬п╧ п╨п╩п╟п╡п╦я┬п╣ Alt п╟п╡я┌п╬п╡я▀п╠п╬я─ п╫п╣ п╟п╨я┌п╦п╡п╦я─я┐п╣я┌я│я▐ п╦ п╡я▀п╢п╣п╩я▐п╣я┌я│я▐ я┌п╬п╩я▄п╨п╬ я│п╟п╪ п╪п╟п╨я─п╬я─п╣пЁп╦п╬п╫ п╠п╣п╥ я│я┐п╠я─п╣пЁп╦п╬п╫п╬п╡.</p>
+<p>п╒п╟п╨ п╤п╣, п╦я│п©п╬п╩я▄п╥я┐п╧я┌п╣ п╥п╟п╤п╟я┌я┐я▌ п╨п╩п╟п╡п╦п╤я┐ Ctrl п╢п╩я▐ п©п╬я│п╩п╣п╢п╬п╡п╟я┌п╣п╩я▄п╫п╬пЁп╬ п╡я▀п╠п╬я─п╟ я─п╣пЁп╦п╬п╫п╬п╡, п╦ Shift п╢п╩я▐ п╡я▀п╠п╬я─п╟ п╫п╣я│п╨п╬п╩я▄п╨п╦я┘ я─п╣пЁп╦п╬п╫п╬п╡ п©п╬п╢я─я▐п╢.</p>
 help;
 		return trim($r);
 	}

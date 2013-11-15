@@ -4,7 +4,7 @@ class CookieHttpVarsTest extends UnitTestCase {
 
 	function setUp() {
 		$_COOKIE['test1'] = serialize(array("1"));
-		$_COOKIE['test2'] = myconv('k', 'w', "ğÒÉ×ÅÔ ÍÉÒ!");
+		$_COOKIE['test2'] = myconv('k', 'w', "ĞŸÑ€Ğ¸Ğ²ĞµÑ‚ Ğ¼Ğ¸Ñ€!");
 
 		$this->object = new NLCookieData;
 	}
@@ -15,7 +15,7 @@ class CookieHttpVarsTest extends UnitTestCase {
 	function test_get_var() {
 		$this->assertNull($this->object->_GetVar('unknown'));
 		$this->assertEqual(array("1"), $this->object->_GetVar('test1'));
-		$this->assertEqual('ğÒÉ×ÅÔ ÍÉÒ!',$this->object->_GetVar('test2'));
+		$this->assertEqual('ĞŸÑ€Ğ¸Ğ²ĞµÑ‚ Ğ¼Ğ¸Ñ€!',$this->object->_GetVar('test2'));
 	}
 }
 

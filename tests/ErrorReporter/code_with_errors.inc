@@ -1,6 +1,6 @@
 <?php
 	// raise test errors
-	trigger_error('ëÁËÁÑ ÔÏ ÏÛÉÂËÁ Ó ÔÅËÓÔÏÍ ÎÁ ÒÕÓÓËÏÍ', E_USER_WARNING);
+	trigger_error('ÐšÐ°ÐºÐ°Ñ Ñ‚Ð¾ Ð¾ÑˆÐ¸Ð±ÐºÐ° Ñ Ñ‚ÐµÐºÑÑ‚Ð¾Ð¼ Ð½Ð° Ñ€ÑƒÑÑÐºÐ¾Ð¼', E_USER_WARNING);
 
 	d2();
 	d();

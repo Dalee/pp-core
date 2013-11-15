@@ -136,7 +136,7 @@ class PXAdminForm extends PXAdminComplexWidget {
 	}
 
 	public function leftControls() {
-		$control = NLAbstractHTMLForm::BuildSubmit('Сохранить') . NLAbstractHTMLForm::BuildSubmit('Сохранить и закрыть', "close");
+		$control = NLAbstractHTMLForm::BuildSubmit('п║п╬я┘я─п╟п╫п╦я┌я▄') . NLAbstractHTMLForm::BuildSubmit('п║п╬я┘я─п╟п╫п╦я┌я▄ п╦ п╥п╟п╨я─я▀я┌я▄', "close");
 
 		if (strlen($_ = join($this->blocks[self::LEFTCONTROLS]))) {
 			$control  = $_;
@@ -149,7 +149,7 @@ class PXAdminForm extends PXAdminComplexWidget {
 	}
 
 	public function rightControls() {
-		$control = NLAbstractHTMLForm::BuildReset('Отменить') . NLAbstractHTMLForm::BuildClose('Закрыть');
+		$control = NLAbstractHTMLForm::BuildReset('п·я┌п╪п╣п╫п╦я┌я▄') . NLAbstractHTMLForm::BuildClose('п≈п╟п╨я─я▀я┌я▄');
 		
 		if (strlen($_ = join($this->blocks[self::RIGHTCONTROLS]))) {
 			$control  = $_;
@@ -170,7 +170,7 @@ class PXAdminForm extends PXAdminComplexWidget {
 			NLAbstractHTMLForm::BuildHidden('area',       $this->area),
 			NLAbstractHTMLForm::BuildHidden('action',     $this->action),
 			NLAbstractHTMLForm::BuildHidden('format',     $this->format->id),
-			NLAbstractHTMLForm::BuildHidden('charcheck', 'йцукен')
+			NLAbstractHTMLForm::BuildHidden('charcheck', 'п╧я├я┐п╨п╣п╫')
 		));
 
 		$this->layout->append('OUTER.CONTENT', $control);
@@ -178,19 +178,19 @@ class PXAdminForm extends PXAdminComplexWidget {
 
 	private function setMenu() {
 		$menuItems = array();
-		$menuItems['main'] = 'Основная информация';
+		$menuItems['main'] = 'п·я│п╫п╬п╡п╫п╟я▐ п╦п╫я└п╬я─п╪п╟я├п╦я▐';
 
 		if (isset($this->object['id']) && $this->object['id'] != 0) {
 			if (count($this->format->childs)) {
-				$menuItems['children'] = 'Разрешенные дети';
+				$menuItems['children'] = 'п═п╟п╥я─п╣я┬п╣п╫п╫я▀п╣ п╢п╣я┌п╦';
 			}
 
 			if (!empty($this->format->references)) {
-				$menuItems['links'] = 'Связи';
+				$menuItems['links'] = 'п║п╡я▐п╥п╦';
 			}
 
-			$menuItems['auditlog'] = 'Журнал';
-			$menuItems['remove']   = 'Удаление';
+			$menuItems['auditlog'] = 'п√я┐я─п╫п╟п╩';
+			$menuItems['remove']   = 'пёп╢п╟п╩п╣п╫п╦п╣';
 		}
 //		$menuItems = join($this->blocks[self::MENU]);
 		$this->layout->setMenu($menuItems, $this->action, 'action');
@@ -223,9 +223,9 @@ class PXAdminForm extends PXAdminComplexWidget {
 
 		if (isset($this->object['sys_created']) || isset($this->object['sys_modified']) || isset($this->object['ownerlogin'])) {
 			$html[] = '<dl class="sysinfo">';
-			$html[] = isset($this->object['sys_created'])  ? '<dt>Создан:  </dt><dd>'.mb_substr($this->object['sys_created'],  0, 19).'</dd>' : '';
-			$html[] = isset($this->object['sys_modified']) ? '<dt>Изменен: </dt><dd>'.mb_substr($this->object['sys_modified'], 0, 19).'</dd>' : '';
-			$html[] = isset($this->object['ownerlogin'])   ? '<dt>Владелец:</dt><dd>'.$this->object['ownerlogin'].'</dd>'                  : '';
+			$html[] = isset($this->object['sys_created'])  ? '<dt>п║п╬п╥п╢п╟п╫:  </dt><dd>'.mb_substr($this->object['sys_created'],  0, 19).'</dd>' : '';
+			$html[] = isset($this->object['sys_modified']) ? '<dt>п≤п╥п╪п╣п╫п╣п╫: </dt><dd>'.mb_substr($this->object['sys_modified'], 0, 19).'</dd>' : '';
+			$html[] = isset($this->object['ownerlogin'])   ? '<dt>п▓п╩п╟п╢п╣п╩п╣я├:</dt><dd>'.$this->object['ownerlogin'].'</dd>'                  : '';
 			$html[] = '</dl>';
 		}
 
@@ -238,12 +238,12 @@ class PXAdminForm extends PXAdminComplexWidget {
 			: ($this->format->id.'#'.$this->object['id']);
 		return <<<HTML
 			<h2>
-				Вы уверенны, что хотите удалить объект &laquo;<strong>{$title}</strong>&raquo;
+				п▓я▀ я┐п╡п╣я─п╣п╫п╫я▀, я┤я┌п╬ я┘п╬я┌п╦я┌п╣ я┐п╢п╟п╩п╦я┌я▄ п╬п╠я┼п╣п╨я┌ &laquo;<strong>{$title}</strong>&raquo;
 			</h2>
  
 			<p class="delete">
 				<input name="ack" id="ack" type="checkbox">
-				<label for="ack">Да я хочу удалить именно этот объект!</label>
+				<label for="ack">п■п╟ я▐ я┘п╬я┤я┐ я┐п╢п╟п╩п╦я┌я▄ п╦п╪п╣п╫п╫п╬ я█я┌п╬я┌ п╬п╠я┼п╣п╨я┌!</label>
 			</p>
 HTML;
 	}
@@ -266,9 +266,9 @@ HTML;
 
 		if(!$audit_wrapper->count) return;
 
-		$audit_wrapper->caption  = '<a href="./?area=auditlog&format='.$this->format->id.'&id='.$this->object['id'].'" target="_blank">Журнал аудита</a>, ';
-		$audit_wrapper->caption .= $audit_wrapper->count.' '.NumericEndingsRussian($audit_wrapper->count, 'запись', 'записи', 'записей');
-		$audit_wrapper->caption .= ' для текущего объекта';
+		$audit_wrapper->caption  = '<a href="./?area=auditlog&format='.$this->format->id.'&id='.$this->object['id'].'" target="_blank">п√я┐я─п╫п╟п╩ п╟я┐п╢п╦я┌п╟</a>, ';
+		$audit_wrapper->caption .= $audit_wrapper->count.' '.NumericEndingsRussian($audit_wrapper->count, 'п╥п╟п©п╦я│я▄', 'п╥п╟п©п╦я│п╦', 'п╥п╟п©п╦я│п╣п╧');
+		$audit_wrapper->caption .= ' п╢п╩я▐ я┌п╣п╨я┐я┴п╣пЁп╬ п╬п╠я┼п╣п╨я┌п╟';
 
 		$audit_wrapper->render();
 	}
@@ -295,7 +295,7 @@ HTML;
 			}
 		}
  
-		$html  = '<h2>Связи с объектами формата &laquo;'.$formatTo->title.'&raquo; ['.sizeof($links).' из '.$fullCount.']</h2>';
+		$html  = '<h2>п║п╡я▐п╥п╦ я│ п╬п╠я┼п╣п╨я┌п╟п╪п╦ я└п╬я─п╪п╟я┌п╟ &laquo;'.$formatTo->title.'&raquo; ['.sizeof($links).' п╦п╥ '.$fullCount.']</h2>';
 		if($reference->multiple){
 			$html  .= '<!--%%OBJECT2JS%%-->';
 		}
@@ -305,14 +305,14 @@ HTML;
 		foreach ($displayFields as $f) {
 			if($f->storageType->filterable()){
 				!($filterOn = isset($filters[$formatTo->id][$f->name])) OR $enabledFilters++;
-				$thead .= '<th class="ref-filter-'.( $filterOn ? 'show' : 'hide').'" ondblclick="ShowHideFilter(this)" title="Двоиной клик, чтобы скрыть/показать фильтр по этому полю"><span>'.$f->description.'</span>';
+				$thead .= '<th class="ref-filter-'.( $filterOn ? 'show' : 'hide').'" ondblclick="ShowHideFilter(this)" title="п■п╡п╬п╦п╫п╬п╧ п╨п╩п╦п╨, я┤я┌п╬п╠я▀ я│п╨я─я▀я┌я▄/п©п╬п╨п╟п╥п╟я┌я▄ я└п╦п╩я▄я┌я─ п©п╬ я█я┌п╬п╪я┐ п©п╬п╩я▌"><span>'.$f->description.'</span>';
 				$thead .= '<input type="text" name="filters['.$formatTo->id.']['.$f->name.']" value="'.($filterOn ? quot($filters[$formatTo->id][$f->name]) : null).'" />';
 				$thead .= '</th>';
 			} else {
 				$thead .= '<th>'.$f->description.'</th>';
 			}
 		}
-		$html .= '<thead><tr><th class="c3 ref-filter-'.( $enabledFilters ? 'show' : 'hide').'"><input type="submit" title="Применить фильтр(ы)" value="&gt;&gt;&gt;"/></th>' . $thead;
+		$html .= '<thead><tr><th class="c3 ref-filter-'.( $enabledFilters ? 'show' : 'hide').'"><input type="submit" title="п÷я─п╦п╪п╣п╫п╦я┌я▄ я└п╦п╩я▄я┌я─(я▀)" value="&gt;&gt;&gt;"/></th>' . $thead;
  
 		foreach ($reference->fields as $k=>$v) {
 			$html .= '<th>'.$v->description.'</th>';
@@ -334,7 +334,7 @@ HTML;
 				$menuTitle = (mb_strlen($v['title']) > 10) ? trim(mb_substr($v['title'], 0, 10)).'&hellip;' : $v['title'];
 				$context = 'Context(event, \'edit\', '.$v['id'].', '.(int)($v['status']).', \''.$formatTo->id.'\',  \''.$menuTitle.'\', \'\', 1, 0, 0); return false;';
 				$html .= '<a oncontextMenu="'.$context.'" href="javascript:EditContent(\''.$formatTo->id.'\', \''.$v['id'].'\')">';
-				$html .= '<img src="i/icon/edit.gif" alt="Изменить &laquo;'.$v['id'].'&raquo;"></a>';
+				$html .= '<img src="i/icon/edit.gif" alt="п≤п╥п╪п╣п╫п╦я┌я▄ &laquo;'.$v['id'].'&raquo;"></a>';
 				$html .= '</td>';
  
 				foreach ($displayFields as $k => $f) {
@@ -343,7 +343,7 @@ HTML;
 					$html .= $f->displayType->buildCell($f, $v);
 					$html .= '</label>';
 					if($reference->multiple && $linksIsset && !$shown) {
-						$html .= '<span title="Нажмите, чтобы добавить еще одну ссылку для этого объекта" class="ref-plus-tr" onclick="appendLinksRow(this)">[ + ]</span>';
+						$html .= '<span title="п²п╟п╤п╪п╦я┌п╣, я┤я┌п╬п╠я▀ п╢п╬п╠п╟п╡п╦я┌я▄ п╣я┴п╣ п╬п╢п╫я┐ я│я│я▀п╩п╨я┐ п╢п╩я▐ я█я┌п╬пЁп╬ п╬п╠я┼п╣п╨я┌п╟" class="ref-plus-tr" onclick="appendLinksRow(this)">[ + ]</span>';
 						$object2JS[$v['id']] = $iteration;
 						$shown = true;
 					}
@@ -386,8 +386,8 @@ HTML;
 			$currentPager = $layout->getData[$formatTo->id . '_page'];
 			unset($layout->getData[$formatTo->id . '_page']);
 		}
-		$html .= '<a style="float: right;" href="'.$this->layout->_BuildHref($formatTo->id.'_exist', 1).'" '.( $onlyExistingLinks ? 'class="selected"': '').'>Привязанные</a>';
-		$html .= '<a style="float: right;" href="'.$this->layout->_BuildHref($formatTo->id.'_exist', 0).'" '.(!$onlyExistingLinks ? 'class="selected"': '').'>Все</a>';
+		$html .= '<a style="float: right;" href="'.$this->layout->_BuildHref($formatTo->id.'_exist', 1).'" '.( $onlyExistingLinks ? 'class="selected"': '').'>п÷я─п╦п╡я▐п╥п╟п╫п╫я▀п╣</a>';
+		$html .= '<a style="float: right;" href="'.$this->layout->_BuildHref($formatTo->id.'_exist', 0).'" '.(!$onlyExistingLinks ? 'class="selected"': '').'>п▓я│п╣</a>';
 		if(isset($currentPager)){
 			$layout->getData[$formatTo->id . '_page'] = $currentPager;
 		}
@@ -417,7 +417,7 @@ HTML;
  
 			if (isset($prev)) {
 				$html .= '<A href="'.$this->layout->_BuildHref($formatTo->id.'_page', $prev).'">';
-				$html .= '<IMG src="i/icon/left.gif" width="4" height="7" border="0" hspace="4" alt="Страница '.$prev.'">';
+				$html .= '<IMG src="i/icon/left.gif" width="4" height="7" border="0" hspace="4" alt="п║я┌я─п╟п╫п╦я├п╟ '.$prev.'">';
 				$html .= '</A>';
 			}
  
@@ -428,12 +428,12 @@ HTML;
 					$html .= ' class="selected"';
 				}
  
-				$html .= ' href="'.$this->layout->_BuildHref($formatTo->id.'_page', $i).'" title="Страница '.$i.'">'.$i.'</A>';
+				$html .= ' href="'.$this->layout->_BuildHref($formatTo->id.'_page', $i).'" title="п║я┌я─п╟п╫п╦я├п╟ '.$i.'">'.$i.'</A>';
 			}
  
 			if (isset($next) && $next > 0) {
 				$html .= '<A href="'.$this->layout->_BuildHref($formatTo->id.'_page', $next).'">';
-				$html .= '<IMG src="i/icon/right.gif" width="4" height="7" border="0" hspace="4" alt="Страница '.$next.'">';
+				$html .= '<IMG src="i/icon/right.gif" width="4" height="7" border="0" hspace="4" alt="п║я┌я─п╟п╫п╦я├п╟ '.$next.'">';
 				$html .= '</A>';
 			}
  
@@ -445,10 +445,10 @@ HTML;
 
 	private function childrenForm() {
 		$values = array(
-			PP_CHILDREN_FETCH_ALL      => 'Все',
-			PP_CHILDREN_FETCH_SELECTED => 'Текущий',
-			PP_CHILDREN_FETCH_NONE     => 'Никакие',
-			PP_CHILDREN_FETCH_PAGED    => 'С постраничкой'
+			PP_CHILDREN_FETCH_ALL      => 'п▓я│п╣',
+			PP_CHILDREN_FETCH_SELECTED => 'п╒п╣п╨я┐я┴п╦п╧',
+			PP_CHILDREN_FETCH_NONE     => 'п²п╦п╨п╟п╨п╦п╣',
+			PP_CHILDREN_FETCH_PAGED    => 'п║ п©п╬я│я┌я─п╟п╫п╦я┤п╨п╬п╧'
 		);
  
 		$name = OBJ_FIELD_CHILDREN;
@@ -485,10 +485,10 @@ HTML;
 			$value = ($checked) ? $this->object[OBJ_FIELD_CHILDREN][$k] : PXTypeDescription::_mapByDefaults('all');
 
 			$html[] = '<dd>'.NLAbstractHTMLForm::BuildDropDown(OBJ_FIELD_CHILDREN.'['.$k.']', $value, $values, 0, 0, !(bool)$checked).'</dd>';
-			$html[] = '<dd>'.$quantity.' '.NumericEndingsRussian($quantity, 'объект', 'объекта', 'объектов');
+			$html[] = '<dd>'.$quantity.' '.NumericEndingsRussian($quantity, 'п╬п╠я┼п╣п╨я┌', 'п╬п╠я┼п╣п╨я┌п╟', 'п╬п╠я┼п╣п╨я┌п╬п╡');
 
 			if ($quantity > 0) {
-				$html[] = ' &#151; отвязка невозможна';
+				$html[] = ' &#151; п╬я┌п╡я▐п╥п╨п╟ п╫п╣п╡п╬п╥п╪п╬п╤п╫п╟';
 			}
  
 			$html[] = '</dd>'."\n";

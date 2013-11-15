@@ -3,5 +3,5 @@
 		$this->db->DeleteContentObject($this->app->types[$this->helper->objectType], $objectId);
 	}
 	$cnt = count($this->helper->objectIds);
-	$RESULT = PXEngineJSON::toSuccess(sprintf('%s %d %s', NumericEndingsRussian($cnt, 'ÕÄÁÌ£Î', 'ÕÄÁÌÅÎÏ', 'ÕÄÁÌÅÎÏ'), $cnt, NumericEndingsRussian($cnt, 'ÏÂßÅËÔ', 'ÏÂßÅËÔÁ', 'ÏÂßÅËÔÏ×')));
+	$RESULT = PXEngineJSON::toSuccess(sprintf('%s %d %s', NumericEndingsRussian($cnt, 'ÑƒÐ´Ð°Ð»Ñ‘Ð½', 'ÑƒÐ´Ð°Ð»ÐµÐ½Ð¾', 'ÑƒÐ´Ð°Ð»ÐµÐ½Ð¾'), $cnt, NumericEndingsRussian($cnt, 'Ð¾Ð±ÑŠÐµÐºÑ‚', 'Ð¾Ð±ÑŠÐµÐºÑ‚Ð°', 'Ð¾Ð±ÑŠÐµÐºÑ‚Ð¾Ð²')));
 ?>

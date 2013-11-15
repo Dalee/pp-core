@@ -1,6 +1,6 @@
 <?php
 /**
- * ip ÁÄÒÅÓ
+ * ip Ð°Ð´Ñ€ÐµÑ
  *
  * storageType integer
  * displayType IPADDR

@@ -25,21 +25,21 @@ class PXTabbedMenuRegionChanger extends PXAdminWidget {
 	}
 
 	private function _static($regionsData) {
-		return '<span class="multipleregions-current-region">Ù≈À’›…  “≈«…œŒ <strong>'. reset($regionsData) .'</strong></span>';
+		return '<span class="multipleregions-current-region">–¢–µ–∫—É—â–∏–π —Ä–µ–≥–∏–æ–Ω <strong>'. reset($regionsData) .'</strong></span>';
 	}
 
 	private function _selector($rid, $regionsData) {
 		$uri = htmlspecialchars(PXRegistry::getRequest()->GetRequestUri(), ENT_COMPAT|ENT_HTML401, DEFAULT_CHARSET);
 
 		$varName           = PXMultiRegions::REGION_MARK . '[rid]';
-		$regionsData[null] = '- ÔÎ·˙·Ù¯ ˜ÛÂ ÚÂÁÈÔÓ˘ -';
+		$regionsData[null] = '- –ü–û–ö–ê–ó–ê–¢–¨ –í–°–ï –†–ï–ì–ò–û–ù–´ -';
 
 		$regionSelector    = new PXInputDropDown($varName, $rid, $regionsData);
 
 		$selectorHtml      = $regionSelector->html();
 
 		return <<<HTML
-			<span class="multipleregions-choose-region">˜Ÿ¬≈“…‘≈ “≈«…œŒ:</span>
+			<span class="multipleregions-choose-region">–í—ã–±–µ—Ä–∏—Ç–µ —Ä–µ–≥–∏–æ–Ω:</span>
 
 			<div id="region_selector">
 				<form method="POST" action="{$uri}">&nbsp;

@@ -70,7 +70,7 @@ class PXAdminTreeBranch extends PXAdminWidget {
 			$type = !$openable ? '-l' : '';
 		}
 
-		$alt = 'éÚÍÅÎÉÔØ ÒÁÚÄÅÌ &laquo;'.$this->escapeTitle().'&raquo;';
+		$alt = 'Ð˜Ð·Ð¼ÐµÐ½Ð¸Ñ‚ÑŒ Ñ€Ð°Ð·Ð´ÐµÐ» &laquo;'.$this->escapeTitle().'&raquo;';
 
 		return '<img onClick="'.$this->contextMenu().'" onContextMenu="'.$this->contextMenu().'" class ="cursor" src="i/tree/leaf'.$type.'.gif" alt="'.$alt.'">';
 	}
@@ -172,7 +172,7 @@ class PXAdminTreeBranch extends PXAdminWidget {
 	}
 
 	function editLink() {
-		$alt    = 'éÚÍÅÎÉÔØ ÒÁÚÄÅÌ &laquo;'.$this->escapeTitle().'&raquo;';
+		$alt    = 'Ð˜Ð·Ð¼ÐµÐ½Ð¸Ñ‚ÑŒ Ñ€Ð°Ð·Ð´ÐµÐ» &laquo;'.$this->escapeTitle().'&raquo;';
 		$format = $this->htmlTree->datatype->id;
 		$id     = $this->leaf->id;
 

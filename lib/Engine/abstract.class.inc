@@ -12,7 +12,7 @@ abstract class PXEngine {
 
 	protected $initOrder = array('app', 'db', 'request', 'user', 'layout');
 
-	function __construct() { // Инициализация основных объектов приложения
+	function __construct() { // п≤п╫п╦я├п╦п╟п╩п╦п╥п╟я├п╦я▐ п╬я│п╫п╬п╡п╫я▀я┘ п╬п╠я┼п╣п╨я┌п╬п╡ п©я─п╦п╩п╬п╤п╣п╫п╦я▐
 		PXProfiler::begin('INIT');
 
 		$this->initApplication();
@@ -99,7 +99,7 @@ abstract class PXEngine {
 
 	function checkArea($area) {
 		if (!isset($this->modules[$area])) {
-			FatalError('Некорректный параметр area = <em>' . strip_tags($this->area) . '</em>');
+			FatalError('п²п╣п╨п╬я─я─п╣п╨я┌п╫я▀п╧ п©п╟я─п╟п╪п╣я┌я─ area = <em>' . strip_tags($this->area) . '</em>');
 		}
 	}
 }

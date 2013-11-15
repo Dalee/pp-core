@@ -15,7 +15,7 @@ class PXTriggerDatabaseForum extends PXAbstractDatabaseTrigger {
 			return;
 		}
 
-		// îÁÞÉÎÁÅÍ ÔÒÁÎÚÁËÃÉÀ
+		// ÐÐ°Ñ‡Ð¸Ð½Ð°ÐµÐ¼ Ñ‚Ñ€Ð°Ð½Ð·Ð°ÐºÑ†Ð¸ÑŽ
 		$this->db->transactionBegin();
 	}
 
@@ -24,12 +24,12 @@ class PXTriggerDatabaseForum extends PXAbstractDatabaseTrigger {
 			return;
 		}
 
-		// ðÒÅËÒÁÝÁÅÍ ÔÒÁÎÚÁËÃÉÀ
+		// ÐŸÑ€ÐµÐºÑ€Ð°Ñ‰Ð°ÐµÐ¼ Ñ‚Ñ€Ð°Ð½Ð·Ð°ÐºÑ†Ð¸ÑŽ
 		$this->db->transactionCommit();
 	}
 
 	function _updateLastTopic($id) {
-		// îÁÊÔÉ ÐÏÓÌÅÄÎÅÅ ÓÏÏÂÝÅÎÉÅ
+		// ÐÐ°Ð¹Ñ‚Ð¸ Ð¿Ð¾ÑÐ»ÐµÐ´Ð½ÐµÐµ ÑÐ¾Ð¾Ð±Ñ‰ÐµÐ½Ð¸Ðµ
 		$last = $this->db->getObjectsByParentLimited($this->db->types[$this->dtMessages], null, $id, 1, 0, DB_SELECT_TABLE, 'sys_created DESC');
 		reset($last);
 		$last = current($last);
@@ -38,19 +38,19 @@ class PXTriggerDatabaseForum extends PXAbstractDatabaseTrigger {
 			return;
 		}
 
-		// ÷ÙÓÔÁ×ÉÔØ lastreply = sys_created ÐÏÓÌÅÄÎÅÇÏ ÓÏÏÂÝÅÎÉÑ ÓÏ status = 1
-		// ÷ÙÓÔÁ×ÉÔØ lastauthor = Á×ÔÏÒÕ ÐÏÓÌÅÄÎÅÇÏ ÓÏÏÂÝÅÎÉÑ ÓÏ status = 1, ÅÓÌÉ ÏÎ ÅÓÔØ:
+		// Ð’Ñ‹ÑÑ‚Ð°Ð²Ð¸Ñ‚ÑŒ lastreply = sys_created Ð¿Ð¾ÑÐ»ÐµÐ´Ð½ÐµÐ³Ð¾ ÑÐ¾Ð¾Ð±Ñ‰ÐµÐ½Ð¸Ñ ÑÐ¾ status = 1
+		// Ð’Ñ‹ÑÑ‚Ð°Ð²Ð¸Ñ‚ÑŒ lastauthor = Ð°Ð²Ñ‚Ð¾Ñ€Ñƒ Ð¿Ð¾ÑÐ»ÐµÐ´Ð½ÐµÐ³Ð¾ ÑÐ¾Ð¾Ð±Ñ‰ÐµÐ½Ð¸Ñ ÑÐ¾ status = 1, ÐµÑÐ»Ð¸ Ð¾Ð½ ÐµÑÑ‚ÑŒ:
 		$lastauthor = !is_null($last['sys_owner']) ? ', lastauthor = '.$last['sys_owner'] : '';
 		$this->db->Query("UPDATE " . $this->dtTopics . " SET lastreply = '" . $last['sys_created'] . "'" . $lastauthor . " WHERE id = " . $id, true);
 
-		// ÷ÙÓÔÁ×ÉÔØ count = ËÏÌÉÞÅÓÔ×Õ ÓÏÏÂÝÅÎÉÊ × ÔÏÐÉËÅ - 1
+		// Ð’Ñ‹ÑÑ‚Ð°Ð²Ð¸Ñ‚ÑŒ count = ÐºÐ¾Ð»Ð¸Ñ‡ÐµÑÑ‚Ð²Ñƒ ÑÐ¾Ð¾Ð±Ñ‰ÐµÐ½Ð¸Ð¹ Ð² Ñ‚Ð¾Ð¿Ð¸ÐºÐµ - 1
 		$this->db->Query("UPDATE ".$this->dtTopics." SET ".$this->db->mapFields('count')." = ((SELECT count(id) FROM ".$this->dtMessages." WHERE parent = ".$id." AND status = '1') - 1) WHERE id = ".$id, true);
 	}
 
 	function _updateParentTopic($id) {
 		$db =& $this->db;
 
-		// îÁÈÏÄÉÍ ÒÏÄÉÔÅÌÑ ÔÏÐÉËÁ
+		// ÐÐ°Ñ…Ð¾Ð´Ð¸Ð¼ Ñ€Ð¾Ð´Ð¸Ñ‚ÐµÐ»Ñ Ñ‚Ð¾Ð¿Ð¸ÐºÐ°
 		$parent = $db->Query("SELECT parent FROM ".$this->dtTopics." WHERE id = ".$id, true);
 		if(!sizeof($parent)) {
 			return;
@@ -61,10 +61,10 @@ class PXTriggerDatabaseForum extends PXAbstractDatabaseTrigger {
 		$parent = current($parent);
 		$parent = $parent['parent'];
 
-		// ÷ÙÓÔÁ×ÉÔØ is_last ×ÓÅÈ ÔÏÐÉËÏ× × ÆÏÒÕÍÅ × 0
+		// Ð’Ñ‹ÑÑ‚Ð°Ð²Ð¸Ñ‚ÑŒ is_last Ð²ÑÐµÑ… Ñ‚Ð¾Ð¿Ð¸ÐºÐ¾Ð² Ð² Ñ„Ð¾Ñ€ÑƒÐ¼Ðµ Ð² 0
 		$db->Query("UPDATE ".$this->dtTopics." SET is_last = '0' WHERE parent = ".$parent, true);
 
-		// ÷ÙÓÔÁ×ÉÔØ is_last ÄÌÑ ÔÏÐÉËÁ Ó ÐÏÓÌÅÄÎÉÍ lastreply
+		// Ð’Ñ‹ÑÑ‚Ð°Ð²Ð¸Ñ‚ÑŒ is_last Ð´Ð»Ñ Ñ‚Ð¾Ð¿Ð¸ÐºÐ° Ñ Ð¿Ð¾ÑÐ»ÐµÐ´Ð½Ð¸Ð¼ lastreply
 		$db->ModifyingQuery("UPDATE ".$this->dtTopics." SET is_last = '1' WHERE id = (
 				SELECT MAX(id) FROM ".$this->dtTopics." WHERE parent = ".$parent." AND lastreply = (
 					SELECT MAX(lastreply) FROM ".$this->dtTopics." WHERE parent = ".$parent." and status = '1'

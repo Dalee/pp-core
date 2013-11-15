@@ -1,10 +1,10 @@
 <?php
 /**
- * Выпадающий список
+ * п▓я▀п©п╟п╢п╟я▌я┴п╦п╧ я│п©п╦я│п╬п╨
  *
- * storageType как правило integer, иногда string
+ * storageType п╨п╟п╨ п©я─п╟п╡п╦п╩п╬ integer, п╦п╫п╬пЁп╢п╟ string
  * displayType DROPDOWN|width
- *             width не используется
+ *             width п╫п╣ п╦я│п©п╬п╩я▄п╥я┐п╣я┌я│я▐
  */
 class PXDisplayTypeDropdown extends PXDisplayType {
 	protected static $trees = array();

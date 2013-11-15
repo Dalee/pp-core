@@ -30,7 +30,7 @@ function t($name, $callback, $expected = true) {
 		: json_encode($result) === json_encode($expected); // todo: make it more flexible
 
 	$nameLength = TEST_CASE_NAME_LENGTH;
-	$case = sprintf("%-{$nameLength}s", (mb_strlen($name) > $nameLength ? mb_substr($name, 0, $nameLength-1) . '…' : $name));
+	$case = sprintf("%-{$nameLength}s", (mb_strlen($name) > $nameLength ? mb_substr($name, 0, $nameLength-1) . 'Б─╕' : $name));
 	con_printf('%3d. %s  %+16s', $counter, $case, number_format($elapsedTime * 1000, 4, ',', ' ').'ms   ');
 	con_printf(sprintf('[%s{end}]{nl}', $test ? '{fg:lgreen} OK ' : '{fg:lred}FAIL'));
 

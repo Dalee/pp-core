@@ -7,7 +7,7 @@ abstract class PXAbstractCronRun {
 	function Run(&$app, &$db, &$tree, $matchedTime, $matchedRule) {
 		return array(
 			'status' => -1,
-			'note'   => 'Не определен метод Run()'
+			'note'   => 'п²п╣ п╬п©я─п╣п╢п╣п╩п╣п╫ п╪п╣я┌п╬п╢ Run()'
 		);
 	}
 

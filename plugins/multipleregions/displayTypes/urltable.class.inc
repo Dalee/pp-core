@@ -1,6 +1,6 @@
 <?php
 /**
- * Таблица URL регионов
+ * п╒п╟п╠п╩п╦я├п╟ URL я─п╣пЁп╦п╬п╫п╬п╡
  *
  * storageType regionurl
  * displayType URLTABLE

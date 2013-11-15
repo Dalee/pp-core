@@ -18,7 +18,7 @@ class PXAdminWidgetPreview extends PXAdminWidget {
 		$link   = "/admin/?area=adminpreview&format={$req->getVar('format')}&id={$req->getVar("id")}";
 		$link   = "window.open('{$link}','mywindow','resizable=yes,location=yes,scrollbars=yes,status=yes,menubar=yes');";
 
-		$html[] = "<button type='button' onclick=\"{$link}\">Предпросмотр</button>";
+		$html[] = "<button type='button' onclick=\"{$link}\">п÷я─п╣п╢п©я─п╬я│п╪п╬я┌я─</button>";
 		return join($html);
 	}
 }

@@ -1,7 +1,7 @@
 <?php
 /**
- * Класс описание ссылок между типами данных.
- * стоится по etc/datatype.xml /model/references/reference/
+ * п п╩п╟я│я│ п╬п©п╦я│п╟п╫п╦п╣ я│я│я▀п╩п╬п╨ п╪п╣п╤п╢я┐ я┌п╦п©п╟п╪п╦ п╢п╟п╫п╫я▀я┘.
+ * я│я┌п╬п╦я┌я│я▐ п©п╬ etc/datatype.xml /model/references/reference/
  *
  * @subpackage Application
  */
@@ -19,17 +19,17 @@ class PXRefDescription {
 	var $load       = 'automatic';
 	
 	/** 
-		@var bool Может ли объект A иметь более одной связи с объектом B по какому-либо дополнительному признаку ? 
+		@var bool п°п╬п╤п╣я┌ п╩п╦ п╬п╠я┼п╣п╨я┌ A п╦п╪п╣я┌я▄ п╠п╬п╩п╣п╣ п╬п╢п╫п╬п╧ я│п╡я▐п╥п╦ я│ п╬п╠я┼п╣п╨я┌п╬п╪ B п©п╬ п╨п╟п╨п╬п╪я┐-п╩п╦п╠п╬ п╢п╬п©п╬п╩п╫п╦я┌п╣п╩я▄п╫п╬п╪я┐ п©я─п╦п╥п╫п╟п╨я┐ ? 
 		@see PXApplication::FillDataTypes()
 	*/
 	var $multiple   = false;
 	/** 
-		@var bool По-умолчанию отображать в форме редактирования ссылок все объекты или только привязанные ?
+		@var bool п÷п╬-я┐п╪п╬п╩я┤п╟п╫п╦я▌ п╬я┌п╬п╠я─п╟п╤п╟я┌я▄ п╡ я└п╬я─п╪п╣ я─п╣п╢п╟п╨я┌п╦я─п╬п╡п╟п╫п╦я▐ я│я│я▀п╩п╬п╨ п╡я│п╣ п╬п╠я┼п╣п╨я┌я▀ п╦п╩п╦ я┌п╬п╩я▄п╨п╬ п©я─п╦п╡я▐п╥п╟п╫п╫я▀п╣ ?
 		@see PXRefDescription::_mapRefByDefaults()
 	*/
 	var $byDefault  = false;
 	/** 
-		@var bool Скрывать или нет конкретный тип связи в форме редактирования ссылок ? Используется для служебных связей.
+		@var bool п║п╨я─я▀п╡п╟я┌я▄ п╦п╩п╦ п╫п╣я┌ п╨п╬п╫п╨я─п╣я┌п╫я▀п╧ я┌п╦п© я│п╡я▐п╥п╦ п╡ я└п╬я─п╪п╣ я─п╣п╢п╟п╨я┌п╦я─п╬п╡п╟п╫п╦я▐ я│я│я▀п╩п╬п╨ ? п≤я│п©п╬п╩я▄п╥я┐п╣я┌я│я▐ п╢п╩я▐ я│п╩я┐п╤п╣п╠п╫я▀я┘ я│п╡я▐п╥п╣п╧.
 		@see PXApplication::FillDataTypes()
 	*/
 	var $hidden     = false;
@@ -90,7 +90,7 @@ class PXRefDescription {
 			}
 			$app->references[$ref->name] = $ref;
 			if (!isset($app->types[$ref->from]) || !isset($app->types[$ref->to])) {
-				FatalError("ОШИБКА МОДЕЛИ: Связь <em>{$ref->name}</em> невозможна, отсутствует один из типов");
+				FatalError("п·п╗п≤п▒п п░ п°п·п■п∙п⌡п≤: п║п╡я▐п╥я▄ <em>{$ref->name}</em> п╫п╣п╡п╬п╥п╪п╬п╤п╫п╟, п╬я┌я│я┐я┌я│я┌п╡я┐п╣я┌ п╬п╢п╦п╫ п╦п╥ я┌п╦п©п╬п╡");
 			}
 			$app->types[$ref->from]->references[$ref->to] = &$app->references[$ref->name];
 			$app->types[$ref->to]->references[$ref->from] = &$app->references[$ref->name];

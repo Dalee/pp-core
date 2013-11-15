@@ -1,7 +1,7 @@
 <?php
 class PXCronRunSearchIndex extends PXAbstractCronRun {
 	function __construct() {	
-		$this->name = 'Индексация данных для поиска';
+		$this->name = 'п≤п╫п╢п╣п╨я│п╟я├п╦я▐ п╢п╟п╫п╫я▀я┘ п╢п╩я▐ п©п╬п╦я│п╨п╟';
 	}
 
 	function Run(&$app, &$db, &$tree, $matchedTime, $matchedRule) {
@@ -10,7 +10,7 @@ class PXCronRunSearchIndex extends PXAbstractCronRun {
 		ini_set('display_errors', 0);
 		$r = $this->_reindex();
 
-		return array("status" => 0, "note" => "Успешно! obj/words: {$r[0]}/{$r[1]}");
+		return array("status" => 0, "note" => "пёя│п©п╣я┬п╫п╬! obj/words: {$r[0]}/{$r[1]}");
 	}
 
 	function _init($reloadFlag, $quietFlag, $withIndexField) {

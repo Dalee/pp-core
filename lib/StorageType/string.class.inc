@@ -1,7 +1,7 @@
 <?php
 /**
- * óÔÒÏËÁ
- * ÷ ÂÁÚÅ ÍÏÖÅÔ ÈÒÁÎÉÔØÓÑ ËÁË VARCHAR(x), ÔÁË É TEXT
+ * Ð¡Ñ‚Ñ€Ð¾ÐºÐ°
+ * Ð’ Ð±Ð°Ð·Ðµ Ð¼Ð¾Ð¶ÐµÑ‚ Ñ…Ñ€Ð°Ð½Ð¸Ñ‚ÑŒÑÑ ÐºÐ°Ðº VARCHAR(x), Ñ‚Ð°Ðº Ð¸ TEXT
  *
  * displayType HIDDEN, TEXT, RICHEDIT, DROPDOWN, COLOR, STATIC
  * storageType string

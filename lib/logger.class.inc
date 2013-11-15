@@ -1,23 +1,23 @@
 <?php
 /**
- * Класс - одиночка "Singleton" для журналирования событий в ProximaPortal.
+ * п п╩п╟я│я│ - п╬п╢п╦п╫п╬я┤п╨п╟ "Singleton" п╢п╩я▐ п╤я┐я─п╫п╟п╩п╦я─п╬п╡п╟п╫п╦я▐ я│п╬п╠я▀я┌п╦п╧ п╡ ProximaPortal.
  */
 
 class PXAuditLogger {
 	/**
-	 * Ссылка на PXApplication
+	 * п║я│я▀п╩п╨п╟ п╫п╟ PXApplication
 	 * @var PXApplication
 	 */
 	var $app;
 
 	/**
-	 * Ссылка на PXDatabase
+	 * п║я│я▀п╩п╨п╟ п╫п╟ PXDatabase
 	 * @var PXDatabase
 	 */
 	var $db;
 
 	/**
-	 * Ссылка на NLLogger
+	 * п║я│я▀п╩п╨п╟ п╫п╟ NLLogger
 	 * @var NLLogger
 	 */
 	var $logger;
@@ -25,13 +25,13 @@ class PXAuditLogger {
 	var $logLevel;
 
 	/**
-	 * Конструктор класса.
+	 * п п╬п╫я│я┌я─я┐п╨я┌п╬я─ п╨п╩п╟я│я│п╟.
 	 *
-	 * Класс PXAuditLogger является singleton оболочкой класса {@link NLLogger}.
-	 * Создание экзепляров класса должно производится через метод {@link PXAuditLogger::getLogger()}.
+	 * п п╩п╟я│я│ PXAuditLogger я▐п╡п╩я▐п╣я┌я│я▐ singleton п╬п╠п╬п╩п╬я┤п╨п╬п╧ п╨п╩п╟я│я│п╟ {@link NLLogger}.
+	 * п║п╬п╥п╢п╟п╫п╦п╣ я█п╨п╥п╣п©п╩я▐я─п╬п╡ п╨п╩п╟я│я│п╟ п╢п╬п╩п╤п╫п╬ п©я─п╬п╦п╥п╡п╬п╢п╦я┌я│я▐ я┤п╣я─п╣п╥ п╪п╣я┌п╬п╢ {@link PXAuditLogger::getLogger()}.
 	 *
-	 * @param PXApplication $app ссылка на PXApplication {@link $app}
-	 * @param PXDatabase $db ссылка на PXDatabase {@link $db}
+	 * @param PXApplication $app я│я│я▀п╩п╨п╟ п╫п╟ PXApplication {@link $app}
+	 * @param PXDatabase $db я│я│я▀п╩п╨п╟ п╫п╟ PXDatabase {@link $db}
 	 */
 	function PXAuditLogger($app, $db) {
 		$this->app = $app;
@@ -61,10 +61,10 @@ class PXAuditLogger {
 	}
 
 	/**
-	 * Конструктор - синглетон.
+	 * п п╬п╫я│я┌я─я┐п╨я┌п╬я─ - я│п╦п╫пЁп╩п╣я┌п╬п╫.
 	 *
-	 * @param PXApplication $app ссылка на PXApplication {@link $app}
-	 * @param PXDatabase $db ссылка на PXDatabase {@link $db}
+	 * @param PXApplication $app я│я│я▀п╩п╨п╟ п╫п╟ PXApplication {@link $app}
+	 * @param PXDatabase $db я│я│я▀п╩п╨п╟ п╫п╟ PXDatabase {@link $db}
 	 * @return PXAuditLogger - single instance of PXauditLogger.
 	 */
 
@@ -83,51 +83,51 @@ class PXAuditLogger {
 	}
 
 	/**
-	 * Метод оболочка для вызова {@link NLLogger::debug()}.
-	 * Использует {@link PXAuditLogger::_createMsg()} для формирования сообщения.
+	 * п°п╣я┌п╬п╢ п╬п╠п╬п╩п╬я┤п╨п╟ п╢п╩я▐ п╡я▀п╥п╬п╡п╟ {@link NLLogger::debug()}.
+	 * п≤я│п©п╬п╩я▄п╥я┐п╣я┌ {@link PXAuditLogger::_createMsg()} п╢п╩я▐ я└п╬я─п╪п╦я─п╬п╡п╟п╫п╦я▐ я│п╬п╬п╠я┴п╣п╫п╦я▐.
 	 *
-	 * @param String $description - текстовое сообщение
-	 * @param String $source - источник сообщения (обычно datatype/id)
-	 * @param String $type - текстовый тип сообщения AUDIT, USER, итп.
+	 * @param String $description - я┌п╣п╨я│я┌п╬п╡п╬п╣ я│п╬п╬п╠я┴п╣п╫п╦п╣
+	 * @param String $source - п╦я│я┌п╬я┤п╫п╦п╨ я│п╬п╬п╠я┴п╣п╫п╦я▐ (п╬п╠я▀я┤п╫п╬ datatype/id)
+	 * @param String $type - я┌п╣п╨я│я┌п╬п╡я▀п╧ я┌п╦п© я│п╬п╬п╠я┴п╣п╫п╦я▐ AUDIT, USER, п╦я┌п©.
 	 */
 	function debug($description, $source = 'UNKNOWN', $type = 'AUDIT') {
 		$this->logger->debug($this->_createMsg($description, $source, $type));
 	}
 	/**
-	 * Метод оболочка для вызова {@link NLLogger::info()}.
-	 * Параметры описаны в {@link PXAuditLogger::debug()}
+	 * п°п╣я┌п╬п╢ п╬п╠п╬п╩п╬я┤п╨п╟ п╢п╩я▐ п╡я▀п╥п╬п╡п╟ {@link NLLogger::info()}.
+	 * п÷п╟я─п╟п╪п╣я┌я─я▀ п╬п©п╦я│п╟п╫я▀ п╡ {@link PXAuditLogger::debug()}
 	 */
 	function info($description, $source = 'UNKNOWN', $type = 'AUDIT') {
 		$this->logger->info($this->_createMsg($description, $source, $type));
 	}
 	/**
-	 * Метод оболочка для вызова {@link NLLogger::warn()}.
-	 * Параметры описаны в {@link PXAuditLogger::debug()}
+	 * п°п╣я┌п╬п╢ п╬п╠п╬п╩п╬я┤п╨п╟ п╢п╩я▐ п╡я▀п╥п╬п╡п╟ {@link NLLogger::warn()}.
+	 * п÷п╟я─п╟п╪п╣я┌я─я▀ п╬п©п╦я│п╟п╫я▀ п╡ {@link PXAuditLogger::debug()}
 	 */
 	function warn($description, $source = 'UNKNOWN', $type = 'AUDIT') {
 		$this->logger->warn($this->_createMsg($description, $source, $type));
 	}
 	/**
-	 * Метод оболочка для вызова {@link NLLogger::error()}.
-	 * Параметры описаны в {@link PXAuditLogger::debug()}
+	 * п°п╣я┌п╬п╢ п╬п╠п╬п╩п╬я┤п╨п╟ п╢п╩я▐ п╡я▀п╥п╬п╡п╟ {@link NLLogger::error()}.
+	 * п÷п╟я─п╟п╪п╣я┌я─я▀ п╬п©п╦я│п╟п╫я▀ п╡ {@link PXAuditLogger::debug()}
 	 */
 	function error($description, $source = 'UNKNOWN', $type = 'AUDIT') {
 		$this->logger->error($this->_createMsg($description, $source, $type));
 	}
 	/**
-	 * Метод оболочка для вызова {@link NLLogger::fatal()}.
-	 * Параметры описаны в {@link PXAuditLogger::debug()}
+	 * п°п╣я┌п╬п╢ п╬п╠п╬п╩п╬я┤п╨п╟ п╢п╩я▐ п╡я▀п╥п╬п╡п╟ {@link NLLogger::fatal()}.
+	 * п÷п╟я─п╟п╪п╣я┌я─я▀ п╬п©п╦я│п╟п╫я▀ п╡ {@link PXAuditLogger::debug()}
 	 */
 	function fatal($description, $source = 'UNKNOWN', $type = 'AUDIT') {
 		$this->logger->fatal($this->_createMsg($description, $source, $type));
 	}
 	/**
-	 * Формирует сообщение для записи в лог.
+	 * п╓п╬я─п╪п╦я─я┐п╣я┌ я│п╬п╬п╠я┴п╣п╫п╦п╣ п╢п╩я▐ п╥п╟п©п╦я│п╦ п╡ п╩п╬пЁ.
 	 *
-	 * @param String $description - текстовое сообщение
-	 * @param String $source - источник сообщения (обычно datatype/id)
-	 * @param String $type - текстовый тип сообщения AUDIT, USER, итп.
-	 * @return Array - массив из 5 элементов для передачи в NLLogger->debug|...|fatal()
+	 * @param String $description - я┌п╣п╨я│я┌п╬п╡п╬п╣ я│п╬п╬п╠я┴п╣п╫п╦п╣
+	 * @param String $source - п╦я│я┌п╬я┤п╫п╦п╨ я│п╬п╬п╠я┴п╣п╫п╦я▐ (п╬п╠я▀я┤п╫п╬ datatype/id)
+	 * @param String $type - я┌п╣п╨я│я┌п╬п╡я▀п╧ я┌п╦п© я│п╬п╬п╠я┴п╣п╫п╦я▐ AUDIT, USER, п╦я┌п©.
+	 * @return Array - п╪п╟я│я│п╦п╡ п╦п╥ 5 я█п╩п╣п╪п╣п╫я┌п╬п╡ п╢п╩я▐ п©п╣я─п╣п╢п╟я┤п╦ п╡ NLLogger->debug|...|fatal()
 	 */
 	function _createMsg($description, $source, $type) {
 		$user = $this->db->user->isAuthed() ? $this->db->user->login : 'UNKNOWN';
@@ -136,7 +136,7 @@ class PXAuditLogger {
 	}
 	
 	/**
-	 * Static метод, включение логгера
+	 * Static п╪п╣я┌п╬п╢, п╡п╨п╩я▌я┤п╣п╫п╦п╣ п╩п╬пЁпЁп╣я─п╟
 	 */
 	 function on(){
 	 	if(PXAuditLogger::disabled()){
@@ -146,7 +146,7 @@ class PXAuditLogger {
 	 }
 	
 	/**
-	 * Static метод, отключение логгера
+	 * Static п╪п╣я┌п╬п╢, п╬я┌п╨п╩я▌я┤п╣п╫п╦п╣ п╩п╬пЁпЁп╣я─п╟
 	 */
 	 function off(){
 	 	$self = PXAuditLogger::getLogger();
@@ -154,7 +154,7 @@ class PXAuditLogger {
 	 }
 	 
 	 /**
-	 * Static метод, возвращает true если лог не ведётся
+	 * Static п╪п╣я┌п╬п╢, п╡п╬п╥п╡я─п╟я┴п╟п╣я┌ true п╣я│п╩п╦ п╩п╬пЁ п╫п╣ п╡п╣п╢я▒я┌я│я▐
 	 */
 	 function disabled(){
 	 	$self = PXAuditLogger::getLogger();

@@ -1,7 +1,7 @@
 <?php
 class PXUserNull extends PXUser {
 	function can($what, $format = NULL, $object = NULL) {
-		FatalError('èÍ... á ÐÏÞÅÍÕ ÒÅÁÌØÎÙÊ ÀÚÅÒ ×ÓÅ ÅÝÅ ÎÅ ÓÏÚÄÁÎ?');
+		FatalError('Ð¥Ð¼... Ð Ð¿Ð¾Ñ‡ÐµÐ¼Ñƒ Ñ€ÐµÐ°Ð»ÑŒÐ½Ñ‹Ð¹ ÑŽÐ·ÐµÑ€ Ð²ÑÐµ ÐµÑ‰Ðµ Ð½Ðµ ÑÐ¾Ð·Ð´Ð°Ð½?');
 	}
 }
 ?>

@@ -85,9 +85,9 @@ function GDImageResize($src, $dest, $width, $height, $rgb=0xFFFFFF, $quality=100
 		FatalError('File ('.$src.') have null size');
 	}
 
-	// Определяем исходный формат по MIME-информации, предоставленной
-	// функцией getimagesize, и выбираем соответствующую формату
-	// imagecreatefrom-функцию.
+	// п·п©я─п╣п╢п╣п╩я▐п╣п╪ п╦я│я┘п╬п╢п╫я▀п╧ я└п╬я─п╪п╟я┌ п©п╬ MIME-п╦п╫я└п╬я─п╪п╟я├п╦п╦, п©я─п╣п╢п╬я│я┌п╟п╡п╩п╣п╫п╫п╬п╧
+	// я└я┐п╫п╨я├п╦п╣п╧ getimagesize, п╦ п╡я▀п╠п╦я─п╟п╣п╪ я│п╬п╬я┌п╡п╣я┌я│я┌п╡я┐я▌я┴я┐я▌ я└п╬я─п╪п╟я┌я┐
+	// imagecreatefrom-я└я┐п╫п╨я├п╦я▌.
 	$format = strtolower(substr($size['mime'], strpos($size['mime'], '/')+1));
 	$icfunc = "imagecreatefrom" . $format;
 	if (!function_exists($icfunc)) {
@@ -234,11 +234,11 @@ function GetImageProperty($file) {
 	$byteSize = filesize($file);
 	$retArray['byteSize'] = $byteSize;
 	if ($byteSize < 1024) {
-		$retArray['xByteSize'] = $byteSize.' байт';
+		$retArray['xByteSize'] = $byteSize.' п╠п╟п╧я┌';
 	} elseif ($byteSize < 1048576) {
-		$retArray['xByteSize'] = sprintf("%01.2f", ($byteSize/1024)).' Кбайт';
+		$retArray['xByteSize'] = sprintf("%01.2f", ($byteSize/1024)).' п п╠п╟п╧я┌';
 	} else {
-		$retArray['xByteSize'] = sprintf("%01.2f", ($byteSize/1048576)).' Кбайт';
+		$retArray['xByteSize'] = sprintf("%01.2f", ($byteSize/1048576)).' п п╠п╟п╧я┌';
 	}
 	return $retArray;
 }

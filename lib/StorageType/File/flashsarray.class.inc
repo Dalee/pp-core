@@ -1,8 +1,8 @@
 <?php
 /**
- * óÐÉÓÏË ÆÌÜÛÅÊ
- * ÈÒÁÎÑÔÓÑ × site/htdocs/ai/ôéð_äáîîùè/éä_ïâÿåëôá/éíñ_ðïìñ/îïíåò.swf
- * ÎÁÐÒÉÍÅÒ: site/htdocs/ai/postcard/123034/movies/edgar.swf
+ * Ð¡Ð¿Ð¸ÑÐ¾Ðº Ñ„Ð»ÑÑˆÐµÐ¹
+ * Ñ…Ñ€Ð°Ð½ÑÑ‚ÑÑ Ð² site/htdocs/ai/Ð¢Ð˜ÐŸ_Ð”ÐÐÐÐ«Ð¥/Ð˜Ð”_ÐžÐ‘ÐªÐ•ÐšÐ¢Ð/Ð˜ÐœÐ¯_ÐŸÐžÐ›Ð¯/ÐÐžÐœÐ•Ð .swf
+ * Ð½Ð°Ð¿Ñ€Ð¸Ð¼ÐµÑ€: site/htdocs/ai/postcard/123034/movies/edgar.swf
  *           site/htdocs/ai/postcard/123034/movies/banner2.swf
  *           site/htdocs/ai/postcard/123034/movies/3.swf
  *

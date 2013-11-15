@@ -3,11 +3,11 @@ class PXCronRunNull extends PXAbstractCronRun {
 	var $name;
 
 	function PXCronRunNull() {
-		$this->name = 'Пустая задача';
+		$this->name = 'п÷я┐я│я┌п╟я▐ п╥п╟п╢п╟я┤п╟';
 	}
 
 	function Run(&$app, &$db, &$tree, $matchedTime, $matchedRule) {
-		return array('status' => 0, 'note' => 'Успешно!');
+		return array('status' => 0, 'note' => 'пёя│п©п╣я┬п╫п╬!');
 	}
 
 }

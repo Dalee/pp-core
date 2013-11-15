@@ -39,13 +39,13 @@ HTML;
 	
 	function param() {
 		$html = '<input id="'.$this->name.$this->distension.'width"  type="text" readonly value="'.$this->value['width'].'" >';
-		$html .= '<span>ширина</span>';
+		$html .= '<span>я┬п╦я─п╦п╫п╟</span>';
 
 		$html .= '<input id="'.$this->name.$this->distension.'height" type="text" readonly value="'.$this->value['height'].'">';
-		$html .= '<span>высота</span>';
+		$html .= '<span>п╡я▀я│п╬я┌п╟</span>';
 
 		$html .= '<input id="'.$this->name.$this->distension.'size"   type="text" readonly value="'.($this->value['path'] ? filesize(BASEPATH.'site/htdocs/'.$this->value['path']) : NULL).'">';
-		$html .= '<span>размер</span>';
+		$html .= '<span>я─п╟п╥п╪п╣я─</span>';
 		
 		return $html;
 		

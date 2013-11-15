@@ -21,7 +21,7 @@
 				}
 			}
 			
-			return array(null => '--- Выберите раздел ---') + $parents;
+			return array(null => '--- п▓я▀п╠п╣я─п╦я┌п╣ я─п╟п╥п╢п╣п╩ ---') + $parents;
 		}
 		
 		function _drawMoveIntoSectionLink(){
@@ -31,7 +31,7 @@
 			}
 			return <<<HTML
 				<div class="multiple-bottom-controls">
-					<a href="#doChangeParent" helper="true" confirm="Вы уверены что хотите переместить отмеченные объекты в выбранный раздел?">Переместить в ...</a>
+					<a href="#doChangeParent" helper="true" confirm="п▓я▀ я┐п╡п╣я─п╣п╫я▀ я┤я┌п╬ я┘п╬я┌п╦я┌п╣ п©п╣я─п╣п╪п╣я│я┌п╦я┌я▄ п╬я┌п╪п╣я┤п╣п╫п╫я▀п╣ п╬п╠я┼п╣п╨я┌я▀ п╡ п╡я▀п╠я─п╟п╫п╫я▀п╧ я─п╟п╥п╢п╣п╩?">п÷п╣я─п╣п╪п╣я│я┌п╦я┌я▄ п╡ ...</a>
 					<div class="helper">
 						<div class="parent-section-changer">
 							<form>

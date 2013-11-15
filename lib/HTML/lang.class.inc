@@ -164,8 +164,8 @@ class PXUserHTMLLang {
 
 		$months      = $this->_get('months'); 
 		$monthsShort = $this->_get('months.short'); 
-		$months2     = $this->_get('months.genitive');       // òÏÄÉÔÅÌØÎÙÊ ÐÁÄÅÖ
-		$months3     = $this->_get('months.prepositional');  // ðÒÅÄÌÏÖÎÙÊ ÐÁÄÅÖ
+		$months2     = $this->_get('months.genitive');       // Ð Ð¾Ð´Ð¸Ñ‚ÐµÐ»ÑŒÐ½Ñ‹Ð¹ Ð¿Ð°Ð´ÐµÐ¶
+		$months3     = $this->_get('months.prepositional');  // ÐŸÑ€ÐµÐ´Ð»Ð¾Ð¶Ð½Ñ‹Ð¹ Ð¿Ð°Ð´ÐµÐ¶
 
 		return array(
 			'%b'  => $monthsShort[$monthNumber],

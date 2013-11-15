@@ -1,6 +1,6 @@
 <?php
 /**
- * ëÁÒÔÉÎËÁ
+ * ÐšÐ°Ñ€Ñ‚Ð¸Ð½ÐºÐ°
  *
  * storageType image
  * displayType IMAGE|width|height

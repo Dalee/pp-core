@@ -167,7 +167,7 @@ function ReadFileToString($fileName) {
 
 	$content = null;
 
-	if (!file_exists($fileName)) FatalError("Попытка открытия несуществующего файла <EM>".$fileName."</EM>");
+	if (!file_exists($fileName)) FatalError("п÷п╬п©я▀я┌п╨п╟ п╬я┌п╨я─я▀я┌п╦я▐ п╫п╣я│я┐я┴п╣я│я┌п╡я┐я▌я┴п╣пЁп╬ я└п╟п╧п╩п╟ <EM>".$fileName."</EM>");
 	$fd = fopen($fileName, "r");
 	if ($fd) {
 		$fsize = filesize($fileName);
@@ -176,7 +176,7 @@ function ReadFileToString($fileName) {
 		}
 		fclose($fd);
 	} else {
-		FatalError("Ошибка при открытии файла <EM>".$fileName."</EM>");
+		FatalError("п·я┬п╦п╠п╨п╟ п©я─п╦ п╬я┌п╨я─я▀я┌п╦п╦ я└п╟п╧п╩п╟ <EM>".$fileName."</EM>");
 	}
 	return $content;
 }
@@ -193,11 +193,11 @@ function WriteStringToFile($fileName, $string) {
 			fwrite($fd, $string);
 			flock($fd, LOCK_UN);
 		} else {
-			FatalError("Ошибка при записи в файл <EM>".$fileName."</EM> - невозможно заблокировать файл.");
+			FatalError("п·я┬п╦п╠п╨п╟ п©я─п╦ п╥п╟п©п╦я│п╦ п╡ я└п╟п╧п╩ <EM>".$fileName."</EM> - п╫п╣п╡п╬п╥п╪п╬п╤п╫п╬ п╥п╟п╠п╩п╬п╨п╦я─п╬п╡п╟я┌я▄ я└п╟п╧п╩.");
 		}
 		fclose($fd);
 	} else {
-		FatalError("Ошибка при записи в файл <EM>".$fileName."</EM>");
+		FatalError("п·я┬п╦п╠п╨п╟ п©я─п╦ п╥п╟п©п╦я│п╦ п╡ я└п╟п╧п╩ <EM>".$fileName."</EM>");
 	}
 }
 
@@ -208,11 +208,11 @@ function AppendStringToFile($fileName, $string) {
 			fwrite($fd, $string);
 			flock($fd, LOCK_UN);
 		} else {
-			FatalError("Ошибка при записи в файл <EM>".$fileName."</EM> - невозможно заблокировать файл.");
+			FatalError("п·я┬п╦п╠п╨п╟ п©я─п╦ п╥п╟п©п╦я│п╦ п╡ я└п╟п╧п╩ <EM>".$fileName."</EM> - п╫п╣п╡п╬п╥п╪п╬п╤п╫п╬ п╥п╟п╠п╩п╬п╨п╦я─п╬п╡п╟я┌я▄ я└п╟п╧п╩.");
 		}
 		fclose($fd);
 	} else {
-		FatalError("Ошибка при записи в файл <EM>".$fileName."</EM>");
+		FatalError("п·я┬п╦п╠п╨п╟ п©я─п╦ п╥п╟п©п╦я│п╦ п╡ я└п╟п╧п╩ <EM>".$fileName."</EM>");
 	}
 }
 
@@ -243,12 +243,12 @@ function MakeDirIfNotExists($dirName, $perm = NULL) {
 		if (!file_exists($fullDirName)) {
 			if($perm)  {
 				if(!mkdir($fullDirName, $perm)) {
-					FatalError('Не могу создать каталог '.$fullDirName.' с правами '.$perm);
+					FatalError('п²п╣ п╪п╬пЁя┐ я│п╬п╥п╢п╟я┌я▄ п╨п╟я┌п╟п╩п╬пЁ '.$fullDirName.' я│ п©я─п╟п╡п╟п╪п╦ '.$perm);
 				}
 
 			} else {
 				if(!mkdir($fullDirName)) {
-					FatalError('Не могу создать каталог '.$fullDirName);
+					FatalError('п²п╣ п╪п╬пЁя┐ я│п╬п╥п╢п╟я┌я▄ п╨п╟я┌п╟п╩п╬пЁ '.$fullDirName);
 				}
 			}
 		}

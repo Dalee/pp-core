@@ -1,6 +1,6 @@
 <?php
 /**
- * óÐÉÓÏË ÆÁÊÌÏ×
+ * Ð¡Ð¿Ð¸ÑÐ¾Ðº Ñ„Ð°Ð¹Ð»Ð¾Ð²
  *
  * storageType filesarray
  * displayType FILESARRAY

@@ -49,7 +49,7 @@ class PXInputRichEdit extends PXAdminComplexWidget {
 		$this->decorate('RICHEDITORS');
 		
 		array_walk($this->blocks[self::AFTER_TEXTAREA], array($this, 'initiate'));
-		$this->addEditor('Без редактора');
+		$this->addEditor('п▒п╣п╥ я─п╣п╢п╟п╨я┌п╬я─п╟');
 		
 		$embedding  = $this->getTypesDict();
 		$types      = new PXInputDropDown(null, $embedding['current'], $embedding['types']);
@@ -59,7 +59,7 @@ class PXInputRichEdit extends PXAdminComplexWidget {
 		
 		return <<<HTML
 			<div class="redactor">
-				<label>Выберите редактор</label>
+				<label>п▓я▀п╠п╣я─п╦я┌п╣ я─п╣п╢п╟п╨я┌п╬я─</label>
 				{$types}
 			</div>
 			<textarea name="{$this->name}" id="{$this->container}" style="width: 100%; height: {$this->height}px;" {$this->disable}>{$this->value}</textarea>

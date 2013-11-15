@@ -1,7 +1,7 @@
 <?php
 /**
- * ëÌÁÓÓ - ÈÒÁÎÉÌÉÝÅ ÄÁÎÎÙÈ Ï ëÁÔÁÌÏÇÅ (Directory).
- * óÔÏÉÔÓÑ ÐÏ etc/datatypes.xml /directories/directory
+ * ÐšÐ»Ð°ÑÑ - Ñ…Ñ€Ð°Ð½Ð¸Ð»Ð¸Ñ‰Ðµ Ð´Ð°Ð½Ð½Ñ‹Ñ… Ð¾ ÐšÐ°Ñ‚Ð°Ð»Ð¾Ð³Ðµ (Directory).
+ * Ð¡Ñ‚Ð¾Ð¸Ñ‚ÑÑ Ð¿Ð¾ etc/datatypes.xml /directories/directory
  * 
  * @subpackage Application
  */

@@ -1,7 +1,7 @@
 <?php
 /**
- * âÏÌØÛÏÅ ÃÅÌÏÅ ÞÉÓÌÏ
- * ÷ ÂÁÚÅ ÍÏÖÅÔ ÈÒÁÎÉÔØÓÑ ËÁË BIGINT
+ * Ð‘Ð¾Ð»ÑŒÑˆÐ¾Ðµ Ñ†ÐµÐ»Ð¾Ðµ Ñ‡Ð¸ÑÐ»Ð¾
+ * Ð’ Ð±Ð°Ð·Ðµ Ð¼Ð¾Ð¶ÐµÑ‚ Ñ…Ñ€Ð°Ð½Ð¸Ñ‚ÑŒÑÑ ÐºÐ°Ðº BIGINT
  *
  * displayType HIDDEN, TEXT, DROPDOWN, STATIC, PARENTDROPDOWN, SELFPARENTDROPDOWN, IPADDR
  * storageType bigint

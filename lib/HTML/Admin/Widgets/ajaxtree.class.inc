@@ -5,8 +5,8 @@ require_once PPLIBPATH . 'HTML/Admin/Widgets/ajaxTreeBranch.class.inc';
 class PXAdminAjaxTree extends PXAdminTree {
 	protected $currentLeaf;
 	/**
-	 * ëÏÎÓÔÒÕËÔÏÒ ËÌÁÓÓÁ PXAdminAjaxTree.
-	 * éÎÉÃÉÁÌÉÚÉÒÕÅÔ ĞÏÌÑ ËÌÁÓÓÁ. ÎÅÏÂÈÏÄÉÍÙÅ ÄÌÑ ĞÏÓÔÒÏÅÎÉÑ ÄÅÒÅ×Á.
+	 * ĞšĞ¾Ğ½ÑÑ‚Ñ€ÑƒĞºÑ‚Ğ¾Ñ€ ĞºĞ»Ğ°ÑÑĞ° PXAdminAjaxTree.
+	 * Ğ˜Ğ½Ğ¸Ñ†Ğ¸Ğ°Ğ»Ğ¸Ğ·Ğ¸Ñ€ÑƒĞµÑ‚ Ğ¿Ğ¾Ğ»Ñ ĞºĞ»Ğ°ÑÑĞ°. Ğ½ĞµĞ¾Ğ±Ñ…Ğ¾Ğ´Ğ¸Ğ¼Ñ‹Ğµ Ğ´Ğ»Ñ Ğ¿Ğ¾ÑÑ‚Ñ€Ğ¾ĞµĞ½Ğ¸Ñ Ğ´ĞµÑ€ĞµĞ²Ğ°.
 	 */
 	public function __construct(&$datatype, &$tree, $currentLeafId = null) {
 		parent::__construct($datatype, $tree);
@@ -41,7 +41,7 @@ class PXAdminAjaxTree extends PXAdminTree {
 	public /* override */ function setSelected($selectedSid) {
 		$this->selectedSid = $selectedSid;
 	
-		// äÏÂÁ×ÌÑÅÍ × ÍÁÓÓÉ× "ÒÁÓÈÌÏĞÙ×ÁÀİÉÈÓÑ" ÌÉÓÔØÅ× ×ÓÅÈ ĞÒÅÄËÏ× ×ÙÂÒÁÎÎÏÇÏ
+		// Ğ”Ğ¾Ğ±Ğ°Ğ²Ğ»ÑĞµĞ¼ Ğ² Ğ¼Ğ°ÑÑĞ¸Ğ² "Ñ€Ğ°ÑÑ…Ğ»Ğ¾Ğ¿Ñ‹Ğ²Ğ°ÑÑ‰Ğ¸Ñ…ÑÑ" Ğ»Ğ¸ÑÑ‚ÑŒĞµĞ² Ğ²ÑĞµÑ… Ğ¿Ñ€ĞµĞ´ĞºĞ¾Ğ² Ğ²Ñ‹Ğ±Ñ€Ğ°Ğ½Ğ½Ğ¾Ğ³Ğ¾
 		$tmpId = $selectedSid;
 		while (isset($this->tree->leafs[$tmpId]->parent)) {
 			$tmpId = $this->tree->leafs[$tmpId]->parent;

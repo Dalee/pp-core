@@ -1,6 +1,6 @@
 <?php
 /**
- * Поле для смены пароля
+ * п÷п╬п╩п╣ п╢п╩я▐ я│п╪п╣п╫я▀ п©п╟я─п╬п╩я▐
  *
  * storageType string
  * displayType PASSWORD

@@ -1,5 +1,5 @@
 <?php
-// ðÒÉÇÌÁÛÅÎÉÑ ÄÌÑ ÓÏÂÙÔÉÊ, ÕÓÔÁÎÁ×ÌÉ×ÁÅÔÓÑ ÒÁÓÐÉÓÁÎÉÅ, ÍÅÓÔÏ  É Ô.Ð 
+// ÐŸÑ€Ð¸Ð³Ð»Ð°ÑˆÐµÐ½Ð¸Ñ Ð´Ð»Ñ ÑÐ¾Ð±Ñ‹Ñ‚Ð¸Ð¹, ÑƒÑÑ‚Ð°Ð½Ð°Ð²Ð»Ð¸Ð²Ð°ÐµÑ‚ÑÑ Ñ€Ð°ÑÐ¿Ð¸ÑÐ°Ð½Ð¸Ðµ, Ð¼ÐµÑÑ‚Ð¾  Ð¸ Ñ‚.Ð¿ 
 require_once PPLIBPATH . 'Mail/EventCalendar/vevent.class.inc';
 class NLMailRequestEvent extends NLMailVEvent {
 	

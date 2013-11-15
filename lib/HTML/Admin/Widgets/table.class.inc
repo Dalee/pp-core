@@ -1,6 +1,6 @@
 <?php
 /**
- * PXAdminTable - конструктор HTML таблиц для ProximaPortal.
+ * PXAdminTable - п╨п╬п╫я│я┌я─я┐п╨я┌п╬я─ HTML я┌п╟п╠п╩п╦я├ п╢п╩я▐ ProximaPortal.
  *
  * @package ProximaPortal
  * @subpackage HTML
@@ -38,12 +38,12 @@ class PXAdminTable extends PXAdminComplexWidget {
 	const AFTER_CONTENT         = 2;
 
 	/**
-	 * Конструктор класса PXAdminTable.
+	 * п п╬п╫я│я┌я─я┐п╨я┌п╬я─ п╨п╩п╟я│я│п╟ PXAdminTable.
 	 *
-	 * @param Array $data - данные
-	 * @param PXTypeDescription $dtype - тип данных
-	 * @param Array $getData - массив с GET переменными которые надо добавлять в ссылки таблицы
-	 * @param String $titleKey - тип поля в datatype по которому будет определяться 'title' таблицы
+	 * @param Array $data - п╢п╟п╫п╫я▀п╣
+	 * @param PXTypeDescription $dtype - я┌п╦п© п╢п╟п╫п╫я▀я┘
+	 * @param Array $getData - п╪п╟я│я│п╦п╡ я│ GET п©п╣я─п╣п╪п╣п╫п╫я▀п╪п╦ п╨п╬я┌п╬я─я▀п╣ п╫п╟п╢п╬ п╢п╬п╠п╟п╡п╩я▐я┌я▄ п╡ я│я│я▀п╩п╨п╦ я┌п╟п╠п╩п╦я├я▀
+	 * @param String $titleKey - я┌п╦п© п©п╬п╩я▐ п╡ datatype п©п╬ п╨п╬я┌п╬я─п╬п╪я┐ п╠я┐п╢п╣я┌ п╬п©я─п╣п╢п╣п╩я▐я┌я▄я│я▐ 'title' я┌п╟п╠п╩п╦я├я▀
 	 */
 	function PXAdminTable($data, $dtype, $getData, $titleKey = NULL) {
 		$this->data                = $data;
@@ -65,7 +65,7 @@ class PXAdminTable extends PXAdminComplexWidget {
 			self::AFTER_CONTENT         => array()
 		);
 
-		$this->position = MASK_NO_MOVE; //перемещение не возможно
+		$this->position = MASK_NO_MOVE; //п©п╣я─п╣п╪п╣я┴п╣п╫п╦п╣ п╫п╣ п╡п╬п╥п╪п╬п╤п╫п╬
 		$this->caption = '';
 	}
 
@@ -86,23 +86,23 @@ class PXAdminTable extends PXAdminComplexWidget {
 	}
 
 	/**
-	 * Устанавливает указатель и подсветку на строку с выбранным id.
-	 * @param Integer $id - id строки.
+	 * пёя│я┌п╟п╫п╟п╡п╩п╦п╡п╟п╣я┌ я┐п╨п╟п╥п╟я┌п╣п╩я▄ п╦ п©п╬п╢я│п╡п╣я┌п╨я┐ п╫п╟ я│я┌я─п╬п╨я┐ я│ п╡я▀п╠я─п╟п╫п╫я▀п╪ id.
+	 * @param Integer $id - id я│я┌я─п╬п╨п╦.
 	 */
 	function setSelected($id, $type=NULL) {
 		$this->selectedRow  = $id;
 		$this->selectedType = $type;
 	}
 	/**
-	 * Устанавливает значение переменной для ссылки на дочерние объекты
-	 * @param String $link - строка: 'sid' или 'cid'
+	 * пёя│я┌п╟п╫п╟п╡п╩п╦п╡п╟п╣я┌ п╥п╫п╟я┤п╣п╫п╦п╣ п©п╣я─п╣п╪п╣п╫п╫п╬п╧ п╢п╩я▐ я│я│я▀п╩п╨п╦ п╫п╟ п╢п╬я┤п╣я─п╫п╦п╣ п╬п╠я┼п╣п╨я┌я▀
+	 * @param String $link - я│я┌я─п╬п╨п╟: 'sid' п╦п╩п╦ 'cid'
 	 */
 	function setChildLink($link){
 		$this->childLink = $link;
 	}
 
 	/**
-	 * Возвращает таблицу.
+	 * п▓п╬п╥п╡я─п╟я┴п╟п╣я┌ я┌п╟п╠п╩п╦я├я┐.
 	 * @return String - html table
 	 */
 	function html() {
@@ -125,7 +125,7 @@ class PXAdminTable extends PXAdminComplexWidget {
 			$_icons = 2 + count($this->controls) + (($this->dtype->childs && $this->showChildObjects) ? 1 : 0);
 
 			$html .= '<th class="c'.(($_icons > 2) ? $_icons : '').'">';
-			$html .= '<a href="'.$this->_buildHref($this->dtype->id.'_order', $this->dtype->order).'" title="Порядок сортировки по умолчанию"><img src="i/icon/order.gif" width="7" height="8" alt=""></a>';
+			$html .= '<a href="'.$this->_buildHref($this->dtype->id.'_order', $this->dtype->order).'" title="п÷п╬я─я▐п╢п╬п╨ я│п╬я─я┌п╦я─п╬п╡п╨п╦ п©п╬ я┐п╪п╬п╩я┤п╟п╫п╦я▌"><img src="i/icon/order.gif" width="7" height="8" alt=""></a>';
 			$html .= '</th>';
 
 			foreach ($this->dtype->fields as $field) {
@@ -177,14 +177,14 @@ class PXAdminTable extends PXAdminComplexWidget {
 
 				//templateVars
 				$tVars = array (
-						'id'     => $row['id'],                 // ID объекта
-						'status' => (int)$row['status'],        // Статус строки, disabled/enabled
+						'id'     => $row['id'],                 // ID п╬п╠я┼п╣п╨я┌п╟
+						'status' => (int)$row['status'],        // п║я┌п╟я┌я┐я│ я│я┌я─п╬п╨п╦, disabled/enabled
 						'format' => $this->dtype->id,           // format/data type
-						'title'  => $menuTitle,                 // заголовок для context меню
+						'title'  => $menuTitle,                 // п╥п╟пЁп╬п╩п╬п╡п╬п╨ п╢п╩я▐ context п╪п╣п╫я▌
 						'alias'  => $alias,                     //
-						'level'  => 1,                          // уровень вложенности обычно = 1
-						'up'     => $up,                        // можно ли вверх ?
-						'down'   => $down);                     // а вниз ?
+						'level'  => 1,                          // я┐я─п╬п╡п╣п╫я▄ п╡п╩п╬п╤п╣п╫п╫п╬я│я┌п╦ п╬п╠я▀я┤п╫п╬ = 1
+						'up'     => $up,                        // п╪п╬п╤п╫п╬ п╩п╦ п╡п╡п╣я─я┘ ?
+						'down'   => $down);                     // п╟ п╡п╫п╦п╥ ?
 
 				$html .= '<tr oncontextmenu="'.$this->_buildContext('edit', $tVars).'" ';
 
@@ -242,7 +242,7 @@ class PXAdminTable extends PXAdminComplexWidget {
 	}
 
 	/**
-	 * Добавляем новый control элемент в конец $this->control массива.
+	 * п■п╬п╠п╟п╡п╩я▐п╣п╪ п╫п╬п╡я▀п╧ control я█п╩п╣п╪п╣п╫я┌ п╡ п╨п╬п╫п╣я├ $this->control п╪п╟я│я│п╦п╡п╟.
 	 * @see _addControl
 	 */
 	function appendControl($name, $template, $context = NULL ) {
@@ -254,7 +254,7 @@ class PXAdminTable extends PXAdminComplexWidget {
 	}
 
 	/**
-	 * Добавляем новый control элемент в начало $this->control массива.
+	 * п■п╬п╠п╟п╡п╩я▐п╣п╪ п╫п╬п╡я▀п╧ control я█п╩п╣п╪п╣п╫я┌ п╡ п╫п╟я┤п╟п╩п╬ $this->control п╪п╟я│я│п╦п╡п╟.
 	 * @see _addControl
 	 */
 	function insertControl($name, $template, $context = NULL ) {
@@ -266,13 +266,13 @@ class PXAdminTable extends PXAdminComplexWidget {
 	}
 
 	/**
-	 * Добавляет элемент управления.
+	 * п■п╬п╠п╟п╡п╩я▐п╣я┌ я█п╩п╣п╪п╣п╫я┌ я┐п©я─п╟п╡п╩п╣п╫п╦я▐.
 	 *
 	 * @see _buildControls
 	 *
-	 * @param String $name     - название элемента управления
-	 * @param String $template - шаблон эл-та управления
-	 * @param String $context  - название контекстного эл-та управления
+	 * @param String $name     - п╫п╟п╥п╡п╟п╫п╦п╣ я█п╩п╣п╪п╣п╫я┌п╟ я┐п©я─п╟п╡п╩п╣п╫п╦я▐
+	 * @param String $template - я┬п╟п╠п╩п╬п╫ я█п╩-я┌п╟ я┐п©я─п╟п╡п╩п╣п╫п╦я▐
+	 * @param String $context  - п╫п╟п╥п╡п╟п╫п╦п╣ п╨п╬п╫я┌п╣п╨я│я┌п╫п╬пЁп╬ я█п╩-я┌п╟ я┐п©я─п╟п╡п╩п╣п╫п╦я▐
 	 */
 	function _addControl($name, $template, $context){
 		$this->controls[$name]['template'] = $template;
@@ -280,9 +280,9 @@ class PXAdminTable extends PXAdminComplexWidget {
 	}
 
 	/**
-	 * Формирует кнопочки управления по содержимому $this->controls.
+	 * п╓п╬я─п╪п╦я─я┐п╣я┌ п╨п╫п╬п©п╬я┤п╨п╦ я┐п©я─п╟п╡п╩п╣п╫п╦я▐ п©п╬ я│п╬п╢п╣я─п╤п╦п╪п╬п╪я┐ $this->controls.
 	 *
-	 * @param Array $vars - массив с переменными для подстановки
+	 * @param Array $vars - п╪п╟я│я│п╦п╡ я│ п©п╣я─п╣п╪п╣п╫п╫я▀п╪п╦ п╢п╩я▐ п©п╬п╢я│я┌п╟п╫п╬п╡п╨п╦
 	 * @return String - html
 	 */
 	function _buildControls($vars) {
@@ -305,16 +305,16 @@ class PXAdminTable extends PXAdminComplexWidget {
 	}
 
 	/**
-	 * Строим вызов для javascript:Context() ф-ции.
+	 * п║я┌я─п╬п╦п╪ п╡я▀п╥п╬п╡ п╢п╩я▐ javascript:Context() я└-я├п╦п╦.
 	 *
 	 * add : parent, items(format=>title)                                                 <br>
 	 * file: title, isDir, isRead, isWrite, isDelete, isBinary, dir, href, side, isCopy   <br>
 	 * edit: id, status, format, title, alias, level, up, down                            <br>
 	 *
-	 * Работа с контекстными меню типов 'file' и 'add' в данный момент не дописаны.       <br>
+	 * п═п╟п╠п╬я┌п╟ я│ п╨п╬п╫я┌п╣п╨я│я┌п╫я▀п╪п╦ п╪п╣п╫я▌ я┌п╦п©п╬п╡ 'file' п╦ 'add' п╡ п╢п╟п╫п╫я▀п╧ п╪п╬п╪п╣п╫я┌ п╫п╣ п╢п╬п©п╦я│п╟п╫я▀.       <br>
 	 *
-	 * @param String $cType - тип контекстного меню
-	 * @param Array  $cVars - переменные для контекстного меню
+	 * @param String $cType - я┌п╦п© п╨п╬п╫я┌п╣п╨я│я┌п╫п╬пЁп╬ п╪п╣п╫я▌
+	 * @param Array  $cVars - п©п╣я─п╣п╪п╣п╫п╫я▀п╣ п╢п╩я▐ п╨п╬п╫я┌п╣п╨я│я┌п╫п╬пЁп╬ п╪п╣п╫я▌
 	 */
 	function _buildContext($cType, $cVars) {
 
@@ -350,21 +350,21 @@ class PXAdminTable extends PXAdminComplexWidget {
 	}
 
 	/**
-	 * Строит ячейку таблицы по заданному display type.
+	 * п║я┌я─п╬п╦я┌ я▐я┤п╣п╧п╨я┐ я┌п╟п╠п╩п╦я├я▀ п©п╬ п╥п╟п╢п╟п╫п╫п╬п╪я┐ display type.
 	 *
-	 * @param Array $object - данные
-	 * @param String $field - поле по которому проверяется display type
+	 * @param Array $object - п╢п╟п╫п╫я▀п╣
+	 * @param String $field - п©п╬п╩п╣ п©п╬ п╨п╬я┌п╬я─п╬п╪я┐ п©я─п╬п╡п╣я─я▐п╣я┌я│я▐ display type
 	 */
 	function _buildCell($object, $field) {
 		return $field->displayType->buildCell($field, $object);
 	}
 	
 	/**
-	 * Строим ссылку, не забываем добавлять getData.
+	 * п║я┌я─п╬п╦п╪ я│я│я▀п╩п╨я┐, п╫п╣ п╥п╟п╠я▀п╡п╟п╣п╪ п╢п╬п╠п╟п╡п╩я▐я┌я▄ getData.
 	 *
-	 * @param  String|Array $key - массив ('nameN'=>'valN') или имя переменной
-	 * @param  String|NULL  $val - значение для String параметра $key
-	 * @return String - строка с html кодом ссылки
+	 * @param  String|Array $key - п╪п╟я│я│п╦п╡ ('nameN'=>'valN') п╦п╩п╦ п╦п╪я▐ п©п╣я─п╣п╪п╣п╫п╫п╬п╧
+	 * @param  String|NULL  $val - п╥п╫п╟я┤п╣п╫п╦п╣ п╢п╩я▐ String п©п╟я─п╟п╪п╣я┌я─п╟ $key
+	 * @return String - я│я┌я─п╬п╨п╟ я│ html п╨п╬п╢п╬п╪ я│я│я▀п╩п╨п╦
 	 */
 	function _buildHref($key, $val = NULL) {
 		$args      = func_get_args();
@@ -443,7 +443,7 @@ class PXAdminTable extends PXAdminComplexWidget {
 		$html .= '<h2>'.$this->caption;
 
 		if ($this->dtype->struct == 'tree') {
-			$html .= '[<a href="'.$this->_buildHref($this->dtype->id.'_view', 'tree').'">дерево</a>]';
+			$html .= '[<a href="'.$this->_buildHref($this->dtype->id.'_view', 'tree').'">п╢п╣я─п╣п╡п╬</a>]';
 		}
 
 		$html .= '</h2>';

@@ -4,8 +4,8 @@ require_once PPLIBPATH . 'HTML/Admin/Widgets/treeBranch.class.inc';
 
 class PXAdminTree extends PXAdminWidget {
 	/**
-	 * Конструктор класса PXAdminTree.
-	 * Инициализирует поля класса. необходимые для построения дерева.
+	 * п п╬п╫я│я┌я─я┐п╨я┌п╬я─ п╨п╩п╟я│я│п╟ PXAdminTree.
+	 * п≤п╫п╦я├п╦п╟п╩п╦п╥п╦я─я┐п╣я┌ п©п╬п╩я▐ п╨п╩п╟я│я│п╟. п╫п╣п╬п╠я┘п╬п╢п╦п╪я▀п╣ п╢п╩я▐ п©п╬я│я┌я─п╬п╣п╫п╦я▐ п╢п╣я─п╣п╡п╟.
 	 */
 	function PxAdminTree(&$datatype, &$tree) {
 		$this->datatype = $datatype;
@@ -57,7 +57,7 @@ class PXAdminTree extends PXAdminWidget {
 		$caption = $this->htmlCaption();
 
 		if(sizeof($this->tree->leafs[0]->children) > 0) {
-			// Рекурсивно генерируем дерево
+			// п═п╣п╨я┐я─я│п╦п╡п╫п╬ пЁп╣п╫п╣я─п╦я─я┐п╣п╪ п╢п╣я─п╣п╡п╬
 			return '<div class="tree">'.$caption.PXAdminTreeBranch::childrenHTML($this->tree->leafs[0]->children, $this).'</div>';
 		} else {
 			return '<div class="tree">'.$caption.'<div class="empty">&#8212;</div></div>';
@@ -67,7 +67,7 @@ class PXAdminTree extends PXAdminWidget {
 	function setSelected($selectedSid) {
 		$this->selectedSid = $selectedSid;
 
-		// Добавляем в массив "расхлопывающихся" листьев всех предков выбранного
+		// п■п╬п╠п╟п╡п╩я▐п╣п╪ п╡ п╪п╟я│я│п╦п╡ "я─п╟я│я┘п╩п╬п©я▀п╡п╟я▌я┴п╦я┘я│я▐" п╩п╦я│я┌я▄п╣п╡ п╡я│п╣я┘ п©я─п╣п╢п╨п╬п╡ п╡я▀п╠я─п╟п╫п╫п╬пЁп╬
 		$tmpId = $selectedSid;
 		while (isset($this->tree->leafs[$tmpId]->parent)) {
 			$tmpId = $this->tree->leafs[$tmpId]->parent;
@@ -97,7 +97,7 @@ class PXAdminTree extends PXAdminWidget {
 		$html .= '<h2>'.$this->caption;
 
 		if ($this->datatype->struct == 'tree') {
-			$html .= '[<a href="'.NLAbstractLayout::_buildHref($this->datatype->id.'_view', 'plain').'">список</a>]';
+			$html .= '[<a href="'.NLAbstractLayout::_buildHref($this->datatype->id.'_view', 'plain').'">я│п©п╦я│п╬п╨</a>]';
 		}
 
 		$html .= '</h2>';

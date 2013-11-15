@@ -35,7 +35,7 @@ function FlashError(name) {
 	document.getElementById(name+'height').value = '';
 	document.getElementById(name+'size').value   = '';
 
-	alert('Вы выбрали неправильный тип файла');
+	alert('п▓я▀ п╡я▀п╠я─п╟п╩п╦ п╫п╣п©я─п╟п╡п╦п╩я▄п╫я▀п╧ я┌п╦п© я└п╟п╧п╩п╟');
 }
 
 function FlashPreview(name, file) {
@@ -54,7 +54,7 @@ function ImageError(name) {
 	document.getElementById(name+'height').value = '';
 	document.getElementById(name+'size').value   = '';
 
-	alert('Вы выбрали неправильный тип файла');
+	alert('п▓я▀ п╡я▀п╠я─п╟п╩п╦ п╫п╣п©я─п╟п╡п╦п╩я▄п╫я▀п╧ я┌п╦п© я└п╟п╧п╩п╟');
 }
 
 function ImagePreview(name, file, width, height, size) {

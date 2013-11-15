@@ -19,7 +19,7 @@ class PXInputPassword extends PXAdminWidget {
 		if(mb_strlen($this->value) && $this->canDelete) {
 			$deleteHTML = <<<HTML
 				<input type="checkbox" name="{$name}[delete]" id="{$name}[delete]" class="checkbox" {$this->disable}>
-				<label for="{$name}[delete]">удалить пароль</label>
+				<label for="{$name}[delete]">я┐п╢п╟п╩п╦я┌я▄ п©п╟я─п╬п╩я▄</label>
 HTML;
 		} else {
 			$deleteHTML = '';
@@ -32,7 +32,7 @@ HTML;
 
 				{$deleteHTML}
 
-				<span>Длина пароля должна быть не менее 6 символов. Хороший пароль должен включать в себя строчные и заглавные буквы латинского алфавита, а также цифры.</span>
+				<span>п■п╩п╦п╫п╟ п©п╟я─п╬п╩я▐ п╢п╬п╩п╤п╫п╟ п╠я▀я┌я▄ п╫п╣ п╪п╣п╫п╣п╣ 6 я│п╦п╪п╡п╬п╩п╬п╡. п╔п╬я─п╬я┬п╦п╧ п©п╟я─п╬п╩я▄ п╢п╬п╩п╤п╣п╫ п╡п╨п╩я▌я┤п╟я┌я▄ п╡ я│п╣п╠я▐ я│я┌я─п╬я┤п╫я▀п╣ п╦ п╥п╟пЁп╩п╟п╡п╫я▀п╣ п╠я┐п╨п╡я▀ п╩п╟я┌п╦п╫я│п╨п╬пЁп╬ п╟п╩я└п╟п╡п╦я┌п╟, п╟ я┌п╟п╨п╤п╣ я├п╦я└я─я▀.</span>
 			</div>
 HTML;
 	}

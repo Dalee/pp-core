@@ -8,13 +8,13 @@ class PXAdminAuditWrapper {
 	var $children_on_page = 15;
 
 	var $cols2title = array(
-		"ts"          => "Дата/Время",
-		"level"       => "Уровень",
-		"type"        => "Тип сообщения",
-		"source"      => "Тип данных/объект",
-		"user"        => "Логин",
-		"ip"          =>"IP адрес",
-		"description" => "Сообщение");
+		"ts"          => "п■п╟я┌п╟/п▓я─п╣п╪я▐",
+		"level"       => "пёя─п╬п╡п╣п╫я▄",
+		"type"        => "п╒п╦п© я│п╬п╬п╠я┴п╣п╫п╦я▐",
+		"source"      => "п╒п╦п© п╢п╟п╫п╫я▀я┘/п╬п╠я┼п╣п╨я┌",
+		"user"        => "п⌡п╬пЁп╦п╫",
+		"ip"          =>"IP п╟п╢я─п╣я│",
+		"description" => "п║п╬п╬п╠я┴п╣п╫п╦п╣");
 
 	var $frame = "INNER.0.0";
 	var $caption = 'none';
@@ -34,7 +34,7 @@ class PXAdminAuditWrapper {
 		$this->count = $this->viewer->getCount();
 		$this->data  = $this->viewer->getData($this->page, $this->onPage, $this->count);
 
-		$this->caption = 'Журнал аудита, '.$this->count.' '.NumericEndingsRussian($this->count, 'запись', 'записи', 'записей');
+		$this->caption = 'п√я┐я─п╫п╟п╩ п╟я┐п╢п╦я┌п╟, '.$this->count.' '.NumericEndingsRussian($this->count, 'п╥п╟п©п╦я│я▄', 'п╥п╟п©п╦я│п╦', 'п╥п╟п©п╦я│п╣п╧');
 	}
 
 	function init_and_render(){
@@ -198,30 +198,30 @@ class PXAdminAuditWrapper {
 		<input type="hidden" name="area" value="auditlog">
 
 		<fieldset id="message_fieldset">
-			<legend>Сообщение</legend>
+			<legend>п║п╬п╬п╠я┴п╣п╫п╦п╣</legend>
 
-			<label for="level">Уровень</label>
+			<label for="level">пёя─п╬п╡п╣п╫я▄</label>
 			<select name="level" id="level">
 				$levelHTML;
 			</select>
 
-			<label id="label_type" for="type">Тип</label>
+			<label id="label_type" for="type">п╒п╦п©</label>
 			<select name="type" id="type">
 				<option value="">- Any -</option>
 				$typeHTML
 			</select>
 
-			<label id="label_description">Текст</label>
+			<label id="label_description">п╒п╣п╨я│я┌</label>
 			<input type="text" name="description" value="$description">
 
-			<label>Дата</label>
+			<label>п■п╟я┌п╟</label>
 			$dateHTML
 		</fieldset>
 
 		<fieldset id="fieldset_object">
-			<legend>Объект</legend>
+			<legend>п·п╠я┼п╣п╨я┌</legend>
 
-			<label id="label_format" for="format">Тип данных</label>
+			<label id="label_format" for="format">п╒п╦п© п╢п╟п╫п╫я▀я┘</label>
 			<select name="format" id="type">
 				<option value="">- Any -</option>
 				$formatHTML
@@ -232,9 +232,9 @@ class PXAdminAuditWrapper {
 		</fieldset>
 
 		<fieldset>
-			<legend>Пользователь</legend>
+			<legend>п÷п╬п╩я▄п╥п╬п╡п╟я┌п╣п╩я▄</legend>
 
-			<label id="label_user">Логин</label>
+			<label id="label_user">п⌡п╬пЁп╦п╫</label>
 			<input type="text" name="user" value="$login">
 
 			<label id="label_ip">IP</label>
@@ -284,7 +284,7 @@ HTML;
 		}
 
 		list ($_type, $_id) = explode('/', $source);
-		return  '<a title="Редактировать объект" href="javascript:EditContent(\''.$_type.'\', \''.$_id.'\')">'.$source.'</a>';
+		return  '<a title="п═п╣п╢п╟п╨я┌п╦я─п╬п╡п╟я┌я▄ п╬п╠я┼п╣п╨я┌" href="javascript:EditContent(\''.$_type.'\', \''.$_id.'\')">'.$source.'</a>';
 	}
 }
 ?>

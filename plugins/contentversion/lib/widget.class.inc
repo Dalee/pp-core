@@ -25,7 +25,7 @@ class PXVersion extends PXAdminWidget {
 	function html_leftcontrols() {
 		if($this->is_version_object()) {
 			$html[] = NLAbstractHTMLForm::BuildHidden('sys_original', $this->object['sys_original']);
-			$html[] = NLAbstractHTMLForm::BuildSubmit('ğÒÉÎÑÔØ ×ÅÒÓÉÀ');
+			$html[] = NLAbstractHTMLForm::BuildSubmit('ĞŸÑ€Ğ¸Ğ½ÑÑ‚ÑŒ Ğ²ĞµÑ€ÑĞ¸Ñ');
 			
 			return join($html);
 		}
@@ -52,7 +52,7 @@ class PXVersion extends PXAdminWidget {
 
 	function html_title() {
 		if($this->is_version_object()) {
-			return sprintf('÷ÅÒÓÉÑ %s ÏÂßÅËÔÁ %s', $this->object['sys_version'], $this->type);
+			return sprintf('Ğ’ĞµÑ€ÑĞ¸Ñ %s Ğ¾Ğ±ÑŠĞµĞºÑ‚Ğ° %s', $this->object['sys_version'], $this->type);
 		}
 
 		return '';
@@ -103,9 +103,9 @@ HTML;
 	private function showList() {
 		$cols = array(
 			'back' => '',
-			'sys_original' => 'îÏÍÅÒ ×ÅÒÓÉÉ',
-			'sys_modifyer'  => 'á×ÔÏÒ',
-			'sys_created'  => 'äÁÔÁ ÓÏÚÄÁÎÉÑ'
+			'sys_original' => 'ĞĞ¾Ğ¼ĞµÑ€ Ğ²ĞµÑ€ÑĞ¸Ğ¸',
+			'sys_modifyer'  => 'ĞĞ²Ñ‚Ğ¾Ñ€',
+			'sys_created'  => 'Ğ”Ğ°Ñ‚Ğ° ÑĞ¾Ğ·Ğ´Ğ°Ğ½Ğ¸Ñ'
 		);
 
 		$page    = $this->request->getVar('_page', 1);
@@ -115,10 +115,10 @@ HTML;
 		$count = $data->getCount();
 
 		if($count == 0) {
-			return 'îÅÔ ×ÅÒÓÉÊ';
+			return 'ĞĞµÑ‚ Ğ²ĞµÑ€ÑĞ¸Ğ¹';
 		} else {
 			$data = $data->getData($page, $onPage, $count);
-			$html[] = $this->table($cols, $data, $caption = 'óĞÉÓÏË ×ÅÒÓÉÊ');
+			$html[] = $this->table($cols, $data, $caption = 'Ğ¡Ğ¿Ğ¸ÑĞ¾Ğº Ğ²ĞµÑ€ÑĞ¸Ğ¹');
 			$html[] = $this->pager($page, $onPage, $count);
 
 			return join($html);

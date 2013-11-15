@@ -10,7 +10,7 @@ function LinkFile(name, dir, file, size) {
 
 function InMemory(url) {
 	window.clipboardData.setData('Text', url);
-	alert('Готово');
+	alert('п⌠п╬я┌п╬п╡п╬');
 	return false;
 }
 
@@ -38,7 +38,7 @@ function ShowUploadForm(id) {
 
 function CreateDir(dir, href, side) {
 	if(dir !== undefined) {
-		newName = prompt('Введите имя нового каталога', '');
+		newName = prompt('п▓п╡п╣п╢п╦я┌п╣ п╦п╪я▐ п╫п╬п╡п╬пЁп╬ п╨п╟я┌п╟п╩п╬пЁп╟', '');
 
 		var outside = GetQueryVariable('action', 0);
 
@@ -50,7 +50,7 @@ function CreateDir(dir, href, side) {
 
 function RenameFile(dir, file, href, side, outside) {
 	if(dir !== undefined && file != undefined) {
-		newName = prompt('Введите новое имя файла', file);
+		newName = prompt('п▓п╡п╣п╢п╦я┌п╣ п╫п╬п╡п╬п╣ п╦п╪я▐ я└п╟п╧п╩п╟', file);
 
 		if(newName !== null && newName.length) {
 			window.location.href = 'action.phtml'+href+'&'+side+'dir='+dir+'&action=rename&mdir=' + dir + '&mfile=' + file +'&nfile=' + newName+'&side='+side+'&outside='+outside;
@@ -71,61 +71,61 @@ function ContextFile(title, isDir, urlAlias, isWrite, isDelete, isBinary, dir, h
 	ret  = '<strong>'+title+'</strong>';
 
 	if(isDir) {
-		ret += '<a class="edit" href="'+href+'&'+side+'dir='+dir+title+'&side='+side+'&outside='+outside+'">Зайти в каталог</a>';
+		ret += '<a class="edit" href="'+href+'&'+side+'dir='+dir+title+'&side='+side+'&outside='+outside+'">п≈п╟п╧я┌п╦ п╡ п╨п╟я┌п╟п╩п╬пЁ</a>';
 
 	} else {
 		if(isWrite != 0 && !isBinary) {
-			ret += '<a class="edit" href="javascript: EditFile(\''+title+'\', \''+dir+'\', \''+href+'\', \''+side+'\', \''+outside+'\')">Изменить</a>';
+			ret += '<a class="edit" href="javascript: EditFile(\''+title+'\', \''+dir+'\', \''+href+'\', \''+side+'\', \''+outside+'\')">п≤п╥п╪п╣п╫п╦я┌я▄</a>';
 		} else {
-			ret += '<span class="edit">Изменить</span>';
+			ret += '<span class="edit">п≤п╥п╪п╣п╫п╦я┌я▄</span>';
 		}
 
 		if(isDelete && isBinary) {
-			ret += '<a class="unzip" href="action.phtml'+href+'&'+side+'dir='+dir+'&action=unzip&mdir='+dir+'&mfile='+title+'&side='+side+'&outside='+outside+'">Разархивировать</a>';
+			ret += '<a class="unzip" href="action.phtml'+href+'&'+side+'dir='+dir+'&action=unzip&mdir='+dir+'&mfile='+title+'&side='+side+'&outside='+outside+'">п═п╟п╥п╟я─я┘п╦п╡п╦я─п╬п╡п╟я┌я▄</a>';
 		} else {
-			ret += '<span class="unzip">Разархивировать</span>';
+			ret += '<span class="unzip">п═п╟п╥п╟я─я┘п╦п╡п╦я─п╬п╡п╟я┌я▄</span>';
 		}
 	}
 
 	if(isCopy && !name && outside !== 'filesarray') {
 		if(isCopy == 1) {
-			confirmJ = ' onclick="javascript: return confirm(\'В каталоге назначения уже есть файл/кататог с таким именем. Вы действительно хотите переписать существующий файл/каталог '+title+'?\');"';
+			confirmJ = ' onclick="javascript: return confirm(\'п▓ п╨п╟я┌п╟п╩п╬пЁп╣ п╫п╟п╥п╫п╟я┤п╣п╫п╦я▐ я┐п╤п╣ п╣я│я┌я▄ я└п╟п╧п╩/п╨п╟я┌п╟я┌п╬пЁ я│ я┌п╟п╨п╦п╪ п╦п╪п╣п╫п╣п╪. п▓я▀ п╢п╣п╧я│я┌п╡п╦я┌п╣п╩я▄п╫п╬ я┘п╬я┌п╦я┌п╣ п©п╣я─п╣п©п╦я│п╟я┌я▄ я│я┐я┴п╣я│я┌п╡я┐я▌я┴п╦п╧ я└п╟п╧п╩/п╨п╟я┌п╟п╩п╬пЁ '+title+'?\');"';
 		} else {
 			confirmJ = '';
 		}
 
 		if(isDelete) {
-			ret += '<a class="move" '+confirmJ+' href="action.phtml'+href+'&'+side+'dir='+dir+'&action=move&mdir='+dir+'&mfile='+title+'&side='+side+'&outside='+outside+'">Переместить</a>';
+			ret += '<a class="move" '+confirmJ+' href="action.phtml'+href+'&'+side+'dir='+dir+'&action=move&mdir='+dir+'&mfile='+title+'&side='+side+'&outside='+outside+'">п÷п╣я─п╣п╪п╣я│я┌п╦я┌я▄</a>';
 		} else {
-			ret += '<span class="move">Переместить</span>';
+			ret += '<span class="move">п÷п╣я─п╣п╪п╣я│я┌п╦я┌я▄</span>';
 		}
 
-		ret += '<a class="copy" '+confirm+' href="action.phtml'+href+'&'+side+'dir='+dir+'&action=copy&mdir='+dir+'&mfile='+title+'&side='+side+'&outside='+outside+'">Скопировать</a>';
+		ret += '<a class="copy" '+confirm+' href="action.phtml'+href+'&'+side+'dir='+dir+'&action=copy&mdir='+dir+'&mfile='+title+'&side='+side+'&outside='+outside+'">п║п╨п╬п©п╦я─п╬п╡п╟я┌я▄</a>';
 	} else {
-		ret += '<span class="move">Переместить</span>';
-		ret += '<span class="copy">Скопировать</span>';
+		ret += '<span class="move">п÷п╣я─п╣п╪п╣я│я┌п╦я┌я▄</span>';
+		ret += '<span class="copy">п║п╨п╬п©п╦я─п╬п╡п╟я┌я▄</span>';
 	}
 
 	if(isDelete) {
-		ret += '<a class="rename" href="javascript: RenameFile(\''+dir+'\', \''+title+'\', \''+href+'\', \''+side+'\', \''+outside+'\');">Переименовать</a>';
+		ret += '<a class="rename" href="javascript: RenameFile(\''+dir+'\', \''+title+'\', \''+href+'\', \''+side+'\', \''+outside+'\');">п÷п╣я─п╣п╦п╪п╣п╫п╬п╡п╟я┌я▄</a>';
 	} else {
-		ret += '<span class="rename">Переименовать</span>';
+		ret += '<span class="rename">п÷п╣я─п╣п╦п╪п╣п╫п╬п╡п╟я┌я▄</span>';
 	}
 
 	if(isDelete) {
-		ret += '<a class="del" href="action.phtml'+href+'&'+side+'dir='+dir+'&action=delete&mdir='+dir+'&mfile='+title+'&side='+side+'&outside='+outside+'" onClick="javascript: return confirm(\'Вы действительно хотите удалить '+title+'\');">Удалить</a>';
+		ret += '<a class="del" href="action.phtml'+href+'&'+side+'dir='+dir+'&action=delete&mdir='+dir+'&mfile='+title+'&side='+side+'&outside='+outside+'" onClick="javascript: return confirm(\'п▓я▀ п╢п╣п╧я│я┌п╡п╦я┌п╣п╩я▄п╫п╬ я┘п╬я┌п╦я┌п╣ я┐п╢п╟п╩п╦я┌я▄ '+title+'\');">пёп╢п╟п╩п╦я┌я▄</a>';
 	} else {
-		ret += '<span class="del">Удалить</span>';
+		ret += '<span class="del">пёп╢п╟п╩п╦я┌я▄</span>';
 	}
 
 	ret += '<div class="hr"></div>';
 
 	if(urlAlias && urlAlias != '0') {
-		ret += '<a class="alias"  href="'+urlAlias+'" target="_blank">Скачать/Показать</a>';
-		ret += '<a class="memory" href="'+urlAlias+'" onClick="return InMemory(\''+urlAlias+'\');">В буфер обмена</a>';
+		ret += '<a class="alias"  href="'+urlAlias+'" target="_blank">п║п╨п╟я┤п╟я┌я▄/п÷п╬п╨п╟п╥п╟я┌я▄</a>';
+		ret += '<a class="memory" href="'+urlAlias+'" onClick="return InMemory(\''+urlAlias+'\');">п▓ п╠я┐я└п╣я─ п╬п╠п╪п╣п╫п╟</a>';
 	} else {
-		ret += '<span class="alias" >Скачать/Показать</span>';
-		ret += '<span class="memory">В буфер обмена</span>';
+		ret += '<span class="alias" >п║п╨п╟я┤п╟я┌я▄/п÷п╬п╨п╟п╥п╟я┌я▄</span>';
+		ret += '<span class="memory">п▓ п╠я┐я└п╣я─ п╬п╠п╪п╣п╫п╟</span>';
 	}
 
 	return ret;

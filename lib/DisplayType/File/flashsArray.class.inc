@@ -1,6 +1,6 @@
 <?php
 /**
- * óÐÉÓÏË ÆÌÜÛÅÊ
+ * Ð¡Ð¿Ð¸ÑÐ¾Ðº Ñ„Ð»ÑÑˆÐµÐ¹
  *
  * storageType flashsarray
  * displayType FLASHSARRAY

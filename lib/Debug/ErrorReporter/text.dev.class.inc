@@ -27,10 +27,10 @@ class PXErrorReporterTextDev extends PXErrorReporter {
 	function traceToText($trace) {
 		$traceLineText = <<<TRACE_LINE
 			return "\n".
-				"\n æÁÊÌ:     \t".\$error['file'].
-				"\n óÔÒÏËÁ:   \t".\$error['line'].
-				"\n æÕÎËÃÉÑ:  \t".\$error['function']."()".
-				"\n ðÁÒÁÍÅÔÒÙ:\t".\$arguments
+				"\n Ð¤Ð°Ð¹Ð»:     \t".\$error['file'].
+				"\n Ð¡Ñ‚Ñ€Ð¾ÐºÐ°:   \t".\$error['line'].
+				"\n Ð¤ÑƒÐ½ÐºÑ†Ð¸Ñ:  \t".\$error['function']."()".
+				"\n ÐŸÐ°Ñ€Ð°Ð¼ÐµÑ‚Ñ€Ñ‹:\t".\$arguments
 			;
 TRACE_LINE;
 

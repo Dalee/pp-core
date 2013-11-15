@@ -16,87 +16,87 @@ require_once PPLIBPATH . 'Config/triggersList.class.inc';
 require_once PPLIBPATH . 'Config/Description/plugin.class.inc';
 
 /**
- * PXApplication - главный класс.
+ * PXApplication - пЁп╩п╟п╡п╫я▀п╧ п╨п╩п╟я│я│.
  *
  * @subpackage Application
  */
 class PXApplication {
 
 	/**
-	 * массив коннекторов к базе данных
+	 * п╪п╟я│я│п╦п╡ п╨п╬п╫п╫п╣п╨я┌п╬я─п╬п╡ п╨ п╠п╟п╥п╣ п╢п╟п╫п╫я▀я┘
 	 * @var Array
 	 */
 	var $dbDescription;
 
 	/**
-	 * массив описаний datatypes {@link PXTypeDescription}
+	 * п╪п╟я│я│п╦п╡ п╬п©п╦я│п╟п╫п╦п╧ datatypes {@link PXTypeDescription}
 	 * @var Array
 	 */
 	var $types = array();
 
 	/**
-	 * массив ссылок между datatypes {@link PXRefDescription}
+	 * п╪п╟я│я│п╦п╡ я│я│я▀п╩п╬п╨ п╪п╣п╤п╢я┐ datatypes {@link PXRefDescription}
 	 * @var Array
 	 */
 	var $references;
 
 	/**
-	 * контейнер c триггерами {@link PXTriggersList}
+	 * п╨п╬п╫я┌п╣п╧п╫п╣я─ c я┌я─п╦пЁпЁп╣я─п╟п╪п╦ {@link PXTriggersList}
 	 * @var Object
 	 */
 	var $triggers = null;
 
 	/**
-	 * массив модулей {@link PXModuleDescription}
+	 * п╪п╟я│я│п╦п╡ п╪п╬п╢я┐п╩п╣п╧ {@link PXModuleDescription}
 	 * @var Array
 	 */
 	var $modules;
 
 	/**
-	 * массив плагинов
+	 * п╪п╟я│я│п╦п╡ п©п╩п╟пЁп╦п╫п╬п╡
 	 * @var Array
 	 */
 	var $plugins = null;
 
 	/**
-	 * массив настроек из etc/properties.ini
+	 * п╪п╟я│я│п╦п╡ п╫п╟я│я┌я─п╬п╣п╨ п╦п╥ etc/properties.ini
 	 * @var Array
 	 */
 	var $properties;
 
 	/**
-	 * массив языковых настроек из (site|local|libpp)/etc/lang.yaml (суммарный)
+	 * п╪п╟я│я│п╦п╡ я▐п╥я▀п╨п╬п╡я▀я┘ п╫п╟я│я┌я─п╬п╣п╨ п╦п╥ (site|local|libpp)/etc/lang.yaml (я│я┐п╪п╪п╟я─п╫я▀п╧)
 	 * @var Array
 	 */
 	var $langTree = array();
 	
 	/**
-	 * массив правил авторизации из etc/auth.ini
+	 * п╪п╟я│я│п╦п╡ п©я─п╟п╡п╦п╩ п╟п╡я┌п╬я─п╦п╥п╟я├п╦п╦ п╦п╥ etc/auth.ini
 	 * @var Array
 	 */
 	var $authrules;
 
 	/**
-	 * массив описаний каталогов из etc/datatypes.xml
+	 * п╪п╟я│я│п╦п╡ п╬п©п╦я│п╟п╫п╦п╧ п╨п╟я┌п╟п╩п╬пЁп╬п╡ п╦п╥ etc/datatypes.xml
 	 * @var Array
 	 */
 	var $directory = array();
 
 	/**
-	 * биндинги модулей из etc/modules.xml modules/bindings
+	 * п╠п╦п╫п╢п╦п╫пЁп╦ п╪п╬п╢я┐п╩п╣п╧ п╦п╥ etc/modules.xml modules/bindings
 	 * @var Array
 	 */
 	var $bindingsQueue;
 
     /**
-	 * экземпляр класса Engine
+	 * я█п╨п╥п╣п╪п©п╩я▐я─ п╨п╩п╟я│я│п╟ Engine
 	 * @var Object
 	 */
 	public $engine;
 
 	/**
-	 * массив названий полей, чьи объекты требуют инициализации при загрузке из кэша.
-	 * Description объекта должен реализовывать метод initialize
+	 * п╪п╟я│я│п╦п╡ п╫п╟п╥п╡п╟п╫п╦п╧ п©п╬п╩п╣п╧, я┤я▄п╦ п╬п╠я┼п╣п╨я┌я▀ я┌я─п╣п╠я┐я▌я┌ п╦п╫п╦я├п╦п╟п╩п╦п╥п╟я├п╦п╦ п©я─п╦ п╥п╟пЁя─я┐п╥п╨п╣ п╦п╥ п╨я█я┬п╟.
+	 * Description п╬п╠я┼п╣п╨я┌п╟ п╢п╬п╩п╤п╣п╫ я─п╣п╟п╩п╦п╥п╬п╡я▀п╡п╟я┌я▄ п╪п╣я┌п╬п╢ initialize
 	 * @var Array
 	 **/
 	protected $reinitialize = array();
@@ -131,9 +131,9 @@ class PXApplication {
 	}
 
 	/**
-	 * Конструктор класса
+	 * п п╬п╫я│я┌я─я┐п╨я┌п╬я─ п╨п╩п╟я│я│п╟
 	 *
-	 * @param String $engineClass - имя класса Engine, используется в имени файла кэша
+	 * @param String $engineClass - п╦п╪я▐ п╨п╩п╟я│я│п╟ Engine, п╦я│п©п╬п╩я▄п╥я┐п╣я┌я│я▐ п╡ п╦п╪п╣п╫п╦ я└п╟п╧п╩п╟ п╨я█я┬п╟
 	 */
 	private function __construct($engineClass, $engineObject) {
 		$this->engine = $engineObject;
@@ -167,7 +167,7 @@ class PXApplication {
 					$tmp = @file(BASEPATH.$filename);
 
 				} else {
-					FatalError('Не могу найти '.$filename);
+					FatalError('п²п╣ п╪п╬пЁя┐ п╫п╟п╧я┌п╦ '.$filename);
 				}
 
 				if(is_array($tmp)) {
@@ -187,11 +187,11 @@ class PXApplication {
 		foreach (array_reverse($filenames) as $filename) {
 			$source = ReadFileToString($filename);
 
-			$source = preg_replace('|^((\s*)include\s+(.+?))$|ime'.REGEX_MOD,	"__ReplaceIncludeWhenParseLangYaml('$1', '$2', '$3');", $source);   // делаем include
-			$source = preg_replace('/\t/'.REGEX_MOD,          ' ' ,         	$source);   // я люблю табы для читабельности, но по стандарту ямла это должны быть пробелы
-			$source = preg_replace('/(\r?\n){2,}/'.REGEX_MOD, "\n",         	$source);   // и лишние переводы строк. и хотя спик их не любит, по стандарту ямла это норма, если документ выделен в потоке в блок --- ...
+			$source = preg_replace('|^((\s*)include\s+(.+?))$|ime'.REGEX_MOD,	"__ReplaceIncludeWhenParseLangYaml('$1', '$2', '$3');", $source);   // п╢п╣п╩п╟п╣п╪ include
+			$source = preg_replace('/\t/'.REGEX_MOD,          ' ' ,         	$source);   // я▐ п╩я▌п╠п╩я▌ я┌п╟п╠я▀ п╢п╩я▐ я┤п╦я┌п╟п╠п╣п╩я▄п╫п╬я│я┌п╦, п╫п╬ п©п╬ я│я┌п╟п╫п╢п╟я─я┌я┐ я▐п╪п╩п╟ я█я┌п╬ п╢п╬п╩п╤п╫я▀ п╠я▀я┌я▄ п©я─п╬п╠п╣п╩я▀
+			$source = preg_replace('/(\r?\n){2,}/'.REGEX_MOD, "\n",         	$source);   // п╦ п╩п╦я┬п╫п╦п╣ п©п╣я─п╣п╡п╬п╢я▀ я│я┌я─п╬п╨. п╦ я┘п╬я┌я▐ я│п©п╦п╨ п╦я┘ п╫п╣ п╩я▌п╠п╦я┌, п©п╬ я│я┌п╟п╫п╢п╟я─я┌я┐ я▐п╪п╩п╟ я█я┌п╬ п╫п╬я─п╪п╟, п╣я│п╩п╦ п╢п╬п╨я┐п╪п╣п╫я┌ п╡я▀п╢п╣п╩п╣п╫ п╡ п©п╬я┌п╬п╨п╣ п╡ п╠п╩п╬п╨ --- ...
 
-			// Spyc'у не нравятся мои конфиги, поэтому их стоит немного переделать
+			// Spyc'я┐ п╫п╣ п╫я─п╟п╡я▐я┌я│я▐ п╪п╬п╦ п╨п╬п╫я└п╦пЁп╦, п©п╬я█я┌п╬п╪я┐ п╦я┘ я│я┌п╬п╦я┌ п╫п╣п╪п╫п╬пЁп╬ п©п╣я─п╣п╢п╣п╩п╟я┌я▄
 			require_once PPPATH . 'vendor/spyc/spyc.php5';
 
 			// spyc must die. long live php-yaml!
@@ -200,11 +200,11 @@ class PXApplication {
 	}
 
 	/**
-	 * Заполняет массив коннекторов к базам данных.
+	 * п≈п╟п©п╬п╩п╫я▐п╣я┌ п╪п╟я│я│п╦п╡ п╨п╬п╫п╫п╣п╨я┌п╬я─п╬п╡ п╨ п╠п╟п╥п╟п╪ п╢п╟п╫п╫я▀я┘.
 	 *
 	 * @see NLDBDescription, $dbDescription
 	 *
-	 * @param Array $array - массив с параметрами подключений к базе данных
+	 * @param Array $array - п╪п╟я│я│п╦п╡ я│ п©п╟я─п╟п╪п╣я┌я─п╟п╪п╦ п©п╬п╢п╨п╩я▌я┤п╣п╫п╦п╧ п╨ п╠п╟п╥п╣ п╢п╟п╫п╫я▀я┘
 	 */
 	private function FillDBDescription($array) {
 		$this->dbDescription = array();
@@ -215,38 +215,38 @@ class PXApplication {
 	}
 
 	/**
-	 * Возвращает элемент из ({@link properties}) по ключу или значение по умолчанию.
+	 * п▓п╬п╥п╡я─п╟я┴п╟п╣я┌ я█п╩п╣п╪п╣п╫я┌ п╦п╥ ({@link properties}) п©п╬ п╨п╩я▌я┤я┐ п╦п╩п╦ п╥п╫п╟я┤п╣п╫п╦п╣ п©п╬ я┐п╪п╬п╩я┤п╟п╫п╦я▌.
 	 *
-	 * @param String $k ключ
-	 * @param String $defaultValue - возвращаемое значение по умолчанию
+	 * @param String $k п╨п╩я▌я┤
+	 * @param String $defaultValue - п╡п╬п╥п╡я─п╟я┴п╟п╣п╪п╬п╣ п╥п╫п╟я┤п╣п╫п╦п╣ п©п╬ я┐п╪п╬п╩я┤п╟п╫п╦я▌
 	 */
 	public function getProperty($k, $defaultValue=NULL) {
 		return (isset($this->properties[$k])) ? $this->properties[$k] : $defaultValue;
 	}
 
 	/**
-	 * Возвращает ассоциативный массив доступных модулей.
+	 * п▓п╬п╥п╡я─п╟я┴п╟п╣я┌ п╟я│я│п╬я├п╦п╟я┌п╦п╡п╫я▀п╧ п╪п╟я│я│п╦п╡ п╢п╬я│я┌я┐п©п╫я▀я┘ п╪п╬п╢я┐п╩п╣п╧.
 	 *
-	 * @return Array         массив из элементов 'module_name' => $module
+	 * @return Array         п╪п╟я│я│п╦п╡ п╦п╥ я█п╩п╣п╪п╣п╫я┌п╬п╡ 'module_name' => $module
 	 */
 	public function getAvailableModules() {
 		return array_filter($this->modules, create_function('$module', "return PXRegistry::getUser()->can('admin', \$module);"));
 	}
 
 	/**
-	 * Возвращает модуль по его имени с проверкой доступа к нему.
+	 * п▓п╬п╥п╡я─п╟я┴п╟п╣я┌ п╪п╬п╢я┐п╩я▄ п©п╬ п╣пЁп╬ п╦п╪п╣п╫п╦ я│ п©я─п╬п╡п╣я─п╨п╬п╧ п╢п╬я│я┌я┐п©п╟ п╨ п╫п╣п╪я┐.
 	 *
-	 * @return PXModule модуль
+	 * @return PXModule п╪п╬п╢я┐п╩я▄
 	 */
 	public function getAvailableModule($module_name) {
 		return isset($this->modules[$module_name]) && PXRegistry::getUser()->can('admin', $this->modules[$module_name]) ? $this->modules[$module_name] : null;
 	}
 
 	/**
-	 * Возвращает ассоциативный массив доступных модулей.
+	 * п▓п╬п╥п╡я─п╟я┴п╟п╣я┌ п╟я│я│п╬я├п╦п╟я┌п╦п╡п╫я▀п╧ п╪п╟я│я│п╦п╡ п╢п╬я│я┌я┐п©п╫я▀я┘ п╪п╬п╢я┐п╩п╣п╧.
 	 *
-	 * @param String $package путь пакаджа (например, "csv/import")
-	 * @return Array          массив из элементов 'module_name' => $module
+	 * @param String $package п©я┐я┌я▄ п©п╟п╨п╟п╢п╤п╟ (п╫п╟п©я─п╦п╪п╣я─, "csv/import")
+	 * @return Array          п╪п╟я│я│п╦п╡ п╦п╥ я█п╩п╣п╪п╣п╫я┌п╬п╡ 'module_name' => $module
 	 */
 	public function getAvailableModulesWithinPackage($package) {
 		$availableModules = $this->getAvailableModules();
@@ -258,11 +258,11 @@ class PXApplication {
 	}
 
 	/**
-	 * Возвращает ассоциативный массив разрешенных детей.
+	 * п▓п╬п╥п╡я─п╟я┴п╟п╣я┌ п╟я│я│п╬я├п╦п╟я┌п╦п╡п╫я▀п╧ п╪п╟я│я│п╦п╡ я─п╟п╥я─п╣я┬п╣п╫п╫я▀я┘ п╢п╣я┌п╣п╧.
 	 *
-	 * @param NULL $formatName      не используется
-	 * @param Object|Array $object  объект для которого искать детей
-	 * @return Array                массив разрешенных детей или пустой массив
+	 * @param NULL $formatName      п╫п╣ п╦я│п©п╬п╩я▄п╥я┐п╣я┌я│я▐
+	 * @param Object|Array $object  п╬п╠я┼п╣п╨я┌ п╢п╩я▐ п╨п╬я┌п╬я─п╬пЁп╬ п╦я│п╨п╟я┌я▄ п╢п╣я┌п╣п╧
+	 * @return Array                п╪п╟я│я│п╦п╡ я─п╟п╥я─п╣я┬п╣п╫п╫я▀я┘ п╢п╣я┌п╣п╧ п╦п╩п╦ п©я┐я│я┌п╬п╧ п╪п╟я│я│п╦п╡
 	 */
 	public function getAllowedChilds($formatName, &$object) {
 		if(!isset($this->types[$formatName])) {
@@ -273,13 +273,13 @@ class PXApplication {
 	}
 
 	/**
-	 * Возвращает массив наименований разрешенных форматов дочерних объектов.
+	 * п▓п╬п╥п╡я─п╟я┴п╟п╣я┌ п╪п╟я│я│п╦п╡ п╫п╟п╦п╪п╣п╫п╬п╡п╟п╫п╦п╧ я─п╟п╥я─п╣я┬п╣п╫п╫я▀я┘ я└п╬я─п╪п╟я┌п╬п╡ п╢п╬я┤п╣я─п╫п╦я┘ п╬п╠я┼п╣п╨я┌п╬п╡.
 	 *
 	 *  @uses getAllowedChilds
 	 *
-	 * @param NULL			не используется
-	 * @param Object|Array	объект для которого искать детей
-	 * @return Array		массив наименований разрешенных детей или пустой массив
+	 * @param NULL			п╫п╣ п╦я│п©п╬п╩я▄п╥я┐п╣я┌я│я▐
+	 * @param Object|Array	п╬п╠я┼п╣п╨я┌ п╢п╩я▐ п╨п╬я┌п╬я─п╬пЁп╬ п╦я│п╨п╟я┌я▄ п╢п╣я┌п╣п╧
+	 * @return Array		п╪п╟я│я│п╦п╡ п╫п╟п╦п╪п╣п╫п╬п╡п╟п╫п╦п╧ я─п╟п╥я─п╣я┬п╣п╫п╫я▀я┘ п╢п╣я┌п╣п╧ п╦п╩п╦ п©я┐я│я┌п╬п╧ п╪п╟я│я│п╦п╡
 	 */
 	public function getAllowedChildsKeys($formatName, &$object) {
 		return array_keys($this->getAllowedChilds($formatName, $object));
@@ -303,23 +303,23 @@ class PXApplication {
 	}
 
 	/**
-	 * Заполняет {@link PXApplication::$types} и {@link PXApplication::$references} данными из файла.
+	 * п≈п╟п©п╬п╩п╫я▐п╣я┌ {@link PXApplication::$types} п╦ {@link PXApplication::$references} п╢п╟п╫п╫я▀п╪п╦ п╦п╥ я└п╟п╧п╩п╟.
 	 *
-	 * В качестве параметра обычно используется файл etc/datatypes.xml. <br>
-	 * XPath /model/datatypes/datatype и /model/references/reference.
+	 * п▓ п╨п╟я┤п╣я│я┌п╡п╣ п©п╟я─п╟п╪п╣я┌я─п╟ п╬п╠я▀я┤п╫п╬ п╦я│п©п╬п╩я▄п╥я┐п╣я┌я│я▐ я└п╟п╧п╩ etc/datatypes.xml. <br>
+	 * XPath /model/datatypes/datatype п╦ /model/references/reference.
 	 *
 	 * @uses PXFieldDescription
 	 * @uses PXDirectoryDescription
 	 * @uses PXRefDescription
 	 * @uses PXTypeDescription
 	 *
-	 * @todo Для вывода сообщений об ошибках используется debug ф-ция d2(), это нормально ?
+	 * @todo п■п╩я▐ п╡я▀п╡п╬п╢п╟ я│п╬п╬п╠я┴п╣п╫п╦п╧ п╬п╠ п╬я┬п╦п╠п╨п╟я┘ п╦я│п©п╬п╩я▄п╥я┐п╣я┌я│я▐ debug я└-я├п╦я▐ d2(), я█я┌п╬ п╫п╬я─п╪п╟п╩я▄п╫п╬ ?
 	 *
-	 * @param String $fileName	имя файла
+	 * @param String $fileName	п╦п╪я▐ я└п╟п╧п╩п╟
 	 */
 	private function FillDataTypes($fileName) {
 		if (!($dom = PXml::load($fileName))) {
-			FatalError("Ошибка в файле настроек <EM>$fileName</EM>");
+			FatalError("п·я┬п╦п╠п╨п╟ п╡ я└п╟п╧п╩п╣ п╫п╟я│я┌я─п╬п╣п╨ <EM>$fileName</EM>");
 		}
 
 		PXTypeDescription::fillAppTypes($dom->xpath("/model/datatypes/datatype"), $this);
@@ -327,18 +327,18 @@ class PXApplication {
 	}
 
 	/**
-	 * Заполняет {@link PXApplication::$directory} данными из файла.
+	 * п≈п╟п©п╬п╩п╫я▐п╣я┌ {@link PXApplication::$directory} п╢п╟п╫п╫я▀п╪п╦ п╦п╥ я└п╟п╧п╩п╟.
 	 *
-	 * В качестве параметра обычно используется файл etc/datatypes.xml. <br>
+	 * п▓ п╨п╟я┤п╣я│я┌п╡п╣ п©п╟я─п╟п╪п╣я┌я─п╟ п╬п╠я▀я┤п╫п╬ п╦я│п©п╬п╩я▄п╥я┐п╣я┌я│я▐ я└п╟п╧п╩ etc/datatypes.xml. <br>
 	 * XPath /model/directories/directory.
 	 *
 	 * @uses PXDirectoryDescription
 	 *
-	 * @param String $fileName	имя файла
+	 * @param String $fileName	п╦п╪я▐ я└п╟п╧п╩п╟
 	 */
 	private function FillDirectories($fileName) {
 		if (!($dom = PXml::load($fileName))) {
-			FatalError("Ошибка в файле настроек <EM>$fileName</EM>");
+			FatalError("п·я┬п╦п╠п╨п╟ п╡ я└п╟п╧п╩п╣ п╫п╟я│я┌я─п╬п╣п╨ <EM>$fileName</EM>");
 		}
 
 		$domDirectories = $dom->xpath("/model/directories/directory");
@@ -383,8 +383,8 @@ class PXApplication {
 	}
 
 	/**
-	 * Загружает справочник (directory) по ссылке
-	 * Использует {@link PXDatabase::_GetData()} для загрузки каталогов из базы данных
+	 * п≈п╟пЁя─я┐п╤п╟п╣я┌ я│п©я─п╟п╡п╬я┤п╫п╦п╨ (directory) п©п╬ я│я│я▀п╩п╨п╣
+	 * п≤я│п©п╬п╩я▄п╥я┐п╣я┌ {@link PXDatabase::_GetData()} п╢п╩я▐ п╥п╟пЁя─я┐п╥п╨п╦ п╨п╟я┌п╟п╩п╬пЁп╬п╡ п╦п╥ п╠п╟п╥я▀ п╢п╟п╫п╫я▀я┘
 	 *
 	 * @param PXDirectoryDescription $directory
 	 */
@@ -398,7 +398,7 @@ class PXApplication {
 		$dataFields    = $directory->sourceDataFields;
 
 		if (!($dom2 = PXml::load($file))) {
-			FatalError("Ошибка в файле справочника <EM>$file</EM>");
+			FatalError("п·я┬п╦п╠п╨п╟ п╡ я└п╟п╧п╩п╣ я│п©я─п╟п╡п╬я┤п╫п╦п╨п╟ <EM>$file</EM>");
 		}
 
 		$results = $dom2->xpath($xpathSelector);
@@ -452,24 +452,24 @@ class PXApplication {
 	}
 
 	/**
-	 * Заполняет {@link PXApplication::$modules} данными из файла.
+	 * п≈п╟п©п╬п╩п╫я▐п╣я┌ {@link PXApplication::$modules} п╢п╟п╫п╫я▀п╪п╦ п╦п╥ я└п╟п╧п╩п╟.
 	 *
-	 * В качестве параметра обычно используется файл etc/modules.xml. <br>
+	 * п▓ п╨п╟я┤п╣я│я┌п╡п╣ п©п╟я─п╟п╪п╣я┌я─п╟ п╬п╠я▀я┤п╫п╬ п╦я│п©п╬п╩я▄п╥я┐п╣я┌я│я▐ я└п╟п╧п╩ etc/modules.xml. <br>
 	 * XPath /modules/module
 	 *
 	 * @uses PXModuleDescription
 	 *
-	 * @param String $fileName имя файла
+	 * @param String $fileName п╦п╪я▐ я└п╟п╧п╩п╟
 	 */
 	private function FillModules($fileName) {
 		if (!($dom = PXml::load($fileName))) {
-			FatalError("Ошибка в файле настроек <em>$fileName</em>");
+			FatalError("п·я┬п╦п╠п╨п╟ п╡ я└п╟п╧п╩п╣ п╫п╟я│я┌я─п╬п╣п╨ <em>$fileName</em>");
 		}
 
 		$domModules = $dom->xpath("/modules//module");
 
 		if (!is_array($domModules) || count($domModules) == 0) {
-			FatalError("Не определены модули проекта");
+			FatalError("п²п╣ п╬п©я─п╣п╢п╣п╩п╣п╫я▀ п╪п╬п╢я┐п╩п╦ п©я─п╬п╣п╨я┌п╟");
 		}
 
 		foreach ($domModules as $domModule) {
@@ -525,13 +525,13 @@ class PXApplication {
 		}
 	
 		if (!($dom = PXml::load($fileName))) {
-			FatalError("Ошибка в файле настроек <em>$fileName</em>");
+			FatalError("п·я┬п╦п╠п╨п╟ п╡ я└п╟п╧п╩п╣ п╫п╟я│я┌я─п╬п╣п╨ <em>$fileName</em>");
 		}
 
 		$domPlugins = $dom->xpath("/plugins//plugin");
 
 		if (!is_array($domPlugins) || count($domPlugins) == 0) {
-			FatalError("Не описаны плагины проекта");
+			FatalError("п²п╣ п╬п©п╦я│п╟п╫я▀ п©п╩п╟пЁп╦п╫я▀ п©я─п╬п╣п╨я┌п╟");
 		}
 
 		foreach($domPlugins as $domPlugin) {
@@ -558,15 +558,15 @@ class PXApplication {
 	}
 
 	/**
-	 * Заполняет {@link PXApplication::$triggers} данными из файла.
+	 * п≈п╟п©п╬п╩п╫я▐п╣я┌ {@link PXApplication::$triggers} п╢п╟п╫п╫я▀п╪п╦ п╦п╥ я└п╟п╧п╩п╟.
 	 *
-	 * В качестве параметра обычно используется файл etc/triggers.xml. <br>
+	 * п▓ п╨п╟я┤п╣я│я┌п╡п╣ п©п╟я─п╟п╪п╣я┌я─п╟ п╬п╠я▀я┤п╫п╬ п╦я│п©п╬п╩я▄п╥я┐п╣я┌я│я▐ я└п╟п╧п╩ etc/triggers.xml. <br>
 	 * XPath /triggers//trigger
-	 * Инициализирует поле triggers объектом-коллекцией триггеров
+	 * п≤п╫п╦я├п╦п╟п╩п╦п╥п╦я─я┐п╣я┌ п©п╬п╩п╣ triggers п╬п╠я┼п╣п╨я┌п╬п╪-п╨п╬п╩п╩п╣п╨я├п╦п╣п╧ я┌я─п╦пЁпЁп╣я─п╬п╡
 	 *
 	 * @uses PXTriggerDescription
 	 *
-	 * @param String $fileName имя файла
+	 * @param String $fileName п╦п╪я▐ я└п╟п╧п╩п╟
 	 */
 	private function fillTriggers($fileName) {
 		$this->triggers = new PXTriggersList;
@@ -576,13 +576,13 @@ class PXApplication {
 		}
 		
 		if (!($dom = PXml::load($fileName))) {
-			FatalError("Ошибка в файле настроек <em>$fileName</em>");
+			FatalError("п·я┬п╦п╠п╨п╟ п╡ я└п╟п╧п╩п╣ п╫п╟я│я┌я─п╬п╣п╨ <em>$fileName</em>");
 		}
 
 		$domTriggers = $dom->xpath("/triggers//trigger");
 
 		if (!is_array($domTriggers) || count($domTriggers) == 0) {
-			FatalError("Не описаны триггеры проекта");
+			FatalError("п²п╣ п╬п©п╦я│п╟п╫я▀ я┌я─п╦пЁпЁп╣я─я▀ п©я─п╬п╣п╨я┌п╟");
 		}
 
 		foreach ($domTriggers as $domTrigger) {
@@ -603,9 +603,9 @@ class PXApplication {
 	}
 
 	/**
-	 * Пользовательская функция для регистрации триггеров не через конфиг triggers.xml, а в процессе работы системы
-	 * @param  String   $type - тип триггера
-	 * @param  Array    $args - массив с параметрами триггера, имя => значение
+	 * п÷п╬п╩я▄п╥п╬п╡п╟я┌п╣п╩я▄я│п╨п╟я▐ я└я┐п╫п╨я├п╦я▐ п╢п╩я▐ я─п╣пЁп╦я│я┌я─п╟я├п╦п╦ я┌я─п╦пЁпЁп╣я─п╬п╡ п╫п╣ я┤п╣я─п╣п╥ п╨п╬п╫я└п╦пЁ triggers.xml, п╟ п╡ п©я─п╬я├п╣я│я│п╣ я─п╟п╠п╬я┌я▀ я│п╦я│я┌п╣п╪я▀
+	 * @param  String   $type - я┌п╦п© я┌я─п╦пЁпЁп╣я─п╟
+	 * @param  Array    $args - п╪п╟я│я│п╦п╡ я│ п©п╟я─п╟п╪п╣я┌я─п╟п╪п╦ я┌я─п╦пЁпЁп╣я─п╟, п╦п╪я▐ => п╥п╫п╟я┤п╣п╫п╦п╣
 	 */
 	function registerTrigger($type, array $args){
 		foreach($args as $name => &$value){
@@ -617,13 +617,13 @@ class PXApplication {
 	}
 	
 	/**
-	 * Проверяет наличие кешированного файла настроек и загружает его.
+	 * п÷я─п╬п╡п╣я─я▐п╣я┌ п╫п╟п╩п╦я┤п╦п╣ п╨п╣я┬п╦я─п╬п╡п╟п╫п╫п╬пЁп╬ я└п╟п╧п╩п╟ п╫п╟я│я┌я─п╬п╣п╨ п╦ п╥п╟пЁя─я┐п╤п╟п╣я┌ п╣пЁп╬.
 	 *
-	 * Если существует актуальный tmp/cache/config файл то он десериализуется в this.
-	 * Актуальность проверяется по времени последнего изменения каталога с конфиг файлами.
+	 * п∙я│п╩п╦ я│я┐я┴п╣я│я┌п╡я┐п╣я┌ п╟п╨я┌я┐п╟п╩я▄п╫я▀п╧ tmp/cache/config я└п╟п╧п╩ я┌п╬ п╬п╫ п╢п╣я│п╣я─п╦п╟п╩п╦п╥я┐п╣я┌я│я▐ п╡ this.
+	 * п░п╨я┌я┐п╟п╩я▄п╫п╬я│я┌я▄ п©я─п╬п╡п╣я─я▐п╣я┌я│я▐ п©п╬ п╡я─п╣п╪п╣п╫п╦ п©п╬я│п╩п╣п╢п╫п╣пЁп╬ п╦п╥п╪п╣п╫п╣п╫п╦я▐ п╨п╟я┌п╟п╩п╬пЁп╟ я│ п╨п╬п╫я└п╦пЁ я└п╟п╧п╩п╟п╪п╦.
 	 *
-	 * @param  String   $engineClass каталог с файлами
-	 * @return String   NULL если файл не существует
+	 * @param  String   $engineClass п╨п╟я┌п╟п╩п╬пЁ я│ я└п╟п╧п╩п╟п╪п╦
+	 * @return String   NULL п╣я│п╩п╦ я└п╟п╧п╩ п╫п╣ я│я┐я┴п╣я│я┌п╡я┐п╣я┌
 	 */
 	private static function loadFromCache($engineClass) {
 		$cacheFile = self::_cacheFilename($engineClass);
@@ -652,9 +652,9 @@ class PXApplication {
 	}
 
 	/**
-	 * Кеширует настройки PXApplication в файл.
+	 * п п╣я┬п╦я─я┐п╣я┌ п╫п╟я│я┌я─п╬п╧п╨п╦ PXApplication п╡ я└п╟п╧п╩.
 	 *
-	 * Весь PXApplication сериализуется в tmp/cache/config файл.
+	 * п▓п╣я│я▄ PXApplication я│п╣я─п╦п╟п╩п╦п╥я┐п╣я┌я│я▐ п╡ tmp/cache/config я└п╟п╧п╩.
 	 */
 	private function saveToCache($engineClass) {
 		$cacheFile = self::_cacheFilename($engineClass);
@@ -704,7 +704,7 @@ class PXApplication {
 		}
 
 		if($required) {
-			FatalError('Отсутствует файл настроек ' . $filename);
+			FatalError('п·я┌я│я┐я┌я│я┌п╡я┐п╣я┌ я└п╟п╧п╩ п╫п╟я│я┌я─п╬п╣п╨ ' . $filename);
 
 		} else {
 			return false;
@@ -719,7 +719,7 @@ class PXApplication {
 			return $files;
 		}
 
-		FatalError('Отсутствует файл настроек '.$filename);
+		FatalError('п·я┌я│я┐я┌я│я┌п╡я┐п╣я┌ я└п╟п╧п╩ п╫п╟я│я┌я─п╬п╣п╨ '.$filename);
 	}
 
 	/*

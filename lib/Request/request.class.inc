@@ -174,7 +174,7 @@ class PXRequest {
 	 */
 	function SetCookieVar($varName, $value='', $expire=NULL) {
 		$response = PXRegistry::getResponse();
-		$response->SetCookie('charcheck', 'ÊÃÕËÅÎ', $expire);
+		$response->SetCookie('charcheck', 'Ğ¹Ñ†ÑƒĞºĞµĞ½', $expire);
 		return $response->SetCookie($varName, $value, $expire);
 	}
 
@@ -239,10 +239,10 @@ class PXRequest {
 	}
 	
 	/**
-	 * ğÒÏ×ÅÒÑÅÔ ×ÈÏÖÄÅÎÉÅ ip-ÁÄÒÅÓÁ × ĞÏÄÓÅÔØ.
+	 * ĞŸÑ€Ğ¾Ğ²ĞµÑ€ÑĞµÑ‚ Ğ²Ñ…Ğ¾Ğ¶Ğ´ĞµĞ½Ğ¸Ğµ ip-Ğ°Ğ´Ñ€ĞµÑĞ° Ğ² Ğ¿Ğ¾Ğ´ÑĞµÑ‚ÑŒ.
 	 *
-	 * @param String $ip        - ip-ÁÄÒÅÓ, ÎÁĞÒÉÍÅÒ 192.168.0.1
-	 * @param String $subnet    - ĞÏÄÓÅÔØ, ÎÁĞÒÉÍÅÒ 192.168.0.0/24
+	 * @param String $ip        - ip-Ğ°Ğ´Ñ€ĞµÑ, Ğ½Ğ°Ğ¿Ñ€Ğ¸Ğ¼ĞµÑ€ 192.168.0.1
+	 * @param String $subnet    - Ğ¿Ğ¾Ğ´ÑĞµÑ‚ÑŒ, Ğ½Ğ°Ğ¿Ñ€Ğ¸Ğ¼ĞµÑ€ 192.168.0.0/24
 	 * @return Int
 	 */
 	static function IsIpInSubnet($ip, $subnet) {
@@ -260,10 +260,10 @@ class PXRequest {
 	}
 
 	/**
-	 * ğÒÏ×ÅÒÑÅÔ ×ÈÏÖÄÅÎÉÅ ip-ÁÄÒÅÓÁ × ÓĞÉÓÏË ĞÏÄÓÅÔÅÊ.
+	 * ĞŸÑ€Ğ¾Ğ²ĞµÑ€ÑĞµÑ‚ Ğ²Ñ…Ğ¾Ğ¶Ğ´ĞµĞ½Ğ¸Ğµ ip-Ğ°Ğ´Ñ€ĞµÑĞ° Ğ² ÑĞ¿Ğ¸ÑĞ¾Ğº Ğ¿Ğ¾Ğ´ÑĞµÑ‚ĞµĞ¹.
 	 *
-	 * @param String $ip        - ip-ÁÄÒÅÓ, ÎÁĞÒÉÍÅÒ 192.168.0.1
-	 * @param Array  $subnet    - ÍÁÓÓÉ× ĞÏÄÓÅÔÅÊ
+	 * @param String $ip        - ip-Ğ°Ğ´Ñ€ĞµÑ, Ğ½Ğ°Ğ¿Ñ€Ğ¸Ğ¼ĞµÑ€ 192.168.0.1
+	 * @param Array  $subnet    - Ğ¼Ğ°ÑÑĞ¸Ğ² Ğ¿Ğ¾Ğ´ÑĞµÑ‚ĞµĞ¹
 	 * @return Int
 	 */
 	static function IsIpInSubnets($ip, $subnets) {
@@ -276,7 +276,7 @@ class PXRequest {
 		return $isIn;
 	}
 
-	// æÕÎËÃÉÑ ×ÏÚ×ÒÁÑİÁÅÔ ÍÁÓÓÉ× "ÏÔËÒÙÔÙÈ" × ÒÅÄÁËÔÏÒÓËÏÍ ÉÎÔÅÒÆÅÊÓÅ ÜÌÅÍÅÎÔÏ× ÄÅÒÅ×Á
+	// Ğ¤ÑƒĞ½ĞºÑ†Ğ¸Ñ Ğ²Ğ¾Ğ·Ğ²Ñ€Ğ°ÑÑ‰Ğ°ĞµÑ‚ Ğ¼Ğ°ÑÑĞ¸Ğ² "Ğ¾Ñ‚ĞºÑ€Ñ‹Ñ‚Ñ‹Ñ…" Ğ² Ñ€ĞµĞ´Ğ°ĞºÑ‚Ğ¾Ñ€ÑĞºĞ¾Ğ¼ Ğ¸Ğ½Ñ‚ĞµÑ€Ñ„ĞµĞ¹ÑĞµ ÑĞ»ĞµĞ¼ĞµĞ½Ñ‚Ğ¾Ğ² Ğ´ĞµÑ€ĞµĞ²Ğ°
 	function getLeafStatus() {
 		$leafStatus = $this->cookieData->_getVar('leafStatus');
 		$openLeaf   = array();
@@ -290,37 +290,37 @@ class PXRequest {
 		return $openLeaf;
 	}
 
-	// ÷ÏÚ×ÒÁİÁÅÔ ÔÅËÕİÉÊ ÏÂßÅËÔ ÕÒÏ×ÎÑ "struct"
+	// Ğ’Ğ¾Ğ·Ğ²Ñ€Ğ°Ñ‰Ğ°ĞµÑ‚ Ñ‚ĞµĞºÑƒÑ‰Ğ¸Ğ¹ Ğ¾Ğ±ÑŠĞµĞºÑ‚ ÑƒÑ€Ğ¾Ğ²Ğ½Ñ "struct"
 	function getSid() {
 		return $this->_getGetPostVar('sid');
 	}
 
-	// ÷ÏÚ×ÒÁİÁÅÔ ÔÅËÕİÉÊ ÏÂßÅËÔ ÕÒÏ×ÎÑ "content"
+	// Ğ’Ğ¾Ğ·Ğ²Ñ€Ğ°Ñ‰Ğ°ĞµÑ‚ Ñ‚ĞµĞºÑƒÑ‰Ğ¸Ğ¹ Ğ¾Ğ±ÑŠĞµĞºÑ‚ ÑƒÑ€Ğ¾Ğ²Ğ½Ñ "content"
 	function getCid() {
 		return $this->_getGetPostVar('cid');
 	}
 
-	// ÷ÏÚ×ÒÁİÁÑÅÔ id ÒÅÄÁËÔÉÒÕÅÍÏÇÏ ÏÂßÅËÔÁ
+	// Ğ’Ğ¾Ğ·Ğ²Ñ€Ğ°Ñ‰Ğ°ÑĞµÑ‚ id Ñ€ĞµĞ´Ğ°ĞºÑ‚Ğ¸Ñ€ÑƒĞµĞ¼Ğ¾Ğ³Ğ¾ Ğ¾Ğ±ÑŠĞµĞºÑ‚Ğ°
 	function getId() {
 		return $this->_getGetPostVar('id');
 	}
 
-	// ÷ÏÚ×ÒÁİÁÑÅÔ format ÒÅÄÁËÔÉÒÕÅÍÏÇÏ/ÄÏÂÁ×ÌÑÅÍÏÇÏ ÏÂßÅËÔÁ
+	// Ğ’Ğ¾Ğ·Ğ²Ñ€Ğ°Ñ‰Ğ°ÑĞµÑ‚ format Ñ€ĞµĞ´Ğ°ĞºÑ‚Ğ¸Ñ€ÑƒĞµĞ¼Ğ¾Ğ³Ğ¾/Ğ´Ğ¾Ğ±Ğ°Ğ²Ğ»ÑĞµĞ¼Ğ¾Ğ³Ğ¾ Ğ¾Ğ±ÑŠĞµĞºÑ‚Ğ°
 	function getFormat() {
 		return $this->_getGetPostVar('format');
 	}
 
-	// ÷ÏÚ×ÒÁİÁÑÅÔ parent ÒÅÄÁËÔÉÒÕÅÍÏÇÏ/ÄÏÂÁ×ÌÑÅÍÏÇÏ ÏÂßÅËÔÁ
+	// Ğ’Ğ¾Ğ·Ğ²Ñ€Ğ°Ñ‰Ğ°ÑĞµÑ‚ parent Ñ€ĞµĞ´Ğ°ĞºÑ‚Ğ¸Ñ€ÑƒĞµĞ¼Ğ¾Ğ³Ğ¾/Ğ´Ğ¾Ğ±Ğ°Ğ²Ğ»ÑĞµĞ¼Ğ¾Ğ³Ğ¾ Ğ¾Ğ±ÑŠĞµĞºÑ‚Ğ°
 	function getParent() {
 		return $this->_getGetPostVar('parent');
 	}
 
-	// ÷ÏÚ×ÒÁİÁÑÅÔ ÄÅÊÓÔ×ÉÅ ĞÒÏÉÚ×ÏÄÉÍÏÅ ÎÁÄ ÒÅÄÁËÔÉÒÕÅÍÙÍ/ÄÏÂÁ×ÌÑÅÍÙÍ ÏÂßÅËÔÏÍ
+	// Ğ’Ğ¾Ğ·Ğ²Ñ€Ğ°Ñ‰Ğ°ÑĞµÑ‚ Ğ´ĞµĞ¹ÑÑ‚Ğ²Ğ¸Ğµ Ğ¿Ñ€Ğ¾Ğ¸Ğ·Ğ²Ğ¾Ğ´Ğ¸Ğ¼Ğ¾Ğµ Ğ½Ğ°Ğ´ Ñ€ĞµĞ´Ğ°ĞºÑ‚Ğ¸Ñ€ÑƒĞµĞ¼Ñ‹Ğ¼/Ğ´Ğ¾Ğ±Ğ°Ğ²Ğ»ÑĞµĞ¼Ñ‹Ğ¼ Ğ¾Ğ±ÑŠĞµĞºÑ‚Ğ¾Ğ¼
 	function getAction() {
 		return $this->_getGetPostVar('action');
 	}
 
-	// ÷ÏÚ×ÒÁİÁÑÅÔ ÔÉĞ ÔÅËÕİÅÇÏ ÏÂßÅËÔÁ
+	// Ğ’Ğ¾Ğ·Ğ²Ñ€Ğ°Ñ‰Ğ°ÑĞµÑ‚ Ñ‚Ğ¸Ğ¿ Ñ‚ĞµĞºÑƒÑ‰ĞµĞ³Ğ¾ Ğ¾Ğ±ÑŠĞµĞºÑ‚Ğ°
 	function getCtype() {
 		return $this->_getGetPostVar('ctype');
 	}
@@ -407,7 +407,7 @@ class PXRequest {
 		return $this->postData->_IsSetVar('close') ? 'close' : 'back';
 	}
 	
-	// æÕÎËÃÉÑ ×ÏÚ×ÒÁİÁÅÔ "ÒÁÚÄÅÌ" ÒÅÄÁËÔÏÒÓËÏÇÏ ÉÎÔÅÒÆÅÊÓÁ
+	// Ğ¤ÑƒĞ½ĞºÑ†Ğ¸Ñ Ğ²Ğ¾Ğ·Ğ²Ñ€Ğ°Ñ‰Ğ°ĞµÑ‚ "Ñ€Ğ°Ğ·Ğ´ĞµĞ»" Ñ€ĞµĞ´Ğ°ĞºÑ‚Ğ¾Ñ€ÑĞºĞ¾Ğ³Ğ¾ Ğ¸Ğ½Ñ‚ĞµÑ€Ñ„ĞµĞ¹ÑĞ°
 	function getArea($default=NULL) {
 		$area = $this->_getGetPostVar('area') ? $this->_getGetPostVar('area') : $this->getGetVar('area');
 		return ($area == NULL) ? $default : $area;

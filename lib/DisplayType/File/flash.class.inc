@@ -1,6 +1,6 @@
 <?php
 /**
- * æÌÅÛËÁ
+ * Ð¤Ð»ÐµÑˆÐºÐ°
  *
  * storageType flash
  * displayType FLASH|width|height

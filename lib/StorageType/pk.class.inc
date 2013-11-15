@@ -1,7 +1,7 @@
 <?php
 /**
- * ãÅÌÏÅ ÞÉÓÌÏ, id ÏÂßÅËÔÁ
- * ÷ ÂÁÚÅ ÍÏÖÅÔ ÈÒÁÎÉÔØÓÑ ËÁË INT4 PRIMARY KEY
+ * Ð¦ÐµÐ»Ð¾Ðµ Ñ‡Ð¸ÑÐ»Ð¾, id Ð¾Ð±ÑŠÐµÐºÑ‚Ð°
+ * Ð’ Ð±Ð°Ð·Ðµ Ð¼Ð¾Ð¶ÐµÑ‚ Ñ…Ñ€Ð°Ð½Ð¸Ñ‚ÑŒÑÑ ÐºÐ°Ðº INT4 PRIMARY KEY
  *
  * displayType HIDDEN, STATIC
  * storageType pk

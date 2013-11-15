@@ -65,7 +65,7 @@ class PXModuleAdvert extends PXModule {
 		if (is_a($campaigns, 'PXAdminTreeObjects') && count($allowedChilds = $this->app->getAllowedChildsKeys($this->dtCampaign, $campaigns->get($sid))) > 1) {
 			foreach(array_diff($allowedChilds, array($this->dtBanner)) as $extra_dt) {
 				if (!isset($this->app->types[$extra_dt])) {
-						$this->layout->append('INNER.1.0', '<h1 class="error">Формат '.$extra_dt.' не описан</h1>');
+						$this->layout->append('INNER.1.0', '<h1 class="error">п╓п╬я─п╪п╟я┌ '.$extra_dt.' п╫п╣ п╬п©п╦я│п╟п╫</h1>');
 						continue;
 					}
 					$objects = new PXAdminTableObjects($extra_dt, $sid, 'ByParent');
@@ -96,18 +96,18 @@ class PXModuleAdvert extends PXModule {
 		
 		$months = array(
 			0  => '',
-			1  => 'Январь',
-			2  => 'Февраль',
-			3  => 'Март',
-			4  => 'Апрель',
-			5  => 'Май',
-			6  => 'Июнь',
-			7  => 'Июль',
-			8  => 'Август',
-			9  => 'Сентябрь',
-			10 => 'Октябрь',
-			11 => 'Ноябрь',
-			12 => 'Декабрь'
+			1  => 'п╞п╫п╡п╟я─я▄',
+			2  => 'п╓п╣п╡я─п╟п╩я▄',
+			3  => 'п°п╟я─я┌',
+			4  => 'п░п©я─п╣п╩я▄',
+			5  => 'п°п╟п╧',
+			6  => 'п≤я▌п╫я▄',
+			7  => 'п≤я▌п╩я▄',
+			8  => 'п░п╡пЁя┐я│я┌',
+			9  => 'п║п╣п╫я┌я▐п╠я─я▄',
+			10 => 'п·п╨я┌я▐п╠я─я▄',
+			11 => 'п²п╬я▐п╠я─я▄',
+			12 => 'п■п╣п╨п╟п╠я─я▄'
 		);
 
 		$format = $request->GetVar('format');
@@ -134,7 +134,7 @@ class PXModuleAdvert extends PXModule {
 				if ($id !== 0) {
 					$lastDayOfMonth = 27;
 					while (checkdate($month, ++$lastDayOfMonth + 1, $year));
-					//jpGraph не понимает массивы начинающиеся не с нулевого эл-та, не стоит его расстраивать
+					//jpGraph п╫п╣ п©п╬п╫п╦п╪п╟п╣я┌ п╪п╟я│я│п╦п╡я▀ п╫п╟я┤п╦п╫п╟я▌я┴п╦п╣я│я▐ п╫п╣ я│ п╫я┐п╩п╣п╡п╬пЁп╬ я█п╩-я┌п╟, п╫п╣ я│я┌п╬п╦я┌ п╣пЁп╬ я─п╟я│я│я┌я─п╟п╦п╡п╟я┌я▄
 					$datay = array_fill(0, $lastDayOfMonth, 0);
 
 					$sql = 'SELECT EXTRACT(DAY FROM ts) AS days, SUM(show) as shows, SUM(click) AS clicks
@@ -146,20 +146,20 @@ class PXModuleAdvert extends PXModule {
 					$object = $db->GetObjectByID($this->app->types[$format], $id);
 
 					if (!empty($object)) {
-						$bannerTitle  = ($mode == 'ctr' ? 'CTR' : ($mode == 'clicks' ? 'Клики' : 'Показы')) .  ' для ';
+						$bannerTitle  = ($mode == 'ctr' ? 'CTR' : ($mode == 'clicks' ? 'п п╩п╦п╨п╦' : 'п÷п╬п╨п╟п╥я▀')) .  ' п╢п╩я▐ ';
 						$bannerTitle .= '"'. substr(strip_tags($object['title']), 0, 32) . '" ('.$months[$month].' '.$year.')';
 					} else {
-						$bannerTitle = "Баннер не найден";
+						$bannerTitle = "п▒п╟п╫п╫п╣я─ п╫п╣ п╫п╟п╧п╢п╣п╫";
 					}
 
-					$sum       = 0;      //сумма показов или кликов
-					$sumClicks = 0;      //сумма кликов для CTR
-					$sumShows  = 0;      //сумма показов для CTR
-					$xTitleOverall = ''; //нижний заголовок с кол-вом кликов/показов/CTR
+					$sum       = 0;      //я│я┐п╪п╪п╟ п©п╬п╨п╟п╥п╬п╡ п╦п╩п╦ п╨п╩п╦п╨п╬п╡
+					$sumClicks = 0;      //я│я┐п╪п╪п╟ п╨п╩п╦п╨п╬п╡ п╢п╩я▐ CTR
+					$sumShows  = 0;      //я│я┐п╪п╪п╟ п©п╬п╨п╟п╥п╬п╡ п╢п╩я▐ CTR
+					$xTitleOverall = ''; //п╫п╦п╤п╫п╦п╧ п╥п╟пЁп╬п╩п╬п╡п╬п╨ я│ п╨п╬п╩-п╡п╬п╪ п╨п╩п╦п╨п╬п╡/п©п╬п╨п╟п╥п╬п╡/CTR
 
 					foreach ($res as $row) {
 						if ($mode !== 'ctr') {
-							//начинаем с нулевого элемента, смотри выше array_fill
+							//п╫п╟я┤п╦п╫п╟п╣п╪ я│ п╫я┐п╩п╣п╡п╬пЁп╬ я█п╩п╣п╪п╣п╫я┌п╟, я│п╪п╬я┌я─п╦ п╡я▀я┬п╣ array_fill
 							$datay[$row['days'] -1 ] = $row[$mode];
 							$sum += $row[$mode];
 						} else {
@@ -170,9 +170,9 @@ class PXModuleAdvert extends PXModule {
 
 					}//foreach
 					if ($mode !== 'ctr')
-						$xTitleOverall = 'Всего ' . ($mode == 'clicks' ? 'кликов: '  : 'показов: ' ) . number_format($sum,0,'.',' ');
+						$xTitleOverall = 'п▓я│п╣пЁп╬ ' . ($mode == 'clicks' ? 'п╨п╩п╦п╨п╬п╡: '  : 'п©п╬п╨п╟п╥п╬п╡: ' ) . number_format($sum,0,'.',' ');
 					else
-						$xTitleOverall = 'Средний CTR: '. number_format(100*$sumClicks/$sumShows,2);
+						$xTitleOverall = 'п║я─п╣п╢п╫п╦п╧ CTR: '. number_format(100*$sumClicks/$sumShows,2);
 
 					DEFINE("TTF_DIR", PPPATH . "share/fonts/");
 					require_once PPPATH . 'vendor/Jpgraph/jpgraph.php';
@@ -224,7 +224,7 @@ class PXModuleAdvert extends PXModule {
 				exit; /* <====EXIT !!! */
 					  /* break;        */
 
-			//отдаем csv файл
+			//п╬я┌п╢п╟п╣п╪ csv я└п╟п╧п╩
 			case 'csv':
 				$response =& PXResponse::getInstance();
 				$response->downloadFile('stat_'.$id.'_'.$year.'_'.$month.'.csv', 'text/csv');
@@ -263,11 +263,11 @@ SQL;
 			//show textual content
 			default:
 				$object = $db->GetObjectByID($app->types[$request->GetFormat()], $request->GetId());
-				$title = isset($object['title']) ? substr(strip_tags($object['title']), 0, 32):'баннер не найден';
+				$title = isset($object['title']) ? substr(strip_tags($object['title']), 0, 32):'п╠п╟п╫п╫п╣я─ п╫п╣ п╫п╟п╧п╢п╣п╫';
 
 
 				$layout->SetOuterForm('action.phtml', 'POST', 'multipart/form-data', true);
-				$layout->Assign('OUTER.RIGHTCONTROLS', NLAbstractHTMLForm::BuildClose('Закрыть'));
+				$layout->Assign('OUTER.RIGHTCONTROLS', NLAbstractHTMLForm::BuildClose('п≈п╟п╨я─я▀я┌я▄'));
 				$years = $db->Query('SELECT EXTRACT(YEAR FROM ts) as year FROM adstat GROUP BY year ORDER BY year ASC;');
 				//DD-MM-YYYY
 				$html = '<DIV style="padding: 10px 0; width: 100%;">
@@ -286,15 +286,15 @@ SQL;
 						 <input type="hidden" name="area"  value="advert">
 
 						 <input type="radio" id="shows" name="mode" value="shows" '.($mode == "shows" ? 'checked':'').'>
-						 <label for="shows">Показы</label>
+						 <label for="shows">п÷п╬п╨п╟п╥я▀</label>
 
 						 <input type="radio" id="clicks" name="mode" value="clicks" '.($mode == "clicks" ? 'checked':'').'>
-						 <label for="clicks">Клики</label>
+						 <label for="clicks">п п╩п╦п╨п╦</label>
 
 						 <input type="radio" id="ctr" name="mode" value="ctr" '.($mode == "ctr" ? 'checked':'').'>
 						 <label for="ctr">CTR</label>
 
-						 <input type="submit" value="Показать"  style="width: 80px">
+						 <input type="submit" value="п÷п╬п╨п╟п╥п╟я┌я▄"  style="width: 80px">
 						 <input type="button" style="width: 80px"
 								onClick="javascript:window.open(\'popup.phtml?area=advert&format=adbanner&id='.$id.'&year='.$year.'&month='.$month.'&action=csv\'); return false;"
 								value="CSV">
@@ -305,7 +305,7 @@ SQL;
 					$html .= '&year='.$year.'&month='.$month.'';
 				$html .= '">';
 
-				$layout->assign('OUTER.TITLE', 'Статистика для баннера &laquo;'. $title .'&raquo;');
+				$layout->assign('OUTER.TITLE', 'п║я┌п╟я┌п╦я│я┌п╦п╨п╟ п╢п╩я▐ п╠п╟п╫п╫п╣я─п╟ &laquo;'. $title .'&raquo;');
 				$layout->assign('OUTER.CONTENT', $html);
 
 				break;

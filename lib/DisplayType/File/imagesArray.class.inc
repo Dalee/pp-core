@@ -1,6 +1,6 @@
 <?php
 /**
- * óÐÉÓÏË ËÁÒÔÉÎÏË
+ * Ð¡Ð¿Ð¸ÑÐ¾Ðº ÐºÐ°Ñ€Ñ‚Ð¸Ð½Ð¾Ðº
  *
  * storageType imagesarray
  * displayType IMAGESARRAY

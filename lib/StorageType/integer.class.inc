@@ -1,7 +1,7 @@
 <?php
 /**
- * ãÅÌÏÅ ÞÉÓÌÏ
- * ÷ ÂÁÚÅ ÍÏÖÅÔ ÈÒÁÎÉÔØÓÑ ËÁË INT4
+ * Ð¦ÐµÐ»Ð¾Ðµ Ñ‡Ð¸ÑÐ»Ð¾
+ * Ð’ Ð±Ð°Ð·Ðµ Ð¼Ð¾Ð¶ÐµÑ‚ Ñ…Ñ€Ð°Ð½Ð¸Ñ‚ÑŒÑÑ ÐºÐ°Ðº INT4
  *
  * displayType HIDDEN, TEXT, DROPDOWN, STATIC, PARENTDROPDOWN, SELFPARENTDROPDOWN, IPADDR
  * storageType integer

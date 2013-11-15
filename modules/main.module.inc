@@ -57,7 +57,7 @@ class PXModuleMain extends PXModule {
 	}
 
 	function check404error($urlFile, $urlPart) {
-		// Определение кода ошибки
+		// п·п©я─п╣п╢п╣п╩п╣п╫п╦п╣ п╨п╬п╢п╟ п╬я┬п╦п╠п╨п╦
 		if (
 			!$this->tree->hasCurrent() ||
 			!($this->request->isIndexFile($urlFile) || $this->objects->hasCurrent())    ||
@@ -177,11 +177,11 @@ class PXModuleMain extends PXModule {
 		$answer = '';
 		if(!empty($id) && isset($this->app->types[$format]) && ($this->app->types[$format]->struct == 'tree' && $this->request->GetVar($format.'_view') != 'plain')){
 
-			// {Нам это необходимо, чтобы работал PXAdminAjaxTreeObjects
+			// {п²п╟п╪ я█я┌п╬ п╫п╣п╬п╠я┘п╬п╢п╦п╪п╬, я┤я┌п╬п╠я▀ я─п╟п╠п╬я┌п╟п╩ PXAdminAjaxTreeObjects
 			$layout = new NLAbstractLayout();
 			$layout->setGetVarToSave('area', $this->area);
 			PXRegistry::setLayout($layout);
-			// нам это необходимо, чтобы работал PXAdminAjaxTreeObjects}
+			// п╫п╟п╪ я█я┌п╬ п╫п╣п╬п╠я┘п╬п╢п╦п╪п╬, я┤я┌п╬п╠я▀ я─п╟п╠п╬я┌п╟п╩ PXAdminAjaxTreeObjects}
 
 			$hTree = new PXAdminAjaxTreeObjects($format, null, null, true, $id);
 			isset($cl) && $hTree->showChildren($cl);
@@ -193,7 +193,7 @@ class PXModuleMain extends PXModule {
 	 
 	function adminIndex() {
 		if (!isset($this->app->types[$this->rootFormatId])) {
-			FatalError("Некорректный тип данных");
+			FatalError("п²п╣п╨п╬я─я─п╣п╨я┌п╫я▀п╧ я┌п╦п© п╢п╟п╫п╫я▀я┘");
 		}
 
 		$app     = $this->app;
@@ -219,7 +219,7 @@ class PXModuleMain extends PXModule {
 
 			$parentObject = $hTree->get($rqSid);
 
-			$layout->assignTitle('раздел &laquo;'.$parentObject['title'].'&raquo;');
+			$layout->assignTitle('я─п╟п╥п╢п╣п╩ &laquo;'.$parentObject['title'].'&raquo;');
 
 			$cidType   = null;
 			$cidObject = null;
@@ -228,7 +228,7 @@ class PXModuleMain extends PXModule {
 			if (count($allowedChilds)) {
 				foreach ($allowedChilds as $childFormat) {
 					if (!isset($app->types[$childFormat])) {
-						$layout->append('INNER.1.0', '<h1 class="error">Формат '.$childFormat.' не описан</h1>');
+						$layout->append('INNER.1.0', '<h1 class="error">п╓п╬я─п╪п╟я┌ '.$childFormat.' п╫п╣ п╬п©п╦я│п╟п╫</h1>');
 						continue;
 					}
 
@@ -282,10 +282,10 @@ class PXModuleMain extends PXModule {
 			}
 
 		} elseif ($rqSid != null) {
-			$layout->assign('INNER.1.0', '<H2 class="error">Раздел '.htmlspecialchars($rqSid, ENT_COMPAT|ENT_HTML401, DEFAULT_CHARSET).' не найден</H2>');
+			$layout->assign('INNER.1.0', '<H2 class="error">п═п╟п╥п╢п╣п╩ '.htmlspecialchars($rqSid, ENT_COMPAT|ENT_HTML401, DEFAULT_CHARSET).' п╫п╣ п╫п╟п╧п╢п╣п╫</H2>');
 
 		} else {
-			$layout->assign('INNER.1.0', '<H2>Выберите раздел</H2>');
+			$layout->assign('INNER.1.0', '<H2>п▓я▀п╠п╣я─п╦я┌п╣ я─п╟п╥п╢п╣п╩</H2>');
 		}
 
 		$hTree->addToParent('INNER.0.0');
@@ -302,7 +302,7 @@ class PXModuleMain extends PXModule {
 	// temporary struct root fixer. probably we must move it out to struct.class.inc (PXStructTree)
 	protected
 	function fillPathnamedAliases($tree, $host = null) {
-		// "пустой" проект
+		// "п©я┐я│я┌п╬п╧" п©я─п╬п╣п╨я┌
 		if (empty($tree) or empty($tree->levels[1])) {
 			return;
 		}
@@ -311,14 +311,14 @@ class PXModuleMain extends PXModule {
 		is_null($host) && $host = PXRegistry::getRequest()->getHTTPHost();
 		$aliases = $this->_parseAliasesConfig();
 
-		// находим соответствие между хостом, на который мы зашли - fixme: use case?
-		// и корнем в дереве, который может быть нам нужен
+		// п╫п╟я┘п╬п╢п╦п╪ я│п╬п╬я┌п╡п╣я┌я│я┌п╡п╦п╣ п╪п╣п╤п╢я┐ я┘п╬я│я┌п╬п╪, п╫п╟ п╨п╬я┌п╬я─я▀п╧ п╪я▀ п╥п╟я┬п╩п╦ - fixme: use case?
+		// п╦ п╨п╬я─п╫п╣п╪ п╡ п╢п╣я─п╣п╡п╣, п╨п╬я┌п╬я─я▀п╧ п╪п╬п╤п╣я┌ п╠я▀я┌я▄ п╫п╟п╪ п╫я┐п╤п╣п╫
 		$hostAlias = 'default';
 		if (isset($aliases[$host])) {
 			$hostAlias = $aliases[$host];
 		}
 
-		// если алиас "не нашли", может быть нужный хост есть среди корней? - fixme: use case?
+		// п╣я│п╩п╦ п╟п╩п╦п╟я│ "п╫п╣ п╫п╟я┬п╩п╦", п╪п╬п╤п╣я┌ п╠я▀я┌я▄ п╫я┐п╤п╫я▀п╧ я┘п╬я│я┌ п╣я│я┌я▄ я│я─п╣п╢п╦ п╨п╬я─п╫п╣п╧? - fixme: use case?
 		if ($hostAlias == 'default') {
 			foreach ($tree->levels[1] as $_rootId) {
 				if ($tree->leafs[$_rootId]->content['pathname'] === $host) {
@@ -328,7 +328,7 @@ class PXModuleMain extends PXModule {
 			}
 		}
 
-		// находим нужный корень и правим его pathname по полному соответствию маске
+		// п╫п╟я┘п╬п╢п╦п╪ п╫я┐п╤п╫я▀п╧ п╨п╬я─п╣п╫я▄ п╦ п©я─п╟п╡п╦п╪ п╣пЁп╬ pathname п©п╬ п©п╬п╩п╫п╬п╪я┐ я│п╬п╬я┌п╡п╣я┌я│я┌п╡п╦я▌ п╪п╟я│п╨п╣
 		foreach ($tree->levels[1] as $_rootId) {
 			if ($tree->leafs[$_rootId]->content['pathname'] === $hostAlias) {
 				$tree->leafs[$_rootId]->content['__pathname'] = $tree->leafs[$_rootId]->content['pathname'];

@@ -4,7 +4,7 @@
 			$objectType = $this->parentWidget->dtype->id;
 			return <<<HTML
 				<div class="multiple-bottom-controls">
-					Операции с отмеченными: 
+					п·п©п╣я─п╟я├п╦п╦ я│ п╬я┌п╪п╣я┤п╣п╫п╫я▀п╪п╦: 
 				</div>
 				<div dtype="{$objectType}" class="display-none"></div>
 HTML;

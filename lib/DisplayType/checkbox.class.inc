@@ -13,7 +13,7 @@ class PXDisplayTypeCheckbox extends PXDisplayType {
 
 	function buildCell($field, $object, $param=NULL) {
 		$value = $object[$field->name];
-		return $value ? '<div class="truecheck" title="ÄÁ"></div>' : '';
+		return $value ? '<div class="truecheck" title="Ð´Ð°"></div>' : '';
 	}
 
 	function getFromRequest($field, $object, $param=NULL) {

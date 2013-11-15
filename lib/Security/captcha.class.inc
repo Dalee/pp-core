@@ -3,7 +3,7 @@
  * Project:     Dalee PHP-classes library
  * File:        captcha.class.inc
  *
- * Генератор captcha изображений
+ * п⌠п╣п╫п╣я─п╟я┌п╬я─ captcha п╦п╥п╬п╠я─п╟п╤п╣п╫п╦п╧
  *
  * @copyright   Dalee, 2003-2010
  * @author      Stanislav Tugovikov <st@dalee.ru>
@@ -14,7 +14,7 @@
  */
 class NLCaptcha {
 	/**
-	 * Конструктор
+	 * п п╬п╫я│я┌я─я┐п╨я┌п╬я─
 	 *
 	 * @param String             $text
 	 * @param Array              $fonts
@@ -37,26 +37,26 @@ class NLCaptcha {
 		$this->width  = $width;
 		$this->height = $height;
 
-		$this->init();                                // первые шаги
-		//$this->addNoise();                            // добавить шум
-		$this->addText($text, $fonts, $fontSize);     // вывести надпись
+		$this->init();                                // п©п╣я─п╡я▀п╣ я┬п╟пЁп╦
+		//$this->addNoise();                            // п╢п╬п╠п╟п╡п╦я┌я▄ я┬я┐п╪
+		$this->addText($text, $fonts, $fontSize);     // п╡я▀п╡п╣я│я┌п╦ п╫п╟п╢п©п╦я│я▄
 
 		if($withLines) {
-			$this->addLines();                    // добавить случайные линии
+			$this->addLines();                    // п╢п╬п╠п╟п╡п╦я┌я▄ я│п╩я┐я┤п╟п╧п╫я▀п╣ п╩п╦п╫п╦п╦
 		}
 
-		$this->showImage();                           // вывести изображение в браузер
+		$this->showImage();                           // п╡я▀п╡п╣я│я┌п╦ п╦п╥п╬п╠я─п╟п╤п╣п╫п╦п╣ п╡ п╠я─п╟я┐п╥п╣я─
 	}
 
 	function init() {
 		mt_srand((double)microtime()*1000000000);
 
-		// создание "хоста"
+		// я│п╬п╥п╢п╟п╫п╦п╣ "я┘п╬я│я┌п╟"
 		$im = @ImageCreate($this->width, $this->height) or FatalError('Cannot Initialize new GD image stream');
 
 		$ica = array();
 
-		// заполнение таблицы индексов цветов
+		// п╥п╟п©п╬п╩п╫п╣п╫п╦п╣ я┌п╟п╠п╩п╦я├я▀ п╦п╫п╢п╣п╨я│п╬п╡ я├п╡п╣я┌п╬п╡
 		$rev = array();
 		$ica[0]   = ImageColorAllocate($im, $this->colors['lite'][0], $this->colors['lite'][1], $this->colors['lite'][2]);
 		$rev[$ica[0]] = 0;
@@ -72,10 +72,10 @@ class NLCaptcha {
 			$rev[$ica[$i+128]] = $i + 128;
 		}
 
-		// заливка фона
+		// п╥п╟п╩п╦п╡п╨п╟ я└п╬п╫п╟
 		ImageFilledRectangle($im, 0, 0, $this->width, $this->height, $ica[0]);
 
-		// веса шума, линий и .т.п.
+		// п╡п╣я│п╟ я┬я┐п╪п╟, п╩п╦п╫п╦п╧ п╦ .я┌.п©.
 		$noiseRatio = mt_rand(80,150)/100;
 		$linesRatio = 2 - $noiseRatio;
 		$fontRatio  = $linesRatio > 1 ? ($linesRatio < 1.5 ? $linesRatio : 1) : 1;// max($linesRatio, 1);

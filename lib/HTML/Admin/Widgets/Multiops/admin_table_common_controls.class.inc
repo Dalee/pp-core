@@ -3,12 +3,12 @@
 		function html(){
 			return <<<HTML
 				<div class="multiple-bottom-controls">
-					<a href="#doCommonMultipleDelete"       confirm="Вы уверены что хотите удалить отмеченные объекты?">Удалить</a>
-					<a href="#doCommonMultipleStatusChange" helper="true">Изменить статус</a>
+					<a href="#doCommonMultipleDelete"       confirm="п▓я▀ я┐п╡п╣я─п╣п╫я▀ я┤я┌п╬ я┘п╬я┌п╦я┌п╣ я┐п╢п╟п╩п╦я┌я▄ п╬я┌п╪п╣я┤п╣п╫п╫я▀п╣ п╬п╠я┼п╣п╨я┌я▀?">пёп╢п╟п╩п╦я┌я▄</a>
+					<a href="#doCommonMultipleStatusChange" helper="true">п≤п╥п╪п╣п╫п╦я┌я▄ я│я┌п╟я┌я┐я│</a>
 					<div class="helper">
 						<div class="status-changer">
-							<button class="on"  assign='{"status": "true"}'>Опубликовать</button>
-							<button class="off" assign='{"status": "false"}'>Скрыть</button>
+							<button class="on"  assign='{"status": "true"}'>п·п©я┐п╠п╩п╦п╨п╬п╡п╟я┌я▄</button>
+							<button class="off" assign='{"status": "false"}'>п║п╨я─я▀я┌я▄</button>
 						</div>
 					</div>
 				</div>

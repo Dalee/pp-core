@@ -1,6 +1,6 @@
 <?php
 /**
- * òÁÚÄÅÌÉÔÅÌØ
+ * Ð Ð°Ð·Ð´ÐµÐ»Ð¸Ñ‚ÐµÐ»ÑŒ
  *
  * storageType virtual
  * displayType DELIMITER

@@ -1,10 +1,10 @@
 <?php
 /**
- * Выпадающий список с деревом разделов (как правило поле parent)
+ * п▓я▀п©п╟п╢п╟я▌я┴п╦п╧ я│п©п╦я│п╬п╨ я│ п╢п╣я─п╣п╡п╬п╪ я─п╟п╥п╢п╣п╩п╬п╡ (п╨п╟п╨ п©я─п╟п╡п╦п╩п╬ п©п╬п╩п╣ parent)
  *
  * storageType integer
  * displayType PARENTDROPDOWN|width
- *             width не используется
+ *             width п╫п╣ п╦я│п©п╬п╩я▄п╥я┐п╣я┌я│я▐
  */
 class PXDisplayTypeParentdropdown extends PXDisplayTypeDropdown {
 	function buildInput($field, $object, $param=NULL) {

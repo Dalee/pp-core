@@ -18,9 +18,9 @@ class PXHTMLFileListingLink extends PXHTMLFileListing {
 
 	<thead>
 		<tr>
-			<th>имя</th>
-			<th>размер</th>
-			<th>права</th>
+			<th>п╦п╪я▐</th>
+			<th>я─п╟п╥п╪п╣я─</th>
+			<th>п©я─п╟п╡п╟</th>
 			<th></th>
 		</tr>
 	</thead>
@@ -52,7 +52,7 @@ HTML;
 			return $_;
 		}
 
-		return '<td><button class="link" onclick="LinkFile(\''.$this->name.'\', \''.dirname($f->alias).'/\', \''.$f->name.'\', '.$f->size.');">Привязать</button></td>';
+		return '<td><button class="link" onclick="LinkFile(\''.$this->name.'\', \''.dirname($f->alias).'/\', \''.$f->name.'\', '.$f->size.');">п÷я─п╦п╡я▐п╥п╟я┌я▄</button></td>';
 	}
 
 	function _listContext($f) {
@@ -82,9 +82,9 @@ class PXHTMLFileListing {
 
 	<thead>
 		<tr>
-			<th>имя</th>
-			<th>размер</th>
-			<th>права</th>
+			<th>п╦п╪я▐</th>
+			<th>я─п╟п╥п╪п╣я─</th>
+			<th>п©я─п╟п╡п╟</th>
 		</tr>
 	</thead>
 HTML;
@@ -96,12 +96,12 @@ HTML;
 <<<HTML
 <tr>
 	<td class="file dir-up">
-		<a href="%HREF%" title="Наверх">
+		<a href="%HREF%" title="п²п╟п╡п╣я─я┘">
 			<span>%TEXT%</span>
 		</a>
 	</td>
 
-	<td class="size-dir">каталог</td>
+	<td class="size-dir">п╨п╟я┌п╟п╩п╬пЁ</td>
 	<td>%PERM%</td>
 </tr>
 HTML;
@@ -216,7 +216,7 @@ HTML;
 
 	function _listSize($f) {
 		if($f->isDir) {
-			return '<td class="size-dir">каталог</td>';
+			return '<td class="size-dir">п╨п╟я┌п╟п╩п╬пЁ</td>';
 
 		} else {
 			return '<td>'.$f->size.'</td>';
@@ -260,7 +260,7 @@ HTML;
 	}
 
 	function error() {
-		return '<div class="error">Этот каталог <strong>не доступен</strong> для просмотра<br/> Вернитесь к <a href="'.$this->href.'">списку каталогов</a></div>';
+		return '<div class="error">п╜я┌п╬я┌ п╨п╟я┌п╟п╩п╬пЁ <strong>п╫п╣ п╢п╬я│я┌я┐п©п╣п╫</strong> п╢п╩я▐ п©я─п╬я│п╪п╬я┌я─п╟<br/> п▓п╣я─п╫п╦я┌п╣я│я▄ п╨ <a href="'.$this->href.'">я│п©п╦я│п╨я┐ п╨п╟я┌п╟п╩п╬пЁп╬п╡</a></div>';
 	}
 }
 ?>

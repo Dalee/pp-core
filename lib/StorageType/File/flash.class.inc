@@ -1,8 +1,8 @@
 <?php
 /**
- * æÌÅÛËÁ
- * ÈÒÁÎÉÔÓÑ × site/htdocs/ai/ôéð_äáîîùè/éä_ïâÿåëôá/éíñ_ðïìñ/éíñ_æáêìá.swf
- * ÎÁÐÒÉÍÅÒ: site/htdocs/ai/banner/125846/movie/banner.swf
+ * Ð¤Ð»ÐµÑˆÐºÐ°
+ * Ñ…Ñ€Ð°Ð½Ð¸Ñ‚ÑÑ Ð² site/htdocs/ai/Ð¢Ð˜ÐŸ_Ð”ÐÐÐÐ«Ð¥/Ð˜Ð”_ÐžÐ‘ÐªÐ•ÐšÐ¢Ð/Ð˜ÐœÐ¯_ÐŸÐžÐ›Ð¯/Ð˜ÐœÐ¯_Ð¤ÐÐ™Ð›Ð.swf
+ * Ð½Ð°Ð¿Ñ€Ð¸Ð¼ÐµÑ€: site/htdocs/ai/banner/125846/movie/banner.swf
  *
  * displayType FLASH
  * storageType flash

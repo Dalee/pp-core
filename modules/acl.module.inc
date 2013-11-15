@@ -3,7 +3,7 @@ class PXModuleAcl extends PXModule {
 	var $what;
 	var $access;
 	var $objectRule     = 'user';
-	var $aclObjectTitle = 'Тип объекта';
+	var $aclObjectTitle = 'п╒п╦п© п╬п╠я┼п╣п╨я┌п╟';
 
 	protected $ruleTypeField;
 	protected $orderingField;
@@ -28,7 +28,7 @@ class PXModuleAcl extends PXModule {
 	
 	function getAclDefinitionsFor($what) {
 		if (empty($this->app->langTree['module_acl_rules'][$what])) {
-			FatalError("Не описаны правила module_acl_rules[{$what}] в lang.yaml");
+			FatalError("п²п╣ п╬п©п╦я│п╟п╫я▀ п©я─п╟п╡п╦п╩п╟ module_acl_rules[{$what}] п╡ lang.yaml");
 		}
 		
 		$_ = $this->app->langTree['module_acl_rules'][$what];
@@ -51,18 +51,18 @@ class PXModuleAcl extends PXModule {
 
 		$table->setData($rules);
 
-		$table->setNullText('Все');
+		$table->setNullText('п▓я│п╣');
 		$table->setDict('sgroupid',   $dicts['sgroup']);
 		$table->setDict('objecttype', $dicts['types']);
 		$table->setDict('what',       $this->getWhatDict());
 		$table->setDict('access',     $this->access);
 
 		$queryParams = 'area='  . $this->area . '&sid=' . urlencode($sid);
-		$table->setControls('/admin/popup.phtml?'  . $queryParams . '&id=',               'изменить это правило', 'edit', false, true);
-		$table->setControls('/admin/action.phtml?' . $queryParams . '&action=delete&id=', 'удалить  это правило', 'del',  true,  false);
+		$table->setControls('/admin/popup.phtml?'  . $queryParams . '&id=',               'п╦п╥п╪п╣п╫п╦я┌я▄ я█я┌п╬ п©я─п╟п╡п╦п╩п╬', 'edit', false, true);
+		$table->setControls('/admin/action.phtml?' . $queryParams . '&action=delete&id=', 'я┐п╢п╟п╩п╦я┌я▄  я█я┌п╬ п©я─п╟п╡п╦п╩п╬', 'del',  true,  false);
 
-		$table->setControls('/admin/action.phtml?' . $queryParams . '&action=up&id=',     'поднять  это правило', 'up' ,  false, false);
-		$table->setControls('/admin/action.phtml?' . $queryParams . '&action=down&id=',   'опустить это правило', 'down', false, false);
+		$table->setControls('/admin/action.phtml?' . $queryParams . '&action=up&id=',     'п©п╬п╢п╫я▐я┌я▄  я█я┌п╬ п©я─п╟п╡п╦п╩п╬', 'up' ,  false, false);
+		$table->setControls('/admin/action.phtml?' . $queryParams . '&action=down&id=',   'п╬п©я┐я│я┌п╦я┌я▄ я█я┌п╬ п©я─п╟п╡п╦п╩п╬', 'down', false, false);
 		$table->showEven();
 
 		$table->setTableId('acl');
@@ -79,9 +79,9 @@ class PXModuleAcl extends PXModule {
 		$countsQueryResult = $this->db->query(sprintf('SELECT "objecttype" as "id", count(*) as "count" FROM "%s" WHERE "objectrule" = \'%s\' GROUP BY 1;', $this->sqlTable, $this->objectRule));
 		$counts = array_flat($countsQueryResult, 'id', 'count');
 
-		$types['*'] = '   <i class="all">Полный список</i> (' . array_sum($counts) . ')';
+		$types['*'] = '   <i class="all">п÷п╬п╩п╫я▀п╧ я│п©п╦я│п╬п╨</i> (' . array_sum($counts) . ')';
 		if ($counts['']) {
-			$types[''] = ' Все (' . $counts[''] . ')';
+			$types[''] = ' п▓я│п╣ (' . $counts[''] . ')';
 		}
 
 		$objects = $this->objectRule === 'user'
@@ -107,8 +107,8 @@ class PXModuleAcl extends PXModule {
 	function addNewRuleButton() {
 		$_  = '';
 		$_ .= '<a href="/admin/popup.phtml?area=' . $this->area . '" onclick="Popup(this.href); return false;" class="button">';
-		$_ .= '<img src="i/icon/add.gif" alt="Добавить правило" />';
-		$_ .= 'Правило доступа';
+		$_ .= '<img src="i/icon/add.gif" alt="п■п╬п╠п╟п╡п╦я┌я▄ п©я─п╟п╡п╦п╩п╬" />';
+		$_ .= 'п÷я─п╟п╡п╦п╩п╬ п╢п╬я│я┌я┐п©п╟';
 		return $_ .= '</a>';
 	}
 
@@ -163,7 +163,7 @@ class PXModuleAcl extends PXModule {
 				$dType = 'DROPDOWN';
 				if($col == 'sgroupid' && $app->types['sgroup']->struct == 'tree') {
 					$param['datatype']   = & $app->types['sgroup'];
-					$param['root_title'] = '-- любая --';
+					$param['root_title'] = '-- п╩я▌п╠п╟я▐ --';
 					$dType = 'PARENTDROPDOWN';
 				}
 				
@@ -190,18 +190,18 @@ class PXModuleAcl extends PXModule {
 
 		$layout->Append('OUTER.CONTENT', $_);
 
-		$title = ($rId == 0) ? 'Добавление нового правила' : 'Редактирование правила &#8470;'.$rId;
+		$title = ($rId == 0) ? 'п■п╬п╠п╟п╡п╩п╣п╫п╦п╣ п╫п╬п╡п╬пЁп╬ п©я─п╟п╡п╦п╩п╟' : 'п═п╣п╢п╟п╨я┌п╦я─п╬п╡п╟п╫п╦п╣ п©я─п╟п╡п╦п╩п╟ &#8470;'.$rId;
 		$layout->AssignTitle($title);
 	}
 
 	function _getFields() {
 		return array(
-			'sgroupid'     => 'Группа',
-			'objectid'     => 'Объект',
-			'objectparent' => 'Родитель объекта',
+			'sgroupid'     => 'п⌠я─я┐п©п©п╟',
+			'objectid'     => 'п·п╠я┼п╣п╨я┌',
+			'objectparent' => 'п═п╬п╢п╦я┌п╣п╩я▄ п╬п╠я┼п╣п╨я┌п╟',
 			'objecttype'   => $this->aclObjectTitle,
-			'what'         => 'Действие',
-			'access'       => 'Доступ'
+			'what'         => 'п■п╣п╧я│я┌п╡п╦п╣',
+			'access'       => 'п■п╬я│я┌я┐п©'
 		);
 	}
 
@@ -238,7 +238,7 @@ class PXModuleAcl extends PXModule {
 			$types[$typeName] = $type->title;
 		}
 
-		$types[null] = '-- любой --';
+		$types[null] = '-- п╩я▌п╠п╬п╧ --';
 
 		return $types;
 	}
@@ -549,11 +549,11 @@ class PXModuleAcl extends PXModule {
 				$rule = $this->db->query('SELECT count(id) as count FROM '.$this->sqlTable.' WHERE id = '.$rId);
 
 				if(!isset($rule[0]['count'])) {
-					FatalError('Какой то косяк с таблицей '.$this->sqlTable);
+					FatalError('п п╟п╨п╬п╧ я┌п╬ п╨п╬я│я▐п╨ я│ я┌п╟п╠п╩п╦я├п╣п╧ '.$this->sqlTable);
 				}
 
 				if((int)$rule[0]['count'] !== 1) {
-					FatalError('Правило с id = '.$rId.' в таблице '.$this->sqlTable.' не найдено');
+					FatalError('п÷я─п╟п╡п╦п╩п╬ я│ id = '.$rId.' п╡ я┌п╟п╠п╩п╦я├п╣ '.$this->sqlTable.' п╫п╣ п╫п╟п╧п╢п╣п╫п╬');
 				}
 
 				$this->db->modifyingQuery('DELETE FROM '.$this->sqlTable.' WHERE id = '.$rId);

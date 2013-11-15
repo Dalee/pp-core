@@ -1,7 +1,7 @@
 <?php
 /**
- * ëÌÁÓÓ - ÈÒÁÎÉÌÉÝÅ ÉÎÆÏÒÍÁÃÉÉ Ï ÍÏÄÕÌÅ.
- * óÔÏÉÔÓÑ ÐÏ etc/modules.xml /modules/module.
+ * ÐšÐ»Ð°ÑÑ - Ñ…Ñ€Ð°Ð½Ð¸Ð»Ð¸Ñ‰Ðµ Ð¸Ð½Ñ„Ð¾Ñ€Ð¼Ð°Ñ†Ð¸Ð¸ Ð¾ Ð¼Ð¾Ð´ÑƒÐ»Ðµ.
+ * Ð¡Ñ‚Ð¾Ð¸Ñ‚ÑÑ Ð¿Ð¾ etc/modules.xml /modules/module.
  *
  * @subpackage Application
  */
@@ -62,7 +62,7 @@ class PXModuleDescription {
 	}
 
 	/**
-	* ðÏÄËÌÀÞÁÅÔ ÆÁÊÌ ÍÏÄÕÌÑ, ÐÒÏ×ÅÒÑÅÔ ÓÎÁÞÁÌÁ local/modules, ÚÁÔÅÍ lib/modules
+	* ÐŸÐ¾Ð´ÐºÐ»ÑŽÑ‡Ð°ÐµÑ‚ Ñ„Ð°Ð¹Ð» Ð¼Ð¾Ð´ÑƒÐ»Ñ, Ð¿Ñ€Ð¾Ð²ÐµÑ€ÑÐµÑ‚ ÑÐ½Ð°Ñ‡Ð°Ð»Ð° local/modules, Ð·Ð°Ñ‚ÐµÐ¼ lib/modules
 	*/
 	function load() {
 		$file = $this->getPathToClass();

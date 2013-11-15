@@ -97,7 +97,7 @@ class PXUserHTMLLayout extends PXLayoutInterface  {
 	function pager($param, &$smarty) {
 		$total = sizeof($param['objects']);
 
-		/* Нужна ли постраничка? */
+		/* п²я┐п╤п╫п╟ п╩п╦ п©п╬я│я┌я─п╟п╫п╦я┤п╨п╟? */
 		$p = mb_strtoupper($param['format']).'_PER_PAGE';
 
 		$app = PXRegistry::getApp();

@@ -12,6 +12,6 @@
 			$this->db->ModifyContentObject($dtype, $object);
 		}
 	} else {
-		$RESULT = PXEngineJSON::toError('îÅÄÏÐÕÓÔÉÍÙÊ ÒÏÄÉÔÅÌØ ÏÂßÅËÔÁ');
+		$RESULT = PXEngineJSON::toError('ÐÐµÐ´Ð¾Ð¿ÑƒÑÑ‚Ð¸Ð¼Ñ‹Ð¹ Ñ€Ð¾Ð´Ð¸Ñ‚ÐµÐ»ÑŒ Ð¾Ð±ÑŠÐµÐºÑ‚Ð°');
 	}
 ?>

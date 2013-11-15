@@ -246,13 +246,13 @@ class PXModuleCronRun extends PXModule {
 		$layout = $this->layout;
 
 		$layout->setOneColumn();
-		$layout->assign('INNER.0.1', '<a href="?area='.$this->area.'&t='.time().'" class="reload">Обновить</a>');
+		$layout->assign('INNER.0.1', '<a href="?area='.$this->area.'&t='.time().'" class="reload">п·п╠п╫п╬п╡п╦я┌я▄</a>');
 
 		$fields = array(
-			'rule'    => 'Правило',
-			'name'    => 'Название задачи',
-			'time'    => 'Начало/Окончание',
-			'comment' => 'Примечание',
+			'rule'    => 'п÷я─п╟п╡п╦п╩п╬',
+			'name'    => 'п²п╟п╥п╡п╟п╫п╦п╣ п╥п╟п╢п╟я┤п╦',
+			'time'    => 'п²п╟я┤п╟п╩п╬/п·п╨п╬п╫я┤п╟п╫п╦п╣',
+			'comment' => 'п÷я─п╦п╪п╣я┤п╟п╫п╦п╣',
 		);
 
 		$result = array();
@@ -277,7 +277,7 @@ class PXModuleCronRun extends PXModule {
 
 			} else {
 				$_['time'] = '&nbsp;<br>&nbsp;';
-				$_['comment'] = 'Еще не запускалась';
+				$_['comment'] = 'п∙я┴п╣ п╫п╣ п╥п╟п©я┐я│п╨п╟п╩п╟я│я▄';
 			}
 
 			$result[] = $_;

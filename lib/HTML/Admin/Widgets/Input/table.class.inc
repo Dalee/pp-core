@@ -78,7 +78,7 @@ class PXInputTable extends PXAdminWidget {
 
 		$html .= '</table>';
 
-		$html .= '<button class="addrow" onclick="AddRowNew(\''.$this->name.'\'); return false;"'.$this->disable.'>Добавить</button>';
+		$html .= '<button class="addrow" onclick="AddRowNew(\''.$this->name.'\'); return false;"'.$this->disable.'>п■п╬п╠п╟п╡п╦я┌я▄</button>';
 
 		return $html;
 	}

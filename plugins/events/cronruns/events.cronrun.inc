@@ -1,8 +1,8 @@
 <?php
 
 /*
- * Обработка региональных объектов
- * Удаление, добавление региона.
+ * п·п╠я─п╟п╠п╬я┌п╨п╟ я─п╣пЁп╦п╬п╫п╟п╩я▄п╫я▀я┘ п╬п╠я┼п╣п╨я┌п╬п╡
+ * пёп╢п╟п╩п╣п╫п╦п╣, п╢п╬п╠п╟п╡п╩п╣п╫п╦п╣ я─п╣пЁп╦п╬п╫п╟.
  */
 
 class PXCronRunEvents extends PXAbstractCronRun {
@@ -10,7 +10,7 @@ class PXCronRunEvents extends PXAbstractCronRun {
 	const SUCCESS_STATE = 'ok';
 
 	function __construct() {
-		$this->name = 'Обработка отложенных событий';
+		$this->name = 'п·п╠я─п╟п╠п╬я┌п╨п╟ п╬я┌п╩п╬п╤п╣п╫п╫я▀я┘ я│п╬п╠я▀я┌п╦п╧';
 	}
 
 

@@ -1,7 +1,7 @@
 <?php
 /**
-* ëÌÁÓÓ - ÈÒÁÎÉÌÉÝÅ.
-* óÔÏÉÔÓÑ ÐÏ etc/datatype.xml /model/datatypes/datatype/attribute
+* ÐšÐ»Ð°ÑÑ - Ñ…Ñ€Ð°Ð½Ð¸Ð»Ð¸Ñ‰Ðµ.
+* Ð¡Ñ‚Ð¾Ð¸Ñ‚ÑÑ Ð¿Ð¾ etc/datatype.xml /model/datatypes/datatype/attribute
 *
 * @see PXTypeDescription
 *

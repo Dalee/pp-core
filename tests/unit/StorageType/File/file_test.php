@@ -25,7 +25,7 @@ class FileTypeTest extends UnitTestCase {
 	}
 		
 	function testProceedFile() {
-		// ÓÏÚÄÁÄÉÍ ×ÒÅÍÅÎÎÙÊ ÆÁÊÌ ÄÌÑ ÔÅÓÔÁ
+		// ÑÐ¾Ð·Ð´Ð°Ð´Ð¸Ð¼ Ð²Ñ€ÐµÐ¼ÐµÐ½Ð½Ñ‹Ð¹ Ñ„Ð°Ð¹Ð» Ð´Ð»Ñ Ñ‚ÐµÑÑ‚Ð°
 		$testTmp = $this->aiTestPath.'tmp_name.txt';
 		
 		if (!file_exists($testTmp)) {

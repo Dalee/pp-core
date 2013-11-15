@@ -14,7 +14,7 @@ class PXInputDateCalendar extends PXInputDateTime {
 		$delim = '<input type="text" class="delim" value="." ' . $this->disable . ' readonly tabindex="-1">';
 
 		$setNullButton = $this->notNull ? '' : <<<HTML
-		<button onclick="with(this.form)ctrlCalendar.calendar{$saneName}.SetNull(this.form.returnDate{$saneName}, this.form.returnDay{$saneName}, this.form.returnMonth{$saneName}, this.form.returnYear{$saneName}); return false;" {$this->disable}>обнулить</button>
+		<button onclick="with(this.form)ctrlCalendar.calendar{$saneName}.SetNull(this.form.returnDate{$saneName}, this.form.returnDay{$saneName}, this.form.returnMonth{$saneName}, this.form.returnYear{$saneName}); return false;" {$this->disable}>п╬п╠п╫я┐п╩п╦я┌я▄</button>
 HTML;
  
 		$html = <<<HTML
@@ -27,7 +27,7 @@ HTML;
 
 				<iframe src="tools/calendar/index.html" name="calendar{$saneName}" id="calendar{$saneName}" scrolling="no" frameborder="0"></iframe>
 
-				<button title="календарь" class="calendar" onfocus="this.blur();" onclick="with(this.form)ctrlCalendar.calendar{$saneName}.DoModal(this.form.returnDate{$saneName}, this.form.returnDay{$saneName}, this.form.returnMonth{$saneName}, this.form.returnYear{$saneName}); return false;" {$this->disable}></button>
+				<button title="п╨п╟п╩п╣п╫п╢п╟я─я▄" class="calendar" onfocus="this.blur();" onclick="with(this.form)ctrlCalendar.calendar{$saneName}.DoModal(this.form.returnDate{$saneName}, this.form.returnDay{$saneName}, this.form.returnMonth{$saneName}, this.form.returnYear{$saneName}); return false;" {$this->disable}></button>
 
 				{$setNullButton}
 			</span>

@@ -25,11 +25,11 @@ class PXModuleAuth extends PXModule {
 		);
 
 		if ($user->IsAuthed()) {
-			$layout->assign('LOGIN.ERROR', '<strong class="error">Нет доступа.</strong>');
+			$layout->assign('LOGIN.ERROR', '<strong class="error">п²п╣я┌ п╢п╬я│я┌я┐п©п╟.</strong>');
 			$user->unAuth();
 
 		} else if ($request->GetAction() == 'error') {
-			$layout->assign('LOGIN.ERROR', '<strong class="error">Введенная комбинация логина/пароля неверна.</strong> ');
+			$layout->assign('LOGIN.ERROR', '<strong class="error">п▓п╡п╣п╢п╣п╫п╫п╟я▐ п╨п╬п╪п╠п╦п╫п╟я├п╦я▐ п╩п╬пЁп╦п╫п╟/п©п╟я─п╬п╩я▐ п╫п╣п╡п╣я─п╫п╟.</strong> ');
 		}
 	}
 
@@ -78,19 +78,19 @@ class PXModuleAuth extends PXModule {
 
 		switch ($request->getVar('action')) {
 			case 'exit':
-				$audit->info('Выход из системы', 'suser'.'/'. $user->id);
+				$audit->info('п▓я▀я┘п╬п╢ п╦п╥ я│п╦я│я┌п╣п╪я▀', 'suser'.'/'. $user->id);
 				$user->UnAuth();
 				return 0;
 				break;
 
 			default:
 				if ($user->IsAuthed()) {
-					$audit->info('Вход в систему', 'suser'.'/'. $user->id);
+					$audit->info('п▓я┘п╬п╢ п╡ я│п╦я│я┌п╣п╪я┐', 'suser'.'/'. $user->id);
 					$user->Auth();
 					return 0;
 
 				} else {
-					$audit->error('Неудачный вход в систему', 'suser' .'/', 'ERROR');
+					$audit->error('п²п╣я┐п╢п╟я┤п╫я▀п╧ п╡я┘п╬п╢ п╡ я│п╦я│я┌п╣п╪я┐', 'suser' .'/', 'ERROR');
 					return 1;
 				}
 				break;

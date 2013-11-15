@@ -79,8 +79,8 @@ function openImagePopupWindow(url, width, height, title) {
 	w.document.write('<html><head><title>'+title+'</title>');
 	w.document.write('<style>html, body { padding: 0; margin: 0; background: #FFFFFF;  height: 100%; position: relative; cursor: hand;}');
 	w.document.write(' img {position: absolute; left: 50%; top: 50%; margin-left: -'+Math.ceil(width / 2)+'px; margin-top: -'+Math.ceil(height / 2)+'px;} </style>');
-	w.document.write('</head><body onclick="window.close();" title="'+title+"\n\n"+'îÁÖÍÉÔÅ ÎÁ ËÁÒÔÉÎËÕ'+"\n"+'ÞÔÏÂÙ ÚÁËÒÙÔØ ÏËÎÏ">');
-	w.document.write('<img src="'+url+'" width="'+width+'" height="'+height+'" border="0" alt="'+title+"\n\n"+'îÁÖÍÉÔÅ ÎÁ ËÁÒÔÉÎËÕ'+"\n"+'ÞÔÏÂÙ ÚÁËÒÙÔØ ÏËÎÏ"></body></html>');
+	w.document.write('</head><body onclick="window.close();" title="'+title+"\n\n"+'ÐÐ°Ð¶Ð¼Ð¸Ñ‚Ðµ Ð½Ð° ÐºÐ°Ñ€Ñ‚Ð¸Ð½ÐºÑƒ'+"\n"+'Ñ‡Ñ‚Ð¾Ð±Ñ‹ Ð·Ð°ÐºÑ€Ñ‹Ñ‚ÑŒ Ð¾ÐºÐ½Ð¾">');
+	w.document.write('<img src="'+url+'" width="'+width+'" height="'+height+'" border="0" alt="'+title+"\n\n"+'ÐÐ°Ð¶Ð¼Ð¸Ñ‚Ðµ Ð½Ð° ÐºÐ°Ñ€Ñ‚Ð¸Ð½ÐºÑƒ'+"\n"+'Ñ‡Ñ‚Ð¾Ð±Ñ‹ Ð·Ð°ÐºÑ€Ñ‹Ñ‚ÑŒ Ð¾ÐºÐ½Ð¾"></body></html>');
 
 	w.document.close();
 	w.focus();

@@ -3,7 +3,7 @@
 class PXEngineIndex extends PXEngine {
 	var  $layout = array('factory' => 'PXUserHTMLLayout');
 
-	function __construct() {     // éÎÉÃÉÁÌÉÚÁÃÉÑ ÏÓÎÏ×ÎÙÈ ÏÂßÅËÔÏ× ÐÒÉÌÏÖÅÎÉÑ
+	function __construct() {     // Ð˜Ð½Ð¸Ñ†Ð¸Ð°Ð»Ð¸Ð·Ð°Ñ†Ð¸Ñ Ð¾ÑÐ½Ð¾Ð²Ð½Ñ‹Ñ… Ð¾Ð±ÑŠÐµÐºÑ‚Ð¾Ð² Ð¿Ñ€Ð¸Ð»Ð¾Ð¶ÐµÐ½Ð¸Ñ
 		parent::profilerStart();
 		parent::__construct();
 
@@ -21,7 +21,7 @@ class PXEngineIndex extends PXEngine {
 	function fillLayout() {
 		$this->layout->setApp(PXRegistry::getApp());
 
-		// ðÅÒÅÄÁÞÁ ÄÁÎÎÙÈ × ÛÁÂÌÏÎÉÚÁÔÏÒ
+		// ÐŸÐµÑ€ÐµÐ´Ð°Ñ‡Ð° Ð´Ð°Ð½Ð½Ñ‹Ñ… Ð² ÑˆÐ°Ð±Ð»Ð¾Ð½Ð¸Ð·Ð°Ñ‚Ð¾Ñ€
 		$this->layout->assign('app',            PXRegistry::getApp(),      true);
 		$this->layout->assign('user',           PXRegistry::getUser(),     true);
 		$this->layout->assign('request',        PXRegistry::getRequest(),  true);

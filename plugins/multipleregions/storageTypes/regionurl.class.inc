@@ -1,7 +1,7 @@
 <?php
 /**
- * óÔÒÏËÁ URL ÒÅÇÉÏÎÏ×
- * ÷ ÂÁÚÅ ÍÏÖÅÔ ÈÒÁÎÉÔØÓÑ ËÁË VARCHAR(x), ÔÁË É TEXT
+ * Ð¡Ñ‚Ñ€Ð¾ÐºÐ° URL Ñ€ÐµÐ³Ð¸Ð¾Ð½Ð¾Ð²
+ * Ð’ Ð±Ð°Ð·Ðµ Ð¼Ð¾Ð¶ÐµÑ‚ Ñ…Ñ€Ð°Ð½Ð¸Ñ‚ÑŒÑÑ ÐºÐ°Ðº VARCHAR(x), Ñ‚Ð°Ðº Ð¸ TEXT
  *
  * displayType URLTEXT
  * storageType regionurl

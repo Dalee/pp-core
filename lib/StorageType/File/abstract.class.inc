@@ -1,6 +1,6 @@
 <?php
 /**
- * âÁÚÏ×ÙÊ ËÌÁÓÓ ÄÌÑ ÒÁÂÏÔÙ Ó ÆÁÊÌÁÍÉ
+ * Ð‘Ð°Ð·Ð¾Ð²Ñ‹Ð¹ ÐºÐ»Ð°ÑÑ Ð´Ð»Ñ Ñ€Ð°Ð±Ð¾Ñ‚Ñ‹ Ñ Ñ„Ð°Ð¹Ð»Ð°Ð¼Ð¸
  */
 class PXStorageTypeAbstractFile extends PXStorageType {
 

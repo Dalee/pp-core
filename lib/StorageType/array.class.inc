@@ -1,9 +1,9 @@
 <?php
 /**
- * íÁÓÓÉ×
- * ÷ ÂÁÚÅ ÍÏÖÅÔ ÈÒÁÎÉÔØÓÑ ËÁË integer[], string[]
- * òÅÁÌÉÚÁÃÉÑ ÐÒÏÉÇÒÙ×ÁÅÔ ÐÏ ÓËÏÒÏÓÔÉ PXStorageTypeIntArray É PXStorageTypeFlatIntArray,
- * ÐÏÜÔÏÍÕ ÄÌÑ integer[] ÎÅ ÒÅËÏÍÅÎÄÕÅÔÓÑ.
+ * ÐœÐ°ÑÑÐ¸Ð²
+ * Ð’ Ð±Ð°Ð·Ðµ Ð¼Ð¾Ð¶ÐµÑ‚ Ñ…Ñ€Ð°Ð½Ð¸Ñ‚ÑŒÑÑ ÐºÐ°Ðº integer[], string[]
+ * Ð ÐµÐ°Ð»Ð¸Ð·Ð°Ñ†Ð¸Ñ Ð¿Ñ€Ð¾Ð¸Ð³Ñ€Ñ‹Ð²Ð°ÐµÑ‚ Ð¿Ð¾ ÑÐºÐ¾Ñ€Ð¾ÑÑ‚Ð¸ PXStorageTypeIntArray Ð¸ PXStorageTypeFlatIntArray,
+ * Ð¿Ð¾ÑÑ‚Ð¾Ð¼Ñƒ Ð´Ð»Ñ integer[] Ð½Ðµ Ñ€ÐµÐºÐ¾Ð¼ÐµÐ½Ð´ÑƒÐµÑ‚ÑÑ.
  *
  * displayType HIDDEN, STATIC, TABLE
  * storageType array

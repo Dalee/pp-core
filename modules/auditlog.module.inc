@@ -3,7 +3,7 @@
 //CREATE VIEW log_audit_view AS SELECT "id", "ts", to_date(ts, 'DD.MM.YYYY') as date, "level", "type", "source", "user", "ip", "description" FROM log_audit;
 
 /**
- * Класс модуля вывода Журнала Аудита.
+ * п п╩п╟я│я│ п╪п╬п╢я┐п╩я▐ п╡я▀п╡п╬п╢п╟ п√я┐я─п╫п╟п╩п╟ п░я┐п╢п╦я┌п╟.
  *
  * @author Andrey Nikolaev <na@index20.ru>
  */

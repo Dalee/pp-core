@@ -26,9 +26,9 @@ class DateTest extends UnitTestCase {
             '<input maxlength="4" type="text" class="last" name="test_field[year]"  id="returnYeartest_field"  value="2009">';
             '<input type="hidden" id="returnDatetest_field" value="">';
             '<iframe src="tools/calendar/index.html" name="calendartest_field" id="calendartest_field" scrolling="no" frameborder="0"></iframe>';
-            '<button title="календарь" class="calendar" onFocus="this.blur();"
+            '<button title="п╨п╟п╩п╣п╫п╢п╟я─я▄" class="calendar" onFocus="this.blur();"
              onclick="with(this.form)ctrlCalendar.calendartest_field.DoModal(this.form.returnDatetest_field, this.form.returnDaytest_field, this.form.returnMonthtest_field, this.form.returnYeartest_field);return false;"></button>';
-            '<button onclick="with(this.form)ctrlCalendar.calendartest_field.SetNull(this.form.returnDatetest_field, this.form.returnDaytest_field, this.form.returnMonthtest_field, this.form.returnYeartest_field);return false;">обнулить</button>';
+            '<button onclick="with(this.form)ctrlCalendar.calendartest_field.SetNull(this.form.returnDatetest_field, this.form.returnDaytest_field, this.form.returnMonthtest_field, this.form.returnYeartest_field);return false;">п╬п╠п╫я┐п╩п╦я┌я▄</button>';
             '</div>';
          */
 

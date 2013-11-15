@@ -42,7 +42,7 @@ class PXModuleFile extends PXModule {
 		}
 
 		$this->layout->setOneColumn();
-		$this->layout->assign('INNER.0.0', '<div class="error">Нет ни одного каталога <strong>доступного</strong> для просмотра!!!</div>');
+		$this->layout->assign('INNER.0.0', '<div class="error">п²п╣я┌ п╫п╦ п╬п╢п╫п╬пЁп╬ п╨п╟я┌п╟п╩п╬пЁп╟ <strong>п╢п╬я│я┌я┐п©п╫п╬пЁп╬</strong> п╢п╩я▐ п©я─п╬я│п╪п╬я┌я─п╟!!!</div>');
 		return true;
 	}
 
@@ -99,8 +99,8 @@ class PXModuleFile extends PXModule {
 		$_ =
 <<<HTML
 <div class="upload-buttons">
-	<input type="button" value="Новый каталог" onclick="javascript:return CreateDir('%DIR%', '%HREF%', '%SIDE%');">
-	<input type="button" value="Новый файл" onclick="ShowUploadForm('%SIDE%UploadForm');">
+	<input type="button" value="п²п╬п╡я▀п╧ п╨п╟я┌п╟п╩п╬пЁ" onclick="javascript:return CreateDir('%DIR%', '%HREF%', '%SIDE%');">
+	<input type="button" value="п²п╬п╡я▀п╧ я└п╟п╧п╩" onclick="ShowUploadForm('%SIDE%UploadForm');">
 </div>
 
 <form action="action.phtml" method="POST" enctype="multipart/form-data" id="%SIDE%UploadForm" class="uploader hide">
@@ -113,9 +113,9 @@ class PXModuleFile extends PXModule {
 	<input type="hidden" name="side"    value="%SIDE%"   >
 	<input type="hidden" name="name"    value="%NAME%"   >
 
-	Выберите файл:<input type="file" name="uploadfile" size="10"/> или введите url:<input type="text" name="uploadfileurl">
+	п▓я▀п╠п╣я─п╦я┌п╣ я└п╟п╧п╩:<input type="file" name="uploadfile" size="10"/> п╦п╩п╦ п╡п╡п╣п╢п╦я┌п╣ url:<input type="text" name="uploadfileurl">
 
-	<input type="submit" value="Закачать">
+	<input type="submit" value="п≈п╟п╨п╟я┤п╟я┌я▄">
 </form>
 HTML;
 
@@ -207,13 +207,13 @@ HTML;
 				$listing->getList($curDir);
 				$listing->setDecorator(new PXHTMLFileListingLink($href, 'l', $rName));
 
-				$this->layout->assign('OUTER.LEFTCONTROLS', '<button class="unlink" onclick="return UnLinkFile(\''.$rName.'\');">Отвязать</button>');
+				$this->layout->assign('OUTER.LEFTCONTROLS', '<button class="unlink" onclick="return UnLinkFile(\''.$rName.'\');">п·я┌п╡я▐п╥п╟я┌я▄</button>');
 
 				$html = '<table class="filemanager"><tbody><tr><td><div class="content">'.$listing->html().'</div></td></tr></tbody></table>';
 				break;
 
 			default:
-				$html = '<div class="error">Действие не определено</div>';
+				$html = '<div class="error">п■п╣п╧я│я┌п╡п╦п╣ п╫п╣ п╬п©я─п╣п╢п╣п╩п╣п╫п╬</div>';
 				break;
 		}
 
@@ -227,14 +227,14 @@ HTML;
 			$object = array();
 			$form   = new PXAdminForm($object, null);
 
-			$this->layout->assign('OUTER.TITLE', 'Редактирование файла &laquo;'.$this->mFile.'&raquo;');
+			$this->layout->assign('OUTER.TITLE', 'п═п╣п╢п╟п╨я┌п╦я─п╬п╡п╟п╫п╦п╣ я└п╟п╧п╩п╟ &laquo;'.$this->mFile.'&raquo;');
 			$form->leftControls();
 			$form->rightControls();
 
 			return $form->editTextFileForm($this->mFile, $this->catalog);
 
 		} else {
-			return 'Редактирование файлов подобного формата еще не реализовано';
+			return 'п═п╣п╢п╟п╨я┌п╦я─п╬п╡п╟п╫п╦п╣ я└п╟п╧п╩п╬п╡ п©п╬п╢п╬п╠п╫п╬пЁп╬ я└п╬я─п╪п╟я┌п╟ п╣я┴п╣ п╫п╣ я─п╣п╟п╩п╦п╥п╬п╡п╟п╫п╬';
 		}
 	}
 
@@ -384,11 +384,11 @@ HTML;
 		if ($file && $file != 'none' && $file['name'] && is_writable($this->catalog)) {
 			$filename = _TranslitFilename(_stripBadFileChars(stripslashes($file['name'])));
 			if (!@copy($file['tmp_name'], $this->catalog.$filename)) {
-				FatalError('Не удалось скопировать файл '.$file['tmp_name'].' в каталог '.$this->catalog);
+				FatalError('п²п╣ я┐п╢п╟п╩п╬я│я▄ я│п╨п╬п©п╦я─п╬п╡п╟я┌я▄ я└п╟п╧п╩ '.$file['tmp_name'].' п╡ п╨п╟я┌п╟п╩п╬пЁ '.$this->catalog);
 			}
 
 			if (!@chmod($this->catalog.$filename, 0664)) {
-				FatalError('Не удалось изменить права доступа файлу '.$this->catalog.$filename);
+				FatalError('п²п╣ я┐п╢п╟п╩п╬я│я▄ п╦п╥п╪п╣п╫п╦я┌я▄ п©я─п╟п╡п╟ п╢п╬я│я┌я┐п©п╟ я└п╟п╧п╩я┐ '.$this->catalog.$filename);
 			}
 		}
 	}
@@ -411,11 +411,11 @@ HTML;
 						@fwrite($fp1, $fileSource);
 						@fclose($fp1);
 					} else {
-						FatalError('Не удалось открыть/создать файл '.$filename);
+						FatalError('п²п╣ я┐п╢п╟п╩п╬я│я▄ п╬я┌п╨я─я▀я┌я▄/я│п╬п╥п╢п╟я┌я▄ я└п╟п╧п╩ '.$filename);
 					}
 
 					if (!@chmod($filename, 0664)) {
-						FatalError('Не удалось изменить права доступа файлу '.$filename);
+						FatalError('п²п╣ я┐п╢п╟п╩п╬я│я▄ п╦п╥п╪п╣п╫п╦я┌я▄ п©я─п╟п╡п╟ п╢п╬я│я┌я┐п©п╟ я└п╟п╧п╩я┐ '.$filename);
 					}
 
 					if(preg_match_all("#/([\w\-]+\.\w{1,5})(\?.*)?$#", $url, $matches, PREG_SET_ORDER) && isset($matches[0][0])) {
