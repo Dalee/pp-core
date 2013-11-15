@@ -1,6 +1,6 @@
 <?php
 
-$defaultVersion = 'v1.5';
+$defaultVersion = 'v1.6';
 
 // версия и ревизия PP
 $version  = file_exists(BASEPATH . '/libpp/VERSION')  ? file_get_contents(BASEPATH . '/libpp/VERSION')  : $defaultVersion;
