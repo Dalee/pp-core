@@ -65,6 +65,8 @@ class PXEngineIndex extends PXEngine {
 		$this->layout->assign('requestPath',    PXRegistry::getRequest()->getPathAsString());
 		$this->layout->assign('REGEX_MOD',      REGEX_MOD);
 		$this->layout->assign('DEFAULT_CHARSET', DEFAULT_CHARSET);
+		$this->layout->assign('CHARSET_UTF8',    CHARSET_UTF8);
+		$this->layout->assign('CHARSET_WINDOWS', CHARSET_WINDOWS);
 	}
 
 	function html() {
