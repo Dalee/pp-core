@@ -153,7 +153,7 @@ class PXSearch {
 		return $result;
 	}
 
-	function strip($s) {
+	public static function strip($s) {
 		$s = preg_replace("/<SCRIPT.*?\\/SCRIPT>/is".REGEX_MOD, '', $s); //
 		$s = preg_replace("/<.*?>/s".REGEX_MOD, ' ', $s);
 		$s = preg_replace("/&nbsp;/is".REGEX_MOD, ' ', $s);
