@@ -147,7 +147,7 @@ class PXModuleAdvert extends PXModule {
 
 					if (!empty($object)) {
 						$bannerTitle  = ($mode == 'ctr' ? 'CTR' : ($mode == 'clicks' ? 'Клики' : 'Показы')) .  ' для ';
-						$bannerTitle .= '"'. substr(strip_tags($object['title']), 0, 32) . '" ('.$months[$month].' '.$year.')';
+						$bannerTitle .= '"'. mb_substr(strip_tags($object['title']), 0, 32) . '" ('.$months[$month].' '.$year.')';
 					} else {
 						$bannerTitle = "Баннер не найден";
 					}
@@ -263,7 +263,7 @@ SQL;
 			//show textual content
 			default:
 				$object = $db->GetObjectByID($app->types[$request->GetFormat()], $request->GetId());
-				$title = isset($object['title']) ? substr(strip_tags($object['title']), 0, 32):'баннер не найден';
+				$title = isset($object['title']) ? mb_substr(strip_tags($object['title']), 0, 32):'баннер не найден';
 
 
 				$layout->SetOuterForm('action.phtml', 'POST', 'multipart/form-data', true);
