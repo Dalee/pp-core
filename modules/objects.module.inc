@@ -134,13 +134,14 @@ class PXModuleObjects extends PXModule {
 		}
 
 		$form = new PXAdminForm($object, $this->datatype);
-		$form->disable = $this->popupCheckAccess($object);
+		$form->setDisabledStatus($this->popupCheckAccess($object));
 		$form->setAction($this->request->getAction());
 		$form->setArea('objects');
 		$form->setChildren($possibleFormats, $counts);
 		$form->setLinks($this->popupLinks($object));
 		$form->setTitle($this->popupSetTitle($object));
 		$form->getForm();
+		$form->setDisabledStatus(false); //release global NLAbstractHTMLForm lock!
 	}
 
 	function &getDatatype($varName='format') {

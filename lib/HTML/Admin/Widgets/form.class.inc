@@ -72,6 +72,11 @@ class PXAdminForm extends PXAdminComplexWidget {
 		$this->linksParam = $linksParam;
 	}
 
+	function setDisabledStatus($status) {
+		$this->disable = !!$status;
+		NLAbstractHTMLForm::setDisabledStatus($this->disable);
+	}
+
 	function form() {
 		return $this->mainForm();
 	}

@@ -5,16 +5,16 @@ define('FLASH_DEFAULT', 'i/v.swf');
 define('FLASH_DEFAULT_FULL', '/admin/i/v.swf');
 
 class NLAbstractHTMLForm {
-	var $disable;
-
-	function NLAbstractHTMLForm() {
-		$this->disable = false;
-	}
+	static $disable = false;
 
 	static
 	function _DisabledStatus() {
-		// isset($this) -- for PHP5
-		return (isset($this) && isset($this->disable) && $this->disable);
+		return self::$disable;
+	}
+
+	public static
+	function setDisabledStatus($status) {
+		self::$disable = !!$status;
 	}
 
 	static
