@@ -29,9 +29,9 @@ XML_SED=$(find "$PROJECT_ROOT/local" \
 for f in $LOCAL; do
 	recode koi8-r..utf-8 $f
 done
-for f in $LIBPP; do
-	recode koi8-r..utf-8 $f
-done
+#for f in $LIBPP; do
+#	recode koi8-r..utf-8 $f
+#done
 for f in $XML_SED; do
 	sed "s/iso-8859-1/utf-8/" -i $f 
 done
