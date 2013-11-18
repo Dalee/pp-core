@@ -192,7 +192,7 @@ class PXModuleObjects extends PXModule {
 		$title = '';
 		if ($this->request->getId() > 0) {
 			if(isset($object) && isset($object['title'])) {
-				$title = '&laquo;'.substr(strip_tags($object['title']), 0, 32).'&raquo; &#8212; ';
+				$title = '&laquo;'.mb_substr(strip_tags($object['title']), 0, 32).'&raquo; &#8212; ';
 			}
 			$title .= ' Редактирование';
 		} else {
