@@ -185,11 +185,7 @@ class NLMailMessage {
 
 	function _getSubject() {
 		if (mb_strlen($this->subject)) {
-			if (preg_match("/[ю-Ъ]/".REGEX_MOD, $this->subject)) {
-				$_subject = "=?".$this->charset."?B?".base64_encode($this->subject)."?=";
-			} else {
-				$_subject = $this->subject;
-			}
+			$_subject = "=?".$this->charset."?B?".base64_encode($this->subject)."?=";
 		} else {
 			$_subject = NULL;
 		}
