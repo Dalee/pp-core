@@ -1,11 +1,12 @@
 <?php
 	class PXModuleMultiopsMasschange extends PXModule{
-		private 
+		private
 			$helper;
 		
-		public 
+		public
 			function adminJson(){
 				$this->settings['helpers'] = @array_merge((array)(BASEPATH . $this->settings['helpers']), array(dirname(__FILE__) . '/Helpers/'));
+				$this->helper = new stdClass();
 				$this->helper->objectType  = $this->request->getVar('format');
 				$this->helper->operation   = preg_replace("#[^a-z0-9_-]#i", '', $this->request->getVar('handler'));
 				$this->helper->options     = $this->request->getVar('options');
@@ -27,7 +28,7 @@
 				return $this->makeOperation();
 			}
 		
-		private 
+		private
 			function makeOperation(){
 				$RESULT = null;
 				
