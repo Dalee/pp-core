@@ -62,7 +62,14 @@ class PXModuleAdvert extends PXModule {
 		}
 
 		// Load additional children tables
-		if (is_a($campaigns, 'PXAdminTreeObjects') && count($allowedChilds = $this->app->getAllowedChildsKeys($this->dtCampaign, $campaigns->get($sid))) > 1) {
+		if (!is_a($campaigns, 'PXAdminTreeObjects')){
+			return;
+		}
+
+		$campaign      = $campaigns->get($sid);
+		$allowedChilds = $this->app->getAllowedChildsKeys($this->dtCampaign, $campaign);
+
+		if(count($allowedChilds) > 1) {
 			foreach(array_diff($allowedChilds, array($this->dtBanner)) as $extra_dt) {
 				if (!isset($this->app->types[$extra_dt])) {
 						$this->layout->append('INNER.1.0', '<h1 class="error">Формат '.$extra_dt.' не описан</h1>');
