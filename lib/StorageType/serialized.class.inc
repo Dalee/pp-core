@@ -53,7 +53,7 @@ class PXStorageTypeSerialized extends PXStorageType {
 				$v = unserialize($w);
 			}
 			elseif ($json) {
-				$v = json_decode_koi($w);
+				$v = json_decode_koi($w, true);
 			}
 
 		}
