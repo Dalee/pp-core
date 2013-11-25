@@ -42,6 +42,13 @@ if (! function_exists('mb_ucfirst')) {
 		return $l.mb_substr($string, 1);
 	}
 }
+if (! function_exists('mb_lcfirst')) {
+	function mb_lcfirst($string) {
+		$l = mb_substr($string, 0, 1);
+		$l = mb_strtolower($l);
+		return $l.mb_substr($string, 1);
+	}
+}
 
 // mbstring compatibility layer
 if (! defined('MB_OVERLOAD_STRING')) {
@@ -64,7 +71,7 @@ if (! defined('MB_OVERLOAD_STRING')) {
 
 	function mb_strrpos() {
 		$a = func_get_args();
-		return call_user_func_array('mb_strrpos', $a);		
+		return call_user_func_array('mb_strrpos', $a);
 	}
 
 	function mb_strlen() {
