@@ -138,7 +138,7 @@
 		}
 
 		public function bulkUpdate($tableName, $fieldName, $valueList) {
-			$query = sprintf('UPDATE %s SET %s = ? WHERE id = ?', $tableName, $jsonName);
+			$query = sprintf('UPDATE %s SET %s = ? WHERE id = ?', $tableName, $fieldName);
 			if (! ($stmt = $this->pdo->prepare($query))) {
 				d2($this->pdo->errorInfo());
 				exit();
