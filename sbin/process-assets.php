@@ -17,7 +17,7 @@
 	ini_set('memory_limit', '512M');
 	umask(0);
 
-	//require_once (BASEPATH . 'libpp/lib/common.defines.inc');
+	require_once (BASEPATH . 'libpp/lib/common.defines.inc');
 	require_once (BASEPATH . 'libpp/lib/HTML/inlineimage.class.inc');
 	require_once (BASEPATH . 'libpp/vendor/CSSMin/CssMin.php');
 	require_once (BASEPATH . 'libpp/lib/Common/functions.compatibility.inc');
@@ -36,7 +36,7 @@
 		die(1);
 	}
 
-	// 
+	//
 	class DirectorySubtree {
 		protected $rootPath = null;
 		protected $data = null;
@@ -65,11 +65,9 @@
 		}
 
 		protected function foundedFile($fileName, $fullPath) {
-			$subdirPath = ltrim(mb_substr($fullPath, mb_strlen($this->rootPath), 0), '/');
-
+			$subdirPath = ltrim(mb_substr($fullPath, mb_strlen($this->rootPath)), '/');
 			$diff = mb_strlen($subdirPath);
 			$subdirPath = trim(mb_substr($subdirPath, 0, ($diff - mb_strlen($fileName))), '/');
-
 			return array (
 				'filename' => $fileName,
 				'fullpath' => $fullPath,
@@ -237,7 +235,7 @@
 	}
 
 	// add protection code
-	// 
+	//
 	$isProtectionDisabled = (isset($argv[1]) && strcmp($argv[1], 'i_am_chosen_one') == 0);
 
 	if (!$isProtectionDisabled) {
@@ -303,7 +301,7 @@
 		$tempFile = tempnam(BASEPATH . 'tmp', 'js');
 		print ("Processing {$sourceFile} thru {$tempFile} to {$destinationFile}\n");
 
-		if (PXHtmlAssets::getInstance()->assets_yui && 
+		if (PXHtmlAssets::getInstance()->assets_yui &&
 			($compressorBinary = FindSystemFile('yui-compressor'))) {
 
 			// wtf? $outputFile = tempnam($bundleTypeRoot, $bundleName);
