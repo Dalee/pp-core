@@ -194,7 +194,7 @@ define('PX_ENGINE_SBIN',    3);
 
 define('DT_STRUCT', 'struct');
 
-if (!IS_WIN) {
+if (!defined('PP_DONT_FORCE_SUDO') && !IS_WIN) {
 	$system_user = posix_getpwnam(SYSTEM_USER);
 
 	switch (posix_getuid()) {

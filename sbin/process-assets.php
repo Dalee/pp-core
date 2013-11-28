@@ -12,6 +12,7 @@
 	define('WORKPATH',   BASEPATH . 'local/htdocs');
 	define('SOURCEPATH', BASEPATH . 'local/htdocs');
 	define('DEBUGMODE',  false);
+	define('PP_DONT_FORCE_SUDO', 1);
 
 	set_time_limit(0);
 	ini_set('memory_limit', '512M');
