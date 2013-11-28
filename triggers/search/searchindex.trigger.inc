@@ -1,6 +1,6 @@
 <?php
 class PXTriggerSearchSearchIndex extends PXAbstractSearchTrigger {
-	function onIndexCronGetSelectCols($formatid, array &$cols) {
+	function onIndexCronGetSelectCols($formatid, &$cols) {
 		$cols[] = 'status';
 
 		if(PXRegistry::getTypes($formatid)->parent != null) {

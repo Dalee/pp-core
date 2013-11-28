@@ -1,21 +1,21 @@
 <?php
 abstract class PXAbstractSearchTrigger extends PXAbstractTrigger {
-	function onBeforeSearchStems($config, array &$where) {
+	function onBeforeSearchStems($config, &$where) {
 	}
 
-	function onBeforeSearchObjects($formatid, array &$where) {
+	function onBeforeSearchObjects($formatid, &$where) {
 	}
 
-	function onAfterSearchObjects($formatid, array &$row) {
+	function onAfterSearchObjects($formatid, &$row) {
 	}
 
-	function onIndexCronGetSelectCols($formatid, array &$cols) {
+	function onIndexCronGetSelectCols($formatid, &$cols) {
 	}
 
-	function onIndexCronStemWeight($formatid, array &$stemW, array &$row) {
+	function onIndexCronStemWeight($formatid, &$stemW, &$row) {
 	}
 
-	function onIndexCronCanIndexRow($formatid, array &$row, NLTree &$tree) {
+	function onIndexCronCanIndexRow($formatid, &$row, &$tree) {
 		return true;
 	}
 }
