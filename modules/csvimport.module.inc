@@ -278,7 +278,7 @@ HTML;
 		$str = str_replace("\\r", "\r", $str);
 		$str = str_replace("--%--", ";", $str);
 		$str = str_replace("'", "&#146;", $str);
-		$str = ereg_replace("\"([^\"]|$)", "\\1", $str);
+		$str = preg_replace("/\"([^\"]|$)/", "\\1", $str);
 		$str = addslashes($str);
 		$str = trim($str);
 		return $str;
