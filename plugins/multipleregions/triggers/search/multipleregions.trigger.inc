@@ -48,7 +48,7 @@ class PXTriggerSearchMultipleregions extends PXAbstractSearchTrigger {
 		$where[] = '('.implode(' OR ', $subWhere).')';
 	}
 
-	function onIndexCronGetSelectCols($formatid, array &$cols) {
+	function onIndexCronGetSelectCols($formatid, &$cols) {
 		if(PXRegistry::getTypes($formatid)->parent != null) {
 			$cols[] = 'parent';
 		}
@@ -58,7 +58,7 @@ class PXTriggerSearchMultipleregions extends PXAbstractSearchTrigger {
 		}
 	}
 
-	function onIndexCronStemWeight($formatid, array &$stemW, array $row) {
+	function onIndexCronStemWeight($formatid, &$stemW, $row) {
 		if (isset($row[PXMultiRegions::REGION_MARK])) {
 			$stemW[PXMultiRegions::REGION_MARK] = $row[PXMultiRegions::REGION_MARK];
 		} else {
