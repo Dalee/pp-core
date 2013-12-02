@@ -266,6 +266,9 @@ HTML;
 		return $this->_GetCsvSource($filename, $length);
 	}
 
+	/**
+	 * @todo Use fgetcsv instead
+	 */
 	function _PrepareString($str) {
 		if (!($length = mb_strlen($str))) {
 			return NULL;
@@ -278,7 +281,7 @@ HTML;
 		$str = str_replace("\\r", "\r", $str);
 		$str = str_replace("--%--", ";", $str);
 		$str = str_replace("'", "&#146;", $str);
-		$str = preg_replace("/\"([^\"]|$)/", "\\1", $str);
+		$str = preg_replace('/"([^"]|$)/'.REGEX_MOD, "\\1", $str);
 		$str = addslashes($str);
 		$str = trim($str);
 		return $str;
