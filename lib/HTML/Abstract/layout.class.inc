@@ -288,7 +288,7 @@ class NLAbstractLayout {
 		parse_str($href, $href_vars);
 
 		foreach ($getData as $k=>$v) {
-			if (strval($v) != "" && $k != $key && empty($href_vars[$k])) {
+			if (((is_array($v) && count($v)) || strval($v) !== "") && $k != $key && empty($href_vars[$k])) {
 				$href = appendParamToUrl($href, $k, $v);
 			}
 		}
