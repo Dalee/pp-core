@@ -58,7 +58,7 @@ class PXTriggerSearchMultipleregions extends PXAbstractSearchTrigger {
 		}
 	}
 
-	function onIndexCronStemWeight($formatid, &$stemW, $row) {
+	function onIndexCronStemWeight($formatid, &$stemW, &$row) {
 		if (isset($row[PXMultiRegions::REGION_MARK])) {
 			$stemW[PXMultiRegions::REGION_MARK] = $row[PXMultiRegions::REGION_MARK];
 		} else {

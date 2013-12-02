@@ -187,6 +187,7 @@ class NLAbstractHTMLForm {
 		return $input->html();
 	}
 
+	static
 	function BuildLinkToFile($name, $value) {
 		$link = new PXInputLinkToFile($name, $value);
 		$link->setDisabled(NLAbstractHTMLForm::_DisabledStatus());
