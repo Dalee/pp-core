@@ -12,7 +12,7 @@
  */
 class PXDisplayTypeText extends PXDisplayType {
 	function buildInput($field, $object, $param=NULL) {
-		$value     = isset($object[$field->name]) ? htmlspecialchars($object[$field->name], ENT_COMPAT|ENT_HTML401, DEFAULT_CHARSET) : NULL;
+		$value     = isset($object[$field->name]) ? $object[$field->name] : NULL;
 		$height    = isset($field->displayTypeArgs[1])  ? (int)$field->displayTypeArgs[1]   : 0;
 		$maxlength = !empty($field->displayTypeArgs[2]) ? (int)$field->displayTypeArgs[2]   : NULL;
 		$wrap      = !empty($field->displayTypeArgs[3]) ? trim($field->displayTypeArgs[3])  : "soft";
@@ -22,10 +22,15 @@ class PXDisplayTypeText extends PXDisplayType {
 
 	function buildCell($field, $object, $param=NULL) {
 		$trunc = isset($field->displayTypeArgs[2]) && (int)$field->displayTypeArgs[2] > 0 ? (int)$field->displayTypeArgs[2] : 50;
-		$value = strip_tags($object[$field->name]);
-		$value = mb_strlen($value) > $trunc ? mb_substr($value, 0, $trunc).'&hellip;' : $value;
-		
-		return $this->getSubDirectoryIfExists($field, $object, $value);
+		$value = isset($object[$field->name]) ? $object[$field->name] : '';
+		$value = $this->getSubDirectoryIfExists($field, $object, $value);
+
+		if(mb_strlen($value) > $trunc) {
+			$value = htmlspecialchars(mb_substr($value, 0, $trunc), ENT_COMPAT|ENT_HTML401|ENT_QUOTES, DEFAULT_CHARSET).'&hellip;';
+		} else {
+			$value = htmlspecialchars($value, ENT_COMPAT|ENT_HTML401|ENT_QUOTES, DEFAULT_CHARSET);
+		}
+
+		return $value;
 	}
 }
-?>
