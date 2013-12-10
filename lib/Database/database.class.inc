@@ -576,8 +576,12 @@ class PXDatabase extends NLSQLDatabaseAdapter implements IPXDatabase {
 					$val = ' IS NOT NULL';
 					break;
 
+				case is_bool($v):
+					$val = ' = ' . $this->trueStatusString($v);
+					break;
+
 				default:
-					$val = ' = '."'".$this->EscapeString($v)."'";
+					$val = ' = ' . "'".$this->EscapeString($v)."'";
 			}
 			$whereClause[] = $format->id.'.'.$k.$val;
 		}
