@@ -419,12 +419,13 @@ function Context(event) {
 	h = menu.offsetHeight;
 	w = menu.offsetWidth;
 
-	dh = document.body.clientHeight;
-	dw = document.body.clientWidth;
+	dh = $(document).height();
+	dw = $(document).width();
 
 	menu.style.left = x + w > dw ? dw - w - 24 : x;
 	menu.style.top  = y + h > dh ? dh - h - 24 : y;
 	menu.style.visibility = 'visible';
+
 	if (window.event) {
 		window.event.cancelBubble = true;
 	}
