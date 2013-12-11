@@ -12,7 +12,7 @@
  */
 class PXDisplayTypeTable extends PXDisplayType {
 	function buildInput($field, $object, $param=NULL) {
-		$value  = isset($object[$field->name]) ? htmlspecialcharsArray($object[$field->name]) : array();
+		$value  = isset($object[$field->name]) ? $object[$field->name] : array();
 		$cols   = isset($field->displayTypeArgs[0]) ? $field->displayTypeArgs[0] : '1';
 		$height = isset($field->displayTypeArgs[1]) ? $field->displayTypeArgs[1] : 0;
 		$header = isset($field->displayTypeArgs[2]) ? explode(isset($field->displayTypeArgs[3]) ? $field->displayTypeArgs[3] : '-', $field->displayTypeArgs[2]) : array();
@@ -41,4 +41,3 @@ class PXDisplayTypeTable extends PXDisplayType {
 		return $param['request']->postData->_GetArrayVar($field->name);
 	}
 }
-?>
