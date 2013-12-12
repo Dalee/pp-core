@@ -28,6 +28,27 @@ class PXStorageTypeSerialized extends PXStorageType {
 		return array($v, $param['dbFields'], $param['dbValues']);
 	}
 
+	//TODO: удалить в феврале 2014'го. От сих...
+	private function strK2U(&$str) {
+		$str = myconv('k', DEFAULT_CHARSET, $str);
+	}
+
+	private function objK2U($obj) {
+		switch(true) {
+			default:
+			case empty($obj):
+				break;
+			case is_array($obj):
+				array_walk_recursive($obj, array($this, 'strK2U'));
+				break;
+			case is_string($obj):
+				$this->strK2U($obj);
+				break;
+		}
+		return $obj;
+	}
+	//TODO: ...до сих
+	
 	function normalize($field, $object, &$param) {
 		$k = $field->name;
 		$w = $object[$k];
@@ -50,7 +71,14 @@ class PXStorageTypeSerialized extends PXStorageType {
 			$srlz = ctype_alpha($fb) && $sb === ':' && ($lb === ';' || $lb === '}');
 
 			if ($srlz) {
-				$v = unserialize($w);
+				$v = @unserialize($w);
+
+				//TODO: удалить в феврале 2014'го. От сих...
+				if($v === false) {
+					$v = @unserialize(myconv(DEFAULT_CHARSET, 'k', $w));
+					$v = $this->objK2U($v);
+				}
+				//TODO: ...до сих
 			}
 			elseif ($json) {
 				$v = json_decode_koi($w, true);
