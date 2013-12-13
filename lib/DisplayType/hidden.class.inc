@@ -7,7 +7,7 @@
  */
 class PXDisplayTypeHidden extends PXDisplayType {
 	function buildRow($field, $object, $param=NULL) {
-		$value = (isset($object[$field->name]) && !is_array($object[$field->name])) ? htmlspecialchars($object[$field->name], ENT_COMPAT|ENT_HTML401, DEFAULT_CHARSET) : NULL;
+		$value = (isset($object[$field->name]) && !is_array($object[$field->name])) ? $object[$field->name] : NULL;
 		return NLAbstractHTMLForm::BuildHidden($field->name, $value);
 	}
 

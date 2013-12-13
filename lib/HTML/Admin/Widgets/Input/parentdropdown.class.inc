@@ -13,13 +13,14 @@ class PXInputParentDropDown extends PXAdminWidget {
 
 	function html() {
 		$selected = false;
-		$html = '<select name="'.$this->name.'"'.$this->disable.'>';
+		$html = '<select name="' . $this->name . '"' . $this->disable . '>';
 
-		foreach ($this->values as $k=>$v) {
-			if(isset($v['disabled'])){
-				$html .= '<optgroup class="disabled" label="'.$v['title'].'"></optgroup>';
+		foreach ($this->values as $k => $v) {
+			if(isset($v['disabled'])) {
+				$html .= '<optgroup class="disabled" label="' . quot($v['title']) . '"></optgroup>';
 			} else {
-				$html .= '<option value="'.quot($k).'"'.($k == $this->value && ($selected = true) ? ' selected' : '').'>'.$v['title'].'</option>';
+				$k == $this->value && $selected = true;
+				$html .= '<option value="' . quot($k) . '"' . ($k == $this->value ? ' selected' : '') . '>' . htmlspecialchars($v['title'], ENT_COMPAT|ENT_HTML401, DEFAULT_CHARSET) . '</option>';
 			}
 		}
 

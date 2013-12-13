@@ -17,7 +17,7 @@ class PXInputTable extends PXAdminWidget {
 			$this->colsWidth = $cols;
 		} else {
 			$this->colsWidth = array();
-			for ($i=0; $i<$cols; $i++) {
+			for ($i = 0; $i < $cols; $i++) {
 				$this->colsWidth[] = 1;
 			}
 		}
@@ -31,7 +31,7 @@ class PXInputTable extends PXAdminWidget {
 		$html = '<colgroup>';
 		for ($i=0; $i<count($this->colsWidth); $i++) {
 			$width = ceil(100*$this->colsWidth[$i]/array_sum($this->colsWidth));
-			$html .= '<col width="'.$width.'%">';
+			$html .= '<col width="' . $width . '%">';
 		}
 		$html .= '</colgroup>';
 		return $html;
@@ -43,11 +43,9 @@ class PXInputTable extends PXAdminWidget {
 
 	function html() {
 		$idx = 0;
-		
-		$html  = '<table id="table'.$this->name.'" class="datagrid">';
 
+		$html  = '<table id="table' . quot($this->name) . '" class="datagrid">';
 		$html .= $this->header();
-
 		$html .= $this->colgroup();
 
 		foreach ($this->value as $row) {
@@ -55,7 +53,7 @@ class PXInputTable extends PXAdminWidget {
 
 			$row = (array)$row;
 
-			for ($i=0; $i<count($this->colsWidth); $i++) {
+			for ($i = 0; $i < count($this->colsWidth); $i++) {
 				$html .= '<td>';
 
 				$currentValue = (isset($row[$i])) ? $row[$i] : NULL;
@@ -67,7 +65,6 @@ class PXInputTable extends PXAdminWidget {
 				}
 
 				$html .= $text->html();
-
 				$html .= '</td>';
 			}
 
@@ -77,10 +74,8 @@ class PXInputTable extends PXAdminWidget {
 		}
 
 		$html .= '</table>';
-
-		$html .= '<button class="addrow" onclick="AddRowNew(\''.$this->name.'\'); return false;"'.$this->disable.'>Добавить</button>';
+		$html .= '<button class="addrow" onclick="AddRowNew(\'' . $this->name . '\'); return false;"' . $this->disable . '>Добавить</button>';
 
 		return $html;
 	}
 }
-?>

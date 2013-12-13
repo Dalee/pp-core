@@ -58,7 +58,7 @@ class PXInputRichEdit extends PXAdminComplexWidget {
 
 		$richEditor = isset($this->blocks[self::AFTER_TEXTAREA][$embedding['current']]) ? $this->blocks[self::AFTER_TEXTAREA][$embedding['current']]->html() : '';
 
-		$escapedValue = htmlspecialchars($this->value, ENT_COMPAT|ENT_HTML401|ENT_QUOTES, DEFAULT_CHARSET);
+		$escapedValue = "\n".htmlspecialchars($this->value, ENT_COMPAT | ENT_HTML401, DEFAULT_CHARSET);
 
 		return <<<HTML
 			<div class="redactor">

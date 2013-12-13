@@ -7,12 +7,12 @@
  */
 class PXDisplayTypeColor extends PXDisplayType {
 	function buildInput($field, $object, $param=NULL) {
-		$value = isset($object[$field->name]) ? htmlspecialchars($object[$field->name], ENT_COMPAT|ENT_HTML401, DEFAULT_CHARSET) : NULL;
+		$value = isset($object[$field->name]) ? $object[$field->name] : NULL;
 		return NLAbstractHTMLForm::BuildColor($field->name, $value);
 	}
 	function buildCell($field, $object, $param=NULL) {
-		$value = $object[$field->name];
-		return '<div class="rgbcolor"><div style="background-color: #'.$value.';" title="#'.$value.'"></div></div>';
+		$value = htmlspecialchars($object[$field->name], ENT_COMPAT | ENT_HTML401, DEFAULT_CHARSET);
+
+		return '<div class="rgbcolor"><div style="background-color: #' . $value . ';" title="#' . $value . '"></div></div>';
 	}
 }
-?>

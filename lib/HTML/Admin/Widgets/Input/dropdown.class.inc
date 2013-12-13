@@ -74,4 +74,3 @@ class PXInputDropDown extends PXAdminWidget {
 		);
 	}
 }
-?>

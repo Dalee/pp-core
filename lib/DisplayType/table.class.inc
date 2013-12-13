@@ -32,7 +32,7 @@ class PXDisplayTypeTable extends PXDisplayType {
 
 			$html_len = mb_strlen($html);
 		}
-		($i < $l) && $html .= '; ...';
+		($i < $l) && $html .= '; &hellip;';
 
 		return $html;
 	}

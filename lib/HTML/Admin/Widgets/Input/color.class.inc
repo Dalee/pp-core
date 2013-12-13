@@ -10,6 +10,7 @@ class PXInputColor extends PXAdminWidget {
 
 	function html() {
 		$name = $this->name;
+		$value = htmlspecialchars($this->value, ENT_COMPAT | ENT_HTML401, DEFAULT_CHARSET);
 
 		$red   = hexdec(mb_substr($this->value, 0, 2));
 		$green = hexdec(mb_substr($this->value, 2, 2));
@@ -17,9 +18,9 @@ class PXInputColor extends PXAdminWidget {
 
 		return <<<HTML
 			<div class="colorselect">
-				<div id="colorBG{$name}" style="background-color: #{$this->value};"></div>
+				<div id="colorBG{$name}" style="background-color: #{$value};"></div>
 
-				<input type="text" name="{$name}" id="colorData{$name}" value="{$this->value}" {$this->disable} readonly>
+				<input type="text" name="{$name}" id="colorData{$name}" value="{$value}" {$this->disable} readonly>
 
 				<input type="hidden" id="colorRed{$name}"    value="{$red}">
 				<input type="hidden" id="colorGreen{$name}"  value="{$green}">
@@ -39,4 +40,3 @@ class PXInputColor extends PXAdminWidget {
 HTML;
 	}
 }
-?>
