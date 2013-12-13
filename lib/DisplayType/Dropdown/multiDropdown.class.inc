@@ -1,13 +1,9 @@
 <?php
 
-//PHP54/52: lambda is not supported in 52, so using original function
-function __htmlspecialchars($s) {
-	return htmlspecialchars($s, ENT_COMPAT|ENT_HTML401, DEFAULT_CHARSET);
-}
 class PXDisplayTypeMultiDropDown extends PXDisplayTypeDropdown {
 	function buildInput($field, $object, $param=NULL) {
 		$value = isset($object[$field->name]) && is_array($object[$field->name])
-			? array_map('__htmlspecialchars', $object[$field->name]) 
+			? $object[$field->name]
 			: NULL;
 
 		$size = isset($field->displayTypeArgs[0])

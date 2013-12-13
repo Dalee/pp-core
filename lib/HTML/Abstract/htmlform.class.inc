@@ -267,5 +267,3 @@ class NLAbstractHTMLForm {
 		return $field->displayType->name;
 	}
 }
-
-?>

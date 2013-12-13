@@ -9,7 +9,9 @@ class PXInputHidden extends PXAdminWidget {
 	}
 
 	function html() {
-		return '<input type="hidden" name="'.$this->name.'" value="'.quot($this->value).'" '.$this->disable.'>';
+		$name = htmlspecialchars($this->name, ENT_COMPAT | ENT_HTML401, DEFAULT_CHARSET);
+		$value = htmlspecialchars($this->value, ENT_COMPAT | ENT_HTML401, DEFAULT_CHARSET);
+
+		return '<input type="hidden" name="' . $name . '" value="' . $value . '" ' . $this->disable . '>';
 	}
 }
-?>

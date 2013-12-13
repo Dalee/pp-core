@@ -26,9 +26,9 @@ class PXDisplayTypeText extends PXDisplayType {
 		$value = $this->getSubDirectoryIfExists($field, $object, $value);
 
 		if(mb_strlen($value) > $trunc) {
-			$value = htmlspecialchars(mb_substr($value, 0, $trunc), ENT_COMPAT|ENT_HTML401|ENT_QUOTES, DEFAULT_CHARSET).'&hellip;';
+			$value = htmlspecialchars(mb_substr($value, 0, $trunc), ENT_COMPAT | ENT_HTML401, DEFAULT_CHARSET) . '&hellip;';
 		} else {
-			$value = htmlspecialchars($value, ENT_COMPAT|ENT_HTML401|ENT_QUOTES, DEFAULT_CHARSET);
+			$value = htmlspecialchars($value, ENT_COMPAT | ENT_HTML401, DEFAULT_CHARSET);
 		}
 
 		return $value;

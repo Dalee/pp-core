@@ -6,30 +6,26 @@ class PXDisplayTypeStaticOrDrop extends PXDisplayType {
 	var $send         = 20;
 	var $send_test    = 21;
 	
-	function buildInput($field, $object, $param=NULL) {
-		$value   = isset($object[$field->name]) ? htmlspecialchars($object[$field->name], ENT_COMPAT|ENT_HTML401, DEFAULT_CHARSET) : NULL;
+	function buildInput($field, $object, $param = NULL) {
+		$value   = isset($object[$field->name]) ? $object[$field->name] : NULL;
 		$values = isset($field->values) ? $field->values->GetList() : array();
 		$fvalues = $field->values->values;
 		
-		if (count($fvalues) 
-			&& isset($fvalues[$value]) 
-			&& !empty($fvalues[$value]['static'])) {
-			
-				return NLAbstractHTMLForm::BuildHidden($field->name, $value).(isset($values[$value]) ? $values[$value] : $value);
+		if (!empty($fvalues[$value]['static'])) {
+			return NLAbstractHTMLForm::BuildHidden($field->name, $value) . htmlspecialchars(isset($values[$value]) ? $values[$value] : $value, ENT_COMPAT | ENT_HTML401, DEFAULT_CHARSET);
 		} else {
-				foreach ($fvalues as $k => $fval) {
-					if (isset($fval['static'])) {
-						$id2unset = $fval['id'];
-						unset($values[$id2unset]);
-					}
-				} 
-				return NLAbstractHTMLForm::BuildDropDown($field->name, $value, $values);
+			foreach ($fvalues as $k => $fval) {
+				if (isset($fval['static'])) {
+					unset($values[$fval['id']]);
+				}
+			}
+			return NLAbstractHTMLForm::BuildDropDown($field->name, $value, $values);
 		}
 	}
 	
-	function buildCell($field, $object, $param=NULL) {
+	function buildCell($field, $object, $param = NULL) {
 		$value = $object[$field->name];
-		return PXDisplayTypeDropdown::buildCell($field, $object, $param=NULL);
+		$dropdown = new PXDisplayTypeDropdown($this->display, $this->name);
+		return $dropdown->buildCell($field, $object, $param);
 	}
 }
-?>

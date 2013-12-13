@@ -8,17 +8,16 @@
 class PXDisplayTypeStatic extends PXDisplayType {
 	function buildInput($field, $object, $param=NULL) {
 		$k = $field->name;
-		$value = isset($object[$k]) ? htmlspecialchars(is_array($object[$k]) ? print_r($object[$k], true) : $object[$k], ENT_COMPAT|ENT_HTML401, DEFAULT_CHARSET) : NULL;
+		$value = isset($object[$k]) ? (is_array($object[$k]) ? print_r($object[$k], true) : $object[$k]) : NULL;
 
 		$values = isset($field->values) ? $field->values->GetList() : array();
-		return NLAbstractHTMLForm::BuildHidden($field->name, $value).(isset($values[$value]) ? $values[$value] : $value);
+		return NLAbstractHTMLForm::BuildHidden($field->name, $value) . htmlspecialchars(isset($values[$value]) ? $values[$value] : $value, ENT_COMPAT | ENT_HTML401, DEFAULT_CHARSET);
 	}
 
 	function buildCell($field, $object, $param=NULL) {
 		$value = $object[$field->name];
-		$value =  isset($field->values->values[$value]) && isset($field->values->values[$value]['title']) ? $field->values->values[$value]['title'] : $value;
-		
-		return $this->getSubDirectoryIfExists($field, $object, $value);
+
+		return htmlspecialchars($this->getSubDirectoryIfExists($field, $object, $value), ENT_COMPAT | ENT_HTML401, DEFAULT_CHARSET);
 	}
 
 	function preModifyObject($field, &$object, $param=NULL) {

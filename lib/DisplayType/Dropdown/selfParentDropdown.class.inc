@@ -8,7 +8,7 @@
  */
 class PXDisplayTypeSelfparentdropdown extends PXDisplayTypeParentdropdown {
 	function buildInput($field, $object, $param=NULL) {
-		$value    = isset($object[$field->name]) ? htmlspecialchars($object[$field->name], ENT_COMPAT|ENT_HTML401, DEFAULT_CHARSET) : NULL;
+		$value    = isset($object[$field->name]) ? $object[$field->name] : NULL;
 		$selfTree = parent::getSelfParentTree($object,$param);
 		$selfTree = $selfTree->getPlainTree(getFromArray($object, 'id'));
 		if(isset($param['root_title'])){
@@ -18,4 +18,3 @@ class PXDisplayTypeSelfparentdropdown extends PXDisplayTypeParentdropdown {
 		return NLAbstractHTMLForm::BuildDropDown($field->name, $value, $selfTree);
 	}
 }
-?>

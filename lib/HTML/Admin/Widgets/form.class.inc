@@ -86,7 +86,7 @@ class PXAdminForm extends PXAdminComplexWidget {
 			NLAbstractHTMLForm::BuildHidden('area', 'file').
 			NLAbstractHTMLForm::BuildHidden('mdir', str_replace(BASEPATH, '', $dir)).
 			NLAbstractHTMLForm::BuildHidden('mfile', $file).
-			NLAbstractHTMLForm::BuildText('filesource', htmlspecialchars(ReadFileToString($dir.'/'.$file), ENT_COMPAT|ENT_HTML401, DEFAULT_CHARSET), '100%');
+			NLAbstractHTMLForm::BuildText('filesource', ReadFileToString($dir.'/'.$file), '100%');
 	}
 
 	function getForm() {
@@ -148,8 +148,8 @@ class PXAdminForm extends PXAdminComplexWidget {
 		}
 
 		PXRegistry::getLayout()->assign('OUTER.LEFTCONTROLS',
-			  join($this->blocks[self::PREPEND_LEFTCONTROLS]) 
-			. $control 
+			  join($this->blocks[self::PREPEND_LEFTCONTROLS])
+			. $control
 			. join($this->blocks[self::APPEND_LEFTCONTROLS]));
 	}
 
@@ -161,8 +161,8 @@ class PXAdminForm extends PXAdminComplexWidget {
 		}
 
 		PXRegistry::getLayout()->assign('OUTER.RIGHTCONTROLS',
-			join($this->blocks[self::PREPEND_RIGHTCONTROLS]) 
-			. $control 
+			join($this->blocks[self::PREPEND_RIGHTCONTROLS])
+			. $control
 			. join($this->blocks[self::APPEND_RIGHTCONTROLS]));
 	}
 
@@ -358,12 +358,12 @@ HTML;
 				$params['other'] = $v;
  
 				foreach ($reference->fields as $sk=>$sv) {
-					$value = ($linksIsset) ? $links[$v['id']]['fields'][$sk] : htmlspecialchars($sv->defaultValue, ENT_COMPAT|ENT_HTML401, DEFAULT_CHARSET);
+					$value = ($linksIsset) ? $links[$v['id']]['fields'][$sk] : $sv->defaultValue;
 					$k = $reference->name.'['.$iteration.']['.$v['id'].'][fields]['.$sk.']';
  
 					$sv->name = $k;
  
-					$html .= '<td>'.$sv->displayType->buildInput($sv, array($k=>$value), $params).'</td>';
+					$html .= '<td>' . $sv->displayType->buildInput($sv, array($k=>$value), $params).'</td>';
 				}
 				$html .= '</tr>';
 				$iteration++;

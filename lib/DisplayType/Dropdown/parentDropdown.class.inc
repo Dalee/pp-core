@@ -8,7 +8,7 @@
  */
 class PXDisplayTypeParentdropdown extends PXDisplayTypeDropdown {
 	function buildInput($field, $object, $param=NULL) {
-		$value    = isset($object[$field->name]) ? htmlspecialchars($object[$field->name], ENT_COMPAT|ENT_HTML401, DEFAULT_CHARSET) : NULL;
+		$value    = isset($object[$field->name]) ? $object[$field->name] : NULL;
 		list($format,$parentFormat) = parent::getFormats($param);
 
 		$tree     = parent::getParentTree($object,$parentFormat);
@@ -31,5 +31,3 @@ class PXDisplayTypeParentdropdown extends PXDisplayTypeDropdown {
 		return NLAbstractHTMLForm::BuildParentDropDown($field->name, $value, $parents);
 	}
 }
-
-?>
