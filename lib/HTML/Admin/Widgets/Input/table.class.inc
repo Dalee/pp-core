@@ -53,7 +53,7 @@ class PXInputTable extends PXAdminWidget {
 
 			$row = (array)$row;
 
-			for ($i = 0; $i < count($this->colsWidth); $i++) {
+			for ($i = 0, $cols = count($this->colsWidth); $i < $cols; $i++) {
 				$html .= '<td>';
 
 				$currentValue = (isset($row[$i])) ? $row[$i] : NULL;
@@ -79,3 +79,4 @@ class PXInputTable extends PXAdminWidget {
 		return $html;
 	}
 }
+

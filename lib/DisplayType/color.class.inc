@@ -11,8 +11,8 @@ class PXDisplayTypeColor extends PXDisplayType {
 		return NLAbstractHTMLForm::BuildColor($field->name, $value);
 	}
 	function buildCell($field, $object, $param=NULL) {
-		$value = htmlspecialchars($object[$field->name], ENT_COMPAT | ENT_HTML401, DEFAULT_CHARSET);
-
-		return '<div class="rgbcolor"><div style="background-color: #' . $value . ';" title="#' . $value . '"></div></div>';
+		$value = $object[$field->name];
+		return ctype_alnum($value) && (mb_strlen($value) == 3 || mb_strlen($value) == 6)  ? '<div class="rgbcolor"><div style="background-color: #' . $value . ';" title="#' . $value . '"></div></div>' : '';
 	}
 }
+

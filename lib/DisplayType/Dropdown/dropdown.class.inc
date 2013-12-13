@@ -66,3 +66,4 @@ class PXDisplayTypeDropdown extends PXDisplayType {
 		}
 	}
 }
+

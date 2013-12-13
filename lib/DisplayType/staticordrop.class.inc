@@ -29,3 +29,4 @@ class PXDisplayTypeStaticOrDrop extends PXDisplayType {
 		return $dropdown->buildCell($field, $object, $param);
 	}
 }
+
