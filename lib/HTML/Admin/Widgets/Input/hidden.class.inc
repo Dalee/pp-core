@@ -15,3 +15,4 @@ class PXInputHidden extends PXAdminWidget {
 		return '<input type="hidden" name="' . $name . '" value="' . $value . '" ' . $this->disable . '>';
 	}
 }
+

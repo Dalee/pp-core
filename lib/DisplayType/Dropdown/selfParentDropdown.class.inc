@@ -18,3 +18,4 @@ class PXDisplayTypeSelfparentdropdown extends PXDisplayTypeParentdropdown {
 		return NLAbstractHTMLForm::BuildDropDown($field->name, $value, $selfTree);
 	}
 }
+
