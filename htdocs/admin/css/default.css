@@ -310,7 +310,6 @@ textarea {
 
 DIV.content {
 	height: 100%;
-	overflow: expression('auto');
 	background-color: #FFFFFF;
 	border: 1px solid #808080;
 	border-right-color: #E7E9ED;
