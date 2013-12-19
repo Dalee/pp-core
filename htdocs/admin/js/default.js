@@ -44,6 +44,18 @@ function checkPassword(input, name) {
 	}
 }
 
+function getViewportHeight() {
+	var ua = navigator.userAgent.toLowerCase();
+	var isOpera = (ua.indexOf('opera')  > -1);
+	var isIE = (!isOpera && ua.indexOf('msie') > -1);
+
+	return ((document.compatMode || isIE) && !isOpera) ? (document.compatMode == 'CSS1Compat') ? document.documentElement.clientHeight : document.body.clientHeight : (document.parentWindow || document.defaultView).innerHeight;
+}
+
+function getDocumentHeight() {
+	return Math.max(document.compatMode != 'CSS1Compat' ? document.body.scrollHeight : document.documentElement.scrollHeight, getViewportHeight());
+}
+
 function ShowUnLinking(name, a) {
 	links = document.getElementsByName(name);
 	for(var i=0; i<links.length; i++) {
@@ -419,7 +431,7 @@ function Context(event) {
 	h = menu.offsetHeight;
 	w = menu.offsetWidth;
 
-	dh = $(document).height();
+	dh = getDocumentHeight();
 	dw = $(document).width();
 
 	menu.style.left = x + w > dw ? dw - w - 24 : x;
