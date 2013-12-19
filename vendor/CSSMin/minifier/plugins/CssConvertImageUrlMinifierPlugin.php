@@ -9,7 +9,7 @@ class CssConvertImageUrlMinifierPlugin extends aCssMinifierPlugin {
 	private $include = array (
 			'background',
 			'background-image',
-			'src', /* @font { src: url() } */
+			/* 'src', @font { src: url() } */
 		);
 
 	/**
