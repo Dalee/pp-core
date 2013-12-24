@@ -76,7 +76,7 @@ class PXModuleFile extends PXModule {
 			$curDir = $tab['side'] == 'l' ? $lDir : $rDir;
 			$othDir = $tab['side'] != 'l' ? $lDir : $rDir;
 
-			$href = '?area='.$this->area.'&'.$tab['oth'].'='.$othDir;
+			$href = '?area='.$this->area.'&'.$tab['oth'].'='.rawurlencode($othDir);
 
 			$listingClass = $curDir ? 'PXFileListing' : 'PXFileListingRoots';
 			$listing = new $listingClass($this->settings);
@@ -348,10 +348,10 @@ HTML;
 			$this->_aDelete();
 		}
 	}
-	
+
 	function _aCreateDir() {
 		$ndir = $this->_escapeFileName($this->request->getVar('ndir'));
-		
+
 		if(is_dir($this->catalog) && is_writable($this->catalog) && !is_dir($this->catalog . $ndir)) {
 			MakeDirIfNotExists($this->catalog.$ndir);
 		}
@@ -452,4 +452,3 @@ HTML;
 		}
 	}
 }
-?>
