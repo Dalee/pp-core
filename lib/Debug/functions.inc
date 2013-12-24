@@ -139,7 +139,7 @@ function d2_shortObject($variable) {
 
 function d2_encode($dump) {
 	if(NOT_CLI) {
-		$dump = htmlentities($dump, ENT_NOQUOTES, DEFAULT_CHARSET);
+		$dump = htmlspecialchars($dump, ENT_NOQUOTES | ENT_SUBSTITUTE | ENT_DISALLOWED, DEFAULT_CHARSET);
 	}
 
 	if(mb_substr(PHP_OS, 0, 3) == 'WIN') {
