@@ -62,9 +62,7 @@ HTML;
 
 class PXHTMLFileListing {
 	function PXHTMLFileListing($href, $side) {
-		$href = htmlspecialchars($href, ENT_COMPAT|ENT_HTML401, DEFAULT_CHARSET);
 		$this->base = $href.'&'.$side.'dir=';
-
 		$this->href = $href;
 		$this->side = $side;
 		$this->files = array();
@@ -160,21 +158,21 @@ HTML;
 	}
 
 	function _listTitle($f) {
-		$td_class = $f->isDir ? ' '.$f->type : '';
+		$td_class = $f->isDir ? ' ' . $f->type : '';
 		$_ = '<td class="file'.$td_class.'">';
 
 		if ($f->isDir) {
 			if($f->readable) {
-				$_ .= '<a href="'.$this->base.$this->catalog.$f->name.'" title="'.$f->name.'">';
+				$_ .= '<a href="'. $this->base . rawurlencode($this->catalog . $f->name) .'" title="'. $this->escapeHTML($f->name) .'">';
 				$_ .= $this->_listContext($f);
 				$_ .= '</a>';
 
 			} else {
-				$_ .= '<del>'.$f->name.'</del>';
+				$_ .= '<del>'. $this->escapeHTML($f->name) .'</del>';
 			}
 
 			if($f->comment) {
-				$_ .= ' <em>'.$f->comment.'</em>';
+				$_ .= ' <em>'. $f->comment .'</em>';
 			}
 
 		} else {
@@ -186,29 +184,41 @@ HTML;
 		return $_;
 	}
 
+	private function escapeJS($str) {
+		return "'" . $this->escapeHTML(addslashes($str)) . "'";
+	}
+	private function escapeHTML($str) {
+		return htmlspecialchars($str, ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE | ENT_DISALLOWED, DEFAULT_CHARSET) ;
+	}
+
 	function _listContext($f) {
+
 		$tmp = array(
 			"Context(event, 'file'",
-			"'".addslashes($f->name)."'", // title
+			$this->escapeJS($f->name), // title
 			$f->isDir,                    // isDir
-			"'".$f->alias."'",            // isRead / alias
+			$this->escapeJS(str_replace('\\', '/', $f->alias)),            // isRead / alias
 			$f->writable,                 // isWrite
 			$f->deletable,                // isDelete
 			$f->binary,                   // isBinary
-			"'".htmlspecialchars(str_replace("'", "", $this->catalog), ENT_COMPAT|ENT_HTML401, DEFAULT_CHARSET)."'",       // dir
-			"'".htmlspecialchars(str_replace("'", "", $this->href), ENT_COMPAT|ENT_HTML401, DEFAULT_CHARSET)."'",          // href
+			$this->escapeJS(str_replace('\\', '/', $this->catalog)),       // dir
+			$this->escapeJS(str_replace('\\', '/', $this->href)),          // href
 			"'".$this->side."'",          // side
-			$f->copyable."); return false;"
+			$f->copyable . "); return false;"
 		);
 
-		$context = ' onContextMenu="'.str_replace('\\', '/', implode(', ', $tmp)).'"';
+		$context = ' onContextMenu="'. implode(', ', $tmp) .'"';
+
+		$name = $this->escapeHTML($f->name);
+		$alias = $this->escapeHTML($f->alias);
+
 		if ($f->isDir) {
-			$click = $f->name;
+			$click = $name;
 		} elseif ($f->alias) {
-			$click = '<a style="margin-left:-21px" href="'.($f->alias).'"><img src="/admin/i/files/'.($f->type).'.gif" /></a>';
-			$click .= '<a class="memory" href="'.($f->alias).'" onClick="return InMemory(\''.$f->alias.'\');">'.$f->name.'</a>';
+			$click = '<a style="margin-left:-21px" href="'. $alias .'"><img src="/admin/i/files/'. $f->type .'.gif" /></a>';
+			$click .= '<a class="memory" href="'. $alias . '" onClick="return InMemory(\''.$f->alias.'\');">'. $name .'</a>';
 		} else {
-			$click = $f->name;
+			$click = $name;
 		}
 
 		return "<span".$context.">".$click."</span>";
@@ -263,4 +273,3 @@ HTML;
 		return '<div class="error">Этот каталог <strong>не доступен</strong> для просмотра<br/> Вернитесь к <a href="'.$this->href.'">списку каталогов</a></div>';
 	}
 }
-?>

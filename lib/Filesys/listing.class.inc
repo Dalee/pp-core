@@ -121,7 +121,7 @@ class PXFileListing {
 
 		$catalog = $this->_prepare($this->_fullPath($catalog));
 		$_dir = new NLDir($catalog);
-		
+
 		foreach($_dir->getDirs(true) as $path) {
 			$this->_files[$path] = new PXFileListingItemCatalog($path, $this);
 		}
@@ -132,7 +132,7 @@ class PXFileListing {
 
 		return $this->_files;
 	}
-	
+
 	function _getRealPath($catalog) {
 		return realpath($this->_fullPath($catalog));
 	}
@@ -141,7 +141,7 @@ class PXFileListing {
 		if(!is_dir($this->_fullPath($catalog))) {
 			return false;
 		}
-		
+
 		foreach($this->_roots as $root) {
 			if(mb_strpos($this->_getRealPath($catalog), $this->_getRealPath($root)) === 0 && mb_strlen($root) <= mb_strlen($catalog)) {
 				return true;
@@ -269,7 +269,7 @@ class PXFileListingItem {
 			return;
 		}
 
-		$this->alias = str_replace($htdocsPrefix, '', $this->catalog.$this->name);
+		$this->alias = str_replace($htdocsPrefix, '', $this->catalog.rawurlencode($this->name));
 	}
 
 	function isRoot() {
@@ -320,4 +320,3 @@ class PXFileListingItemRoot extends PXFileListingItemCatalog {
 		return $this->parent->_fullPath($catalog);
 	}
 }
-?>

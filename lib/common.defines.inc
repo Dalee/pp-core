@@ -3,9 +3,15 @@
 // Default timezone settings for formated date output
 date_default_timezone_set('Europe/Moscow');
 
-// php5.4 htmlspecialchars flag ENT_HTML401
+// php5.4 htmlspecialchars flags ENT_HTML401, ENT_SUBSTITUTE and ENT_DISALLOWED
 if (!defined('ENT_HTML401')) {
 	define('ENT_HTML401', 0);
+}
+if (!defined('ENT_SUBSTITUTE')) {
+	define('ENT_SUBSTITUTE', 0);
+}
+if (!defined('ENT_DISALLOWED')) {
+	define('ENT_DISALLOWED', 0);
 }
 
 // PHP 5.2.6 compatibility
@@ -85,10 +91,10 @@ set_include_path(implode(PATH_SEPARATOR, $includePath));
 /*
  * Parse and load BASEPATH . /etc/php.ini
  * Some custom variables (not php ones) are:
- * 
+ *
  * profiler = true | false    # false by default
  * user = someuser            # 'nobody' by default
- * 
+ *
  */
 $profiler    = false;
 $system_user = 'nobody';
@@ -180,7 +186,7 @@ define('OBJ_FIELD_PATHNAME',         'pathname');
 define('PP_CHILDREN_FETCH_ALL',      1);
 define('PP_CHILDREN_FETCH_SELECTED', 2);
 define('PP_CHILDREN_FETCH_NONE',     3);
-define('PP_CHILDREN_FETCH_PAGED',    4); 
+define('PP_CHILDREN_FETCH_PAGED',    4);
 
 define('DEFAULT_CHILDREN_PER_PAGE',  20);
 
@@ -200,7 +206,7 @@ if (!defined('PP_DONT_FORCE_SUDO') && !IS_WIN) {
 	switch (posix_getuid()) {
 
 		case $system_user['uid']:
-			// all ok we have target user 
+			// all ok we have target user
 			break;
 
 		case 0:
