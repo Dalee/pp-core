@@ -414,11 +414,8 @@ function Context(event) {
 				menu.innerHTML += ContextAdd(arguments[2], arguments[i], arguments[i+1]);
 			}
 
-		} else if (arguments[1] == 'file') {
-			menu.innerHTML += ContextFile(arguments[2], arguments[3], arguments[4], arguments[5], arguments[6], arguments[7], arguments[8], arguments[9], arguments[10], arguments[1]);
-
 		} else {
-			menu.innerHTML += ContextEdit(arguments[2], arguments[3], arguments[4], arguments[5], arguments[6], arguments[7], arguments[8], arguments[9]);
+			menu.innerHTML += (arguments[1] == 'file' ? ContextFile : ContextEdit).apply(null, Array.prototype.slice.call(arguments, 2));
 		}
 	}
 

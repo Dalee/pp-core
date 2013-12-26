@@ -48,12 +48,20 @@ function CreateDir(dir, href, side) {
 	}
 }
 
-function RenameFile(dir, file, href, side, outside) {
+function RenameFile(dir, file, href, side, outside, fileName) {
 	if(dir !== undefined && file != undefined) {
 		newName = prompt('Введите новое имя файла', file);
 
 		if(newName !== null && newName.length) {
-			window.location.href = 'action.phtml'+href+'&'+side+'dir='+dir+'&action=rename&mdir=' + dir + '&mfile=' + file +'&nfile=' + newName+'&side='+side+'&outside='+outside;
+			window.location.href = 'action.phtml'+href+'&'+side+'dir='+dir+'&action=rename&mdir=' + dir + '&mfile=' + fileName +'&nfile=' + newName+'&side='+side+'&outside='+outside+'&charcheck=йцукен';
+		}
+	}
+}
+
+function RemoveFile(dir, file, href, side, outside, fileName) {
+	if(dir !== undefined && file != undefined) {
+		if(confirm('Вы действительно хотите удалить '+file)) {
+			window.location.href = 'action.phtml'+href+'&'+side+'dir='+dir+'&action=delete&mdir=' + dir + '&mfile=' + fileName +'&side='+side+'&outside='+outside +'&charcheck=йцукен';
 		}
 	}
 }
@@ -63,7 +71,7 @@ function EditFile(title, dir, href, side, outside) {
 	g.focus();
 }
 
-function ContextFile(title, isDir, urlAlias, isWrite, isDelete, isBinary, dir, href, side, isCopy) {
+function ContextFile(title, isDir, urlAlias, isWrite, isDelete, isBinary, dir, href, side, isCopy, fileName, isBrokenFilename) {
 	var ret;
 	var name = GetQueryVariable('name', 0);
 	var outside = GetQueryVariable('action', 0);
@@ -71,49 +79,49 @@ function ContextFile(title, isDir, urlAlias, isWrite, isDelete, isBinary, dir, h
 	ret  = '<strong>'+title+'</strong>';
 
 	if(isDir) {
-		ret += '<a class="edit" href="'+href+'&'+side+'dir='+dir+title+'&side='+side+'&outside='+outside+'">Зайти в каталог</a>';
+		ret += '<a class="edit" href="'+href+'&'+side+'dir='+dir+fileName+'&side='+side+'&outside='+outside+'">Зайти в каталог</a>';
 
 	} else {
-		if(isWrite != 0 && !isBinary) {
-			ret += '<a class="edit" href="javascript: EditFile(\''+title+'\', \''+dir+'\', \''+href+'\', \''+side+'\', \''+outside+'\')">Изменить</a>';
+		if(isWrite != 0 && !isBinary && !isBrokenFilename) {
+			ret += '<a class="edit" href="#" onClick="EditFile(\''+title+'\', \''+dir+'\', \''+href+'\', \''+side+'\', \''+outside+'\'); return false;">Изменить</a>';
 		} else {
 			ret += '<span class="edit">Изменить</span>';
 		}
 
-		if(isDelete && isBinary) {
-			ret += '<a class="unzip" href="action.phtml'+href+'&'+side+'dir='+dir+'&action=unzip&mdir='+dir+'&mfile='+title+'&side='+side+'&outside='+outside+'">Разархивировать</a>';
+		if(isDelete && isBinary && !isBrokenFilename) {
+			ret += '<a class="unzip" href="action.phtml'+href+'&'+side+'dir='+dir+'&action=unzip&mdir='+dir+'&mfile='+fileName+'&side='+side+'&outside='+outside+'">Разархивировать</a>';
 		} else {
 			ret += '<span class="unzip">Разархивировать</span>';
 		}
 	}
 
-	if(isCopy && !name && outside !== 'filesarray') {
-		if(isCopy == 1) {
-			confirmJ = ' onclick="javascript: return confirm(\'В каталоге назначения уже есть файл/кататог с таким именем. Вы действительно хотите переписать существующий файл/каталог '+title+'?\');"';
+	if(isCopy && !name && outside !== 'filesarray' && !isBrokenFilename) {
+		if(isCopy == 2) {
+			confirmJ = ' onclick="return confirm(\'В каталоге назначения уже есть файл/кататог с таким именем. Вы действительно хотите переписать существующий файл/каталог '+title+'?\');"';
 		} else {
 			confirmJ = '';
 		}
 
 		if(isDelete) {
-			ret += '<a class="move" '+confirmJ+' href="action.phtml'+href+'&'+side+'dir='+dir+'&action=move&mdir='+dir+'&mfile='+title+'&side='+side+'&outside='+outside+'">Переместить</a>';
+			ret += '<a class="move" '+confirmJ+' href="action.phtml'+href+'&'+side+'dir='+dir+'&action=move&mdir='+dir+'&mfile='+fileName+'&side='+side+'&outside='+outside+'">Переместить</a>';
 		} else {
 			ret += '<span class="move">Переместить</span>';
 		}
 
-		ret += '<a class="copy" '+confirm+' href="action.phtml'+href+'&'+side+'dir='+dir+'&action=copy&mdir='+dir+'&mfile='+title+'&side='+side+'&outside='+outside+'">Скопировать</a>';
+		ret += '<a class="copy" '+confirmJ+' href="action.phtml'+href+'&'+side+'dir='+dir+'&action=copy&mdir='+dir+'&mfile='+fileName+'&side='+side+'&outside='+outside+'">Скопировать</a>';
 	} else {
 		ret += '<span class="move">Переместить</span>';
 		ret += '<span class="copy">Скопировать</span>';
 	}
 
 	if(isDelete) {
-		ret += '<a class="rename" href="javascript: RenameFile(\''+dir+'\', \''+title+'\', \''+href+'\', \''+side+'\', \''+outside+'\');">Переименовать</a>';
+		ret += '<a class="rename" href="#" onClick="RenameFile(\''+dir+'\', \''+title+'\', \''+href+'\', \''+side+'\', \''+outside+'\', \''+fileName+'\'); return false;">Переименовать</a>';
 	} else {
 		ret += '<span class="rename">Переименовать</span>';
 	}
 
 	if(isDelete) {
-		ret += '<a class="del" href="action.phtml'+href+'&'+side+'dir='+dir+'&action=delete&mdir='+dir+'&mfile='+title+'&side='+side+'&outside='+outside+'" onClick="javascript: return confirm(\'Вы действительно хотите удалить '+title+'\');">Удалить</a>';
+		ret += '<a class="del" href="#" onClick="RemoveFile(\''+dir+'\', \''+title+'\', \''+href+'\', \''+side+'\', \''+outside+'\', \''+fileName+'\'); return false;">Удалить</a>';
 	} else {
 		ret += '<span class="del">Удалить</span>';
 	}
