@@ -334,6 +334,8 @@ class Spyc {
       $line = $this->stripGroup ($line, $group);
     }
 
+    $line = preg_replace('/\\\\(&[\w#]+;)/', '\\1', $line);
+
     if ($this->startsMappedSequence($line))
       return $this->returnMappedSequence($line);
 
@@ -720,8 +722,8 @@ class Spyc {
     if (strpos($line, '&') === false && strpos($line, '*') === false) return false; // Please die fast ;-)
     if (preg_match('/^(&[^ ]+)/', $line, $matches)) return $matches[1];
     if (preg_match('/^(\*[^ ]+)/', $line, $matches)) return $matches[1];
-    if (preg_match('/(&[^" ]+$)/', $line, $matches)) return $matches[1];
-    if (preg_match('/(\*[^" ]+$)/', $line, $matches)) return $matches[1];
+    if (preg_match('/(?<!\\\\)(&[^" ]+$)/', $line, $matches)) return $matches[1];
+    if (preg_match('/(?<!\\\\)(\*[^" ]+$)/', $line, $matches)) return $matches[1];
     return false;
   }
 
