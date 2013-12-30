@@ -46,7 +46,7 @@ function checkPassword(input, name) {
 
 function getViewportHeight() {
 	var ua = navigator.userAgent.toLowerCase();
-	var isOpera = (ua.indexOf('opera')  > -1);
+	var isOpera = (ua.indexOf('opera') > -1);
 	var isIE = (!isOpera && ua.indexOf('msie') > -1);
 
 	return ((document.compatMode || isIE) && !isOpera) ? (document.compatMode == 'CSS1Compat') ? document.documentElement.clientHeight : document.body.clientHeight : (document.parentWindow || document.defaultView).innerHeight;
