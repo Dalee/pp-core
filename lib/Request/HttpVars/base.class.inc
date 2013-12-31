@@ -18,20 +18,23 @@ class NLHTTPVarsData {
 
 	function charcheck_machine($testable) {
 		switch ($testable) {
-			case 'éöóêåí':
-			case 'ëçèìåï':
+			case "\xE9\xF6\xF3\xEA\xE5\xED":
+			case "\xEB\xE7\xE8\xEC\xE5\xEF":
 			case '??????':
 				return CHARSET_WINDOWS;
 				break;
 
-			case 'ÊÃÕËÅÎ':
-				return DEFAULT_CHARSET;
+			case "\xCA\xC3\xD5\xCB\xC5\xCE":
+				return CHARSET_KOI8R;
 				break;
 
 			// FIXME: in case of UTF-8, this line is dead line (double check before kill it)
-			case chr(208).chr(185).chr(209).chr(134).chr(209).chr(131).chr(208).chr(186).chr(208).chr(181).chr(208).chr(189):
+			case "\xD0\xB9\xD1\x86\xD1\x83\xD0\xBA\xD0\xB5\xD0\xBD":
 				return CHARSET_UTF8;
 				break;
+
+			default:
+				return DEFAULT_CHARSET;
 		}
 	}
 
@@ -48,8 +51,8 @@ class NLHTTPVarsData {
 		}
 	}
 
-	// òÁÓËÏÄÉÒÏ×ÁÎÉÅ JavaScript escape();
-	// private 
+	// Ğ Ğ°ÑĞºĞ¾Ğ´Ğ¸Ñ€Ğ¾Ğ²Ğ°Ğ½Ğ¸Ğµ JavaScript escape();
+	// private
 	function _unEscape(&$data) {
 		if (is_array($data)) {
 			foreach ($data as $k=>$v) {
@@ -70,7 +73,7 @@ class NLHTTPVarsData {
 
 		$this->charSet($needFixIisRewrite);
 
-		if (isset($this->raw['charcheck'])) {
+		if (!empty($this->raw['charcheck'])) {
 			$this->_needToConvert = true;
 			$this->clientCharset  = $this->charcheck_machine($this->raw['charcheck']);
 		}
@@ -140,7 +143,7 @@ DO
 			);
 		}
 		NestedArrayWalk($temp, $callback, array('killEmptyRows' => $killEmptyRows));
-		
+
 		return $temp;
 	}
 
@@ -159,7 +162,7 @@ DO
 			return NULL;
 		} else {
 			$r = $this->raw[$varName];
-		
+
 			$pattern = array("year", "month", "day", "hour", "minute", "second");
 			$diff = array_diff($pattern, array_keys($r));
 
