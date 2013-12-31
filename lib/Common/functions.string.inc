@@ -736,6 +736,9 @@ function myconv($from, $to, $string, $be_quiet = true) {
 	}
 
 	foreach (array($from, $to) as $_ => $enc_test) {
+		if(is_null($enc_test)) {
+			return $string;
+		}
 		if ((! array_key_exists($enc_test, $one2enc)) &&
 			(! in_array($enc_test, $one2enc))) {
 			FatalError(sprintf('Unknown encoding: %s', $enc_test));
