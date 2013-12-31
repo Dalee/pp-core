@@ -254,7 +254,7 @@ function str_lireplace($search, $replacement, $subject, $limit = 1){
   * @param  Boolean $caseMatters Use caseless comparsion or not. By default, case is matter.
   * @return String
   */
-  
+
 function _strReplaceLimited($search, $replacement, $subject, $limit = 1, $caseMatters = true){
 	$replaced = 0; $limit = (int)$limit; $len = mb_strlen($search);
 	if($caseMatters){
@@ -262,7 +262,7 @@ function _strReplaceLimited($search, $replacement, $subject, $limit = 1, $caseMa
 	} else {
 		$strp = 'mb_stripos';
 	}
-	
+
 	while($replaced++ < $limit && ($pos = $strp($subject, $search)) !== false){
 		$subject = substr_replace($subject, $replacement, $pos, $len);
 	}
@@ -364,7 +364,7 @@ function stripSlashesDeep($value) {
 function multiLevelVarsToString($name, $arrayVars, $leaf=null, $num_save=false) {
 	foreach($arrayVars as $k=>$a) {
 		$t[$k] = "{$leaf}[".((is_numeric($k) && !$num_save) ? '' : $k)."]";
-		$t[$k] = is_array($a) ? multiLevelVarsToString($name, $a, $t[$k], $num_save) : $name.$t[$k]."=".urlencode($a); 
+		$t[$k] = is_array($a) ? multiLevelVarsToString($name, $a, $t[$k], $num_save) : $name.$t[$k]."=".urlencode($a);
 	}
 
 	return !empty($t) ? join ('&', $t) : '';
@@ -397,7 +397,7 @@ function isUtfString($str) {
 
 		# hardcore
 		for ($j = 0; $j < $n; $j++) {
-			if ((ord($str[++$i]) & 0xC0) != 0x80)     # 80 - BF -- 2nd, 3rd, 4th bytes 
+			if ((ord($str[++$i]) & 0xC0) != 0x80)     # 80 - BF -- 2nd, 3rd, 4th bytes
 				return false;
 		}
 	}
@@ -412,14 +412,14 @@ function isAsciiString($AStr) {
 
 /*
  * Substring for a UTF8 string.
- * 
+ *
  * Input string should be UTF8-encoded.
- * - If an encoding mistake is found in the first '$from' UTF8 characters, 
+ * - If an encoding mistake is found in the first '$from' UTF8 characters,
  * blank string ('') is returned.
- * - If an encoding mistake is found in the next charaters, only first N 
- * correctly-encoded characters (starting from '$from') are returned 
+ * - If an encoding mistake is found in the next charaters, only first N
+ * correctly-encoded characters (starting from '$from') are returned
  * (N <= $length).
- * 
+ *
  * The function returns always a correct UTF8-encoded string.
  */
 // NOTICE: no need to use mb_ functions here
@@ -723,10 +723,11 @@ function myconv($from, $to, $string, $be_quiet = true) {
 		'k' => CHARSET_KOI8R,
 		'w' => CHARSET_WINDOWS,
 		'i' => CHARSET_ISO,
+		'l' => CHARSET_LATIN1,
 		'a' => CHARSET_ANSI,
 		'd' => CHARSET_DOS,
 		'm' => CHARSET_MAC,
-		'u' => CHARSET_UTF8,
+		'u' => CHARSET_UTF8
 	);/*}}}*/
 	static $tables = array();
 
@@ -949,14 +950,14 @@ function fixWordLength($string, $length = 10) {
 	$vowel    = "[уеыаоэяиюaeiouy]";  // english vowels: a, e, i, o, u, y.
 	$notvowel = "[^уеыаоэяиюaeiouy" . $delim ."]";
 	$endPattern = '\s\d\?\)!,.\-;:\'"`';
-	
+
 	// replace htmlentities
 	$entityPattern = '/(&#\d+;|&\w+;)/'.REGEX_MOD;
 	$entityReplacement = chr(2);
-	
+
 	preg_match_all($entityPattern, $string, $replacement);
 	$replacement = current($replacement);
-	
+
 	$string = preg_replace($entityPattern, $entityReplacement, $string);
 
 	$hyphens = $string;
@@ -968,14 +969,14 @@ function fixWordLength($string, $length = 10) {
 	$hyphens = preg_replace('/(' . $notvowel . $vowel    . ')(' . $notvowel . $vowel . ')/i'.REGEX_MOD,							'$1' . $delim .       '$2', $hyphens);
 	$hyphens = preg_replace('/(' . $vowel    . $notvowel . ')(' . $notvowel . $notvowel . $vowel . ')/i'.REGEX_MOD,				'$1' . $delim .       '$2', $hyphens);
 	$hyphens = preg_replace('/(' . $vowel    . $notvowel . $notvowel . ')(' . $notvowel . $notvowel . $vowel . ')/i'.REGEX_MOD,	'$1' . $delim .       '$2', $hyphens);
-	
+
 	// second time (to catch close standing syllables)
 	$hyphens = preg_replace('/(' . $vowel .')(' . $vowel . ')([^' . $endPattern . '])/i'.REGEX_MOD,                             '$1' . $doubleDelim . '$2$3', $hyphens);
 	$hyphens = preg_replace('/(' . $vowel    . $notvowel . ')(' . $notvowel . $vowel . ')/i'.REGEX_MOD,                         '$1' . $delim .       '$2', $hyphens);
 	$hyphens = preg_replace('/(' . $notvowel . $vowel    . ')(' . $notvowel . $vowel . ')/i'.REGEX_MOD,                         '$1' . $delim .       '$2', $hyphens);
 	$hyphens = preg_replace('/(' . $vowel    . $notvowel . ')(' . $notvowel . $notvowel . $vowel . ')/i'.REGEX_MOD,             '$1' . $delim .       '$2', $hyphens);
 	$hyphens = preg_replace('/(' . $vowel    . $notvowel . $notvowel . ')(' . $notvowel . $notvowel . $vowel . ')/i'.REGEX_MOD, '$1' . $delim .       '$2', $hyphens);
-	
+
 	$syllables = explode($delim, $hyphens);
 
 	$string = $tmp = array_shift($syllables);
@@ -990,10 +991,10 @@ function fixWordLength($string, $length = 10) {
 				$string .= "&shy;";
 			}
 		}
-		
+
 		$string .= $s;
 	}
-	
+
 	// get back htmlentities
 	$pieces = explode($entityReplacement, $string);
 	foreach($pieces as $key => $piece){
@@ -1002,7 +1003,7 @@ function fixWordLength($string, $length = 10) {
 		}
 	}
 	$string = implode($pieces);
-	
+
 	return $string;
 }
 
@@ -1031,7 +1032,7 @@ function utf8_urldecodeCallback($p) {
 		0x042E, 0x0410, 0x0411, 0x0426, 0x0414, 0x0415, 0x0424, 0x0413,
 		0x0425, 0x0418, 0x0419, 0x041A, 0x041B, 0x041C, 0x041d, 0x041E,
 		0x041F, 0x042F, 0x0420, 0x0421, 0x0422, 0x0423, 0x0416, 0x0412,
-		0x042C, 0x042B, 0x0417, 0x0428, 0x042d, 0x0429, 0x0427, 0x042A      
+		0x042C, 0x042B, 0x0417, 0x0428, 0x042d, 0x0429, 0x0427, 0x042A
 	);
 
 	$hex = $p[1];
