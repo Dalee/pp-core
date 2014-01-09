@@ -31,6 +31,7 @@
 	define('DATATYPESXML', BASEDIR.'/local/etc/datatypes.xml');
 
 	require_once (PPLIBPATH.'/Debug/functions.inc');
+	require_once (PPLIBPATH.'/Common/functions.compatibility.inc');
 
 	/**
 	 *
