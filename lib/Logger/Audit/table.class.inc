@@ -31,6 +31,26 @@ class PXAdminAuditTable extends PXAdminTableSimple {
 			$row[$col] = $this->__link('./?area=auditlog&user='.$row[$col], $row[$col]);
 		}
 
+		if ($col == 'diff') {
+			$diff = (array)json_decode_koi($row[$col], true);
+
+			$source = explode('/', $row['source'])[0];
+
+			$typeFields = $this->app->types[$source]->fields;
+			$changedOutput = 'Ничего не изменилось';
+			$humanTitles = [];
+
+			foreach ($diff as $code) {
+				$humanTitles[] = $typeFields[$code]->description;
+			}
+
+			if (!empty($humanTitles)) {
+				$changedOutput = implode(', ', $humanTitles);
+			}
+
+			$row[$col] = $changedOutput;
+		}
+
 		return parent::cell($row, $col);
 	}
 

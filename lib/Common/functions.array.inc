@@ -189,6 +189,40 @@ function array_remap($array, $map, $strict = false) {
 	return $result;
 }
 
+function array_deep_diff($d1, $d2, $excludeKeys) {
+    if (is_array($d1) && is_array($d2))  {
+        $diff = array();
+        foreach (array_unique(array_merge(array_keys($d1), array_keys($d2))) as $key) {
+        	if (is_array($excludeKeys) && in_array($key, $excludeKeys)) {
+        		continue;
+        	}
+
+            if (!array_key_exists($key, $d1)) {
+                $diff['added'][$key] = $d2[$key];
+            } else if (!array_key_exists($key, $d2)) {
+                $diff['removed'][$key] = $d1[$key];
+            } else {
+                $tmp = array_deep_diff($d1[$key], $d2[$key], $excludeKeys);
+                if (!empty($tmp)) $diff[$key] = $tmp;
+            }
+        }
+        return $diff;
+
+    } else if (!is_array($d1) && !is_array($d2))  {
+        if ($d1 == $d2) return array();
+        $ret = "$d1 ---> $d2";
+        // just a little touch for numerics, might not be needed
+        if (is_numeric($d1) && is_numeric($d2)) {
+            if ($d1 > $d2) $ret .= ' [- ' . ($d1 - $d2) . ']';
+            if ($d1 < $d2) $ret .= ' [+ ' . ($d2 - $d1) . ']';
+        }
+        return $ret;
+
+    } else {
+        return array('Array compared with NonArray');
+    }       
+}
+
 
 /**
  * Array flatter (maker)

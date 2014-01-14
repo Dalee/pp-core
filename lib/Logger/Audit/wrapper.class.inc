@@ -13,8 +13,10 @@ class PXAdminAuditWrapper {
 		"type"        => "Тип сообщения",
 		"source"      => "Тип данных/объект",
 		"user"        => "Логин",
-		"ip"          =>"IP адрес",
-		"description" => "Сообщение");
+		"ip"          => "IP адрес",
+		"description" => "Сообщение",
+		"diff"        => "Что изменилось"
+	);
 
 	var $frame = "INNER.0.0";
 	var $caption = 'none';

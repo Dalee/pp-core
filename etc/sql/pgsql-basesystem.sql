@@ -128,13 +128,14 @@ CREATE TABLE log_audit (
 	source  VARCHAR(128),
 	"user"  VARCHAR(32),
 	ip      VARCHAR(32),
-	description VARCHAR
+	description VARCHAR,
+	diff	TEXT
 ) WITH OIDS;
 
 CREATE INDEX source_idx ON log_audit(split_part(source, '/', 2));
 CREATE INDEX type_idx ON log_audit (type);
 CREATE INDEX data_idx ON log_audit(date_trunc('day', ts));
-CREATE VIEW log_audit_view AS SELECT "id", "ts", to_date(ts::text, 'DD.MM.YYYY'::text) as date, "level", "type", "source", "user", "ip", "description" FROM log_audit;
+CREATE VIEW log_audit_view AS SELECT "id", "ts", to_date(ts::text, 'DD.MM.YYYY'::text) as date, "level", "type", "source", "user", "ip", "description", "diff" FROM log_audit;
 
 -- 003_search.sql
 CREATE SEQUENCE stem_key  START 1 INCREMENT 1 MAXVALUE 2147483647 MINVALUE 1 CACHE 1;

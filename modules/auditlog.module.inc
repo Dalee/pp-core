@@ -1,6 +1,6 @@
 <?php
 //sql view required:
-//CREATE VIEW log_audit_view AS SELECT "id", "ts", to_date(ts, 'DD.MM.YYYY') as date, "level", "type", "source", "user", "ip", "description" FROM log_audit;
+//CREATE VIEW log_audit_view AS SELECT "id", "ts", to_date(ts::text, 'DD.MM.YYYY'::text) as date, "level", "type", "source", "user", "ip", "description", "diff" FROM log_audit;
 
 /**
  * Класс модуля вывода Журнала Аудита.

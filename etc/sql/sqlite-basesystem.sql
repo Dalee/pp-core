@@ -129,13 +129,14 @@ CREATE TABLE log_audit (
 	source  VARCHAR,
 	"user"  VARCHAR,
 	ip      VARCHAR,
-	description VARCHAR
+	description VARCHAR,
+	diff	TEXT
 );
 
 --CREATE INDEX source_idx ON log_audit(split_part(source, '/', 2));
 CREATE INDEX type_idx ON log_audit (type);
 --CREATE INDEX data_idx ON log_audit(date_trunc('day', ts));
-CREATE VIEW log_audit_view AS SELECT "id", "ts", date(ts, 'DD.MM.YYYY') as "date", "level", "type", "source", "user", "ip", "description" FROM log_audit;
+CREATE VIEW log_audit_view AS SELECT "id", "ts", date(ts, 'DD.MM.YYYY') as "date", "level", "type", "source", "user", "ip", "description", "diff" FROM log_audit;
 
 -- 003_search.sql
 CREATE TABLE stems (
