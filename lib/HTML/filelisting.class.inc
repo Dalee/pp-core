@@ -117,9 +117,9 @@ HTML;
 	}
 
 	function _breadCrumbs() {
-		$pathA = explode('/', $this->catalog);
+		$pathA = array_map(array($this, 'escapeHTML'), explode('/', $this->catalog));
 
-		array_unshift($pathA, '&#8595;');
+		array_unshift($pathA, '&darr;');
 
 		$res = array();
 
@@ -128,12 +128,9 @@ HTML;
 				continue;
 			}
 
-			$href = '';
-			for($i=1; $i<=$k; $i++) {
-				$href .= $pathA[$i].'/';
-			}
+			$href = implode('/', array_slice($pathA, 1, $k));
 
-			$res[] = '<a href="'.$this->base.quot($href).'">'.strip_tags($d).'</a>';
+			$res[] = '<a href="'.$this->base.rawurlencode($href).'">' . $d . '</a>';
 		}
 
 		$_ = implode('/', $res);
@@ -194,17 +191,20 @@ HTML;
 	function _listContext($f) {
 
 		$tmp = array(
-			"Context(event, 'file'",
-			$this->escapeJS($f->name), // title
-			$f->isDir,                    // isDir
+			"Context(event",
+			"'file'",
+			$this->escapeJS($f->name),                                     // title
+			$f->isDir,                                                     // isDir
 			$this->escapeJS(str_replace('\\', '/', $f->alias)),            // isRead / alias
-			$f->writable,                 // isWrite
-			$f->deletable,                // isDelete
-			$f->binary,                   // isBinary
-			$this->escapeJS(str_replace('\\', '/', $this->catalog)),       // dir
+			$f->writable,                                                  // isWrite
+			$f->deletable,                                                 // isDelete
+			$f->binary,                                                    // isBinary
+			"'".rawurlencode(str_replace('\\', '/', $this->catalog))."'",  // dir
 			$this->escapeJS(str_replace('\\', '/', $this->href)),          // href
-			"'".$this->side."'",          // side
-			$f->copyable . "); return false;"
+			"'".$this->side."'",                                           // side
+			$f->copyable,                                                  // isCopy
+			"'".rawurlencode($f->name)."'",                                // fileName
+			intval(!mb_check_encoding($f->name, DEFAULT_CHARSET)) . "); return false;" // isBrokenFilename
 		);
 
 		$context = ' onContextMenu="'. implode(', ', $tmp) .'"';
