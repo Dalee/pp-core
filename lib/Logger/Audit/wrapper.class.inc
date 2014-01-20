@@ -5,7 +5,8 @@ require_once PPLIBPATH . 'Logger/Audit/viewer.class.inc';
 
 class PXAdminAuditWrapper {
 	var $app, $request, $db, $layout;
-	var $children_on_page = 15;
+	var $minChildrenOnPage = 20;
+	var $maxChildrenOnPage = 100;
 
 	var $cols2title = array(
 		"ts"          => "Дата/Время",
@@ -26,8 +27,11 @@ class PXAdminAuditWrapper {
 
 	function PXAdminAuditWrapper() {
 		PXRegistry::assignToObject($this);
-		$this->page    = $this->request->getVar('_page', 1);
-		$this->onPage  = $this->children_on_page;
+		
+		$this->page = $this->request->getVar('_page', 1);
+
+		$onPage = $this->request->getVar('_per_page', $this->minChildrenOnPage);
+		$this->onPage = $onPage > $this->maxChildrenOnPage ? $this->maxChildrenOnPage : $onPage;
 	}
 
 	function init() {
