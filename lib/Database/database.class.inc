@@ -282,7 +282,7 @@ class PXDatabase extends NLSQLDatabaseAdapter implements IPXDatabase {
 	 * @param Array|NULL $limit     NULL or array(LIMIT,OFFSET)
 	 * @return Array|NULL           results of {@link NLSQLDatabaseAdapter::Query()}
 	 */
-	protected function _GetData($format, $status, $mode, $where=NULL, $limit=NULL, $order=NULL) {
+	protected function _GetData($format, $status, $mode, $where=NULL, $limit=NULL, $order=NULL, $dontUseCache = false) {
 		if(is_array($limit)) {
 			if(is_null($limit[0]) || is_null($limit[1])) {
 				$limit = null;
@@ -305,22 +305,23 @@ class PXDatabase extends NLSQLDatabaseAdapter implements IPXDatabase {
 			$order_by     = ($first_is_fun ? '' : $format->id . '.') . $order;
 		}
 
-		foreach ($this->triggers as $t){
+		foreach ($this->triggers as $t) {
 			$t->getTrigger()->OnBeforeGetDataBuildQuery($this, $format, $mode, $selector, $where, $order_by, $limit);
 		}
-	
+
 		$query = 'SELECT ' . $selector . ' FROM ' . $format->id;
 
 		if (!is_null($where))    $query .= ' WHERE ' . $where;
 		if (!is_null($order_by)) $query .= ' ORDER BY ' . $order_by;
-		foreach ($this->triggers as $t){
+
+		foreach ($this->triggers as $t) {
 			$t->getTrigger()->OnGetDataBuildQuery($this, $format, $mode, $query, $selector, $where, $order_by, $limit);
 		}
 
 		$queryIden = $this->_getCacheIden($query, $mode, $limit);
 		$data = $this->cache->load(array($queryIden, $format->id));
 
-		if ($data === null) {
+		if ($data === null || $dontUseCache) {
 			$sqlRes = $this->Query($query, true, $limit);
 			$data = $this->_PrepareResult($sqlRes, $format, $mode);
 			$this->cache->save(array($queryIden, $format->id), $data);
@@ -406,7 +407,7 @@ class PXDatabase extends NLSQLDatabaseAdapter implements IPXDatabase {
 	 * @param Integer $id
 	 * @return Array
 	 */
-	function getObjectById($format, $id) {
+	function getObjectById($format, $id, $dontUseCache = false) {
 		if (empty($id)) {
 			return array();
 		}
@@ -414,7 +415,7 @@ class PXDatabase extends NLSQLDatabaseAdapter implements IPXDatabase {
 			$this->FatalError('Попытка SQL-Injection!');
 		}
 
-		$data = $this->_GetData($format, null, DB_SELECT_TABLE, $format->id.'.id = '.$id);
+		$data = $this->_GetData($format, null, DB_SELECT_TABLE, $format->id . '.id = ' . $id, null, null, $dontUseCache);
 
 		if (count($data)) {
 			return reset($data);
@@ -1072,7 +1073,7 @@ class PXDatabase extends NLSQLDatabaseAdapter implements IPXDatabase {
 				$t->getTrigger()->OnModifyObject($this, $object['id'], $format, $object, $dbFields, $dbValues, $objectInDB);
 
 			$sysKeysToRemove = array('sys_created', 'sys_modified', 'sys_meta', 'sys_owner', 'sys_reflex_id', 'sys_order', 'allowed');
-			$diff = array_deep_diff($this->getObjectById($format, $object['id']), $objectInDB, $sysKeysToRemove);
+			$diff = array_deep_diff($this->getObjectById($format, $object['id'], true), $objectInDB, $sysKeysToRemove);
 
 			$audit->info('Объект изменен', $format->id . '/' . $object['id'], 'AUDIT', json_encode_koi(array_keys($diff)));
 		}
