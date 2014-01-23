@@ -9,7 +9,7 @@ class CssConvertImageUrlMinifierPlugin extends aCssMinifierPlugin {
 	private $include = array (
 			'background',
 			'background-image',
-			/* 'src', @font { src: url() } */
+			'src' // @font { src: url() }
 		);
 
 	/**
@@ -19,17 +19,25 @@ class CssConvertImageUrlMinifierPlugin extends aCssMinifierPlugin {
 	 * @return boolean Return TRUE to break the processing of this token; FALSE to continue
 	 */
 	public function apply(aCssToken &$token) {
-		if (!in_array($token->Property, $this->include) || !preg_match($this->reMatch, $token->Value, $m) || false !== strpos($token->Value, 'data:image/')) {
+		if (!in_array($token->Property, $this->include) || !preg_match($this->reMatch, $token->Value, $m) || false !== strpos($token->Value, 'data:')) {
 			return false;
 		}
 
-		if (substr($m[1], 0, 1) === '.' || ($m[1][0] !== '/')) {
-			$re = sprintf('@^%s[^/]+/htdocs/@', preg_quote(BASEPATH, '@'));
-			$m[1] = preg_replace($re, '/', realpath(dirname($this->configuration['sourceFile']).'/'.$m[1]));
+		$path = $m[1];
+		// resolve path to sourceFile if relative
+		if ($path[0] !== '/') {
+			$sourceFilePath = $this->configuration['sourceFile'];
+			$re = sprintf('@^%s[^/]+/(htdocs/|blocks/)?@', preg_quote(BASEPATH, '@'));
+			$to = '/';
+			if (strpos($sourceFilePath, 'htdocs') === false) { // hack for .blocks
+				$to = '/.blocks/';
+			}
+			$fullPath = realpath(dirname($sourceFilePath) . '/' . $path);
+			$path = preg_replace($re, $to, $fullPath);
 		}
 
 		$imageTag = PXHtmlImageTag::getInstance();
-		$result = $imageTag->buildProperty(array('src' => $m[1]));
+		$result = $imageTag->buildProperty(array('src' => $path));
 
 		$token->Value = str_replace($m[0], $result, $token->Value);
 		return true;
