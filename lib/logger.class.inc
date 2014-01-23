@@ -46,7 +46,8 @@ class PXAuditLogger {
 			'source' => '%2',
 			'user' => '%3',
 			'ip' => '%4',
-			'description' => '%5'
+			'description' => '%5',
+			'diff' => '%6'
 		);		
 		$loggerSqlFormat = $db->loggerSqlFormat('log_audit', $loggerSqlFormatFields);
 		if (!$loggerSqlFormat || $this->app->getProperty('DISABLE_LOGGER', 0) == '1') {
@@ -90,36 +91,36 @@ class PXAuditLogger {
 	 * @param String $source - источник сообщения (обычно datatype/id)
 	 * @param String $type - текстовый тип сообщения AUDIT, USER, итп.
 	 */
-	function debug($description, $source = 'UNKNOWN', $type = 'AUDIT') {
-		$this->logger->debug($this->_createMsg($description, $source, $type));
+	function debug($description, $source = 'UNKNOWN', $type = 'AUDIT', $diff = NULL) {
+		$this->logger->debug($this->_createMsg($description, $source, $type, $diff));
 	}
 	/**
 	 * Метод оболочка для вызова {@link NLLogger::info()}.
 	 * Параметры описаны в {@link PXAuditLogger::debug()}
 	 */
-	function info($description, $source = 'UNKNOWN', $type = 'AUDIT') {
-		$this->logger->info($this->_createMsg($description, $source, $type));
+	function info($description, $source = 'UNKNOWN', $type = 'AUDIT', $diff = NULL) {
+		$this->logger->info($this->_createMsg($description, $source, $type, $diff));
 	}
 	/**
 	 * Метод оболочка для вызова {@link NLLogger::warn()}.
 	 * Параметры описаны в {@link PXAuditLogger::debug()}
 	 */
-	function warn($description, $source = 'UNKNOWN', $type = 'AUDIT') {
-		$this->logger->warn($this->_createMsg($description, $source, $type));
+	function warn($description, $source = 'UNKNOWN', $type = 'AUDIT', $diff = NULL) {
+		$this->logger->warn($this->_createMsg($description, $source, $type, $diff));
 	}
 	/**
 	 * Метод оболочка для вызова {@link NLLogger::error()}.
 	 * Параметры описаны в {@link PXAuditLogger::debug()}
 	 */
-	function error($description, $source = 'UNKNOWN', $type = 'AUDIT') {
-		$this->logger->error($this->_createMsg($description, $source, $type));
+	function error($description, $source = 'UNKNOWN', $type = 'AUDIT', $diff = NULL) {
+		$this->logger->error($this->_createMsg($description, $source, $type, $diff));
 	}
 	/**
 	 * Метод оболочка для вызова {@link NLLogger::fatal()}.
 	 * Параметры описаны в {@link PXAuditLogger::debug()}
 	 */
-	function fatal($description, $source = 'UNKNOWN', $type = 'AUDIT') {
-		$this->logger->fatal($this->_createMsg($description, $source, $type));
+	function fatal($description, $source = 'UNKNOWN', $type = 'AUDIT', $diff = NULL) {
+		$this->logger->fatal($this->_createMsg($description, $source, $type, $diff));
 	}
 	/**
 	 * Формирует сообщение для записи в лог.
@@ -129,10 +130,11 @@ class PXAuditLogger {
 	 * @param String $type - текстовый тип сообщения AUDIT, USER, итп.
 	 * @return Array - массив из 5 элементов для передачи в NLLogger->debug|...|fatal()
 	 */
-	function _createMsg($description, $source, $type) {
+	function _createMsg($description, $source, $type, $diff) {
 		$user = $this->db->user->isAuthed() ? $this->db->user->login : 'UNKNOWN';
 		$ip   = (PXRequest::GetRemoteAddr() !== null) ? PXRequest::GetRemoteAddr() : 'UNKNOWN';
-		return array($type, $source, $user, $ip, $description);
+
+		return array($type, $source, $user, $ip, $description, $diff);
 	}
 	
 	/**

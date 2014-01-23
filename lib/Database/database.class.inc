@@ -1071,8 +1071,12 @@ class PXDatabase extends NLSQLDatabaseAdapter implements IPXDatabase {
 			foreach ($this->triggers as $t)
 				$t->getTrigger()->OnModifyObject($this, $object['id'], $format, $object, $dbFields, $dbValues, $objectInDB);
 
-			$audit->info('Объект изменен', $format->id .'/'. $object['id']);
+			$sysKeysToRemove = array('sys_created', 'sys_modified', 'sys_meta', 'sys_owner', 'sys_reflex_id', 'sys_order', 'allowed');
+			$diff = array_deep_diff($this->getObjectById($format, $object['id']), $objectInDB, $sysKeysToRemove);
+
+			$audit->info('Объект изменен', $format->id . '/' . $object['id'], 'AUDIT', json_encode_koi(array_keys($diff)));
 		}
+
 		return NULL;
 	}
 
