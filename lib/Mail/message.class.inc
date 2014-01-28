@@ -127,7 +127,9 @@ class NLMailMessage {
 		}
 
 		foreach($variables as $k=>$v) {
-			$text = str_replace('%'.mb_strtoupper($k).'%', (string)$v, $text);
+			if (is_scalar($v)) {
+				$text = str_replace('%'.mb_strtoupper($k).'%', (string)$v, $text);
+			}
 		}
 
 		$text = preg_replace("/(?<!\%)\%[^%]+?\%/si".REGEX_MOD, '', $text);
