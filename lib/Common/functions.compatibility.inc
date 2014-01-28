@@ -18,6 +18,16 @@ function pp_simplexml_encode_string($value) {
 	return myconv(DEFAULT_CHARSET, CHARSET_UTF8, $value);
 }
 
+// no function in PHP, simulating
+if (! function_exists('mb_strcasecmp')) {
+	function mb_strcasecmp($str1, $str2, $encoding = null) {
+		if (null === $encoding) {
+			$encoding = mb_internal_encoding();
+		}
+		return strcmp(mb_strtoupper($str1, $encoding), mb_strtoupper($str2, $encoding));
+	}
+}
+
 // no function, but strtr is most cases are utf-8 safe
 if (! function_exists('mb_strtr')) {
 	function mb_strtr($string, $from, $to = null) {
