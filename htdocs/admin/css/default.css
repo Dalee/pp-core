@@ -314,8 +314,9 @@ DIV.content {
 	border: 1px solid #808080;
 	border-right-color: #E7E9ED;
 }
-DIV.content .tree {
+DIV.content .tree__container {
 	padding: 10px 0 0 10px;
+	position: relative;
 }
 DIV.content h2 {
 	padding: 10px 0 5px 10px;
@@ -1237,35 +1238,48 @@ img.cursor {
 	cursor: pointer;
 }
 
-.tree-leaf span {
+.tree__leaf {
 	position: relative;
 }
 
-.tree-leaf span .tree-fullBrief {
+.tree__leaf-title {
+	position: relative;
+	max-width: 300px;
+	text-overflow: ellipsis;
+	display: block;
+	overflow: hidden;
+	white-space: nowrap;
+	cursor: help;
+}
+
+.tree__leaf-fields {
 	position: absolute;
 	z-index: 100;
 	min-height: 20px;
 	min-width:  200px;
-	background: #FFFFE1;
+	background: rgba(255,255,245,0.9);
 	color: #000;
-	border: 1px solid #000;
-	padding: 10px;
-	font-size: 110%;
+	border: 1px solid #333;
+	border-radius: 3px;
+	padding: 0px 8px;
+	font-size: 100%;
 	display:none;
-	margin-left: 100px;
-	top:  -10px;
+	top: 0;
+	left: 300px;
 }
 
-.tree-leaf span:hover .tree-fullBrief {
+.tree__leaf-title:hover {
+	box-shadow: 2px 1px #333;
+}
+.tree__leaf-title:hover + .tree__leaf-fields {
 	display: block;
-	
-} 
- 
- .tree-leaf .tree-fullBrief dt {
- 	font-weight: bold;
- }
- 
- .tree-leaf .tree-fullBrief dd {
+}
+
+.tree__leaf-fields dt {
+	font-weight: bold;
+}
+
+.tree__leaf-fields dd {
 	 margin-bottom: 1em;
 }
 
