@@ -1198,3 +1198,24 @@ function __convertStringToDashed_helper($a) { return '-' . mb_strtolower(substr(
 function _stripBadFileChars($fname) {
 	return str_replace(array('..' . DIRECTORY_SEPARATOR, DIRECTORY_SEPARATOR, chr(0)), '', $fname);
 }
+
+function softcut ($string, $max_length, $tail = null) {
+	if (mb_strlen($string) < $max_length) {
+		return $string;
+	}
+	if (is_null($tail)) {
+		$tail = '...';
+	}
+
+	$tail_length = mb_strlen($tail);
+	$swot = mb_substr($string, 0, $max_length - $tail_length); // string that shorter than max_length without tail width
+
+	$cut_pos = 0;
+	$delimiters = array(' ', ',', '.', '"', "'", '/', ';', '-', '+', "\t");
+	foreach ($delimiters as $d) {
+		$cut_pos = max($cut_pos, mb_strrpos($swot,$d));
+	}
+
+	$string = mb_substr($string, 0, $cut_pos);
+	return $string . $tail;
+}
