@@ -1,6 +1,6 @@
 <?php
 class PXAdminTreeBranch extends PXAdminWidget {
-	
+
 	function PXAdminTreeBranch($leaf, $htmlTree, $parentLeaf) {
 		$this->leaf     = $leaf;
 		$this->htmlTree = $htmlTree;
@@ -12,9 +12,15 @@ class PXAdminTreeBranch extends PXAdminWidget {
 
 		$html = '';
 		$html .= '<div'.$this->divAttrs().'>';
+
+		$html .= '<span class="tree__leaf-title">';
 		$html .= $this->paddingImages();
 		$html .= $this->contextMenuLink();
 		$html .= $this->editLink().$this->toChildsLink('<span'.$this->spanAttrs().'>'.$title.'</span>');
+		$html .= '</span>';
+
+		$html .= '<span class="tree__leaf-fields">'.$this->listedFields().'</span>';
+
 		$html .= PXAdminTreeBranch::childrenHTML($this->leaf->children, $this->htmlTree, $this);
 		$html .= '</div>';
 
@@ -23,7 +29,8 @@ class PXAdminTreeBranch extends PXAdminWidget {
 
 	function divAttrs() {
 		$cssClass = array(
-			'tree-leaf',
+			'tree-leaf tree__leaf',
+			'tree__leaf_level_' . $this->leaf->level,
 			$this->htmlTree->isSelected($this->leaf->id) ? 'selected ' : '',
 			$this->htmlTree->isOpenLeaf($this->leaf->parent)  || $this->leaf->level <= 2 ? 'open' : 'close'
 		);
@@ -31,7 +38,7 @@ class PXAdminTreeBranch extends PXAdminWidget {
 		return ' oncontextmenu="'.$this->contextMenu().'" id="leafId'.$this->leaf->id.'" class="'.implode(' ', $cssClass).'" ';
 	}
 
-	function listedFields() {
+	function listedFields($brief = false) {
 		$fields = array();
 
 		foreach($this->htmlTree->datatype->fields as $name=>$descr) {
@@ -42,7 +49,7 @@ class PXAdminTreeBranch extends PXAdminWidget {
 		}
 
 		if(sizeof($fields)) {
-			return sprintf("<dl class='tree-fullBrief'>%s</dl>", implode('', $fields));
+			return sprintf("<dl class='tree__leaf-fields-container tree-fullBrief'>%s</dl>", implode('', $fields));
 
 		} else {
 			return '';

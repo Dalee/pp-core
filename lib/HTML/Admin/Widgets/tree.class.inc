@@ -58,7 +58,7 @@ class PXAdminTree extends PXAdminWidget {
 
 		if(sizeof($this->tree->leafs[0]->children) > 0) {
 			// Рекурсивно генерируем дерево
-			return '<div class="tree">'.$caption.PXAdminTreeBranch::childrenHTML($this->tree->leafs[0]->children, $this).'</div>';
+			return '<div class="tree">'.$caption.'<div class="tree__container">'.PXAdminTreeBranch::childrenHTML($this->tree->leafs[0]->children, $this).'</div></div>';
 		} else {
 			return '<div class="tree">'.$caption.'<div class="empty">&#8212;</div></div>';
 		}
