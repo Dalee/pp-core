@@ -94,6 +94,61 @@ class NLTree {
 		$this->_fillLevel(0, 0);
 	}
 
+	function walk ($closure = false, $rootId = null) {
+
+		if (is_null($rootId)) {
+			$rootId = 0;
+		}
+		if (empty($this->leafs[$rootId])) {
+			return trigger_error('Unexistent leaf id passed');
+		}
+
+		$leafs = $this->leafs;
+		$traversing = function ($id) use (&$leafs, $closure, &$traversing) {
+			$leaf = $leafs[$id];
+			$closure($leaf);
+
+			if (!empty($leaf->children)) {
+				foreach ($leaf->children as $id => $child) {
+					$traversing($child);
+				}
+			}
+		};
+
+		return $traversing($rootId);
+	}
+
+	function map ($closure = false, $rootId = null) {
+
+		if (is_null($rootId)) {
+			$rootId = 0;
+		}
+		if (empty($this->leafs[$rootId])) {
+			return trigger_error('Unexistent leaf id passed');
+		}
+
+		$leafs = $this->leafs;
+		$traversing = function ($id) use (&$leafs, $closure, &$traversing) {
+			$leaf = $leafs[$id];
+
+			$result = array();
+			if (!empty($leaf->children)) {
+				foreach ($leaf->children as $id => $child) {
+					$result[] = $traversing($child);
+				}
+			}
+
+			return $closure($leaf, $result);
+		};
+
+		$result = array();
+		foreach ($leafs[0]->children as $id => $child) {
+			$result[] = $traversing($child);
+		}
+
+		return $result;
+	}
+
 	function getRoot() {
 		return $this->leafs[0];
 	}

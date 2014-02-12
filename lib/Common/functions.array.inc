@@ -404,4 +404,36 @@ function getRowFromTable($array, $colName, $colValues, $strict = true) {
 	return $found;
 }
 
-?>
+/**
+ * Checks an array to be a simple array
+ */
+function is_list ($array) {
+	if (empty($array) || !is_array($array)) {
+		return null;
+	}
+
+	$l = sizeof($array) - 1;
+	// first and last are numeric
+	if (!isset($array[0]) || !isset($array[$l])) {
+		return false;
+	}
+
+	for ($i = 1; $i < $l; $i += 1) {
+		if (!isset($array[$i])) {
+			return false;
+		}
+	}
+
+	return true;
+}
+
+/**
+ * readable alias to "is_array() && !is_list()"
+ */
+function is_hash ($array) {
+	if (empty($array) || !is_array($array)) {
+		return null;
+	}
+
+	return !is_list($array);
+}
