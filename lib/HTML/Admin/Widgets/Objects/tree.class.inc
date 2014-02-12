@@ -2,16 +2,23 @@
 
 class PXAdminTreeObjects extends PXAdminObjects {
 	protected $withoutExternals;
+	protected $loadWhere = null;
+	protected $loadMethod = null;
+
 	/**
 	 *
 	 * @param unknown $format
-	 * @param string $where - deprecated
-	 * @param string $loadMethod - deprecated
+	 * @param string $where
+	 * @param string $loadMethod
 	 * @param string $withoutExternals
 	 */
-	function __construct($format, $where=NULL, $loadMethod='', $withoutExternals = false) {
+	function __construct($format, $where = null, $loadMethod = null, $withoutExternals = false) {
+		$this->loadWhere = $where;
+		$this->loadMethod = $loadMethod;
 		$this->withoutExternals = $withoutExternals;
+
 		parent::__construct($format);
+
 		$this->createSubWidget();
 	}
 
@@ -23,7 +30,14 @@ class PXAdminTreeObjects extends PXAdminObjects {
 			return;
 		}
 
-		$this->tree = $this->db->getObjects($this->format, null, DB_SELECT_TREE | ($this->withoutExternals ? DB_SELECT_WITHOUT_EXTERNALS : 0) );
+		switch (strtolower($this->loadMethod)) {
+			case 'byparent':
+				$this->tree = $this->db->getObjectsByParent($this->format, null, $this->loadWhere, DB_SELECT_TREE | ($this->withoutExternals ? DB_SELECT_WITHOUT_EXTERNALS : 0) );
+				break;
+			default:
+				$this->tree = $this->db->getObjects($this->format, null, DB_SELECT_TREE | ($this->withoutExternals ? DB_SELECT_WITHOUT_EXTERNALS : 0) );
+				break;
+		}
 
 		$this->db->filterByAccess('admin', $this->format, $this->tree);
 		$this->count = sizeof($this->tree->leafs) - 1;
