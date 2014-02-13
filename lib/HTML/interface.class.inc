@@ -11,6 +11,12 @@ class PXLayoutInterface {
 
 	function setLang($lang='rus') {
 	}
+
+	function setContent () {
+	}
+
+	function getContent () {
+	}
 }
 
 class PXLayoutNull extends PXLayoutInterface {
