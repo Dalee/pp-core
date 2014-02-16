@@ -96,7 +96,7 @@ class PXModuleMain extends PXModule {
 		}
 
 		$allowed = $object->getAllowedChilds();
-		
+
 		if (!count($allowed)) {
 			return;
 		}
@@ -115,12 +115,12 @@ class PXModuleMain extends PXModule {
 			$fillObj->findCurrent($type, $pathName);
 		}
 	}
-	
+
 	private function loadAllObjects($object, $format, $pathName) {
 		$objsArray = array();
-		
+
 		$objsArray = $this->_loadContent($format, true, 'parent', $object->currentId);
-		
+
 		return $objsArray;
 	}
 
@@ -169,7 +169,7 @@ class PXModuleMain extends PXModule {
 
 		return $currentPage;
 	}
-	
+
 	public function adminJson() {
 		$format = $this->request->getVar('f');
 		$cl = $this->request->getVar('cl');
@@ -185,12 +185,12 @@ class PXModuleMain extends PXModule {
 
 			$hTree = new PXAdminAjaxTreeObjects($format, null, null, true, $id);
 			isset($cl) && $hTree->showChildren($cl);
-			
+
 			$answer = $hTree->html();
 		}
 		return array('branch' => $answer);
 	}
-	 
+
 	function adminIndex() {
 		if (!isset($this->app->types[$this->rootFormatId])) {
 			FatalError("Некорректный тип данных");
@@ -262,7 +262,7 @@ class PXModuleMain extends PXModule {
 					if (count($allowedChilds)) {
 						foreach ($allowedChilds as $childFormat) {
 							if ($app->types[$childFormat]->struct == 'tree' && $request->GetVar($childFormat.'_view') != 'plain') {
-								$objects = new PXAdminTreeObjects($childFormat, $rqCid, 'ByParent');
+								$subObjects = new PXAdminTreeObjects($childFormat, $rqCid, 'ByParent');
 
 							} else {
 								$subObjects =  new PXAdminTableObjects($childFormat, $rqCid, 'ByParent');
