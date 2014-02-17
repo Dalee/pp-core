@@ -30,6 +30,11 @@
 	define('DATABASEINI', BASEDIR.'/site/etc/database.ini');
 	define('DATATYPESXML', BASEDIR.'/local/etc/datatypes.xml');
 
+	// before we include /Debug/functions.inc we need to 
+	// define IS_WIN constant.
+	if (!defined('IS_WIN')) {
+		define('IS_WIN', (substr(PHP_OS, 0, 3) == 'WIN'));
+	}
 	require_once (PPLIBPATH.'/Debug/functions.inc');
 	require_once (PPLIBPATH.'/Common/functions.compatibility.inc');
 
