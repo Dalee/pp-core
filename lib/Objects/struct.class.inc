@@ -227,7 +227,7 @@ class PXTreeObjects implements PXContentObjectsInterface, ArrayAccess, Iterator 
 	}
 
 	function getCurrentType(){
-		return $this->currentType;
+		return $this->currentType();
 	}
 
 	// FIXME !!!
