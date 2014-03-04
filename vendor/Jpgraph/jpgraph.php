@@ -226,7 +226,7 @@ require_once 'jpgraph_gradient.php';
 // in all methods.
 //
 class JpGraphError {
-    function Install($aErrObject) {
+    static function Install($aErrObject) {
 	GLOBAL $__jpg_err;
 	$__jpg_err = $aErrObject;
     }
@@ -5842,7 +5842,7 @@ class Image {
 	    }
 	}
 	else {
-	    if( ereg("\n",$txt) ) { 
+	    if( preg_match("/\n/",$txt) ) { 
 		$tmp = explode("\n",$txt);
 		for($i=0; $i < count($tmp); ++$i) {
 		    $w1 = $this->GetTextWidth($tmp[$i]);
@@ -5972,7 +5972,7 @@ class Image {
 	    $oy=$y;
 	}
 
-	if( !ereg("\n",$txt) || ($dir>0 && ereg("\n",$txt)) ) {
+	if( !preg_match("/\n/",$txt) || ($dir>0 && preg_match("/\n/",$txt)) ) {
 	    // Format a single line
 
 	    $txt = $this->AddTxtCR($txt);

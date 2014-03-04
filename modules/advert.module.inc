@@ -134,7 +134,7 @@ class PXModuleAdvert extends PXModule {
 		switch($request->getAction()) {
 			//show image and exit
 			case 'image':
-				$response =& PXResponse::getInstance();
+				$response = PXResponse::getInstance();
 				$response->downloadFile('stat_'.$id.'_'.$year.'_'.$month.'.png', 'image/png', 'inline');
 				$response->send();
 
@@ -181,7 +181,7 @@ class PXModuleAdvert extends PXModule {
 					else
 						$xTitleOverall = 'Средний CTR: '. number_format(100*$sumClicks/$sumShows,2);
 
-					DEFINE("TTF_DIR", PPPATH . "share/fonts/");
+					define("TTF_DIR", PPPATH . "share/fonts/");
 					require_once PPPATH . 'vendor/Jpgraph/jpgraph.php';
 					require_once PPPATH . 'vendor/Jpgraph/jpgraph_bar.php';
 
@@ -218,7 +218,9 @@ class PXModuleAdvert extends PXModule {
 					$graph->title->SetFont(FF_VERDANA, FS_NORMAL, 10);
 					$graph->title->Set($bannerTitle);
 
-					$graph->Stroke();
+					//FIXME: just stop using JpGraph for php 4 ...
+					//too much strict notices, so I've disabled all by The Dog (c)
+					@$graph->Stroke();
 
 
 					exit; /*<====EXIT !!!*/
