@@ -15,7 +15,7 @@ class PXStorageTypeImage extends PXStorageTypeFile {
 	}
 
 	function __normalize($field, $object, &$param, $allowed = null) {
-		$allowedImageTypes = array_unique(unserialize(is_null($allowed) ? ENUM_ALLOWED_IMAGETYPES : $allowed));
+		$allowedImageTypes = array_unique(isset($param['allowed']) ? $param['allowed'] : unserialize(ENUM_ALLOWED_IMAGETYPES));
 		$basedir           = $this->ai($field, $object, $param['format']);
 		$tmp               = glob(HTDOCS_PATH . $basedir . '/*');
 
