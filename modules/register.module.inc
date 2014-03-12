@@ -343,11 +343,11 @@ class PXModuleRegister extends PXAbstractModule {
 
 	protected function _parseFields(&$input, &$errors){
 		$uData = array();
-		foreach ($this->fields as $k => $f) {
+		foreach ($this->fields as $f) {
 			$input[$f['title']] = $uData[$f['title']] = $this->request->GetPostVar($f['title']);
 
 			// check basic fields allowed length (only strings)
-			if(!empty($f['min']) || !empty($f['max'])){
+			if(is_string($uData[$f['title']]) && !(empty($f['min']) && empty($f['max']))){
 				if(!@isValidString($uData[$f['title']], (int)$f['min'], (int)$f['max'])) {
 					$errors[$f['title']]['size'] = true;
 				}
@@ -356,7 +356,7 @@ class PXModuleRegister extends PXAbstractModule {
 			// apply validators
 			foreach($f['validators'] as $modifier){
 				if(method_exists($this, $validator = '_' . $modifier . 'FieldValidator')){
-					$this->$validator($f['title'], $uData[$f['title']], $errors, $uData);
+					$this->$validator($f['title'], $uData[$f['title']], $errors, $uData, $f);
 				}
 			}
 		}
@@ -470,7 +470,7 @@ class PXModuleRegister extends PXAbstractModule {
 	}
 
 	//{{{ Validators block
-	protected function _loginFieldValidator($field, $value, &$errors, &$userData){
+	protected function _loginFieldValidator($field, $value, &$errors, &$userData, $fieldMeta = null){
 		if (!isValidLogin($value, 1, 255)) { //login length must be controlled in the min and max field options
 			$errors[$field]['badlogin'] = true;
 		}
@@ -482,9 +482,11 @@ class PXModuleRegister extends PXAbstractModule {
 		}
 	}
 
-	protected function _passwordFieldValidator($field, $value, &$errors, &$userData){
-		if (!isset($value[0]) || !isValidPasswd($value[0], 1, 255)) { //password length must be controlled in the min and max field options
-			$errors[$field]['badpassword']    = true;
+	protected function _passwordFieldValidator($field, $value, &$errors, &$userData, $fieldMeta = null){
+		$min = $fieldMeta['min'] ?: 1; $max = $fieldMeta['max'] ?: 255;
+		
+		if (!isset($value[0]) || !isValidPasswd($value[0], $min, $max)) {
+			$errors[$field]['badpassword'] = true;
 		}
 
 		if (!isset($value[0]) || !isset($value[1]) || $value[0] !== $value[1]) {
@@ -499,13 +501,13 @@ class PXModuleRegister extends PXAbstractModule {
 		if($field !== 'passwd') unset($userData[$field]);
 	}
 
-	protected function _emailFieldValidator($field, $value, &$errors, &$userData){
+	protected function _emailFieldValidator($field, $value, &$errors, &$userData, $fieldMeta = null){
 		if(!empty($value) && !isValidEmail($value)){
 			$errors[$field]['email'] = true;
 		}
 	}
 
-	protected function _uniqueFieldValidator($field, $value, &$errors, &$userData){
+	protected function _uniqueFieldValidator($field, $value, &$errors, &$userData, $fieldMeta = null){
 		if(mb_strlen(trim($value))){
 			$user =& $this->loadModel('user', array($field => trim($value)));
 
@@ -517,7 +519,7 @@ class PXModuleRegister extends PXAbstractModule {
 		}
 	}
 
-	protected function _reqFieldValidator($field, $value, &$errors, &$userData){
+	protected function _reqFieldValidator($field, $value, &$errors, &$userData, $fieldMeta = null){
 		if(is_array($value)){
 			foreach($value as $everyField){
 				if(!mb_strlen(trim($everyField))){
@@ -534,8 +536,8 @@ class PXModuleRegister extends PXAbstractModule {
 		}
 	}
 
-	protected function _dateFieldValidator($field, $value, &$errors, &$userData){
-		extract($value, EXTR_SKIP);
+	protected function _dateFieldValidator($field, $value, &$errors, &$userData, $fieldMeta = null){
+		@extract($value, EXTR_SKIP);
 
 		if(empty($day) && empty($month) && empty($year)){
 			$userData[$field] = null;
@@ -548,7 +550,7 @@ class PXModuleRegister extends PXAbstractModule {
 		}
 	}
 
-	protected function _fileFieldValidator($field, $value, &$errors, &$userData){
+	protected function _fileFieldValidator($field, $value, &$errors, &$userData, $fieldMeta = null){
 		$file = $this->request->GetUploadFile($field);
 
 		if(!empty($file)){
@@ -556,7 +558,7 @@ class PXModuleRegister extends PXAbstractModule {
 		}
 	}
 
-	protected function _captchaFieldValidator($field, $value, &$errors){
+	protected function _captchaFieldValidator($field, $value, &$errors, $fieldMeta = null){
 		if(!empty($this->captchaField) && 
 		    empty($value['key'])       or 
 		    empty($value['value'])     or 
