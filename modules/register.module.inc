@@ -235,7 +235,17 @@ class PXModuleRegister extends PXAbstractModule {
 				}
 
 				$existingUser = max(array(), reset($existingUser));
-				$this->_passwordFieldValidator('newpassword', $this->request->GetPostVar('newpassword'), $errors, $existingUser);
+				
+				//FIXME: add some more usable interface to fields params
+				$pwdFieldMeta = null;
+				foreach($this->fields as $f) {
+					if (in_array('password', $f['validators'])) {
+						$pwdFieldMeta = $f;
+						break;
+					}
+				}
+				
+				$this->_passwordFieldValidator('newpassword', $this->request->GetPostVar('newpassword'), $errors, $existingUser, $pwdFieldMeta);
 
 				if(!count($errors)){
 					$existingUser['remindcode'] = '';
