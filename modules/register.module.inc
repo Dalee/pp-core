@@ -401,11 +401,15 @@ class PXModuleRegister extends PXAbstractModule {
 			case 'user':
 				$object += $this->app->InitContentObject(DT_USER); //merge with prototype
 				
+				//temporary enable superuser for manipulations with account
+				$this->db->setUser(new PXUserCron());
 				if($object['id'] > 0){ // modify
 					$this->db->ModifyContentObject($this->app->types[DT_USER], $object);
 				} else { //create 
 					$object['id'] = $this->db->AddContentObject($this->app->types[DT_USER], $object);
 				}
+				$this->db->setUser($this->user);
+				
 				break;
 
 			case 'captcha':
