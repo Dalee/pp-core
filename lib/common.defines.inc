@@ -148,11 +148,11 @@ else { // utf8
 }
 
 if (setlocale(LC_ALL, json_decode(DEFAULT_LOCALE)) === false) {
-	FatalError(sprintf('Unable to set setlocale: %s', DEFAULT_LOCALE));
+	die(sprintf('Unable to set setlocale: %s', DEFAULT_LOCALE));
 }
 if (function_exists('mb_internal_encoding')) {
 	if (mb_internal_encoding(DEFAULT_CHARSET) === false) {
-		FatalError(sprintf('Unable to internal encoding to: %s', DEFAULT_CHARSET));
+		die(sprintf('Unable to internal encoding to: %s', DEFAULT_CHARSET));
 	}
 }
 
