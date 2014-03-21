@@ -568,13 +568,19 @@ class PXDatabase extends NLSQLDatabaseAdapter implements IPXDatabase {
 		$whereClause = array();
 		foreach ($field as $k => $v) {
 			//заменяет спец.значения на соотв. sql-выражения
-			switch (1) {
+			switch (true) {
 				case is_null($v):
 					$val = ' IS NULL';
 					break;
 
 				case $v === NOT_NULL:
 					$val = ' IS NOT NULL';
+					break;
+
+				case is_array($v):
+					empty($v) && FatalError("Array value for db#getObjectsByField* can't be empty!");
+					$db = $this;
+					$val = " IN ('" . join("','", array_map(function($item) use ($db) { return $db->EscapeString($item); }, $v)) . "')";
 					break;
 
 				case is_bool($v):
