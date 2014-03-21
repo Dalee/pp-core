@@ -578,7 +578,7 @@ class PXDatabase extends NLSQLDatabaseAdapter implements IPXDatabase {
 					break;
 
 				case is_array($v):
-					empty($v) && FatalError("Array value for db#getObjectsByField* can't be empty!");
+					empty($v) && $this->FatalError("Array value for db#getObjectsByField* can't be empty!");
 					$db = $this;
 					$val = " IN ('" . join("','", array_map(function($item) use ($db) { return $db->EscapeString($item); }, $v)) . "')";
 					break;
