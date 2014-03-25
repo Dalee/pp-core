@@ -20,7 +20,12 @@ class PXTriggerLayoutMultiCreatepathmodify extends PXAbstractLayoutTrigger {
 
 		$reflexField = PXMultipleRegionsReflexer::REFLEX_FIELD;
 
-		foreach ($tree->leafs as $l) {
+		foreach ($tree->leafs as $k => $l) {
+
+			// skip empty artifacts
+			if ($k === '' && is_null($l)) {
+				continue;
+			}
 
 			// looking for cloned node
 			if ($l->id == 0 || empty($l->content[$reflexField])) {
@@ -34,9 +39,7 @@ class PXTriggerLayoutMultiCreatepathmodify extends PXAbstractLayoutTrigger {
 				return;
 			}
 		}
-		
+
 		$tree->__multiCreatePathModifyCache__[$id] = $id;
 	}
 }
-
-?>
