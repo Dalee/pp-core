@@ -290,7 +290,13 @@ class NLAbstractLayout {
 		parse_str($href, $href_vars);
 
 		foreach ($getData as $k=>$v) {
-			if (((is_array($v) && count($v)) || (is_string($v) && strval($v) !== "")) && $k != $key && empty($href_vars[$k])) {
+			$flag = false;
+			$flag = $flag || (is_array($v) && count($v));
+			$flag = $flag || (is_string($v) && strval($v) !== "");
+			$flag = $flag || (is_numeric($v));
+			$flag = $flag && ($k != $key && empty($href_vars[$k]));
+
+			if ($flag) {
 				$href = appendParamToUrl($href, $k, $v);
 			}
 		}
@@ -299,5 +305,3 @@ class NLAbstractLayout {
 		return @"?{$href['query']}";
 	}
 }
-
-?>
