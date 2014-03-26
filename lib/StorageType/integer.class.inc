@@ -31,5 +31,9 @@ class PXStorageTypeInteger extends PXStorageType {
 
 		return array($v, $param['dbFields'], $param['dbValues']);
 	}
+
+	function filterable(){
+		return true;
+	}
 }
 ?>
