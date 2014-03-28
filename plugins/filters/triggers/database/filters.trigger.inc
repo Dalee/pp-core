@@ -40,9 +40,14 @@ class PXTriggerDatabaseFilters extends PXAbstractDatabaseTrigger {
 				case $storageType instanceof PXStorageTypeBoolean :
 					empty($value) || $_where[] = sprintf("%s.%s = %s", $format->id, $name, $value == 't' ? 'true' : 'false');
 					break;
+
+				case $storageType instanceof PXStorageTypeInteger :
+					empty($value) || $_where[] = sprintf("%s.%s = %d", $format->id, $name, $value);
+					break;
+
 				default:
 					$value = urldecode($value);
-					
+
 					$left  = mb_substr($value, 0, 1) != '^' ? P_LEFT : 0;
 					$right = mb_substr($value, -1)   != '$' ? P_RIGHT : 0;
 					
