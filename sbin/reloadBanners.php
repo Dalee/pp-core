@@ -1,4 +1,4 @@
-#!/usr/bin/php5 -q
+#!/usr/bin/env php5
 <?php
 	set_time_limit(0);
 	require_once dirname(__FILE__).'/../../libpp/lib/maincommon.inc';
