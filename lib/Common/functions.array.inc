@@ -30,7 +30,7 @@ function GetColsFromTableWithIndex($table, $rows, $index) {
 	foreach ($table as $id => $row) {
 		if (is_array($row)) {
 			$k = $index ? $row[$index] : $id;
-			$results[] = array_intersect_key($row, $rows);
+			$results[$k] = array_intersect_key($row, $rows);
 		}
 	}
 	return $results;
