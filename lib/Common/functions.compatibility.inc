@@ -112,9 +112,7 @@ if (! defined('MB_OVERLOAD_STRING')) {
 		return call_user_func_array('stristr', $a);
 	}
 
-	function mb_parse_str() {
-		$a = func_get_args();
-		return call_user_func_array('parse_str', $a);
+	function mb_parse_str($str, &$arr = null) {
+		return parse_str($str, $arr);
 	}
-
 }
