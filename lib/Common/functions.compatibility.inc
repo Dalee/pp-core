@@ -81,7 +81,7 @@ if (! defined('MB_OVERLOAD_STRING')) {
 
 	function mb_strrpos() {
 		$a = func_get_args();
-		return call_user_func_array('mb_strrpos', $a);
+		return call_user_func_array('strrpos', $a);
 	}
 
 	function mb_strlen() {
