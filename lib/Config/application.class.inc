@@ -230,7 +230,7 @@ class PXApplication {
 	 * @return Array         массив из элементов 'module_name' => $module
 	 */
 	public function getAvailableModules() {
-		return array_filter($this->modules, create_function('$module', "return PXRegistry::getUser()->can('admin', \$module);"));
+		return array_filter($this->modules, function($module) { return PXRegistry::getUser()->can('admin', $module); });
 	}
 
 	/**
@@ -253,8 +253,8 @@ class PXApplication {
 		if (empty($package)) {
 			return $availableModules;
 		}
-		// for 5.3: return array_filter($availableModules, function ($module) using $package { return 0 === strpos($module->package, $package); });
-		return array_filter($availableModules, create_function('$module', 'return 0 === strpos($module->package, "'.addslashes($package).'");'));
+
+		return array_filter($availableModules, function($module) use ($package) { return 0 === strpos($module->package, $package); });
 	}
 
 	/**
@@ -697,7 +697,7 @@ class PXApplication {
 	 */
 	private static function findConfigFile($filename, $required=true) {
 		$files = self::findFilesUnless($filename,
-			create_function('$files', 'return count($files) > 0; '));
+			function($files) { return count($files) > 0; });
 
 		if ($files) {
 			return $files[0];
