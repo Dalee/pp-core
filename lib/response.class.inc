@@ -218,9 +218,13 @@ class PXResponse {
 	 * @param string $name
 	 * @param mixed $value
 	 * @param integer $expire
+	 * @param string $domain
+	 * @param string $path
+	 * @param boolean $secure
+	 * @param boolean $httponly
 	 * @return boolean
 	 */
-	function SetCookie($name, $value, $expire = NULL, $domain = NULL) {
+	function SetCookie($name, $value, $expire = NULL, $domain = NULL, $path = '/', $secure = false, $httponly = false) {
 		if (headers_sent()) {
 			return false;
 		}
@@ -231,7 +235,8 @@ class PXResponse {
 		if (!is_numeric($expire)) {
 			$expire = 0;
 		}
-		return setcookie($name, $value, $expire, '/', $domain);
+		
+		return setcookie($name, $value, $expire, $path, $domain, $secure, $httponly);
 	}
 }
 
