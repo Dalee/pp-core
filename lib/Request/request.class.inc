@@ -327,7 +327,28 @@ class PXRequest {
 
 	// POST
 	function getLinks($reference) {
-		return $this->postData->_getArrayVar($reference->name, false);
+		$rawLinksData = $this->postData->_getArrayVar($reference->name, false);
+		
+		foreach($rawLinksData as $r => $links) {
+			foreach($links as $rr => $link) {
+				if (empty($link['fields'])) {
+					continue;
+				}
+				
+				foreach($link['fields'] as $name => $field) {
+					if (isset($reference->fields[$name])) {
+						$object    = array();
+						$p         = array('request' => $this);
+						$lname     = '__links_hack_fix_' . $name;
+						$fakeField = (object)array('name' => $lname);
+						$this->SetVar($lname, $field);
+						$rawLinksData[$r][$rr]['fields'][$name] = $reference->fields[$name]->displayType->getFromRequest($fakeField, $object, $p);
+					}
+				}
+			}
+		}
+		
+		return $rawLinksData;
 	}
 
 	function include_handler($handler) {
