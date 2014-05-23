@@ -10,7 +10,7 @@ class NLHTTPVarsData {
 
 	function __construct($needToStripTags = false, $needToConvert=true) {
 		$this->raw              = array();
-		$this->clientCharset    = isset($_SERVER['CHARSET']) ? strtolower($_SERVER['CHARSET']{0}) : CHARSET_WINDOWS;
+		$this->clientCharset    = isset($_SERVER['CHARSET']) ? strtolower($_SERVER['CHARSET']{0}) : CHARSET_UTF8;
 
 		$this->_needToConvert   = $needToConvert;
 		$this->_needToStripTags = $needToStripTags;
@@ -38,19 +38,6 @@ class NLHTTPVarsData {
 		}
 	}
 
-	function charSet($needFixIisRewrite) {
-		foreach ($this->raw as $k=>$v) {
-			// FIXME! temporary hack
-			if($needFixIisRewrite && is_string($v)) {
-				$this->raw[$k] = $v = myconv(CHARSET_UTF8, CHARSET_LATIN1, $v);
-			}
-
-			if (is_string($v) && !isAsciiString($v) && isUtfString($v)) {
-				$this->clientCharset = CHARSET_UTF8;
-			}
-		}
-	}
-
 	// Раскодирование JavaScript escape();
 	// private
 	function _unEscape(&$data) {
@@ -66,12 +53,8 @@ class NLHTTPVarsData {
 		}
 	}
 
-	function _NormalizeData($needFixIisRewrite=false) {
+	function _NormalizeData() {
 		$this->_unEscape($this->raw);
-
-		$this->clientCharset = CHARSET_WINDOWS;
-
-		$this->charSet($needFixIisRewrite);
 
 		if (!empty($this->raw['charcheck'])) {
 			$this->_needToConvert = true;
