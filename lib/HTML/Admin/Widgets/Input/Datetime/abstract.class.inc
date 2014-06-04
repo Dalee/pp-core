@@ -8,7 +8,7 @@ class PXInputDateTime extends PXAdminWidget {
 		$this->name    = $name;
 		$this->notNull = $notNull;
 
-		$this->date = $this->_parseDate($value, $notNull);
+		$this->date = (is_array($value)) ? $value : $this->_parseDate($value, $notNull);
 	}
 
 	function _parseDate($value, $notNull) {
