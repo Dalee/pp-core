@@ -571,6 +571,9 @@
 			// try to collect fields data by datatype or just use defaults
 			$xml = PXml::load(DATATYPESXML);
 			@list ($datatype) = $xml->xpath('/model/datatypes/datatype[@name="'.$name.'"]');
+			if (empty($datatype)) {
+				$this->fatal("Unknown datatype name ".$name);
+			}
 			if ($datatype && $datatype->name == $name) {
 				// $this->fatal('Datatype '.addslashes($name).' not exists');
 				$fields = $this->_makeFieldsByDatatype($datatype);
