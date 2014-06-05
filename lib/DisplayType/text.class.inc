@@ -33,4 +33,8 @@ class PXDisplayTypeText extends PXDisplayType {
 
 		return $value;
 	}
+
+	function buildTreeHover ($field, $object, $param = null) {
+		return $this->buildCell($field, $object, $param);
+	}
 }
