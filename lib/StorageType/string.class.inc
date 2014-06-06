@@ -20,7 +20,7 @@ class PXStorageTypeString extends PXStorageType {
 	}
 
 	function searchLikeQuery($field, $object, &$param) {
-		return $param['formatId'].'.'.$field->name." LIKE '%".$param['word']."%'::text OR ";
+		return $param['formatId'].'.'.$field->name.PXRegistry::getDb()->LIKE($param['word'], P_LEFT | P_RIGHT).'OR ';
 	}
 	
 	function filterable(){
