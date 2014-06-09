@@ -69,7 +69,7 @@ class PXCorpRegions {
 				$obj[self::getField()] = str_replace('{', '', $obj[self::getField()]);
 				$obj[self::getField()] = str_replace('}', '', $obj[self::getField()]);
 				$obj[self::getField()] = explode(',', $obj[self::getField()]);
-	
+
 				foreach ($rData as $val) {
 					if(in_array($val['id'], $obj[self::getField()])) {
 						$obj['fullpath'] = 'http://' . self::findUrl($host, $val['id']) . createPathByParentId($tree, $obj['parent']) . $obj['pathname'];
@@ -77,16 +77,16 @@ class PXCorpRegions {
 					}
 				}
 			}
-			
+
 			$objects[$obj['id']] = $obj;
 		}
-				
+
 		return $objects;
 	}
 
 	static function whereRegion($type){ //FIXME ! Possible wrong behaviour ! See PXMultiRegions::findByRegion()
 		$rid = self::getRegionId($type);
-		
+
 		if($rid != 0){
 			$where = PXRegistry::getDb()->inArray(self::getField(), $rid);
 		} else {
@@ -114,21 +114,21 @@ class PXCorpRegions {
 
 		if (isset($db->types[$objType]) && isset($db->types[$objType]->fields['pathname'])) {
 			$regionWhere = array(sprintf("pathname = '%s'", $pathName)); //FIXME ! It is safe query ?
-			
+
 			if (isset($db->types[$objType]->fields[self::getField()])) {
 				$regionWhere[] = $db->inArray(self::getField(), $rid);
 			}
 
 			$obj = $db->query(sprintf("SELECT * FROM %s WHERE %s", $objType, join(' AND ', $regionWhere)));
 		}
-		
+
 		return $obj;
 	}
 
 	static function getAllUrls() {
 		$urls    = array();
 		$regions = PXRegistry::getDb()->getObjects(PXRegistry::getDb()->types[self::getField()], true);
-		
+
 		if (!count($regions)) {
 			return $urls;
 		}
@@ -138,7 +138,7 @@ class PXCorpRegions {
 				$urls = array_merge($urls, explode(',', trim($region['url'])));
 			}
 		}
-		
+
 		return $urls;
 	}
 
@@ -158,14 +158,14 @@ class PXCorpRegions {
 				$host        = str_replace($langPrefix . '.', '', $host);
 				$langVersion = $langPrefix . '.';
 			}
-			
+
 			$intersection = array(
 				'count' => 0,
 				'url'   => null
 			);
-			
+
 			$currentHost  = array_reverse(explode('.', $host));
-			
+
 			foreach ($urls as $k => $url) {
 
 				//FIXME! WTF IS HERE ??? skipping special hosts. buggy and unexpectable
@@ -220,7 +220,7 @@ class PXCorpRegions {
 
 		$path = explode('/', $fullPath);
 		$pathname = end($path);
-		
+
 		$host = self::findUrl($path[0], $regionId);
 
 		array_shift($path); // remove URL
@@ -229,31 +229,33 @@ class PXCorpRegions {
 		if (empty($tree)) {
 			$tree = self::initRegionTree($regionId, $path);
 		}
-		
+
 		// cuz we need to restore current struct (path) in new region instantly. TODO: think about how to move it outta here
 		$path = $tree->getIdArrayByPath(OBJ_FIELD_PATHNAME, $path);
-		
+
 		while(($sid = array_pop($path)) < 0);
-		
-		if(mb_strpos($pathname, '.')){
+
+		if(mb_strpos($pathname, '.') && isset($tree->leafs[$sid])){
 			$db = PXRegistry::getDb();
 			$query = array();
 			$allowedFormats = PXRegistry::getApp()->getAllowedChilds(DT_STRUCT, $tree->leafs[$sid]);
+
 			foreach($allowedFormats as $format => $v){
 				if(!isset(PXRegistry::getTypes($format)->fields[OBJ_FIELD_PATHNAME])){
 					continue;
 				}
 				$query[] = sprintf("SELECT id FROM %s WHERE parent = %d AND %s='%s'", $format, $sid, OBJ_FIELD_PATHNAME, $db->escapeString($pathname));
 			}
-			
+
 			sizeof($query) && $result = $db->query(join (' UNION ', $query));
-			
+
 			if(empty($result)){
 				$pathname = '';
 			}
 		} else {
 			$pathname = '';
 		}
+
 		$path = createSomePathByParentId($tree, $sid, OBJ_FIELD_PATHNAME, '/', true, false).$pathname;
 
 		// host can be empty -> http:///$path
@@ -280,7 +282,7 @@ class PXCorpRegions {
 		$region = PXMultiRegions::getInstance();
 		$current_id = $region->getRid();
 		$region->setRid($id, true);
-		
+
 		if(!empty($pathnames)){
 			$where = array();
 			foreach($pathnames as $pathname){
@@ -291,7 +293,7 @@ class PXCorpRegions {
 		} else {
 			$tree = $db->getObjects(PXRegistry::getTypes(DT_STRUCT), true, DB_SELECT_TREE);
 		}
-		
+
 		$region->setRid($current_id, true);
 		return $tree;
 	}
@@ -301,10 +303,8 @@ class PXCorpRegions {
 		$langPrefix = PXRegistry::getApp()->getProperty('ENGLISH_HOST_PREFIX', 'english');
 		return mb_strstr($host, $langPrefix . '.') ? $langPrefix : '';
 	}
-	
+
 	static function isRegionalObject($format_id){
 		return self::multi()->isRegionalObject(PXRegistry::getTypes($format_id));
 	}
 }
-
-?>
