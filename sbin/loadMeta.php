@@ -1,4 +1,4 @@
-#!/usr/bin/env php5
+#!/usr/bin/env php54
 <?php
 	set_time_limit(0);
 	require_once dirname(__FILE__).'/../../libpp/lib/maincommon.inc';
@@ -69,4 +69,3 @@
 		}
 		WorkProgress(true);
 	}
-?>

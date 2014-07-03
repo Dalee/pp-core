@@ -1,4 +1,4 @@
-#!/usr/bin/env php5
+#!/usr/bin/env php54
 <?php
 
 /* ret codes
@@ -278,4 +278,3 @@ foreach($options as $option => $value) {
 			show_usage_and_exit();
 	}
 }
-?>

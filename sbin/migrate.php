@@ -634,4 +634,3 @@
 
 	$mgr = new MigrationManager($argc, $argv);
 	$mgr->run();
-?>
