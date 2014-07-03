@@ -1,4 +1,4 @@
-#!/usr/bin/env php5
+#!/usr/bin/env php54
 <?
 set_time_limit(0);
 ini_set('memory_limit','512M'); //for greedy scripts
@@ -58,4 +58,3 @@ if($jobName) {
 
 	$cronModule->RunTasks($app, time());
 }
-?>
