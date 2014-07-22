@@ -173,7 +173,7 @@ class PXResponse {
 
 	function send($content = null, $http_version_1_1 = true) {
 		if (!headers_sent()) {
-			if ($this->isError() || mb_strlen($content)) {
+			if (($this->status != $this->STATUS_OK) || mb_strlen($content)) {
 				// FIXME: we really need HTTP/1.1 ?
 				// to fix troubles with Transfer-Encoding: chunked
 				// (Apache uses it when Content-Length header missed for 1.1)
