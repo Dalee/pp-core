@@ -116,7 +116,7 @@ class PXResponse {
 	}
 
 	function isError() {
-		return ($this->status != $this->STATUS_OK) && ($this->status != $this->STATUS_NOT_MODIFIED);
+		return intval($this->status) >= 400;
 	}
 
 	// Cache management
