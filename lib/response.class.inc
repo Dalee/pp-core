@@ -173,14 +173,12 @@ class PXResponse {
 
 	function send($content = null, $http_version_1_1 = true) {
 		if (!headers_sent()) {
-			if (($this->status != $this->STATUS_OK) || mb_strlen($content)) {
-				// FIXME: we really need HTTP/1.1 ?
-				// to fix troubles with Transfer-Encoding: chunked
-				// (Apache uses it when Content-Length header missed for 1.1)
-				// you may use Nginx directive "chunked_transfer_encoding off;"
-				// in the http{} or location{} config scopes
-				header(sprintf('HTTP/1.%d %s', (int)$http_version_1_1, $this->status));
-			}
+			// FIXME: we really need HTTP/1.1 ?
+			// to fix troubles with Transfer-Encoding: chunked
+			// (Apache uses it when Content-Length header missed for 1.1)
+			// you may use Nginx directive "chunked_transfer_encoding off;"
+			// in the http{} or location{} config scopes
+			header(sprintf('HTTP/1.%d %s', (int)$http_version_1_1, $this->status));
 
 			if (mb_strlen($content)) {
 				// NOTICE: no mb_ here
