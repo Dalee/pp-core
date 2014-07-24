@@ -1,5 +1,9 @@
 <?php
 
+/**
+ * Checks for registry instance
+ * @return bool
+ */
 function pp_loaded() {
 	return class_exists('PXRegistry');
 }
@@ -7,6 +11,7 @@ function pp_loaded() {
 /**
  * pp_paths returns proxima's base paths or full paths for subpath
  * @param string $sub subpath
+ * @param bool $withPlugins adds plugins directories to paths list
  * @return array
  */
 function pp_base_paths($sub = null, $withPlugins = false) {
