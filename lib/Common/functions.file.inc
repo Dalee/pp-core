@@ -42,9 +42,9 @@ function copyr($source, $dest) {
 }
 
 /**
- * Calls a $callback function for every file in a directory and its 
+ * Calls a $callback function for every file in a directory and its
  * subdirectories.
- * 
+ *
  * The callback function receives 2 parameters:
  * 1) file path (ex.: /path/to/file/my.txt);
  * 2) file name (ex.: my.txt).
@@ -340,6 +340,26 @@ function FindSystemFile($fileName){
 			return $path.'/'.$fileName;
 		}
 	}
-} 
+}
 
-?>
+/**
+ * Determines mime type of file
+ * @param string $filename
+ * @return string
+ * @throws Exception
+ */
+function fileMimeType ($filename) {
+	if (is_callable('mime_content_type')) {
+		list ($mime) = explode(";", mime_content_type($filename));
+	}
+	elseif (is_callable('finfo_file')) {
+		$finfo = finfo_open(FILEINFO_MIME_TYPE);
+		$mime = finfo_file($finfo, $filename);
+		finfo_close($finfo);
+	}
+	else {
+		// @todo probably need to change to $mime = false
+		throw new Exception ('Can\'t determine mime type at '.__FILE__.':'.__LINE__);
+	}
+	return $mime;
+}
