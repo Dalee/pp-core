@@ -28,6 +28,9 @@ abstract class PXAbstractCommand {
 	/** @var string full description of scope */
 	protected $description;
 
+	/** @var array environment */
+	protected $env = array();
+
 	/**
 	 * Constructor.
 	 *
@@ -76,6 +79,19 @@ abstract class PXAbstractCommand {
 	}
 
 	public function __invoke() {
+		$this->_help();
+	}
+
+	// todo: move it to traits
+	public function _setup () {
+		$this->env['flags'] = PXConsole::flags() + array_fill_keys(array_keys($this->flags), 0);
+	}
+
+	public function _teardown () {
+		// dummy
+	}
+
+	public function _help () {
 		if (!empty($this->help)) {
 			con_head("Help");
 			con_text($this->help);
@@ -90,5 +106,4 @@ abstract class PXAbstractCommand {
 		con_list(array_flip($this->flags));
 		con_eol();
 	}
-
 }
