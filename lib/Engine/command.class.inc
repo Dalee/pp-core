@@ -51,11 +51,13 @@ class PXEngineCommand extends PXEngineSbin {
 	protected static function search($command) {
 		list ($ns, $command, $method) = array_pad(array_pad(explode(':', $command), 2, ''), -3, null);
 
+		// var_dump(pp_base_paths('commands', true)); //, $command . '.' . self::COMMAND_EXTENSION));
 		if ($ns) {
-			$file = pp_fetch_file(pp_plugin_path($ns, 'commands'), $command); // broken
+			$path = pp_plugin_path($ns, 'commands'); // broken
 		} else {
-			$file = pp_fetch_file('commands', $command . '.' . self::COMMAND_EXTENSION);
+			$path = pp_base_paths('commands', true);
 		}
+		$file = pp_fetch_file($path, $command . '.' . self::COMMAND_EXTENSION);
 
 		if ($file) {
 			$class = "PXCommand".$command;
@@ -72,7 +74,7 @@ class PXEngineCommand extends PXEngineSbin {
 	protected static function fetch_commands() {
 		$paths = array_filter(array_map(function ($path) {
 			return file_exists($path) ? glob($path.'*.'.self::COMMAND_EXTENSION) : null;
-		}, pp_base_paths('commands')));
+		}, pp_base_paths('commands', true)));
 		$commands = array();
 		$commands[] = 'list'; // static::command_list
 		array_walk_recursive($paths, function ($v, $k) use (&$commands) {
@@ -117,7 +119,9 @@ class PXEngineCommand extends PXEngineSbin {
 				break;
 			case ($action['method'] && is_callable(array($command, $action['method']))
 				&& count($command->_method($action['method'])->params($required = true)) <= count($params)):
+				$command->_setup();
 				$r = call_user_func_array(array($command, $action['method']), $params);
+				$command->_teardown();
 				break;
 			case ($action['method'] && is_callable(array($command, $action['method']))):
 				con_alert('Incorrect params for {fg:yellow}%s:%s {fg:white}command', $command->name, $action['method']);
@@ -125,7 +129,9 @@ class PXEngineCommand extends PXEngineSbin {
 				break;
 			case (is_callable($command)
 				&& count($command->_method('')->params($required = true)) <= count($params)):
+				$command->_setup();
 				$r = call_user_func_array($command, $params);
+				$command->_teardown();
 				break;
 			case (is_callable($command)):
 				con_alert('Incorrect params for {fg:yellow}%s {fg:white}command', $command->name);
@@ -152,6 +158,7 @@ class PXEngineCommand extends PXEngineSbin {
 	protected static function command_ls() {
 		return static::command_list();
 	}
+
 	protected static function command_list() {
 		$commands = static::fetch_commands();
 
