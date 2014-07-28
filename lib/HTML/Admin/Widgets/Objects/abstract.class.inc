@@ -80,8 +80,7 @@ abstract class PXAdminObjects extends PXAdminWidget implements IPXAdminObjects {
 
 		$this->layout->appendControls($this->layoutButtonCell, $parent, array($this->format->id));
 
-		// FIXME - need append, not assign
-		$this->layout->assignContextMenu($this->layoutCell.'.CONTEXT', $parent, array($this->format->id));
+		$this->layout->appendContextMenu($this->layoutCell.'.CONTEXT', $parent, array($this->format->id));
 	}
 
 	protected

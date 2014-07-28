@@ -72,8 +72,8 @@ class PXAdminHTMLLayout extends NLAbstractLayout {
 		}
 	}
 
-	function assignContextMenu($label, $selectedSid, $allowedFormats) {
-		$html = NULL;
+	function _makeContextMenu($selectedSid, $allowedFormats) {
+		$html = '';
 
 		if (sizeof($allowedFormats)) {
 			$html .=' onContextMenu="Context(event, \'add\', \''.quot(quot($selectedSid), false).'\'';
@@ -87,7 +87,33 @@ class PXAdminHTMLLayout extends NLAbstractLayout {
 			$html .= '); return false;" ';
 		}
 
-		$this->assign($label, $html);
+		return $html;
+	}
+
+	function assignContextMenu($label, $selectedSid, $allowedFormats) {
+		$this->assign($label, $this->_makeContextMenu($selectedSid, $allowedFormats));
+	}
+
+	function appendContextMenu($label, $selectedSid, $allowedFormats) {
+		// store formats and labels for each parent
+		// some times there are same parents so we can share context menus
+		static $stored = array();
+		if (!isset($stored[$selectedSid])) {
+			$stored[$selectedSid] = array(
+				'labels'  => array(),
+				'formats' => array()
+			);
+		}
+
+		// append to label
+		$collection = &$stored[$selectedSid];
+		$collection['labels'][] = $label;
+		$collection['formats'] = array_merge($collection['formats'], $allowedFormats);
+
+		// draw it for each label (each space)
+		foreach ($collection['labels'] as $_label) {
+			$this->assign($_label, $this->_makeContextMenu($selectedSid, $collection['formats']));
+		}
 	}
 
 	function appendTable($label, $objectFormat, $table, $selected = NULL, $varToTitle = NULL, $page=1, $objectsOnPage=0, $count=0, $withLinks=TRUE, $parentPathname=NULL) {
