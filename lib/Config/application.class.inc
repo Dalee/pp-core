@@ -69,7 +69,7 @@ class PXApplication {
 	 * @var Array
 	 */
 	var $langTree = array();
-	
+
 	/**
 	 * массив правил авторизации из etc/auth.ini
 	 * @var Array
@@ -461,7 +461,7 @@ class PXApplication {
 	 *
 	 * @param String $fileName имя файла
 	 */
-	private function FillModules($fileName) {
+	private function fillModules($fileName) {
 		if (!($dom = PXml::load($fileName))) {
 			FatalError("Ошибка в файле настроек <em>$fileName</em>");
 		}
@@ -515,6 +515,32 @@ class PXApplication {
 		$this->modules[$module->getName()] = $module;
 	}
 
+	/**
+	 * Пользовательская функция для регистрации модулей не через конфиг modules.xml, а при загрузке плагинов
+	 * @param  String   $name - имя
+	 * @param  Array    $args - массив с параметрами триггера, имя => значение
+	 */
+	public function registerModule ($name, array $args = null) {
+		if (!ctype_alnum($name)) {
+			throw new Exception('Invalid module name');
+		}
+
+		$lcname = strtolower($name);
+		$ucfname = ucfirst($name);
+
+		if (isset($this->modules[$lcname])) {
+			return false;
+		}
+
+		$module = new PXModuleDescription();
+		$module->name        = $lcname;
+		$module->description = isset($args['description'])? $args['description'] : $ucfname;
+		$module->class       = isset($args['class'])? $args['class'] : 'PXModule' . $ucfname;
+		$this->setModules($module);
+
+		return true;
+	}
+
 	/*
 	 * plugins
 	 *
@@ -523,7 +549,7 @@ class PXApplication {
 		if($fileName === false) {
 			return;
 		}
-	
+
 		if (!($dom = PXml::load($fileName))) {
 			FatalError("Ошибка в файле настроек <em>$fileName</em>");
 		}
@@ -553,7 +579,7 @@ class PXApplication {
 			$this->plugins[$plugin->getName()] = $plugin;
 			$plugin->getPlugin($this); //initialize plugin
 		}
-		
+
 		$this->reinitialize['plugins'] = true;
 	}
 
@@ -570,11 +596,11 @@ class PXApplication {
 	 */
 	private function fillTriggers($fileName) {
 		$this->triggers = new PXTriggersList;
-		
+
 		if($fileName === false) {
 			return;
 		}
-		
+
 		if (!($dom = PXml::load($fileName))) {
 			FatalError("Ошибка в файле настроек <em>$fileName</em>");
 		}
@@ -589,7 +615,7 @@ class PXApplication {
 			$this->setTrigger($domTrigger->attributes(), $domTrigger->parent()->nodeName());
 		}
 	}
-	
+
 	private function setTrigger($attributes, $type) {
 		$trigger = new PXTriggerDescription();
 		$trigger->setAttrs($attributes);
@@ -615,7 +641,7 @@ class PXApplication {
 		$this->setTrigger($args, $type);
 		return $this;
 	}
-	
+
 	/**
 	 * Проверяет наличие кешированного файла настроек и загружает его.
 	 *
