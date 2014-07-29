@@ -1,5 +1,5 @@
 function startCheckPassword(input, name) {
-	checkPassord = setInterval(
+	setInterval(
 		function() {
 			checkPassword(input, name);
 		},
@@ -8,8 +8,8 @@ function startCheckPassword(input, name) {
 }
 
 function checkPassword(input, name) {
-	pType   = input.form.elements[name+'[type]'];
-	pReType = input.form.elements[name+'[retype]'];
+	var pType   = input.form.elements[name+'[type]'];
+	var pReType = input.form.elements[name+'[retype]'];
 
 	if(input === pType) {
 		if(input.value.length == 0) {
@@ -337,87 +337,243 @@ function ContextCall(id, status, format, title) {
 	return Context('Edit', format, id, 'Изменить ' + title);
 }
 
-function ContextEdit(id, status, format, title, alias, level, up, down) {
-	var ret;
+function renderContextMenu (title, items) {
+	var ret = [];
 	var area = GetQueryVariable('area', 'main');
 
-	ret  = '<strong>'+title+'</strong>';
-	ret += '<a class="edit" href="javascript: EditContent(\''+format+'\', '+id+')">Изменить</a>';
-	ret += '<a class="copy" href="javascript: CloneContent(\''+format+'\', '+id+')">Клонировать</a>';
-
-	if(level) {
-		ret += '<a class="del" href="action.phtml?id='+id+'&area=objects&action=directremove&format='+format+'" onclick="return window.confirm(\'Вы действительно хотите удалить '+title+'?\');">Удалить</a>';
-	} else {
-		ret += '<span class="del">Удалить</span>';
+	if (title) {
+		ret.push('<strong>' + title + '</strong>');
 	}
 
-	ret += '<div class="hr"></div>';
+	function link (el) {
+		var node = document.createElement(el.disabled? 'span' : 'a');
 
-	if (status != 1 && level) {
-		ret += '<a class="on" href="action.phtml?id='+id+'&area=objects&action=directstatus&format='+format+'">Опубликовать</a>';
-	} else {
-		ret += '<span class="on">Опубликовать</span>';
+		var classes = '';
+		if (el.block) {
+			classes = el.block;
+		}
+		if (classes) {
+			node.className = classes;
+		}
+
+		node.innerText = Array(el.content).join('');
+
+		if (el.disabled) {
+			return node.outerHTML;
+		}
+
+		if (el.url) {
+			node.href = el.url;
+			if (el.blank) node.target = '_blank';
+		}
+		else if (el.action) {
+			node.href = 'javascript: ' + el.action;
+		}
+
+		if (el.confirm) {
+			node.confirmText = typeof el.confirm === 'string'? el.confirm : 'Вы уверены?';
+			node.onclick = "return window.confirm(this.confirmText);";
+		}
+
+		return node.outerHTML;
 	}
 
-	if(status == 1 && level) {
-		ret += '<a class="off" href="action.phtml?id='+id+'&area=objects&action=directstatus&format='+format+'">Скрыть</a>';
-	} else {
-		ret += '<span class="off">Скрыть</span>';
+	var groups = {'': []}, group, el;
+	for (var i = 0, l = items.length; i < l; i += 1) {
+		el = items[i];
+		group = typeof el === 'string'? '' : (el.group || '');
+		groups[group] = groups[group] || [];
+		groups[group].push(String(
+			(el.url || el.action) && el.content? link(el) : el
+		));
 	}
 
-	ret += '<div class="hr"></div>';
+	ret.push($.map(groups, function (v) { return v.join(''); })
+		.filter(function (v) { return v; })
+		.join('<div class="hr"></div>'));
 
-	if(up) {
-		ret += '<a class="up" href="action.phtml?id='+id+'&area=objects&action=directup&format='+format+'">Поднять выше</a>';
-	} else {
-		ret += '<span class="up">Поднять выше</span>';
-	}
-
-	if(down) {
-		ret += '<a class="down" href="action.phtml?id='+id+'&area=objects&action=directdown&format='+format+'">Опустить ниже</a>';
-	} else {
-		ret += '<span class="down">Опустить ниже</span>';
-	}
-
-	if(up || down) {
-		ret += '<a href="javascript:MoveContent(\''+format+'\', '+id+');">Изменить позицию на&hellip;</a>';
-	} else {
-		ret += '<span>Изменить позицию на&hellip;</span>';
-	}
-
-	ret += '<div class="hr"></div>';
-
-	if (alias.length) {
-		ret += '<a class="alias" href="/admin/preview.phtml?q='+alias+'" target="_blank">Показать на сайте</a>';
-	} else {
-		ret += '<span class="alias">Показать на сайте</span>';
-	}
-
-	return ret;
+	return ret.join('');
 }
 
-function ContextAdd(parent, format, title) {
-	return '<a class="add" href="javascript: AddContent(\''+format+'\', '+(parent ? parent : "''")+')">'+title+'</a>';
+function _ContextParamsAdd (parent, format, title) {
+	var items = [];
+	for (var i = 1, l = arguments.length; i < l; i += 2) {
+		// each pair or elements are format and title
+		items.push({id: arguments[i], title: arguments[i + 1]});
+	}
+	return {
+		id      : Number(parent) || "''",
+		formats : items
+	};
 }
 
-function Context(event) {
+function _ContextParamsEdit (id, status, format, title, alias, level, up, down) {
+	return {
+		id     : id,
+		status : status,
+		format : format,
+		title  : title,
+		alias  : alias,
+		level  : level,
+		up     : up,
+		down   : down
+	};
+}
+
+function _ContextParamsFile (title, isDir, urlAlias, isWrite, isDelete, isBinary, dir, href, side, isCopy, fileName, isBrokenFilename) {
+	return {
+		title    : title,
+		isDir    : isDir,
+		urlAlias : urlAlias,
+		isWrite  : isWrite,
+		isDelete : isDelete,
+		isBinary : isBinary,
+		dir      : dir,
+		href     : href,
+		side     : side,
+		isCopy   : isCopy,
+		fileName : fileName,
+
+		isBrokenFilename : isBrokenFilename
+	};
+}
+
+function ContextEdit (id, status, format, title, alias, level, up, down) {
+	// format-id-params shortcuts
+	var jsFIP = '(\'' + format + '\', ' + id + ')',
+		urlFIP = 'action.phtml?area=objects&id=' + id + '&format=' + format + '&';
+
+	return [
+		// standard menu items
+		{ group: 'standard', block: 'edit', content: 'Изменить', action: 'EditContent' + jsFIP },
+		{ group: 'standard', block: 'copy', content: 'Клонировать', action: 'CloneContent' + jsFIP },
+		{ group: 'standard', block: 'del',  content: 'Удалить', url: urlFIP + 'action=directremove',
+			disabled: !level, confirm: 'Вы действительно хотите удалить ' + title + '?' },
+
+		// status
+		{ group: 'visibility', block: 'on', content: 'Опубликовать', url: urlFIP + 'action=directstatus',
+			disabled: !(!status && level) },
+		{ group: 'visibility', block: 'off', content: 'Скрыть', url: urlFIP + 'action=directstatus',
+			disabled: !(status && level) },
+
+		// ordering objects
+		{ group: 'order', block: 'up', content: 'Поднять выше', url: urlFIP + 'action=directup',
+			disabled: !up },
+		{ group: 'order', block: 'down', content: 'Опустить ниже', url: urlFIP + 'action=directdown',
+			disabled: !down },
+		{ group: 'order', block: 'updown', content: 'Изменить позицию на …', action: 'MoveContent' + jsFIP,
+			disabled: !(down || up) },
+
+		// preview plugin ?
+		{ group: 'preview', block: 'alias', content: 'Показать на сайте', url: '/admin/preview.phtml?q='+alias,
+			disabled: !(alias.length), blank: true }
+	];
+}
+
+function ContextFile (title, isDir, urlAlias, isWrite, isDelete, isBinary, dir, href, side, isCopy, fileName, isBrokenFilename) {
+	var ret;
+	var name = GetQueryVariable('name', 0);
+	var outside = GetQueryVariable('action', 0);
+
+	urlAlias = urlAlias !== '0'? urlAlias : '';
+
+	// title-blabla-params shortcuts
+	var jsP  = '(\'' + title + '\', \'' + dir + '\', \'' + href + '\', \'' + side + '\', \'' + outside + '\'); return false;',
+		jsP2 = '(\'' + dir + '\', \'' + title + '\', \'' + href + '\', \'' + side + '\', \'' + outside + '\', \'' + fileName + '\'); return false;',
+		urlP = 'action.phtml' + href + '&' + side + 'dir=' + dir + '&mdir=' + dir + '&mfile=' + fileName + '&side=' + side + '&outside=' + outside + '&',
+		urlDP = href + '&' + side + 'dir=' + dir + fileName + '&side=' + side + '&outside=' + outside + '&',
+
+		copyMoveDisabled = !isCopy || name || outside === 'filesarray' || isBrokenFilename,
+		copyMoveConfirm = isCopy === 2 && [
+			'В каталоге назначения уже есть файл/кататог с таким именем. ',
+			'Вы действительно хотите переписать существующий файл/каталог ' + title + '?'
+		].join('');
+
+	return [
+		// standard menu items
+		{ group: 'standard', block: 'edit', content: 'Зайти в каталог', url: urlDP, visible: isDir },
+		{ group: 'standard', block: 'edit', content: 'Изменить', action: 'EditFile' + jsP,
+			visible: !isDir, disabled: isWrite === 0 || isBinary || isBrokenFilename },
+		{ group: 'standard', block: 'unzip', content: 'Разархивировать', url: urlP + 'action=unzip',
+			visible: !isDir, disabled: !isDelete || !isBinary || isBrokenFilename },
+
+		// copy/move
+		{ group: 'standard', block: 'move', content: 'Переместить', url: urlP + 'action=move',
+			confirm: copyMoveConfirm, disabled: copyMoveDisabled && !isDelete },
+		{ group: 'standard', block: 'copy', content: 'Скопировать', url: urlP + 'action=copy',
+			confirm: copyMoveConfirm, disabled: copyMoveDisabled },
+
+		{ group: 'standard', block: 'rename', content: 'Переименовать', action: 'RenameFile' + jsP2, disabled: !isDelete },
+		{ group: 'standard', block: 'del', content: 'Удалить', action: 'RemoveFile' + jsP2, disabled: !isDelete },
+
+		{ group: 'alias', block: 'alias', content: 'Скачать/Показать', url: urlAlias || '#', blank: true, disabled: !urlAlias },
+		{ group: 'alias', block: 'memory', content: 'В буфер обмена', action: 'return InMemory(\'' + urlAlias + '\');', disabled: !urlAlias }
+	];
+}
+
+/**
+ * @param {Number|null} parent
+ * @param {String} format
+ * @param {String} title
+ */
+function ContextAdd (parent, format, title /* [, format, title]* */) {
+	var params = _ContextParamsAdd.apply(this, arguments),
+		items = [],
+		format, i, l;
+
+	for (i = 0, l = params.formats.length; i < l; i += 1) {
+		format = params.formats[i];
+		items.push({
+			block: 'add',
+			action: 'AddContent(\'' + format.id + '\', ' + params.id + ')',
+			content: format.title
+		});
+	}
+
+	return items;
+}
+
+/**
+ * function Context (event: Event[, menuType: string[, args...]])
+ * @param {Event} event
+ */
+function Context (event) {
+	var args = Array.prototype.slice.call(arguments, 2);
 	menu = document.getElementById('ContextMenu');
 	menu.innerHTML = '';
 
-	if (arguments.length > 1) {
-		if (arguments[1] == 'add') {
-			menu.innerHTML += '<strong>Добавить</strong>';
-			for(i=3; i<arguments.length; i+=2) {
-				menu.innerHTML += ContextAdd(arguments[2], arguments[i], arguments[i+1]);
-			}
+	var menuType = arguments[1],
+		pParsers = {
+			def  : function () { return {}; },
+			add  : _ContextParamsAdd,
+			edit : _ContextParamsEdit,
+			file : _ContextParamsFile
+		},
+		funcs    = {
+			def  : ContextEdit,
+			add  : ContextAdd,  // ContextAdd used by PXAdminHTMLLayout and PXAdminObjects
+			edit : ContextEdit,
+			file : ContextFile  // ContextFile function placed in /admin/js/filemanager.js
+		},
+		items    = [],
+		params   = (pParsers[menuType] || pParsers.def).apply(this, args),
+		mTitle   = menuType === 'add'? 'Добавить' : (params.title || args[0]);
 
-		} else {
-			menu.innerHTML += (arguments[1] == 'file' ? ContextFile : ContextEdit).apply(null, Array.prototype.slice.call(arguments, 2));
-		}
+	/** @todo rework it to have more flexible ctxMenu generator */
+	if (menuType !== undefined) {
+		var res = (funcs[menuType] || funcs.def).apply(null, args);
+		items.push.apply(items, res);
+
+		// plugins
+		var additional = Context.fetch(menuType, args);
+		items.push.apply(items, additional);
 	}
 
-	menu.innerHTML += '<div class="hr"></div>';
-	menu.innerHTML += '<a href="javascript: ContextHide();">Отмена</a>';
+	items.push({ group: 'last', action: 'ContextHide();', content: 'Отмена' });
+
+	menu.innerHTML = renderContextMenu(mTitle, items.filter(function (v) {
+		return !v.hasOwnProperty('visible') || v.visible;
+	}));
 
 	menu.style.display = 'block';
 	x = _mousex + 12;
@@ -440,28 +596,106 @@ function Context(event) {
 	}
 }
 
-function GetParentOffsetTop(obj) {
-	if(obj.offsetParent && obj.offsetParent.tagName != 'body') {
-		return obj.offsetTop + GetParentOffsetTop(obj.offsetParent) - obj.scrollTop;
-	} else {
-		return  0;
+/**
+ * Storage for additional menu items for each menu type
+ */
+Context._addons = {};
+
+/**
+ * Registers menu item
+ * @param {String} menuType
+ * @param {String|String[]} item or items
+ */
+Context.register = function (menuType, item) {
+	if (Array.isArray(item)) {
+		for (var i = 0, l = item.length; i < l; i += 1) {
+			Context.register(menuType, item[i]);
+		}
+		return;
 	}
+
+	var collection = Context._addons[menuType] = Context._addons[menuType] || [];
+	collection.push(item);
+
+	return Context;
+};
+
+/**
+ * Prepare and fetch additional registered menu items
+ * @param {String} menuType
+ * @returns {Array}
+ */
+Context.fetch = function (menuType, args) {
+	var funcs = {
+			edit : _ContextParamsEdit,
+			add  : _ContextParamsAdd,
+			file : _ContextParamsFile,
+			def  : function () { console.error('unknown menu type', arguments); return {}; }
+		},
+		params = (funcs[menuType] || funcs.def).apply(this, args);
+
+	function fill (el) {
+		switch (true) {
+		case el === undefined:
+			el = '';
+		case el === false || el === true:
+		case typeof el === 'Number' || el instanceof Number:
+			break;
+		case el && el.call && true:
+			el = el.call(el, params, fill);
+			break;
+		case Array.isArray(el):
+			el = el.map(fill);
+			break;
+		case typeof el === 'object':
+			el = fillObject(el);
+			break;
+		case typeof el === 'string' || el instanceof String:
+			el = String(el).replace(/:([\w\d]+)/g, function (m, k) {
+				return params[k] || ('?' + k);
+			});
+			break;
+		default:
+			console.log('unhandled', typeof el, el);
+		}
+		return el;
+	}
+
+	function fillObject (obj) {
+		var keys = Object.keys(obj), i, k, l, res = {};
+		for (i = 0, l = keys.length; i < l; i += 1) {
+			k = keys[i];
+			res[k] = fill(obj[k]);
+		}
+		return res;
+	}
+
+	return (Context._addons[menuType] || [])
+		.map(fill)
+		.filter(function (v) {
+			return v;
+		});
+};
+
+function GetParentOffsetTop(obj) {
+	if (!obj.offsetParent || obj.offsetParent.tagName === 'body') {
+		return 0;
+	}
+	return obj.offsetTop + GetParentOffsetTop(obj.offsetParent) - obj.scrollTop;
 }
 
 function GetParentOffsetLeft(obj) {
-	if(obj.offsetParent && obj.offsetParent.tagName != 'body') {
-		return obj.offsetLeft + GetParentOffsetLeft(obj.offsetParent) - obj.scrollLeft;
-	} else {
-		return  0;
-
+	if (!obj.offsetParent || obj.offsetParent.tagName === 'body') {
+		return 0;
 	}
+	return obj.offsetLeft + GetParentOffsetLeft(obj.offsetParent) - obj.scrollLeft;
 }
+
 function ContextHide() {
 	menu = document.getElementById('ContextMenu');
 	menu.style.display    = 'none';
 	menu.style.visibility = 'hidden';
 }
-
 
 _mousex = 0
 _mousey = 0
