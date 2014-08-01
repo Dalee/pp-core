@@ -363,3 +363,42 @@ function fileMimeType ($filename) {
 	}
 	return $mime;
 }
+
+/**
+ * Parsing file size
+ * @params string $filesize
+ * @params integer [$decimals=0]
+ * @params array [$measures]
+ * @test [1555] >>> {"size":1.52,"step":1,"measure":"KB","pretty":"2 KB"}
+ * @test [1555, 2] >>> {"size":1.52,"step":1,"measure":"KB","pretty":"1.52 KB"}
+ */
+function parseFilesize ($filesize, $decimals = 0, $measures = null) {
+	$measures = (array)($measures ? $measures : null) + array('B', 'KB', 'MB', 'GB', 'TB', 'PB');
+
+	$size = $filesize;
+	$step = 0;
+
+	while ($size > 1024) {
+		$size /= 1024;
+		$step += 1;
+	}
+
+	$measure = $measures[$step];
+	$pretty = number_format($size, $decimals, '.', '') . ' ' . $measure;
+	$size = round($size, 2);
+
+	return compact('size', 'step', 'measure', 'pretty');
+}
+
+/**
+ * Prettify file size
+ * @params string $filesize
+ * @params integer [$decimals=0]
+ * @params array [$measures]
+ * @test [1555] >>> "2 KB"
+ * @test [1555, 2] >>> "1.52 KB"
+ */
+function prettifyFilesize ($filesize, $decimals = 0, $measures = null) {
+	$parsed = parseFilesize ($filesize, $decimals, $measures);
+	return $parsed['pretty'];
+}
