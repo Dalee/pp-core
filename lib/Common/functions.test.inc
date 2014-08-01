@@ -78,28 +78,28 @@ function thead($class, $method = null) {
  * Autogenerator for phpDoc tests
  *
  */
-function tt($aim, $type = 'class') {
-	if (!($file = fetch_standard_file($aim, $type))) {
-		echo "Aim \"{$aim}\" not found\n";
+function tt ($file) {
+	if (!file_exists($file)) {
+		echo "Aim \"{$file}\" not found\n";
 		return;
 	}
 	$toks = token_get_all(file_get_contents($file));
 	// handle functions and classes
 	$ns = null;
 	$class = null;
-	for ($i = 0, $l = count($toks); $i < $l; $i++) {
-		if ($toks[$i-2][0] == T_NAMESPACE) {
-			$ns = '\\';
+	for ($i = 2, $l = count($toks); $i < $l; $i++) {
+		if ($toks[$i-2][0] === T_NAMESPACE) {
+			$ns = "\\";
 			while ($toks[$i][0] !== T_WHITESPACE) {
 				$ns .= $toks[$i][1];
 				$i ++;
 			}
-			$ns .= '\\';
-		} elseif ($toks[$i-2][0] == T_CLASS and $toks[$i][0] == T_STRING) {
+			$ns .= "\\";
+		} elseif ($toks[$i-2][0] === T_CLASS and $toks[$i][0] === T_STRING) {
 			$class = $ns . $toks[$i][1];
 			_tt_class($class);
-		} elseif ($toks[$i-2][0] == T_FUNCTION and $toks[$i][0] == T_STRING) {
-			$func = $ns . '\\' . $toks[$i][1];
+		} elseif ($toks[$i-2][0] === T_FUNCTION and $toks[$i][0] === T_STRING) {
+			$func = $ns . "\\" . $toks[$i][1];
 			is_callable($func) && _tt_function($func);
 		}
 	}

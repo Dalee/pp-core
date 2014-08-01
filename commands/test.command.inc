@@ -100,13 +100,13 @@ help;
 			$aim = null;
 			@eval("\$aim = [$ttAim];");
 			if (!$aim) continue;
-			if ($file = fetch_standard_file($aim[0], @$aim[1] ?: 'class')) {
-				$aim = $file;
+			$file = $aim[0];
+			if (!file_exists($file)) {
+				echo "Aim \"{$file}\" not found\n";
+				continue;
 			}
-			if (file_exists($aim)) {
-				preg_match_all('#\s*@test\s*#', file_get_contents($aim), $m);
-				$count += count($m[0]);
-			}
+			preg_match_all('#\s*@test\s*#', file_get_contents($file), $m);
+			$count += count($m[0]);
 		}
 		return $count;
 	}
@@ -129,7 +129,15 @@ help;
 
 		$units = array();
 		foreach (pp_base_paths('tests', 1) as $plugin => $path) {
-			$tests = glob($path . '*.' . self::TEST_EXTENSION);
+
+			// recursive fetch tests
+			$tests = array(); //glob($path . '*.' . self::TEST_EXTENSION);
+			while ($d = glob($path . '*', GLOB_ONLYDIR)) {
+				$path .= '*';
+				$tests = array_merge($tests, glob($path . '.' . self::TEST_EXTENSION));
+				$path .= '*/';
+			}
+
 			foreach ($tests as $testPath) {
 				$unit_basepath = str_replace('.' . self::TEST_EXTENSION, '', $testPath);
 				$unit_sqlpath = file_exists($unit_sqlpath = $unit_basepath . '.' . self::SQL_EXTENSION)? $unit_sqlpath : null;
@@ -144,6 +152,7 @@ help;
 				$units[] = $unit_item;
 			}
 		}
+
 		usort($units, function ($a, $b) {
 			$q = strcmp($a['plugin'], $b['plugin']);
 			if ($q !== 0) return $q;
