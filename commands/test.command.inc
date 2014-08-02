@@ -72,21 +72,21 @@ help;
 		'help' => '?',
 		'quite' => 'q',
 		'verbose' => 'v',
-		'stoponfail' => 'f',
+		'bail' => 'b',
 		'diff-sidebyside' => 'y',
 		'diff-uniform' => 'u',
 	);
 
 	public static $quite = false;
 	public static $verbose = false;
-	public static $stoponfail = false;
+	public static $bail = false;
 	public static $diffmode = false;
 
 	protected static $fails = array();
 
 	public static function _fail($data) {
 		self::$fails[] = $data;
-		self::$stoponfail && self::done();
+		self::$bail && self::done();
 	}
 
 	// it's dirty
@@ -124,7 +124,7 @@ help;
 
 		self::$quite = $flags['quite'];
 		self::$verbose = $flags['verbose'];
-		self::$stoponfail = $flags['stoponfail'];
+		self::$bail = $flags['bail'];
 		self::$diffmode = $flags['diff-sidebyside'] ? 'sidebyside' : ($flags['diff-uniform'] ? 'uniform' : false);
 
 		$units = array();
