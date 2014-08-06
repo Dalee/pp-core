@@ -1,10 +1,13 @@
 <?php
+
+require_once PPLIBPATH . 'Common/functions.html.inc';
+
 class PXInputFile extends PXAdminWidget {
 	var $value = array();
 	var $name;
 	var $entry;
 	var $distension;
-	
+
 	function PXInputFile($name, $value, $entry = NULL) {
 		$this->value = $value;
 		$this->name  = $name;
@@ -24,7 +27,7 @@ class PXInputFile extends PXAdminWidget {
 		$this->value['path']   = $this->value['fullpath'];
 		$this->value['width']  = 0;
 		$this->value['height'] = 0;
-		
+
 		return <<<HTML
 			<input type="text" readonly value="{$this->value['filename']}" >
 			<span>имя</span>
@@ -53,22 +56,25 @@ HTML;
 		}
 		return $html;
 	}
-	
+
 	function html() {
 		$this->setparam();
-		
-		$html  = '<div class="imagepreview">';
-		
-		$html .= $this->preview();
 
-		$html .= '<input class="file" type="file" id="'.$this->name.$this->distension.'" name="'.$this->name.(!is_null($this->entry) && mb_strlen($this->entry) ? '_edit' : '').$this->distension.'"'.$this->disable.' onpropertychange="Preview(this.value, \''.$this->type.'\', \''.$this->name.$this->distension.'\');"><br>';
-		
-		$html .= $this->param();
+		$name = $this->name.(!is_null($this->entry) && mb_strlen($this->entry) ? '_edit' : '').$this->distension;
 
-		$html .= $this->view_copy_del();
-
-		$html .= '</div>';
-		return $html;
+		return html_block('imagepreview', array(), array(
+			$this->preview(),
+			html_el('input', array(
+				'class' => 'file',
+				'type' => 'file',
+				'id' => $this->name.$this->distension,
+				'name' => $name,
+				'disabled' => $this->disable? 'disabled' : null,
+				'onpropertychange' => "Preview(this.value, '{$this->type}', '{$this->name}{$this->distension}');"
+			)),
+			html_br(),
+			$this->param(),
+			$this->view_copy_del()
+		));
 	}
 }
-?>

@@ -58,8 +58,10 @@ function html_attributes ($atts) {
 	$atts = (array)($atts);
 	$out = '';
 
+
 	foreach ($atts as $a => $v) {
 		if ($a !== 'text' && $a !== 'html' && !is_null($v)) {
+			$v = is_array($v)? join(" ", $v) : $v;
 			$out .= ' ' . $a . '="' . html_escape($v) . '"';
 		}
 	}
@@ -107,8 +109,11 @@ function html_element ($el, $html, $atts = array()) {
 		$atts = $html;
 	}
 
-	$inner  = isset($atts['text']) ? html_escape($atts['text']) : '';
-	$inner .= isset($atts['html']) ? $atts['html'] : '';
+	$text = isset($atts['text'])? html_escape($atts['text']) : '';
+	$html = isset($atts['html'])? $atts['html'] : '';
+	$html = is_array($html)? join($html) : $html;
+
+	$inner = trim($text . $html);
 
 	if (empty($inner)) {
 		return html_empty_element($el, $atts);
@@ -127,53 +132,57 @@ function html_element ($el, $html, $atts = array()) {
  * @param array $atts
  * @return string
  * @test ["div", {"class":"maharaja"}] >>> "<div class=\"maharaja\" />"
+ * @test ["img", {"src":"maharaja"}, true] >>> "<img src=\"maharaja\">"
  * @test ["br"] >>> "<br />"
+ * @test ["br", true] >>> "<br>"
  */
-function html_empty_element ($el, $atts = array()) {
+function html_empty_element ($el, $atts = array(), $skipCloser = false) {
 	$el = (string)($el);
+	if (is_bool($atts)) {
+		$skipCloser = $atts;
+		$atts = null;
+	}
 	$atts = html_attributes($atts);
-	return sprintf("<%s />", trim($el . ' ' . $atts));
+	return sprintf("<%s%s>", trim($el . ' ' . $atts), $skipCloser? '' : ' /');
 }
 
 /**
- * @param string [$href]
- * @param string [$text]
- * @param string [$class]
- * @param string [$title]
- * @param array $atts
- * @param array normalized attributes array
- * @test ["//dalee.ru/~zx", "dzx"] >>> {"href":"//dalee.ru/~zx","text":"dzx"}
- * @test ["#1", "2", "a"] >>> {"href":"#1","text":"2","class":"a"}
- * @test ["#1", "2", ["a", "b"]] >>> {"href":"#1","text":"2","class":"a b"}
- * @test [{"text":"2","class":"b","href":"#1"}] >>> {"text":"2","class":"b","href":"#1"}
+ * normalizes passed args with names
+ * expect last parameter as array (or nothing)
+ * @param array $args
+ * @param array $names
+ * @return array
+ * @test [[{"D":"d"}], ["A","B","C"]] >>> {"D":"d"}
+ * @test [["a","b",{"D":"d"}], ["A","B","C"], true] >>> {"D":"d","A":"a","B":"b","C":null}
+ * @test [["//dalee.ru/~zx", "dzx"], ["href","text","class","title"]] >>> {"href":"//dalee.ru/~zx","text":"dzx"}
+ * @test [["#1", "2", "a"], ["href","text","class","title"]] >>> {"href":"#1","text":"2","class":"a"}
+ * @test [["#1", "2", ["a", "b"]], ["href","text","class","title"]] >>> {"href":"#1","text":"2","class":["a","b"]}
+ * @test [[{"text":"2","class":"b","href":"#1"}], ["href","text","class","title"]] >>> {"text":"2","class":"b","href":"#1"}
  */
-function _html_a_params ($href, $text = '', $class = '', $title = '', $atts = array()) {
-	$args = func_get_args();
-	$args_index = array('href', 'text', 'class', 'title');
-
+function _html_duck_params ($args, $names, $empties = false) {
 	$atts = end($args);
-	if (is_array($atts) && !isset($atts[0])) {
+	if (is_array($atts) && !empty($args[0]) && !isset($atts[0])) {
 		$args[key($args)] = null;
-	} else {
+	}
+	else {
 		$atts = array();
 	}
 
-	foreach ($args_index as $k => $v) {
+	// drop invalid values
+	foreach ($names as $k => $v) {
 		if (!isset($args[$k]) || (is_array($args[$k]) && !isset($args[$k][0]))) {
 			$args[$k] = null;
 		}
 	}
-	$args = array_combine($args_index, array_splice($args, 0, 4));
+	// and combine hash
+	$args = array_combine($names, array_splice($args, 0, 4));
 
+	// collect return
 	foreach ($args as $k => $v) {
-		$atts[$k] = !empty($v) ? $v : (isset($atts[$k]) ? $atts[$k] : null);
+		$atts[$k] = !empty($v)? $v : (isset($atts[$k])? $atts[$k] : null);
 	}
 
-	if (isset($atts['class']) && !empty($atts['class'])) {
-		$atts['class'] = is_array($atts['class']) ? join(' ', $atts['class']) : (string)($atts['class']);
-	}
-
-	return array_filter($atts);
+	return $empties? $atts : array_filter($atts);
 }
 
 /**
@@ -190,7 +199,8 @@ function _html_a_params ($href, $text = '', $class = '', $title = '', $atts = ar
  * @test [{"text":"2","class":"b","href":"#1"}] >>> "<a class=\"b\" href=\"#1\">2</a>"
  */
 function html_a ($href, $text = '', $class = '', $title = '', $atts = array()) {
-	$atts = call_user_func_array('_html_a_params', func_get_args());
+	$atts = $atts + _html_duck_params(func_get_args(), array('href', 'text', 'class', 'title'));
+
 	return html_element('a', $atts);
 }
 
@@ -198,20 +208,101 @@ function html_a ($href, $text = '', $class = '', $title = '', $atts = array()) {
  * make an element with content
  * @test ["span", "<img src=\"yolo\" />"] >>> "<span><img src=\"yolo\" /></span>"
  * @test ["div", {"html":"<br/>","class":"blabla"}] >>> "<div class=\"blabla\"><br/></div>"
+ * @test ["div", {"class":"blabla"}, "<br>"] >>> "<div class=\"blabla\"><br></div>"
+ * @test ["div"] >>> "<div />"
  */
-function html_el ($tag, $html, $atts = array()) {
+function html_el ($tag, $atts = array(), $html = '') {
+	if (is_string($atts)) {
+		$html = $atts;
+		$atts = array();
+	}
+
 	if (empty($atts) || !is_array($atts)) {
 		$atts = array();
 	}
 
-	if (is_array($html)) {
-		$atts = $html;
-	}
-	else {
+	if (!empty($html)) {
 		$atts['html'] = $html;
 	}
 
 	return html_element($tag, $atts);
+}
+
+/**
+ * make a block
+ * @test ["b1", "<img src=\"yolo\" />"] >>> "<div class=\"b1\"><img src=\"yolo\" /></div>"
+ * @test ["b2", {"html":"<br/>","class":"blabla"}] >>> "<div class=\"b2 blabla\"><br/></div>"
+ * @test ["b3"] >>> "<div class=\"b3\" />"
+ */
+function html_block ($name, $atts = array(), $html = '') {
+	if (is_string($atts)) {
+		$html = $atts;
+		$atts = array();
+	}
+
+	if (empty($atts) || !is_array($atts)) {
+		$atts = array();
+	}
+
+	if (!empty($html)) {
+		$atts['html'] = $html;
+	}
+
+	// fetch tag if exists or use div
+	$tag = isset($atts['tag'])? $atts['tag'] : 'div';
+	unset($atts['tag']);
+
+	// prepend block class
+	$atts['class'] = !isset($atts['class'])? $name :
+		(is_array($atts['class'])? array($name) + $atts['class'] : $name . ' ' . $atts['class']);
+
+	return html_element($tag, $atts);
+}
+
+/**
+ * br generator
+ * @param string [$class]
+ * @param array $atts
+ * @return string html
+ * @test [] >>> "<br>"
+ * @test ["a"] >>> "<br class=\"a\">"
+ * @test [["a","b","c"]] >>> "<br class=\"a b c\">"
+ * @test [{"class":["a","b","c"]}] >>> "<br class=\"a b c\">"
+ * @test ["a",{"class":["b"]}] >>> "<br class=\"a\">"
+ * @test [["a","c"],{"class":["b"]}] >>> "<br class=\"a c\">"
+ */
+function html_br ($class = null, $atts = array()) {
+	$atts = (array)$atts;
+
+	// skip class if none passed
+	if (is_array($class) && empty($atts) && !isset($class[0])) {
+		$atts = $class;
+	}
+	elseif ($class) {
+		$atts['class'] = $class;
+	}
+
+	return html_empty_element('br', $atts, true);
+}
+
+/**
+ * img generator
+ * @param string [$src]
+ * @param string|array [$class]
+ * @param string [$alt]
+ * @param array $atts
+ * @return string
+ * @test [[]] >>> "<img src=\"\" alt=\"\">"
+ * @test ["//dalee.ru/logo.png"] >>> "<img src=\"//dalee.ru/logo.png\" alt=\"\">"
+ * @test ["/1.png",["q","w"]] >>> "<img src=\"/1.png\" class=\"q w\" alt=\"\">"
+ */
+function html_img ($src, $class = null, $alt = '', array $atts = array()) {
+	$atts = $atts + _html_duck_params(func_get_args(), array('src', 'class', 'alt'), true);
+
+	$atts['src'] = $atts['src'] ?: '';
+	$atts['alt'] = $atts['alt'] ?: '';
+
+	return html_empty_element('img', $atts, true);
 }
 
 /**

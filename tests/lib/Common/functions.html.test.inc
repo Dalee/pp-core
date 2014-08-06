@@ -1,4 +1,4 @@
 <?php
 
-include './lib/Common/functions.html.inc';
-tt('./lib/Common/functions.html.inc');
+include PPLIBPATH . 'Common/functions.html.inc';
+tt(PPLIBPATH . 'Common/functions.html.inc');
