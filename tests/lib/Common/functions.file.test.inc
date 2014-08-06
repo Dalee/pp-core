@@ -1,3 +1,3 @@
 <?php
 
-tt('./lib/Common/functions.file.inc');
+tt(PPLIBPATH . 'Common/functions.file.inc');
