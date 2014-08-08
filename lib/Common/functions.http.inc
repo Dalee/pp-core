@@ -112,6 +112,12 @@ if (!function_exists('http_build_url')) :
  * @param int $flags a bitmask of binary or'ed HTTP_URL constants; HTTP_URL_REPLACE is the default
  * @param array $newUrl if set, it will be filled with the parts of the composed url like parse_url() would return
  * @return string Returns the new URL as string on success or FALSE on failure.
+ * @test ["//ya.ru/?q=123",{"scheme":"https","query":"q=yahoo"}] >>> "https://ya.ru/?q=yahoo"
+ * @test ["http://mike@www.example.com/foo/bar", "./baz", 26] >>> "http://www.example.com/foo/baz"
+ * @test ["http://mike:1234@www.example.com/foo/bar/", "./../baz", 18] >>> "http://mike@www.example.com/foo/baz"
+ * @test ["/path/?query#anchor",{"scheme":"https","host":"ssl.example.com"}] >>> "https://ssl.example.com/path/?query#anchor"
+ * @test ["/path/?query#anchor",{"scheme":"ftp","host":"ftp.example.com","port":21}] >>> "ftp://ftp.example.com:21/path/?query#anchor"
+ * @test ["http://example.org/orig?q=1#f","https://www.example.com:9999/replaced#n",0] >>> "https://www.example.com:9999/replaced?q=1#n"
  * @test ["http://user@www.example.com/pub/index.php?a=b#files",{"scheme":"ftp","host":"ftp.example.com","path":"files/current/","query":"a=c"},286] >>> "ftp://ftp.example.com/pub/files/current/?a=c" --- replace scheme, host, path, query
  */
 function http_build_url($url, $parts = array(), $flags = HTTP_URL_REPLACE, &$new_url = array()) {
@@ -130,6 +136,8 @@ function http_build_url($url, $parts = array(), $flags = HTTP_URL_REPLACE, &$new
 		}
 	}
 
+	$flags = $flags?: HTTP_URL_REPLACE;
+
 	// default behavior
 	if ($flags & HTTP_URL_REPLACE) {
 		foreach ($keys as $key) {
@@ -141,13 +149,9 @@ function http_build_url($url, $parts = array(), $flags = HTTP_URL_REPLACE, &$new
 	// more concrete ruled by flags
 	else {
 		if (isset($parts['path']) && ($flags & HTTP_URL_JOIN_PATH)) {
-			if (isset($url['path']) && substr($parts['path'], 0, 1) !== '/') {
-				$path = str_replace(basename($url['path']), '', $url['path']);
-				$url['path'] = rtrim($path, '/') . '/' . ltrim($parts['path'], '/');
-			}
-			else {
-				$url['path'] = $parts['path'];
-			}
+			$lastSlash = substr($url['path'], -1, 1) === '/';
+			// d20 //, $parts['path'], path_resolve($parts['path'], $url['path']));
+			$url['path'] = path_resolve($url['path'], ($lastSlash? '' : '../') . $parts['path']);
 		}
 
 		if (isset($parts['query']) && ($flags & HTTP_URL_JOIN_QUERY)) {

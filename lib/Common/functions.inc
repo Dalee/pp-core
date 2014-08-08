@@ -15,6 +15,7 @@ if (!defined('IS_WIN')) {
 
 require_once PPLIBPATH . 'Common/functions.compatibility.inc';
 require_once PPLIBPATH . 'Common/functions.pp.inc';
+require_once PPLIBPATH . 'Common/functions.path.inc';
 require_once PPLIBPATH . 'Common/functions.etc.inc';
 require_once PPLIBPATH . 'Common/functions.file.inc';
 require_once PPLIBPATH . 'Common/functions.html.inc';
