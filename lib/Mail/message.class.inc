@@ -147,7 +147,7 @@ class NLMailMessage {
 		$id = uniqid(rand(), true);
 
 		if(isset($this->files[$name])) {
-			return $this->files[$name]['id'];
+			return 'cid:'.$this->files[$name]['id'];
 		}
 
 		$this->files[$name] = array('file'=>$file, 'name'=>$name, 'id'=>$id, 'type'=>$type, 'source'=>$source, 'inline?' => $inline);
