@@ -1,5 +1,5 @@
 <?php
-class PXModuleRegister extends PXAbstractModule {
+class PXModuleRegister extends PXModule {
 	//config vars
 	protected $systemName;
 	protected $systemEmail;
@@ -8,6 +8,7 @@ class PXModuleRegister extends PXAbstractModule {
 	protected $userNotify;
 	protected $contactEmailField;
 	protected $captchaField;
+	protected $csrfField;
 	protected $defaultAuth;
 
 	protected $fields;
@@ -27,6 +28,7 @@ class PXModuleRegister extends PXAbstractModule {
 		$this->userNotify        = GetFromArray($settings,'notify');                         //notify users about successful registration
 		$this->contactEmailField = GetFromArray($settings,'useremail');                      //form field used for user contact email
 		$this->captchaField      = GetFromArray($settings,'captcha');                        //form field used for the captcha
+		$this->csrfField         = GetFromArray($settings,'csrf');                           //form field used for the anti-forgery token
 		$this->defaultAuth       = GetFromArray($settings,'authtype', null);                 //auth engine used on this site, for password encryption purposes
 
 		$this->fields            = array();
@@ -56,6 +58,12 @@ class PXModuleRegister extends PXAbstractModule {
 
 		$errors = & $this->loadModel('session', 'errors');
 		$input  = & $this->loadModel('session', 'data');
+		
+		if(!empty($this->csrfField)){
+			$token = & $this->loadModel('session', 'csrf');
+			$layout->assign($this->csrfField, $token[$this->csrfField] = generateRandomString(16));
+		}
+		
 		$layout->assign('__view', $request->GetVar('view'));
 
 		switch($request->GetVar('view')){
@@ -438,29 +446,9 @@ class PXModuleRegister extends PXAbstractModule {
 
 		switch($store){
 			case 'session':
-				static $firstOpen = 0;
-
-				if(!$firstOpen++){
-					MakeDirIfNotExists(BASEPATH."site/var/sessions/");
-					session_save_path(BASEPATH."site/var/sessions/");
-					ini_set('session.use_cookies',      1);
-					ini_set('session.use_only_cookies', 1);
-					ini_set('session.use_trans_sid',    0);
-					session_set_cookie_params(0);
-
-					if(isset($_SESSION)){
-						if(session_name() != 'registration'){
-							session_commit();
-							session_name('registration');
-							session_start();
-						}
-
-					} else {
-						session_name('registration');
-						session_start();
-					}
+				if (session_status() == PHP_SESSION_NONE) {
+					session_start();
 				}
-
 				$model =& $_SESSION['registration'][$filter];
 				break;
 
@@ -579,6 +567,15 @@ class PXModuleRegister extends PXAbstractModule {
 		    !$this->loadModel('captcha', array($value['key'] => $value['value']))
 		){
 			$errors[$field]['badcaptcha']  = true;
+		}
+	}
+
+	protected function _csrfFieldValidator($field, $value, &$errors, $fieldMeta = null){
+		if(!empty($this->csrfField)){
+			$token = $this->loadModel('session', 'csrf');
+			(empty($token[$field]) || $token[$field] != $value) && $errors[$field]['badcsrftoken'] = true;
+			$token[$field] = null;
+			$this->_saveModel('session');
 		}
 	}
 	// }}} Validators block
