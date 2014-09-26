@@ -14,6 +14,8 @@ class PXModuleRegister extends PXModule {
 	protected $fields;
 	
 	protected $_controller;
+	
+	protected $_modelCache;
 
 	// need for automatic assign using PXRegistry
 	public $response;
@@ -49,6 +51,14 @@ class PXModuleRegister extends PXModule {
 		return compact('title', 'min', 'max', 'validators');
 	}
 
+	protected function _buildCsrfToken() {
+		if(!empty($this->csrfField)){
+			$token = & $this->loadModel('session', 'csrf');
+			$token[$this->csrfField] = generateRandomString(16);
+			return [$this->csrfField, $token[$this->csrfField]];
+		}
+	}
+
 	function userIndex() {
 		$layout  = $this->layout;
 		$request = $this->request;
@@ -59,9 +69,8 @@ class PXModuleRegister extends PXModule {
 		$errors = & $this->loadModel('session', 'errors');
 		$input  = & $this->loadModel('session', 'data');
 		
-		if(!empty($this->csrfField)){
-			$token = & $this->loadModel('session', 'csrf');
-			$layout->assign($this->csrfField, $token[$this->csrfField] = generateRandomString(16));
+		if ($csrf = $this->_buildCsrfToken()) {
+			$layout->assign($csrf[0], $csrf[1]);
 		}
 		
 		$layout->assign('__view', $request->GetVar('view'));
@@ -338,15 +347,16 @@ class PXModuleRegister extends PXModule {
 				$newUser['status'] = true;
 			}
 
+			$this->_saveModel('user', $newUser);
+
 			if(isset($mail)){
-				if($this->_sendMail($newUser, $mail)){
+				if($this->_sendMail($this->_modelCache['user'], $mail)){
 					$stages['mail'] = $mail['route'] . 'sent';
 				} else {
 					$stages['mail'] = $mail['route'] . 'errorsent';
 				}
 			}
 
-			$this->_saveModel('user', $newUser);
 			$this->_saveModel('session');
 
 			return $this->buildRoute('success', $stages);
