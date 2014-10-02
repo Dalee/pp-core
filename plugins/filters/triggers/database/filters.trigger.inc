@@ -6,7 +6,7 @@ class PXTriggerDatabaseFilters extends PXAbstractDatabaseTrigger {
 	function OnBeforeGetDataBuildQuery($db, $format, &$mode, &$selector, &$where, &$order, &$limit) {
 		$layout = PXRegistry::getLayout();
 
-		if (!PXRegistry::getApp()->isAdminEngine() || !($layout instanceof PXAdminHTMLLayout)) {
+		if (!PXRegistry::getApp()->isAdminEngine() || !($layout instanceof PXAdminHTMLLayout) || !PXPluginFilters::enabled()) {
 			return;
 		}
 
