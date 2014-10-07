@@ -185,6 +185,11 @@ class PXModuleRegister extends PXModule {
 		$errors = $input = null;
 
 		$modifyingFields = $this->_parseFields($input, $errors);
+
+		if (!empty($this->csrfField) && !empty($errors[$this->csrfField])) {
+			return $this->buildRoute('modifyerror');
+		}
+
 		foreach($userData as $field => $data){
 			if(!isset($errors[$field]) && isset($modifyingFields[$field])){
 				$userData[$field] = $modifyingFields[$field];
