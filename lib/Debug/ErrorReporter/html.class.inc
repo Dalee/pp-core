@@ -3,7 +3,7 @@ class PXErrorReporterHTML extends PXErrorReporter {
 	function PXErrorReporterHTML() {
 		$this->computer = IS_WIN && isset($_ENV['COMPUTERNAME']) ? strtolower($_ENV['COMPUTERNAME']) : @rtrim(`hostname`);
 
-		$this->toEmail = isset($_SERVER['SERVER_ADMIN']) ? $_SERVER['SERVER_ADMIN'] : 'support@dalee.ru';
+		$this->toEmail = !empty($_SERVER['SERVER_ADMIN']) ? $_SERVER['SERVER_ADMIN'] : 'support@dalee.ru';
 		$this->fromEmail = 'robot@'.$this->computer;
 	}
 
