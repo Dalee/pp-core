@@ -211,20 +211,11 @@ class PXCorpRegions {
 			return $fullPath;
 		}
 
-		$returnProto = 'http://';
+		$urlData = parse_url($fullPath) + array('host' => '', 'path' => '');
+		$path = explode('/', ltrim($urlData['path'], '/'));
 
-		if (preg_match("#^(https?://)#", $fullPath, $m)) {
-			$fullPath = str_replace($m[1], '', $fullPath);
-			$returnProto = $m[1];
-		}
-
-		$path = explode('/', $fullPath);
 		$pathname = end($path);
-
-		$host = self::findUrl($path[0], $regionId);
-
-		array_shift($path); // remove URL
-		array_unshift($path, self::isLangHost($host) ? 'en' : 'default'); //TODO: change this root finding method !
+		array_unshift($path, self::isLangHost($urlData['host']) ? 'en' : 'default'); //TODO: change this root finding method !
 
 		if (empty($tree)) {
 			$tree = self::initRegionTree($regionId, $path);
@@ -256,11 +247,10 @@ class PXCorpRegions {
 			$pathname = '';
 		}
 
-		$path = createSomePathByParentId($tree, $sid, OBJ_FIELD_PATHNAME, '/', true, false).$pathname;
-
-		// host can be empty -> http:///$path
-		empty($host) && $returnProto = '';
-		return sprintf('%s%s/%s', $returnProto, $host, $path);
+		return http_build_url($fullPath, array(
+			'host' => self::findUrl($urlData['host'], $regionId),
+			'path' => '/' . createSomePathByParentId($tree, $sid, OBJ_FIELD_PATHNAME, '/', true, false) . $pathname
+		), HTTP_URL_REPLACE);
 	}
 
 	static function regionExists($id) {
