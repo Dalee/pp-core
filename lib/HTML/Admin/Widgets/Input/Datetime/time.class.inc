@@ -12,9 +12,9 @@ class PXInputTime extends PXInputDateTime {
 		$sixty   = array_map(array($this, '__leadingZero'), range(0, 59));
 		$seconds = $minutes = $null + array_combine($sixty, $sixty);
 
-		$hour    = new PXInputDropDown($this->name.'[hour]',   $this->date['hour'],   $hours);
-		$minute  = new PXInputDropDown($this->name.'[minute]', $this->date['minute'], $minutes);
-		$second  = new PXInputDropDown($this->name.'[second]', $this->date['second'], $seconds);
+		$hour    = new PXInputDropDown($this->name.'[hour]',   $this->__leadingZero($this->date['hour']),   $hours);
+		$minute  = new PXInputDropDown($this->name.'[minute]', $this->__leadingZero($this->date['minute']), $minutes);
+		$second  = new PXInputDropDown($this->name.'[second]', $this->__leadingZero($this->date['second']), $seconds);
 
 		$delim   = '<span>:</span>';
 
