@@ -272,8 +272,8 @@ class PXModuleCronRun extends PXModule {
 				$dsec =  $diff - $dmin*60;
 
 				$_['time'] = date($this->TIME_FORMAT, $t['start']).'<br>'.date($this->TIME_FORMAT, $t['end']).' ('.$dmin.' min '.$dsec.' sec)';
-
-				$_['comment'] = ($t['result']['status'] >= 0) ? '<b>'.$t['result']['note'].'</b>' : '<b class="error">'.$t['result']['note'].'</b>';
+				$note = isset($t['result']['note']) ? htmlentities($t['result']['note'], ENT_COMPAT | ENT_HTML401, DEFAULT_CHARSET) : '';
+				$_['comment'] = ($t['result']['status'] >= 0) ? '<b>'. $note .'</b>' : '<b class="error">'. $note .'</b>';
 
 			} else {
 				$_['time'] = '&nbsp;<br>&nbsp;';
