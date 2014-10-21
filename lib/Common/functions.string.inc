@@ -85,6 +85,16 @@ function _TranslitFilename($text) {
 	);
 
 	$text = mb_strtr(trim($text), $trans);
+
+	// Remove remaining unsafe characters.
+	$text = preg_replace('![^0-9A-Za-z_.-]!', '', $text);
+	// Remove multiple consecutive non-alphabetical characters.
+	$text = preg_replace('/(_)_+|(\.)\.+|(-)-+/', '\\1\\2\\3', $text);
+	// Check if filename is empty or starts with dot
+	if (empty($text) || mb_strpos($text, '.') === 0) {
+		$text = time() . $text;
+	}
+
 	return mb_substr($text, 0, 255); //max filename length in most common filesystems
 }
 
