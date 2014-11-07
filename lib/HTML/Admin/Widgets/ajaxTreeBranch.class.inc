@@ -3,14 +3,21 @@ class PXAdminAjaxTreeBranch extends PXAdminTreeBranch {
 	
 	public /* override */ function html() {
 		$title = strip_tags($this->leaf->title);
-				
+
 		$html = '';
 		$html .= '<div' . $this->divAttrs() . '>';
+		$html .= '<span class="tree__leaf-title">';
 		$html .= $this->paddingImages();
 		$html .= $this->contextMenuLink();
 		$html .= $this->editLink() . $this->toChildsLink('<span' . $this->spanAttrs() . '>' . $title . '</span>');
+		$html .= $this->hintHtml();
+		$html .= '</span>';
 
-		($this->htmlTree->isOpenLeaf($this->leaf->id) || !$this->leaf->parent) && $html .= PXAdminAjaxTreeBranch::childrenHTML($this->leaf->children, $this->htmlTree, $this);
+		$html .= '<span class="tree__leaf-fields">' . $this->listedFields() . '</span>';
+
+		if ($this->htmlTree->isOpenLeaf($this->leaf->id) || !$this->leaf->parent) {
+			$html .= PXAdminAjaxTreeBranch::childrenHTML($this->leaf->children, $this->htmlTree, $this);
+		}
 
 		$html .= '</div>';
 
@@ -19,7 +26,7 @@ class PXAdminAjaxTreeBranch extends PXAdminTreeBranch {
 
 	public /* override */ function divAttrs() {
 		$cssClass = array(
-			'tree-leaf',
+			'tree-leaf tree__leaf',
 			$this->htmlTree->isSelected($this->leaf->id) ? 'selected ' : '',
 			$this->htmlTree->isOpenLeaf($this->leaf->parent)  || $this->leaf->level <= 2 ? 'open' : 'close'
 		);

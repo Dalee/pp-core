@@ -1212,15 +1212,15 @@ div.tree div.selected div span {
 
 div.tree div.selected {
 	background-color: #385A94;
-	color: #FFFFFF;
+	color: #FFF;
 }
 
 div.tree div.selected span {
-	color: #FFFFFF;
+	color: #FFF;
 }
 
 div.tree span.hide, div.tree a.hide, div.tree div.selected div span.hide {
-	color: #DDDDDD;
+	color: #bbb;
 }
 
 div.tree div.close {
@@ -1252,6 +1252,10 @@ img.cursor {
 	cursor: help;
 }
 
+.tree__leaf-hint {
+	color:#ccc;
+}
+
 .tree__leaf-fields {
 	position: absolute;
 	z-index: 100;
@@ -1273,6 +1277,10 @@ img.cursor {
 }
 .tree__leaf-title:hover + .tree__leaf-fields {
 	display: block;
+}
+
+.tree__leaf_level_1 + .tree__leaf {
+	margin-top: 4px;
 }
 
 .tree__leaf-fields dt {

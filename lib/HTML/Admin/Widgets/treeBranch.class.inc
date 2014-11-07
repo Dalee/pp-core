@@ -12,11 +12,11 @@ class PXAdminTreeBranch extends PXAdminWidget {
 
 		$html = '';
 		$html .= '<div'.$this->divAttrs().'>';
-
 		$html .= '<span class="tree__leaf-title">';
 		$html .= $this->paddingImages();
 		$html .= $this->contextMenuLink();
 		$html .= $this->editLink().$this->toChildsLink('<span'.$this->spanAttrs().'>'.$title.'</span>');
+		$html .= $this->hintHtml();
 		$html .= '</span>';
 
 		$html .= '<span class="tree__leaf-fields">'.$this->listedFields().'</span>';
@@ -38,11 +38,23 @@ class PXAdminTreeBranch extends PXAdminWidget {
 		return ' oncontextmenu="'.$this->contextMenu().'" id="leafId'.$this->leaf->id.'" class="'.implode(' ', $cssClass).'" ';
 	}
 
+	function hintHtml() {
+		$hint = '';
+		foreach($this->htmlTree->datatype->fields as $name=>$descr) {
+			if ($name !== 'title' && $descr->listed) {
+				$hint = '[' . $this->leaf->content[$name] . ']';
+				break;
+			}
+		}
+		$hint && ($hint = ' <span class="tree__leaf-hint">'.$hint.'</span>');
+		return $hint;
+	}
+
 	function listedFields($brief = false) {
 		$fields = array();
 
 		foreach($this->htmlTree->datatype->fields as $name=>$descr) {
-			if($name !== 'title' && $descr->listed) {
+			if ($name !== 'title' && $descr->listed) {
 				$param = array();
 				$fields[] = '<dt>'.$descr->description.'</dt><dd>'.$descr->displayType->buildTreeHover($descr, $this->leaf->content, $param).'</dd>';
 			}
