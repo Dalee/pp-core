@@ -88,14 +88,14 @@ function GetFromArray($array, $index, $default=NULL) {
 if(!function_exists('array_combine')){
 	function array_combine($arr1, $arr2) {
 		$out = array();
-		
+
 		$arr1 = array_values($arr1);
 		$arr2 = array_values($arr2);
-		
+
 		foreach($arr1 as $key1 => $value1) {
 			$out[(string)$value1] = $arr2[$key1];
 		}
-		
+
 		return $out;
 	}
 }
@@ -139,7 +139,7 @@ function array_recursive_inheritance() {
 /**
  * Simple transpose operation
  * Useful for tables (arrays of maps with the same fields)
- * 
+ *
  * @param array $array 2-dim array
  * @return array transposed 2-dim array
  */
@@ -220,7 +220,7 @@ function array_deep_diff($d1, $d2, $excludeKeys) {
 
     } else {
         return array('Array compared with NonArray');
-    }       
+    }
 }
 
 
@@ -324,13 +324,13 @@ function array_keys_grouped($array) {
 * @param array	$list		Список, в котором производится поиск. Передаётся по ссылке - иначе после foreach'а сбразывается указатель массива.
 * @param mixed	$current	Сосед искомых элементов.
 * @param bool	$circular	Считать ли последний элемент соседом первого.
-* @param bool	$strict		Использовать строгое (true) или нестрогое (false) сравнение при поиске элемента. 
+* @param bool	$strict		Использовать строгое (true) или нестрогое (false) сравнение при поиске элемента.
 * @return array Список из двух элементов - предыдущего и последующего.
 */
 function findNeighborElements($list, $current, $circular = true, $strict = true) {
 
 	$inList = &$list; // Иначе foreach не меняет указатель массива по завершению, что ломает весь алгоритм
-	
+
 	$found = false;
 	$pos   = 0;
 
@@ -350,7 +350,7 @@ function findNeighborElements($list, $current, $circular = true, $strict = true)
 		$last ? end($inList) : prev($inList);
 		$last || $next = next($inList);
 		$last || prev($inList);
-		
+
 		$first = $pos == 1;
 		$first || $prev = prev($inList);
 
@@ -361,14 +361,14 @@ function findNeighborElements($list, $current, $circular = true, $strict = true)
 }
 
 /**
- * Поиск строк в таблице по значению одного из столбцов    
- * 
+ * Поиск строк в таблице по значению одного из столбцов
+ *
  * @param array $array	Таблица
  * @param string $colName	Название столбца
  * @param mixed $colValues	Значение ячейки в этом столбце, можно передавать список значений для проверки
  * @param bool $strict	Использовать строгое (===) или нестрогое (==) сравнение
  * @param int $count	Максимальное количество возврщаемых строк
- * 
+ *
  * @return array	Таблица из строк, для которых в заданном столбце ячейка имеет заданное значение. Если ничего не найдено, то пустой массив.
  */
 function getRowsFromTable($array, $colName, $colValues, $strict = true, $count = INF) {
@@ -414,12 +414,12 @@ function is_list ($array) {
 
 	$l = sizeof($array) - 1;
 	// first and last are numeric
-	if (!isset($array[0]) || !isset($array[$l])) {
+	if (!array_key_exists(0, $array) || !array_key_exists($l, $array)) {
 		return false;
 	}
 
-	for ($i = 1; $i < $l; $i += 1) {
-		if (!isset($array[$i])) {
+	for ($i = 1; $i < $l; $i++) {
+		if (!array_key_exists($i, $array)) {
 			return false;
 		}
 	}
