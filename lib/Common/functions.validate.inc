@@ -3,8 +3,9 @@ function isEmail($string) {
 	$string = trim($string);
 	$emails = preg_split('/\s*[,;]\s*/'.REGEX_MOD, $string);
 
-	foreach($emails as $string) {
-		if (!preg_match("/^[a-z0-9_\-\.]{1,128}@(([a-z0-9-]+\.)+(com|net|org|mil|edu|gov|arpa|info|biz|inc|name|mobi|[a-z]{2})|[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3})$/is".REGEX_MOD, $string)) {
+	foreach ($emails as $email) {
+		//since PHP 5.2.0
+		if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
 			return false;
 		}
 	}
