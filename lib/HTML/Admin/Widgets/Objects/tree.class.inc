@@ -34,6 +34,9 @@ class PXAdminTreeObjects extends PXAdminObjects {
 			case 'byparent':
 				$this->tree = $this->db->getObjectsByParent($this->format, null, $this->loadWhere, DB_SELECT_TREE | ($this->withoutExternals ? DB_SELECT_WITHOUT_EXTERNALS : 0) );
 				break;
+			case 'byidarray':
+				$this->tree = $this->db->getObjectsByIdArray($this->format, null, $this->loadWhere, DB_SELECT_TREE | ($this->withoutExternals ? DB_SELECT_WITHOUT_EXTERNALS : 0) );
+				break;
 			default:
 				$this->tree = $this->db->getObjects($this->format, null, DB_SELECT_TREE | ($this->withoutExternals ? DB_SELECT_WITHOUT_EXTERNALS : 0) );
 				break;
