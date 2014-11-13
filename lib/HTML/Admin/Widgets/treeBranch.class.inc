@@ -41,7 +41,7 @@ class PXAdminTreeBranch extends PXAdminWidget {
 	function hintHtml() {
 		$hint = '';
 		foreach($this->htmlTree->datatype->fields as $name=>$descr) {
-			if ($name !== 'title' && $descr->listed) {
+			if ($name !== 'title' && $descr->listed && is_string($this->leaf->content[$name])) {
 				$hint = '[' . $this->leaf->content[$name] . ']';
 				break;
 			}
