@@ -136,7 +136,7 @@ class PXModuleObjects extends PXModule {
 		$form = new PXAdminForm($object, $this->datatype);
 		$form->setDisabledStatus($this->popupCheckAccess($object));
 		$form->setAction($this->request->getAction());
-		$form->setArea('objects');
+		$form->setArea($this->getArea());
 		$form->setChildren($possibleFormats, $counts);
 		$form->setLinks($this->popupLinks($object));
 		$form->setTitle($this->popupSetTitle($object));
@@ -338,9 +338,13 @@ class PXModuleObjects extends PXModule {
 		return $this->nextLocation;
 	}
 
+	protected function getArea() {
+		return 'objects';
+	}
+
 	function _route() {
 		$rAction = $this->request->getAction();
-		$this->nextLocation = 'popup.phtml?area=objects&format='.$this->datatype->id.'&action='.$rAction;
+		$this->nextLocation = 'popup.phtml?area='.$this->getArea().'&format='.$this->datatype->id.'&action='.$rAction;
 		return $rAction;
 	}
 

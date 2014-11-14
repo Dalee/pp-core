@@ -74,19 +74,16 @@ function HideUnLinking(name, a) {
 	a.outerHTML = '<a href="show_unlinked" onClick="ShowUnLinking(\''+name+'\', this); return false;" class="white">&#x2191;</a>';
 }
 
-
+//http://css-tricks.com/snippets/javascript/get-url-variables/
 function GetQueryVariable(varName, defValue) {
-	var begin = location.search.indexOf(varName) + varName.length + 1;
-	if (begin != 4) {
-		var string = location.search.substring(begin);
-		var end = string.indexOf("&");
-		if (end != -2) {
-			string = string.substring(0, end);
+	var vars = window.location.search.substring(1).split("&");
+	for (var i=0; i<vars.length; i++) {
+		var pair = vars[i].split("=");
+		if (pair[0] == varName) {
+		   return pair[1];
 		}
-		return string;
-	} else {
-		return defValue;
 	}
+	return defValue;
 }
 
 function ChangeRichEdit(radio, textedit, text, richedit, edit) {
@@ -110,22 +107,22 @@ function OpenClose(id) {
 
 function hideShowLeaf(id, format) {
 	var position, direction, src, parentDiv, childrenDivs, expandImg, expandLink, href, tree, data;
-	
+
 	format = format || '';
 	expandImg  = $('#leafImg' + format + id);
 	parentDiv  = $('#leafId' + format + id);
-	
+
 	src       = expandImg.attr('src');
 	position  = src.indexOf('close') == -1 ? 'open' : 'close';
-	direction = position == 'close' ? 'open' : 'close'; 
+	direction = position == 'close' ? 'open' : 'close';
 
 	childrenDivs = parentDiv.children('div');
-	
+
 	if(direction == 'open' && !childrenDivs.length){
 		data       = {f: format, id: id};
 		tree       = expandImg.closest('div.tree');
-		tree.data('cl') && (data.cl = tree.data('cl')); 
-		expandLink = expandImg.parent('a'); 
+		tree.data('cl') && (data.cl = tree.data('cl'));
+		expandLink = expandImg.parent('a');
 		href       = expandLink.attr('href');
 		expandLink.removeAttr('href');
 		expandImg.attr('src', src.replace('.gif', '-anim.gif'));
@@ -151,7 +148,7 @@ function hideShowLeaf(id, format) {
 		document.cookie = 'leafStatus[leafId' + format + id + ']=' + direction;
 		childrenDivs.toggle(direction == 'open');
 	}
-	
+
 }
 
 function Popup(url, width, height) {
@@ -516,17 +513,17 @@ $(function() {
 		if ($('input[name=area]').val() == 'macl') {
 			var currentSelect = $(this).val();
 		  	var nextSelect = $('select[name=what]');
-	
+
 			$.getJSON('/admin/json.phtml?area=macl', {currentModule:currentSelect}, function(data) {
 				$('select[name=what] option').remove();
-				
+
 				$.each(data, function(index, value){
-					$("<option></option>").attr("value", index).html(value).appendTo(nextSelect); 
+					$("<option></option>").attr("value", index).html(value).appendTo(nextSelect);
 					$('select[name=what] option:first').attr('selected', 'yes');
 		    	});
-			});	
+			});
 		}
-		return false;		
+		return false;
 	});
 });
 
