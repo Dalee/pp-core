@@ -142,7 +142,7 @@ class NLTree {
 		};
 
 		$result = array();
-		foreach ($leafs[0]->children as $id => $child) {
+		foreach ($leafs[$rootId]->children as $id => $child) {
 			$result[] = $traversing($child);
 		}
 
