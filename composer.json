@@ -1,0 +1,21 @@
+{
+  "name": "dalee/libpp5",
+  "type": "pp-plugin",
+  "description": "ProximaPortal",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Dalee Developers Team",
+      "email": "dev@dalee.ru"
+    }
+  ],
+  "require": {
+    "pp/installers": "*"
+  },
+  "require-dev": {
+
+  },
+  "scripts": {
+    "test": "sudo -u nobody sbin/pp.php test"
+  }
+}
