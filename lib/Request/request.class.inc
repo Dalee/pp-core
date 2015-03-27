@@ -109,7 +109,8 @@ class PXRequest {
 	static function GetHttpHost() {
 		if (isset($_SERVER['HTTP_X_HOST'])) {
 			if (mb_strstr($_SERVER['HTTP_X_HOST'], ",")) {
-				$host = trim(end(explode(",", $_SERVER['HTTP_X_HOST'])));
+				$hosts = explode(",", $_SERVER['HTTP_X_HOST']);
+				$host = trim(end($hosts));
 			} else {
 				$host = $_SERVER['HTTP_X_HOST'];
 			}
