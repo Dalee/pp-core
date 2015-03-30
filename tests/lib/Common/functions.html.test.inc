@@ -1,4 +1,4 @@
 <?php
 
-include PPLIBPATH . 'Common/functions.html.inc';
+require_once PPLIBPATH . 'Common/functions.html.inc';
 tt(PPLIBPATH . 'Common/functions.html.inc');

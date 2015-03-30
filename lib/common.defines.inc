@@ -98,6 +98,7 @@ set_include_path(implode(PATH_SEPARATOR, $includePath));
  */
 $profiler    = false;
 $system_user = 'nobody';
+$env         = 'unknown';
 
 if (file_exists(BASEPATH.'/site/etc/php.ini')) {
 	$ini_params = parse_ini_file(BASEPATH.'/site/etc/php.ini');
@@ -114,10 +115,15 @@ if (file_exists(BASEPATH.'/site/etc/php.ini')) {
 	if (isset($ini_params['user'])) {
 		$system_user = $ini_params['user'];
 	}
+
+	if (isset($ini_params['env'])) {
+		$env = $ini_params['env'];
+	}
 }
 
 define('PROFILER', $profiler);
 define('SYSTEM_USER', $system_user);
+define('ENV', $env);
 
 // Влючаем дебаг
 error_reporting(E_ALL);

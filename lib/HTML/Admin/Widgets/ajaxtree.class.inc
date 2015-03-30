@@ -14,6 +14,7 @@ class PXAdminAjaxTree extends PXAdminTree {
 	}
 
 	public function html() {
+		$this->decorate();
 		return isset($this->currentLeaf) ? $this->branchHtml() : $this->treeHtml();
 	}
 
@@ -26,12 +27,27 @@ class PXAdminAjaxTree extends PXAdminTree {
 	protected function treeHtml(){
 		$caption = $this->htmlCaption();
 
-		if(sizeof($this->tree->leafs[0]->children) > 0) {
+		$html = '';
+		$html .= join($this->blocks[self::BEFORE]);
+
+		if (sizeof($this->tree->leafs[0]->children) > 0) {
+			// Рекурсивно генерируем дерево
 			$data = $this->showChildLinks ? ' data-cl="'.$this->childLinkVarName.'"' : '';
-			return '<div class="tree"' . $data . '>' . $caption . '<div class="tree__container">' . PXAdminAjaxTreeBranch::childrenHTML($this->tree->leafs[0]->children, $this) . '</div></div>';
+			$html .= '<div class="tree"' . $data . '>';
+				$html .= $caption;
+				$html .= join($this->blocks[self::BEFORE_CONTENT]);
+				$html .= '<div class="tree__container">';
+					$html .= PXAdminAjaxTreeBranch::childrenHTML($this->tree->leafs[0]->children, $this);
+				$html .= '</div>';
+				$html .= join($this->blocks[self::AFTER_CONTENT]);
+			$html .= '</div>';
 		} else {
-			return '<div class="tree">' . $caption . '<div class="empty">&#8212;</div></div>';
+			$html .= '<div class="tree">' . $caption . '<div class="empty">&#8212;</div></div>';
 		}
+
+		$html .= join($this->blocks[self::AFTER]);
+
+		return $html;
 	}
 
 	public /* override */ function isOpenLeaf($id) {

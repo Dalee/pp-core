@@ -169,7 +169,12 @@ function _parsePhpDocTest($phpdoc) {
 		list ($expression, $title) = array_pad(explode('---', $data), 2, null);
 		list ($params, $result) = array_pad(explode('>>>', $expression), 2, 'null');
 		$test = (array)json_decode(trim($params), 1);
-		$test[] = json_decode(trim($result));
+		preg_match('@^/.+/[ism]?$@s', trim($result), $m);
+		$test[] = !$m?
+			json_decode(trim($result))
+			: function ($expected) use ($m) {
+				return preg_match($m[0], $expected)? $expected : $m[0];
+			};
 		$tests[$title ?: $data] = $test;
 		$pos ++;
 	}

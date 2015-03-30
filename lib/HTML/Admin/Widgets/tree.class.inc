@@ -2,7 +2,13 @@
 
 require_once PPLIBPATH . 'HTML/Admin/Widgets/treeBranch.class.inc';
 
-class PXAdminTree extends PXAdminWidget {
+class PXAdminTree extends PXAdminComplexWidget {
+
+	const BEFORE         = 0;
+	const BEFORE_CONTENT = 1;
+	const AFTER_CONTENT  = 4;
+	const AFTER          = 5;
+
 	/**
 	 * Конструктор класса PXAdminTree.
 	 * Инициализирует поля класса. необходимые для построения дерева.
@@ -17,6 +23,14 @@ class PXAdminTree extends PXAdminWidget {
 		$this->caption          = '';
 		$this->showChildLinks   = false;
 		$this->childLinkVarName = 'cid';
+
+		// set up available subwidgets areas
+		$this->blocks = array(
+			self::BEFORE         => array(),
+			self::BEFORE_CONTENT => array(),
+			self::AFTER_CONTENT  => array(),
+			self::AFTER          => array(),
+		);
 	}
 
 	function &getLeaf($id) {
@@ -54,14 +68,30 @@ class PXAdminTree extends PXAdminWidget {
 	}
 
 	function html(){
+		$this->decorate();
+
 		$caption = $this->htmlCaption();
 
-		if(sizeof($this->tree->leafs[0]->children) > 0) {
+		$html = '';
+		$html .= join($this->blocks[self::BEFORE]);
+
+		if (sizeof($this->tree->leafs[0]->children) > 0) {
 			// Рекурсивно генерируем дерево
-			return '<div class="tree">'.$caption.'<div class="tree__container">'.PXAdminTreeBranch::childrenHTML($this->tree->leafs[0]->children, $this).'</div></div>';
+			$html .= '<div class="tree">';
+				$html .= $caption;
+				$html .= join($this->blocks[self::BEFORE_CONTENT]);
+				$html .= '<div class="tree__container">';
+					$html .= PXAdminTreeBranch::childrenHTML($this->tree->leafs[0]->children, $this);
+				$html .= '</div>';
+				$html .= join($this->blocks[self::AFTER_CONTENT]);
+			$html .= '</div>';
 		} else {
-			return '<div class="tree">'.$caption.'<div class="empty">&#8212;</div></div>';
+			$html .= '<div class="tree">'.$caption.'<div class="empty">&#8212;</div></div>';
 		}
+
+		$html .= join($this->blocks[self::AFTER]);
+
+		return $html;
 	}
 
 	function setSelected($selectedSid) {
