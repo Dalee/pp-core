@@ -82,13 +82,14 @@ endif;
  * http_build_url()".
  *
  * @see http://us2.php.net/manual/en/http.constants.php#http.constants.url
+ * @see http://git.php.net/?p=pecl/http/pecl_http.git;a=blob;f=php_http_url_api.h;h=940db8e61e68e1a544896a691079ad33c5b633ff;hb=375522dcffba5c1f2d99ff70afb2a8f8788063cd
  */
 if (!defined('HTTP_URL_REPLACE')) :
-	define('HTTP_URL_REPLACE',        0x001); // replace every part of the first URL when there's one of the second URL
-	define('HTTP_URL_JOIN_PATH',      0x002); // join relative paths
-	define('HTTP_URL_JOIN_QUERY',     0x004); // join query strings
-	define('HTTP_URL_STRIP_USER',     0x008); // strip any user authentication information
-	define('HTTP_URL_STRIP_PASS',     0x010); // strip any password authentication information
+	define('HTTP_URL_REPLACE',        0x000); // replace every part of the first URL when there's one of the second URL
+	define('HTTP_URL_JOIN_PATH',      0x001); // join relative paths
+	define('HTTP_URL_JOIN_QUERY',     0x002); // join query strings
+	define('HTTP_URL_STRIP_USER',     0x004); // strip any user authentication information
+	define('HTTP_URL_STRIP_PASS',     0x008); // strip any password authentication information
 	define('HTTP_URL_STRIP_PORT',     0x020); // strip explicit port numbers
 	define('HTTP_URL_STRIP_PATH',     0x040); // strip complete path
 	define('HTTP_URL_STRIP_QUERY',    0x080); // strip query string
@@ -97,104 +98,199 @@ if (!defined('HTTP_URL_REPLACE')) :
 	// HTTP_URL_STRIP_ALL and HTTP_URL_STRIP_AUTH cover several other flags.
 
 	// strip any authentication information
-	define('HTTP_URL_STRIP_AUTH',     0x018); // USER | PASS
+	define('HTTP_URL_STRIP_AUTH',     HTTP_URL_STRIP_USER | HTTP_URL_STRIP_PASS); // 0x00C
 	// strip anything but scheme and host
-	define('HTTP_URL_STRIP_ALL',      0x1f8); // USER | PASS | PORT | PATH | QUERY | FRAGMENT
+	define('HTTP_URL_STRIP_ALL',      HTTP_URL_STRIP_AUTH | HTTP_URL_STRIP_PORT | HTTP_URL_STRIP_PATH | HTTP_URL_STRIP_QUERY | HTTP_URL_STRIP_FRAGMENT);
+	define('HTTP_URL_FROM_ENV',       0x1000);
 endif;
 
 if (!function_exists('http_build_url')) :
 
 /**
  * Build a URL.
+ *
  * The parts of the second URL will be merged into the first according to the flags argument.
  * @param mixed $url (part(s) of) an URL in form of a string or associative array like parse_url() returns
  * @param mixed $params same as the first argument
  * @param int $flags a bitmask of binary or'ed HTTP_URL constants; HTTP_URL_REPLACE is the default
  * @param array $newUrl if set, it will be filled with the parts of the composed url like parse_url() would return
  * @return string Returns the new URL as string on success or FALSE on failure.
+ *
+ * @see http://git.php.net/?p=pecl/http/pecl_http.git;a=blob;f=http_url_api.c;h=8a70b0f2fb18b3435110b436b7f1f68023cafb15;hb=refs/heads/R_1_7
+ *
  * @test ["//ya.ru/?q=123",{"scheme":"https","query":"q=yahoo"}] >>> "https://ya.ru/?q=yahoo"
- * @test ["http://mike@www.example.com/foo/bar", "./baz", 26] >>> "http://www.example.com/foo/baz"
- * @test ["http://mike:1234@www.example.com/foo/bar/", "./../baz", 18] >>> "http://mike@www.example.com/foo/baz"
- * @test ["/path/?query#anchor",{"scheme":"https","host":"ssl.example.com"}] >>> "https://ssl.example.com/path/?query#anchor"
- * @test ["/path/?query#anchor",{"scheme":"ftp","host":"ftp.example.com","port":21}] >>> "ftp://ftp.example.com:21/path/?query#anchor"
+ *
+ * @see http://git.php.net/?p=pecl/http/pecl_http.git;a=blob;f=tests/build_url_001.phpt;h=c8b5ad36c146e9868b358f4d518390d695905d69;hb=refs/heads/R_1_7
+ * @test ["page", {}, 0] >>> "http://localhost/page"
+ * @test ["with/some/path/", {}, 0] >>> "http://localhost/with/some/path/"
+ *
+ * @see http://git.php.net/?p=pecl/http/pecl_http.git;a=blob;f=tests/build_url_002.phpt;h=787b7f42840b22b5927f78328a19b45a9b0d7002;hb=refs/heads/R_1_7
+ * @test ["http://example.org/orig?q=1#f", "https://www.example.com:9999/replaced#n"] >>> "https://www.example.com:9999/replaced?q=1#n"
+ * @test ["http://example.org/orig?q=1#f", "https://www.example.com:9999/replaced#n", 0] >>> "https://www.example.com:9999/replaced?q=1#n"
+ *
+ * @see http://git.php.net/?p=pecl/http/pecl_http.git;a=blob;f=tests/build_url_003.phpt;h=1736ca6e3b45c77a0b683ea5765dcf25f836cb22;hb=refs/heads/R_1_7
+ * @test ["/path/?query#anchor", {}, 0] >>> "http://localhost/path/?query#anchor"
+ * @test ["/path/?query#anchor", {"scheme":"https"}, 0] >>> "https://localhost/path/?query#anchor"
+ * @test ["/path/?query#anchor", {"scheme":"https", "host": "ssl.example.com" }, 0] >>> "https://ssl.example.com/path/?query#anchor"
+ * @test ["/path/?query#anchor", {"scheme":"ftp", "host": "ftp.example.com", "port": 21 }, 0] >>> "ftp://ftp.example.com/path/?query#anchor"
+ *
+ * @see http://git.php.net/?p=pecl/http/pecl_http.git;a=blob;f=tests/build_url_004.phpt;h=1db54a8f1ae97faf08c52586adc2e7c32e2312c0;hb=refs/heads/R_1_7
+ * @test ["http://mike@www.example.com/foo/bar", "./baz", 13] >>> "http://www.example.com/foo/baz" --- HTTP_URL_STRIP_AUTH|HTTP_URL_JOIN_PATH
+ * @test ["http://mike@www.example.com/foo/bar/", "../baz", 5] >>> "http://www.example.com/foo/baz" --- HTTP_URL_STRIP_USER|HTTP_URL_JOIN_PATH
+ * @test ["http://mike:1234@www.example.com/foo/bar/", "./../baz", 9] >>> "http://mike@www.example.com/foo/baz" --- HTTP_URL_STRIP_PASS|HTTP_URL_JOIN_PATH
+ * @test ["http://www.example.com:8080/foo?a[0]=b#frag", "?a[0]=1&b=c&a[1]=b", 354] >>> "http://www.example.com/?a%5B0%5D=1&a%5B1%5D=b&b=c" --- HTTP_URL_JOIN_QUERY|HTTP_URL_STRIP_PORT|HTTP_URL_STRIP_FRAGMENT|HTTP_URL_STRIP_PATH
+ *
  * @test ["http://example.org/orig?q=1#f","https://www.example.com:9999/replaced#n",0] >>> "https://www.example.com:9999/replaced?q=1#n"
- * @test ["http://user@www.example.com/pub/index.php?a=b#files",{"scheme":"ftp","host":"ftp.example.com","path":"files/current/","query":"a=c"},286] >>> "ftp://ftp.example.com/pub/files/current/?a=c" --- replace scheme, host, path, query
+ * @test ["http://user@www.example.com/pub/index.php?a=b#files",{"scheme":"ftp","host":"ftp.example.com","path":"files/current/","query":"a=c"},271] >>> "ftp://ftp.example.com/pub/files/current/?a=c" --- replace scheme, host, path, query == HTTP_URL_STRIP_FRAGMENT|HTTP_URL_STRIP_AUTH|HTTP_URL_JOIN_QUERY|HTTP_URL_JOIN_PATH
  */
-function http_build_url($url, $parts = array(), $flags = HTTP_URL_REPLACE, &$new_url = array()) {
+function http_build_url($url, $parts = array(), $flags = HTTP_URL_FROM_ENV, &$new_url = array()) {
 	is_array($url) || $url = parse_url($url);
 	is_array($parts) || $parts = parse_url($parts);
 
-	isset($url['query']) && is_string($url['query']) || $url['query'] = null;
+	isset($url['query'])   && is_string($url['query'])   || $url['query']   = null;
 	isset($parts['query']) && is_string($parts['query']) || $parts['query'] = null;
 
 	$keys = array('user', 'pass', 'port', 'path', 'query', 'fragment');
 
-	// Schema and host are always replaced
-	foreach (array('scheme', 'host') as $part) {
-		if (isset($parts[$part])) {
-			$url[$part] = $parts[$part];
+	$new_url = array();
+
+	$new_url['port'] = 0;
+
+	if(!($flags & HTTP_URL_STRIP_PORT)) {
+		$new_url['port'] = isset($parts['port']) ? $parts['port'] : (isset($url['port']) ? $url['port'] : 0);
+	}
+
+	if(!($flags & HTTP_URL_STRIP_USER)) {
+		$new_url['user'] = isset($parts['user']) ? $parts['user'] : (isset($url['user']) ? $url['user'] : null);
+	}
+
+	if(!($flags & HTTP_URL_STRIP_PASS)) {
+		$new_url['pass'] = isset($parts['pass']) ? $parts['pass'] : (isset($url['pass']) ? $url['pass'] : null);
+	}
+
+	$new_url['scheme'] = isset($parts['scheme']) ? $parts['scheme'] : (isset($url['scheme']) ? $url['scheme'] : null);
+	$new_url['host']   = isset($parts['host'])   ? $parts['host']   : (isset($url['host'])   ? $url['host']   : null);
+
+	if(!($flags & HTTP_URL_STRIP_PATH)) {
+		if(($flags & HTTP_URL_JOIN_PATH) && isset($url['path']) && isset($parts['path']) && substr($parts['path'], 0, 1) != '/'){
+			$new_url['path'] = substr($url['path'], -1) == '/' ? $url['path'] : (dirname($url['path']) . '/');
+			$new_url['path'] .= $parts['path'];
+		} else {
+			$new_url['path'] = isset($parts['path']) ? $parts['path'] : (isset($url['path']) ? $url['path'] : null);
 		}
 	}
 
-	$flags = $flags?: HTTP_URL_REPLACE;
+	if (!($flags & HTTP_URL_STRIP_QUERY)) {
+		if(($flags & HTTP_URL_JOIN_QUERY) && isset($url['query']) && isset($parts['query'])) {
+			parse_str($url['query'], $url_query);
+			parse_str($parts['query'], $parts_query);
+			$new_url['query'] = http_build_query(
+				array_replace_recursive(
+					$url_query,
+					$parts_query
+				)
+			);
+		} else {
+			$new_url['query'] = isset($parts['query']) ? $parts['query'] : (isset($url['query']) ? $url['query'] : null);
+		}
+	}
 
-	// default behavior
-	if ($flags & HTTP_URL_REPLACE) {
-		foreach ($keys as $key) {
-			if (isset($parts[$key])) {
-				$url[$key] = $parts[$key];
+	if(!($flags & HTTP_URL_STRIP_FRAGMENT)) {
+		$new_url['fragment'] = isset($parts['fragment']) ? $parts['fragment'] : (isset($url['fragment']) ? $url['fragment'] : null);
+	}
+
+	if (!isset($new_url['scheme'])) {
+		if ($flags & HTTP_URL_FROM_ENV) {
+			switch(true) {
+				case !!$_SERVER['HTTPS'] && !strcasecmp($_SERVER['HTTPS'], 'ON'):
+					$new_url['scheme'] = 'https';
+					break;
+				case !isset($new_url['port']):
+				case $new_url['port'] == 80:
+				case $new_url['port'] == 0:
+				default:
+					$new_url['scheme'] = 'http';
+					break;
+				case $new_url['port'] == 443:
+					$new_url['scheme'] = 'https';
+					break;
+				case !!($scheme = getservbyport($new_url['port'], "tcp")):
+					$new_url['scheme'] = $scheme;
+					break;
 			}
+		} else {
+			$new_url['scheme'] = 'http';
 		}
 	}
-	// more concrete ruled by flags
-	else {
-		if (isset($parts['path']) && ($flags & HTTP_URL_JOIN_PATH)) {
-			$lastSlash = substr($url['path'], -1, 1) === '/';
-			// d20 //, $parts['path'], path_resolve($parts['path'], $url['path']));
-			$url['path'] = path_resolve($url['path'], ($lastSlash? '' : '../') . $parts['path']);
-		}
 
-		if (isset($parts['query']) && ($flags & HTTP_URL_JOIN_QUERY)) {
-			if (isset($url['query'])) {
-				parse_str($url['query'], $url_query);
-				parse_str($parts['query'], $parts_query);
-
-				$url['query'] = http_build_query(
-					array_replace_recursive(
-						$url_query,
-						$parts_query
-					)
-				);
+	if(!isset($new_url['host'])) {
+		if($flags & HTTP_URL_FROM_ENV) {
+			if(strlen($host = $_SERVER['HTTP_HOST']) || strlen($host = $_SERVER['SERVER_NAME'])) {
+				$new_url['host'] = $host;
+			} else {
+				$new_url['host'] = php_uname('n');
 			}
-			else {
-				$url['query'] = $parts['query'];
+		} else {
+			$new_url['host'] = 'localhost';
+		}
+	}
+
+	if(!isset($new_url['path'])) {
+		if(($flags & HTTP_URL_FROM_ENV) && strlen($_SERVER['REQUEST_URI'])) {
+			$pos = strpos($_SERVER['REQUEST_URI'], '?');
+			if($pos !== false) {
+				$new_url['path'] = substr($_SERVER['REQUEST_URI'], 0, $pos);
+			} else {
+				$new_url['path'] = $_SERVER['REQUEST_URI'];
 			}
+		} else {
+			$new_url['path'] = '/';
+		}
+	} elseif (substr($new_url['path'], 0, 1) != '/') {
+		if(($flags & HTTP_URL_FROM_ENV) && strlen($_SERVER['REQUEST_URI'])) {
+			$pos = strrpos($_SERVER['REQUEST_URI'], '/');
+			if($pos !== false) {
+				$path = substr($_SERVER['REQUEST_URI'], 0, $pos);
+			} else {
+				$path = '/';
+			}
+		} else {
+			$path = '/';
+		}
+		$new_url['path'] = $path . $new_url['path'];
+	}
+
+	if($new_url['path'] != '/'){
+		while(preg_match('#/\.(/|$)#' . REGEX_MOD, $new_url['path'], $matches, PREG_OFFSET_CAPTURE)) {
+			$new_url['path'] = substr_replace($new_url['path'], "/", $matches[0][1], strlen($matches[0][0]));
+		}
+		while(preg_match('#(^|/[^/]+)/\.\.(/|$)#' . REGEX_MOD, $new_url['path'], $matches, PREG_OFFSET_CAPTURE)) {
+			$new_url['path'] = substr_replace($new_url['path'], "/", $matches[0][1], strlen($matches[0][0]));
 		}
 	}
 
-	// stripper
-	foreach ($keys as $key) {
-		$strip = 'HTTP_URL_STRIP_' . strtoupper($key);
-		if ($flags & constant($strip)) {
-			unset($url[$key]);
+	if($new_url['port']) {
+		if(($new_url['port'] == 80 && $new_url['scheme'] == 'http') ||
+		   ($new_url['port'] == 443 && $new_url['scheme'] == 'https') ||
+		   (getservbyname($new_url['scheme'], 'tcp') == $new_url['port'])
+		) {
+			$new_url['port'] = 0;
 		}
 	}
 
-	// compile
-	$parsed_string = isset($url['scheme'])? $url['scheme'] . '://' : '';
-	if (isset($url['user'])) {
-		$parsed_string .= $url['user'] . (isset($url['pass'])? ':' . $url['pass'] : '') . '@';
+	$str = $new_url['scheme'] . '://';
+	if(isset($new_url['user'])) {
+		$str .= $new_url['user'];
+		$str .= isset($new_url['password']) ? ':' . $new_url['password'] : '';
+		$str .= '@';
 	}
-	$parsed_string .= isset($url['host'])? $url['host'] : '';
-	$parsed_string .= isset($url['port'])? ':' . $url['port'] : '';
-	$parsed_string .= empty($url['path'])? '/' : $url['path'];
-	$parsed_string .= isset($url['query'])? '?' . $url['query'] : '';
-	$parsed_string .= isset($url['fragment'])? '#' . $url['fragment'] : '';
+	$str .= $new_url['host'];
+	$str .= $new_url['port'] ? ':' . $new_url['port'] : '';
+	$str .= $new_url['path'];
+	$str .= isset($new_url['query']) ? '?' . $new_url['query'] : '';
+	$str .= isset($new_url['fragment']) ? '#' . $new_url['fragment'] : '';
 
-	// set to the last param if passed
-	$new_url = $url;
-
-	return $parsed_string;
+	return $str;
 }
 
 endif;
