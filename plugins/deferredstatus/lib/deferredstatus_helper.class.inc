@@ -86,13 +86,13 @@ class PXDeferredStatusHelper {
 				$state = 'prepared';
 				$v['status'] = false;
 				break;
-			case $since < $now && !$until: // time to publish forever
+			case $since <= $now && !$until: // time to publish forever
 				$state = 'done';
 				$v['status'] = true;
 				break;
-			case !$since && $now < $until: // without publishing date
-				$v['sys_deferred_since'] = date('d.m.Y H:i:s'); // set current time as publishing date
-			case $since < $now && $now < $until: // now between since and until, usual case
+			case !$since && $now <= $until: // without publishing date
+				$v['sys_deferred_since'] = date('Y-m-d H:i:s', $now); // set current time as publishing date
+			case $since <= $now && $now <= $until: // now between since and until, usual case
 				$state = 'published';
 				$v['status'] = true;
 				break;
