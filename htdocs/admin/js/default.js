@@ -478,8 +478,8 @@ function ContextFile (title, isDir, urlAlias, isWrite, isDelete, isBinary, dir, 
 	urlAlias = urlAlias !== '0'? urlAlias : '';
 
 	// title-blabla-params shortcuts
-	var jsP  = '(\'' + title + '\', \'' + dir + '\', \'' + href + '\', \'' + side + '\', \'' + outside + '\'); return false;',
-		jsP2 = '(\'' + dir + '\', \'' + title + '\', \'' + href + '\', \'' + side + '\', \'' + outside + '\', \'' + fileName + '\'); return false;',
+	var jsP  = '(\'' + title + '\', \'' + dir + '\', \'' + href + '\', \'' + side + '\', \'' + outside + '\');',
+		jsP2 = '(\'' + dir + '\', \'' + title + '\', \'' + href + '\', \'' + side + '\', \'' + outside + '\', \'' + fileName + '\');',
 		urlP = 'action.phtml' + href + '&' + side + 'dir=' + dir + '&mdir=' + dir + '&mfile=' + fileName + '&side=' + side + '&outside=' + outside + '&',
 		urlDP = href + '&' + side + 'dir=' + dir + fileName + '&side=' + side + '&outside=' + outside + '&',
 
