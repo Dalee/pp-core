@@ -8,7 +8,7 @@ function SortByRelevant($a, $b) {
 }
 
 function _yo2ye($s) {
-	return mb_strtr($s, "ёЁ", "еЕ");
+	return str_replace('Ё', 'Е', str_replace('ё', 'е', $s));
 }
 
 class PXSearch {
