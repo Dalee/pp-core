@@ -254,7 +254,7 @@ class PXCronRunSearchIndex extends PXAbstractCronRun {
 				$totalWeights = array();
 
 				foreach ($this->search->config[$dt] as $field => $weight) {
-					preg_match_all("/[\xa3\xc0-\xdfa-z\d]+/s", $this->search->strip($row[$field]), $m);
+					preg_match_all("/[а-яa-z\d]+/s".REGEX_MOD, $this->search->strip($row[$field]), $m);
 
 					foreach($m[0] as $word) {
 						$stem = $this->search->getStemByWord(_yo2ye($word));
