@@ -1,6 +1,7 @@
 <?php
 abstract class PXAbstractCronRun {
 	public $name = 'Abstract CronRun Class';
+	protected $logsDir;
 
 	function __construct() {}
 
@@ -21,12 +22,16 @@ abstract class PXAbstractCronRun {
 		$logger->log($logger->ERROR, $message);
 	}
 
+	function setLoggerDir($logsDir) {
+		$this->logsDir = $logsDir;
+	}
+
 	function &getLogger() {
 		if(!isset($this->logger)) {
-			$logsDir = BASEPATH.'var/logs/cronrun/'.str_replace('pxcronrun', '', get_class($this)).'/';
+			$logsDir = $this->logsDir? $this->logsDir: BASEPATH.'var/logs/cronrun/'.str_replace('pxcronrun', '', get_class($this)).'/';
 			MakeDirIfNotExists($logsDir);
 
-			$this->logger =& NLLogger::getLogger('cron');
+			$this->logger = NLLogger::getLogger('cron');
 
 			if(PXRequest::getHttpMethod() === 'CLI') {
 				$this->logger->addAppender('file', 'FileAppender');
@@ -104,7 +109,7 @@ class PXCronRule {
 				'jun' =>  '6',
 				'jul' =>  '7',
 				'aug' =>  '8',
-				'sep' =>  '9', 
+				'sep' =>  '9',
 				'oct' => '10',
 				'nov' => '11',
 				'dec' => '12'
