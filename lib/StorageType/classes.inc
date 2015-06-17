@@ -11,6 +11,7 @@ require_once PPLIBPATH . 'StorageType/boolean.class.inc';
 require_once PPLIBPATH . 'StorageType/timestamp.class.inc';
 
 require_once PPLIBPATH . 'StorageType/serialized.class.inc';
+require_once PPLIBPATH . 'StorageType/json.class.inc';
 require_once PPLIBPATH . 'StorageType/yaml.class.inc';
 
 require_once PPLIBPATH . 'StorageType/array.class.inc';
