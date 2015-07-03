@@ -27,7 +27,7 @@
 		function _drawMoveIntoSectionLink(){
 			$opts = '';
 			foreach($this->_getAllowedSections() as $id => $name){
-				$opts .= "<option value=\"{$id}\"}'>{$name}</option>";
+				$opts .= "<option value=\"{$id}\"'>{$name}</option>";
 			}
 			return <<<HTML
 				<div class="multiple-bottom-controls">
