@@ -218,8 +218,12 @@ class PXStorageType {
 	function getClassByName($name) {
 		$baseClass = 'PXStorageType';
 
-		$inputClass  = $baseClass.mb_ucfirst(mb_strtolower($name));
-		return class_exists($inputClass) ? $inputClass : $baseClass;
+		$inputClass = $baseClass.mb_ucfirst(mb_strtolower($name));
+		if (!class_exists($inputClass)) {
+			trigger_error("Class {$inputClass} not found, use {$baseClass} instead", E_USER_NOTICE);
+			return $baseClass;
+		}
+		return $inputClass;
 	}
 
 	static public
