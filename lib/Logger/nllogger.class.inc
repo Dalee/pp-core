@@ -232,7 +232,7 @@ class FileAppender extends Appender {
 
 		if (isset($openFiles[$fileName]) && file_exists($fileName) && filesize($fileName) >= $this->fileSize ) {
 			fclose($openFiles[$fileName]);
-			$rotateFileName = $fileName .'.'. mktime();
+			$rotateFileName = $fileName .'.'. time();
 			//paranoid_mode = on
 			if (file_exists($rotateFileName))
 				$rotateFileName .= '.' . md5(mt_rand());
