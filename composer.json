@@ -1,8 +1,9 @@
 {
   "name": "pp/pp",
-  "type": "pp-plugin",
+  "type": "library",
   "description": "ProximaPortal",
   "license": "MIT",
+  "minimum-stability": "dev",
   "authors": [
     {
       "name": "Dalee Developers Team",
