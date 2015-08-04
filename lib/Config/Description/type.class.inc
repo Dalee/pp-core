@@ -19,7 +19,6 @@ class PXTypeDescription {
 	var $dTypes        = array();
 	var $struct        = 'plain';
 	var $byDefault     = NULL;
-	var $outputHandler = NULL; # REMOVEME ! This option is deprecated and will be removed in the future.
 
 	function parentType() {
 		return PXRegistry::getTypes($this->parent);
@@ -28,7 +27,7 @@ class PXTypeDescription {
 	/**
 	 * Возвращает массив типов потомков для переданного формата
 	 */
-	
+
 	function childTypes() {
 		$cTypes = array();
 
@@ -178,7 +177,7 @@ class PXTypeDescription {
 		$name = $field->name;
 		$this->fields[$name] = $field;
 	}
-	
+
 	function assignToGroup($field) {
 		static $groupId = 0;
 		static $fillingGroup;
@@ -199,7 +198,6 @@ class PXTypeDescription {
 				case 'parent'        : $this->parent        = $attr->value; break;
 				case 'bydefault'     : $this->byDefault     = self::_mapByDefaults($attr->value); break;
 				case 'struct'        : $this->struct        = $attr->value; break;
-				case 'outputhandler' : $this->outputHandler = $attr->value; break; # Deprecated !
 
 				default              : d2("Unknown attr name: ".$attr->name); break;
 			}
@@ -215,7 +213,7 @@ class PXTypeDescription {
 	* protected -> public, because used in PXAdminForm
 	*
 	* @see PP_CHILDREN_FETCH_ALL, PP_CHILDREN_FETCH_SELECTED, PP_CHILDREN_FETCH_NONE
-	* @access public 
+	* @access public
 	* @param String $string
 	* @return Integer
 	*/
