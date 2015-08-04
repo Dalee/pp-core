@@ -17,7 +17,6 @@ require_once PPLIBPATH . 'Request/classes.inc';
 require_once PPLIBPATH . 'Mail/message.class.inc';
 require_once PPLIBPATH . 'Mail/EventCalendar/classes.inc';
 require_once PPLIBPATH . 'Logger/nllogger.class.inc';
-require_once PPLIBPATH . 'Exception/deprecated.class.inc';
 
 require_once PPLIBPATH . 'Config/application.class.inc';
 require_once PPLIBPATH . 'Database/database.class.inc';
