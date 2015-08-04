@@ -12,7 +12,6 @@ class PXFieldDescription {
 	var $description     = NULL;
 	var $storageType     = NULL;
 	var $storageTypeArgs = NULL;
-	var $handler         = NULL;
 	var $displayType     = NULL;
 	var $displayTypeArgs = NULL;
 	var $values          = NULL;
@@ -48,10 +47,6 @@ class PXFieldDescription {
 
 					case 'displaytype':
 						$this->setParsedDisplayType($node, $fieldNode);
-						break;
-
-					case 'handler':
-						$this->handler = $value;
 						break;
 
 					case 'listed':
