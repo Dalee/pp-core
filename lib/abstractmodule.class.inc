@@ -79,18 +79,11 @@ abstract class PXModule implements PXModuleIF {
 
 	function userJson() {
 	}
-	
+
 	function adminJson() {
 	}
-	
+
 	function finalizeBindingsQueue() {
 		$this->app->bindingsQueue->stopLoading();
 	}
 }
-
-abstract class PXAbstractModule extends PXModule implements PXModuleIF {
-	function __call($method, $args) {
-		throw new DeprecatedException("PXAbstractModule is deprecated. Use PXModule");
-	}
-}
-?>
