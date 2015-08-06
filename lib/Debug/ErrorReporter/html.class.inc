@@ -52,11 +52,11 @@ HTML
 			$errorRepDir = 'error_reporter';
 			$cacheTime   = 30;
 		}
-		
+
 		if (empty($cacheTime) || empty($errorRepDir)) {
 			return array(null, false);
 		}
-		
+
 		$cache          = ObjectCache::get('file', $errorRepDir, $cacheTime);
 		$errorSignature = json_encode($this->errorsMap);
 
@@ -124,7 +124,7 @@ SORT_FUNCTION
 
 		$mail = new NLMailMessage();
 		$this->mail =& $mail;
-		
+
 		$mail->validateEmails(false);
 
 		$mail->setFrom('Error Reporter', $this->fromEmail);
@@ -138,10 +138,11 @@ SORT_FUNCTION
 			$cls = strtolower(str_replace(' ', '', $error['type']));
 			$this->attachError($error, $errPos);
 
+			$message = htmlspecialchars($error['message'], ENT_QUOTES | ENT_DISALLOWED | ENT_SUBSTITUTE, 'UTF-8');
 			$errorsListHTML[] = <<<HTML
 				<li class="{$cls}">
 					<strong>{$error['type']}</strong>:
-					{$error['message']}
+					{$message}
 				</li>
 HTML;
 		}
@@ -276,6 +277,8 @@ HTML;
 	function errorToXML($error) {
 		$traceXML = $this->traceToXML($error['trace']);
 
+		$message = htmlspecialchars($error['message'], ENT_XML1 | ENT_QUOTES | ENT_DISALLOWED | ENT_SUBSTITUTE, 'UTF-8');
+
 		return <<<XML
 <?xml version="1.0" encoding="UTF-8"?>
 <?xml-stylesheet type="text/xsl" href="error_reporter.xsl"?>
@@ -284,21 +287,15 @@ HTML;
 	<code>{$error['code']}</code>
 	<file>{$error['file']}</file>
 	<line>{$error['line']}</line>
-	<message>
-		<![CDATA[
-			{$error['message']}
-		]]>
-	</message>
-
-	<trace>{$traceXML}
-	</trace>
+	<message>{$message}</message>
+	<trace>{$traceXML}</trace>
 </error>
 XML;
 	}
 
 	function traceToXML($trace) {
 		return implode(
-			"\n", 
+			"\n",
 
 			array_map(
 				create_function(
@@ -310,7 +307,7 @@ XML;
 
 							array_map(
 								create_function(
-									'\$a', 
+									'\$a',
 									" return \"\n\t\t\t\t\".'<'.\\\$a['type'].'>'.\\\$a['value'].'</'.\\\$a['type'].'>';"
 								),
 
@@ -334,4 +331,3 @@ TRACE_TO_XML
 		);
 	}
 }
-?>
