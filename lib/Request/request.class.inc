@@ -352,24 +352,6 @@ class PXRequest {
 		return $rawLinksData;
 	}
 
-	function include_handler($handler) {
-		$file = mb_strtolower($handler).".inputhandler.inc";
-
-		if (file_exists(BASEPATH.'/local/handlers/'.$file)) {
-			include_once BASEPATH.'/local/handlers/'.$file;
-		} elseif (file_exists(BASEPATH.'/libpp/handlers/'.$file)) {
-			include_once BASEPATH.'/libpp/handlers/'.$file;
-		}
-	}
-
-	function doHandler(&$field, &$object_field, $handler, $extraArgs) {
-		$function = 'PXInputHandler'.$handler;
-
-		if (function_exists($function)) {
-			$object_field = $function($field, $object_field, $extraArgs);
-		}
-	}
-
 	// POST
 	function getContentObject($format) {
 		$object = array();
@@ -377,15 +359,6 @@ class PXRequest {
 
 		foreach ($format->fields as $k=>$v) {
 			$object[$k] = $v->displayType->getFromRequest($v, $object, $p);
-
-			if (!empty($v->handler)) {
-				$extraArgs = explode('|', $v->handler);
-				$handler   = array_shift($extraArgs);
-
-				$this->include_handler($handler);
-				$this->doHandler($v, $object[$k], $handler, $extraArgs);
-			}
-
 			$object[$k] = $v->storageType->getFromRequest($v, $object, $p);
 		}
 
