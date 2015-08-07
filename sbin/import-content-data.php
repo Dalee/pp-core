@@ -93,7 +93,7 @@ file_exists($input = $args[1]) || usage('file "'.$input.'" doesn\'t exists');
 $input_files = null;
 isset($args[2]) && file_exists($input_files = $args[2]) && ($input_files = realpath($input_files));
 
-$import = json_decode_koi(file_get_contents($input), 1);
+$import = json_decode(file_get_contents($input), 1);
 empty($import['data']) && usage("Invalid file \"$input\"");
 
 function wrong_schemas($err) {
@@ -181,7 +181,7 @@ foreach ($import['data'] as $typeKey => $objects) {
 			}
 		}
 	}
-	
+
 	$next = 0;
 	$oldIdParentMap[$typeKey] = array();
 	foreach ($objects as $object) {
@@ -224,7 +224,7 @@ if (isset($import['data']['struct'])) {
 			$err = 'Missed template for struct type "'.$object['type'].'" at struct#'.$object['id'];
 			empty($flags['ignore-missed-fields'])? wrong_schemas($err) : Label('Warn: '.$err);
 		}
-		// MAGIC BUG in php appears ahead in 'while (!empty($objects)) {$object = array_shift($objects); ...', 
+		// MAGIC BUG in php appears ahead in 'while (!empty($objects)) {$object = array_shift($objects); ...',
 		// if using 'foreach ($objects as $id => &$object) { ... }' statement, strange simultaneous array corruption
 		// FUCK php! C# forever ;)
 		$objects[$id]['type'] = $stype;
@@ -278,7 +278,7 @@ foreach ($order as $typeKey => $order) {
 	$objects = array_values($import['data'][$typeKey]);
 	$count = count($objects);
 	Label(sprintf('Adding %d objects of "%s" datatype.', $count, $typeKey));
-	
+
 	$type = $app->types[$typeKey];
 
 	// calc file fields
@@ -327,7 +327,7 @@ foreach ($order as $typeKey => $order) {
 			}
 			$object['sys_regions'] = array_values(array_filter($object['sys_regions']));
 		}
-		
+
 		// and drop id before creating new object
 		unset($object['id']);
 
@@ -423,7 +423,7 @@ $aifilestar = $outpath . '/ppdata.files.tar.gz';
 `cd $outpath; tar -cvzf $aifilestar ./; rm -r $outpath/ai`;
 echo 'files: ' . $aifilestar . PHP_EOL;
 
-$outdata = json_encode_koi($export);
+$outdata = json_encode($export);
 $outfile = $outpath . '/ppdata.json';
 file_put_contents($outfile, $outdata); // or dump to stdout
 echo 'data json: ' . $outfile . PHP_EOL;

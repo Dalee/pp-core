@@ -32,7 +32,7 @@ class PXAdminAuditTable extends PXAdminTableSimple {
 		}
 
 		if ($col == 'diff') {
-			$diff = (array)json_decode_koi($row[$col], true);
+			$diff = (array)json_decode($row[$col], true);
 			$diff = array_filter($diff);
 
 			$source = explode('/', $row['source'])[0];

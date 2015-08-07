@@ -14,32 +14,6 @@
 		echo $s."\n";
 	}
 
-	function __json_encode_koi_k2u(&$value) {
-		$value = iconv('koi8-r', 'utf-8', $value);
-	}
-
-	function json_encode_koi($value, $options = 0) {
-		if (empty($value)) {
-			// dummy
-		} elseif (is_scalar($value)) {
-			__json_encode_koi_k2u($value);
-		} else {
-			array_walk_recursive($value, '__json_encode_koi_k2u');
-		}
-
-		switch(PHP_MINOR_VERSION) {
-			case 2:
-				$value = json_encode($value);
-				break;
-			case 3:
-			case 4:
-				$value = json_encode($value, $options);
-				break;
-		}
-
-		return $value;
-	}
-
 	/**
 	 *
 	 */
@@ -191,12 +165,12 @@
 
 			$obj = null;
 			switch($data['dbtype']) {
-				case 'pgsql': 
-					$obj = new PostgreSQL($data); 
+				case 'pgsql':
+					$obj = new PostgreSQL($data);
 					break;
 				default:
-					printf("Database: %s not supported, yet.\n", $data['dbtype']); 
-					exit(1); 
+					printf("Database: %s not supported, yet.\n", $data['dbtype']);
+					exit(1);
 					break;
 			}
 			return $obj;
@@ -316,15 +290,15 @@
 				$tableName  = $datatype->getName();
 				$attributes = $datatype->getAttributes();
 				$fieldList = $this->db->getFields($tableName);
-				
+
 				foreach ($attributes as $_ => $attribute) {
 					$storagetype = $attribute->getStorageType();
 					if (! in_array($storagetype, $this->poiFields)) {
 						continue;
 					}
 
-					$backupField = (in_array($backupField, $fieldList)) ? 
-						null : 
+					$backupField = (in_array($backupField, $fieldList)) ?
+						null :
 						sprintf('%s__backup', $attribute->getName());
 
 					$updateTableFieldList[] = array(
@@ -358,7 +332,7 @@
 					if ( $sign === 'a:') {
 						$updatedRowList[] = array(
 							'id' => $row['id'],
-							'value' => json_encode_koi(unserialize($row[$fieldName]))
+							'value' => json_encode(unserialize($row[$fieldName]))
 						);
 						$processed += 1;
 					}

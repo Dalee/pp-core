@@ -15,7 +15,7 @@ class PXStorageTypeSerialized extends PXStorageType {
 
 	function normalizeObjectAttribute($field, $object, &$param) {
 		$k = $field->name;
-		$v = json_encode_koi((is_array($object[$k])) ? $object[$k] : array());
+		$v = json_encode((is_array($object[$k])) ? $object[$k] : array());
 
 		if (is_array($param['dbFields'])) {
 			$param['dbFields'][] = $k;
@@ -48,7 +48,7 @@ class PXStorageTypeSerialized extends PXStorageType {
 		return $obj;
 	}
 	//TODO: ...до сих
-	
+
 	function normalize($field, $object, &$param) {
 		$k = $field->name;
 		$w = $object[$k];
@@ -81,7 +81,7 @@ class PXStorageTypeSerialized extends PXStorageType {
 				//TODO: ...до сих
 			}
 			elseif ($json) {
-				$v = json_decode_koi($w, true);
+				$v = json_decode($w, true);
 			}
 
 		}

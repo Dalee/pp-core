@@ -117,7 +117,7 @@ $aifilestar = $outpath . '/ppdata.files.tar.gz';
 `cd $outpath; tar -cvzf $aifilestar ./; rm -r $outpath/ai`;
 echo 'files: ' . $aifilestar . PHP_EOL;
 
-$outdata = json_encode_koi($export);
+$outdata = json_encode($export);
 $outfile = $outpath . '/ppdata.json';
 file_put_contents($outfile, $outdata); // or dump to stdout
 echo 'data json: ' . $outfile . PHP_EOL;

@@ -134,7 +134,7 @@ class PXDatabase extends NLSQLDatabaseAdapter implements IPXDatabase {
 			}
 		}
 	}
-	
+
 	/**
 	 * Загружает справочник (directories) в зависимости от типа
 	 *
@@ -250,7 +250,7 @@ class PXDatabase extends NLSQLDatabaseAdapter implements IPXDatabase {
 		}
 
 		$format = clone $this->types[$directory->source];
-        
+
 		/*
 		 * fixme: check this code please
 		 * looks like it's totally wrong!
@@ -290,7 +290,7 @@ class PXDatabase extends NLSQLDatabaseAdapter implements IPXDatabase {
 				$limit = array_map('intval', $limit);
 			}
 		}
-		
+
 		PXProfiler::begin('GET DATA: ' . $format->id . '[' . (is_null($status)?'N':($status?'t':'f')) . ', "' . $where . '"]-[' .  (is_array($limit) ? implode('.', $limit) : '') . ']-[' . $order . ']');
 		$where = $this->joinWhere($format, $status, $where);
 
@@ -770,7 +770,7 @@ class PXDatabase extends NLSQLDatabaseAdapter implements IPXDatabase {
 				$sqlUpdateRule[] = sprintf(
 					"sys_meta = %s",
 					$this->MapData(
-						json_encode_koi($sysMetaField)
+						json_encode($sysMetaField)
 					)
 				);
 			}
@@ -1024,7 +1024,7 @@ class PXDatabase extends NLSQLDatabaseAdapter implements IPXDatabase {
 					$sysMetaFieldList[] = $k;
 				}
 			}
-			
+
 			$dbFields[] = 'sys_modified';
 			$dbValues[] = '##now##';
 			$this->transactionBegin();
@@ -1065,7 +1065,7 @@ class PXDatabase extends NLSQLDatabaseAdapter implements IPXDatabase {
 				$sqlUpdateRule = sprintf(
 					"sys_meta = %s",
 					count($sysMetaField) > 0
-						? $this->MapData(json_encode_koi($sysMetaField))
+						? $this->MapData(json_encode($sysMetaField))
 						: 'NULL'
 				);
 				$query = sprintf('UPDATE %s SET %s WHERE id = %s', $format->id, $sqlUpdateRule, $object['id']);
@@ -1074,14 +1074,14 @@ class PXDatabase extends NLSQLDatabaseAdapter implements IPXDatabase {
 
 			$this->transactionCommit();
 			$object['sys_order'] = isset($objectInDB['sys_order']) ? $objectInDB['sys_order'] : null;
-			
+
 			foreach ($this->triggers as $t)
 				$t->getTrigger()->OnModifyObject($this, $object['id'], $format, $object, $dbFields, $dbValues, $objectInDB);
 
 			$sysKeysToRemove = array('sys_created', 'sys_modified', 'sys_meta', 'sys_owner', 'sys_reflex_id', 'sys_order', 'allowed');
 			$diff = array_deep_diff($this->getObjectById($format, $object['id'], true), $objectInDB, $sysKeysToRemove);
 
-			$audit->info('Объект изменен', $format->id . '/' . $object['id'], 'AUDIT', json_encode_koi(array_keys($diff)));
+			$audit->info('Объект изменен', $format->id . '/' . $object['id'], 'AUDIT', json_encode(array_keys($diff)));
 		}
 
 		return NULL;
@@ -1099,21 +1099,21 @@ class PXDatabase extends NLSQLDatabaseAdapter implements IPXDatabase {
 	function ModifyObjectSysVars($format, $object) {
 		$audit = PXAuditLogger::getLogger($this->app, $this);
 		$objectInDB = $this->getObjectById($format, $object['id']);
-		
+
 		if (!count($objectInDB)) {
 			$this->FatalError('Попытка модифицировать отсутствующий объект');
 		}
-		
+
 		if(isset($objectInDB['parent']) && !isset($object['parent'])){
 			$object['parent'] = $objectInDB['parent'];
 		}
-		
+
 		if (!$this->user->can(array('write', 'modify'), $format, $object)) {
 			$errString = 'Отказано в доступе при попытке модифицировать объект типа <em>'.$format->id.'</em>';
 			$audit->error($errString, $format->parent .'/'. (isset($object['parent']) ? $object['parent'] : ''));
 			$this->FatalError($errString);
 		}
-		
+
 		$dbFields = array();
 		$dbValues = array();
 		if (isset($object[OBJ_FIELD_CHILDREN])) {
@@ -1249,10 +1249,10 @@ class PXDatabase extends NLSQLDatabaseAdapter implements IPXDatabase {
 
 		$swap = !!preg_match('#sys_order\s+DESC#i'.REGEX_MOD, $format->order);
 		$down = ($swap xor ($direction == 'down'));
-		
+
 		$where = array();
 		$where[] = sprintf('%s.sys_order %s %s', $format->id, $down ? '>' : '<', $objectInDB['sys_order']);
-		
+
 		if (!empty($format->parent)) {
 			$parent = $objectInDB['parent'];
 			$is_null = is_null($parent);
@@ -1264,7 +1264,7 @@ class PXDatabase extends NLSQLDatabaseAdapter implements IPXDatabase {
 			$is_null = is_null($pid);
 			$where[] = sprintf('%s.pid %s %s', $format->id, $is_null ? 'IS' : '=', $is_null ? 'NULL' : $pid);
 		}
-		
+
 		$where = join(' AND ', $where);
 		$nearCount = $this->getObjectsByWhere($format, NULL, $where, DB_SELECT_COUNT);
 		if(!$nearCount){
@@ -1274,12 +1274,12 @@ class PXDatabase extends NLSQLDatabaseAdapter implements IPXDatabase {
 		$nearObject = $offset >= 0 ? $this->getObjectsByWhereLimited($format, NULL, $where, 1, $offset, DB_SELECT_TABLE, 'sys_order'.($down ? '' : ' DESC')) : array();
 		$permitMove = true;
 		$object_id= $objectInDB['id'];
-		
+
 		foreach ($this->triggers as $t){
 			$permitMove = $t->getTrigger()->OnBeforeMoveObject($this, $objectId, $format, $objectInDB);
 			if(!$permitMove) break;
 		}
-		
+
 		if($permitMove && sizeof($nearObject)) {
 			$nearObject = current($nearObject);
 			$this->transactionBegin();
@@ -1378,11 +1378,11 @@ class PXDatabase extends NLSQLDatabaseAdapter implements IPXDatabase {
 					$exception  = isset($object['id']) ? array('id'=>$object['id']) : array();
 					$condCols   = array('pathname'=>$url, 'parent'=>$object['parent']);
 					$condTables = array();
-					
+
 					foreach ($this->types[$format->parent]->childs as $child) {
 						if (isset($this->types[$child]->fields['pathname'])) {
 							$condTable = array('tableName' => $child, 'exWhere' => '');
-							
+
 							foreach ($this->triggers as $t){
 								$t->getTrigger()->OnBeforeNormalizePathBuildQuery($format, $this->types[$child], $condTable, $object);
 							}
@@ -1390,7 +1390,7 @@ class PXDatabase extends NLSQLDatabaseAdapter implements IPXDatabase {
 							$condTables[] = $condTable;
 						}
 					}
-					
+
 					$reiteration = (int)$this->IsUniqueColsCombination($condTables, $condCols, $exception);
 				}
 
@@ -1516,11 +1516,11 @@ SQL;
 					//search first empty node in our linked list
 				}
 			}
-			
+
 			foreach($reference->fields as $fk => $fv){
 				$element[$fk] = $fv->storageType->normalize($fv, $element, $param);
 			}
-			
+
 			$table = array(
 				'title'  => $title,
 				'fields' => $element,
@@ -1791,7 +1791,7 @@ SQL;
 			$table[$k]['sys_modified'] = $this->importDateTime($table[$k]['sys_modified']);
 
 			if ($isMetaPresent) {
-				$sysMeta = json_decode_koi($table[$k]['sys_meta'], true);
+				$sysMeta = json_decode($table[$k]['sys_meta'], true);
 				$sysMeta = is_array($sysMeta) ? $sysMeta : array();
 
 				// загружаем сохраненные мета-поля, в случае их
@@ -1847,14 +1847,14 @@ SQL;
 
 				return $newTable;
 				break;
-				
+
 			case $mode & DB_SELECT_TREE:
 			case $mode & DB_SELECT_FULL_TREE:
 				PXProfiler::begin('PREPARE: '.$format->id.' ['.sizeof($resTable).'x'.sizeof($format->fields).']');
 
 				$this->_NormalizeTable($resTable, $format, !!($mode & DB_SELECT_WITHOUT_EXTERNALS));
 				$newTable = array();
-			
+
 				foreach ($resTable as $k=>$v) {
 					if ($this->user->can('read', $format, $v)) {
 						$newTable[$v['id']] = $v;
@@ -1914,7 +1914,7 @@ SQL;
 		if (!(isset($format->fields['parent']) && $object['parent'])) {
 			return;
 		}
-		
+
 		$audit = PXAuditLogger::getLogger($this->app, $this);
 
 		$permitCheck = null;
@@ -1943,11 +1943,11 @@ SQL;
 			$this->FatalError($errString);
 		}
 	}
-	
+
 	function importBoolean($string) {
 		return $this->dbDriver->importBoolean($string);
 	}
-	
+
 	protected function clearObjectTypeCache($format) {
 		$this->cache->deleteGroup($format);
 		foreach($this->app->references as $ref){

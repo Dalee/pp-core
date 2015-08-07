@@ -7,7 +7,7 @@
 		require_once($localcommon);
 	}
 
-	ini_set('display_errors', '1'); 
+	ini_set('display_errors', '1');
 	$engine = new PXEngineSbin();
 
 	// process every object in database and update sys_meta tag
@@ -30,7 +30,7 @@
 			Label(sprintf("No need to be processed: %s", $type->id));
 			continue;
 		}
-		
+
 		Label(sprintf("Processing: %s", $type->id));
 		$queryUpdateFmt = 'UPDATE %s SET %s WHERE id = %s';
 		$querySelectFmt = 'SELECT * FROM %s WHERE id > %d ORDER BY id ASC LIMIT %d';
@@ -58,7 +58,7 @@
 					}
 				}
 
-				$metaField = (count($sysMetaField) > 0) ? $db->MapData(json_encode_koi($sysMetaField)) : 'NULL';
+				$metaField = (count($sysMetaField) > 0) ? $db->MapData(json_encode($sysMetaField)) : 'NULL';
 				$metaField = sprintf("sys_meta = %s", $metaField);
 
 				// fire!
