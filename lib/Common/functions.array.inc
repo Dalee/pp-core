@@ -84,22 +84,6 @@ function GetFromArray($array, $index, $default=NULL) {
 	}
 }
 
-//Thanks to the PHP.NET comments, it is very helpful function sometimes, but it exists only in PHP5
-if(!function_exists('array_combine')){
-	function array_combine($arr1, $arr2) {
-		$out = array();
-
-		$arr1 = array_values($arr1);
-		$arr2 = array_values($arr2);
-
-		foreach($arr1 as $key1 => $value1) {
-			$out[(string)$value1] = $arr2[$key1];
-		}
-
-		return $out;
-	}
-}
-
 function NestedArrayWalk(&$multiArray, $mapper, $optArgs = array(), $nestingLevel = 0){
 	if(!is_callable($mapper)) {
 		return false;

@@ -24,10 +24,6 @@ class PXModuleDescription {
 		return new $this->class($this->name, $this->settings, $this);
 	}
 
-	public function getInstance() {
-		throw new DeprecatedException("PXModuleDescription->getInstance() is deprecated. Use PXModuleDescription->getModule()");
-	}
-
 	function setAttrs($attrs) {
 		foreach($attrs as $item) {
 			$name = $item->name;

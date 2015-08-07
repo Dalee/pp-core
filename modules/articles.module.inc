@@ -1,5 +1,5 @@
 <?php
-class PXModuleArticles extends PXAbstractModule {
+class PXModuleArticles extends PXModule {
 	function userIndex() {
 		$articles = $this->layout->getVar('articles', array());
 
