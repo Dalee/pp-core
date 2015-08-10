@@ -4,14 +4,14 @@ class PXErrorReporterHTMLDev extends PXErrorReporter {
 		$css = $this->isFirstError() ? $this->css() : '';
 
 		$traceHTML = $this->traceToHtml($error['trace']);
-		$error['message'] = $error['message'];
+		$message = htmlspecialchars($error['message'], ENT_QUOTES | ENT_DISALLOWED | ENT_SUBSTITUTE, 'UTF-8');
 
 		$response = PXResponse::getInstance();
 		$response->unavailable();
 		$response->send(<<<HTML
 			<html class="error-debug">
 				<head>
-					<title>{$error['message']} &#8212; Fatal Error</title>
+					<title>{$message} &#8212; Fatal Error</title>
 					{$css}
 				</head>
 
@@ -19,7 +19,7 @@ class PXErrorReporterHTMLDev extends PXErrorReporter {
 					<h1>Error</h1>
 					<p>Sorry, but fatal error occured at <strong>{$error['file']}</strong>, <strong>{$error['line']}</strong>, and your request can not be contented</p>
 					<p>Error description:</p>
-					<pre class="desc">{$error['message']}</pre>
+					<pre class="desc">{$message}</pre>
 
 					<div class="error-debug-show_table">
 						<table class="error-trace">
@@ -45,11 +45,11 @@ HTML
 		}
 
 		$traceHTML = $this->traceToHtml($error['trace']);
-		$error['message'] = $error['message'];
+		$message = htmlspecialchars($error['message'], ENT_QUOTES | ENT_DISALLOWED | ENT_SUBSTITUTE, 'UTF-8');
 
 		echo <<<HTML
 			<div class="error-debug">
-				<strong> {$error['type']}</strong>: {$error['message']} in file <strong>{$error['file']}</strong> on line <strong>{$error['line']}</strong>
+				<strong> {$error['type']}</strong>: {$message} in file <strong>{$error['file']}</strong> on line <strong>{$error['line']}</strong>
 
 				<a href="" onclick="this.parentNode.className += ' error-debug-show_table'; this.style.display = 'none'; return false;">trace</a>
 				<a href="" onclick="this.parentNode.style.display = 'none'; return false;">hide</a>
@@ -89,7 +89,7 @@ ERROR_ROW;
 
 	function _argsToHTML($arg){
 		$arg['value'] = $arg['value'];
-		
+
 		return <<<ARGS
 			<span class="{$arg['type']}" title="{$arg['type']}">
 				{$arg['value']}
@@ -158,4 +158,3 @@ ARGS;
 HTML;
 	}
 }
-?>
