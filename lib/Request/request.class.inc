@@ -127,7 +127,8 @@ class PXRequest {
 	static function GetRemoteAddr() {
 		if (isset($_SERVER['HTTP_X_REAL_IP'])) {
 			if (mb_strstr($_SERVER['HTTP_X_REAL_IP'], ",")) {
-				$real_ip = trim(end(explode(",", $_SERVER['HTTP_X_REAL_IP'])));
+				$real_ip = explode(",", $_SERVER['HTTP_X_REAL_IP']);
+				$real_ip = trim(end($real_ip));
 			} else {
 				$real_ip = $_SERVER['HTTP_X_REAL_IP'];
 			}
