@@ -111,8 +111,17 @@ class PXAdminTable extends PXAdminComplexWidget {
 		$html = '<div class="table_wrapper">';
 
 		$html .= $this->htmlCaption();
-		
+
 		$html .= join($this->blocks[self::BEFORE_CONTENT_ALWAYS]);
+
+		$hasInnerBlocks = false;
+
+		foreach($this->dtype->fields as $field){
+			if(is_a($field->storageType, 'PXStorageTypeBlockcontent')) {
+				$hasInnerBlocks = true;
+				break;
+			}
+		}
 
 		if (count($this->data)) {
 			$html .= join($this->blocks[self::BEFORE_CONTENT]);
@@ -122,7 +131,7 @@ class PXAdminTable extends PXAdminComplexWidget {
 
 			//<!-- table header
 			$html .= '<thead><tr>';
-			$_icons = 2 + count($this->controls) + (($this->dtype->childs && $this->showChildObjects) ? 1 : 0);
+			$_icons = 2 + count($this->controls) + ((($hasInnerBlocks || $this->dtype->childs) && $this->showChildObjects) ? 1 : 0);
 
 			$html .= '<th class="c'.(($_icons > 2) ? $_icons : '').'">';
 			$html .= '<a href="'.$this->_buildHref($this->dtype->id.'_order', $this->dtype->order).'" title="Порядок сортировки по умолчанию"><img src="i/icon/order.gif" width="7" height="8" alt=""></a>';
@@ -164,7 +173,7 @@ class PXAdminTable extends PXAdminComplexWidget {
 
 				if (in_array($this->showDefaultControls, array('before', 'after'))) {
 					$meths = array('before' => 'insertControl', 'after' => 'appendControl');
-					
+
 					$t1  = '<a href="#"><img src="i/icon/menu.gif" ';
 					$t1 .= 'onclick="{{context}}" oncontextmenu="{{context}}" alt=""></a>';
 
@@ -209,7 +218,7 @@ class PXAdminTable extends PXAdminComplexWidget {
 				$html .= '<td class="c">';
 				$html .= $this->_buildControls($tVars);
 
-				if ($this->dtype->childs && $this->showChildObjects && isset($this->childLink)) {
+				if (($hasInnerBlocks || $this->dtype->childs) && $this->showChildObjects && isset($this->childLink)) {
 					$html .= '<a href="'.$this->_BuildHref($this->childLink, $row['id'], 'ctype', $this->dtype->id).'">';
 					$html .= '<img src="i/icon/childs.gif" alt=""></a>';
 				}
@@ -235,7 +244,7 @@ class PXAdminTable extends PXAdminComplexWidget {
 
 			$html .= '<div class="empty">&#8212;</DIV>';
 		}//if
-		
+
 		$html .= '</div>';
 
 		return $html;
@@ -358,7 +367,7 @@ class PXAdminTable extends PXAdminComplexWidget {
 	function _buildCell($object, $field) {
 		return $field->displayType->buildCell($field, $object);
 	}
-	
+
 	/**
 	 * Строим ссылку, не забываем добавлять getData.
 	 *

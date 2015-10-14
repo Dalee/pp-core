@@ -185,6 +185,10 @@ function AddContent(format, parent) {
 	Popup('popup.phtml?area=objects&format='+format+'&id=0&action=main&parent='+parent);
 }
 
+function AddBlockContent(format, field, parent) {
+	Popup('popup.phtml?area=objects&format=block&parent_type='+format+'&parent_field='+field+'&id=0&action=main&parent_id='+parent);
+}
+
 function CloneContent(format, donor) {
 	Popup('action.phtml?area=objects&format='+format+'&id='+donor+'&action=clone');
 }
