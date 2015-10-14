@@ -2,7 +2,23 @@
 
 class PXTriggerDatabaseBlockcontent extends PXAbstractDatabaseTrigger {
 
-	function OnDeleteObject(&$db, &$objId, &$format, &$objectInDB) {
+	protected static $TYPE = 'block';
+
+	public /*override*/ function OnBeforeAddObject(&$db, &$objId, &$format, &$object, &$dbFields, &$dbValues) {
+		if($format->id != self::$TYPE) {
+			return true;
+		}
+		$parentFormat = &$db->app->types[$object['parent_type']];
+		if(!isset($parentFormat) || !isset($parentFormat->fields[$object['parent_field']])) {
+			return false;
+		}
+		if(!isset($object['parent_id']) || empty($object['parent_id'])) {
+			return false;
+		}
+		return true;
+	}
+
+	public /*override*/ function OnDeleteObject(&$db, &$objId, &$format, &$objectInDB) {
 		$hasInnerBlocks = false;
 
 		foreach($format->fields as $field) {
@@ -15,7 +31,7 @@ class PXTriggerDatabaseBlockcontent extends PXAbstractDatabaseTrigger {
 			return;
 		}
 
-		$db->query(sprintf("DELETE FROM block WHERE parent_type='%s' AND parent_id=%d", $db->EscapeString($format->id), $objId));
+		$db->query(sprintf("DELETE FROM %s WHERE parent_type='%s' AND parent_id=%d", self::$TYPE, $db->EscapeString($format->id), $objId));
 	}
 
 }
