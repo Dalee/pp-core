@@ -31,3 +31,5 @@ require_once PPLIBPATH . 'StorageType/aggr.class.inc';
 require_once PPLIBPATH . 'StorageType/session_st.class.inc';
 
 require_once PPLIBPATH . 'StorageType/sql.class.inc';
+
+require_once PPLIBPATH . 'StorageType/blockcontent.class.inc';

@@ -67,11 +67,11 @@ abstract class PXAdminObjects extends PXAdminWidget implements IPXAdminObjects {
 		$cell[2]++;
 		$this->layoutButtonCell = implode('.', $cell);
 
-		$this->_addControls();
+		$this->addControls();
 	}
 
-	private
-	function _addControls() {
+	protected
+	function addControls() {
 		$parent = $this->getControlParent();
 
 		if(!PXRegistry::getUser()->can(array('write', 'add'), $this->format, array('parent' => $parent, 'id' => null))) {
