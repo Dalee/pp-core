@@ -190,37 +190,44 @@ function array_remap($array, $map, $strict = false) {
 }
 
 function array_deep_diff($d1, $d2, $excludeKeys) {
-    if (is_array($d1) && is_array($d2))  {
-        $diff = array();
-        foreach (array_unique(array_merge(array_keys($d1), array_keys($d2))) as $key) {
-        	if (is_array($excludeKeys) && in_array($key, $excludeKeys)) {
-        		continue;
-        	}
+	switch(true){
+		case is_array($d1) && is_array($d2) :
+			$diff = array();
+			foreach (array_unique(array_merge(array_keys($d1), array_keys($d2))) as $key) {
+				if (is_array($excludeKeys) && in_array($key, $excludeKeys)) {
+					continue;
+				}
 
-            if (!array_key_exists($key, $d1)) {
-                $diff['added'][$key] = $d2[$key];
-            } else if (!array_key_exists($key, $d2)) {
-                $diff['removed'][$key] = $d1[$key];
-            } else {
-                $tmp = array_deep_diff($d1[$key], $d2[$key], $excludeKeys);
-                if (!empty($tmp)) $diff[$key] = $tmp;
-            }
-        }
-        return $diff;
-
-    } else if (!is_array($d1) && !is_array($d2))  {
-        if ($d1 == $d2) return array();
-        $ret = "$d1 ---> $d2";
-        // just a little touch for numerics, might not be needed
-        if (is_numeric($d1) && is_numeric($d2)) {
-            if ($d1 > $d2) $ret .= ' [- ' . ($d1 - $d2) . ']';
-            if ($d1 < $d2) $ret .= ' [+ ' . ($d2 - $d1) . ']';
-        }
-        return $ret;
-
-    } else {
-        return array('Array compared with NonArray');
-    }
+				if (!array_key_exists($key, $d1)) {
+					$diff['added'][$key] = $d2[$key];
+				} else if (!array_key_exists($key, $d2)) {
+					$diff['removed'][$key] = $d1[$key];
+				} else {
+					$tmp = array_deep_diff($d1[$key], $d2[$key], $excludeKeys);
+					if (!empty($tmp)) $diff[$key] = $tmp;
+				}
+			}
+			return $diff;
+		case (is_scalar($d1) || is_null($d1)) && (is_scalar($d2) || is_null($d2)) :
+			if ($d1 == $d2) {
+				return array();
+			}
+			$ret = "$d1 ---> $d2";
+			// just a little touch for numerics, might not be needed
+			if (is_numeric($d1) && is_numeric($d2)) {
+				if ($d1 > $d2) $ret .= ' [- ' . ($d1 - $d2) . ']';
+				if ($d1 < $d2) $ret .= ' [+ ' . ($d2 - $d1) . ']';
+			}
+			return $ret;
+		case is_object($d1) && is_object($d2) :
+			/* Два объекта нельзя сравнивать через == , т.к. можно нарваться на циклические зависимости и
+			 * в результате получить FatalError. А сравнивать через === бессмысленно. */
+			return array();
+		default:
+			/* скаляр vs массив, массив vs объект, скаляр vs объект, ресурс vs что угодно,
+			 * колбэки vs что угодно */
+			return array('Noncomparable values');
+	}
 }
 
 
