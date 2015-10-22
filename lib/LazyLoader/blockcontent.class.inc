@@ -2,9 +2,6 @@
 
 class PXBlockContentLazyLoader  {
 
-	protected $app;
-	protected $db;
-
 	protected $ownerType;
 	protected $ownerId;
 	protected $ownerField;
@@ -18,10 +15,7 @@ class PXBlockContentLazyLoader  {
 
 	protected static $MEDIA_FIELDS = array('images');
 
-	public function __construct($app, $db, $ownerType, $ownerId, $ownerField) {
-		$this->app = $app;
-		$this->db = $db;
-
+	public function __construct($ownerType, $ownerId, $ownerField) {
 		$this->ownerType = $ownerType;
 		$this->ownerId = $ownerId;
 		$this->ownerField = $ownerField;
@@ -33,7 +27,8 @@ class PXBlockContentLazyLoader  {
 	}
 
 	protected function __isValid() {
-		$format = &$this->app->types[$this->ownerType];
+		$app = PXRegistry::getApp();
+		$format = &$app->types[$this->ownerType];
 		if(!isset($format)) {
 			return false;
 		}
@@ -54,8 +49,10 @@ class PXBlockContentLazyLoader  {
 	}
 
 	protected function __initOnce(){
-		$this->tree = $this->db->getObjectsByFields(
-				$this->app->types[self::$TYPE],
+		$db  = PXRegistry::getDb();
+		$app = PXRegistry::getApp();
+		$this->tree = $db->getObjectsByFields(
+				$app->types[self::$TYPE],
 				true,
 				array(
 						'parent_type' => $this->ownerType,
