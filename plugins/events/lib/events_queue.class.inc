@@ -1,7 +1,5 @@
 <?php
 
-include_once BASEPATH . '/libpp/vendor/spyc/spyc.php5';
-
 class PXEventsQueue {
 	const TABLE = 'sys_events';
 
@@ -17,7 +15,7 @@ class PXEventsQueue {
 	}
 
 	static function all() {
-		return array_map(array(__CLASS__, 'normalize'), 
+		return array_map(array(__CLASS__, 'normalize'),
 							PXRegistry::getDB()->query(sprintf('select * from %s where in_process = false order by id asc', self::TABLE)));
 	}
 
@@ -26,7 +24,7 @@ class PXEventsQueue {
 	}
 
 	static function enqueue($args) {
-		PXRegistry::getDB()->modifyingQuery(sprintf("INSERT INTO %s (callback, params) values ('%s', '%s')", 
+		PXRegistry::getDB()->modifyingQuery(sprintf("INSERT INTO %s (callback, params) values ('%s', '%s')",
 			self::TABLE, PXStorageTypeYaml::toYaml($args['callback']), PXStorageTypeYaml::toYaml($args['params'])));
 	}
 
