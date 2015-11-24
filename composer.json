@@ -9,6 +9,12 @@
       "email": "dev@dalee.ru"
     }
   ],
+  "repositories": [
+    {
+      "type": "composer",
+      "url": "http://packages.git.dalee.ru"
+    }
+  ],
   "require": {
     "pp/installers": "*"
   },

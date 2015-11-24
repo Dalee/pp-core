@@ -45,4 +45,6 @@ require_once PPLIBPATH . 'XML/classes.inc';
 
 require_once PPLIBPATH . 'LazyLoader/blockcontent.class.inc';
 
+require_once PPLIBPATH . 'YAML/yaml.class.inc';
+
 spl_autoload_register(array('PXAbstractPlugin', 'autoload'));

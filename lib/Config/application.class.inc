@@ -154,48 +154,17 @@ class PXApplication {
 		$this->saveToCache($engineClass);
 	}
 
-	//TODO:FIXME: REWRITE ME!
 	private function fillLang ($filenames) {
-		if (!function_exists("__ReplaceIncludeWhenParseLangYaml")) {
-			function __ReplaceIncludeWhenParseLangYaml($replacement, $indent, $filename) {
-				$string = '';
-
-				if(file_exists($filename)) {
-					$tmp = @file($filename);
-
-				} elseif(file_exists(BASEPATH.$filename)) {
-					$tmp = @file(BASEPATH.$filename);
-
-				} else {
-					FatalError('Не могу найти '.$filename);
-				}
-
-				if(is_array($tmp)) {
-					foreach($tmp as $s) {
-						if(!strlen(trim($s))) {
-							continue;
-						}
-
-						$string .= $indent.$s;
-					}
-				}
-
-				return $string;
-			}
+		// use precompiled lang.yaml if exists
+		if (file_exists(SHAREDPATH . 'var/lang.yaml')) {
+			array_unshift($filenames, SHAREDPATH . 'var/lang.yaml'); // prod path
+		} elseif (file_exists(BASEPATH . 'tmp/lang.yaml')) {
+			array_unshift($filenames, BASEPATH . 'tmp/lang.yaml'); // dev path
 		}
 
 		foreach (array_reverse($filenames) as $filename) {
 			$source = ReadFileToString($filename);
-
-			$source = preg_replace('|^((\s*)include\s+(.+?))$|ime'.REGEX_MOD,	"__ReplaceIncludeWhenParseLangYaml('$1', '$2', '$3');", $source);   // делаем include
-			$source = preg_replace('/\t/'.REGEX_MOD,          ' ' ,         	$source);   // я люблю табы для читабельности, но по стандарту ямла это должны быть пробелы
-			$source = preg_replace('/(\r?\n){2,}/'.REGEX_MOD, "\n",         	$source);   // и лишние переводы строк. и хотя спик их не любит, по стандарту ямла это норма, если документ выделен в потоке в блок --- ...
-
-			// Spyc'у не нравятся мои конфиги, поэтому их стоит немного переделать
-			require_once PPPATH . 'vendor/spyc/spyc.php5';
-
-			// spyc must die. long live php-yaml!
-			$this->langTree = array_recursive_inheritance($this->langTree, Spyc::YAMLLoad($source));
+			$this->langTree = array_recursive_inheritance($this->langTree, PXYaml::parse($source));
 		}
 	}
 
