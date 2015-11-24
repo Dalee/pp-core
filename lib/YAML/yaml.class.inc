@@ -1,6 +1,5 @@
 <?php
 
-require_once PPPATH . 'vendor/symfony/yaml/Yaml.php';
 use \Symfony\Component\Yaml\Yaml;
 
 /**
