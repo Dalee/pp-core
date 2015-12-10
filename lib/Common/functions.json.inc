@@ -50,6 +50,7 @@ function json_decode_koi($value, $assoc = false, $depth = 512, $options = 0) {
 		case 3:
 			$value = json_decode($value, $assoc, $depth);
 			break;
+		default:
 			$value = json_decode($value, $assoc, $depth, $options);
 			break;
 	}
