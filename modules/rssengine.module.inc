@@ -34,7 +34,6 @@ class PXModuleRSSEngine extends PXModule {
 		}
 
 		$string = strtr($string, $trans_tbl);
-//		$string = preg_replace('/&#(\d+);/e', "chr(\\1)", $string);
 
 		return $string;
 	}
