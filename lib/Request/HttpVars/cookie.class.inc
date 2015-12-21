@@ -13,7 +13,7 @@ class NLCookieData extends NLHTTPVarsData {
 
 		$value = $this->raw[$varName];
 
-		if(is_string($value) && mb_strlen($value) && mb_substr($value, 0, 2) == 'a:') {
+		if(is_string($value) && mb_strlen($value) && mb_substr($value, 0, 2) == 'a:' && !preg_match("/O:\d+:/i", $value)) {
 			$value = unserialize($value);
 		}
 
