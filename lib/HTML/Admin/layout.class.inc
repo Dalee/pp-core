@@ -1,9 +1,9 @@
 <?php
 class PXAdminHTMLLayout extends NLAbstractLayout {
 	var $types;
-	
+
 	var $_scripts = array();
- 
+
 	//TODO: there must be right places in <HEAD> for this
 	var $_scriptsTemplates  = array(
 		':css' => array(
@@ -22,7 +22,7 @@ class PXAdminHTMLLayout extends NLAbstractLayout {
 			':area'  => 'OUTER.FORMBEGIN',
 			':proto' => "<style type=\"text/css\">\n%s\n</style>"
 		)
- 
+
 	);
 
 	function PXAdminHTMLLayout($outerLayout, $types) {
@@ -195,19 +195,19 @@ class PXAdminHTMLLayout extends NLAbstractLayout {
 	function assignKeyValueList($label, $list, $selected, $varName = 'sid') {
 		parent::AssignKeyValueList($label, $list, $varName, $selected);
 	}
-	
+
 	function assignJS($pathToScript){
 		$this->_renderScript($pathToScript, ':js', true);
 	}
- 
+
 	function assignInlineJS($scriptBody, $uniq = true){
 		$this->_renderScript($scriptBody, ':inline_js', $uniq);
 	}
- 
+
 	function assignCSS($pathToScript){
 		$this->_renderScript($pathToScript, ':css', true);
 	}
- 
+
 	function assignInlineCSS($scriptBody){
 		$this->_renderScript($scriptBody, ':inline_css', true);
 	}

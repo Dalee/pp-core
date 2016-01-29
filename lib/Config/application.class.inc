@@ -719,6 +719,8 @@ class PXApplication {
 
 	/*
 	 * function is_enough($files_array) { <return TRUE when enough files collected> }
+	 * @param string $filename
+	 * @param callable $is_enough
 	 */
 	private static function findFilesUnless($filename, $is_enough = NULL) {
 		$files = array();
@@ -730,7 +732,7 @@ class PXApplication {
 				$files[] = $path;
 			}
 
-			if ($is_enough && $is_enough($files)) {
+			if (is_callable($is_enough) && $is_enough($files)) {
 				return $files;
 			}
 		}
@@ -762,4 +764,3 @@ class PXApplication {
 		}
 	}
 }
-?>
