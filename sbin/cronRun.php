@@ -1,5 +1,5 @@
 #!/usr/bin/env php54
-<?
+<?php
 set_time_limit(0);
 ini_set('memory_limit','512M'); //for greedy scripts
 require_once dirname(__FILE__).'/../lib/maincommon.inc';

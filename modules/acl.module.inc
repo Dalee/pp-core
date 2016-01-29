@@ -17,24 +17,24 @@ class PXModuleAcl extends PXModule {
 		$this->orderingField = 'sys_order';
 		$this->ruleTypeField = 'objectrule';
 	}
-	
+
 	function getAvailableActions() {
 		return $this->getAclDefinitionsFor('actions');
 	}
-	
+
 	function getAvailableAccess() {
 		return $this->getAclDefinitionsFor('access');
 	}
-	
+
 	function getAclDefinitionsFor($what) {
 		if (empty($this->app->langTree['module_acl_rules'][$what])) {
 			FatalError("Не описаны правила module_acl_rules[{$what}] в lang.yaml");
 		}
-		
+
 		$_ = $this->app->langTree['module_acl_rules'][$what];
 		return array_combine(array_keys($_), getColFromTable($_, 'rus')); //TODO: make lang choose optional
 	}
-	
+
 	function getWhatDict() {
 		return $this->what;
 	}
@@ -158,7 +158,7 @@ class PXModuleAcl extends PXModule {
 				'selfParents' => NULL,
 				'even'        => false
 			);
-			
+
 			if(isset($dicts[$col])) {
 				$dType = 'DROPDOWN';
 				if($col == 'sgroupid' && $app->types['sgroup']->struct == 'tree') {
@@ -166,7 +166,7 @@ class PXModuleAcl extends PXModule {
 					$param['root_title'] = '-- любая --';
 					$dType = 'PARENTDROPDOWN';
 				}
-				
+
 				$fieldType->setDisplayType($dType);
 
 				$tmpVals = array();
@@ -183,7 +183,7 @@ class PXModuleAcl extends PXModule {
 			} else {
 				$fieldType->setDisplayType('TEXT');
 			}
-			
+
 			$_ .= $fieldType->displayType->buildRow($fieldType, $object, $param);
 		}
 		$_ .= '</table>';
@@ -211,13 +211,14 @@ class PXModuleAcl extends PXModule {
 
 	function _getSidCriteria($sid) {
 		$andwhat = array('blank' => '1 = 1');
-		switch (true) {
-			case $sid === null or $sid === '*':break;
-			default:
-				$sid = (string)$sid;
-			case is_scalar($sid):
-				$andwhat['sid'] = sprintf(' COALESCE("objecttype", \'\') = \'%s\'', $sid);
+
+		if ($sid === null || $sid === '*') {
+			return $andwhat;
 		}
+
+		$sid = $this->db->escapeString($sid);
+		$andwhat['sid'] = sprintf(' COALESCE("objecttype", \'\') = \'%s\'', $sid);
+
 		return $andwhat;
 	}
 
@@ -234,7 +235,7 @@ class PXModuleAcl extends PXModule {
 
 	function _getTypes() {
 		$types  = array();
-		foreach ($this->db->types as $typeName=>$type) { 
+		foreach ($this->db->types as $typeName=>$type) {
 			$types[$typeName] = $type->title;
 		}
 
@@ -253,7 +254,7 @@ class PXModuleAcl extends PXModule {
 		$dicts['sgroup']     = GetColFromTableWithIndexs($db->app->directory['sgroup']->values, 'title');
 		$dicts['types']      = $this->_getTypes();
 		$dicts['what']       = $this->getWhatDict();
-		
+
 		$dicts['sgroupid']   =& $dicts['sgroup'];
 		$dicts['access']     =& $this->access;
 		$dicts['objecttype'] =& $dicts['types'];
@@ -499,7 +500,7 @@ class PXModuleAcl extends PXModule {
 		$rId = (int)$this->request->getVar('id');
 		$afterId = (int)$this->request->getVar('after');
 		$sid = $this->_getSid();
-		$redir = '/admin/?area='.$this->area.'&sid='.$sid;
+		$redir = '/admin/?area='.$this->area.'&sid='.urlencode($sid);
 		$ajax = $this->request->getVar('ajax');
 		$result = null;
 
@@ -542,7 +543,7 @@ class PXModuleAcl extends PXModule {
 
 				$this->db->UpdateObjectById($this->sqlTable, $rId, $fields, $values);
 
-				$redir = '/admin/popup.phtml?area='.$this->area.'&sid='.$sid.'&id='.$rId;
+				$redir = '/admin/popup.phtml?area='.$this->area.'&sid='.urlencode($sid).'&id='.$rId;
 				break;
 
 			case 'delete':

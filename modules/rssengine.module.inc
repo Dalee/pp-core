@@ -30,11 +30,10 @@ class PXModuleRSSEngine extends PXModule {
 		$trans_tbl['&hellip;'] = "&#8230;";
 
 		foreach($trans_tbl as $k=>$v) {
-			$trans_tbl[$k] = myconv(CHARSET_WINDOWS, CHARSET_UTF8, $v);
+			$trans_tbl[$k] = myconv(DEFAULT_CHARSET, $this->encoding, $v);
 		}
 
 		$string = strtr($string, $trans_tbl);
-//		$string = preg_replace('/&#(\d+);/e', "chr(\\1)", $string);
 
 		return $string;
 	}

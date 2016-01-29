@@ -28,11 +28,7 @@
 		break;
 
 		case 'get_code':
-			$length       = (int)$request->GetVar('len');
-			$length       = $length > 0 && $length <= 16 ? $length : 4;
-			$allowedChars = $request->GetVar('char_map', "23456789qweyupasdfkzxcvbnm23456789");
-			
-			$bn->CreateNew($length, $allowedChars);
+			$bn->CreateNew(4, '23456789qweyupasdfkzxcvbnm23456789');
 			print $bn->key;
 		break;
 	}

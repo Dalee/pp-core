@@ -773,7 +773,7 @@ class PXModuleForum extends PXModule {
 
 	function _makeReplyBody($body, $author, $mode) {
 		$q = $this->quoteTag['tag'];
-		$a = (!is_null($author)) ? trim(preg_replace('#{(\w+)}#e', '$author["\1"]', $this->quoteTag['field'])) : '';
+		$a = (!is_null($author)) ? trim(preg_replace_callback('#{(\w+)}#', function($m) use ($author) { return $author[$m[1]];}, $this->quoteTag['field'])) : '';
 		if ($a) $a = '=' . $a;
 		$s = '';
 
