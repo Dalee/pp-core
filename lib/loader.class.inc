@@ -1,4 +1,4 @@
-<?
+<?php
 
 class PXLoader {
 	private $path = "";

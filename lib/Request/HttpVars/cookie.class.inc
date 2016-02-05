@@ -13,10 +13,6 @@ class NLCookieData extends NLHTTPVarsData {
 
 		$value = $this->raw[$varName];
 
-		if(is_string($value) && mb_strlen($value) && mb_substr($value, 0, 2) == 'a:') {
-			$value = unserialize($value);
-		}
-
 		return $value;
 	}
 }

@@ -567,10 +567,15 @@ class PXDatabase extends NLSQLDatabaseAdapter implements IPXDatabase {
 
 		$whereClause = array();
 		foreach ($field as $k => $v) {
+			$not = false;
+			if (strpos($k, '!') === 0) {
+				$not = true;
+				$k = str_replace('!', '', $k);
+			}
 			//заменяет спец.значения на соотв. sql-выражения
 			switch (true) {
 				case is_null($v):
-					$val = ' IS NULL';
+					$val = sprintf(' IS %sNULL', $not ? "NOT " : "");
 					break;
 
 				case $v === NOT_NULL:
@@ -580,15 +585,15 @@ class PXDatabase extends NLSQLDatabaseAdapter implements IPXDatabase {
 				case is_array($v):
 					empty($v) && $this->FatalError("Array value for db#getObjectsByField* can't be empty!");
 					$db = $this;
-					$val = " IN ('" . join("','", array_map(function($item) use ($db) { return $db->EscapeString($item); }, $v)) . "')";
+					$val = ($not ? " NOT" : "") . " IN ('" . join("','", array_map(function($item) use ($db) { return $db->EscapeString($item); }, $v)) . "')";
 					break;
 
 				case is_bool($v):
-					$val = ' = ' . $this->trueStatusString($v);
+					$val = ($not ? ' <> ' : ' = ') . $this->trueStatusString($v);
 					break;
 
 				default:
-					$val = ' = ' . "'".$this->EscapeString($v)."'";
+					$val = ($not ? ' <> ' : ' = ') . "'".$this->EscapeString($v)."'";
 			}
 			$whereClause[] = $format->id.'.'.$k.$val;
 		}

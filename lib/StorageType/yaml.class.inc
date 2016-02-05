@@ -7,8 +7,6 @@
  * storageType yaml
  */
 
-require_once BASEPATH . '/libpp/vendor/spyc/spyc.php5';
-
 class PXStorageTypeYaml extends PXStorageType {
 	function getFromRequest($field, $object, &$param) {
 		$k = $field->name;
@@ -31,11 +29,11 @@ class PXStorageTypeYaml extends PXStorageType {
 	}
 
 	static function toArray($yaml) {
-		return Spyc::YAMLLoad($yaml);
+		return PXYaml::parse($yaml);
 	}
 
 	static function toYaml($array) {
-		return Spyc::YAMLDump($array);
+		return PXYaml::dump($array);
 	}
 
 	function normalize($field, $object, &$param) {

@@ -224,6 +224,17 @@ class PXModuleMain extends PXModule {
 			$cidType   = null;
 			$cidObject = null;
 
+			$structHasInnerBlocks = false;
+
+			foreach($this->rootFormat->fields as $fieldName => $field) {
+				if(!is_a($field->storageType, 'PXStorageTypeBlockcontent')) {
+					continue;
+				}
+				$blocks = new PXAdminBlocksTree($this->rootFormat, $fieldName, $rqSid);
+				$blocks->addToParent('INNER.1.0');
+				$hasInnerBlocks = true;
+			}
+
 			$allowedChilds = $app->getAllowedChildsKeys($this->rootFormat->id, $parentObject);
 			if (count($allowedChilds)) {
 				foreach ($allowedChilds as $childFormat) {
@@ -256,6 +267,16 @@ class PXModuleMain extends PXModule {
 				if ($rqCid && !empty($cidType)) {
 					$layout->setGetVarToSave('cid', $rqCid);
 
+					$childHasInnerBlocks = false;
+					foreach($this->app->types[$cidType]->fields as $fieldName => $field) {
+						if(!is_a($field->storageType, 'PXStorageTypeBlockcontent')) {
+							continue;
+						}
+						$blocks = new PXAdminBlocksTree($this->app->types[$cidType], $fieldName, $rqCid);
+						$blocks->addToParent('INNER.2.0');
+						$childHasInnerBlocks = true;
+					}
+
 					$allowedChilds = $app->getAllowedChildsKeys($cidType, $cidObject);
 					$layout->setThreeColumns();
 
@@ -272,12 +293,12 @@ class PXModuleMain extends PXModule {
 							$subObjects->addToParent('INNER.2.0');
 						}
 
-					} else {
+					} elseif (!$childHasInnerBlocks) {
 						$this->layout->notSetAllowedChilds('INNER.2.0', $cidType, $rqCid);
 					}
 				}
 
-			} else {
+			} elseif (!$structHasInnerBlocks) {
 				$this->layout->notSetAllowedChilds('INNER.1.0', $this->rootFormatId, $rqSid);
 			}
 

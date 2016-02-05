@@ -7,7 +7,7 @@ class PXAdminTreeObjects extends PXAdminObjects {
 
 	/**
 	 *
-	 * @param unknown $format
+	 * @param mixed $format
 	 * @param string $where
 	 * @param string $loadMethod
 	 * @param string $withoutExternals
