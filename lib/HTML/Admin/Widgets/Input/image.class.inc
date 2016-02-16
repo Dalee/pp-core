@@ -28,15 +28,15 @@ class PXInputImage extends PXInputFile {
 			$this->height = $h;
 		}
 	}
-	
-	function preview() {		
+
+	function preview() {
 		return <<<HTML
 			<div>
 				<img src="{$this->p}" id="{$this->name}{$this->distension}src" width="{$this->width}" height="{$this->height}">
 			</div>
 HTML;
 	}
-	
+
 	function param() {
 		$html = '<input id="'.$this->name.$this->distension.'width"  type="text" readonly value="'.$this->value['width'].'" >';
 		$html .= '<span>ширина</span>';
@@ -44,11 +44,12 @@ HTML;
 		$html .= '<input id="'.$this->name.$this->distension.'height" type="text" readonly value="'.$this->value['height'].'">';
 		$html .= '<span>высота</span>';
 
-		$html .= '<input id="'.$this->name.$this->distension.'size"   type="text" readonly value="'.($this->value['path'] ? filesize(BASEPATH.'site/htdocs/'.$this->value['path']) : NULL).'">';
+		$fileSize = !empty($this->value['size']) ? $this->value['size'] : ($this->value['path'] ? filesize(HTDOCS_PATH . DIRECTORY_SEPARATOR . $this->value['path']) : '');
+		$html .= '<input id="'.$this->name.$this->distension.'size"   type="text" readonly value="'.$fileSize.'">';
 		$html .= '<span>размер</span>';
-		
+
 		return $html;
-		
+
 	}
 }
 ?>
