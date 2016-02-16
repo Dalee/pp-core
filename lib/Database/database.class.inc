@@ -161,11 +161,29 @@ class PXDatabase extends NLSQLDatabaseAdapter implements IPXDatabase {
 				$directory = $this->app->directory[$field->source];
 
 				$idsArray = getColFromTable($objects, $field->name);
+				if (empty($idsArray)) {
+					// nothing to update
+					continue;
+				}
+
 				$flattenArray = array();
 				foreach ($idsArray as $value) {
-					$flattenArray = array_merge($flattenArray, (array)$value);
+					// $idsArray is rarely not flattened, so cast to array is slower than check
+					if (is_array($value)) {
+						foreach ($value as $v) {
+							$flattenArray[$v] = null;
+						}
+					} else {
+						$flattenArray[$value] = null;
+					}
 				}
-				if(sizeof($flattenArray) && $directory->filter !== $flattenArray) {
+				$flattenArray = array_keys($flattenArray);
+
+				$needUpdate = (count($directory->filter) != count($flattenArray));
+				if (!$needUpdate) {
+					$needUpdate = count(array_diff($flattenArray, $directory->filter));
+				}
+				if ($needUpdate) {
 					$directory->filter = $flattenArray;
 					$this->LoadDirectory($directory, array(),true, $format);
 				}
