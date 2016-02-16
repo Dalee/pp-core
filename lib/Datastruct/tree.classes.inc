@@ -164,13 +164,21 @@ class NLTree {
 		}
 
 		// Filling children attributes of leafs of tree
-		foreach ($this->leafs as $k=>$v) {
+		$toUnset = [];
+
+		foreach ($this->leafs as $k => $v) {
 			if (!is_null($v->parent) && isset($this->leafs[$v->parent])) {
 				$this->leafs[$v->parent]->children[] = $k;
 
 			} elseif ($v->id != 0 && $this->saveOrphans) {
 				$this->leafs[0]->children[] = $k;
+			} elseif ($v->id != 0 && !$this->saveOrphans) {
+				$toUnset[] = $k;
 			}
+		}
+
+		foreach ($toUnset as $key) {
+			unset($this->leafs[$key]);
 		}
 	}
 

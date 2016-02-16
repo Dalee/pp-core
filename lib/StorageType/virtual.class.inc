@@ -11,12 +11,12 @@ class PXStorageTypeVirtual extends PXStorageType {
 		return (!is_null($field->defaultValue)) ? $field->defaultValue : NULL;
 	}
 
-	function notInDb($field, $object, $param=NULL) {
-		return true;
-	}
-
-	function inMeta($field, $object, $param=NULL) {
+	function storedInDb() {
 		return false;
 	}
+
+	function storedInMeta() {
+		return false;
+	}
+
 }
-?>

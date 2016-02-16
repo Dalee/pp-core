@@ -161,11 +161,29 @@ class PXDatabase extends NLSQLDatabaseAdapter implements IPXDatabase {
 				$directory = $this->app->directory[$field->source];
 
 				$idsArray = getColFromTable($objects, $field->name);
+				if (empty($idsArray)) {
+					// nothing to update
+					continue;
+				}
+
 				$flattenArray = array();
 				foreach ($idsArray as $value) {
-					$flattenArray = array_merge($flattenArray, (array)$value);
+					// $idsArray is rarely not flattened, so cast to array is slower than check
+					if (is_array($value)) {
+						foreach ($value as $v) {
+							$flattenArray[$v] = null;
+						}
+					} else {
+						$flattenArray[$value] = null;
+					}
 				}
-				if(sizeof($flattenArray) && $directory->filter !== $flattenArray) {
+				$flattenArray = array_keys($flattenArray);
+
+				$needUpdate = (count($directory->filter) != count($flattenArray));
+				if (!$needUpdate) {
+					$needUpdate = count(array_diff($flattenArray, $directory->filter));
+				}
+				if ($needUpdate) {
 					$directory->filter = $flattenArray;
 					$this->LoadDirectory($directory, array(),true, $format);
 				}
@@ -1776,15 +1794,17 @@ SQL;
 	 * @access public
 	 */
 	function _NormalizeTable(&$table, $format, $withoutMeta = false) {
+		$p = array('db' => &$this, 'format' => $format->id);
+		$inMeta = [];
 		foreach ($table as $k=>$v) {
 
 			$isMetaPresent = !empty($v['sys_meta']);
 
 			foreach ($format->fields as $fk=>$fv) {
-				$p = array('db'=>&$this, 'format'=>$format->id);
-
-				$inMeta = $fv->storageType->inMeta($fv, $table[$k], $p);
-				if ($inMeta && ($withoutMeta || $isMetaPresent)) {
+				if (!isset($inMeta[$fk])) { // cache results, cuz lots of rows in table
+					$inMeta[$fk] = $fv->storageType->inMeta($fv, null, $p);
+				}
+				if ($inMeta[$fk] && ($withoutMeta || $isMetaPresent)) {
 					$table[$k][$fk] = null;
 					continue;
 				}

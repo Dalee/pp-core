@@ -31,8 +31,9 @@ class PXStorageTypeSession extends PXStorageType {
 		return '';
 	}
 
-	function notInDb($field, $object, $param=NULL) {
-		return true;
+	function storedInDb() {
+		return false;
 	}
+
 }
 ?>
