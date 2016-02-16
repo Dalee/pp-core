@@ -85,8 +85,8 @@ class PXStorageTypeAbstractFile extends PXStorageType {
 		FatalError(get_class($this)."::__normalize() doesn't exists !");
 	}
 
-	function notInDb($field, $object, $param=NULL) {
-		return true;
+	function storedInDb() {
+		return false;
 	}
 
 	function copyFile($field, $src, $dest) {

@@ -1794,15 +1794,17 @@ SQL;
 	 * @access public
 	 */
 	function _NormalizeTable(&$table, $format, $withoutMeta = false) {
+		$p = array('db' => &$this, 'format' => $format->id);
+		$inMeta = [];
 		foreach ($table as $k=>$v) {
 
 			$isMetaPresent = !empty($v['sys_meta']);
 
 			foreach ($format->fields as $fk=>$fv) {
-				$p = array('db'=>&$this, 'format'=>$format->id);
-
-				$inMeta = $fv->storageType->inMeta($fv, $table[$k], $p);
-				if ($inMeta && ($withoutMeta || $isMetaPresent)) {
+				if (!isset($inMeta[$fk])) { // cache results, cuz lots of rows in table
+					$inMeta[$fk] = $fv->storageType->inMeta($fv, null, $p);
+				}
+				if ($inMeta[$fk] && ($withoutMeta || $isMetaPresent)) {
 					$table[$k][$fk] = null;
 					continue;
 				}
