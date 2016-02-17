@@ -134,7 +134,7 @@ class PXDatabase extends NLSQLDatabaseAdapter implements IPXDatabase {
 			}
 		}
 	}
-	
+
 	/**
 	 * Загружает справочник (directories) в зависимости от типа
 	 *
@@ -268,7 +268,7 @@ class PXDatabase extends NLSQLDatabaseAdapter implements IPXDatabase {
 		}
 
 		$format = clone $this->types[$directory->source];
-        
+
 		/*
 		 * fixme: check this code please
 		 * looks like it's totally wrong!
@@ -308,7 +308,7 @@ class PXDatabase extends NLSQLDatabaseAdapter implements IPXDatabase {
 				$limit = array_map('intval', $limit);
 			}
 		}
-		
+
 		PXProfiler::begin('GET DATA: ' . $format->id . '[' . (is_null($status)?'N':($status?'t':'f')) . ', "' . $where . '"]-[' .  (is_array($limit) ? implode('.', $limit) : '') . ']-[' . $order . ']');
 		$where = $this->joinWhere($format, $status, $where);
 
@@ -391,12 +391,11 @@ class PXDatabase extends NLSQLDatabaseAdapter implements IPXDatabase {
 		$has_sys_meta = false;
 
 		foreach ($format->fields as $k=>$v) {
-			$p = array();
-			if($v->storageType->notInDb($v, null, $p)) {
-				$has_sys_meta = $has_sys_meta || $v->storageType->inMeta($v, null, $p);
+			if(!$v->storageType->storedInDb()) {
+				$has_sys_meta = $has_sys_meta || $v->storageType->storedInMeta();
 				continue;
 			}
-
+			$p = array();
 			$selector .= $v->storageType->createSelector($v, null, $p).', ';
 		}
 
@@ -754,12 +753,12 @@ class PXDatabase extends NLSQLDatabaseAdapter implements IPXDatabase {
 
 		if($permitAdd){
 			// формируем список полей которые не будут сохранены в базу данных
-			// ориентируемся на результат выполнения inMeta, для файловых
+			// ориентируемся на результат выполнения storedInMeta, для файловых
 			// и виртуальных полей метод должен возвращать true.
 			$cuttedFieldDiff = array_diff(array_keys($format->fields), $dbFields);
 			$sysMetaFieldList = array();
 			foreach($cuttedFieldDiff as $k) {
-				if($format->fields[$k]->storageType->inMeta($format->fields[$k], $object)) {
+				if($format->fields[$k]->storageType->storedInMeta()) {
 					$sysMetaFieldList[] = $k;
 				}
 			}
@@ -1038,16 +1037,16 @@ class PXDatabase extends NLSQLDatabaseAdapter implements IPXDatabase {
 
 		if ($permitModify) {
 			// формируем список полей которые не будут сохранены в базу данных
-			// ориентируемся на результат выполнения inMeta, для файловых
+			// ориентируемся на результат выполнения storedInMeta, для файловых
 			// и виртуальных полей метод должен возвращать true.
 			$cuttedFieldDiff = array_diff(array_keys($format->fields), $dbFields);
 			$sysMetaFieldList = array();
 			foreach($cuttedFieldDiff as $k) {
-				if($format->fields[$k]->storageType->inMeta($format->fields[$k], $object)) {
+				if($format->fields[$k]->storageType->storedInMeta()) {
 					$sysMetaFieldList[] = $k;
 				}
 			}
-			
+
 			$dbFields[] = 'sys_modified';
 			$dbValues[] = '##now##';
 			$this->transactionBegin();
@@ -1083,7 +1082,7 @@ class PXDatabase extends NLSQLDatabaseAdapter implements IPXDatabase {
 
 			if (count($sysMetaFieldList) > 0) {
 				// обновляем sys_meta, если есть что туда записать,
-				// а так же, если у объекта вообще есть поля типа inMeta! Иначе нарушается логика!
+				// а так же, если у объекта вообще есть поля типа storedInMeta! Иначе нарушается логика!
 				// см. логику выборки в методе createSelector() (проверка has_sys_meta)!
 				$sqlUpdateRule = sprintf(
 					"sys_meta = %s",
@@ -1097,7 +1096,7 @@ class PXDatabase extends NLSQLDatabaseAdapter implements IPXDatabase {
 
 			$this->transactionCommit();
 			$object['sys_order'] = isset($objectInDB['sys_order']) ? $objectInDB['sys_order'] : null;
-			
+
 			foreach ($this->triggers as $t)
 				$t->getTrigger()->OnModifyObject($this, $object['id'], $format, $object, $dbFields, $dbValues, $objectInDB);
 
@@ -1122,21 +1121,21 @@ class PXDatabase extends NLSQLDatabaseAdapter implements IPXDatabase {
 	function ModifyObjectSysVars($format, $object) {
 		$audit = PXAuditLogger::getLogger($this->app, $this);
 		$objectInDB = $this->getObjectById($format, $object['id']);
-		
+
 		if (!count($objectInDB)) {
 			$this->FatalError('Попытка модифицировать отсутствующий объект');
 		}
-		
+
 		if(isset($objectInDB['parent']) && !isset($object['parent'])){
 			$object['parent'] = $objectInDB['parent'];
 		}
-		
+
 		if (!$this->user->can(array('write', 'modify'), $format, $object)) {
 			$errString = 'Отказано в доступе при попытке модифицировать объект типа <em>'.$format->id.'</em>';
 			$audit->error($errString, $format->parent .'/'. (isset($object['parent']) ? $object['parent'] : ''));
 			$this->FatalError($errString);
 		}
-		
+
 		$dbFields = array();
 		$dbValues = array();
 		if (isset($object[OBJ_FIELD_CHILDREN])) {
@@ -1272,10 +1271,10 @@ class PXDatabase extends NLSQLDatabaseAdapter implements IPXDatabase {
 
 		$swap = !!preg_match('#sys_order\s+DESC#i'.REGEX_MOD, $format->order);
 		$down = ($swap xor ($direction == 'down'));
-		
+
 		$where = array();
 		$where[] = sprintf('%s.sys_order %s %s', $format->id, $down ? '>' : '<', $objectInDB['sys_order']);
-		
+
 		if (!empty($format->parent)) {
 			$parent = $objectInDB['parent'];
 			$is_null = is_null($parent);
@@ -1287,7 +1286,7 @@ class PXDatabase extends NLSQLDatabaseAdapter implements IPXDatabase {
 			$is_null = is_null($pid);
 			$where[] = sprintf('%s.pid %s %s', $format->id, $is_null ? 'IS' : '=', $is_null ? 'NULL' : $pid);
 		}
-		
+
 		$where = join(' AND ', $where);
 		$nearCount = $this->getObjectsByWhere($format, NULL, $where, DB_SELECT_COUNT);
 		if(!$nearCount){
@@ -1297,12 +1296,12 @@ class PXDatabase extends NLSQLDatabaseAdapter implements IPXDatabase {
 		$nearObject = $offset >= 0 ? $this->getObjectsByWhereLimited($format, NULL, $where, 1, $offset, DB_SELECT_TABLE, 'sys_order'.($down ? '' : ' DESC')) : array();
 		$permitMove = true;
 		$object_id= $objectInDB['id'];
-		
+
 		foreach ($this->triggers as $t){
 			$permitMove = $t->getTrigger()->OnBeforeMoveObject($this, $objectId, $format, $objectInDB);
 			if(!$permitMove) break;
 		}
-		
+
 		if($permitMove && sizeof($nearObject)) {
 			$nearObject = current($nearObject);
 			$this->transactionBegin();
@@ -1401,11 +1400,11 @@ class PXDatabase extends NLSQLDatabaseAdapter implements IPXDatabase {
 					$exception  = isset($object['id']) ? array('id'=>$object['id']) : array();
 					$condCols   = array('pathname'=>$url, 'parent'=>$object['parent']);
 					$condTables = array();
-					
+
 					foreach ($this->types[$format->parent]->childs as $child) {
 						if (isset($this->types[$child]->fields['pathname'])) {
 							$condTable = array('tableName' => $child, 'exWhere' => '');
-							
+
 							foreach ($this->triggers as $t){
 								$t->getTrigger()->OnBeforeNormalizePathBuildQuery($format, $this->types[$child], $condTable, $object);
 							}
@@ -1413,7 +1412,7 @@ class PXDatabase extends NLSQLDatabaseAdapter implements IPXDatabase {
 							$condTables[] = $condTable;
 						}
 					}
-					
+
 					$reiteration = (int)$this->IsUniqueColsCombination($condTables, $condCols, $exception);
 				}
 
@@ -1539,11 +1538,11 @@ SQL;
 					//search first empty node in our linked list
 				}
 			}
-			
+
 			foreach($reference->fields as $fk => $fv){
 				$element[$fk] = $fv->storageType->normalize($fv, $element, $param);
 			}
-			
+
 			$table = array(
 				'title'  => $title,
 				'fields' => $element,
@@ -1802,7 +1801,7 @@ SQL;
 
 			foreach ($format->fields as $fk=>$fv) {
 				if (!isset($inMeta[$fk])) { // cache results, cuz lots of rows in table
-					$inMeta[$fk] = $fv->storageType->inMeta($fv, null, $p);
+					$inMeta[$fk] = $fv->storageType->storedInMeta();
 				}
 				if ($inMeta[$fk] && ($withoutMeta || $isMetaPresent)) {
 					$table[$k][$fk] = null;
@@ -1872,14 +1871,14 @@ SQL;
 
 				return $newTable;
 				break;
-				
+
 			case $mode & DB_SELECT_TREE:
 			case $mode & DB_SELECT_FULL_TREE:
 				PXProfiler::begin('PREPARE: '.$format->id.' ['.sizeof($resTable).'x'.sizeof($format->fields).']');
 
 				$this->_NormalizeTable($resTable, $format, !!($mode & DB_SELECT_WITHOUT_EXTERNALS));
 				$newTable = array();
-			
+
 				foreach ($resTable as $k=>$v) {
 					if ($this->user->can('read', $format, $v)) {
 						$newTable[$v['id']] = $v;
@@ -1939,7 +1938,7 @@ SQL;
 		if (!(isset($format->fields['parent']) && $object['parent'])) {
 			return;
 		}
-		
+
 		$audit = PXAuditLogger::getLogger($this->app, $this);
 
 		$permitCheck = null;
@@ -1968,11 +1967,11 @@ SQL;
 			$this->FatalError($errString);
 		}
 	}
-	
+
 	function importBoolean($string) {
 		return $this->dbDriver->importBoolean($string);
 	}
-	
+
 	protected function clearObjectTypeCache($format) {
 		$this->cache->deleteGroup($format);
 		foreach($this->app->references as $ref){

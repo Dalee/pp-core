@@ -166,17 +166,17 @@ class PXStorageType {
 	 * списка полей объекта извлекаемых из базы
 	 * Возвращает флаг, извлекать ли поле из базы
 	 *
-	 * @return Boolean
+	 * @return bool
 	 */
 	function storedInDb() {
-		return true;
+		return !$this->notInDb($this->field, null, null);
 	}
 
 	/**
 	 * @deprecated Use !storedInDb()
 	 */
 	function notInDb($field, $object, $param=NULL) {
-		return !$this->storedInDb();
+		return false;
 	}
 
 	/**
@@ -186,14 +186,14 @@ class PXStorageType {
 	 * @return Boolean
 	 */
 	function storedInMeta() {
-		return !$this->storedInDb();
+		return $this->inMeta($this->field, null, null);
 	}
 
 	/**
 	 * @deprecated Use storedInMeta()
 	 */
 	function inMeta($field, $object, $param=NULL) {
-		return $this->notInDb($field, $object, $param);
+		return !$this->storedInDb();
 	}
 
 	/**
