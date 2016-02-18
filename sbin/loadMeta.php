@@ -7,7 +7,7 @@
 		require_once($localcommon);
 	}
 
-	ini_set('display_errors', '1'); 
+	ini_set('display_errors', '1');
 	$engine = new PXEngineSbin();
 
 	// process every object in database and update sys_meta tag
@@ -17,10 +17,9 @@
 
 	foreach($app->types as $type) {
 		// is we need to run on this type?
-		$dummyObject = array();
 		$needProcess = false;
-		foreach ($type->fields as $k => $v) {
-			if ($v->storageType->notInDb($v, $dummyObject)) {
+		foreach ($type->fields as $v) {
+			if (!$v->storageType->storedInDb()) {
 				$needProcess = true;
 				break;
 			}
@@ -30,7 +29,7 @@
 			Label(sprintf("No need to be processed: %s", $type->id));
 			continue;
 		}
-		
+
 		Label(sprintf("Processing: %s", $type->id));
 		$queryUpdateFmt = 'UPDATE %s SET %s WHERE id = %s';
 		$querySelectFmt = 'SELECT * FROM %s WHERE id > %d ORDER BY id ASC LIMIT %d';
@@ -50,7 +49,7 @@
 
 				$sysMetaField = array();
 				foreach ($type->fields as $k => $v) {
-					if ($v->storageType->notInDb($v, $object)) {
+					if (!$v->storageType->storedInDb()) {
 						$p = array('id' => $object['id'], 'format' => $type->id);
 						if ( ($proceedFileResult = $v->storageType->proceedFile($v, $object, $p)) ) {
 							$sysMetaField[$k] = $proceedFileResult;
