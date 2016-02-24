@@ -14,7 +14,7 @@ class PXContentVersion {
 		PXRegistry::assignToObject($this);
 
 		$this->newObject  = $newObject;
-		
+
 		$this->versionId  = (int) PXRegistry::getRequest()->getVar('version');
 		$this->type       = $type;
 
@@ -27,13 +27,13 @@ class PXContentVersion {
 
 	public static function find($type, $object, $objectInDb) {
 		$versionObject = new PXContentVersion($type, $object, $objectInDb, false);
-		
+
 		$versionObject->original = $object;
 
-		$versionObject->object = $versionObject->versionId < 1 
+		$versionObject->object = $versionObject->versionId < 1
 			? $object
 			: $versionObject->findBySysOriginal();
-		
+
 		return $versionObject;
 	}
 
@@ -60,12 +60,12 @@ class PXContentVersion {
 
 	private function updateOriginal() {
 		$this->skip();
-		
+
 		$this->db->modifyContentObject($this->type, $this->original);
-		
+
 		$this->unskip();
 	}
-	
+
 	public static function deleteOriginal($type, $id) {
 		PXRegistry::getDB()->modifyingQuery("update {$type->id} set status = false where id = '{$id}'");
 	}
@@ -96,7 +96,7 @@ class PXContentVersion {
 		}
 
 		$lastVersion = $this->getLastVersion();
-			
+
 		$o['sys_original'] = $o['id'];
 		$o['sys_modifyer'] = PXRegistry::getUser()->id;
 		$o['sys_version']  = $lastVersion['max'] + 1;
@@ -125,7 +125,7 @@ class PXContentVersion {
 	}/*}}}*/
 
 	private function getLastVersion() {
-		$sql = sprintf("select id, max(sys_version) from %s where sys_original = '%s' group by id order by id desc", 
+		$sql = sprintf("select id, max(sys_version) from %s where sys_original = '%s' group by id order by id desc",
 			$this->type->id, $this->original['id']);
 
 		$max = pos($this->db->query($sql));
@@ -139,7 +139,7 @@ class PXContentVersion {
 	function readAttribute($field) {
 		return !isset($this->object[$field]) ? null : $this->object[$field];
 	}
-	
+
 	function writeAttribute($field, $value) {
 		$this->object[$field] = $value;
 	}
@@ -157,8 +157,8 @@ class PXContentVersion {
 	}
 
 	private function filterFields($field) {
-		return $field->storageType->notInDb($field, $this->object, null) && !$field->storageType->name == 'virtual';
-	}	
+		return !$field->storageType->storedInDb() && !$field->storageType->name == 'virtual';
+	}
 }
 
 

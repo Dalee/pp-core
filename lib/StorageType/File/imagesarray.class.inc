@@ -32,7 +32,8 @@ class PXStorageTypeImagesarray extends PXStorageTypeFilesarray {
 					'path'   => isset($httpPath) ? $httpPath : NULL,
 					'width'  => isset($width)    ? $width    : NULL,
 					'height' => isset($height)   ? $height   : NULL,
-					'entry'  => $entry
+					'entry'  => $entry,
+					'size'   => is_file($diskPath) ? filesize($diskPath) : 0,
 				);
 
 				unset($httpPath);

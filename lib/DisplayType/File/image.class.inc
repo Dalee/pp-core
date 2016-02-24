@@ -10,11 +10,11 @@ class PXDisplayTypeImage extends PXDisplayType {
 		$k = $field->name;
 		$value = (isset($object[$k]) && is_array($object[$k]) && isset($object[$k]['path']) && !is_null($object[$k]['path']))
 			? $object[$k]
-			: array('width'=>null, 'height'=>null, 'path'=>null);
+			: array('width'=>null, 'height'=>null, 'path'=>null, 'size'=>null);
 
 		return $this->getAdminWidget($k, $value);
 	}
-	
+
 	function getAdminWidget($k, $value) {
 		return NLAbstractHTMLForm::BuildImage($k, $value);
 	}
@@ -24,7 +24,7 @@ class PXDisplayTypeImage extends PXDisplayType {
 		$maxHeight = $this->getMaxHeight($field);
 		return $this->buildCellHtml($object[$field->name], $maxWidth, $maxHeight);
 	}
-	
+
 	function buildCellHtml() {
 		list($value, $maxWidth, $maxHeight) = func_get_args(); // PHP54 args contract violation
 		$html  = '<div class="imagepreview image-in-cell"><div class="small" style="width: '.$maxWidth.'px; height: '.$maxHeight.'px;">';
@@ -43,7 +43,7 @@ class PXDisplayTypeImage extends PXDisplayType {
 	function getFromRequest($field, $object, $param=NULL) {
 		return $param['request']->postData->_GetImageVar($field->name);
 	}
-	
+
 	function getMaxWidth($field) {
 		$s = 50;
 		if (isset($field->displayTypeArgs[0])) {
@@ -51,7 +51,7 @@ class PXDisplayTypeImage extends PXDisplayType {
 		}
 		return $s;
 	}
-	
+
 	function getMaxHeight($field) {
 		$s = 50;
 		if (isset($field->displayTypeArgs[1])) {
@@ -61,14 +61,14 @@ class PXDisplayTypeImage extends PXDisplayType {
 		}
 		return $s;
 	}
-	
+
 	function getCellWidth($field) {
 		// + 22:
 		// + 20 for div.image-in-cell {margin: 10px;}
 		// + 2 for the border
 		return $field && isset($field->displayTypeArgs[0]) ? $field->displayTypeArgs[0] + 22 : 0;
 	}
-	
+
 	function getDisplaySizes($width, $height, $maxWidth, $maxHeight) {
 		if (($width <= $maxWidth) && ($height <= $maxHeight)) {
 			$w = $width;

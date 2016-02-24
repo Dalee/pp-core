@@ -166,11 +166,14 @@ class PXStorageType {
 	 * списка полей объекта извлекаемых из базы
 	 * Возвращает флаг, извлекать ли поле из базы
 	 *
-	 * @param PXFieldDescription $field
-	 * @param Array              $object
-	 * @param Array|NULL         $param
-	 *
-	 * @return Boolean
+	 * @return bool
+	 */
+	function storedInDb() {
+		return !$this->notInDb($this->field, null, null);
+	}
+
+	/**
+	 * @deprecated Use !storedInDb()
 	 */
 	function notInDb($field, $object, $param=NULL) {
 		return false;
@@ -180,14 +183,17 @@ class PXStorageType {
 	 * Вызывается при работе с полем sys_meta
 	 * Возвращает необходима ли выгрузка/сохранение значения в sys_meta
 	 *
-	 * @param PXFieldDescription $field
-	 * @param Array              $object
-	 * @param Array|NULL         $param
-	 *
 	 * @return Boolean
 	 */
+	function storedInMeta() {
+		return $this->inMeta($this->field, null, null);
+	}
+
+	/**
+	 * @deprecated Use storedInMeta()
+	 */
 	function inMeta($field, $object, $param=NULL) {
-		return $this->notInDb($field, $object, $param);
+		return !$this->storedInDb();
 	}
 
 	/**

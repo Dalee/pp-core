@@ -16,7 +16,8 @@ class PXDisplayTypeImagesarray extends PXDisplayTypeImage {
 					'width'  => null,
 					'height' => null,
 					'path'   => null,
-					'entry'  => ''
+					'entry'  => '',
+					'size'   => null,
 				)
 			)
 		);

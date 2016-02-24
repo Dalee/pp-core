@@ -33,13 +33,14 @@ class PXStorageTypeImage extends PXStorageTypeFile {
 		$httpPath = str_replace('%2F', '/', $httpPath);
 		$httpPath = str_replace('//', '/', $httpPath);
 		$httpPath = str_replace('+', '%20', $httpPath);
-		
+
 		list($width, $height, ) = getimagesize($diskPath);
 
 		return array(
 			'path'   => isset($httpPath) ? $httpPath : NULL,
 			'width'  => isset($width)    ? $width    : NULL,
-			'height' => isset($height)   ? $height   : NULL
+			'height' => isset($height)   ? $height   : NULL,
+			'size'   => is_file($diskPath) ? filesize($diskPath) : 0,
 		);
 	}
 

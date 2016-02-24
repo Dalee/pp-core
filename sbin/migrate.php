@@ -30,7 +30,7 @@
 	define('DATABASEINI', BASEDIR.'/site/etc/database.ini');
 	define('DATATYPESXML', BASEDIR.'/local/etc/datatypes.xml');
 
-	// before we include /Debug/functions.inc we need to 
+	// before we include /Debug/functions.inc we need to
 	// define IS_WIN constant.
 	if (!defined('IS_WIN')) {
 		define('IS_WIN', (substr(PHP_OS, 0, 3) == 'WIN'));
@@ -118,7 +118,7 @@
 			if(!$this->settedup()) {
 				$stmt = $this->pdo->prepare(
 					sprintf(
-						'create table %s ( id serial primary key, filename varchar(255) ) with oids', 
+						'create table %s ( id serial primary key, filename varchar(255) ) with oids',
 						Database::TABLE_NAME)
 				);
 				if(!$stmt->execute()) {
@@ -126,7 +126,7 @@
 				}
 				$stmt->closeCursor();
 			}
-			
+
 			$stmt_insert = $this->pdo->prepare(sprintf('INSERT INTO %s (filename) VALUES (?)', Database::TABLE_NAME));
 			$stmt_check = $this->pdo->prepare(sprintf('SELECT id FROM %s WHERE filename = ?', Database::TABLE_NAME));
 
@@ -155,7 +155,7 @@
 			$dst = tempnam(BASEDIR.'/tmp', 'sql_');
 
 			$migration_sql = sprintf(
-				"INSERT INTO %s (filename) VALUES (%s);", 
+				"INSERT INTO %s (filename) VALUES (%s);",
 				Database::TABLE_NAME,
 				$this->pdo->quote($filename)
 			);
@@ -270,7 +270,7 @@
 
 				case 'm':
 				case 'migrate':
-					$this->migrate(); 
+					$this->migrate();
 					break;
 
 				case 'e':
@@ -612,7 +612,7 @@
 					$this->fatal("Unexpected storage type: {$storageType}", 9);
 				}
 				try {
-					if (call_user_func_array(array($class, 'notInDb'), array(null, null))) continue;
+					if (!call_user_func(array($class, 'storedInDb'))) continue;
 				} catch (Exception $e) {
 					// dummy
 				}
