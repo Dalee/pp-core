@@ -161,11 +161,29 @@ class PXDatabase extends NLSQLDatabaseAdapter implements IPXDatabase {
 				$directory = $this->app->directory[$field->source];
 
 				$idsArray = getColFromTable($objects, $field->name);
+				if (empty($idsArray)) {
+					// nothing to update
+					continue;
+				}
+
 				$flattenArray = array();
 				foreach ($idsArray as $value) {
-					$flattenArray = array_merge($flattenArray, (array)$value);
+					// $idsArray is rarely not flattened, so cast to array is slower than check
+					if (is_array($value)) {
+						foreach ($value as $v) {
+							$flattenArray[$v] = null;
+						}
+					} else {
+						$flattenArray[$value] = null;
+					}
 				}
-				if(sizeof($flattenArray) && $directory->filter !== $flattenArray) {
+				$flattenArray = array_keys($flattenArray);
+
+				$needUpdate = (count($directory->filter) != count($flattenArray));
+				if (!$needUpdate) {
+					$needUpdate = count(array_diff($flattenArray, $directory->filter));
+				}
+				if ($needUpdate) {
 					$directory->filter = $flattenArray;
 					$this->LoadDirectory($directory, array(),true, $format);
 				}
@@ -373,12 +391,11 @@ class PXDatabase extends NLSQLDatabaseAdapter implements IPXDatabase {
 		$has_sys_meta = false;
 
 		foreach ($format->fields as $k=>$v) {
-			$p = array();
-			if($v->storageType->notInDb($v, null, $p)) {
-				$has_sys_meta = $has_sys_meta || $v->storageType->inMeta($v, null, $p);
+			if(!$v->storageType->storedInDb()) {
+				$has_sys_meta = $has_sys_meta || $v->storageType->storedInMeta();
 				continue;
 			}
-
+			$p = array();
 			$selector .= $v->storageType->createSelector($v, null, $p).', ';
 		}
 
@@ -736,12 +753,12 @@ class PXDatabase extends NLSQLDatabaseAdapter implements IPXDatabase {
 
 		if($permitAdd){
 			// формируем список полей которые не будут сохранены в базу данных
-			// ориентируемся на результат выполнения inMeta, для файловых
+			// ориентируемся на результат выполнения storedInMeta, для файловых
 			// и виртуальных полей метод должен возвращать true.
 			$cuttedFieldDiff = array_diff(array_keys($format->fields), $dbFields);
 			$sysMetaFieldList = array();
 			foreach($cuttedFieldDiff as $k) {
-				if($format->fields[$k]->storageType->inMeta($format->fields[$k], $object)) {
+				if($format->fields[$k]->storageType->storedInMeta()) {
 					$sysMetaFieldList[] = $k;
 				}
 			}
@@ -1020,12 +1037,12 @@ class PXDatabase extends NLSQLDatabaseAdapter implements IPXDatabase {
 
 		if ($permitModify) {
 			// формируем список полей которые не будут сохранены в базу данных
-			// ориентируемся на результат выполнения inMeta, для файловых
+			// ориентируемся на результат выполнения storedInMeta, для файловых
 			// и виртуальных полей метод должен возвращать true.
 			$cuttedFieldDiff = array_diff(array_keys($format->fields), $dbFields);
 			$sysMetaFieldList = array();
 			foreach($cuttedFieldDiff as $k) {
-				if($format->fields[$k]->storageType->inMeta($format->fields[$k], $object)) {
+				if($format->fields[$k]->storageType->storedInMeta()) {
 					$sysMetaFieldList[] = $k;
 				}
 			}
@@ -1065,7 +1082,7 @@ class PXDatabase extends NLSQLDatabaseAdapter implements IPXDatabase {
 
 			if (count($sysMetaFieldList) > 0) {
 				// обновляем sys_meta, если есть что туда записать,
-				// а так же, если у объекта вообще есть поля типа inMeta! Иначе нарушается логика!
+				// а так же, если у объекта вообще есть поля типа storedInMeta! Иначе нарушается логика!
 				// см. логику выборки в методе createSelector() (проверка has_sys_meta)!
 				$sqlUpdateRule = sprintf(
 					"sys_meta = %s",
@@ -1776,15 +1793,17 @@ SQL;
 	 * @access public
 	 */
 	function _NormalizeTable(&$table, $format, $withoutMeta = false) {
+		$p = array('db' => &$this, 'format' => $format->id);
+		$inMeta = [];
 		foreach ($table as $k=>$v) {
 
 			$isMetaPresent = !empty($v['sys_meta']);
 
 			foreach ($format->fields as $fk=>$fv) {
-				$p = array('db'=>&$this, 'format'=>$format->id);
-
-				$inMeta = $fv->storageType->inMeta($fv, $table[$k], $p);
-				if ($inMeta && ($withoutMeta || $isMetaPresent)) {
+				if (!isset($inMeta[$fk])) { // cache results, cuz lots of rows in table
+					$inMeta[$fk] = $fv->storageType->storedInMeta();
+				}
+				if ($inMeta[$fk] && ($withoutMeta || $isMetaPresent)) {
 					$table[$k][$fk] = null;
 					continue;
 				}
