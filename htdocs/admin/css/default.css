@@ -130,7 +130,7 @@ table.objects th a, table.objects-table th a {
 	text-decoration: none;
 	display: block;
 	zoom: 1;
-	background: transparent url() 100% 50% no-repeat;
+	background: transparent no-repeat 100% 50%;
 	padding: 0;
 }
 table.objects thead th, table.objects-table thead th{
@@ -231,7 +231,7 @@ table.objects td.not-in-dict {
 
 table.objects td a.ctrl {
 	padding: 0 2px 0 16px;
-	background: transparent url() 4px 50% no-repeat;
+	background: transparent no-repeat 4px 50%;
 	text-decoration: none;
 }
 
@@ -475,6 +475,7 @@ div.perpage a.selected {
 
 td label, td input, td select {
 	vertical-align: middle;
+	max-width: 100%;
 }
 
 
@@ -515,6 +516,7 @@ table.mainform {
 	border: 1px solid #C9CED6;
 	border-collapse: collapse;
 	margin: 0 0 1em;
+	table-layout: fixed;
 }
 
 table.mainform th {
@@ -613,7 +615,7 @@ div.colorselect div {
 }
 
 div.password input {
-	background: #FFFFFF url() 0 0 no-repeat;
+	background: #FFFFFF no-repeat 0 0;
 }
 
 div.password input.good {
