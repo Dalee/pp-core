@@ -12,10 +12,14 @@ function createSomePathByParentId($tree, $id, $fieldname='pathname', $delim='/',
 		}
 	}
 
-	$createdPath = '';
-	$path = '';
 	if (isset($tree->leafs[$id])) {
-		$path = $inContent ? $tree->leafs[$id]->content[$fieldname] : $tree->leafs[$id]->{$fieldname};
+		if ($inContent) {
+			$path = isset($tree->leafs[$id]->content[$fieldname]) ? $tree->leafs[$id]->content[$fieldname] : '';
+		} else {
+			$path = isset($tree->leafs[$id]->{$fieldname}) ? $tree->leafs[$id]->{$fieldname} : '';
+		}
+	} else {
+		$path = '';
 	}
 
 	if (isset($tree->leafs[$id]->parent) && $tree->leafs[$id]->parent) {
