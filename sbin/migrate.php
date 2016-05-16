@@ -612,7 +612,9 @@
 					$this->fatal("Unexpected storage type: {$storageType}", 9);
 				}
 				try {
-					if (!call_user_func(array($class, 'storedInDb'))) continue;
+					$null = null;
+					$instance = new $class($null, null);
+					if (!$instance->storedInDb()) continue;
 				} catch (Exception $e) {
 					// dummy
 				}

@@ -45,8 +45,8 @@ class NLAbstractHTMLForm {
 	}
 
 	static
-	function BuildSubmit($value, $name=NULL) {
-		$submit = new PXControlSubmit($value, $name);
+	function BuildSubmit($value, $name = null, $accessKey = null) {
+		$submit = new PXControlSubmit($value, $name, $accessKey);
 		$submit->setDisabled(NLAbstractHTMLForm::_DisabledStatus());
 		return $submit->html();
 	}

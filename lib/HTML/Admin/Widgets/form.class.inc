@@ -141,7 +141,7 @@ class PXAdminForm extends PXAdminComplexWidget {
 	}
 
 	public function leftControls() {
-		$control = NLAbstractHTMLForm::BuildSubmit('Сохранить') . NLAbstractHTMLForm::BuildSubmit('Сохранить и закрыть', "close");
+		$control = NLAbstractHTMLForm::BuildSubmit('Сохранить') . NLAbstractHTMLForm::BuildSubmit('Сохранить и закрыть', 'close', 'c');
 
 		if (strlen($_ = join($this->blocks[self::LEFTCONTROLS]))) {
 			$control  = $_;

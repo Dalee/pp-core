@@ -100,7 +100,7 @@ class PXModuleAdvert extends PXModule {
 		$app     = $this->app;
 		$db      = $this->db;
 		$request = $this->request;
-		
+
 		$months = array(
 			0  => '',
 			1  => 'Январь',
@@ -181,47 +181,15 @@ class PXModuleAdvert extends PXModule {
 					else
 						$xTitleOverall = 'Средний CTR: '. number_format(100*$sumClicks/$sumShows,2);
 
-					define("TTF_DIR", PPPATH . "share/fonts/");
-					require_once PPPATH . 'vendor/Jpgraph/jpgraph.php';
-					require_once PPPATH . 'vendor/Jpgraph/jpgraph_bar.php';
+					// RIP Jpgraph
 
-					$graph = new Graph(950,400,"auto");
-					$graph->SetScale("textlin");
-					$graph->img->SetMargin(50,20,20,60);
-					$graph->setMarginColor("#C9CED6");
-
-					$graph->setFrame(0);
-					$bplot = new BarPlot($datay);
-					$bplot->SetColor("#656565");
-					$bplot->SetFillColor('#009900@0.30');
-					$bplot->SetWidth(0.85);
-					$bplot->value->Show();
-					if ($mode == 'ctr')
-						$bplot->value->SetFormat('%.2f');
-					else
-						$bplot->value->SetFormat('%d');
-					$bplot->value->setColor("black");
-					$bplot->value->SetFont(FF_ARIAL, FS_NORMAL, 7);
-					$graph->Add($bplot);
-
-					$graph->xaxis->SetColor("#656565", "black");
-					$graph->xaxis->scale->ticks->SupressTickMarks(true);
-					$graph->xaxis->title->SetFont(FF_VERDANA, FS_NORMAL, 8);
-					$graph->xaxis->SetTitle($xTitleOverall);
-					$graph->xaxis->title->SetMargin(10,0,0,0);
-
-					$graph->yaxis->SetColor("#656565", "black");
-					$graph->yaxis->scale->ticks->SupressMinorTickMarks(true);
-					$graph->yaxis->scale->SetGrace(5);
-					$graph->yaxis->SetTickSide(SIDE_LEFT);
-
-					$graph->title->SetFont(FF_VERDANA, FS_NORMAL, 10);
-					$graph->title->Set($bannerTitle);
-
-					//FIXME: just stop using JpGraph for php 4 ...
-					//too much strict notices, so I've disabled all by The Dog (c)
-					@$graph->Stroke();
-
+					// @TODO: draw graph on client if you need
+					print json_encode(array(
+						'datay' => $datay,
+						'mode' => $mode,
+						'xTitleOverall' => $xTitleOverall,
+						'bannerTitle' => $bannerTitle,
+					));
 
 					exit; /*<====EXIT !!!*/
 				}//if
