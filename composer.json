@@ -1,6 +1,6 @@
 {
   "name": "pp/core",
-  "type": "library",
+  "type": "pp-core",
   "description": "ProximaPortal",
   "license": "MIT",
   "minimum-stability": "dev",
