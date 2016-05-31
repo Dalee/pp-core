@@ -1,4 +1,5 @@
 <?php
+
 class PXUserCron extends PXUser {
 	function aclType() {
 		return 'GOD';
@@ -8,4 +9,3 @@ class PXUserCron extends PXUser {
 		return true;
 	}
 }
-?>

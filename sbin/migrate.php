@@ -5,8 +5,6 @@
 	 *
 	 * ./libpp/sbin/migrate.php create hello_world
 	 * ./libpp/sbin/migrate.php c hello_world
-	 * ./libpp/sbin/migrate.php c -- "ALTER TABLE hello ADD COLUMN world VARCHAR;"
-	 * ./libpp/sbin/migrate.php create struct --dry-run
 	 *
 	 * ./libpp/sbin/migrate.php migrate
 	 * ./libpp/sbin/migrate.php m
@@ -31,10 +29,6 @@
 	define('DATATYPESXML', BASEDIR.'/local/etc/datatypes.xml');
 
 	// before we include /Debug/functions.inc we need to
-	// define IS_WIN constant.
-	if (!defined('IS_WIN')) {
-		define('IS_WIN', (substr(PHP_OS, 0, 3) == 'WIN'));
-	}
 	require_once (PPLIBPATH.'/Debug/functions.inc');
 	require_once (PPLIBPATH.'/Common/functions.compatibility.inc');
 
@@ -370,20 +364,6 @@
 			if ($this->argc < 3) {
 				$this->fatal("Migration name absent", 5);
 			}
-			// special behavior of -- name
-			if ($this->argv[2] == '--') {
-				$first_query_string = trim($this->argv[3], " \t\n\r;");
-				if (empty($first_query_string)) {
-					$this->fatal("Special '--' filename requires query argument", 3);
-				}
-				list($query) = explode(';', $first_query_string);
-				$this->argv[2] = preg_replace('/[^a-z0-9\-]+/', '_', strtolower($query));
-
-			} else if ($this->argc === 3) {
-				$this->argv[3] = $this->_sqlCreateTableByMigration($this->argv[2]);
-				$this->argv[2] = 'create_table_'.preg_replace('/[^a-z0-9\-]+/', '_', $this->argv[2]);
-				$this->argc = 4;
-			}
 
 			$name = strtolower($this->argv[2]);
 			if(!preg_match('/^[a-z0-9_-]+$/', $name)) {
@@ -547,20 +527,9 @@
 		}
 
 		protected function _sqlCreateTableByMigration($name) {
-			require_once (BASEDIR . '/libpp/lib/XML/classes.inc');
-			require_once (BASEDIR . '/libpp/lib/StorageType/classes.inc');
-			foreach (glob(BASEDIR . '/local/lib/StorageType/*.class.inc') as $stf) {
-				require_once ($stf);
-			}
-			foreach (glob(BASEDIR . '/libpp/plugins/*/storageTypes/*.class.inc') as $stf) {
-				require_once ($stf);
-			}
-			foreach (glob(BASEDIR . '/local/plugins/*/storageTypes/*.class.inc') as $stf) {
-				require_once ($stf);
-			}
-
-
-			$sys_fields = array(
+			$fields = array(
+				'id' => 'SERIAL PRIMARY KEY',
+				'title' => 'VARCHAR',
 				'sys_order' => 'INTEGER',
 				'sys_owner' => 'INTEGER DEFAULT NULL REFERENCES suser ON DELETE SET NULL ON UPDATE CASCADE',
 				'sys_created' => 'TIMESTAMP DEFAULT now()',
@@ -568,34 +537,16 @@
 				'sys_meta' => 'VARCHAR',
 			);
 
-			// try to collect fields data by datatype or just use defaults
-			$xml = PXml::load(DATATYPESXML);
-			@list ($datatype) = $xml->xpath('/model/datatypes/datatype[@name="'.$name.'"]');
-			if (empty($datatype)) {
-				$this->fatal("Unknown datatype name ".$name);
-			}
-			if ($datatype && $datatype->name == $name) {
-				// $this->fatal('Datatype '.addslashes($name).' not exists');
-				$fields = $this->_makeFieldsByDatatype($datatype);
-			} else {
-				$fields = array(
-					'id' => 'SERIAL PRIMARY KEY',
-					'title' => 'VARCHAR',
-				);
-			}
-
-			$fields += $sys_fields;
-
-			// need to call trigger here: onMigrateCreateTable or something instead of hack
-			if (isset($fields['sys_regions'])) {
-				$fields['sys_reflex_id'] = 'INTEGER';
-			}
-
 			foreach ($fields as $key => $field) {
 				$fields[$key] = sprintf('  %-16s %s', $key, $field);
 			}
 
-			$statement = sprintf('CREATE TABLE %s (%s%s%2$s) WITH OIDS;', $datatype->name, PHP_EOL, join(",".PHP_EOL, $fields));
+			$statement = sprintf(
+				'CREATE TABLE %s (%s%s%2$s) WITH OIDS;',
+				$name,
+				PHP_EOL,
+				join(",".PHP_EOL, $fields)
+			);
 
 			return $statement;
 		}

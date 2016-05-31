@@ -201,6 +201,11 @@ function WriteStringToFile($fileName, $string) {
 	}
 }
 
+/**
+ * @deprecated use Monolog instead
+ * @param $fileName
+ * @param $string
+ */
 function AppendStringToFile($fileName, $string) {
 	$fd = fopen($fileName, "a");
 	if ($fd) {
@@ -232,10 +237,6 @@ function MakeDirIfNotExists($dirName, $perm = NULL) {
 	$fullDirName = '';
 
 	$dirPath = explode(DIRECTORY_SEPARATOR, $dirName);
-
-	if(IS_WIN) {
-		$fullDirName = array_shift($dirPath);
-	}
 
 	foreach($dirPath as $subDirName) {
 		$fullDirName .= DIRECTORY_SEPARATOR.$subDirName;

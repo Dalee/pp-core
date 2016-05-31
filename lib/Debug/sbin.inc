@@ -17,10 +17,6 @@ function Label($str, $alwaysPrint=false) {
 		$timer = str_repeat(' ', (7 - mb_strlen($timer))).$timer;
 	}
 
-	if(IS_WIN) {
-		$str = myconv(DEFAULT_CHARSET, CHARSET_DOS, $str);
-	}
-
 	echo "\r".$timer."\t".$str."\n";
 
 	return $timer;

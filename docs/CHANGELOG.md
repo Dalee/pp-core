@@ -1,15 +1,29 @@
 # Change log
 
-## [v1.6] - 2016-05-17
-### Removed
-- Remove deprecated output handler from type description [link](http://git.dalee.ru/pp/core/merge_requests/2)
-- Remove useless and hacky handlers [link](http://git.dalee.ru/pp/core/merge_requests/1)
-- Remove DeprecatedException [link](http://git.dalee.ru/pp/core/merge_requests/3)
-- Remove deprecated PXAbstractModule in favor of PXModule [link](http://git.dalee.ru/pp/core/merge_requests/3)
-- Remove PXModuleDescription->getInstance() in favor of PXModuleDescription->getModule [link](http://git.dalee.ru/pp/core/merge_requests/3)
-- Remove FPDF, JSON, Recaptcha from vendors [link](http://git.dalee.ru/pp/core/merge_requests/3)
-- Remove old NLHTTPClient [link](http://git.dalee.ru/pp/core/merge_requests/3)
-- Remove deprecated functions `_PrepareWMLText`, `SortRussianByTitle`, `wapUtf8Cyr`, `utfDecode`, `utfEncode`, `array_combine`, `__json_encode_koi_k2u`, `__json_encode_koi_u2k`, `json_encode_koi`, `json_decode_koi` [link](http://git.dalee.ru/pp/core/merge_requests/3)
+## [Unreleased]
+### Изменения
+- Monolog, `PXRegistry::getLogger($logger_name)`,
+где `$logger_name` может быть одной из констант: `LOGGER_APP`, `LOGGER_CRON`.
+По-умолчанию `LOGGER_APP` рендерится в `site/var/application.log`, `LOGGER_CRON` - `site/var/cron.log`
+- Убрана поддержка PHP версии ниже 5.4
+- Убрана поддержка Windows платформ
+- Убраны старые варианты авторизации Rambler, Domain, Plain
+- PXAuthNull, PXAuthSecure, PXAuthSession перенесены в PSR-4 (src/Lib/Auth)
+- auth.ini в качестве названия группы теперь требует полный PSR-4 путь к классу
+- migrate.php больше не пытается обращаться к datatypes.xml
+- Капча при доступе в административный интерфейс
 
-## [v1.5] - Dark ages
-### Chaotic add/copy/paste/commit
+## [v1.6] - 2016-05-17
+### Изменения
+- Убрана поддержка `handler` из `datatype.xml` [link](http://git.dalee.ru/pp/core/merge_requests/2)
+- Убраны беполезные `handler` [link](http://git.dalee.ru/pp/core/merge_requests/1)
+- Убарн класс DeprecatedException [link](http://git.dalee.ru/pp/core/merge_requests/3)
+- Замена `PXAbstractModule` на `PXModule` [link](http://git.dalee.ru/pp/core/merge_requests/3)
+- Замена `PXModuleDescription->getInstance()` на `PXModuleDescription->getModule` [link](http://git.dalee.ru/pp/core/merge_requests/3)
+- Из `vendor` удалены FPDF, JSON, Recaptcha [link](http://git.dalee.ru/pp/core/merge_requests/3)
+- Удален NLHTTPClient [link](http://git.dalee.ru/pp/core/merge_requests/3)
+- Удалены устаревшие функции `_PrepareWMLText`, `SortRussianByTitle`, `wapUtf8Cyr`, `utfDecode`, `utfEncode`, `array_combine`, `__json_encode_koi_k2u`, `__json_encode_koi_u2k`, `json_encode_koi`, `json_decode_koi` [link](http://git.dalee.ru/pp/core/merge_requests/3)
+
+## [v1.5] - 2008 - Темные века
+### Изменения
+- Умеренно-хаотичное развитие

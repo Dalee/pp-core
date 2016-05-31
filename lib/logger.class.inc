@@ -3,6 +3,7 @@
  * Класс - одиночка "Singleton" для журналирования событий в ProximaPortal.
  */
 
+// TODO: refactor to use monolog
 class PXAuditLogger {
 	/**
 	 * Ссылка на PXApplication
@@ -21,7 +22,7 @@ class PXAuditLogger {
 	 * @var NLLogger
 	 */
 	var $logger;
-	
+
 	var $logLevel;
 
 	/**
@@ -48,7 +49,7 @@ class PXAuditLogger {
 			'ip' => '%4',
 			'description' => '%5',
 			'diff' => '%6'
-		);		
+		);
 		$loggerSqlFormat = $db->loggerSqlFormat('log_audit', $loggerSqlFormatFields);
 		if (!$loggerSqlFormat || $this->app->getProperty('DISABLE_LOGGER', 0) == '1') {
 			$this->logger->addAppender('sql', 'BlackHoleAppender');
@@ -69,7 +70,7 @@ class PXAuditLogger {
 	 * @return PXAuditLogger - single instance of PXauditLogger.
 	 */
 
-	static function &getLogger() {
+	static function getLogger() {
 		static $instance;
 
 		if ($instance === null) {
@@ -136,7 +137,7 @@ class PXAuditLogger {
 
 		return array($type, $source, $user, $ip, $description, $diff);
 	}
-	
+
 	/**
 	 * Static метод, включение логгера
 	 */
@@ -146,7 +147,7 @@ class PXAuditLogger {
 	 		$self->logger->setLevel($self->logLevel);
 	 	}
 	 }
-	
+
 	/**
 	 * Static метод, отключение логгера
 	 */
@@ -154,7 +155,7 @@ class PXAuditLogger {
 	 	$self = PXAuditLogger::getLogger();
 	 	$self->logger->setLevel($self->logger->NONE);
 	 }
-	 
+
 	 /**
 	 * Static метод, возвращает true если лог не ведётся
 	 */

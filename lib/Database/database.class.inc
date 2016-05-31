@@ -55,7 +55,7 @@ class PXDatabase extends NLSQLDatabaseAdapter implements IPXDatabase {
 	 *
 	 * @param PXApplication $app {@link $app} reference to PXApplication
 	 */
-	function PXDatabase($app, $dbDescriptionName='database') {
+	function __construct($app, $dbDescriptionName='database') {
 		parent::__construct($app->dbDescription[$dbDescriptionName]);
 
 		$this->setUser(new PXUserNull());

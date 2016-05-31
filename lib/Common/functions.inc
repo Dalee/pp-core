@@ -9,10 +9,6 @@
  * @subpackage  Common
  */
 
-if (!defined('IS_WIN')) {
-	define('IS_WIN', (bool)(substr(PHP_OS, 0, 3) == 'WIN'));
-}
-
 require_once PPLIBPATH . 'Common/functions.compatibility.inc';
 require_once PPLIBPATH . 'Common/functions.pp.inc';
 require_once PPLIBPATH . 'Common/functions.path.inc';

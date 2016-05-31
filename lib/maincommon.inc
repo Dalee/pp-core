@@ -2,6 +2,7 @@
 
 require_once dirname(__FILE__) . '/common.defines.inc';
 
+require_once BASEPATH . 'vendor/autoload.php';
 require_once PPLIBPATH . 'common.version.inc';
 
 require_once PPLIBPATH . 'registry.class.inc';
@@ -17,6 +18,7 @@ require_once PPLIBPATH . 'Request/classes.inc';
 require_once PPLIBPATH . 'Mail/message.class.inc';
 require_once PPLIBPATH . 'Mail/EventCalendar/classes.inc';
 require_once PPLIBPATH . 'Logger/nllogger.class.inc';
+require_once PPLIBPATH . 'monolog.php';
 
 require_once PPLIBPATH . 'Config/application.class.inc';
 require_once PPLIBPATH . 'Database/database.class.inc';

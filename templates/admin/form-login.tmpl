@@ -20,9 +20,9 @@
 									</COLGROUP>
 
 									<TR>
-										<TD rowspan="3" valign="top">
-											<IMG src="i/auth.gif" width="30" height="32" alt="Пожалуйста введите свой логин и пароль" hspace="10"><!--
-										--></TD>
+										<TD rowspan="5" valign="top">
+											<IMG src="i/auth.gif" width="30" height="32" alt="Пожалуйста введите свой логин и пароль" hspace="10">
+										</TD>
 
 										<TD colspan="2">
 											{LOGIN.ERROR}
@@ -32,10 +32,11 @@
 
 									<FORM action="{LOGIN.FORMACTION}" method="{LOGIN.FORMMETHOD}">
 										<INPUT type="hidden" name="{LOGIN.REFERERNAME}" value="{LOGIN.REFERERVALUE}">
-										<INPUT type="hidden" name="{LOGIN.AREANAME}"    value="{LOGIN.AREAVALUE}">
+										<INPUT type="hidden" name="{LOGIN.AREANAME}" value="{LOGIN.AREAVALUE}">
+										<INPUT type="hidden" name="{CAPTCHA.KEYNAME}" value="{CAPTCHA.KEY}"/>
 
 										<TR>
-											<TD>логин</TD>
+											<TD>Логин</TD>
 
 											<TD width="100%">
 												<INPUT type="text" name="{LOGIN.LOGINNAME}" value="{LOGIN.LOGINVALUE}" style="width:100%;">
@@ -43,10 +44,25 @@
 										</TR>
 
 										<TR>
-											<TD>пароль</TD>
+											<TD>Пароль</TD>
 
 											<TD>
 												<INPUT type="password" name="{LOGIN.PASSWDNAME}" style="width:100%;">
+											</TD>
+										</TR>
+										<TR>
+											<TD>Код безопасности</TD>
+											<TD>
+												<IMG width="100" height="40" src="/captcha/{CAPTCHA.KEY}.jpeg"/>
+											</TD>
+										</TR>
+										<TR>
+											<TD>
+												Вы точно не робот?
+											</TD>
+											<TD>
+												<INPUT type="text" name="{CAPTCHA.VALNAME}" autocomplete="off" style="width: 100%;"/>
+												{CAPTCHA.NOTE}
 											</TD>
 										</TR>
 

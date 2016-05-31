@@ -1,48 +1,80 @@
 <?php
+
+require_once PPLIBPATH . '/Security/blockingnumbers.class.inc';
+
 class PXModuleAuth extends PXModule {
+
 	function adminIndex() {
-		$user    = $this->user;
-		$layout  = $this->layout;
-		$request = $this->request;
-		
-		$layout->setLoginForm(
+
+		$captcha = new NLBlockingNumbers();
+
+		$captchaKey = $captcha->CreateNew()
+			? $captcha->getKey()
+			: 0;
+
+		$captchaNote = $this->app->isDevelopmentMode()
+			? '<br/><strong>(капчу можно не вводить)</strong>'
+			: '';
+
+		$this->layout->setLoginForm(
 			'action.phtml',
 			'POST',
-
-			array(
-				'login'   => 'login',
-				'passwd'  => 'passwd',
+			[
+				'login' => 'login',
+				'passwd' => 'passwd',
 				'referer' => 'referer',
-				'area'    => 'area'
-			),
-
-			array(
-				'login'   => $user->login,
-				'passwd'  => NULL,
-				'referer' => $request->getReferer(),
-				'area'    => 'auth'
-			)
+				'area' => 'area',
+				'captchaKey' => 'captchaKey',
+				'captchaVal' => 'captchaVal',
+			],
+			[
+				'login' => $this->user->login,
+				'passwd' => NULL,
+				'referer' => $this->request->getReferer(),
+				'area' => 'auth',
+				'captchaKey' => $captchaKey,
+				'captchaNote' => $captchaNote,
+			]
 		);
 
-		if ($user->IsAuthed()) {
-			$layout->assign('LOGIN.ERROR', '<strong class="error">Нет доступа.</strong>');
-			$user->unAuth();
+		if ($this->user->IsAuthed()) {
+			$this->user->unAuth();
+			$this->layout->assign(
+				'LOGIN.ERROR',
+				'<strong class="error">Нет доступа</strong><br/><br/>'
+			);
 
-		} else if ($request->GetAction() == 'error') {
-			$layout->assign('LOGIN.ERROR', '<strong class="error">Введенная комбинация логина/пароля неверна.</strong> ');
+
+		} else if ($this->request->GetAction() == 'error') {
+			$this->layout->assign(
+				'LOGIN.ERROR',
+				'<strong class="error">Ошибка авторизации</strong><br/><br/>'
+			);
 		}
 	}
 
 	function adminAction() {
-		$request = $this->request;
 
-		if ($this->_auth() == 0) {
-			$nextLocation = $request->GetReferer();
+		// TODO: refactor, accept referrer for current domain only
+		// TODO: remove this shitty magic with nextLocation guessing
+
+		$captcha = new NLBlockingNumbers();
+		$captchaKey = $this->request->getPostVar('captchaKey');
+		$captchaVal = $this->request->getPostVar('captchaVal');
+
+		$captchaSolved = $this->app->isDevelopmentMode();
+		if ($captcha->CheckValueByKey($captchaKey, $captchaVal, true)) {
+			$captchaSolved = true;
+		}
+
+		if (($captchaSolved === true) && ($this->_auth() == 0)) {
+			$nextLocation = $this->request->getReferer();
 
 		} else {
-			$nextLocation = $request->GetReferer();
-			if(strpos($nextLocation, '?') !== FALSE) {
-				if(strpos($nextLocation, '?action=') !== FALSE || strpos($nextLocation, '&action=') !== FALSE) {
+			$nextLocation = $this->request->getReferer();
+
+			if (strpos($nextLocation, '?') !== FALSE) {
+				if (strpos($nextLocation, '?action=') !== FALSE || strpos($nextLocation, '&action=') !== FALSE) {
 					$nextLocation = preg_replace("/(?<=\&|\?)action=[^&]*/", "action=error", $nextLocation);
 				} else {
 					$nextLocation .= '&action=error';
@@ -57,44 +89,45 @@ class PXModuleAuth extends PXModule {
 	}
 
 	function userAction() {
-		$request = $this->request;
-
 		if ($this->_auth() == 0) {
-			$nextLocation = ($request->GetVar('onsuccess')) ? $request->GetVar('onsuccess') : $request->GetReferer();
+			$nextLocation = ($this->request->GetVar('onsuccess'))
+				? $this->request->GetVar('onsuccess')
+				: $this->request->GetReferer();
+
 			$nextLocation = removeParamFromUrl($nextLocation, 'login');
+
 		} else {
-			$nextLocation = ($request->GetVar('onerror')) ? $request->GetVar('onerror') : $request->GetReferer();
+			$nextLocation = ($this->request->GetVar('onerror'))
+				? $this->request->GetVar('onerror')
+				: $this->request->GetReferer();
+
 			$nextLocation = appendParamToUrl($nextLocation, 'login', 'bad');
 		}
 		return $nextLocation;
 	}
 
-	function _auth() {
-		$app     = $this->app;
-		$db      = $this->db;
-		$user    = $this->user;
-		$request = $this->request;
-		$audit   = PXAuditLogger::getLogger($app, $db);
 
-		switch ($request->getVar('action')) {
+	function _auth() {
+		$audit = PXAuditLogger::getLogger();
+
+		switch ($this->request->getVar('action')) {
 			case 'exit':
-				$audit->info('Выход из системы', 'suser'.'/'. $user->id);
-				$user->UnAuth();
+				$audit->info('Выход из системы', 'suser' . '/' . $this->user->id);
+				$this->user->UnAuth();
 				return 0;
 				break;
 
 			default:
-				if ($user->IsAuthed()) {
-					$audit->info('Вход в систему', 'suser'.'/'. $user->id);
-					$user->Auth();
+				if ($this->user->IsAuthed()) {
+					$this->user->Auth();
+					$audit->info('Вход в систему', 'suser' . '/' . $this->user->id);
 					return 0;
 
 				} else {
-					$audit->error('Неудачный вход в систему', 'suser' .'/', 'ERROR');
+					$audit->error('Неудачный вход в систему', 'suser' . '/', 'ERROR');
 					return 1;
 				}
 				break;
 		}
 	}
 }
-?>

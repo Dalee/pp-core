@@ -1,4 +1,7 @@
 <?php
+
+use Monolog\Registry;
+
 final class PXRegistry {
 	const unknownVarMessage = "Registry - not heap. Store your %s somewhere else!";
 
@@ -37,7 +40,7 @@ final class PXRegistry {
 				case 'app':
 					throw new Exception("{$varName} wasn't set yet.");
 					break;
-				
+
 				case 'db':
 					$registry->$varName = new PXDataBase(self::getApp());
 					break;
@@ -123,6 +126,15 @@ final class PXRegistry {
 		return self::get('struct');
 	}
 
+	/**
+	 * @param string $name
+	 * @return Monolog\Logger
+	 * @throws Exception
+	 */
+	public static function getLogger($name = LOGGER_APP) {
+		return Registry::getInstance($name);
+	}
+
 	public static function getTypes($typeName=null) {
 		static $types;
 
@@ -165,8 +177,7 @@ final class PXRegistry {
 		}
 	}
 
-	private static
-	function _set($varName, $variable) {
+	private static function _set($varName, $variable) {
 		$registry = self::instance();
 
 		if(!self::canSaveIt($varName)) {
@@ -198,9 +209,8 @@ final class PXRegistry {
 }
 
 final class PXRegistryUSER {
-	private
-		$__hash__;
-	
+	private $__hash__;
+
 	public
 		function get($key){
 			if(isset($this->__hash__[$key])){
@@ -219,7 +229,7 @@ final class PXRegistryUSER {
 				$this->__hash__[$key] = $value;
 			}
 		}
-		
+
 		// Overloading
 		function __get($name){
 			return $this->get($name);
@@ -229,5 +239,3 @@ final class PXRegistryUSER {
 			return isset($this->__hash__[$name]);
 		}
 }
-
-?>

@@ -70,7 +70,7 @@ class PXModuleCronRun extends PXModule {
 	}
 
 	function RunJob(&$job, &$app, $matchedTime) {
-		$tmpDir = IS_WIN ? $_ENV['TEMP'] : BASEPATH.'tmp/lock/cronrun';
+		$tmpDir = BASEPATH.'tmp/lock/cronrun';
 		MakeDirIfNotExists($tmpDir);
 
 		// ******* child code ******
@@ -183,13 +183,13 @@ class PXModuleCronRun extends PXModule {
 				continue;
 			}
 
-			if (IS_WIN || ($pid = pcntl_fork()) == 0) {
+			if (($pid = pcntl_fork()) == 0) {
 				$this->RunJob($k, $app, $matchedTime); //child code
-				if(!IS_WIN) exit(); //close child process
+				exit(); //close child process
 			}
 		}
 
-		if(!IS_WIN && $pid) { //parent code
+		if($pid) { //parent code
 			while(pcntl_waitpid(-1, $status) > 0){
 				//wanna some status ?
 			}
@@ -289,4 +289,4 @@ class PXModuleCronRun extends PXModule {
 		$layout->Assign('INNER.0.0', $table->html());
 	}
 }
-?>
+

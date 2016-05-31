@@ -1,18 +1,30 @@
 <?php
+
+use PP\Lib\Auth\AuthInterface;
+use PP\Lib\Auth\AuthException;
+
 class PXUserAuthorized extends PXUser {
+	protected $authDriverRemap = [
+		'session' => 'PP\Lib\Auth\Session',
+		'secure' => 'PP\Lib\Auth\Secure',
+	];
+
 	/**
-	 * @param Mixed $what single rule or array of rules for special behaviour,
+	 * @param $what string single rule or array of rules for special behaviour,
 	 * which provide "ANY" logic, so we can check multiple rules until first will be allowed
-	*/
+	 * @param $format array
+	 * @param $object array
+	 * @return bool
+	 */
 	function can($what, $format = NULL, $object = NULL) {
 		$can = false; //ACL system is restrictive by default
-		
-		if($object === NULL){
-			$object = array('id'=>NULL,'parent'=>NULL);
+
+		if ($object === NULL) {
+			$object = array('id' => NULL, 'parent' => NULL);
 		}
 
-		foreach((array)$what as $rule){
-			if($can = $this->acl->check($rule, $format, $object)){
+		foreach ((array)$what as $rule) {
+			if ($can = $this->acl->check($rule, $format, $object)) {
 				break; //check given rules for current user until first return true, "ANY" logic realization
 			}
 		}
@@ -21,14 +33,13 @@ class PXUserAuthorized extends PXUser {
 	}
 
 	function checkAuth() {
-		foreach (PXRegistry::getApp()->authrules as $rule => $params) {
+		foreach ($this->app->authrules as $rule => $params) {
 			if (!$params['enabled']) {
 				continue;
 			}
 
 			$isAuth = $this->proceedAuth($rule, $params);
-
-			if(!$isAuth) {
+			if (!$isAuth) {
 				continue;
 			}
 
@@ -40,41 +51,53 @@ class PXUserAuthorized extends PXUser {
 		return $this->auth->onAuth();
 	}
 
-	private function proceedAuth($rule, $params) {
-		$authClass = 'PXAuth'.ucfirst(strtolower($rule));
+	private function proceedAuth($authDriverClass, $params) {
+		$authDriverClass = (isset($this->authDriverRemap[$authDriverClass]))
+			? $this->authDriverRemap[$authDriverClass]
+			: $authDriverClass;
 
-		if (!class_exists($authClass)) {
-			FatalError('Неизвестный способ авторизации ' . $authClass);
+		if (!class_exists($authDriverClass)) {
+			throw new AuthException('Unknown auth driver: ' . $authDriverClass);
 		}
 
-		//PHP54 doesnt like temp objects passed by reference
-		$app = PXRegistry::getApp();
-		$req = PXRegistry::getRequest();
-		$db  = PXRegistry::getDB();
-		$tmpAuth  = new $authClass($app, $req, $this, $db, $params);
-		if(!$this->isAuthed()) {
+		/** @var AuthInterface $authDriver */
+		$authDriver = new $authDriverClass($params);
+		$authDriver
+			->setApp($this->app)
+			->setDb($this->db)
+			->setRequest($this->request)
+			->setUser($this);
+
+		if (!$authDriver->isCredentialsValid()) {
 			return false;
 		}
 
-		$this->auth = $tmpAuth;
+		$this->auth = $authDriver;
 		return true;
 	}
 
-	private function setGroups() {
-		$this->app = PXRegistry::getApp();
-		$this->db  = PXRegistry::getDB();
 
+	private function setGroups() {
 		if (!isset($this->app->types[DT_GROUP])) {
 			return;
 		}
 
-		$groups = $this->db->getLinks($this->app->references[LINK_GROUP2USER], DT_USER, $this->id);
+		$groups = $this->db->getLinks(
+			$this->app->references[LINK_GROUP2USER],
+			DT_USER,
+			$this->id
+		);
 
-		$this->groups = array_unique(array_merge(array(0, (int)$this->data['parent']), array_keys($groups)));
+		$this->groups = array_unique(
+			array_merge(
+				[0, (int)$this->data['parent']],
+				array_keys($groups)
+			)
+		);
 	}
 
 	function aclType() {
 		return (count($this->groups) > 1) ? 'bygroup' : 'basic';
 	}
 }
-?>
+

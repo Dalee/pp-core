@@ -1,10 +1,6 @@
 <?php
 class PXErrorReporterTextDev extends PXErrorReporter {
 	function _addError($code, $message, $file, $line, $traceFromLine=2) {
-		if(IS_WIN && function_exists('myconv')) {
-			$message = myconv(DEFAULT_CHARSET, CHARSET_DOS, $message);
-		}
-
 		parent::_addError($code, $message, $file, $line, $traceFromLine);
 	}
 
@@ -34,12 +30,8 @@ class PXErrorReporterTextDev extends PXErrorReporter {
 			;
 TRACE_LINE;
 
-		if(IS_WIN) {
-			$traceLineText = myconv(DEFAULT_CHARSET, CHARSET_DOS, $traceLineText);
-		}
-
 		return implode(
-			"\n", 
+			"\n",
 
 			array_map(
 				create_function(
@@ -51,7 +43,7 @@ TRACE_LINE;
 
 							array_map(
 								create_function(
-									'\$a', 
+									'\$a',
 									" return \\\$a['value'] ;"
 								),
 

@@ -25,9 +25,15 @@ class PXDisplayTypePassword extends PXDisplayType {
 
 		$value = (isset($tmp['type']) && isset($tmp['retype']) && mb_strlen($tmp['type']) && ($tmp['type'] === $tmp['retype'])) ? trim($tmp['type']) : null;
 		if(mb_strlen($value) && !is_null($value)) {
-			$authmethodname = PXRegistry::getUser()->getPrimaryAuthMethod(empty($field->displayTypeArgs[0]) ? null : $field->displayTypeArgs[0]);
-			is_callable(array($authmethodname, 'passwdToDB')) or FatalError("Can't process password with {$authmethodname}::passwdToDB() !");
-			$value = call_user_func(array($authmethodname, 'passwdToDB'), $value);
+
+			$authDriver = PXRegistry::getUser()
+				->getPrimaryAuthMethod(empty($field->displayTypeArgs[0]) ? null : $field->displayTypeArgs[0]);
+
+			if (!is_callable([$authDriver, 'passwdToDB'])) {
+				FatalError("Can't process password with {$authDriver}::passwdToDB() !");
+			}
+
+			$value = call_user_func(array($authDriver, 'passwdToDB'), $value);
 		}
 
 		if(isset($tmp['delete']) && $tmp['delete'] === 'on') {
@@ -47,4 +53,4 @@ class PXDisplayTypePassword extends PXDisplayType {
 		}
 	}
 }
-?>
+

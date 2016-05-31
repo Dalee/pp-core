@@ -25,12 +25,12 @@ class PXRequest {
 
 	function __construct() {
 		$this->httpMethod = $this->GetHttpMethod();
-		$this->host       = $this->GetHttpHost();
+		$this->host = $this->GetHttpHost();
 		$this->remoteAddr = $this->GetRemoteAddr();
-		$this->path       = self::GetOriginalPath(); //PHP54/52: <static> is better but for 52 using <self>
+		$this->path = self::GetOriginalPath(); //PHP54/52: <static> is better but for 52 using <self>
 
-		$this->getData    = new NLGetData();
-		$this->postData   = new NLPostData();
+		$this->getData = new NLGetData();
+		$this->postData = new NLPostData();
 		$this->cookieData = new NLCookieData();
 	}
 
@@ -48,7 +48,7 @@ class PXRequest {
 		}
 	}
 
-	static function GetHttpReferer($default=NULL) {
+	static function GetHttpReferer($default = NULL) {
 		return self::getServerVar('HTTP_REFERER', $default);
 	}
 
@@ -73,15 +73,15 @@ class PXRequest {
 	function GetPathAsString() {
 		return $this->path;
 	}
-	
+
 	function IsBadPath() {
 		$path = $this->GetPathAsString();
 		// Terminal slash check
-		if (preg_match('#\.(' . join('|', array_map('preg_quote', unserialize(ENUM_ALLOWED_PATHNAMES))) . ')/+$#'.REGEX_MOD, $path)) {
+		if (preg_match('#\.(' . join('|', array_map('preg_quote', unserialize(ENUM_ALLOWED_PATHNAMES))) . ')/+$#' . REGEX_MOD, $path)) {
 			return true;
 		}
 		// 'index.php' and etc. check (shouldn't occur in the middle)
-		if (preg_match('#/(' . join('|', array_map('preg_quote', $this->rootPathsList)) . ')/#'.REGEX_MOD, $path)) {
+		if (preg_match('#/(' . join('|', array_map('preg_quote', $this->rootPathsList)) . ')/#' . REGEX_MOD, $path)) {
 			return true;
 		}
 		return false;
@@ -97,10 +97,10 @@ class PXRequest {
 					$this->rootPathsList,
 					true
 				)
-			){
+			) {
 				continue;
 			}
-			
+
 			$path[] = $tmp;
 		}
 		return $path;
@@ -121,7 +121,7 @@ class PXRequest {
 			return NULL;
 		}
 
-		return preg_replace('/:.+$/'.REGEX_MOD, '', $host);
+		return preg_replace('/:.+$/' . REGEX_MOD, '', $host);
 	}
 
 	static function GetRemoteAddr() {
@@ -145,7 +145,7 @@ class PXRequest {
 			return NULL;
 		}
 	}
-	
+
 	function getIpAddr($varName) {
 		if ($this->getHttpMethod() == 'POST') {
 			return $this->postData->_GetIPAddrVar($varName);
@@ -154,7 +154,7 @@ class PXRequest {
 		}
 	}
 
-	function GetUserAgent(){
+	function GetUserAgent() {
 		return isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : '';
 	}
 
@@ -174,7 +174,7 @@ class PXRequest {
 	 * Set cookie
 	 * @deprecated
 	 */
-	function SetCookieVar($varName, $value='', $expire=NULL) {
+	function SetCookieVar($varName, $value = '', $expire = NULL) {
 		$response = PXRegistry::getResponse();
 		$response->SetCookie('charcheck', 'йцукен', $expire);
 		return $response->SetCookie($varName, $value, $expire);
@@ -194,20 +194,24 @@ class PXRequest {
 
 	function _GetGetPostVar($varName) {
 		switch ($this->httpMethod) {
-			case 'POST': return $this->GetPostVar($varName);
-			default:     return $this->GetGetVar($varName);
+			case 'POST':
+				return $this->GetPostVar($varName);
+			default:
+				return $this->GetGetVar($varName);
 		}
 	}
 
 	function _SetGetPostVar($varName, $value) {
 		switch ($this->httpMethod) {
-			case 'POST': return $this->postData->_SetVar($varName, $value);
-			default:     return $this->getData->_SetVar($varName, $value);
+			case 'POST':
+				return $this->postData->_SetVar($varName, $value);
+			default:
+				return $this->getData->_SetVar($varName, $value);
 		}
 	}
 
 	function SetVar($varName, $value) {
-		$functionName = 'Set'.mb_strtoupper($varName{0}).mb_substr($varName, 1);
+		$functionName = 'Set' . mb_strtoupper($varName{0}) . mb_substr($varName, 1);
 
 		if (method_exists($this, $functionName)) {
 			$value = call_user_func(array(&$this, $functionName), $value);
@@ -218,7 +222,7 @@ class PXRequest {
 	}
 
 	function GetVar($varName, $default = NULL) {
-		$functionName = 'Get'.ucfirst($varName);
+		$functionName = 'Get' . ucfirst($varName);
 
 		if (method_exists($this, $functionName)) {
 			$value = call_user_func(array(&$this, $functionName));
@@ -231,32 +235,34 @@ class PXRequest {
 
 	function isSetVar($varName) {
 		switch ($this->httpMethod) {
-			case 'POST': return $this->postData->_isSetVar($varName);
-			default:     return $this->getData->_isSetVar($varName);
+			case 'POST':
+				return $this->postData->_isSetVar($varName);
+			default:
+				return $this->getData->_isSetVar($varName);
 		}
 	}
 
-	function GetUploadFile($varName, $isArray=FALSE) {
+	function GetUploadFile($varName, $isArray = FALSE) {
 		return $this->postData->_GetFileVar($varName, $isArray);
 	}
-	
+
 	/**
 	 * Проверяет вхождение ip-адреса в подсеть.
 	 *
-	 * @param String $ip        - ip-адрес, например 192.168.0.1
-	 * @param String $subnet    - подсеть, например 192.168.0.0/24
+	 * @param String $ip - ip-адрес, например 192.168.0.1
+	 * @param String $subnet - подсеть, например 192.168.0.0/24
 	 * @return Int
 	 */
 	static function IsIpInSubnet($ip, $subnet) {
-		list($net,$mask) = explode("/",$subnet);
+		list($net, $mask) = explode("/", $subnet);
 
-		$lnet   = ip2long($net);
-		$lip    = ip2long($ip);
+		$lnet = ip2long($net);
+		$lip = ip2long($ip);
 		$binnet = mb_str_pad(decbin($lnet), 32, "0", STR_PAD_LEFT);
 
 		$firstpart = mb_substr($binnet, 0, $mask);
-		$binip     = mb_str_pad(decbin($lip), 32, "0", STR_PAD_LEFT);
-		$firstip   = mb_substr($binip, 0, $mask);
+		$binip = mb_str_pad(decbin($lip), 32, "0", STR_PAD_LEFT);
+		$firstip = mb_substr($binip, 0, $mask);
 
 		return (int)(strcmp($firstpart, $firstip) === 0);
 	}
@@ -264,14 +270,14 @@ class PXRequest {
 	/**
 	 * Проверяет вхождение ip-адреса в список подсетей.
 	 *
-	 * @param String $ip        - ip-адрес, например 192.168.0.1
-	 * @param Array  $subnet    - массив подсетей
+	 * @param String $ip - ip-адрес, например 192.168.0.1
+	 * @param Array $subnet - массив подсетей
 	 * @return Int
 	 */
 	static function IsIpInSubnets($ip, $subnets) {
 		$isIn = 0;
 
-		foreach($subnets as $s) {
+		foreach ($subnets as $s) {
 			$isIn += PXRequest::IsIpInSubnet($ip, $s);
 		}
 
@@ -281,9 +287,9 @@ class PXRequest {
 	// Функция возвраящает массив "открытых" в редакторском интерфейсе элементов дерева
 	function getLeafStatus() {
 		$leafStatus = $this->cookieData->_getVar('leafStatus');
-		$openLeaf   = array();
+		$openLeaf = array();
 		if ($leafStatus) {
-			foreach ($leafStatus as $l=>$s) {
+			foreach ($leafStatus as $l => $s) {
 				if ($s == 'open') {
 					$openLeaf[] = mb_substr($l, 6);
 				}
@@ -330,18 +336,18 @@ class PXRequest {
 	// POST
 	function getLinks($reference) {
 		$rawLinksData = $this->postData->_getArrayVar($reference->name, false);
-		
-		foreach($rawLinksData as $r => $links) {
-			foreach($links as $rr => $link) {
+
+		foreach ($rawLinksData as $r => $links) {
+			foreach ($links as $rr => $link) {
 				if (empty($link['fields'])) {
 					continue;
 				}
-				
-				foreach($link['fields'] as $name => $field) {
+
+				foreach ($link['fields'] as $name => $field) {
 					if (isset($reference->fields[$name])) {
-						$object    = array();
-						$p         = array('request' => $this);
-						$lname     = '__links_hack_fix_' . $name;
+						$object = array();
+						$p = array('request' => $this);
+						$lname = '__links_hack_fix_' . $name;
 						$fakeField = (object)array('name' => $lname);
 						$this->SetVar($lname, $field);
 						$rawLinksData[$r][$rr]['fields'][$name] = $reference->fields[$name]->displayType->getFromRequest($fakeField, $object, $p);
@@ -349,16 +355,16 @@ class PXRequest {
 				}
 			}
 		}
-		
+
 		return $rawLinksData;
 	}
 
 	// POST
 	function getContentObject($format) {
 		$object = array();
-		$p      = array('request' => $this);
+		$p = array('request' => $this);
 
-		foreach ($format->fields as $k=>$v) {
+		foreach ($format->fields as $k => $v) {
 			$object[$k] = $v->displayType->getFromRequest($v, $object, $p);
 			$object[$k] = $v->storageType->getFromRequest($v, $object, $p);
 		}
@@ -372,7 +378,7 @@ class PXRequest {
 		if ($this->postData->_IsSet(OBJ_FIELD_CHILDREN) || in_array(OBJ_FIELD_CHILDREN, $neededVars)) {
 			$object[OBJ_FIELD_CHILDREN] = $this->postData->_getArrayVar(OBJ_FIELD_CHILDREN);
 		}
-		
+
 		//FIXME ! Obsoleted ?
 		if ($this->postData->_IsSet('sys_accessmod')) {
 			$object['sys_accessmod'] = $this->postData->_getNumericVar('sys_accessmod');
@@ -388,8 +394,10 @@ class PXRequest {
 	// GET/POST
 	function getAck() {
 		switch ($this->httpMethod) {
-			case 'POST':    return $this->postData->_getCheckBoxVar('ack');
-			default:        return $this->getData->_getCheckBoxVar('ack');
+			case 'POST':
+				return $this->postData->_getCheckBoxVar('ack');
+			default:
+				return $this->getData->_getCheckBoxVar('ack');
 		}
 	}
 
@@ -402,25 +410,25 @@ class PXRequest {
 	function getAfterActionDeal() {
 		return $this->postData->_IsSetVar('close') ? 'close' : 'back';
 	}
-	
+
 	// Функция возвращает "раздел" редакторского интерфейса
-	function getArea($default=NULL) {
+	function getArea($default = NULL) {
 		$area = $this->_getGetPostVar('area') ? $this->_getGetPostVar('area') : $this->getGetVar('area');
 		return ($area == NULL) ? $default : $area;
 	}
 
 	// clean the fields for admin system
-	function getOrderVar($format, $default_sort, $fields){
-		$currentOrder = $this->GetVar($format.'_order');
-		if(!$currentOrder) {
+	function getOrderVar($format, $default_sort, $fields) {
+		$currentOrder = $this->GetVar($format . '_order');
+		if (!$currentOrder) {
 			return $default_sort;
 		}
 		$order = array();
 		$multipleOrders = explode(",", $currentOrder);
-		foreach($multipleOrders as $currentOrder) {
+		foreach ($multipleOrders as $currentOrder) {
 			list($field_name, $sort_dir) = array_pad(explode(" ", trim($currentOrder), 2), 2, '');
 			$sort_dir = mb_strtoupper(trim($sort_dir)) == 'DESC' ? ' DESC' : '';
-			if(!(isset($fields[$field_name]) && $fields[$field_name]->listed) && $field_name != 'sys_order') {
+			if (!(isset($fields[$field_name]) && $fields[$field_name]->listed) && $field_name != 'sys_order') {
 				continue;
 			}
 
@@ -433,7 +441,7 @@ class PXRequest {
 	function getHostAndDir() {
 		$a = $this->getPath();
 		array_unshift($a, $this->getHttpHost());
-		if (sizeof($a) > 1 && mb_strstr($a[sizeof($a)-1], ".")) {
+		if (sizeof($a) > 1 && mb_strstr($a[sizeof($a) - 1], ".")) {
 			array_pop($a);
 		}
 		return $a;
@@ -442,8 +450,8 @@ class PXRequest {
 	function getFile() {
 		$a = $this->getPath();
 		if (count($a)) {
-			if (mb_strstr($a[sizeof($a)-1], ".")) {
-				return $a[sizeof($a)-1];
+			if (mb_strstr($a[sizeof($a) - 1], ".")) {
+				return $a[sizeof($a) - 1];
 			}
 		}
 
@@ -460,10 +468,10 @@ class PXRequest {
 	}
 
 	function isXmlHttpRequest() {
-		return (bool) mb_stristr(self::getServerVar('HTTP_X_REQUESTED_WITH'), 'XMLHttpRequest');
+		return (bool)mb_stristr(self::getServerVar('HTTP_X_REQUESTED_WITH'), 'XMLHttpRequest');
 	}
 
-	static public function getServerVar($name, $default=null) {
+	static public function getServerVar($name, $default = null) {
 		return isset($_SERVER[$name]) ? $_SERVER[$name] : $default;
 	}
 

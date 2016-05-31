@@ -1,16 +1,16 @@
 <?php
 define('USERLEVEL_UNAUTHED', 0);
-define('USERLEVEL_USER',     1024);
-define('USERLEVEL_ADMIN',    8192);
-
+define('USERLEVEL_USER', 1024);
+define('USERLEVEL_ADMIN', 8192);
 define('USER_SESSION_INTERVAL', time() + 2592000);
 
-define('DT_USER',         'suser');
-define('DT_GROUP',        'sgroup');
+define('DT_USER', 'suser');
+define('DT_GROUP', 'sgroup');
 define('LINK_GROUP2USER', 'sgroup2suser');
 
-require_once PPLIBPATH . 'User/Auth/classes.inc';
 require_once PPLIBPATH . 'Acl/classes.inc';
+
+use PP\Lib\Auth\Null;
 
 abstract class PXUser {
 	var $id;
@@ -20,34 +20,62 @@ abstract class PXUser {
 	var $auth;
 	var $app;
 
+	/**
+	 * @var \PXDatabase
+	 */
+	protected $db;
+
+	/**
+	 * @var \PXRequest
+	 */
+	protected $request;
+
 	function __construct() {
-		$this->id     = NULL;
-		$this->login  = NULL;
+		$this->id = NULL;
+		$this->login = NULL;
 		$this->groups = array(0);
-		$this->data   = array();
+		$this->data = array();
 
-		$this->auth = new PXAuthNull();
+		$this->auth = new Null();
 	}
 
-	function setDb(&$db) {
-		$this->db =& $db;
-		$db->setUser($this);
+	/**
+	 * @param PXDatabase $db
+	 * @return $this
+	 */
+	function setDb(PXDatabase $db) {
+		$this->db = $db;
 
+		$this->db->setUser($this);
 		$this->acl = new PXObjectsACL($db, $this);
+
+		return $this;
 	}
 
-	function setApp(&$app) {
-		$this->app =& $app;
+	/**
+	 * @param PXApplication $app
+	 * @return $this
+	 */
+	function setApp(PXApplication $app) {
+		$this->app = $app;
+
+		return $this;
 	}
 
-	function setRequest(&$request) {
-		$this->request =& $request;
+	/**
+	 * @param PXRequest $request
+	 * @return $this
+	 */
+	function setRequest(PXRequest $request) {
+		$this->request = $request;
+
+		return $this;
 	}
 
-	// FIXME
+
 	function auth() {
-		if(strtolower(get_class($this->auth)) != 'pxauthnull' || $this->checkAuth()){
-			foreach($this->app->triggers->system as $t) {
+		if ($this->checkAuth()) {
+			foreach ($this->app->triggers->system as $t) {
 				$t->getTrigger()->onAfterUserAuth($this);
 			}
 			return $this->auth->auth();
@@ -60,8 +88,8 @@ abstract class PXUser {
 	}
 
 	function isAdmin() {
-		foreach($this->app->modules as $module) {
-			if($module->name != 'auth' && $this->can('admin', $module)) {
+		foreach ($this->app->modules as $module) {
+			if ($module->name != 'auth' && $this->can('admin', $module)) {
 				return true;
 			}
 		}
@@ -69,41 +97,52 @@ abstract class PXUser {
 		return false;
 	}
 
+	/**
+	 * @return bool
+	 */
 	function isAuthed() {
 		return !is_null($this->id);
 	}
 
 	function checkAuth() {
+		return false;
 	}
 
 	function getTitle() {
 		return $this->auth->getTitle();
 	}
 
+	/**
+	 * @param null $req_auth_method
+	 * @return array of fully qualified class names
+	 */
 	function getAuthMethods($req_auth_method = null) {
-		$authmethods = null;
+		$authDriverList = null;
 
-		foreach($this->app->authrules as $rule => $param){
-			if(!is_null($req_auth_method) && $rule == $req_auth_method){ //use required auth method
-				$authmethods[0] = $rule; //single element
+		foreach ($this->app->authrules as $rule => $param) {
+			if (!is_null($req_auth_method) && $rule == $req_auth_method) { //use required auth method
+				$authDriverList[0] = $rule; //single element
 				break;
 			}
 
-			if($param['enabled']) {
-				$authmethods[] = $rule;
+			if ($param['enabled']) {
+				$authDriverList[] = $rule;
 			}
 		}
 
-		if(is_null($authmethods)) {
-			$authmethods[] = 'null';
+		if (is_null($authDriverList)) {
+			$authDriverList[] = 'PP\Lib\Auth\Null';
 		}
 
-		return $authmethods;
+		return $authDriverList;
 	}
 
-	function getPrimaryAuthMethod($type = null){
+	/**
+	 * @param null $type
+	 * @return string fully qualified class name
+	 */
+	function getPrimaryAuthMethod($type = null) {
 		$authMethods = $this->getAuthMethods($type);
-		return 'PXAuth' . ucfirst(reset($authMethods));
+		return reset($authMethods);
 	}
 }
-?>

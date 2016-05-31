@@ -31,7 +31,7 @@ define('CON_BGCOLOR_MAGENTA',  "\033[45m", 1);
 define('CON_BGCOLOR_CYAN',     "\033[46m", 1);
 define('CON_BGCOLOR_WHITE',    "\033[47m", 1);
 
-define('CON_COLS',             IS_WIN ? 72 : (`tput cols` - 10));
+define('CON_COLS',             (`tput cols` - 10));
 
 define('CON_EOC',              "\033[00m", 1);
 define('CON_EOL',              CON_EOC . PHP_EOL);
