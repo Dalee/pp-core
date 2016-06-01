@@ -163,7 +163,7 @@
 	<body onload="ctrl.style.visibility='hidden';">
 		<script type="text/javascript">
 			parent.ctrlCalendar = parent.ctrlCalendar || {}
-			eval("parent.ctrlCalendar." + (self.name || 'default') + "=parent.frames[self.name];");
+			parent.ctrlCalendar[self.name || 'default'] = parent.frames[self.name];
 			var DateControl;
 			var DayControl;
 			var MonthControl;
