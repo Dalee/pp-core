@@ -747,6 +747,14 @@ class PXApplication {
 			BASEPATH.'/libpp/etc/');
 	}
 
+	/**
+	 * Return if application is in development mode
+	 * @return bool
+	 */
+	public function isDevelopmentMode() {
+		return $this->getProperty('ENVIRONMENT') === ENV_DEVELOPER;
+	}
+
 	function isAdminEngine() {
 		return $this->engine->engineClass() == PX_ENGINE_ADMIN;
 	}

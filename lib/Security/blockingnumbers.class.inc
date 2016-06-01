@@ -41,6 +41,13 @@ class NLBlockingNumbers {
 		$this->value      = "";
 	}
 
+	/**
+	 * @return int
+	 */
+	public function getKey() {
+		return $this->key;
+	}
+
 	function CreateNew($chars = 4, $alphabet = '0123456789') {
 		if (!$this->storage) {
 			return false;

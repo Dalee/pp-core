@@ -96,6 +96,5 @@ function path_relative ($from, $to) {
  * @test ["."] >>> false
  */
 function path_is_absolute ($path) {
-	return $path[0] === '/' // *nix/osx
-		|| (IS_WIN && strpos($path, ':\\') === 1); // win
+	return $path[0] === '/';
 }

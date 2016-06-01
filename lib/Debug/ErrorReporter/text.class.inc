@@ -7,7 +7,7 @@ class PXErrorReporterText extends PXErrorReporterHTML {
 
 	function environmentsUris() {
 		$script = implode(' ', $_SERVER['argv']);
-		$user   = IS_WIN ? $this->getWindowsUser() : $this->getUnixUser();
+		$user   = $this->getUnixUser();
 		$root   = $_SERVER['DOCUMENT_ROOT'];
 		$path   = getcwd();
 

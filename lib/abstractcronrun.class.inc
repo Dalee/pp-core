@@ -1,9 +1,6 @@
 <?php
 abstract class PXAbstractCronRun {
 	public $name = 'Abstract CronRun Class';
-	protected $logsDir;
-
-	function __construct() {}
 
 	function Run(&$app, &$db, &$tree, $matchedTime, $matchedRule) {
 		return array(
@@ -13,37 +10,11 @@ abstract class PXAbstractCronRun {
 	}
 
 	function log($message) {
-		$logger =& $this->getLogger();
-		$logger->log($logger->INFO, $message);
+		PXRegistry::getLogger(LOGGER_CRON)->info($message);
 	}
 
 	function error($message) {
-		$logger =& $this->getLogger();
-		$logger->log($logger->ERROR, $message);
-	}
-
-	function setLoggerDir($logsDir) {
-		$this->logsDir = $logsDir;
-	}
-
-	function &getLogger() {
-		if(!isset($this->logger)) {
-			$logsDir = $this->logsDir? $this->logsDir: BASEPATH.'var/logs/cronrun/'.str_replace('pxcronrun', '', get_class($this)).'/';
-			MakeDirIfNotExists($logsDir);
-
-			$this->logger = NLLogger::getLogger('cron');
-
-			if(PXRequest::getHttpMethod() === 'CLI') {
-				$this->logger->addAppender('file', 'FileAppender');
-			} else {
-				$this->logger->addAppender('file', 'Appender');
-			}
-
-			$this->logger->setLevel($this->logger->INFO);
-			$this->logger->setAppenderParam('file', 'fileName', $logsDir.date('Y-m-d_H-i-s').'.log');
-		}
-
-		return $this->logger;
+		PXRegistry::getLogger(LOGGER_CRON)->error($message);
 	}
 }
 
@@ -164,4 +135,4 @@ class PXCronRule {
 		return $result;
 	}
 }
-?>
+

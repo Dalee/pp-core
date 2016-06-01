@@ -4,4 +4,3 @@ class PXUserNull extends PXUser {
 		FatalError('Хм... А почему реальный юзер все еще не создан?');
 	}
 }
-?>

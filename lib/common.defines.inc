@@ -3,42 +3,9 @@
 // Default timezone settings for formated date output
 date_default_timezone_set('Europe/Moscow');
 
-// php5.4 htmlspecialchars flags ENT_HTML401, ENT_SUBSTITUTE and ENT_DISALLOWED
-if (!defined('ENT_HTML401')) {
-	define('ENT_HTML401', 0);
-}
-if (!defined('ENT_SUBSTITUTE')) {
-	define('ENT_SUBSTITUTE', 0);
-}
-if (!defined('ENT_DISALLOWED')) {
-	define('ENT_DISALLOWED', 0);
-}
-
-// PHP 5.2.6 compatibility
-if (!defined('PHP_MAJOR_VERSION')) {
-	define('PHP_MAJOR_VERSION', 5);
-}
-if (!defined('PHP_MINOR_VERSION')) {
-	define('PHP_MINOR_VERSION', 2);
-}
-if (!defined('PHP_VERSION_ID')) {
-	define('PHP_VERSION_ID', 50206);
-}
-if (!defined('PHP_RELEASE_VERSION')) {
-	define('PHP_RELEASE_VERSION', 6); // PHP 5.2.6
-}
-if (!defined('PHP_EXTRA_VERSION')) {
-	define('PHP_EXTRA_VERSION', '');
-}
-
-// Определение не на винде ли мы запущены
-if (!defined('IS_WIN')) {
-	define('IS_WIN', (substr(PHP_OS, 0, 3) == 'WIN'));
-}
-
 // Определение корня сайта в случае запуска скрипта из консоли (CLI)
-if(!isset($_SERVER['REQUEST_METHOD'])) {
-	$_SERVER['DOCUMENT_ROOT'] = realpath(dirname(__FILE__).'/../../');
+if (!isset($_SERVER['REQUEST_METHOD'])) {
+	$_SERVER['DOCUMENT_ROOT'] = realpath(dirname(__FILE__) . '/../../');
 }
 
 // cli
@@ -46,11 +13,9 @@ defined('IS_CLI') || define('IS_CLI', PHP_SAPI === 'cli');
 
 // Определение BASEPATH - это полный путь к корню сайта
 if(!defined('BASEPATH')) {
-	if (IS_WIN) {
-		define('BASEPATH', rtrim(str_replace("\\\\", DIRECTORY_SEPARATOR, $_SERVER["DOCUMENT_ROOT"]), DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR);
-	} else {
-		define('BASEPATH', rtrim(str_replace("/", DIRECTORY_SEPARATOR, $_SERVER["DOCUMENT_ROOT"]), DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR);
-	}
+	$basePath = str_replace("/", DIRECTORY_SEPARATOR, $_SERVER["DOCUMENT_ROOT"]);
+	$basePath = rtrim($basePath, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
+	define('BASEPATH', $basePath);
 }
 
 // Объявляем PPPATH, LOCALPATH, SHAREDPATH
@@ -124,10 +89,13 @@ if (file_exists(BASEPATH.'/site/etc/php.ini')) {
 define('PROFILER', $profiler);
 define('SYSTEM_USER', $system_user);
 define('ENV', $env);
+define('LOGGER_APP', 'application');
+define('LOGGER_CRON', 'cron');
 
 // Влючаем дебаг
 error_reporting(E_ALL);
 define('DEBUG', true);
+define('ENV_DEVELOPER', 'DEVELOPER');
 
 // charset based defines
 define('CHARSET_KOI8R',              'koi8-r');
@@ -141,21 +109,14 @@ define('CHARSET_UTF8',               'utf-8');
 define('CHARSET_UCS2BE',             'ucs-2be');
 define('CHARSET_UTF16BE',            'utf-16be');
 
-// current default proxima charset
-if (false) { // koi8
-	define('DEFAULT_CHARSET',            CHARSET_KOI8R);
-	define('DEFAULT_LOCALE',             json_encode(array('Russian_Russia.20866', 'ru_RU.KOI8-R', 'KOI8-R')));
-	define('REGEX_MOD',                  '');
-}
-else { // utf8
-	define('DEFAULT_CHARSET',            CHARSET_UTF8);
-	define('DEFAULT_LOCALE',             json_encode(array('Russian_Russia.UTF-8', 'ru_RU.UTF-8', 'UTF-8')));
-	define('REGEX_MOD',                  'u'); // UTF-8 mod for regexp
-}
+define('DEFAULT_CHARSET',            CHARSET_UTF8);
+define('DEFAULT_LOCALE',             json_encode(array('Russian_Russia.UTF-8', 'ru_RU.UTF-8', 'UTF-8')));
+define('REGEX_MOD',                  'u'); // UTF-8 mod for regexp
 
 if (setlocale(LC_ALL, json_decode(DEFAULT_LOCALE)) === false) {
 	die(sprintf('Unable to set setlocale: %s', DEFAULT_LOCALE));
 }
+
 if (function_exists('mb_internal_encoding')) {
 	if (mb_internal_encoding(DEFAULT_CHARSET) === false) {
 		die(sprintf('Unable to internal encoding to: %s', DEFAULT_CHARSET));
@@ -206,7 +167,7 @@ define('PX_ENGINE_SBIN',    3);
 
 define('DT_STRUCT', 'struct');
 
-if (!defined('PP_DONT_FORCE_SUDO') && !IS_WIN) {
+if (!defined('PP_DONT_FORCE_SUDO')) {
 	$system_user = posix_getpwnam(SYSTEM_USER);
 
 	switch (posix_getuid()) {
@@ -228,5 +189,3 @@ if (!defined('PP_DONT_FORCE_SUDO') && !IS_WIN) {
 
 define('HTDOCS_PATH', BASEPATH.'/site/htdocs');
 define('CACHE_PATH', BASEPATH.'/tmp/cache.'.strval(PHP_VERSION_ID).'.'.strtolower(DEFAULT_CHARSET));
-
-?>

@@ -95,15 +95,12 @@ class NLDir {
 	 * @return integer
 	 */
 	function Create($permissions = NULL) {
-		if ($this->_block) return -1;
-		$pathElements = explode(DIRECTORY_SEPARATOR, $this->name);
-
-		if(!IS_WIN) {
-			$path = mb_substr($this->name, 0, 1);
-		} else {
-			$path = mb_substr($this->name, 0, 3);
-			array_shift($pathElements);
+		if ($this->_block) {
+			return -1;
 		}
+
+		$pathElements = explode(DIRECTORY_SEPARATOR, $this->name);
+		$path = mb_substr($this->name, 0, 1);
 
 		foreach ($pathElements as $element) {
 			$path .= $element.DIRECTORY_SEPARATOR;

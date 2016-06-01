@@ -1,7 +1,7 @@
 <?php
 class PXErrorReporterHTML extends PXErrorReporter {
 	function PXErrorReporterHTML() {
-		$this->computer = IS_WIN && isset($_ENV['COMPUTERNAME']) ? strtolower($_ENV['COMPUTERNAME']) : @rtrim(`hostname`);
+		$this->computer = @rtrim(`hostname`);
 
 		$this->toEmail = !empty($_SERVER['SERVER_ADMIN']) ? $_SERVER['SERVER_ADMIN'] : 'support@dalee.ru';
 		$this->fromEmail = 'robot@'.$this->computer;

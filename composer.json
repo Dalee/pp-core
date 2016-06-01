@@ -1,28 +1,30 @@
 {
-  "name": "pp/core",
-  "type": "pp-core",
-  "description": "ProximaPortal",
-  "license": "MIT",
-  "minimum-stability": "dev",
-  "authors": [
-    {
-      "name": "Dalee Developers Team",
-      "email": "dev@dalee.ru"
-    }
-  ],
-  "repositories": [
-    {
-      "type": "composer",
-      "url": "http://packages.git.dalee.ru"
-    }
-  ],
-  "require": {
-    "pp/installers": "*"
-  },
-  "require-dev": {
-
-  },
-  "scripts": {
-    "test": "sudo -u nobody sbin/pp.php test"
-  }
+	"name": "pp/core",
+	"type": "pp-core",
+	"description": "ProximaPortal",
+	"license": "MIT",
+	"minimum-stability": "dev",
+	"authors": [
+		{
+			"name": "Dalee Developers Team",
+			"email": "dev@dalee.ru"
+		}
+	],
+	"repositories": [
+		{
+			"type": "composer",
+			"url": "http://packages.git.dalee.ru"
+		}
+	],
+	"require": {
+		"pp/installers": "*",
+		"monolog/monolog": "^1.19"
+	},
+	"autoload": {
+		"psr-4": {
+			"PP\\": [
+				"src/"
+			]
+		}
+	}
 }

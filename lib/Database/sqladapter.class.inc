@@ -6,7 +6,7 @@ class NLSQLDatabaseAdapter {
 	protected $dbDriver;
 	protected $selfDescription; // ?
 
-	function NLSQLDatabaseAdapter(&$dbDescription) {
+	function __construct(&$dbDescription) {
 		$this->init($dbDescription);
 	}
 
