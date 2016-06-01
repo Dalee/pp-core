@@ -1,7 +1,7 @@
 # Change log
 
 ## [Unreleased]
-### Изменения
+### Изменения [link](http://git.dalee.ru/pp/core/merge_requests/8)
 - Monolog, `PXRegistry::getLogger($logger_name)`, где `$logger_name` может быть одной из констант: `LOGGER_APP`, `LOGGER_CRON`. По-умолчанию `LOGGER_APP` рендерится в `site/var/application.log`, `LOGGER_CRON` - `site/var/cron.log`
 - Убрана поддержка PHP версии ниже 5.4
 - Убрана поддержка Windows платформ
