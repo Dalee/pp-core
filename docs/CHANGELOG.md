@@ -2,16 +2,15 @@
 
 ## [Unreleased]
 ### Изменения
-- Monolog, `PXRegistry::getLogger($logger_name)`,
-где `$logger_name` может быть одной из констант: `LOGGER_APP`, `LOGGER_CRON`.
-По-умолчанию `LOGGER_APP` рендерится в `site/var/application.log`, `LOGGER_CRON` - `site/var/cron.log`
+- Monolog, `PXRegistry::getLogger($logger_name)`, где `$logger_name` может быть одной из констант: `LOGGER_APP`, `LOGGER_CRON`. По-умолчанию `LOGGER_APP` рендерится в `site/var/application.log`, `LOGGER_CRON` - `site/var/cron.log`
 - Убрана поддержка PHP версии ниже 5.4
 - Убрана поддержка Windows платформ
 - Убраны старые варианты авторизации Rambler, Domain, Plain
 - PXAuthNull, PXAuthSecure, PXAuthSession перенесены в PSR-4 (src/Lib/Auth)
-- auth.ini в качестве названия группы теперь требует полный PSR-4 путь к классу
+- auth.ini в качестве названия механизма авторизации теперь требует полный PSR-4 путь к классу (для обратной совместимости - используется маппинг для secure и session вариантов авторизации)
 - migrate.php больше не пытается обращаться к datatypes.xml
-- Капча при доступе в административный интерфейс
+- Капча при доступе в административный интерфейс (в development-режиме не требует ввода)
+- Определение development режима работы app->isDevelopmentMode(), установка режима через properties.ini `ENVIRONMENT=DEVELOPER`.
 
 ## [v1.6] - 2016-05-17
 ### Изменения
