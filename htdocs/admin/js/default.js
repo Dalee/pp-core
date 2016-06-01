@@ -555,7 +555,7 @@ function Context (event) {
 		},
 		funcs    = {
 			def  : ContextEdit,
-			add  : ContextAdd,  // ContextAdd used by PXAdminHTMLLayout and PXAdminObjects
+			add  : ContextAdd,  // ContextAdd used by AdminHtmlLayout and PXAdminObjects
 			edit : ContextEdit,
 			file : ContextFile  // ContextFile function placed in /admin/js/filemanager.js
 		},

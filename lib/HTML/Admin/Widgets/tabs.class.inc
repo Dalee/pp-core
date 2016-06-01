@@ -1,5 +1,7 @@
 <?php
 
+use PP\Lib\Html\Layout\LayoutAbstract;
+
 class PXWidgetTabs extends PXAdminComplexWidget {
 	const PREPEND = 0;
 	const APPEND  = 1;
@@ -30,13 +32,13 @@ class PXWidgetTabs extends PXAdminComplexWidget {
 		$html[]  = join($this->blocks[self::PREPEND]);
 
 		foreach ($this->items as $k=>$v) {
-			$href   = $this->buildHref ? NLAbstractLayout::buildHref($this->varName, $k) : '?'.$this->varName.'='.$k;
+			$href   = $this->buildHref ? LayoutAbstract::buildHref($this->varName, $k) : '?'.$this->varName.'='.$k;
 			$html[] = sprintf("<li %s><a href='%s'>%s</a><b></b></li>", ($k  === $current ? "class='current'" : ""), $href, $v);
 		}
-		
+
 		$html[] = join($this->blocks[self::APPEND]);
 		$html[] = "</ul>";
-		
+
 		return join($html);
 	}
 }

@@ -31,7 +31,7 @@ abstract class PXModule implements PXModuleIF {
 	 */
 	var $user;
 	/**
-	 * @var NLAbstractLayout
+	 * @var \PP\Lib\Html\Layout\LayoutAbstract
 	 */
 	var $layout;
 	/**

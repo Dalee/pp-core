@@ -1,6 +1,7 @@
 <?php
 
 use Monolog\Registry;
+use PP\Lib\Html\Layout;
 
 final class PXRegistry {
 	const unknownVarMessage = "Registry - not heap. Store your %s somewhere else!";
@@ -50,7 +51,7 @@ final class PXRegistry {
 					break;
 
 				case 'layout':
-					$registry->$varName = new PXLayoutNull();
+					$registry->$varName = new Layout\Null();
 					break;
 
 				case 'request':
@@ -108,7 +109,7 @@ final class PXRegistry {
 
 	/**
 	 * @static
-	 * @return PXLayoutNull|PXUserHTMLLayout
+	 * @return Layout\Null|PXUserHTMLLayout
 	 */
 	public static function getLayout() {
 		return self::get('layout');

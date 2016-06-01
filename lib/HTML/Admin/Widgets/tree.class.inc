@@ -2,6 +2,8 @@
 
 require_once PPLIBPATH . 'HTML/Admin/Widgets/treeBranch.class.inc';
 
+use \PP\Lib\Html\Layout\LayoutAbstract;
+
 class PXAdminTree extends PXAdminComplexWidget {
 
 	const BEFORE         = 0;
@@ -13,7 +15,7 @@ class PXAdminTree extends PXAdminComplexWidget {
 	 * Конструктор класса PXAdminTree.
 	 * Инициализирует поля класса. необходимые для построения дерева.
 	 */
-	function PxAdminTree(&$datatype, &$tree) {
+	function __construct($datatype, $tree) {
 		$this->datatype = $datatype;
 
 		$this->tree             = $tree;
@@ -59,7 +61,7 @@ class PXAdminTree extends PXAdminComplexWidget {
 
 	function childsLink($id) {
 		return $this->datatype->childs && $this->showChildLinks
-			? NLAbstractLayout::_BuildHref($this->childLinkVarName, $id)
+			? LayoutAbstract::_BuildHref($this->childLinkVarName, $id)
 			: null;
 	}
 
@@ -127,11 +129,11 @@ class PXAdminTree extends PXAdminComplexWidget {
 		$html .= '<h2>'.$this->caption;
 
 		if ($this->datatype->struct == 'tree') {
-			$html .= '[<a href="'.NLAbstractLayout::_buildHref($this->datatype->id.'_view', 'plain').'">список</a>]';
+			$html .= '[<a href="'.LayoutAbstract::_buildHref($this->datatype->id.'_view', 'plain').'">список</a>]';
 		}
 
 		$html .= '</h2>';
 		return $html;
 	}
 }
-?>
+

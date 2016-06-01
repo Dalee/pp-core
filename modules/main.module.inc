@@ -1,4 +1,7 @@
 <?php
+
+use \PP\Lib\Html\Layout\AdminHtmlLayout;
+
 class PXModuleMain extends PXModule {
 	private $rootFormatId;
 	private $objectsLoadMode;
@@ -178,7 +181,7 @@ class PXModuleMain extends PXModule {
 		if(!empty($id) && isset($this->app->types[$format]) && ($this->app->types[$format]->struct == 'tree' && $this->request->GetVar($format.'_view') != 'plain')){
 
 			// {Нам это необходимо, чтобы работал PXAdminAjaxTreeObjects
-			$layout = new NLAbstractLayout();
+			$layout = new AdminHtmlLayout("index", $this->app->types);
 			$layout->setGetVarToSave('area', $this->area);
 			PXRegistry::setLayout($layout);
 			// нам это необходимо, чтобы работал PXAdminAjaxTreeObjects}
@@ -360,5 +363,3 @@ class PXModuleMain extends PXModule {
 	}
 
 }
-
-?>

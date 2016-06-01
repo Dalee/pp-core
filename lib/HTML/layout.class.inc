@@ -1,11 +1,12 @@
 <?php
-class PXUserHTMLLayout extends PXLayoutInterface  {
+
+use PP\Lib\Html\Layout\LayoutInterface;
+
+class PXUserHTMLLayout implements LayoutInterface  {
 	var $smarty;
 	var $_filters;
 
 	function __construct() {
-		parent::__construct();
-
 		require_once PPPATH . 'vendor/Smarty/Smarty.class.php';
 
 		$this->_initSmarty();
@@ -40,11 +41,11 @@ class PXUserHTMLLayout extends PXLayoutInterface  {
 		$this->smarty->caching       = false;
 	}
 
-	function setApp($app) {
+	function setApp(\PXApplication $app) {
 		$this->lang->setTree($app->langTree);
 	}
 
-	private 
+	private
 	function _initLang() {
 		require_once PPLIBPATH . 'HTML/lang.class.inc';
 
@@ -53,13 +54,13 @@ class PXUserHTMLLayout extends PXLayoutInterface  {
 		$this->addTemplateModifier('lang', array($this->lang, 'lang_modifier'));
 
 		$this->AddTemplateFunction('pager', array($this, 'pager'));
-		$this->AddTemplateFunction('autopager', array($this, 'autopager')); 
+		$this->AddTemplateFunction('autopager', array($this, 'autopager'));
 
 		$this->AddTemplateBlock('dev', 'smarty_block_dev'); //FIXME: see functions.etc.inc
 	}
 
 	function htmlPager($totalObjects, $objectsPerPage, &$smarty, $param) {
-		$maxPage = ceil($totalObjects/$objectsPerPage); 
+		$maxPage = ceil($totalObjects/$objectsPerPage);
 		$objectsPerPage = $objectsPerPage;
 
 		$request     = PXRegistry::getRequest();
@@ -204,7 +205,7 @@ class PXUserHTMLLayout extends PXLayoutInterface  {
 	function addTemplateFunction($name, $callback) {
 		$this->smarty->register_function($name, $callback);
 	}
-	
+
 	function addTemplateBlock($name, $callback, $cacheable = true) {
 		$this->smarty->register_block($name, $callback, $cacheable);
 	}

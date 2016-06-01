@@ -10,6 +10,8 @@ define("MASK_FIRST_PAGE", 1);
 define("MASK_LAST_PAGE",  2);
 define("MASK_NO_MOVE",    3);
 
+use PP\Lib\Html\Layout\LayoutAbstract;
+
 class PXAdminTable extends PXAdminComplexWidget {
 
 	var $data;
@@ -45,7 +47,7 @@ class PXAdminTable extends PXAdminComplexWidget {
 	 * @param Array $getData - массив с GET переменными которые надо добавлять в ссылки таблицы
 	 * @param String $titleKey - тип поля в datatype по которому будет определяться 'title' таблицы
 	 */
-	function PXAdminTable($data, $dtype, $getData, $titleKey = NULL) {
+	function __construct($data, $dtype, $getData, $titleKey = NULL) {
 		$this->data                = $data;
 		$this->dtype               = $dtype;
 		$this->getData             = !empty($getData) ? $getData : array();
@@ -397,7 +399,7 @@ class PXAdminTable extends PXAdminComplexWidget {
 	}
 
 	function _addToUrl(&$href, $k, $v) {
-		$href = NLAbstractLayout::buildHref($k, $v, $this->getData, $href);
+		$href = LayoutAbstract::buildHref($k, $v, $this->getData, $href);
 	}
 
 	function setSiteTree($tree){

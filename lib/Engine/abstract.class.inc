@@ -7,7 +7,7 @@ abstract class PXEngine {
 	protected $app       = array('factory' => 'PXApplication', 'helper' => true);
 	protected $request   = array('factory' => 'PXRequest');
 	protected $db        = array('factory' => 'PXDatabase',    'helper' => true);
-	protected $layout    = array('factory' => 'PXLayoutNull');
+	protected $layout    = array('factory' => 'PP\Lib\Html\Layout\Null');
 	protected $user      = array('factory' => 'PXUserAuthorized');
 
 	protected $initOrder = array('app', 'db', 'request', 'user', 'layout');

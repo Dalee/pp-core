@@ -2,22 +2,22 @@
 require_once BASEPATH . '/libpp/lib/Debug/functions.inc';
 require_once BASEPATH . '/libpp/lib/registry.class.inc';
 require_once BASEPATH . '/libpp/lib/maincommon.inc';
-require_once BASEPATH . '/libpp/lib/HTML/Abstract/layout.class.inc';
-require_once BASEPATH . '/libpp/lib/HTML/Admin/layout.class.inc';
+
+use PP\Lib\Html\Layout\AdminHtmlLayout;
 
 class RegistryTest extends UnitTestCase {
 	function setUp() {
 		$e = new PXEngineIndex();
 	}
-	
+
 	function testGet() {
 		$mapping = array(
-			'app'     => 'PXApplication', 
-			'db'      => 'PXDataBase', 
+			'app'     => 'PXApplication',
+			'db'      => 'PXDataBase',
 			'request' => 'PXRequest',
 			'user'    => 'PXUserAuthorized'
 		);
-	
+
 		foreach($mapping as $methodName => $objClass) {
 			$method = 'get'.$methodName;
 			$obj =& PXRegistry::$method();
@@ -26,22 +26,10 @@ class RegistryTest extends UnitTestCase {
 	}
 
 	function testSet() {
-		PXRegistry::setLayout(new PXAdminHTMLLayout('index', PXRegistry::getTypes()));
-		$this->assertIsA(PXRegistry::getLayout(), 'PXAdminHTMLLayout');
+		PXRegistry::setLayout(new AdminHtmlLayout('index', PXRegistry::getTypes()));
+		$this->assertIsA(PXRegistry::getLayout(), 'PP\Lib\Html\Layout\AdminHtmlLayout');
 
 		PXRegistry::setUser(new PXUserNull());
 		$this->assertIsA(PXRegistry::getUser(), 'PXUserNull');
 	}
-
-	//deep
-	/*function test_ObjectsIdentity() {
-		foreach(array('app', 'db', 'request', 'response', 'user', 'layout') as $key) {
-			$method = 'get'.$key;
-			$obj1 =& PXRegistry::$method();
-			$obj2 =& PXRegistry::$method();
-
-			$this->assertIdentical($obj1, $obj2);
-		}
-	}*/
 }
-?>

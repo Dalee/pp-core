@@ -1,8 +1,18 @@
 <?php
-class PXAdminHTMLLayout extends NLAbstractLayout {
-	var $types;
 
+namespace PP\Lib\Html\Layout;
+
+
+class AdminHtmlLayout extends LayoutAbstract {
+
+	var $types;
 	var $_scripts = array();
+
+	public function setApp(\PXApplication $app) {
+	}
+
+	public function setLang($lang = 'rus') {
+	}
 
 	//TODO: there must be right places in <HEAD> for this
 	var $_scriptsTemplates  = array(
@@ -25,28 +35,39 @@ class PXAdminHTMLLayout extends NLAbstractLayout {
 
 	);
 
-	function PXAdminHTMLLayout($outerLayout, $types) {
-		$this->NLAbstractLayout();
-		$this->setOuterLayout($outerLayout);
-		$this->assignTitle();
-		$this->setOuterLogo('i/admin.gif', 'Proxima CMS Портал', 250, 36);
-		$this->assignVersion();
+	public function __construct($outerLayout, $types) {
+		parent::__construct();
+
 		$this->types = $types;
 
-		$this->assign('BODY.CLASS', quot(PXRegistry::getRequest()->getArea()));
+		$this->assignTitle();
+		$this->setOuterLogo('i/admin.gif', 'pp/core', 250, 36);
+		$this->setOuterLayout($outerLayout);
+
+		$this->assign('BODY.CLASS', quot(\PXRegistry::getRequest()->getArea()));
 	}
 
-	function assignVersion() {
-		$this->assign('OUTER.VERSION', PP_VERSION);
+	protected function assignVersion() {
+		$user = \PXRegistry::getUser();
+		$version = ($user->isAuthed())
+			? PP_VERSION
+			: '';
+
+		$this->assign('OUTER.VERSION', $version);
 	}
 
-	function setApp() {
-		// pass ;
-	}
-
+	/**
+	 * @param null|string $title
+	 * @return $this
+	 */
 	function assignTitle($title = NULL) {
-		$title = ((is_null($title) || !mb_strlen(trim($title))) ? '' : mb_strtr($title, array('<' => '&lt;', '>' => '&gt;')).' / ')."Proxima CMS Портал";
-		$this->Assign("OUTER.TITLE", $title);
+		$title = ((is_null($title) || !mb_strlen(trim($title)))
+				? ''
+				: mb_strtr($title, array('<' => '&lt;', '>' => '&gt;')).' / ')."Proxima CMS Портал";
+
+		$this->assign("OUTER.TITLE", $title);
+
+		return $this;
 	}
 
 	function assignError($label, $errorText) {
@@ -54,7 +75,7 @@ class PXAdminHTMLLayout extends NLAbstractLayout {
 	}
 
 	function assignContentControls($label, $selectedSid, $allowedFormats) {
-		FatalError("please use PXAdminHTMLLayout::AssignControls");
+		throw new \Exception("please use AdminHtmlLayout::AssignControls");
 	}
 
 	function assignControls($label, $selectedSid, $allowedFormats) {
@@ -64,7 +85,7 @@ class PXAdminHTMLLayout extends NLAbstractLayout {
 
 	function appendControls($label, $selectedSid, $allowedFormats) {
 		foreach ($allowedFormats as $format) {
-			$button = new PXControlButton($this->types[$format]->title);
+			$button = new \PXControlButton($this->types[$format]->title);
 			$button->setClickCode('AddContent(\''.$format.'\', '.(int)$selectedSid.')');
 			$button->setClass('add');
 
@@ -117,10 +138,10 @@ class PXAdminHTMLLayout extends NLAbstractLayout {
 	}
 
 	function appendTable($label, $objectFormat, $table, $selected = NULL, $varToTitle = NULL, $page=1, $objectsOnPage=0, $count=0, $withLinks=TRUE, $parentPathname=NULL) {
-		$htmltable = new PXAdminTable($table, $this->types[$objectFormat], $this->getData);
+		$htmltable = new \PXAdminTable($table, $this->types[$objectFormat], $this->getData);
 		$htmltable->setCaption($this->types[$objectFormat]->title . '(' . $count . ')');
 
-		$pager = new PxAdminPager($page, $objectsOnPage, $count, $this->types[$objectFormat], $this->getData);
+		$pager = new \PxAdminPager($page, $objectsOnPage, $count, $this->types[$objectFormat], $this->getData);
 		$htmltable->setPosition($pager->getPosition());
 
 		$this->append($label, $htmltable->html().$pager->html());
@@ -222,10 +243,14 @@ class PXAdminHTMLLayout extends NLAbstractLayout {
 		return $singleton ? ($this->_scripts[$hash] = true) : true;
 	}
 
+	function template($filename, $label = null) {
+		$this->assignVersion();
 
-	public
-	function notSetAllowedChilds($label, $format, $id) {
-		$format = PXRegistry::getTypes($format);
+		return parent::template($filename, $label);
+	}
+
+	public function notSetAllowedChilds($label, $format, $id) {
+		$format = \PXRegistry::getTypes($format);
 
 		$this->assign($label, <<<HTML
 			<h2>Для добавления в раздел информации необходимо указать разрешенные форматы</h2>
@@ -239,5 +264,3 @@ HTML
 		);
 	}
 }
-
-?>

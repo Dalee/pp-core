@@ -72,21 +72,6 @@ class NLAbstractHTMLForm {
 	}
 
 	static
-	function BuildHref($key, $value) {
-		$href = "?";
-
-		foreach ($this->getData as $k=>$v) {
-			$v = urlencode($v);
-			if (!empty($v) && $k != $key) $href .= $k.'='.$v.'&';
-		}
-
-		$href .= $key.'='.$value.'&';
-		$href = mb_substr($href, 0, -1);
-
-		return $href;
-	}
-
-	static
 	function BuildHidden($name, $value) {
 		$hidden = new PXInputHidden($name, $value);
 
@@ -219,7 +204,7 @@ class NLAbstractHTMLForm {
 	function BuildDropDown($name, $value, $values, $multiple=false, $size=null, $disabled=false) {
 		$dropdown = new PXInputDropDown($name, $value, $values);
 		$dropdown->setDisabled($disabled||NLAbstractHTMLForm::_DisabledStatus());
-		
+
 		$dropdown->setMultiple($multiple);
 
 		if ($size) {
@@ -229,7 +214,7 @@ class NLAbstractHTMLForm {
 
 		return $dropdown->html();
 	}
-	
+
 	static
 	function BuildParentDropDown($name, $value, $values) {
 		$parentdropdown = new PXInputParentDropDown($name, $value, $values);
