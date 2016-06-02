@@ -1,6 +1,6 @@
 # Change log
 
-## [Unreleased]
+## [v1.6.1]
 ### Изменения
 - Monolog, `PXRegistry::getLogger($logger_name)`, где `$logger_name` может быть одной из констант: `LOGGER_APP`, `LOGGER_CRON`. По-умолчанию `LOGGER_APP` рендерится в `site/var/application.log`, `LOGGER_CRON` - `site/var/cron.log`
 - Убрана поддержка PHP версии ниже 5.4
@@ -10,11 +10,12 @@
 - auth.ini в качестве названия механизма авторизации теперь требует полный PSR-4 путь к классу (для обратной совместимости - используется маппинг для secure и session вариантов авторизации)
 - migrate.php больше не пытается обращаться к datatypes.xml
 - Капча при доступе в административный интерфейс (в development-режиме не требует ввода)
-- Определение development режима работы app->isDevelopmentMode(), установка режима через properties.ini `ENVIRONMENT=DEVELOPER`.
+- Определение development режима работы app->isDevelopmentMode(), установка режима через properties.ini `ENVIRONMENT=DEVELOPER`
 - `class NLAbstractLayout` -> `abstract PP\Lib\Html\Layout\LayoutAbstract`
 - `class PXAdminHTMLLayout` -> `class PP\Lib\Html\Layout\AdminHtmlLayout`
 - `class PXLayoutInterface` -> `interface PP\Lib\Html\Layout\LayoutInterface`
 - Версия pp/core отображается только для авторизированных пользователей
+- Добавлена константа `APPPATH` и метод `getAppPath` в класс `PXApplication` для ее получения [link](http://git.dalee.ru/pp/core/merge_requests/10)
 
 ### Merge Request
 - [!8](http://git.dalee.ru/pp/core/merge_requests/8)
