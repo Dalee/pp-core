@@ -748,6 +748,13 @@ class PXApplication {
 	}
 
 	/**
+	 * Returns application path
+	 */
+	public function getAppPath() {
+		return APPPATH;
+	}
+
+	/**
 	 * Return if application is in development mode
 	 * @return bool
 	 */

@@ -23,6 +23,7 @@ defined('PPPATH')     || define('PPPATH',     BASEPATH . 'libpp' . DIRECTORY_SEP
 defined('PPLIBPATH')  || define('PPLIBPATH',  PPPATH   . 'lib' . DIRECTORY_SEPARATOR);
 defined('LOCALPATH')  || define('LOCALPATH',  BASEPATH . 'local' . DIRECTORY_SEPARATOR);
 defined('SHAREDPATH') || define('SHAREDPATH', BASEPATH . 'site' . DIRECTORY_SEPARATOR);
+defined('APPPATH')    || define('APPPATH',    BASEPATH . 'app' . DIRECTORY_SEPARATOR);
 
 //
 if (isset($_SERVER['HTTP_X_REWRITE_URL'])) {
