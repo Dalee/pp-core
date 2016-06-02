@@ -2,7 +2,7 @@
 class PXEngineAdminIndex extends PXEngineAdmin {
 	var $menu;
 
-	var $layout                 = array('factory' => 'PXAdminHTMLLayout', 'helper' => true);
+	var $layout                 = array('factory' => 'PP\Lib\Html\Layout\AdminHtmlLayout', 'helper' => true);
 	var $outerLayout            = 'index';
 	protected $templateMainArea = 'INNER.0.0';
 
@@ -93,4 +93,3 @@ class PXEngineAdminIndex extends PXEngineAdmin {
 		$this->layout->flush($charset);
 	}
 }
-?>

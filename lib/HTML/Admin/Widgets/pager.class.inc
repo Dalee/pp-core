@@ -1,6 +1,8 @@
 <?php
 define("MASK_MIDDLE_PAGE",   0);
 
+use \PP\Lib\Html\Layout\LayoutAbstract;
+
 class PXAdminPager extends PXAdminComplexWidget {
 	var $_currentPage;
 	var $_rowsPerPage;
@@ -25,7 +27,7 @@ class PXAdminPager extends PXAdminComplexWidget {
 	 * @param String  $pager_name - имя переменной для постраничной навигации, конкатенируется с '_page'
 	 * @param Array   $getData - массив с GET переменными, которые надо добавлять в ссылки постраничной навигации, обычно берётся из поля $layout->getData
 	 */
-	function PxAdminPager($cur, $rows = 1, $count = 1, $pager_name = '', $get_data = null){
+	function __construct($cur, $rows = 1, $count = 1, $pager_name = '', $get_data = null){
 		if($pager_name instanceof PXTypeDescription) {
 			$pager_name = $pager_name->id;
 		}
@@ -97,7 +99,7 @@ class PXAdminPager extends PXAdminComplexWidget {
 	}
 
 	function _buildHref($key, $val = NULL) {
-		return NLAbstractLayout::buildHref($key, $val, $this->_getData);
+		return LayoutAbstract::buildHref($key, $val, $this->_getData);
 	}
 
 	function getPosition () {
@@ -116,7 +118,7 @@ class PXAdminPager extends PXAdminComplexWidget {
 	function getPagerName() {
 		return $this->_pagerName;
 	}
-	
+
 	function getParamName() {
 		return $this->_pagerName . "_page";
 	}
@@ -136,8 +138,4 @@ class PXAdminPager extends PXAdminComplexWidget {
 	public static function getPerPageByFormatId($formatId, $default = null) {
 		return PXRegistry::getRequest()->getGetVar(self::getPerPageParamByFormatId($formatId), $default);
 	}
-
-
-
 }
-?>

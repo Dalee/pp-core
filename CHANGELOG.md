@@ -1,7 +1,7 @@
 # Change log
 
 ## [Unreleased]
-### Изменения [link](http://git.dalee.ru/pp/core/merge_requests/8)
+### Изменения
 - Monolog, `PXRegistry::getLogger($logger_name)`, где `$logger_name` может быть одной из констант: `LOGGER_APP`, `LOGGER_CRON`. По-умолчанию `LOGGER_APP` рендерится в `site/var/application.log`, `LOGGER_CRON` - `site/var/cron.log`
 - Убрана поддержка PHP версии ниже 5.4
 - Убрана поддержка Windows платформ
@@ -11,6 +11,15 @@
 - migrate.php больше не пытается обращаться к datatypes.xml
 - Капча при доступе в административный интерфейс (в development-режиме не требует ввода)
 - Определение development режима работы app->isDevelopmentMode(), установка режима через properties.ini `ENVIRONMENT=DEVELOPER`.
+- `class NLAbstractLayout` -> `abstract PP\Lib\Html\Layout\LayoutAbstract`
+- `class PXAdminHTMLLayout` -> `class PP\Lib\Html\Layout\AdminHtmlLayout`
+- `class PXLayoutInterface` -> `interface PP\Lib\Html\Layout\LayoutInterface`
+- Версия pp/core отображается только для авторизированных пользователей
+
+### Merge Request
+- [!8](http://git.dalee.ru/pp/core/merge_requests/8)
+- [!9](http://git.dalee.ru/pp/core/merge_requests/9)
+
 
 ## [v1.6] - 2016-05-17
 ### Изменения

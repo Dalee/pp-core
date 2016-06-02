@@ -2,17 +2,19 @@
 
 require_once dirname(__FILE__) . '/additional_loader.class.inc';
 
+use PP\Lib\Html\Layout\LayoutAbstract;
+
 class PXFiltersAdminWidget extends PXAdminWidget {
 	protected $pluginFolder;
 	protected $ignoredTypes;
 	protected $dtype             = null;
 	protected $additionalFilters = array();
-	
+
 	public function __construct($pluginFolder) {
 		parent::__construct();
 		$this->pluginFolder  = $pluginFolder;
 	}
-	
+
 	public /* override */ function setParent($widget) {
 		parent::setParent($widget);
 		if(isset($widget->dtype)){
@@ -20,7 +22,7 @@ class PXFiltersAdminWidget extends PXAdminWidget {
 			$this->additionalFilters = PXFiltersPluginAdditionalLoader::getAdditionalFilters($this->dtype->id, $this->pluginFolder);
 		}
 	}
-	
+
 	public /* override */ function html() {
 		$ignoredTypes = array_map('trim', explode(',', PXAbstractPlugin::getParam('filters', 'ignore')));
 		if (empty($this->dtype) || in_array($this->dtype->id, $ignoredTypes)) {
@@ -29,22 +31,22 @@ class PXFiltersAdminWidget extends PXAdminWidget {
 		$request = PXRegistry::getRequest();
 		$layout  = PXRegistry::getLayout();
 		$app     = PXRegistry::getApp();
-		
+
 		$layout->assignInlineJS($this->js());
 		$layout->assignInlineCSS($this->css());
-		
+
 		$filters = $request->getVar('filters', array());
 
 		$filters_html = '<p>Используйте ^ для поиска в начале строки, $ &mdash; в конце строки.</p>';
-		
+
 		foreach ($this->dtype->fields as $field) {
 			if (!$field->listed || !$field->storageType->filterable()) continue;
 			$filter_value = @htmlspecialchars($filters[$this->dtype->id][$field->name], ENT_COMPAT|ENT_HTML401, DEFAULT_CHARSET);
-			
+
 			switch(true){
 				case $field->storageType instanceof PXStorageTypeBoolean:
 					$spformat = '<label><input type="radio" name="filters[' . $this->dtype->id . '][' . $field->name .']" value="%s"%s/>%s</label> ';
-					
+
 					$filters_html .= '<div>';
 					$filters_html .= sprintf($spformat, '',  empty($filter_value) ? ' checked="checked"' : '', 'Все');
 					$filters_html .= sprintf($spformat, 'f', $filter_value == 'f' ? ' checked="checked"' : '', 'Нет');
@@ -55,11 +57,11 @@ class PXFiltersAdminWidget extends PXAdminWidget {
 					$filters_html .= sprintf('<div><input type="text" value="%s" name="filters[%s][%s]" /> &ndash; <label>%s</label></div>', $filter_value, $this->dtype->id, $field->name, $field->description);
 			}
 		}
-		
+
 		foreach($this->additionalFilters as $additionalFilter){
 			$filters_html .= $additionalFilter->html();
 		}
-		
+
 		$filters_html .= '<button class="run_f">Применить</button>';
 
 		if (!empty($filters[$this->dtype->id])) {
@@ -90,7 +92,7 @@ $(function() {
 		var pattern = new RegExp(pattern_str, "gi");
 		return loc.replace(pattern, '').replace(/&$/, '');
 	};
-	
+
 	$(".run_f").click(function() {
 		var search_properties = {};
 		var loc = erase_filters().split('&');
@@ -121,7 +123,7 @@ $(function() {
 				join.push(i + '=' + encodeURIComponent(search_properties[i]));
 			}
 		}
-	
+
 		join.push('charcheck=' + encodeURIComponent('йцукен'));
 
 		window.location.search = '?' +  join.join('&');
@@ -214,11 +216,10 @@ class PXOnPageAdminWidget extends PXAdminWidget {
 
 		foreach ($this->onPageValues as $i => $t) {
 			$selected = $req->getVar($param, 20) == $t ? 'selected' : '';
-			$tmp[$i]  = sprintf("<a class='%s' href='%s'>%s</a>", $selected, NLAbstractLayout::buildHref($param, $t), $t);
+			$tmp[$i]  = sprintf("<a class='%s' href='%s'>%s</a>", $selected, LayoutAbstract::buildHref($param, $t), $t);
 		}
 
 		return "Показывать на странице: " . join($tmp);
 	}
 }
 
-?>

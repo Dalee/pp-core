@@ -38,7 +38,6 @@ require_once PPLIBPATH . 'abstractplugin.class.inc';
 require_once PPLIBPATH . 'search.class.inc';
 require_once PPLIBPATH . 'logger.class.inc';
 require_once PPLIBPATH . 'Objects/classes.inc';
-require_once PPLIBPATH . 'HTML/interface.class.inc';
 
 require_once PPLIBPATH . 'Engine/classes.inc';
 

@@ -1,21 +1,24 @@
 <?php
 
-require_once PPLIBPATH . 'Common/functions.array.inc';
-require_once PPLIBPATH . 'Common/functions.string.inc';
+namespace PP\Lib\Html\Layout;
 
 define('TABLECOLOR1', '#E7E9ED');
 define('TABLECOLOR2', '#C9CED6');
 define('TABLECOLOR3', '#385A94');
 
-class NLAbstractLayout {
+require_once PPLIBPATH . 'Common/functions.array.inc';
+require_once PPLIBPATH . 'Common/functions.string.inc';
+
+
+abstract class LayoutAbstract implements LayoutInterface {
+
 	private $html = '';
 	private $labels = array();
 
-	var $getData;
-
+	public $getData;
 	public $outerLayout;
 
-	function NLAbstractLayout() {
+	public function __construct() {
 		$this->getData = array();
 
 		$this->template_dirs = array(
@@ -136,7 +139,7 @@ class NLAbstractLayout {
 	}
 
 	function setMenu($menuItems, $current, $getParam = 'area', $buildHref = true) {
-		$menu = new PXWidgetMenuTabbed;
+		$menu = new \PXWidgetMenuTabbed();
 
 		$menu->items = $menuItems;
 		$menu->selected = $current;
@@ -149,7 +152,7 @@ class NLAbstractLayout {
 	function setLogoutForm($href) {
 		$this->assign('OUTER.EXIT', $this->template('form-logout.tmpl'));
 		$this->assign('LOGOUT.HREF', $href);
-		$this->assign('USER.TITLE', PXRegistry::getUser()->getTitle());
+		$this->assign('USER.TITLE', \PXRegistry::getUser()->getTitle());
 	}
 
 	function setLoginForm($formAction, $formMethod, $namesArray, $valuesArray) {
@@ -196,9 +199,8 @@ class NLAbstractLayout {
 		$this->set($label, $refValue);
 	}
 
-	public
-	function isWidget($value) {
-		return is_object($value) && $value instanceof PXAdminWidgetIF;
+	public function isWidget($value) {
+		return is_object($value) && $value instanceof \PXAdminWidgetIF;
 	}
 
 	// alias for append
@@ -236,7 +238,7 @@ class NLAbstractLayout {
 	}
 
 	function assignKeyValueList($label, $list, $varName, $selected) {
-		$list = new PxAdminList($list);
+		$list = new \PXAdminList($list);
 
 		$list->setVarName($varName);
 		$list->setSelected($selected);
@@ -268,7 +270,7 @@ class NLAbstractLayout {
 
 	function flush($charset = NULL) {
 		$result = $this->html();
-		$response =& PXResponse::getInstance();
+		$response = \PXResponse::getInstance();
 
 		if ($charset) {
 			if (defined('DEFAULT_CHARSET') && $charset != DEFAULT_CHARSET) {
@@ -282,12 +284,12 @@ class NLAbstractLayout {
 
 	// static
 	public static function _buildHref($key, $value) {
-		return NLAbstractLayout::buildHref($key, $value);
+		return static::buildHref($key, $value);
 	}
 
 	// static
 	public static function buildHref($key, $value, $getData = array(), $href = "?") {
-		$layoutData = PXRegistry::getLayout()->getData;
+		$layoutData = \PXRegistry::getLayout()->getData;
 		$getData = array_merge($layoutData, $getData);
 
 		parse_str($href, $href_vars);
@@ -307,4 +309,6 @@ class NLAbstractLayout {
 		$href = parse_url(appendParamToUrl($href, $key, $value));
 		return @"?{$href['query']}";
 	}
+
+
 }

@@ -28,6 +28,7 @@ class PXUserHTMLLang {
 
 	/**
 	 * smarty_function_lang
+	 * @return string
 	 */
 	public function lang($param, &$smarty) {
 		if (empty($param)) {
@@ -151,7 +152,7 @@ class PXUserHTMLLang {
 	function _dateWeekdaysReplaces($time) {
 		$weekDay = strftime('%u', $time);
 		$short   = $this->_get('weekdays.short');
-		$full    = $this->_get('weekdays'); 
+		$full    = $this->_get('weekdays');
 
 		return array(
 			'%a' => $short[$weekDay -1],
@@ -162,8 +163,8 @@ class PXUserHTMLLang {
 	function _dateMonthsReplaces($time) {
 		$monthNumber = (int)strftime('%m', $time);
 
-		$months      = $this->_get('months'); 
-		$monthsShort = $this->_get('months.short'); 
+		$months      = $this->_get('months');
+		$monthsShort = $this->_get('months.short');
 		$months2     = $this->_get('months.genitive');       // Родительный падеж
 		$months3     = $this->_get('months.prepositional');  // Предложный падеж
 

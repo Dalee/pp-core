@@ -2,11 +2,13 @@
 
 require_once dirname(__FILE__) . '/../../lib/additional_loader.class.inc';
 
+use PP\Lib\Html\Layout\AdminHtmlLayout;
+
 class PXTriggerDatabaseFilters extends PXAbstractDatabaseTrigger {
 	function OnBeforeGetDataBuildQuery($db, $format, &$mode, &$selector, &$where, &$order, &$limit) {
 		$layout = PXRegistry::getLayout();
 
-		if (!PXRegistry::getApp()->isAdminEngine() || !($layout instanceof PXAdminHTMLLayout) || !PXPluginFilters::enabled()) {
+		if (!PXRegistry::getApp()->isAdminEngine() || !($layout instanceof AdminHtmlLayout) || !PXPluginFilters::enabled()) {
 			return;
 		}
 
@@ -50,18 +52,18 @@ class PXTriggerDatabaseFilters extends PXAbstractDatabaseTrigger {
 
 					$left  = mb_substr($value, 0, 1) != '^' ? P_LEFT : 0;
 					$right = mb_substr($value, -1)   != '$' ? P_RIGHT : 0;
-					
+
 					if (!$left) {
 						$value = mb_substr($value, 1);
 					}
-					
+
 					if (!$right) {
 						$value = mb_substr($value, 0, mb_strlen($value) - 1);
 					}
 					$_where[] = sprintf("%s.%s %s", $format->id, $name, $db->like($db->escapeString($value), $left | $right));
 			}
 		}
-		
+
 		foreach (PXFiltersPluginAdditionalLoader::getAdditionalFilters($format->id, $this->description->getFolder()) as $additionalFilterClass) {
 			/* @var $additionalFilterClass PXAdditionalFilter */
 			$whereAdditionalPart = $additionalFilterClass->getWhere();

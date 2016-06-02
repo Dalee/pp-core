@@ -1,4 +1,7 @@
 <?php
+
+use PP\Lib\Html\Layout\LayoutAbstract;
+
 class PXVersion extends PXAdminWidget {
 	private $request;
 	private $app;
@@ -26,7 +29,7 @@ class PXVersion extends PXAdminWidget {
 		if($this->is_version_object()) {
 			$html[] = NLAbstractHTMLForm::BuildHidden('sys_original', $this->object['sys_original']);
 			$html[] = NLAbstractHTMLForm::BuildSubmit('Принять версию');
-			
+
 			return join($html);
 		}
 
@@ -43,7 +46,7 @@ class PXVersion extends PXAdminWidget {
 		} else {
 			if($this->is_version_object()) {
 				PXResponse::getInstance()
-					->redirect(NLAbstractLayout::buildHref('action', 'contentversion'));
+					->redirect(LayoutAbstract::buildHref('action', 'contentversion'));
 			}
 		}
 
@@ -147,4 +150,3 @@ HTML;
 	}
 
 }
-?>
