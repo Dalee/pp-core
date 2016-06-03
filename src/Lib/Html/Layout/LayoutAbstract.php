@@ -271,14 +271,6 @@ abstract class LayoutAbstract implements LayoutInterface {
 	function flush($charset = NULL) {
 		$result = $this->html();
 		$response = \PXResponse::getInstance();
-
-		if ($charset) {
-			if (defined('DEFAULT_CHARSET') && $charset != DEFAULT_CHARSET) {
-				$result = myconv(DEFAULT_CHARSET, $charset, $result);
-				$response->setCharset($charset);
-			}
-		}
-
 		$response->send($result);
 	}
 

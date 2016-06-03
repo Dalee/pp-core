@@ -5,14 +5,12 @@ require_once PPLIBPATH . 'Common/functions.array.inc';
 class NLHTTPVarsData {
 	var $raw;
 	var $clientCharset;
-	var $_needToConvert;
 	var $_needToStripTags;
 
 	function __construct($needToStripTags = false, $needToConvert=true) {
 		$this->raw              = array();
 		$this->clientCharset    = isset($_SERVER['CHARSET']) ? strtolower($_SERVER['CHARSET']{0}) : CHARSET_UTF8;
 
-		$this->_needToConvert   = $needToConvert;
 		$this->_needToStripTags = $needToStripTags;
 	}
 
@@ -57,7 +55,6 @@ class NLHTTPVarsData {
 		$this->_unEscape($this->raw);
 
 		if (!empty($this->raw['charcheck'])) {
-			$this->_needToConvert = true;
 			$this->clientCharset  = $this->charcheck_machine($this->raw['charcheck']);
 		}
 
@@ -77,10 +74,6 @@ class NLHTTPVarsData {
 
 			if ($this->_needToStripTags) {
 				$data = strip_tags($data);
-			}
-
-			if ($this->_needToConvert) {
-				$data = myconv($this->clientCharset, DEFAULT_CHARSET, $data);
 			}
 		}
 	}

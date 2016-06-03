@@ -200,7 +200,7 @@ HTML;
 
 		$this->addEnvironments();
 
-		$mail->setBody(myconv(DEFAULT_CHARSET, CHARSET_UTF8, $body));
+		$mail->setBody($body);
 		$mail->send();
 	}
 
@@ -261,7 +261,7 @@ HTML;
 
 		$xml[] = '</environments>';
 
-		$html = $this->applyXSLT(myconv(DEFAULT_CHARSET, CHARSET_UTF8, implode("\n", $xml)));
+		$html = $this->applyXSLT(implode("\n", $xml));
 
 		$this->mail->addFile(null, 'environments.debug_html', 'text/html', $html);
 	}
@@ -269,7 +269,7 @@ HTML;
 	function attachError($error, $errPos) {
 		if($errPos < 15) {
 			$xml  = $this->errorToXML($error);
-			$html = $this->applyXSLT(myconv(DEFAULT_CHARSET, CHARSET_UTF8, $xml));
+			$html = $this->applyXSLT($xml);
 			$this->mail->addFile(null, 'error_'.($errPos + 1).'.debug_html', 'text/html', $html);
 		}
 	}

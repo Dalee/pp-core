@@ -40,7 +40,6 @@ class PXUserHTMLLang {
 
 		$path   = null;
 		$action = null;
-		$encoding = null;
 
 		if (isset($param['get'])) {
 			$path = $param['get'];
@@ -62,20 +61,12 @@ class PXUserHTMLLang {
 			$action = 'assign';
 		}
 
-		if (isset($param['encoding'])) {
-			$encoding = $param['encoding'];
-		}
-
 		if (is_null($path)) {
 			return;
 		}
 
 		$value = $this->_get($path);
 		$value = $this->_replace($value, $param);
-
-		if (!empty($encoding)) {
-			$value = $this->_reconv($value, $encoding);
-		}
 
 		switch($action) {
 			case 'return':
@@ -195,13 +186,6 @@ class PXUserHTMLLang {
 		}
 
 		return $value;
-	}
-
-	function _reconv($value, $encoding) {
-		if ($encoding == 'utf8') {
-			$this->charset = CHARSET_UTF8;
-		}
-		return convertCyrillicObjectToUtf($value);
 	}
 
 	function parseDateToTime($string) {

@@ -27,7 +27,7 @@ class PXAdminAuditWrapper {
 
 	function PXAdminAuditWrapper() {
 		PXRegistry::assignToObject($this);
-		
+
 		$this->page = $this->request->getVar('_page', 1);
 
 		$onPage = $this->request->getVar('_per_page', $this->minChildrenOnPage);
@@ -56,7 +56,7 @@ class PXAdminAuditWrapper {
 			$this->filterForm();
 		}
 	}
-	
+
 	function table() {
 		$table = new PXAdminAuditTable($this->cols2title);
 		$table->setDict('level', $this->viewer->getErrorLevels());
@@ -64,7 +64,7 @@ class PXAdminAuditWrapper {
 		$table->setCaption($this->caption);
 		$this->html($table->html());
 	}
-	
+
 	function pager() {
 		$param = $this->request->getAllGetData();
 
@@ -72,10 +72,6 @@ class PXAdminAuditWrapper {
 			$param['ts'] = getFromArray($param['date'], 'day'). '-' . getFromArray($param['date'], 'month') . '-' . getFromArray($param['date'], 'year') . ' 00:00:00';
 		}
 		unset($param['date']);
-
-		foreach($param as $k => $v) {
-			$param[$k] = myconv(DEFAULT_CHARSET, CHARSET_UTF8, $param[$k]);
-		}
 
 		$pager = new PXAdminPager($this->page, $this->onPage, $this->count, '',  $param);
 		$this->html($pager->html());
@@ -121,7 +117,7 @@ class PXAdminAuditWrapper {
 
 		$dateHTML =  NLAbstractHTMLForm::BuildDateTime("date", $ts, false, true, true);
 
-		$html = 
+		$html =
 <<<HTML
 	<H2>Filter</H2>
 
@@ -258,11 +254,11 @@ HTML;
 	function get_cols() {
 		return array_merge(array('id'), array_keys($this->cols2title));
 	}
-	
+
 	function html($html) {
 		$this->layout->append($this->frame, $html);
 	}
-	
+
 	function filter() {
 		$filters = array();
 
@@ -272,7 +268,7 @@ HTML;
 
 		foreach($in as $field=>$value) {
 			$var = $this->request->getVar($field, $value);
-			
+
 			if(is_null($var)) {
 				continue;
 			}
@@ -280,7 +276,7 @@ HTML;
 			$this->layout->setGetVarToSave($field, $var);
 			$filters[$field] = $var;
 		}
-		
+
 		return $filters;
 	}
 

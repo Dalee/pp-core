@@ -18,19 +18,14 @@ class PXEngineJSON extends PXEngine {
 	}
 
 	function sendJson() {
-		$encodedResult = self::jsonEncodeCyr($this->result);
 		$response =& PXResponse::getInstance();
 		$response->setContentType('text/javascript');
-		$response->send(json_encode($encodedResult));
+		$response->send(json_encode($this->result));
 		exit;
 	}
 
 	function getJson($module) {
 		return $module->userJson();
-	}
-
-	public static function jsonEncodeCyr($object) {
-		return convertCyrillicObjectToUtf($object);
 	}
 
 	// Common data encoders for library methods standardization
@@ -44,7 +39,7 @@ class PXEngineJSON extends PXEngine {
 	}
 
 	protected static function toObject($key, $value, $encode) {
-		return (object)array($key => (object)array('notice' => $encode ? self::jsonEncodeCyr($value) : $value));
+		return (object)array($key => (object)array('notice' => $value));
 	}
 
 }

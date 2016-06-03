@@ -4,7 +4,7 @@ class CookieHttpVarsTest extends UnitTestCase {
 
 	function setUp() {
 		$_COOKIE['test1'] = serialize(array("1"));
-		$_COOKIE['test2'] = myconv('k', 'w', "Привет мир!");
+		$_COOKIE['test2'] = 'Привет мир!';
 
 		$this->object = new NLCookieData;
 	}

@@ -11,7 +11,7 @@ class NLMSSQLDatabase extends NLAbstractSQLDatabase {
 	function NLMSSQLDatabase($dbDescription) {
 		$this->setCache($dbDescription->cache);
 		$this->setConnectParams($dbDescription);
-		
+
 		$this->connected       = false;
 		$this->servercoding    = (isset($_SERVER['SERVER_PORT']) ? CHARSET_WINDOWS : CHARSET_DOS);
 	}
@@ -33,7 +33,7 @@ class NLMSSQLDatabase extends NLAbstractSQLDatabase {
 
 		return $this->connected;
 	}
-	
+
 	function setConnectParams($db) {
 		foreach(array_keys($this->connectArray) as $field) {
 			if ($db->$field !== NULL) {
@@ -50,8 +50,6 @@ class NLMSSQLDatabase extends NLAbstractSQLDatabase {
 	}
 
 	function Query($query, $donotusecache = false, $limitpair = NULL, $xxxx=false) {
-		$query = myconv(DEFAULT_CHARSET, $this->servercoding, $query);
-
 		PXProfiler::begin('SQL: '.$query);
 
 		$md = (is_array($limitpair)) ? "-{$limitpair[0]}-{$limitpair[1]}" : "";
@@ -59,7 +57,7 @@ class NLMSSQLDatabase extends NLAbstractSQLDatabase {
 		if (!is_null($table = $this->_loadFromCache($query.$md, $donotusecache))) {
 		        return $table;
 		}
-		
+
 		if (!$this->connected) {
 			$this->Connect();
 		}
@@ -94,7 +92,7 @@ class NLMSSQLDatabase extends NLAbstractSQLDatabase {
 						if (is_string($v)) {
 							if ($v === " ") $v = ''; // FIXME: Fix bug #26315 http://bugs.php.net/bug.php?id=26315
 							// may be change to fetch_array
-							$tmp[$k] = myconv($this->servercoding, DEFAULT_CHARSET, $v);
+							$tmp[$k] = $v;
 						}
 					}
 
@@ -120,7 +118,6 @@ class NLMSSQLDatabase extends NLAbstractSQLDatabase {
 		}
 
 		if ($this->connected) {
-			$query = myconv(DEFAULT_CHARSET, $this->servercoding, $query);
 			ini_set('track_errors', 1);
 
 			if (($res = mssql_query($query, $this->connection)) === false) {
@@ -146,7 +143,7 @@ class NLMSSQLDatabase extends NLAbstractSQLDatabase {
 					} else {
 						return NULL;
 					}
-				} 
+				}
 			}
 
 			return $res;
