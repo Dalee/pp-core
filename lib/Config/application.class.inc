@@ -450,7 +450,20 @@ class PXApplication {
 			$nodes = $domModule->childNodes();
 			foreach ($nodes as $node) {
 				if (!$node->isXmlNode()) continue;
-				$module->settings[$node->nodeName()][] = pp_simplexml_decode_string($node->nodeValue());
+
+				if (!empty($node->childNodes())) {
+					$settings = [];
+					foreach ($node->childNodes() as $child) {
+						$chunk = [];
+						foreach ($child->attributes() as $attr) {
+							$chunk[$attr->name] = $attr->value;
+						}
+						$settings[] = $chunk;
+					}
+					$module->settings[$node->nodeName()] = $settings;
+				} else {
+					$module->settings[$node->nodeName()][] = pp_simplexml_decode_string($node->nodeValue());
+				}
 			}
 
 			foreach ($module->settings as $k=>$v) {
