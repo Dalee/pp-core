@@ -3,6 +3,7 @@
 ## [v1.6.2] - 2016-06-03
 ### Изменения
 - Вырезан myconv и связанные с ним методы [link](http://git.dalee.ru/pp/core/merge_requests/11)
+- Убран модуль и триггер форума [link](http://git.dalee.ru/pp/core/merge_requests/14)
 - `PXEngine` -> `PP\Lib\Engine\AbstractEngine`
 - `PXAdminEngine*` -> `PP\Lib\Engine\Admin\`
 - Настоящие сессии в административном интерфейсе, класс сессии доступен через `$engine->getSession()`
