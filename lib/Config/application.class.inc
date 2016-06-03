@@ -451,7 +451,8 @@ class PXApplication {
 			foreach ($nodes as $node) {
 				if (!$node->isXmlNode()) continue;
 
-				if (!empty($node->childNodes())) {
+				$childNodes = $node->childNodes();
+				if (!empty($childNodes)) {
 					$settings = [];
 					foreach ($node->childNodes() as $child) {
 						$chunk = [];
