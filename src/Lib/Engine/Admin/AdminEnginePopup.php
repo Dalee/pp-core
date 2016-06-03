@@ -1,25 +1,29 @@
 <?php
-class PXEngineAdminPopup extends PXEngineAdminIndex {
-	var $outerLayout            = 'popup';
+
+namespace PP\Lib\Engine\Admin;
+
+
+class AdminEnginePopup extends AdminEngineIndex {
+
+	protected $outerLayout = 'popup';
 	protected $templateMainArea = 'OUTER.CONTENT';
 
 	function initModules() {
-		$this->area    = $this->request->getArea();
+		$this->area = $this->request->getArea();
 		$this->modules = self::getModule($this->app, $this->area);
 	}
 
-	function fillLayout($area = NULL) { /* E_STRICT */
+	function fillLayout($area = null) {
 		$this->layout->setGetVarToSave('area', $this->area);
 	}
 
 	function runModules() {
-		PXProfiler::begin('RUN MODULES');
-
 		if (!$this->hasAdminModules()) {
-			return $this->layout->assignError($this->templateMainArea, 'Нет доступа');
+			$this->layout->assignError($this->templateMainArea, 'Нет доступа');
+			return;
 		}
 
-		if(!$this->checkArea($this->area)) {
+		if (!$this->checkArea($this->area)) {
 			return;
 		}
 
@@ -28,9 +32,5 @@ class PXEngineAdminPopup extends PXEngineAdminIndex {
 		$instance = $this->modules[$this->area]->getModule();
 
 		$this->layout->append($this->templateMainArea, $instance->adminPopup());
-		
-
-		PXProfiler::end();
 	}
 }
-?>

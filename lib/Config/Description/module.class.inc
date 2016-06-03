@@ -16,6 +16,9 @@ class PXModuleDescription {
 
 	const EMPTY_DESCRIPTION = '---';
 
+	/**
+	 * @return \PXModule
+	 */
 	public function getModule() {
 		if (!class_exists($this->class, false)) {
 			$this->load();

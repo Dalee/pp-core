@@ -1,5 +1,8 @@
 <?php
-class PXEngineSbin extends PXEngine {
+
+use PP\Lib\Engine\AbstractEngine;
+
+class PXEngineSbin extends AbstractEngine {
 	var $result;
 
 	var $request = array('factory' => 'PXNullRequest');
@@ -18,4 +21,3 @@ class PXEngineSbin extends PXEngine {
 		return PX_ENGINE_SBIN;
 	}
 }
-?>

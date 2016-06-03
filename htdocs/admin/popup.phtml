@@ -1,8 +1,10 @@
 <?php
-	include '../../lib/mainadmin.inc';
-	$engine = new PXEngineAdminPopup();
 
-	$engine->runModules();
+include '../../lib/mainadmin.inc';
 
-	$engine->html();
-?>
+use PP\Lib\Engine\Admin\AdminEnginePopup;
+
+$engine = new AdminEnginePopup();
+$engine->start();
+$engine->runModules();
+$engine->html();

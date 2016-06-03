@@ -18,7 +18,15 @@
 	],
 	"require": {
 		"pp/installers": "*",
-		"monolog/monolog": "^1.19"
+		"monolog/monolog": "^1.19",
+		"symfony/http-foundation": "^3.1"
+	},
+	"config": {
+		"secure-http": false,
+		"preferred-install": {
+			"pp/*": "source",
+			"*": "dist"
+		}
 	},
 	"autoload": {
 		"psr-4": {

@@ -1,11 +1,27 @@
 <?php
 interface PXModuleIF {
 	function adminIndex();
+
+	/**
+	 * @return string
+	 */
 	function adminAction();
+
+	/**
+	 * @return string
+	 */
 	function adminPopup();
 	function userIndex();
 	function userAction();
+
+	/**
+	 * @return array|null
+	 */
 	function userJson();
+
+	/**
+	 * @return string
+	 */
 	function adminJson();
 }
 
@@ -63,10 +79,16 @@ abstract class PXModule implements PXModuleIF {
 		$this->layout->assignError('INNER.1.0', 'Функция <em>adminIndex</em> данного модуля не определена');
 	}
 
+	/**
+	 * {@inheritdoc}
+	 */
 	function adminPopup() {
 		$this->layout->assignError('OUTER.CONTENT', 'Функция <em>adminPopup</em> данного модуля не определена');
 	}
 
+	/**
+	 * {@inheritdoc}
+	 */
 	function adminAction() {
 		FatalError("Функция <em>adminAction</em> данного модуля не определена");
 	}
@@ -77,10 +99,16 @@ abstract class PXModule implements PXModuleIF {
 	function userAction() {
 	}
 
+	/**
+	 * {@inheritdoc}
+	 */
 	function userJson() {
 	}
 
-	function adminJson() {
+	/**
+	 * {@inheritdoc}
+	 */
+	public function adminJson() {
 	}
 
 	function finalizeBindingsQueue() {
