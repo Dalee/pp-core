@@ -2,6 +2,8 @@
 
 namespace PP\Lib\Auth;
 
+use Symfony\Component\HttpFoundation\Session\Session;
+
 abstract class AuthAbstract implements AuthInterface {
 
 	/** @var \PXRequest */
@@ -15,6 +17,9 @@ abstract class AuthAbstract implements AuthInterface {
 
 	/** @var \PXUser */
 	protected $user;
+
+	/** @var null|Session */
+	protected $session;
 
 	protected $login;
 	protected $passwd;
@@ -60,6 +65,17 @@ abstract class AuthAbstract implements AuthInterface {
 	}
 
 	/**
+	 * @param null|Session $session
+	 * @return $this
+	 */
+	public function setSession(Session $session = null) {
+		$this->session = $session;
+
+		return $this;
+	}
+
+
+	/**
 	 * {@inheritdoc}
 	 */
 	abstract public function isCredentialsValid();
@@ -69,6 +85,7 @@ abstract class AuthAbstract implements AuthInterface {
 		$user = \PXRegistry::getUser();
 
 		$user->id = $uArray['id'];
+		$user->login = $uArray['title'];
 		$user->data = $uArray;
 		$this->passwd = $user->passwd = $uArray['passwd'];
 	}

@@ -15,7 +15,7 @@ class PXEngineJSON extends AbstractEngine {
 	}
 
 	function sendJson() {
-		$response =& PXResponse::getInstance();
+		$response = PXResponse::getInstance();
 		$response->setContentType('text/javascript');
 		$response->send(json_encode($this->result));
 		exit;

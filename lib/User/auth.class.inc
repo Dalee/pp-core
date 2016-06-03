@@ -66,7 +66,8 @@ class PXUserAuthorized extends PXUser {
 			->setApp($this->app)
 			->setDb($this->db)
 			->setRequest($this->request)
-			->setUser($this);
+			->setUser($this)
+			->setSession($this->app->engine->getSession());
 
 		if (!$authDriver->isCredentialsValid()) {
 			return false;

@@ -10,7 +10,7 @@ class AdminEnginePopup extends AdminEngineIndex {
 
 	function initModules() {
 		$this->area = $this->request->getArea();
-		$this->modules = self::getModule($this->app, $this->area);
+		$this->modules = $this->getModule($this->app, $this->area);
 	}
 
 	function fillLayout($area = null) {

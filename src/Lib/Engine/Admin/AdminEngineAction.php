@@ -9,7 +9,7 @@ class AdminEngineAction extends AbstractAdminEngine {
 
 	function initModules() {
 		$this->area = $this->request->getArea();
-		$this->modules = static::getModule($this->app, $this->area);
+		$this->modules = $this->getModule($this->app, $this->area);
 	}
 
 	function runModules() {

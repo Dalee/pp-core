@@ -2,31 +2,37 @@
 
 namespace PP\Lib\Engine\Admin;
 
-use PXModule;
+use PXResponse;
 
-class AdminEngineJson extends \PXEngineJSON {
+class AdminEngineJson extends AbstractAdminEngine {
 
-	/**
-	 *
-	 */
+	protected $result;
+
+
 	function initModules() {
 		$this->area = $this->request->getArea();
-		$this->modules = AbstractAdminEngine::getModule($this->app, $this->area);
+		$this->modules = $this->getModule($this->app, $this->area);
+	}
+
+	function runModules() {
+		// For correct user session expiration handling and admin auth module working
+		if (!($this->hasAdminModules() || $this->area == $this->authArea)) {
+			return;
+		}
+
 		$this->checkArea($this->area);
+
+		$instance = $this->modules[$this->area]->getModule();
+		$this->result = $instance->adminJson();
 	}
 
-	/**
-	 * @param PXModule $module
-	 * @return string|null
-	 */
-	function getJson(PXModule $module) {
-		return $module->adminJson();
-	}
+	function sendJson() {
+		$body = json_encode($this->result);
 
-	/**
-	 * @return int
-	 */
-	public function engineClass() {
-		return PX_ENGINE_ADMIN;
+		$response = PXResponse::getInstance();
+		$response->setContentType('text/javascript');
+		$response->setLength(strlen($body));
+		$response->send($body);
+		exit;
 	}
 }

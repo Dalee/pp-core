@@ -32,7 +32,7 @@ abstract class AbstractAdminEngine extends AbstractEngine {
 	}
 
 	// static because PXEngineAdminJSON inherited from PXEngineJSON (stupid, but traits available only from php 5.4)
-	public static function getModule(PXApplication $app, $area) {
+	protected function getModule(PXApplication $app, $area) {
 		return array_filter(array($area => $app->getAvailableModule($area)));
 	}
 
