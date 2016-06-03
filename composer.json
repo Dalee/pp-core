@@ -19,7 +19,7 @@
 	"require": {
 		"pp/installers": "*",
 		"monolog/monolog": "^1.19",
-		"symfony/http-foundation": "3.0.1"
+		"symfony/http-foundation": "~2.8"
 	},
 	"config": {
 		"secure-http": false,
