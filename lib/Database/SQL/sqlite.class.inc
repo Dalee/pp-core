@@ -2,7 +2,7 @@
 	/**
 	 * sqlite
 	 * dbname = /path/to/database.sqlite3
-	 * 
+	 *
 	 */
 	require_once (PPLIBPATH.'Database/SQL/abstract.class.inc');
 
@@ -59,7 +59,7 @@
 
 				// emulate some functionality
 				$this->connection->sqliteCreateFunction('split_part', '_sqlite_split_part', 3);
-				
+
 
 			} catch(PDOException $e) {
 				$this->connection = null;
@@ -160,10 +160,6 @@
 				foreach ($row as $key => $value) {
 					if (!is_null($value)) {
 						$value = $this->UnescapeString($value);
-
-						if (strcasecmp(DEFAULT_CHARSET, $this->_internalEncoding)) {
-							$value = myconv($this->_internalEncoding, DEFAULT_CHARSET, $value);
-						}
 					}
 
 					$key = trim($key, '"');
@@ -209,9 +205,6 @@
 					break;
 			}
 
-			if (strcasecmp(DEFAULT_CHARSET, $this->_internalEncoding)) {
-				$ret = myconv(DEFAULT_CHARSET, $this->_internalEncoding, $ret);
-			}
 			return $ret;
 		}
 
@@ -220,7 +213,7 @@
 			// TODO: refactor to user-defined function
 			return sprintf("%s @> ARRAY[%s]", $sane ? $arrayField : $this->EscapeString($arrayField), $sane ? $value : $this->EscapeString($value));
 		}
-		
+
 		public function arrayIn($arrayField, $value, $sane = false) {
 			// TODO: refactor to user-defined function
 			return sprintf("%s <@ ARRAY[%s]", $sane ? $arrayField : $this->EscapeString($arrayField), $sane ? $value : $this->EscapeString($value));
@@ -238,7 +231,7 @@
 			$tableName = $this->MapData($tableName);
 			return count($this->query("select name from sqlite_master where name={$tableName} and type='table'"));
 		}
-	
+
 		public function EscapeString($string) {
 			return addslashes($string);
 		}
@@ -255,7 +248,7 @@
 			return $string;
 		}
 
-		// mappers 
+		// mappers
 		public function mapFields($field) {
 			return '"'.$this->EscapeString($field).'"';
 		}

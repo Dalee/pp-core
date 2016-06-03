@@ -22,4 +22,3 @@ require_once PPLIBPATH . 'Common/functions.execution.inc';
 require_once PPLIBPATH . 'Common/functions.date.inc';
 require_once PPLIBPATH . 'Common/functions.validate.inc';
 require_once PPLIBPATH . 'Common/functions.imageswork.inc';
-require_once PPLIBPATH . 'Common/functions.json.inc';

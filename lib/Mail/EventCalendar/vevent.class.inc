@@ -1,27 +1,27 @@
 <?php
 class NLMailVEvent {
-	
+
 	var $_calScale;        //тип календаря, если не установлен, по умолчанию GREGORIAN
 	var $_prodId;		   // почтовый клиент - обязательное свойство
 	var $_method;
-	
+
 	var $_requiredProps;   // массив обязательных полей объекта vEvent конкретного типа
 	var $_uselessProps;    // массив неиспользуемых полей объекта vEvent конкретного типа
 	var $eventProps;       // все поля объекта vEvent
-	
+
 	function NLMailVEvent() {
 		$this->_calScale = null;                    //тип календаря, если не установлен, по умолчанию GREGORIAN
 		$this->_prodId   = '-//Microsoft Corporation//Outlook 11.0 MIMEDIR//EN'; // почтовый клиент - обязательное свойство
-		
+
 		$this->eventProps = array();
 		$this->setDTStamp(time());
 		$this->setSequence(0);
 		$this->setSummary('');
 	}
-	
+
 	function getCalendarContent() {
 		$eventContent = $this->_createEvent();
-		
+
 		$content = "BEGIN:VCALENDAR\n";
 		if ($this->_calScale) $content .= $this->_calScale . "\n";
 		$content .= "PRODID:" .$this->_prodId . "\n";
@@ -29,20 +29,20 @@ class NLMailVEvent {
 		$content .= "METHOD:" .$this->_method . "\n";
 		if ($eventContent) $content .= $eventContent . "\n";
 		$content .= "END:VCALENDAR\n";
-		
-		return myconv(DEFAULT_CHARSET, CHARSET_UTF8, $content);
+
+		return $content;
 	}
-	
+
 	function _createEvent() {
 		$this->setAttendee($this->toEmail);
 		$this->setOrganizer($this->fromEmail);
-		
+
 		$required = $this->_checkRequired();
 		if ($required) {
 			$this->setError('Вы не инициализировали свойство ' . $required . ',требуемое для данного типа события');
 			return false;
 		}
-		
+
 		$useless = $this->_checkUseless();
 		if ($useless) {
 			$this->setError('Cвойство ' . $useless . 'не должно быть инициировано для данного типа события');
@@ -51,7 +51,7 @@ class NLMailVEvent {
 		$content = "BEGIN:VEVENT\n" . implode("\n", $this->eventProps) . "\nEND:VEVENT";
 		return $content;
 	}
-	
+
 	/**
 	 * Проверка, инициированы ли все необходимые свойства для данного типа события
 	 */
@@ -63,10 +63,10 @@ class NLMailVEvent {
 		}
 		return false;
 	}
-	
+
 	/**
 	 * Проверка на отсутствие запрещенных свойств для данного типа события
-	 */	
+	 */
 	function _checkUseless() {
 		foreach ($this->_uselessProps as $propname) {
 			if (isset($this->eventProps[$propname])) {
@@ -75,21 +75,21 @@ class NLMailVEvent {
 		}
 		return false;
 	}
-	
+
 	/**
-	 * Устанавливает тип календаря, если не указан, по умолчанию GREGORIAN	
+	 * Устанавливает тип календаря, если не указан, по умолчанию GREGORIAN
 	 */
 	function setCalScale($scale) {
 		$this->_calScale = 'CALSCALE:' . $scale;
 	}
-	
+
 	/**
 	 * Идентификатор почтового клиента
 	 */
 	function setProdId($prodId) {
 		$this->_prodId = $prodId;
 	}
-	
+
 	/**
 	 * Форматирует время в стандарте vCalendar
 	 *
@@ -98,7 +98,7 @@ class NLMailVEvent {
 	function formatDT($date) {
 		return date('Ymd', $date) . 'T' . date('His', $date) . 'Z';
 	}
-	
+
 	/**
 	 * Устанавливает напоминания
 	 *
@@ -115,10 +115,10 @@ class NLMailVEvent {
 		if ($duration) $alarm .= 'DURATION:' . $duration . "\n";
 		if ($repeat)   $alarm .= 'REPEAT:'   . $repeat   . "\n";  // число повторений, используется вместе с DURATION
 		$alarm .= "END:VALARM";
-		
+
 		$this->eventProps['alarm'] = $alarm;
 	}
-	
+
 	/**
 	 * Устанавливает важность события - не стандартное свойство планировщика outlook
 	 *
@@ -127,24 +127,24 @@ class NLMailVEvent {
 	function setXImportance($value) {
 		$this->eventProps['XImportance'] = 'X-MICROSOFT-CDO-IMPORTANCE:' . $value;
 	}
-	
+
 	/**
 	 * Определяет категории события
 	 * например BUSINESS,HUMAN RESOURCES,ANNIVERSARY,PERSONAL,SPECIAL OCCASION и т.п - не обязательный
-	 * 
+	 *
 	 * @param string $text
 	 */
 	function setCategories($text) {
 		$this->eventProps['categories'] = 'CATEGORIES:' . $rId;
 	}
-	
+
 	/**
 	 * Определяет связь с другим компонентом vCalendar по UID
 	 *
 	 * @param string $rId
 	 */
 	function setRelated($rId) {
-		$this->eventProps['related'] = 'RELATED-TO:<' . $rId . '>'; 
+		$this->eventProps['related'] = 'RELATED-TO:<' . $rId . '>';
 	}
 
 	/**
@@ -205,14 +205,14 @@ class NLMailVEvent {
 	}
 
 	/**
-	 * Устанавливает дополнительную или альтернативную контактную информацию 
+	 * Устанавливает дополнительную или альтернативную контактную информацию
 	 *
 	 * @param string $text
 	 */
 	function setContact($text) {
 		$this->eventProps['contact'] = 'CONTACT:' . $text;
 	}
-	
+
 	/**
 	 * Устанавливает комментарий к событию
 	 *
@@ -221,7 +221,7 @@ class NLMailVEvent {
 	function setComment($text) {
 		$this->eventProps['comment'] = 'COMMENT:' . $text;
 	}
-	
+
 	/**
 	 * Устанавливает привязанный документ к объекту vCalendar
 	 *
@@ -244,16 +244,16 @@ class NLMailVEvent {
 		$duration = 'P';
 		if ($weeks) $duration .= $weeks . 'W';
 		if ($days)  $duration .= $days  . 'D';
-		
+
 		if ($hours || $minutes || $seconds) $duration .= 'T';
-		
+
 		if ($hours)   $duration .= $hours   . 'H';
 		if ($minutes) $duration .= $minutes . 'M';
 		if ($seconds) $duration .= $seconds . 'S';
-		
+
 		$this->eventProps['duration'] = 'DURATION:' . $duration;
 	}
-	
+
 	function setRecurrenceId($value) {
 		$this->eventProps['recurrenceId'] = 'RECURRENCE-ID;' . $value;
 	}
@@ -266,7 +266,7 @@ class NLMailVEvent {
 	function setUID($hostname) {
 		$this->eventProps['uid'] = 'UID:' . time() . '@' . $hostname;
 	}
-	
+
 	/**
 	 * Устанавливает участника события, по умолчанию - получатель письма
 	 *
@@ -306,7 +306,7 @@ class NLMailVEvent {
 			$this->eventProps['priority'] = 'PRIORITY:' . $priority;
 		}
 	}
-	
+
 	/**
 	 * Устанавливает краткое описание
 	 *
@@ -315,7 +315,7 @@ class NLMailVEvent {
 	function setSummary($text) {
 		$this->eventProps['summary'] = 'SUMMARY:' . $text;
 	}
-	
+
 	/**
 	 * Устанавливает описание события
 	 *
@@ -332,12 +332,12 @@ class NLMailVEvent {
 	 */
 	function setSequence($number) {
 		$this->eventProps['sequence'] = 'SEQUENCE:' . intval($number);
-		
+
 	}
-	
+
  	/** Устанавливает прозрачность события:
   	 * необходимо ли затрачивать время или ресурсы на данное событие
-	 * 
+	 *
 	 *
 	 * @param string $value
 	 */
@@ -359,16 +359,16 @@ class NLMailVEvent {
 	function setLocation($location) {
 		$this->eventProps['location'] = 'LOCATION:' . $location;
 	}
-	
+
 	/**
 	 * Устанавливает дату/время создания данного сообщения о событии
 	 *
 	 * @param timestamp $date
 	 */
-	function setDTStamp($date) { 
+	function setDTStamp($date) {
 		$this->eventProps['DTStamp'] = 'DTSTAMP:' . $this->formatDT($date);
 	}
-	
+
 	/**
 	 * Устанавливает дату/время начала события. Для cобытия с методом refresh - не используется
 	 *
@@ -377,7 +377,7 @@ class NLMailVEvent {
 	function setDTStart($date) {
 		$this->eventProps['DTStart'] = 'DTSTART:' . $this->formatDT($date);
 	}
-	
+
 	/**
 	 * Устанавливает дату/время окончания события. Для cобытия с методом refresh - не используется
 	 *
@@ -386,7 +386,7 @@ class NLMailVEvent {
 	function setDTEnd($date) {
 		$this->eventProps['DTEnd'] = 'DTEND:' . $this->formatDT($date);
 	}
-	
+
 	/**
 	 * Устанавливает организатора события - обязательное свойство, по умолчанию - отправитель
 	 *
@@ -395,16 +395,16 @@ class NLMailVEvent {
 	function setOrganizer($organizer) {
 		$this->eventProps['organizer'] = 'ORGANIZER:MAILTO:'.$organizer;
 	}
-	
+
 	/**
-	 * Устанавливает дату создания события 
+	 * Устанавливает дату создания события
 	 *
 	 * @param timestamp $date
 	 */
 	function setCreated($date) {
 		$this->eventProps['created'] = 'CREATED:' . $this->formatDT($date);
 	}
-	
+
 	/**
 	 * Задает географическое положение, координаты
 	 *
@@ -414,16 +414,16 @@ class NLMailVEvent {
 	function setGeo($lat, $lon) {
 		$this->eventProps['geo'] = 'GEO:'.$lat.';'.$lon;
 	}
-	
+
 	/**
-	 * Устанавливает статус события 
+	 * Устанавливает статус события
 	 *
 	 * @param string $status
 	 */
 	function setStatus($status) {
 		$validValues = array(
 			'tentative',        // пробное
-			'confirmed',        // подтверждено 
+			'confirmed',        // подтверждено
 			'cancelled'         // отменено
 		);
 		if (in_array($status, $validValues)) {

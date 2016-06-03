@@ -382,8 +382,7 @@ HTML;
 
 	function uploadFileFromUser($file) {
 		if ($file && $file != 'none' && $file['name'] && is_writable($this->catalog)) {
-			$encodedFileName = myconv(DEFAULT_CHARSET, CHARSET_WINDOWS, $file['name']);
-			$filename = _TranslitFilename(_stripBadFileChars(stripslashes($encodedFileName)));
+			$filename = _TranslitFilename(_stripBadFileChars(stripslashes($file['name'])));
 			if (!@copy($file['tmp_name'], $this->catalog.$filename)) {
 				FatalError('Не удалось скопировать файл '.$file['tmp_name'].' в каталог '.$this->catalog);
 			}

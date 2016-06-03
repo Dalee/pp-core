@@ -140,11 +140,6 @@ HTML;
 
 	private function pager($page, $onPage, $count) {
 		$param = $this->request->getAllGetData();
-
-		foreach($param as $k => $v) {
-			$param[$k] = myconv(DEFAULT_CHARSET, CHARSET_UTF8, $param[$k]);
-		}
-
 		$pager = new PXAdminPager($page, $onPage, $count, '',  $param);
 		return $pager->html();
 	}

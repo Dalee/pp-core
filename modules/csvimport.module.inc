@@ -8,7 +8,7 @@ class PXModuleCsvImport extends PXModule {
 
 		$this->settings = $settings;
 		$this->area = $area;
-		
+
 		$this->htmlEsc = array(
 			chr(145) => '&lsquo;',
 			chr(146) => '&rsquo;',
@@ -146,7 +146,7 @@ class PXModuleCsvImport extends PXModule {
 
 		return count($objects);
 	}
-	
+
 	function constructObject(&$object, $fields, $row){
 		foreach($fields as $fk=>$fv) {
 			if($fk === 'parent') {
@@ -160,14 +160,14 @@ class PXModuleCsvImport extends PXModule {
 			}
 		}
 	}
-	
+
 	function deleteOldObjects(&$db, &$format, $parent = null){
 		if(!is_null($parent)) {
 			$sql = 'DELETE FROM '.$format->id.' WHERE parent = '.$parent.';';
 		} else {
 			$sql = 'DELETE FROM '.$format->id;
 		}
-		
+
 		if ($db->ModifyingQuery($sql) == ERROR_DB_BADQUERY) {
 			FatalError("Ошибка в запросе". $sql);
 		}
@@ -274,7 +274,6 @@ HTML;
 			return NULL;
 		}
 		$str = strtr($str, $this->htmlEsc);
-		$str = myconv(CHARSET_WINDOWS, DEFAULT_CHARSET, $str);
 		$str = str_replace("\\", '&#92;', $str);
 		$str = str_replace("\n", ' ', $str);
 		$str = str_replace("\\n", "\n", $str);

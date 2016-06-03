@@ -5,37 +5,12 @@ require_once PPLIBPATH . 'Common/functions.array.inc';
 class NLHTTPVarsData {
 	var $raw;
 	var $clientCharset;
-	var $_needToConvert;
 	var $_needToStripTags;
 
 	function __construct($needToStripTags = false, $needToConvert=true) {
 		$this->raw              = array();
 		$this->clientCharset    = isset($_SERVER['CHARSET']) ? strtolower($_SERVER['CHARSET']{0}) : CHARSET_UTF8;
-
-		$this->_needToConvert   = $needToConvert;
 		$this->_needToStripTags = $needToStripTags;
-	}
-
-	function charcheck_machine($testable) {
-		switch ($testable) {
-			case "\xE9\xF6\xF3\xEA\xE5\xED":
-			case "\xEB\xE7\xE8\xEC\xE5\xEF":
-			case '??????':
-				return CHARSET_WINDOWS;
-				break;
-
-			case "\xCA\xC3\xD5\xCB\xC5\xCE":
-				return CHARSET_KOI8R;
-				break;
-
-			// FIXME: in case of UTF-8, this line is dead line (double check before kill it)
-			case "\xD0\xB9\xD1\x86\xD1\x83\xD0\xBA\xD0\xB5\xD0\xBD":
-				return CHARSET_UTF8;
-				break;
-
-			default:
-				return DEFAULT_CHARSET;
-		}
 	}
 
 	// Раскодирование JavaScript escape();
@@ -55,12 +30,6 @@ class NLHTTPVarsData {
 
 	function _NormalizeData() {
 		$this->_unEscape($this->raw);
-
-		if (!empty($this->raw['charcheck'])) {
-			$this->_needToConvert = true;
-			$this->clientCharset  = $this->charcheck_machine($this->raw['charcheck']);
-		}
-
 		$this->_Normalize($this->raw);
 	}
 
@@ -77,10 +46,6 @@ class NLHTTPVarsData {
 
 			if ($this->_needToStripTags) {
 				$data = strip_tags($data);
-			}
-
-			if ($this->_needToConvert) {
-				$data = myconv($this->clientCharset, DEFAULT_CHARSET, $data);
 			}
 		}
 	}

@@ -6,25 +6,14 @@ class BaseHttpVarsTest extends UnitTestCase {
 		$this->object = new NLHTTPVarsData();
 	}
 
-	function test_charchek_machine() {
-		$this->object->raw['charcheck'] = 'йцукен';
-		$this->assertEqual('k', $this->object->charcheck_machine($this->object->raw['charcheck']));
-
-		$this->object->raw['charcheck'] = myconv('k', 'w', 'йцукен');
-		$this->assertEqual('w', $this->object->charcheck_machine($this->object->raw['charcheck']));
-
-		$this->object->raw['charcheck'] = myconv('k', 'u', 'йцукен');
-		$this->assertEqual('u', $this->object->charcheck_machine($this->object->raw['charcheck']));
-	}	
-
 	function test_normalize_data() {
 	}
 
 	function check_normalizing($to) {
-		$this->object->raw['test'] = myconv('k', $to, 'Привет Мир!');
+		$this->object->raw['test'] = 'О©╫О©╫О©╫О©╫О©╫О©╫ О©╫О©╫О©╫!';
 		$this->object->_NormalizeData($this->object->raw);
-		$expected = "Привет Мир!";
-	
+		$expected = "О©╫О©╫О©╫О©╫О©╫О©╫ О©╫О©╫О©╫!";
+
 		$this->assertEqual($expected, $this->object->raw['test']);
 	}
 
@@ -40,7 +29,7 @@ class BaseHttpVarsTest extends UnitTestCase {
 
 		$this->assertEqual($expected, $actual);
 	}
-	
+
 	function test_is_set_var() {
 		$this->object->raw['test'] = 1;
 		$this->assertTrue($this->object->_isSetVar('test'));
@@ -64,7 +53,7 @@ class BaseHttpVarsTest extends UnitTestCase {
 
 		$this->assertEqual($expected, $actual);
 	}
-	
+
 	function test_get_array_var_with_remove_empty_rows() {
 		$testable = array("test00"=>"", "test01"=>array("test10"=>"", "test11"=>array("testf1"=>"", "testf2"=>"hello world!", "testf3"=>"bla-bla")));
 		$this->object->raw['test'] = $testable;
@@ -98,7 +87,7 @@ class BaseHttpVarsTest extends UnitTestCase {
 
 		$this->object->raw['test'] = array('year' => '', 'month' => '', 'day' => '');
 		$this->assertNull($this->object->_GetDateVar('test'));
-		
+
 		$this->object->raw['test'] = array('year' => '30100', 'month' => '11', 'day' => '11');
 		$this->assertEqual('11.11.30100', $this->object->_GetDateVar('test'));
 	}
@@ -122,7 +111,7 @@ class BaseHttpVarsTest extends UnitTestCase {
 
 		$this->object->raw['test'] = $test1;
 		$this->assertEqual(array("test"=>array("a2"=>"1")), $this->object->GetAll());
-		
+
 		$this->object->raw['test'] = $test2;
 		$this->assertEqual(array("test"=>"test"), $this->object->GetAll());
 	}
