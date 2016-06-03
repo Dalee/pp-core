@@ -51,28 +51,22 @@ class DatabaseHandler extends NullSessionHandler {
 	 */
 	public function read($sessionId) {
 		$sessionId = $this->db->EscapeString($sessionId);
+
 		$sql = sprintf(
 			"SELECT * FROM %s WHERE session_id = '%s'",
 			static::SESSION_TABLE,
 			$sessionId
 		);
 
-		$result = $this->db->Query($sql, true);
-		if (!empty($result)) {
-			$result = $result[0];
-			return json_decode($result['session_data']);
-		} else {
-			$sql = sprintf("INSERT INTO %s (session_id, session_data, session_lifetime, session_time)
-					VALUES ('%s', '', 0, %d)",
-				static::SESSION_TABLE,
-				$sessionId,
-				time()
-			);
-
-			$this->db->ModifyingQuery($sql, null, null, false);
+		$row = $this->db->Query($sql, true);
+		if (($row = reset($row)) !== false) {
+			$maxTime = (int)$row['session_time'] + (int)$row['session_lifetime'];
+			if ($maxTime > time()) {
+				return json_decode($row['session_data']);
+			}
 		}
 
-		return true;
+		return '';
 	}
 
 	/**

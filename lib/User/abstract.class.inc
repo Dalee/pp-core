@@ -18,6 +18,8 @@ abstract class PXUser {
 	var $groups;
 	var $data;
 	var $auth;
+
+	/** @var PXApplication */
 	var $app;
 
 	/**
@@ -31,11 +33,10 @@ abstract class PXUser {
 	protected $request;
 
 	function __construct() {
-		$this->id = NULL;
-		$this->login = NULL;
-		$this->groups = array(0);
-		$this->data = array();
-
+		$this->id = null;
+		$this->login = null;
+		$this->groups = [0];
+		$this->data = [];
 		$this->auth = new Null();
 	}
 
@@ -78,6 +79,7 @@ abstract class PXUser {
 			foreach ($this->app->triggers->system as $t) {
 				$t->getTrigger()->onAfterUserAuth($this);
 			}
+
 			return $this->auth->auth();
 		}
 		return false;
@@ -101,7 +103,7 @@ abstract class PXUser {
 	 * @return bool
 	 */
 	function isAuthed() {
-		return !is_null($this->id);
+		return $this->id !== null;
 	}
 
 	function checkAuth() {

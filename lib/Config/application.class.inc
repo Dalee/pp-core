@@ -90,7 +90,7 @@ class PXApplication {
 
     /**
 	 * экземпляр класса Engine
-	 * @var Object
+	 * @var \PP\Lib\Engine\AbstractEngine
 	 */
 	public $engine;
 
@@ -116,8 +116,9 @@ class PXApplication {
 
 		/* try to get config from cache */
 		$cache = self::loadFromCache($engineClass);
-
-		if(!is_null($cache)) {
+		if ($cache !== null) {
+			// fetched app instance from cache, re-set engine link to app
+			$cache->engine = $engineObject;
 			$instance[$engineClass] = $cache;
 			return $instance[$engineClass];
 		}

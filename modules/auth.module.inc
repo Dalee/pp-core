@@ -67,6 +67,7 @@ class PXModuleAuth extends PXModule {
 			$captchaSolved = true;
 		}
 
+//		var_dump(2, $this->app->engine->getSession());
 		if (($captchaSolved === true) && ($this->_auth() == 0)) {
 			$nextLocation = $this->request->getReferer();
 
@@ -119,7 +120,7 @@ class PXModuleAuth extends PXModule {
 
 			default:
 				if ($this->user->IsAuthed()) {
-					$this->user->Auth();
+					$this->user->auth();
 					$audit->info('Вход в систему', 'suser' . '/' . $this->user->id);
 					return 0;
 

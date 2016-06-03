@@ -9,6 +9,8 @@
 namespace PP\Lib\Auth;
 
 
+use Symfony\Component\HttpFoundation\Session\Session;
+
 interface AuthInterface {
 
 	/**
@@ -39,4 +41,10 @@ interface AuthInterface {
 	 * @return $this
 	 */
 	public function setUser(\PXUser $user);
+
+	/**
+	 * @param Session|null $session
+	 * @return mixed
+	 */
+	public function setSession(Session $session = null);
 }
