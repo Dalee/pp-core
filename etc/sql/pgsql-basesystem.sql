@@ -52,34 +52,34 @@ CREATE TABLE acl_objects (
 INSERT INTO sgroup (title, status, allowed) VALUES ('Администраторы', true, 'a:1:{s:5:"suser";i:1;}');
 UPDATE suser SET parent = (SELECT id FROM sgroup WHERE title = 'Администраторы' LIMIT 1);
 
-INSERT INTO acl_objects (what, access, objectrule) 
+INSERT INTO acl_objects (what, access, objectrule)
 	VALUES ('read', 'allo', 'user');
 
-INSERT INTO acl_objects (sgroupid, what, access, objectrule) 
+INSERT INTO acl_objects (sgroupid, what, access, objectrule)
 	VALUES ((SELECT id FROM sgroup WHERE title = 'Администраторы' LIMIT 1), 'admin', 'allo', 'user');
 
-INSERT INTO acl_objects (sgroupid, what, access, objectrule) 
+INSERT INTO acl_objects (sgroupid, what, access, objectrule)
 	VALUES ((SELECT id FROM sgroup WHERE title = 'Администраторы' LIMIT 1), 'write', 'allo', 'user');
 
-INSERT INTO acl_objects (sgroupid, what, access, objectrule) 
+INSERT INTO acl_objects (sgroupid, what, access, objectrule)
 	VALUES ((SELECT id FROM sgroup WHERE title = 'Администраторы' LIMIT 1), 'admin', 'allo', 'module');
 
-INSERT INTO acl_objects (objecttype, what, access, objectrule)  
+INSERT INTO acl_objects (objecttype, what, access, objectrule)
 	VALUES ('auth', 'admin', 'allo', 'module');
 
-INSERT INTO acl_objects (sgroupid, objecttype, what, access, objectrule)  
+INSERT INTO acl_objects (sgroupid, objecttype, what, access, objectrule)
 	VALUES ((SELECT id FROM sgroup WHERE title = 'Администраторы' LIMIT 1), 'main', 'viewmenu', 'allo', 'module');
 
-INSERT INTO acl_objects (sgroupid, objecttype, what, access, objectrule)  
+INSERT INTO acl_objects (sgroupid, objecttype, what, access, objectrule)
 	VALUES ((SELECT id FROM sgroup WHERE title = 'Администраторы' LIMIT 1), 'users', 'viewmenu', 'allo', 'module');
 
-INSERT INTO acl_objects (sgroupid, objecttype, what, access, objectrule)  
+INSERT INTO acl_objects (sgroupid, objecttype, what, access, objectrule)
 	VALUES ((SELECT id FROM sgroup WHERE title = 'Администраторы' LIMIT 1), 'acl', 'viewmenu', 'allo', 'module');
 
-INSERT INTO acl_objects (sgroupid, objecttype, what, access, objectrule)  
+INSERT INTO acl_objects (sgroupid, objecttype, what, access, objectrule)
 	VALUES ((SELECT id FROM sgroup WHERE title = 'Администраторы' LIMIT 1), 'macl', 'viewmenu', 'allo', 'module');
 
-INSERT INTO acl_objects (sgroupid, objecttype, what, access, objectrule)  
+INSERT INTO acl_objects (sgroupid, objecttype, what, access, objectrule)
 	VALUES ((SELECT id FROM sgroup WHERE title = 'Администраторы' LIMIT 1), 'objects', 'viewmenu', 'allo', 'module');
 
 
@@ -88,34 +88,34 @@ UPDATE acl_objects SET sys_order = id;
 CREATE TABLE struct (
 	id              SERIAL PRIMARY KEY,
 	parent          INT4 DEFAULT NULL REFERENCES struct ON DELETE CASCADE ON UPDATE CASCADE,
-	
+
 	sys_order       INT4,
 	sys_owner       INT4 DEFAULT NULL REFERENCES suser ON DELETE SET NULL ON UPDATE CASCADE,
 	sys_created     TIMESTAMP DEFAULT now(),
 	sys_modified    TIMESTAMP DEFAULT now(),
 	allowed		    TEXT,
-	
+
 	title           VARCHAR,
 	pathname        VARCHAR,
 	type            VARCHAR,
-	
+
 	status          BOOL
 ) WITH OIDS;
 
 CREATE TABLE html (
 	id              SERIAL PRIMARY KEY,
 	parent          INT4 NOT NULL REFERENCES struct ON DELETE CASCADE ON UPDATE CASCADE,
-	
+
 	sys_order       INT4,
 	sys_owner       INT4 DEFAULT NULL REFERENCES suser ON DELETE SET NULL ON UPDATE CASCADE,
 	sys_created     TIMESTAMP DEFAULT now(),
 	sys_modified    TIMESTAMP DEFAULT now(),
-	
+
 	title           VARCHAR,
 	pathname        VARCHAR,
 	text            TEXT,
 	index           BOOL DEFAULT TRUE,
-	
+
 	status          BOOL
 ) WITH OIDS;
 
@@ -163,6 +163,7 @@ CREATE UNIQUE INDEX sdata_uniq_idx ON searchdata (stemid, did);
 ALTER TABLE struct ADD index BOOL DEFAULT TRUE;
 
 -- 004_suser_session
+-- deprecated, TODO: refactor PP\Lib\Auth\Session
 CREATE TABLE suser_session (
 	id            SERIAL PRIMARY KEY,
 	suser_id      INT4 DEFAULT NULL REFERENCES suser ON DELETE CASCADE ON UPDATE CASCADE,
@@ -170,3 +171,11 @@ CREATE TABLE suser_session (
 	sid           VARCHAR(32) UNIQUE,
 	ip            INET
 ) WITH OIDS;
+
+-- new session mechanic, real sessions in admin
+CREATE TABLE admin_session (
+	session_id VARCHAR(128) NOT NULL PRIMARY KEY,
+	session_data TEXT NOT NULL,
+	session_lifetime INTEGER NOT NULL,
+	session_time INTEGER NOT NULL
+);

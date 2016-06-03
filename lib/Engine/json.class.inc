@@ -1,17 +1,14 @@
 <?php
 
-class PXEngineJSON extends PXEngine {
-	var $result;
+use PP\Lib\Engine\AbstractEngine;
 
-	function __construct() {
-		parent::profilerStart();
-		parent::__construct();
-	}
+class PXEngineJSON extends AbstractEngine {
+	protected $result;
 
 	function runModules() {
 		$module = $this->modules[$this->area]->getModule();
 
-		$response =& PXResponse::getInstance();
+		$response = PXResponse::getInstance();
 		$response->dontCache();
 
 		$this->result = $this->getJson($module);
@@ -24,7 +21,7 @@ class PXEngineJSON extends PXEngine {
 		exit;
 	}
 
-	function getJson($module) {
+	function getJson(\PXModule $module) {
 		return $module->userJson();
 	}
 
@@ -43,5 +40,3 @@ class PXEngineJSON extends PXEngine {
 	}
 
 }
-
-?>

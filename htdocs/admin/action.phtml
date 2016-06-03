@@ -1,8 +1,10 @@
 <?php
-	include '../../lib/mainadmin.inc';
-	$engine = new PXEngineAdminAction();
 
-	$engine->runModules();
+include '../../lib/mainadmin.inc';
 
-	$engine->redirect();
-?>
+use PP\Lib\Engine\Admin\AdminEngineAction;
+
+$engine = new AdminEngineAction();
+$engine->start();
+$engine->runModules();
+$engine->redirect();

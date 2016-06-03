@@ -115,6 +115,14 @@ class PXUserHTMLLayout implements LayoutInterface  {
 		$this->lang->setLang($lang);
 	}
 
+	function setContent($content) {
+		// TODO: used in ./local/plugins/blocks/lib/HTML/layout.class.inc
+	}
+
+	function getContent(){
+		// TODO: used in ./local/plugins/blocks/lib/HTML/layout.class.inc
+	}
+
 	function getLangVar($path) {
 		$param = array('get' => $path, 'return' => true);
 		return $this->lang->lang($param, $this->smarty);

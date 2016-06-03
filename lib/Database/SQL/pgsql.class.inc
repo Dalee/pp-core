@@ -225,7 +225,7 @@ class NLPGSQLDatabase extends NLAbstractSQLDatabase {
 				return "'".$this->EscapeString($value)."'";
 		}
 	}
-	
+
 	function mapFields($field) {
 		return '"'.$this->EscapeString($field).'"';
 	}
@@ -362,7 +362,7 @@ class NLPGSQLDatabase extends NLAbstractSQLDatabase {
 	function tableExists($tableName) {
 		return count($this->query("SELECT relname FROM pg_class WHERE relname='{$tableName}'"));
 	}
-	
+
 	function LIKE($condition, $percs){
 		return $this->_searchMethod("ILIKE", $condition, $percs);
 	}
@@ -370,7 +370,7 @@ class NLPGSQLDatabase extends NLAbstractSQLDatabase {
 	function inArray($arrayField, $value, $sane = false){
 		return sprintf("%s @> ARRAY[%s]", $sane ? $arrayField : $this->EscapeString($arrayField), $sane ? $value : $this->EscapeString($value));
 	}
-	
+
 	function arrayIn($arrayField, $value, $sane = false){
 		return sprintf("%s <@ ARRAY[%s]", $sane ? $arrayField : $this->EscapeString($arrayField), $sane ? $value : $this->EscapeString($value));
 	}

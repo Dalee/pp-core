@@ -1,15 +1,18 @@
 <?php
-class PXEngineAdminAction extends PXEngineAdmin {
+
+namespace PP\Lib\Engine\Admin;
+
+use PXResponse;
+
+class AdminEngineAction extends AbstractAdminEngine {
 	var $nextLocation;
 
 	function initModules() {
-		$this->area    = $this->request->getArea();
-		$this->modules = self::getModule($this->app, $this->area);
+		$this->area = $this->request->getArea();
+		$this->modules = static::getModule($this->app, $this->area);
 	}
 
 	function runModules() {
-		PXProfiler::begin('RUN MODULES');
-
 		// For correct user session expiration handling and admin auth module working
 		if (!($this->hasAdminModules() || $this->area == $this->authArea)) {
 			return;
@@ -19,17 +22,15 @@ class PXEngineAdminAction extends PXEngineAdmin {
 
 		$instance = $this->modules[$this->area]->getModule();
 		$this->nextLocation = $instance->adminAction();
-
-		PXProfiler::end();
 	}
 
 	function redirect() {
-		$response =& PXResponse::getInstance();
+		$response = PXResponse::getInstance();
 		$response->dontCache();
 
 		switch ($this->request->getAfterActionDeal()) {
 			case 'close':
-				closeAndRefresh();
+				\CloseAndRefresh();
 				break;
 
 			case 'back':
@@ -44,4 +45,3 @@ class PXEngineAdminAction extends PXEngineAdmin {
 		}
 	}
 }
-?>

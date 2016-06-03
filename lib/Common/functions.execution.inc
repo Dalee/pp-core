@@ -51,18 +51,16 @@ HTML;
 function Finalize($url) {
 	require_once PPLIBPATH . 'response.class.inc';
 
-	$response =& PXResponse::getInstance();
+	$response = PXResponse::getInstance();
 	$response->redirect($url);
 }
 
 function ListenInput($length = 255) {
 	if (!isset ($GLOBALS['StdinPointer'])) {
-		$GLOBALS['StdinPointer'] = fopen ("php://stdin","r");
+		$GLOBALS['StdinPointer'] = fopen("php://stdin", "r");
 	}
 
-	$line = fgets ($GLOBALS['StdinPointer'], $length);
+	$line = fgets($GLOBALS['StdinPointer'], $length);
 
-	return trim ($line);
+	return trim($line);
 }
-
-?>

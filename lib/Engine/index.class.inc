@@ -1,10 +1,11 @@
 <?php
 
-class PXEngineIndex extends PXEngine {
+use PP\Lib\Engine\AbstractEngine;
+
+class PXEngineIndex extends AbstractEngine {
 	var  $layout = array('factory' => 'PXUserHTMLLayout');
 
 	function __construct() {     // Инициализация основных объектов приложения
-		parent::profilerStart();
 		parent::__construct();
 
 		$this->content             = new StdClass; // FIXME
@@ -15,7 +16,7 @@ class PXEngineIndex extends PXEngine {
 		$this->layout->setApp($this->app);
 	}
 
-	function initModules() {
+	protected function initModules() {
 	}
 
 	function fillLayout() {
@@ -71,25 +72,21 @@ class PXEngineIndex extends PXEngine {
 
 	function html() {
 		$html = PXRegistry::getLayout()->display();
-		
-		$response =& PXResponse::getInstance();
+
+		$response = PXResponse::getInstance();
 		$response->send($html);
 	}
 
 	function runModules() {
-		PXProfiler::begin('RUN MODULES');
-
 		$queue = PXRegistry::getApp()->bindingsQueue;
 		$queue->getRequestBinding();
+
 		foreach($queue as $bind) {
 			if(!$bind->isBinding($this->content)) {
 				continue;
 			}
 
 			$moduleDescription = $bind->getModuleDescription();
-			$debugKey = 'MODULE: '.$moduleDescription->class;
-
-			PXProfiler::begin($debugKey);
 			$module = $moduleDescription->getModule();
 
 			$module->tree       =& $this->content->tree;
@@ -97,10 +94,7 @@ class PXEngineIndex extends PXEngine {
 			$module->subObjects =& $this->content->subObjects;
 
 			$module->userIndex();
-			PXProfiler::end();
 		}
-
-		PXProfiler::end();
 	}
 }
-?>
+

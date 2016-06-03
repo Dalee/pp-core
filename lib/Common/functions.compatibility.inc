@@ -1,18 +1,20 @@
 <?php
 
-//
+// FIXME: remove from local and remove from here
 function pp_simplexml_decode_string($value) {
-	return strval($value);
+	return (string)$value;
 }
 
+// FIXME: remove from local and remove from here
 function pp_simplexml_encode_string($value) {
-	return strval($value);
+	return (string)$value;
 }
 
 // no function in PHP, simulating
 if (! function_exists('mb_strcasecmp')) {
 	function mb_strcasecmp($str1, $str2, $encoding = null) {
 		if (null === $encoding) {
+
 			$encoding = mb_internal_encoding();
 		}
 		return strcmp(mb_strtoupper($str1, $encoding), mb_strtoupper($str2, $encoding));

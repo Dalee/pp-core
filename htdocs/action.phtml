@@ -1,9 +1,8 @@
 <?php
-	include_once '../lib/mainuser.inc';
-	$engine = new PXEngineAction();
 
-	$engine->runModules();
+include_once '../lib/mainuser.inc';
 
-	$engine->profilerStop();
-	$engine->redirect();
-?>
+$engine = new PXEngineAction();
+$engine->start();
+$engine->runModules();
+$engine->redirect();

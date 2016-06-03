@@ -1,11 +1,11 @@
 <?php
-class PXEngineAction extends PXEngine {
-	var $nextLocation;
 
-	function __construct(){
-		parent::profilerStart();
-		parent::__construct();
-	}
+use PP\Lib\Engine\AbstractEngine;
+
+class PXEngineAction extends AbstractEngine {
+
+	/** @var string */
+	protected $nextLocation;
 
 	function runModules() {
 		$module = $this->modules[$this->area]->getModule();
@@ -31,4 +31,3 @@ class PXEngineAction extends PXEngine {
 		$response->redirect($nextLocation);
 	}
 }
-?>

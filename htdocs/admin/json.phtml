@@ -1,8 +1,10 @@
 <?php
-	include '../../lib/mainadmin.inc';
-	$engine = new PXEngineAdminJSON();
 
-	$engine->runModules();
+include '../../lib/mainadmin.inc';
 
-	$engine->sendJson();
-?>
+use PP\Lib\Engine\Admin\AdminEngineJson;
+
+$engine = new AdminEngineJson();
+$engine->start();
+$engine->runModules();
+$engine->sendJson();

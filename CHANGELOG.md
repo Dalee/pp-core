@@ -3,8 +3,11 @@
 ## [Unreleased]
 ### Изменения
 - Вырезан myconv и связанные с ним методы [link](http://git.dalee.ru/pp/core/merge_requests/11)
+- `PXEngine` -> `PP\Lib\Engine\AbstractEngine`
+- `PXAdminEngine*` -> `PP\Lib\Engine\Admin\`
+- Настоящие сессии в административном интерфейсе, класс сессии доступен через `$engine->getSession()`
 
-## [v1.6.1]
+## [v1.6.1] - 2016-06-02
 ### Изменения
 - Monolog, `PXRegistry::getLogger($logger_name)`, где `$logger_name` может быть одной из констант: `LOGGER_APP`, `LOGGER_CRON`. По-умолчанию `LOGGER_APP` рендерится в `site/var/application.log`, `LOGGER_CRON` - `site/var/cron.log`
 - Убрана поддержка PHP версии ниже 5.4

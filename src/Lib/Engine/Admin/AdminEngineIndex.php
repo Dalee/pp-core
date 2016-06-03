@@ -1,12 +1,21 @@
 <?php
-class PXEngineAdminIndex extends PXEngineAdmin {
-	var $menu;
 
-	var $layout                 = array('factory' => 'PP\Lib\Html\Layout\AdminHtmlLayout', 'helper' => true);
-	var $outerLayout            = 'index';
+namespace PP\Lib\Engine\Admin;
+
+use PXModuleDescription;
+use PXResponse;
+
+use PP\Lib\Html\Layout\AdminHtmlLayout;
+
+class AdminEngineIndex extends AbstractAdminEngine {
+
+	/** @var AdminHtmlLayout */
+	protected $layout = array('factory' => 'PP\Lib\Html\Layout\AdminHtmlLayout', 'helper' => true);
+	protected $menu;
+	protected $outerLayout = 'index';
 	protected $templateMainArea = 'INNER.0.0';
 
-	function initLayout($klass){
+	function initLayout($klass) {
 		$this->layout = new $klass($this->outerLayout, $this->app->types);
 	}
 
@@ -19,7 +28,7 @@ class PXEngineAdminIndex extends PXEngineAdmin {
 
 		foreach ($this->modules as $module) {
 			// check modules acl rules
-			if (PXRegistry::getUser()->can('viewmenu', $module)) {
+			if ($this->user->can('viewmenu', $module)) {
 				$menuItems[$module->name] = $module->description == '' || $module->description == PXModuleDescription::EMPTY_DESCRIPTION ? $module->name : $module->description;
 			}
 		}
@@ -28,8 +37,8 @@ class PXEngineAdminIndex extends PXEngineAdmin {
 	}
 
 	function showAuthForm() {
-		if(!isset($this->modules[$this->authArea])) {
-			FatalError('Undefined auth module or you forget insert "allo" for "admin" auth module in acl_objects');
+		if (!isset($this->modules[$this->authArea])) {
+			\FatalError('Undefined auth module or you forget insert "allo" for "admin" auth module in acl_objects');
 		}
 
 		$auth = $this->modules[$this->authArea]->getModule();
@@ -46,7 +55,7 @@ class PXEngineAdminIndex extends PXEngineAdmin {
 		$this->layout->setGetVarToSave('sid', $this->request->getSid());
 	}
 
-	function checkArea($area) {
+	protected function checkArea($area) {
 		if (!isset($this->modules[$area])) {
 			$this->layout->setOneColumn();
 			$this->layout->assignError($this->templateMainArea, 'Некорректный параметр <em>area</em> = <em>' . strip_tags($area) . '</em>');
@@ -57,39 +66,38 @@ class PXEngineAdminIndex extends PXEngineAdmin {
 		return true;
 	}
 
-	function runModules() {
-		PXProfiler::begin('RUN MODULES');
-
+	public function runModules() {
 		$this->initMenu();
 
 		if (!$this->hasAdminModules()) {
-			return $this->showAuthForm();
+			$this->showAuthForm();
+			return;
 		}
 
 		$this->area = $this->request->getArea(current(array_keys($this->menu)));
 		$this->fillLayout();
 
-		if($this->area == 'exit') {
-			$response =& PXResponse::getInstance();
+		if ($this->area == 'exit') {
+			$this->session->invalidate(1);
+
+			$response = PXResponse::getInstance();
 			$response->redirect(sprintf('action.phtml?area=%s&action=exit', $this->authArea));
 		}
 
-		if(!$this->checkArea($this->area)) {
+		if (!$this->checkArea($this->area)) {
 			return;
 		}
 
-		$instance = $this->modules[$this->area]->getModule()->adminIndex();
-
-		PXProfiler::end();
+		$this->modules[$this->area]->getModule()->adminIndex();
 	}
 
-	function html() {
-		$response =& PXResponse::getInstance();
+	public function html() {
+		$response = PXResponse::getInstance();
 		$response->dontCache();
 
 		$charset = $this->app->GetProperty('OUTPUT_CHARSET', DEFAULT_CHARSET);
 
-		PXRegistry::getDb()->close();
+		$this->db->close();
 		$this->layout->flush($charset);
 	}
 }
