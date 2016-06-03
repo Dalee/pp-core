@@ -2,20 +2,12 @@
 
 // FIXME: remove from local and remove from here
 function pp_simplexml_decode_string($value) {
-<<<<<<< fe0a0c663392026ff8c87b515128c561a5566740
-	return strval($value);
-=======
 	return (string)$value;
->>>>>>> Session support for AdminEngine
 }
 
 // FIXME: remove from local and remove from here
 function pp_simplexml_encode_string($value) {
-<<<<<<< fe0a0c663392026ff8c87b515128c561a5566740
-	return strval($value);
-=======
 	return (string)$value;
->>>>>>> Session support for AdminEngine
 }
 
 // no function in PHP, simulating

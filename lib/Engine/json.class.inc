@@ -40,8 +40,3 @@ class PXEngineJSON extends AbstractEngine {
 	}
 
 }
-<<<<<<< fe0a0c663392026ff8c87b515128c561a5566740
-
-?>
-=======
->>>>>>> Session support for AdminEngine
