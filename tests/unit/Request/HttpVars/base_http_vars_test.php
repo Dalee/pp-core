@@ -6,17 +6,6 @@ class BaseHttpVarsTest extends UnitTestCase {
 		$this->object = new NLHTTPVarsData();
 	}
 
-	function test_charchek_machine() {
-		$this->object->raw['charcheck'] = '������';
-		$this->assertEqual('k', $this->object->charcheck_machine($this->object->raw['charcheck']));
-
-		$this->object->raw['charcheck'] = '������';
-		$this->assertEqual('w', $this->object->charcheck_machine($this->object->raw['charcheck']));
-
-		$this->object->raw['charcheck'] = '������';
-		$this->assertEqual('u', $this->object->charcheck_machine($this->object->raw['charcheck']));
-	}
-
 	function test_normalize_data() {
 	}
 
