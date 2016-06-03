@@ -1,6 +1,6 @@
 # Change log
 
-## [Unreleased]
+## [v1.6.2] - 2016-06-03
 ### Изменения
 - Вырезан myconv и связанные с ним методы [link](http://git.dalee.ru/pp/core/merge_requests/11)
 - `PXEngine` -> `PP\Lib\Engine\AbstractEngine`
@@ -27,7 +27,6 @@
 ### Merge Request
 - [!8](http://git.dalee.ru/pp/core/merge_requests/8)
 - [!9](http://git.dalee.ru/pp/core/merge_requests/9)
-
 
 ## [v1.6] - 2016-05-17
 ### Изменения
