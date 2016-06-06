@@ -48,6 +48,33 @@ abstract class LayoutAbstract implements LayoutInterface {
 		FatalError('Template ' . $filename . ' dosn\'t exists');
 	}
 
+	/**
+	 * {@inheritdoc}
+	 */
+	public function setApp(\PXApplication $app) {
+		return $this;
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function setLang($lang = 'rus') {
+		return $this;
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function setContent($content) {
+		return $this;
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function getContent() {
+		return null;
+	}
 
 	function _arrayToAttrs($array) {
 		if (!sizeof($array)) {
@@ -194,9 +221,14 @@ abstract class LayoutAbstract implements LayoutInterface {
 		$this->add($label, $value);
 	}
 
-	function assign($label, $value) {
+	/**
+	 * {@inheritdoc}
+	 */
+	public function assign($label, $value) {
 		$refValue = $value;
 		$this->set($label, $refValue);
+
+		return $this;
 	}
 
 	public function isWidget($value) {
@@ -301,6 +333,5 @@ abstract class LayoutAbstract implements LayoutInterface {
 		$href = parse_url(appendParamToUrl($href, $key, $value));
 		return @"?{$href['query']}";
 	}
-
 
 }

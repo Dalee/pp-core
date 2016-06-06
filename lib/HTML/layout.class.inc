@@ -2,6 +2,11 @@
 
 use PP\Lib\Html\Layout\LayoutInterface;
 
+/**
+ * TODO: Refactor and move this file to src/Lib/Html/Layout
+ *
+ * Class PXUserHTMLLayout
+ */
 class PXUserHTMLLayout implements LayoutInterface  {
 	var $smarty;
 	var $_filters;
@@ -41,12 +46,16 @@ class PXUserHTMLLayout implements LayoutInterface  {
 		$this->smarty->caching       = false;
 	}
 
-	function setApp(\PXApplication $app) {
+	/**
+	 * {@inheritdoc}
+	 */
+	public function setApp(\PXApplication $app) {
 		$this->lang->setTree($app->langTree);
+
+		return $this;
 	}
 
-	private
-	function _initLang() {
+	private function _initLang() {
 		require_once PPLIBPATH . 'HTML/lang.class.inc';
 
 		$this->lang = new PXUserHTMLLang();
@@ -111,16 +120,27 @@ class PXUserHTMLLayout implements LayoutInterface  {
 		return $this->htmlPager($total, $a_per_page, $smarty, $param);
 	}
 
-	function setLang($lang='rus') {
+	/**
+	 * {@inheritdoc}
+	 */
+	public function setLang($lang='rus') {
 		$this->lang->setLang($lang);
+
+		return $this;
 	}
 
-	function setContent($content) {
-		// TODO: used in ./local/plugins/blocks/lib/HTML/layout.class.inc
+	/**
+	 * {@inheritdoc}
+	 */
+	public function setContent($content) {
+		return $this;
 	}
 
-	function getContent(){
-		// TODO: used in ./local/plugins/blocks/lib/HTML/layout.class.inc
+	/**
+	 * {@inheritdoc}
+	 */
+	public function getContent(){
+		return null;
 	}
 
 	function getLangVar($path) {
@@ -128,12 +148,18 @@ class PXUserHTMLLayout implements LayoutInterface  {
 		return $this->lang->lang($param, $this->smarty);
 	}
 
-	function assign($varName, $variable, $byReference=false) {
+	/**
+	 * TODO: remove byReference flag to conform LayoutInterface
+	 * {@inheritdoc}
+	 */
+	public function assign($varName, $variable, $byReference=false) {
 		if($byReference) {
 			$this->smarty->assign_by_ref($varName, $variable);
 		} else {
 			$this->smarty->assign($varName, $variable);
 		}
+
+		return $this;
 	}
 
 	function assignByRef($varName, &$variable) {
@@ -222,4 +248,3 @@ class PXUserHTMLLayout implements LayoutInterface  {
 		unset($this->_filters[$functionName]);
 	}
 }
-?>

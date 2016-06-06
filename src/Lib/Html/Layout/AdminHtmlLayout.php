@@ -8,11 +8,6 @@ class AdminHtmlLayout extends LayoutAbstract {
 	var $types;
 	var $_scripts = array();
 
-	public function setApp(\PXApplication $app) {
-	}
-
-	public function setLang($lang = 'rus') {
-	}
 
 	//TODO: there must be right places in <HEAD> for this
 	var $_scriptsTemplates  = array(
