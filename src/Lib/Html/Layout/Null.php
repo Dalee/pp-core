@@ -8,21 +8,36 @@ class Null implements LayoutInterface {
 	/**
 	 * {@inheritdoc}
 	 */
-	function assign($name, $value) {
+	public function assign($name, $value) {
 		return $this;
 	}
 
 	/**
 	 * {@inheritdoc}
 	 */
-	function setApp(\PXApplication $app) {
+	public function setApp(\PXApplication $app) {
 		return $this;
 	}
 
 	/**
 	 * {@inheritdoc}
 	 */
-	function setLang($lang = 'rus') {
+	public function setLang($lang = 'rus') {
 		return $this;
 	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function setContent($content) {
+		return $this;
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function getContent() {
+		return null;
+	}
+
 }
