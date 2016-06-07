@@ -3,9 +3,10 @@
 	set_time_limit(0);
 	require_once dirname(__FILE__).'/../../libpp/lib/maincommon.inc';
 
-	ini_set('display_errors', '1'); 
+	ini_set('display_errors', '1');
 
 	$engine = new PXEngineSbin();
+	$engine->start();
 
 	if (in_array('--help', $argv) || in_array('-?', $argv) || in_array('-h', $argv)) {
 		Label("Banners reloader");

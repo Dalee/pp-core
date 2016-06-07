@@ -5,6 +5,7 @@
 	Label('Start...');
 
 	$engine = new PXEngineSbin();
+	$engine->start();
 
 	$db  = PXRegistry::getDb();
 	$app = PXRegistry::getApp();

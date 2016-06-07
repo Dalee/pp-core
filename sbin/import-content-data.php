@@ -29,6 +29,7 @@ if (!is_callable('mb_strtolower')) {
 
 ini_set('display_errors', '1');
 $engine = new PXEngineSbin();
+$engine->start();
 
 $app = PXRegistry::getApp();
 $db = PXRegistry::getDb();

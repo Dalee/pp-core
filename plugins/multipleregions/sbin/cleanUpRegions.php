@@ -18,7 +18,7 @@ Label("Cleanup Regions. Delete null, 0, -1 values... Start");
 function question() {
 	Label("Warning. null region field will be replace on {}. Check your models. Delete not used sys_regions fields.");
 	Label("Continue?[y/n]");
-	
+
 	$answer = trim(fread(STDIN, 80));
 
 	if(!in_array($answer, array("y", "n", true))) {
@@ -32,6 +32,7 @@ function question() {
 question();
 
 $engine = new PXEngineSbin();
+$engine->start();
 $db  = PXRegistry::getDB();
 
 $regionsField = PXMultiRegions::REGION_MARK;
@@ -67,13 +68,13 @@ foreach($r as $i) {
 	if(empty($temp)) continue;
 
 	foreach($temp as $k) {
-		$regions = 
+		$regions =
 			array_filter(PXMultipleRegionsHelper::toArray($k[$regionsField]), "is_natural");
 
 		$params["pattern"]           = "update %s set %s = '%s' where id = '%s'";
 		$params["region_mark_value"] = PXMultipleRegionsHelper::toString($regions);
 		$params['cond_value']        = $k['id'];
-		
+
 		$db->modifyingQuery(call_user_func_array("sprintf", $params));
 	}
 }

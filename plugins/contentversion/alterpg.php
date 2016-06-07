@@ -4,6 +4,7 @@
 require_once dirname(__FILE__).'/../../lib/maincommon.inc';
 
 $engine = new PXEngineSbin();
+$engine->start();
 $db = PXRegistry::getDB();
 
 $tables = $db->query(<<<SQL

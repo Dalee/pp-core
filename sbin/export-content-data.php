@@ -10,6 +10,7 @@ if (file_exists($localcommon = BASEPATH.'local/lib/maincommon.inc')) {
 
 ini_set('display_errors', '1');
 $engine = new PXEngineSbin();
+$engine->start();
 
 $app = PXRegistry::getApp();
 $db = PXRegistry::getDb();

@@ -9,6 +9,7 @@ if(file_exists($localLib = dirname(__FILE__).'/../../local/lib/mainsbin.inc')){
 }
 
 $engine = new PXEngineSbin();
+$engine->start();
 
 $db = PXRegistry::getDb();
 $db->clearCache(true);

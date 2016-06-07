@@ -19,6 +19,7 @@ if(file_exists($localLib = dirname(__FILE__).'/../../local/lib/mainsbin.inc')){
 }
 
 $engine = new PXEngineSbin();
+$engine->start();
 
 $ARGV = $_SERVER['argv'];
 

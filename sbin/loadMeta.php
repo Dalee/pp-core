@@ -9,6 +9,7 @@
 
 	ini_set('display_errors', '1');
 	$engine = new PXEngineSbin();
+	$engine->start();
 
 	// process every object in database and update sys_meta tag
 	$app = PXRegistry::getApp();

@@ -12,6 +12,8 @@ set_error_handler("errorH");
 Label("Rename reflex_id in database... Start");
 
 $engine = new PXEngineSbin();
+$engine->start();
+
 $db  = PXRegistry::getDB();
 
 $r = $db->query("SELECT table_name, column_name from information_schema.columns  where column_name in ('reflex_id', 'sys_reflex_id')");
