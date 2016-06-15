@@ -242,7 +242,7 @@ HTML;
 		while (($data = fgetcsv($handle, 4096, ";")) !== FALSE && (!$length || $row <= $length)) {
 			$num = count($data);
 			for ($c=0; $c<$num; $c++) {
-				$result[$row][$c] = $this->_PrepareString($data[$c]);
+				$result[$row][$c] = iconv(CHARSET_WINDOWS, CHARSET_UTF8, $data[$c]);
 			}
 			$maxLen = max($maxLen, $num);
 			$row++;
@@ -265,26 +265,4 @@ HTML;
 	function getParsedCsv($filename, $length=null) {
 		return $this->_GetCsvSource($filename, $length);
 	}
-
-	/**
-	 * @todo Use fgetcsv instead
-	 */
-	function _PrepareString($str) {
-		if (!($length = mb_strlen($str))) {
-			return NULL;
-		}
-		$str = strtr($str, $this->htmlEsc);
-		$str = str_replace("\\", '&#92;', $str);
-		$str = str_replace("\n", ' ', $str);
-		$str = str_replace("\\n", "\n", $str);
-		$str = str_replace("\\r", "\r", $str);
-		$str = str_replace("--%--", ";", $str);
-		$str = str_replace("'", "&#146;", $str);
-		$str = preg_replace('/"([^"]|$)/'.REGEX_MOD, "\\1", $str);
-		$str = addslashes($str);
-		$str = trim($str);
-		return $str;
-	}
 }
-
-?>
