@@ -50,7 +50,9 @@ class Job {
 	 */
 	public function toArray() {
 		return [
-			'payload' => $this->getPayload()
+			'worker' => $this->getWorker(),
+			'payload' => $this->getPayload(),
+			'state' => $this->getState()
 		];
 	}
 

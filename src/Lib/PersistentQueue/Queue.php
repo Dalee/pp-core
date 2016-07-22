@@ -38,7 +38,7 @@ class Queue {
 		$contentType = $this->app->types[static::JOB_DB_TYPE];
 		$jobObject = $job->toArray();
 
-		$stub = $this->app->initContentObject($contentType);
+		$stub = $this->app->initContentObject(static::JOB_DB_TYPE);
 		$object = array_merge($stub, $jobObject);
 
 		return $this->db->addContentObject($contentType, $object);
