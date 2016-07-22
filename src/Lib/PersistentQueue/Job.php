@@ -21,7 +21,7 @@ class Job {
 	private $payload;
 
 	/**
-	 * @var WorkerInterface
+	 * @var string
 	 */
 	private $worker;
 
@@ -91,17 +91,17 @@ class Job {
 	}
 
 	/**
-	 * @param WorkerInterface $worker
+	 * @param string $worker
 	 * @return $this
 	 */
-	public function setWorker(WorkerInterface $worker) {
+	public function setWorker($worker) {
 		$this->worker = $worker;
 
 		return $this;
 	}
 
 	/**
-	 * @return WorkerInterface
+	 * @return string
 	 */
 	public function getWorker() {
 		return $this->worker;
