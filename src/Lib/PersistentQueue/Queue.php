@@ -32,20 +32,25 @@ class Queue {
 
 	/**
 	 * @param Job $job
-	 * @return $this
+	 * @return int
 	 */
 	public function addJob(Job $job) {
-		//
+		$contentType = $this->app->types[static::JOB_DB_TYPE];
+		$jobObject = $job->toArray();
 
-		return $this;
+		$stub = $this->app->initContentObject($contentType);
+		$object = array_merge($stub, $jobObject);
+
+		return $this->db->addContentObject($contentType, $object);
 	}
 
 	/**
 	 * @return Job[]
 	 */
 	public function getFreshJobs() {
+		$contentType = $this->app->types[static::JOB_DB_TYPE];
 		$objects = $this->db->getObjectsByField(
-			$this->app->types[static::JOB_DB_TYPE], true,
+			$contentType, true,
 			'state', Job::STATE_FRESH
 		);
 

@@ -3,10 +3,10 @@
 namespace PP\Lib\PersistentQueue;
 
 /**
- * Interface IWorker
+ * Interface WorkerInterface
  * @package PP\Lib\PersistentQueue
  */
-interface IWorker {
+interface WorkerInterface {
 
 	/**
 	 * @return string
@@ -14,7 +14,7 @@ interface IWorker {
 	public function getName();
 
 	/**
-	 * 
+	 *
 	 */
 	public function work();
 

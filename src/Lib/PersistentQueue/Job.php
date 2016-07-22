@@ -21,7 +21,7 @@ class Job {
 	private $payload;
 
 	/**
-	 * @var IWorker
+	 * @var WorkerInterface
 	 */
 	private $worker;
 
@@ -43,6 +43,23 @@ class Job {
 		$this->state = static::STATE_FRESH;
 	}
 
+	/**
+	 * Converts instance to array
+	 *
+	 * @return array
+	 */
+	public function toArray() {
+		return [
+			'payload' => $this->getPayload()
+		];
+	}
+
+	/**
+	 * Creates instance from array
+	 *
+	 * @param array $object
+	 * @return static
+	 */
 	public static function fromArray(array $object) {
 		$job = new static;
 		$job->setState($object['state']);
@@ -74,17 +91,17 @@ class Job {
 	}
 
 	/**
-	 * @param IWorker $worker
+	 * @param WorkerInterface $worker
 	 * @return $this
 	 */
-	public function setWorker(IWorker $worker) {
+	public function setWorker(WorkerInterface $worker) {
 		$this->worker = $worker;
 
 		return $this;
 	}
 
 	/**
-	 * @return IWorker
+	 * @return WorkerInterface
 	 */
 	public function getWorker() {
 		return $this->worker;
