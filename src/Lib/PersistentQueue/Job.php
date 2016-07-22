@@ -64,13 +64,10 @@ class Job {
 	 */
 	public static function fromArray(array $object) {
 		$job = new static;
-		$job->setState($object['state']);
-		// TODO: double check if it's a string
+		$job->setState(getFromArray($object, 'state', static::STATE_FRESH));
 		$job->setPayload($object['payload']);
-		// TODO: need a resolver
-		// $job->setWorker();
-		// TODO: double check it's ok
-		$job->setCreated(new DateTime($object['created']));
+		$job->setWorker($object['worker']);
+		// $job->setCreated(new DateTime($object['created']));
 
 		return $job;
 	}
