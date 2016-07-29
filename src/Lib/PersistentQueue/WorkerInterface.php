@@ -9,13 +9,8 @@ namespace PP\Lib\PersistentQueue;
 interface WorkerInterface {
 
 	/**
-	 * @return string
-	 */
-	public function getName();
-
-	/**
 	 *
 	 */
-	public function work();
+	public function run(array $params = []);
 
 }

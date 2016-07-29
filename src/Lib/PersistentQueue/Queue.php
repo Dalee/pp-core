@@ -59,4 +59,19 @@ class Queue {
 		}, $objects);
 	}
 
+	/**
+	 * @param $class
+	 * @throws \Exception
+	 */
+	public static function validateWorkerClass($class) {
+		if (!class_exists($class)) {
+			throw new \Exception;
+		}
+
+		$interfaces = class_implements($class);
+		if (!isset($interfaces[WorkerInterface::class])) {
+			throw new \Exception;
+		}
+	}
+
 }
