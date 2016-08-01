@@ -2,18 +2,28 @@
 
 namespace PP\Lib\PersistentQueue;
 
-use DateTime;
+use PP\Lib\IArrayable;
 
 /**
  * Class Job
  * @package PP\Lib\PersistentQueue
  */
-class Job {
+class Job implements IArrayable {
 
 	/**
 	 * @var string
 	 */
 	const STATE_FRESH = 'fresh';
+
+	/**
+	 * @var string
+	 */
+	const STATE_FINISHED = 'finished';
+
+	/**
+	 * @var int
+	 */
+	private $id = 0;
 
 	/**
 	 * @var array
@@ -26,11 +36,6 @@ class Job {
 	private $worker;
 
 	/**
-	 * @var DateTime
-	 */
-	private $created;
-
-	/**
 	 * @var string
 	 */
 	private $state;
@@ -39,7 +44,6 @@ class Job {
 	 * Job constructor
 	 */
 	public function __construct() {
-		$this->created = new DateTime;
 		$this->state = static::STATE_FRESH;
 	}
 
@@ -50,6 +54,7 @@ class Job {
 	 */
 	public function toArray() {
 		return [
+			'id' => $this->getId(),
 			'worker' => $this->getWorker(),
 			'payload' => $this->getPayload(),
 			'state' => $this->getState()
@@ -64,10 +69,10 @@ class Job {
 	 */
 	public static function fromArray(array $object) {
 		$job = new static;
+		$job->setId(getFromArray($object, 'id', 0));
 		$job->setState(getFromArray($object, 'state', static::STATE_FRESH));
 		$job->setPayload($object['payload']);
 		$job->setWorker($object['worker']);
-		// $job->setCreated(new DateTime($object['created']));
 
 		return $job;
 	}
@@ -124,20 +129,19 @@ class Job {
 	}
 
 	/**
-	 * @param DateTime $created
-	 * @return $this
+	 * @return int
 	 */
-	public function setCreated(DateTime $created) {
-		$this->created = $created;
-
-		return $this;
+	public function getId() {
+		return $this->id;
 	}
 
 	/**
-	 * @return DateTime
+	 * @param int $id
 	 */
-	public function getCreated() {
-		return $this->created;
+	public function setId($id) {
+		$this->id = $id;
+
+		return $this;
 	}
 
 }

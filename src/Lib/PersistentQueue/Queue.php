@@ -2,7 +2,8 @@
 
 namespace PP\Lib\PersistentQueue;
 
-use PXRegistry;
+use PXApplication;
+use PXDatabase;
 
 /**
  * Class Queue
@@ -10,24 +11,36 @@ use PXRegistry;
  */
 class Queue {
 
+	/**
+	 * @var string
+	 */
 	const JOB_DB_TYPE = 'queue_job';
 
 	/**
-	 * @var \PXApplication
+	 * @var PXApplication
 	 */
 	private $app;
 
 	/**
-	 * @var \PXDatabase
+	 * @var PXDatabase
 	 */
 	private $db;
 
 	/**
+	 * @var array
+	 */
+	private $workers = [];
+
+	/**
 	 * Queue constructor
 	 */
-	public function __construct() {
-		$this->app = PXRegistry::getApp();
-		$this->db = PXRegistry::getDb();
+	public function __construct(PXApplication $app, PXDatabase $db) {
+		$this->app = $app;
+		$this->db = $db;
+
+		$directory = $app->directory['content-generators'];
+		$directory->loaded || $db->loadDirectory($directory, null);
+		$this->workers = $directory->values;
 	}
 
 	/**
@@ -42,6 +55,24 @@ class Queue {
 		$object = array_merge($stub, $jobObject);
 
 		return $this->db->addContentObject($contentType, $object);
+	}
+
+	/**
+	 * @param Job $job
+	 * @return null
+	 */
+	protected function updateJob(Job $job) {
+		$contentType = $this->app->types[static::JOB_DB_TYPE];
+		return $this->db->ModifyContentObject($contentType, $job->toArray());
+	}
+
+	/**
+	 * @param Job $job
+	 * @return null
+	 */
+	public function finishJob(Job $job) {
+		$job->setState(Job::STATE_FINISHED);
+		return $this->updateJob($job);
 	}
 
 	/**
@@ -60,18 +91,42 @@ class Queue {
 	}
 
 	/**
-	 * @param $class
-	 * @throws \Exception
+	 * @param string $id
+	 * @return mixed|null
 	 */
-	public static function validateWorkerClass($class) {
-		if (!class_exists($class)) {
+	public function getWorkerClassByID($id) {
+		if (!isset($this->workers[$id]['class'])) {
+			return null;
+		}
+
+		return $this->workers[$id]['class'];
+	}
+
+	/**
+	 * @return array
+	 */
+	public function getWorkers() {
+		return $this->workers;
+	}
+
+	/**
+	 * @param WorkerInterface $worker
+	 */
+	public function instanciateWorkerForJob(Job $job) {
+		$worker = $job->getWorker();
+		$workerClass = $this->getWorkerClassByID($worker);
+
+		if (!$workerClass || !class_exists($workerClass)) {
 			throw new \Exception;
 		}
 
-		$interfaces = class_implements($class);
-		if (!isset($interfaces[WorkerInterface::class])) {
+		$interfaces = class_implements($workerClass);
+		// miss you 5.4 - WorkerInterface::class
+		if (!isset($interfaces['PP\Lib\PersistentQueue\WorkerInterface'])) {
 			throw new \Exception;
 		}
+
+		return new $workerClass($this->app, $this->db);
 	}
 
 }
