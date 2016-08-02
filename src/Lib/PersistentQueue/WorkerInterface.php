@@ -9,7 +9,7 @@ namespace PP\Lib\PersistentQueue;
 interface WorkerInterface {
 
 	/**
-	 *
+	 * Fires worker
 	 */
 	public function run(array $params = []);
 

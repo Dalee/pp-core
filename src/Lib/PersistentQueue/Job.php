@@ -21,6 +21,16 @@ class Job implements IArrayable {
 	const STATE_FINISHED = 'finished';
 
 	/**
+	 * @var string
+	 */
+	const STATE_FAILED = 'failed';
+
+	/**
+	 * @var string
+	 */
+	const STATE_IN_PROGRESS = 'in progress';
+
+	/**
 	 * @var int
 	 */
 	private $id = 0;

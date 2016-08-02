@@ -17,6 +17,11 @@ class Queue {
 	const JOB_DB_TYPE = 'queue_job';
 
 	/**
+	 * @var string
+	 */
+	const JOB_FETCH_LIMIT = 1;
+
+	/**
 	 * @var PXApplication
 	 */
 	private $app;
@@ -76,13 +81,33 @@ class Queue {
 	}
 
 	/**
+	 * @param Job $job
+	 * @return null
+	 */
+	public function failJob(Job $job) {
+		$job->setState(Job::STATE_FAILED);
+		return $this->updateJob($job);
+	}
+
+	/**
+	 * @param Job $job
+	 * @return null
+	 */
+	public function startJob(Job $job) {
+		$job->setState(Job::STATE_IN_PROGRESS);
+		return $this->updateJob($job);
+	}
+
+	/**
+	 * @param int $limit
 	 * @return Job[]
 	 */
-	public function getFreshJobs() {
+	public function getFreshJobs($limit = self::JOB_FETCH_LIMIT) {
 		$contentType = $this->app->types[static::JOB_DB_TYPE];
-		$objects = $this->db->getObjectsByField(
+		$objects = $this->db->getObjectsByFieldLimited(
 			$contentType, true,
-			'state', Job::STATE_FRESH
+			'state', Job::STATE_FRESH,
+			$limit, 0
 		);
 
 		return array_map(function ($object) {
