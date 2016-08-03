@@ -101,7 +101,7 @@ class Collection implements Countable, IteratorAggregate {
 	/**
 	 * @param  mixed  $key
 	 * @param  mixed  $value
-	 * @return $this
+	 * @return Collection
 	 */
 	public function set($key, $value) {
 		if (is_null($key)) {
@@ -115,7 +115,7 @@ class Collection implements Countable, IteratorAggregate {
 
 	/**
 	 * @param  mixed  $value
-	 * @return $this
+	 * @return Collection
 	 */
 	public function push($value) {
 		$this->set(null, $value);
