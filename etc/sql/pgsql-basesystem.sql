@@ -179,3 +179,16 @@ CREATE TABLE admin_session (
 	session_lifetime INTEGER NOT NULL,
 	session_time INTEGER NOT NULL
 );
+
+CREATE TABLE queue_job (
+	id SERIAL PRIMARY KEY,
+	sys_order INTEGER,
+	sys_owner INTEGER DEFAULT NULL REFERENCES suser ON DELETE SET NULL ON UPDATE CASCADE,
+	sys_created TIMESTAMP WITHOUT TIME ZONE DEFAULT now(),
+	sys_modified TIMESTAMP WITHOUT TIME ZONE DEFAULT now(),
+	status BOOLEAN DEFAULT true,
+
+	worker VARCHAR(150),
+	payload JSON,
+	state VARCHAR DEFAULT 'fresh'
+) WITH OIDS;
