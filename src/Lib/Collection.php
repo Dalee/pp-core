@@ -77,4 +77,50 @@ class Collection implements Countable, IteratorAggregate {
 		return new ArrayIterator($this->elements);
 	}
 
+	/**
+	 * @param  mixed  $key
+	 * @return bool
+	 */
+	public function containsKey($key) {
+		return array_key_exists($key, $this->elements);
+	}
+
+	/**
+	 * @param  mixed  $key
+	 * @param  mixed  $default
+	 * @return mixed
+	 */
+	public function get($key, $default = null) {
+		if ($this->containsKey($key)) {
+			return $this->elements[$key];
+		}
+
+		return $default;
+	}
+
+	/**
+	 * @param  mixed  $key
+	 * @param  mixed  $value
+	 * @return $this
+	 */
+	public function set($key, $value) {
+		if (is_null($key)) {
+			$this->elements[] = $value;
+		} else {
+			$this->elements[$key] = $value;
+		}
+
+		return $this;
+	}
+
+	/**
+	 * @param  mixed  $value
+	 * @return $this
+	 */
+	public function push($value) {
+		$this->set(null, $value);
+
+		return $this;
+	}
+
 }
