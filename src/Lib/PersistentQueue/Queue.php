@@ -135,7 +135,10 @@ class Queue {
 	}
 
 	/**
-	 * @param WorkerInterface $worker
+	 * @param Job $job
+	 *
+	 * @return mixed
+	 * @throws \Exception
 	 */
 	public function instanciateWorkerForJob(Job $job) {
 		$worker = $job->getWorker();
@@ -146,7 +149,7 @@ class Queue {
 		}
 
 		$interfaces = class_implements($workerClass);
-		// miss you 5.4 - WorkerInterface::class
+		// miss you 5.5 - WorkerInterface::class
 		if (!isset($interfaces['PP\Lib\PersistentQueue\WorkerInterface'])) {
 			throw new \Exception;
 		}

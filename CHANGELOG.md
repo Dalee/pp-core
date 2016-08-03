@@ -1,5 +1,9 @@
 # Change log
 
+## [v1.6.9] - 2016-08-03
+### Изменения
+- Добавлены классы и миграция для работы с очередями `PP\Lib\PersistentQueue`
+
 ## [v1.6.2] - 2016-06-03
 ### Изменения
 - Вырезан myconv и связанные с ним методы [link](http://git.dalee.ru/pp/core/merge_requests/11)
@@ -33,7 +37,7 @@
 ### Изменения
 - Убрана поддержка `handler` из `datatype.xml` [link](http://git.dalee.ru/pp/core/merge_requests/2)
 - Убраны беполезные `handler` [link](http://git.dalee.ru/pp/core/merge_requests/1)
-- Убарн класс DeprecatedException [link](http://git.dalee.ru/pp/core/merge_requests/3)
+- Убран класс DeprecatedException [link](http://git.dalee.ru/pp/core/merge_requests/3)
 - Замена `PXAbstractModule` на `PXModule` [link](http://git.dalee.ru/pp/core/merge_requests/3)
 - Замена `PXModuleDescription->getInstance()` на `PXModuleDescription->getModule` [link](http://git.dalee.ru/pp/core/merge_requests/3)
 - Из `vendor` удалены FPDF, JSON, Recaptcha [link](http://git.dalee.ru/pp/core/merge_requests/3)
