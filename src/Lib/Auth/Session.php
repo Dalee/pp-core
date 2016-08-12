@@ -20,7 +20,6 @@ class Session extends AuthAbstract {
 		$userIp = (string)$this->session->get(static::AUTHORIZED_USER_IP);
 		if ($userId > 0) {
 			if ($userIp !== $this->request->GetRemoteAddr()) {
-				vaR_dump($userIp, $this->request->GetRemoteAddr());
 				return false;
 			}
 
