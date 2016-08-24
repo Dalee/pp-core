@@ -4,6 +4,7 @@ CREATE TABLE suser (
 	sys_order     INT4,
 	sys_created   TIMESTAMP DEFAULT now(),
 	sys_modified  TIMESTAMP DEFAULT now(),
+	sys_meta      VARCHAR,
 
 	title         VARCHAR,
 	passwd        VARCHAR,
@@ -18,6 +19,7 @@ CREATE TABLE sgroup (
 	sys_order     INT4,
 	sys_created   TIMESTAMP DEFAULT now(),
 	sys_modified  TIMESTAMP DEFAULT now(),
+	sys_meta      VARCHAR,
 	allowed       VARCHAR,
 
 	title         VARCHAR,
@@ -93,6 +95,7 @@ CREATE TABLE struct (
 	sys_owner       INT4 DEFAULT NULL REFERENCES suser ON DELETE SET NULL ON UPDATE CASCADE,
 	sys_created     TIMESTAMP DEFAULT now(),
 	sys_modified    TIMESTAMP DEFAULT now(),
+	sys_meta        VARCHAR,
 	allowed		    TEXT,
 
 	title           VARCHAR,
@@ -110,6 +113,7 @@ CREATE TABLE html (
 	sys_owner       INT4 DEFAULT NULL REFERENCES suser ON DELETE SET NULL ON UPDATE CASCADE,
 	sys_created     TIMESTAMP DEFAULT now(),
 	sys_modified    TIMESTAMP DEFAULT now(),
+	sys_meta        VARCHAR,
 
 	title           VARCHAR,
 	pathname        VARCHAR,
@@ -162,17 +166,7 @@ CREATE UNIQUE INDEX sdata_uniq_idx ON searchdata (stemid, did);
 ------------------------------------------------------------------------------------------------- --
 ALTER TABLE struct ADD index BOOL DEFAULT TRUE;
 
--- 004_suser_session
--- deprecated, TODO: refactor PP\Lib\Auth\Session
-CREATE TABLE suser_session (
-	id            SERIAL PRIMARY KEY,
-	suser_id      INT4 DEFAULT NULL REFERENCES suser ON DELETE CASCADE ON UPDATE CASCADE,
-	mtime         TIMESTAMP DEFAULT now(),
-	sid           VARCHAR(32) UNIQUE,
-	ip            INET
-) WITH OIDS;
-
--- new session mechanic, real sessions in admin
+-- real sessions in admin
 CREATE TABLE admin_session (
 	session_id VARCHAR(128) NOT NULL PRIMARY KEY,
 	session_data TEXT NOT NULL,

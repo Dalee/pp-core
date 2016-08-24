@@ -803,6 +803,7 @@ class PXDatabase extends NLSQLDatabaseAdapter implements IPXDatabase {
 			$this->transactionCommit();
 
 			$object['sys_order'] = $newId;
+			$object['sys_meta'] = $sysMetaField;
 
 			foreach ($this->triggers as $t) {
 				$t->getTrigger()->OnAddObject($this, $newId, $format, $object, $dbFields, $dbValues);
@@ -1074,6 +1075,7 @@ class PXDatabase extends NLSQLDatabaseAdapter implements IPXDatabase {
 			foreach ($format->fields as $k=>$v) {
 				$p = array('id'=>$object['id'], 'format'=>$format->id);
 
+				// TODO: в случае плагина Ceph, файл - удаляется, поэтому нужен какой-то workaround
 				$proceedFileResult = $v->storageType->proceedFile($v, $object, $p);
 				if(in_array($k, $sysMetaFieldList) && $proceedFileResult) {
 					$sysMetaField[$k] = $proceedFileResult;
@@ -1096,6 +1098,7 @@ class PXDatabase extends NLSQLDatabaseAdapter implements IPXDatabase {
 
 			$this->transactionCommit();
 			$object['sys_order'] = isset($objectInDB['sys_order']) ? $objectInDB['sys_order'] : null;
+			$object['sys_meta'] = $sysMetaField;
 
 			foreach ($this->triggers as $t)
 				$t->getTrigger()->OnModifyObject($this, $object['id'], $format, $object, $dbFields, $dbValues, $objectInDB);
@@ -1816,7 +1819,8 @@ SQL;
 
 			if ($isMetaPresent) {
 				$sysMeta = json_decode($table[$k]['sys_meta'], true);
-				$sysMeta = is_array($sysMeta) ? $sysMeta : array();
+				$sysMeta = is_array($sysMeta) ? $sysMeta : [];
+				$table[$k]['sys_meta'] = $sysMeta; // нормализуем sys_meta
 
 				// загружаем сохраненные мета-поля, в случае их
 				// отсутствия (например работаем в режиме ноды кластера)

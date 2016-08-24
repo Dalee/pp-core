@@ -36,12 +36,12 @@ class PXStorageTypeImage extends PXStorageTypeFile {
 
 		list($width, $height, ) = getimagesize($diskPath);
 
-		return array(
+		return [
 			'path'   => isset($httpPath) ? $httpPath : NULL,
 			'width'  => isset($width)    ? $width    : NULL,
 			'height' => isset($height)   ? $height   : NULL,
 			'size'   => is_file($diskPath) ? filesize($diskPath) : 0,
-		);
+		];
 	}
 
 	function copyFile($field, $src, $dest) {
@@ -54,4 +54,4 @@ class PXStorageTypeImage extends PXStorageTypeFile {
 		}
 	}
 }
-?>
+

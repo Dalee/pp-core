@@ -28,13 +28,13 @@ class PXStorageTypeImagesarray extends PXStorageTypeFilesarray {
 				$httpPath = $basedir.$entry;
 				list($width, $height, ) = getimagesize($diskPath);
 
-				$imagesArray[$entry] = array(
+				$imagesArray[$entry] = [
 					'path'   => isset($httpPath) ? $httpPath : NULL,
 					'width'  => isset($width)    ? $width    : NULL,
 					'height' => isset($height)   ? $height   : NULL,
 					'entry'  => $entry,
 					'size'   => is_file($diskPath) ? filesize($diskPath) : 0,
-				);
+				];
 
 				unset($httpPath);
 				unset($width);
@@ -45,4 +45,3 @@ class PXStorageTypeImagesarray extends PXStorageTypeFilesarray {
 		return $imagesArray;
 	}
 }
-?>

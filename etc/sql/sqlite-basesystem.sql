@@ -4,6 +4,7 @@ CREATE TABLE suser (
 	sys_order     INTEGER,
 	sys_created   TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 	sys_modified  TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+	sys_meta      VARCHAR,
 
 	title         VARCHAR,
 	passwd        VARCHAR,
@@ -18,6 +19,7 @@ CREATE TABLE sgroup (
 	sys_order     INTEGER,
 	sys_created   TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 	sys_modified  TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+	sys_meta      VARCHAR,
 	allowed       VARCHAR,
 
 	title         VARCHAR,
@@ -53,34 +55,34 @@ CREATE TABLE acl_objects (
 INSERT INTO sgroup (title, status, allowed) VALUES ('Администраторы', 1, 'a:1:{s:5:"suser";i:1;}');
 UPDATE suser SET parent = (SELECT id FROM sgroup WHERE title = 'Администраторы' LIMIT 1);
 
-INSERT INTO acl_objects (what, access, objectrule) 
+INSERT INTO acl_objects (what, access, objectrule)
 	VALUES ('read', 'allo', 'user');
 
-INSERT INTO acl_objects (sgroupid, what, access, objectrule) 
+INSERT INTO acl_objects (sgroupid, what, access, objectrule)
 	VALUES ((SELECT id FROM sgroup WHERE title = 'Администраторы' LIMIT 1), 'admin', 'allo', 'user');
 
-INSERT INTO acl_objects (sgroupid, what, access, objectrule) 
+INSERT INTO acl_objects (sgroupid, what, access, objectrule)
 	VALUES ((SELECT id FROM sgroup WHERE title = 'Администраторы' LIMIT 1), 'write', 'allo', 'user');
 
-INSERT INTO acl_objects (sgroupid, what, access, objectrule) 
+INSERT INTO acl_objects (sgroupid, what, access, objectrule)
 	VALUES ((SELECT id FROM sgroup WHERE title = 'Администраторы' LIMIT 1), 'admin', 'allo', 'module');
 
-INSERT INTO acl_objects (objecttype, what, access, objectrule)  
+INSERT INTO acl_objects (objecttype, what, access, objectrule)
 	VALUES ('auth', 'admin', 'allo', 'module');
 
-INSERT INTO acl_objects (sgroupid, objecttype, what, access, objectrule)  
+INSERT INTO acl_objects (sgroupid, objecttype, what, access, objectrule)
 	VALUES ((SELECT id FROM sgroup WHERE title = 'Администраторы' LIMIT 1), 'main', 'viewmenu', 'allo', 'module');
 
-INSERT INTO acl_objects (sgroupid, objecttype, what, access, objectrule)  
+INSERT INTO acl_objects (sgroupid, objecttype, what, access, objectrule)
 	VALUES ((SELECT id FROM sgroup WHERE title = 'Администраторы' LIMIT 1), 'users', 'viewmenu', 'allo', 'module');
 
-INSERT INTO acl_objects (sgroupid, objecttype, what, access, objectrule)  
+INSERT INTO acl_objects (sgroupid, objecttype, what, access, objectrule)
 	VALUES ((SELECT id FROM sgroup WHERE title = 'Администраторы' LIMIT 1), 'acl', 'viewmenu', 'allo', 'module');
 
-INSERT INTO acl_objects (sgroupid, objecttype, what, access, objectrule)  
+INSERT INTO acl_objects (sgroupid, objecttype, what, access, objectrule)
 	VALUES ((SELECT id FROM sgroup WHERE title = 'Администраторы' LIMIT 1), 'macl', 'viewmenu', 'allo', 'module');
 
-INSERT INTO acl_objects (sgroupid, objecttype, what, access, objectrule)  
+INSERT INTO acl_objects (sgroupid, objecttype, what, access, objectrule)
 	VALUES ((SELECT id FROM sgroup WHERE title = 'Администраторы' LIMIT 1), 'objects', 'viewmenu', 'allo', 'module');
 
 
@@ -89,34 +91,36 @@ UPDATE acl_objects SET sys_order = id;
 CREATE TABLE struct (
 	id              INTEGER PRIMARY KEY,
 	parent          INTEGER DEFAULT NULL REFERENCES struct ON DELETE CASCADE ON UPDATE CASCADE,
-	
+
 	sys_order       INTEGER,
 	sys_owner       INTEGER DEFAULT NULL REFERENCES suser ON DELETE SET NULL ON UPDATE CASCADE,
 	sys_created     TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 	sys_modified    TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+	sys_meta        VARCHAR,
 	allowed		    TEXT,
-	
+
 	title           VARCHAR,
 	pathname        VARCHAR,
 	type            VARCHAR,
-	
+
 	status          INTEGER
 );
 
 CREATE TABLE html (
 	id              INTEGER PRIMARY KEY,
 	parent          INTEGER NOT NULL REFERENCES struct ON DELETE CASCADE ON UPDATE CASCADE,
-	
+
 	sys_order       INTEGER,
 	sys_owner       INTEGER DEFAULT NULL REFERENCES suser ON DELETE SET NULL ON UPDATE CASCADE,
 	sys_created     TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 	sys_modified    TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-	
+	sys_meta        VARCHAR,
+
 	title           VARCHAR,
 	pathname        VARCHAR,
 	"text"          TEXT,
 	"index"         INTEGER DEFAULT 1,
-	
+
 	status          INTEGER
 );
 
@@ -162,11 +166,10 @@ CREATE UNIQUE INDEX sdata_uniq_idx ON searchdata (stemid, did);
 -- ---------------------------------------------------------------------------------------------
 ALTER TABLE struct ADD "index" INTEGER DEFAULT 1;
 
--- 004_suser_session
-CREATE TABLE suser_session (
-	id            INTEGER PRIMARY KEY AUTOINCREMENT,
-	suser_id      INTEGER DEFAULT NULL REFERENCES suser ON DELETE CASCADE ON UPDATE CASCADE,
-	mtime         TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-	sid           VARCHAR,
-	ip            VARCHAR
+-- real sessions in admin
+CREATE TABLE admin_session (
+	session_id VARCHAR NOT NULL PRIMARY KEY,
+	session_data TEXT NOT NULL,
+	session_lifetime INTEGER NOT NULL,
+	session_time INTEGER NOT NULL
 );

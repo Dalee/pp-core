@@ -16,4 +16,3 @@ class PXStorageTypeFlash extends PXStorageTypeImage {
 		return parent::normalize($field, $object, $param, $allowed);
 	}
 }
-?>

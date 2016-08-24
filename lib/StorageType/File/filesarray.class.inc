@@ -152,4 +152,3 @@ class PXStorageTypeFilesarray extends PXStorageTypeAbstractFile {
 		return $filesArray;
 	}
 }
-?>

@@ -108,4 +108,3 @@ class PXStorageTypeFile extends PXStorageTypeAbstractFile {
 		return $file;
 	}
 }
-?>
