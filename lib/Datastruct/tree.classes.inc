@@ -153,6 +153,38 @@ class NLTree {
 		return $this->leafs[0];
 	}
 
+	/**
+	 * Collects all objects of allowed types within
+	 * children
+	 *
+	 * @param integer $structId
+	 * @param array $allowedTypes
+	 * @return array
+	 */
+	public function recursiveChildren($structId, array $allowedTypes = []) {
+		$childrenIds = $this->leafs[$structId]->children;
+		if (empty($childrenIds)) {
+			return [];
+		}
+
+		$result = [$structId];
+
+		foreach ($childrenIds as $childId) {
+			$item = $this->leafs[$childId]->content;
+			if (!in_array($item['type'], $allowedTypes)) {
+				continue;
+			}
+
+			$result[] = $childId;
+			$tmp = $this->recursiveChildren($childId, $allowedTypes);
+			if (!empty($tmp)) {
+				$result = array_merge($result, $tmp);
+			}
+		}
+
+		return $result;
+	}
+
 	function _fillLeafs(&$table) {
 		// Filling leafs of tree
 		foreach ($table as $k=>$v) {
