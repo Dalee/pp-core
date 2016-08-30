@@ -106,10 +106,10 @@ class PXStorageType {
 	 * в поле
 	 *
 	 * @param PXFieldDescription $field
-	 * @param Array              $object
-	 * @param Array|NULL         $param
+	 * @param array              $object
+	 * @param array|NULL         $param
 	 *
-	 * @return String
+	 * @return string
 	 */
 	function searchLikeQuery($field, $object, &$param) {
 		return '';
@@ -120,16 +120,21 @@ class PXStorageType {
 	 * Подготавливает данные к сохранению в базу
 	 *
 	 * @param PXFieldDescription $field
-	 * @param Array              $object
-	 * @param Array|NULL         $param
+	 * @param array              $object
+	 * @param array|null         $param
 	 *
-	 * @return String
+	 * @return string
 	 */
 	function proceedFile($field, &$object, &$param, $allowed = null) {
-		return isset($object[$field->name]) ? $object[$field->name] : NULL;
+		return isset($object[$field->name]) ? $object[$field->name] : null;
 	}
 
-
+	/**
+	 * @param PXFieldDescription $field
+	 * @param array $object
+	 * @param array $param
+	 * @return null
+	 */
 	function cloneFile($field, $object, &$param) {
 		return null;
 	}
@@ -139,13 +144,13 @@ class PXStorageType {
 	 * поля после выборки объекта из базы
 	 *
 	 * @param PXFieldDescription $field
-	 * @param Array              $object
-	 * @param Array|NULL         $param
+	 * @param array              $object
+	 * @param array|null         $param
 	 *
-	 * @return Mixed
+	 * @return mixed|null
 	 */
 	function normalize($field, $object, &$param) {
-		return isset($object[$field->name]) ? $object[$field->name] : NULL;
+		return isset($object[$field->name]) ? $object[$field->name] : null;
 	}
 
 	/**
@@ -175,7 +180,7 @@ class PXStorageType {
 	/**
 	 * @deprecated Use !storedInDb()
 	 */
-	function notInDb($field, $object, $param=NULL) {
+	function notInDb($field, $object, $param = null) {
 		return false;
 	}
 
@@ -192,7 +197,7 @@ class PXStorageType {
 	/**
 	 * @deprecated Use storedInMeta()
 	 */
-	function inMeta($field, $object, $param=NULL) {
+	function inMeta($field, $object, $param = null) {
 		return !$this->storedInDb();
 	}
 
@@ -203,25 +208,21 @@ class PXStorageType {
 		return false;
 	}
 
-	/*
-		see PXDatabase::_createSelector()
-	*/
-	function createSelector($field, $object, $param=null) {
+	/**
+	 * @see PXDatabase::_createSelector()
+	 */
+	function createSelector($field, $object, $param = null) {
 		return $field->typeDescription->id.'.'.PXRegistry::getDB()->mapFields($field->name);
 	}
 
-	static protected
-	function parseConfigArguments($attrNode, $fieldNode) {
+	protected static function parseConfigArguments($attrNode, $fieldNode) {
 		$args = explode("|", $attrNode->value);
-		$name = $args[0];
-
 		array_shift($args);
 
 		return $args;
 	}
 
-	static public
-	function getClassByName($name) {
+	public static function getClassByName($name) {
 		$baseClass = 'PXStorageType';
 
 		$inputClass = $baseClass.mb_ucfirst(mb_strtolower($name));
@@ -232,8 +233,7 @@ class PXStorageType {
 		return $inputClass;
 	}
 
-	static public
-	function parseConfig($attrNode, $fieldNode) {
+	public static function parseConfig($attrNode, $fieldNode) {
 		$name = preg_replace('/\|.+$/'.REGEX_MOD, '', $attrNode->value);
 
 		$cls = self::getClassByName($name);
@@ -242,4 +242,3 @@ class PXStorageType {
 		return array($cls, $name, $args);
 	}
 }
-?>

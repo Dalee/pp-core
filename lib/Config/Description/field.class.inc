@@ -10,7 +10,10 @@
 class PXFieldDescription {
 	var $name            = NULL;
 	var $description     = NULL;
-	var $storageType     = NULL;
+
+	/** @var PXStorageType|PXStorageTypeAbstractFile */
+	var $storageType     = null;
+
 	var $storageTypeArgs = NULL;
 	var $displayType     = NULL;
 	var $displayTypeArgs = NULL;
@@ -64,8 +67,8 @@ class PXFieldDescription {
 						$this->source =  $value;
 						break;
 
-					case 'noindex': 
-						$noindex = mb_strtoupper($value); 
+					case 'noindex':
+						$noindex = mb_strtoupper($value);
 						$this->noindex = $noindex == 'TRUE';
 						break;
 

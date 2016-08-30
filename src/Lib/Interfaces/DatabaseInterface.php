@@ -1,7 +1,10 @@
 <?php
-interface IPXDatabase {
+
+namespace PP\Lib\Interfaces;
+
+interface DatabaseInterface {
+
 	public function setUser($user);
 	public function LoadDirectoriesAutomatic(&$directories);
-	# TODO: describe more methods
+
 }
-?>

@@ -42,7 +42,7 @@ class PXModuleSearch extends PXModule {
 		}
 
 		$this->layout->assign('text', $query);
-		return $query; 
+		return $query;
 	}
 
 	function getChapters() {
@@ -101,7 +101,7 @@ class PXModuleSearch extends PXModule {
 
 		return $res;
 	}
-	
+
 	function adminIndex() {
 		$this->word = trim($this->request->GetVar('word'));
 		$this->searchForm();
@@ -157,7 +157,7 @@ HTML;
 				margin: 0;
 				list-style: none;
 			}
-			
+
 			fieldset {
 				margin: 1em 0;
 			}
@@ -167,8 +167,6 @@ HTML;
 			<h2>Поиск</h2>
 
 			<input type="hidden" name="area"      value="{$this->area}">
-			<input type="hidden" name="charcheck" value="йцукен">
-
 			<input type="text" style="width:80%;" name="word" value="{$hword}">
 
 			<input type="submit" value="Найти">
@@ -189,7 +187,7 @@ HTML;
 		foreach($checkedTypes as $k => $v){
 			$this->layout->setGetVarToSave('d[' . $k . ']', 'on');
 		}
-		
+
 		$this->layout->setGetVarToSave('charcheck', $this->request->getVar('charcheck'));
 	}
 

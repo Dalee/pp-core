@@ -2,6 +2,15 @@
 abstract class PXAbstractCronRun {
 	public $name = 'Abstract CronRun Class';
 
+	/**
+	 * @param PXApplication $app
+	 * @param PXDatabase|NLPGSQLDatabase $db
+	 * @param PXTreeObjects $tree
+	 * @param int $matchedTime
+	 * @param PXCronRule $matchedRule
+	 *
+	 * @return array
+	 */
 	function Run(&$app, &$db, &$tree, $matchedTime, $matchedRule) {
 		return array(
 			'status' => -1,

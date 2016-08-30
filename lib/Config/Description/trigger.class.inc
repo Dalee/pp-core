@@ -12,6 +12,9 @@ class PXTriggerDescription {
 	private $instance     = NULL;
 	private $folder       = NULL;
 
+	/**
+	 * @return PXAbstractTrigger|PXAbstractDatabaseTrigger|PXAbstractSystemTrigger
+	 */
 	public function getTrigger() {
 		if($this->instance) {
 			return $this->instance;
@@ -33,7 +36,7 @@ class PXTriggerDescription {
 	function getName() {
 		return $this->name;
 	}
-	
+
 	function getFolder() {
 		return $this->folder;
 	}
@@ -53,12 +56,12 @@ class PXTriggerDescription {
 		}
 
 		$this->klass = sprintf('PXTrigger%s%s', ucfirst($this->type), ucfirst($this->name));
-		
+
 		if(!(strlen($this->name) && class_exists($this->klass) && is_subclass_of($this->klass, sprintf("PXAbstract%sTrigger", $this->type)))){
 			FatalError("Триггер '{$this->klass}' отсутствует или его интерфейс не совпадает с типом '{$this->type}'");
 		}
 	}
-	
+
 	function getPathToClass() {
 		$file = strtolower("triggers/{$this->type}/{$this->name}");
 		// why we looking for a trigger in global scope first? does it wrong?

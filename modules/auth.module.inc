@@ -67,7 +67,6 @@ class PXModuleAuth extends PXModule {
 			$captchaSolved = true;
 		}
 
-//		var_dump(2, $this->app->engine->getSession());
 		if (($captchaSolved === true) && ($this->_auth() == 0)) {
 			$nextLocation = $this->request->getReferer();
 

@@ -1,4 +1,6 @@
 <?php
+
+// TODO: удалить этот пиздец, начать с unite
 class PXCronRunReadBSLog extends PXAbstractCronRun {
 	var $DATE_FORMAT   = 'd.m.Y H:00:00';              // date format here [d-m-Y H:i:s] german time format
 
@@ -27,7 +29,7 @@ class PXCronRunReadBSLog extends PXAbstractCronRun {
 
 		$this->timeMin = 0;
 		$this->timeMax = 0;
-		
+
 		/*
 			Extra console params:
 			argv[2] means filename to parse or files limit per round
@@ -40,7 +42,7 @@ class PXCronRunReadBSLog extends PXAbstractCronRun {
 				$this->files[]   = $_SERVER['argv'][2];
 				$this->leaveSourceFile = true;
 			}
-			
+
 			$this->skipLog = !empty($_SERVER['argv'][3]);
 		}
 	}
@@ -363,5 +365,3 @@ version2:
 	1097241447 192.168.1.21 show 281470 281471 5113442241610AF8000007BA03035D02 123x123 gif
 
 */
-
-?>

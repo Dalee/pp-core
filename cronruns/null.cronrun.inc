@@ -1,14 +1,13 @@
 <?php
-class PXCronRunNull extends PXAbstractCronRun {
-	var $name;
 
-	function PXCronRunNull() {
+class PXCronRunNull extends PXAbstractCronRun {
+	public $name;
+
+	public function __construct() {
 		$this->name = 'Пустая задача';
 	}
 
-	function Run(&$app, &$db, &$tree, $matchedTime, $matchedRule) {
+	public function Run(&$app, &$db, &$tree, $matchedTime, $matchedRule) {
 		return array('status' => 0, 'note' => 'Успешно!');
 	}
-
 }
-?>

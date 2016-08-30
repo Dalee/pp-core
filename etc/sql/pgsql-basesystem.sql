@@ -5,6 +5,7 @@ CREATE TABLE suser (
 	sys_created   TIMESTAMP DEFAULT now(),
 	sys_modified  TIMESTAMP DEFAULT now(),
 	sys_meta      VARCHAR,
+	sys_uuid      VARCHAR(36),
 
 	title         VARCHAR,
 	passwd        VARCHAR,
@@ -20,6 +21,7 @@ CREATE TABLE sgroup (
 	sys_created   TIMESTAMP DEFAULT now(),
 	sys_modified  TIMESTAMP DEFAULT now(),
 	sys_meta      VARCHAR,
+	sys_uuid      VARCHAR(36),
 	allowed       VARCHAR,
 
 	title         VARCHAR,
@@ -30,7 +32,14 @@ CREATE TABLE sgroup (
 ALTER TABLE suser  ADD COLUMN parent INT4 DEFAULT NULL REFERENCES sgroup ON DELETE SET NULL ON UPDATE CASCADE;
 ALTER TABLE sgroup ADD COLUMN parent INT4 DEFAULT NULL REFERENCES sgroup ON DELETE SET NULL ON UPDATE CASCADE;
 
-INSERT INTO suser (title, passwd, realname, status) VALUES ('admin', md5('1010'), 'Site Administrator', TRUE);
+INSERT INTO suser (title, passwd, realname, status, sys_uuid)
+VALUES (
+	'admin',
+	md5('1010'),
+	'Администратор',
+	true,
+	'0466909f-2e37-4f01-969a-7ef68ec23976'
+);
 
 CREATE TABLE sgroup2suser (
 	sgroupid      INT4 NOT NULL REFERENCES sgroup ON DELETE CASCADE ON UPDATE CASCADE,
@@ -41,6 +50,7 @@ CREATE TABLE acl_objects (
 	id            SERIAL PRIMARY KEY,
 
 	sys_order     INT4,
+	sys_uuid      VARCHAR(36),
 	sgroupid      INT4 DEFAULT NULL REFERENCES sgroup ON DELETE CASCADE ON UPDATE CASCADE,
 	objectid      INT4,
 	objectparent  INT4,
@@ -51,76 +61,149 @@ CREATE TABLE acl_objects (
 	objectrule	  VARCHAR
 ) WITH OIDS;
 
-INSERT INTO sgroup (title, status, allowed) VALUES ('Администраторы', true, 'a:1:{s:5:"suser";i:1;}');
+INSERT INTO sgroup (title, status, allowed, sys_uuid)
+VALUES (
+	'Администраторы',
+	true,
+	'a:1:{s:5:"suser";i:1;}',
+	'a44636d6-c455-4721-a4ac-dc22bc185dbd'
+);
+
 UPDATE suser SET parent = (SELECT id FROM sgroup WHERE title = 'Администраторы' LIMIT 1);
 
-INSERT INTO acl_objects (what, access, objectrule)
-	VALUES ('read', 'allo', 'user');
+-- ACL
+INSERT INTO acl_objects (what, access, objectrule, sys_uuid)
+VALUES (
+	'read',
+	'allo',
+	'user',
+	'b4c23701-c8f2-45b6-adb5-e7c62d5e0709'
+);
 
-INSERT INTO acl_objects (sgroupid, what, access, objectrule)
-	VALUES ((SELECT id FROM sgroup WHERE title = 'Администраторы' LIMIT 1), 'admin', 'allo', 'user');
+INSERT INTO acl_objects (sgroupid, what, access, objectrule, sys_uuid)
+VALUES (
+	(SELECT id FROM sgroup WHERE title = 'Администраторы' LIMIT 1),
+	'admin',
+	'allo',
+	'user',
+	'ff7aac6f-6c1e-4b82-a4b3-bd540d0f63ad'
+);
 
-INSERT INTO acl_objects (sgroupid, what, access, objectrule)
-	VALUES ((SELECT id FROM sgroup WHERE title = 'Администраторы' LIMIT 1), 'write', 'allo', 'user');
+INSERT INTO acl_objects (sgroupid, what, access, objectrule, sys_uuid)
+VALUES (
+	(SELECT id FROM sgroup WHERE title = 'Администраторы' LIMIT 1),
+	'write',
+	'allo',
+	'user',
+	'9c7e586a-50d9-40cb-a07c-5ac4d37fbcf1'
+);
 
-INSERT INTO acl_objects (sgroupid, what, access, objectrule)
-	VALUES ((SELECT id FROM sgroup WHERE title = 'Администраторы' LIMIT 1), 'admin', 'allo', 'module');
+INSERT INTO acl_objects (sgroupid, what, access, objectrule, sys_uuid)
+VALUES (
+	(SELECT id FROM sgroup WHERE title = 'Администраторы' LIMIT 1),
+	'admin',
+	'allo',
+	'module',
+	'6e56c112-496c-4256-88ea-81a7c85b8118'
+);
 
-INSERT INTO acl_objects (objecttype, what, access, objectrule)
-	VALUES ('auth', 'admin', 'allo', 'module');
+INSERT INTO acl_objects (objecttype, what, access, objectrule, sys_uuid)
+VALUES (
+	'auth',
+	'admin',
+	'allo',
+	'module',
+	'89c532e2-639e-4b78-9745-065c4d39fcd7'
+);
 
-INSERT INTO acl_objects (sgroupid, objecttype, what, access, objectrule)
-	VALUES ((SELECT id FROM sgroup WHERE title = 'Администраторы' LIMIT 1), 'main', 'viewmenu', 'allo', 'module');
+INSERT INTO acl_objects (sgroupid, objecttype, what, access, objectrule, sys_uuid)
+VALUES (
+	(SELECT id FROM sgroup WHERE title = 'Администраторы' LIMIT 1),
+	'main',
+	'viewmenu',
+	'allo',
+	'module',
+	'84222706-6a54-4333-9b94-63582abb73d2'
+);
 
-INSERT INTO acl_objects (sgroupid, objecttype, what, access, objectrule)
-	VALUES ((SELECT id FROM sgroup WHERE title = 'Администраторы' LIMIT 1), 'users', 'viewmenu', 'allo', 'module');
+INSERT INTO acl_objects (sgroupid, objecttype, what, access, objectrule, sys_uuid)
+VALUES (
+	(SELECT id FROM sgroup WHERE title = 'Администраторы' LIMIT 1),
+	'users',
+	'viewmenu',
+	'allo',
+	'module',
+	'fe935eb3-5606-4afb-8dfa-cebd231aa215'
+);
 
-INSERT INTO acl_objects (sgroupid, objecttype, what, access, objectrule)
-	VALUES ((SELECT id FROM sgroup WHERE title = 'Администраторы' LIMIT 1), 'acl', 'viewmenu', 'allo', 'module');
+INSERT INTO acl_objects (sgroupid, objecttype, what, access, objectrule, sys_uuid)
+VALUES (
+	(SELECT id FROM sgroup WHERE title = 'Администраторы' LIMIT 1),
+	'acl',
+	'viewmenu',
+	'allo',
+	'module',
+	'170999b2-4fd4-4c79-a934-dd4ad6b64e1a'
+);
 
-INSERT INTO acl_objects (sgroupid, objecttype, what, access, objectrule)
-	VALUES ((SELECT id FROM sgroup WHERE title = 'Администраторы' LIMIT 1), 'macl', 'viewmenu', 'allo', 'module');
+INSERT INTO acl_objects (sgroupid, objecttype, what, access, objectrule, sys_uuid)
+VALUES (
+	(SELECT id FROM sgroup WHERE title = 'Администраторы' LIMIT 1),
+	'macl',
+	'viewmenu',
+	'allo',
+	'module',
+	'8d48db14-9c14-4186-ae5a-167559c024b2'
+);
 
-INSERT INTO acl_objects (sgroupid, objecttype, what, access, objectrule)
-	VALUES ((SELECT id FROM sgroup WHERE title = 'Администраторы' LIMIT 1), 'objects', 'viewmenu', 'allo', 'module');
-
+INSERT INTO acl_objects (sgroupid, objecttype, what, access, objectrule, sys_uuid)
+VALUES (
+	(SELECT id FROM sgroup WHERE title = 'Администраторы' LIMIT 1),
+	'objects',
+	'viewmenu',
+	'allo',
+	'module',
+	'e0eb8142-e641-4fba-aa6f-4e6b9b416ce0'
+);
 
 UPDATE acl_objects SET sys_order = id;
 
 CREATE TABLE struct (
-	id              SERIAL PRIMARY KEY,
-	parent          INT4 DEFAULT NULL REFERENCES struct ON DELETE CASCADE ON UPDATE CASCADE,
+	id            SERIAL PRIMARY KEY,
+	parent        INT4 DEFAULT NULL REFERENCES struct ON DELETE CASCADE ON UPDATE CASCADE,
 
-	sys_order       INT4,
-	sys_owner       INT4 DEFAULT NULL REFERENCES suser ON DELETE SET NULL ON UPDATE CASCADE,
-	sys_created     TIMESTAMP DEFAULT now(),
-	sys_modified    TIMESTAMP DEFAULT now(),
-	sys_meta        VARCHAR,
-	allowed		    TEXT,
+	sys_order     INT4,
+	sys_owner     INT4 DEFAULT NULL REFERENCES suser ON DELETE SET NULL ON UPDATE CASCADE,
+	sys_created   TIMESTAMP DEFAULT now(),
+	sys_modified  TIMESTAMP DEFAULT now(),
+	sys_meta      VARCHAR,
+	sys_uuid      VARCHAR(36),
+	allowed		  TEXT,
 
-	title           VARCHAR,
-	pathname        VARCHAR,
-	type            VARCHAR,
+	title         VARCHAR,
+	pathname      VARCHAR,
+	type          VARCHAR,
 
-	status          BOOL
+	status        BOOL
 ) WITH OIDS;
 
 CREATE TABLE html (
-	id              SERIAL PRIMARY KEY,
-	parent          INT4 NOT NULL REFERENCES struct ON DELETE CASCADE ON UPDATE CASCADE,
+	id            SERIAL PRIMARY KEY,
+	parent        INT4 NOT NULL REFERENCES struct ON DELETE CASCADE ON UPDATE CASCADE,
 
-	sys_order       INT4,
-	sys_owner       INT4 DEFAULT NULL REFERENCES suser ON DELETE SET NULL ON UPDATE CASCADE,
-	sys_created     TIMESTAMP DEFAULT now(),
-	sys_modified    TIMESTAMP DEFAULT now(),
-	sys_meta        VARCHAR,
+	sys_order     INT4,
+	sys_owner     INT4 DEFAULT NULL REFERENCES suser ON DELETE SET NULL ON UPDATE CASCADE,
+	sys_created   TIMESTAMP DEFAULT now(),
+	sys_modified  TIMESTAMP DEFAULT now(),
+	sys_meta      VARCHAR,
+	sys_uuid      VARCHAR(36),
 
-	title           VARCHAR,
-	pathname        VARCHAR,
-	text            TEXT,
-	index           BOOL DEFAULT TRUE,
+	title         VARCHAR,
+	pathname      VARCHAR,
+	text          TEXT,
+	index         BOOL DEFAULT TRUE,
 
-	status          BOOL
+	status        BOOL
 ) WITH OIDS;
 
 -- 002_auditlog.sql
@@ -168,21 +251,22 @@ ALTER TABLE struct ADD index BOOL DEFAULT TRUE;
 
 -- real sessions in admin
 CREATE TABLE admin_session (
-	session_id VARCHAR(128) NOT NULL PRIMARY KEY,
-	session_data TEXT NOT NULL,
+	session_id       VARCHAR(128) NOT NULL PRIMARY KEY,
+	session_data     TEXT NOT NULL,
 	session_lifetime INTEGER NOT NULL,
-	session_time INTEGER NOT NULL
+	session_time     INTEGER NOT NULL
 );
 
 CREATE TABLE queue_job (
-	id SERIAL PRIMARY KEY,
-	sys_order INTEGER,
-	sys_owner INTEGER DEFAULT NULL REFERENCES suser ON DELETE SET NULL ON UPDATE CASCADE,
-	sys_created TIMESTAMP WITHOUT TIME ZONE DEFAULT now(),
+	id           SERIAL PRIMARY KEY,
+	sys_order    INTEGER,
+	sys_owner    INTEGER DEFAULT NULL REFERENCES suser ON DELETE SET NULL ON UPDATE CASCADE,
+	sys_created  TIMESTAMP WITHOUT TIME ZONE DEFAULT now(),
 	sys_modified TIMESTAMP WITHOUT TIME ZONE DEFAULT now(),
-	status BOOLEAN DEFAULT true,
+	sys_uuid     VARCHAR(36),
 
-	worker VARCHAR(150),
-	payload JSON,
-	state VARCHAR DEFAULT 'fresh'
+	worker       VARCHAR(150),
+	payload      JSON,
+	state        VARCHAR DEFAULT 'fresh',
+	status       BOOLEAN DEFAULT true
 ) WITH OIDS;

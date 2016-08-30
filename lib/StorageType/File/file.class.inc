@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Файл
  * хранится в site/htdocs/ai/ТИП_ДАННЫХ/ИД_ОБЪЕКТА/ИМЯ_ПОЛЯ/ИМЯ_ФАЙЛА
@@ -8,27 +9,31 @@
  * storageType file
  */
 class PXStorageTypeFile extends PXStorageTypeAbstractFile {
-	//FIXME: Remove static usage of this method from projects !
+
+	/**
+	 * {@inheritdoc}
+	 */
 	function proceedFile($field, &$object, &$param, $allowed = null) {
-		$is_static_call  = !isset($this) || !(is_a($this, 'PXStorageTypeAbstractFile')); //see FIXME above
-		$fileArray       = &$object[$field->name];
-		$ai              = $is_static_call ?
-		                      self::ai($field, $object, $param['format']) :
-		                      $this->ai($field, $object, $param['format']);
-		$basedir         = HTDOCS_PATH . $ai;
-		$filename        = null;
+
+		$fileArray = &$object[$field->name];
+		$ai = $this->ai($field, $object, $param['format']);
+		$basedir = HTDOCS_PATH . $ai;
 		$invalidateCache = false;
 
 		if (is_array($fileArray)) {
+
+			// добавление нового файла, либо загрузка нового
 			if (!empty($fileArray['name'])) {
-				if(isset($param['allowed']) && is_array($param['allowed'])) {
+				$filename = null;
+
+				if (isset($param['allowed']) && is_array($param['allowed'])) {
 					$allowed = $param['allowed'];
 
 					$tmp = _TranslitFilename($fileArray['name']);
-					$tmp = preg_replace('/\.\w+$/'.REGEX_MOD, '', $tmp);
+					$tmp = preg_replace('/\.\w+$/' . REGEX_MOD, '', $tmp);
 
-					if(in_array($fileArray['type'], array_keys($allowed))) {
-						$filename = $tmp.'.'.$allowed[$fileArray['type']];
+					if (in_array($fileArray['type'], array_keys($allowed))) {
+						$filename = $tmp . '.' . $allowed[$fileArray['type']];
 					}
 
 				} else {
@@ -37,39 +42,42 @@ class PXStorageTypeFile extends PXStorageTypeAbstractFile {
 
 				// ModifyContent: если мы загружаем новый файл, мы трем все файлы
 				// в директории, и копируем туда новый
-				if(!is_null($filename)) {
-					MakeDirIfNotExists($basedir);
-					$d = dir($basedir);
-					while ($entry = $d->read()) {
-						if (is_file($basedir.$entry)) {
-							unlink($basedir.$entry);
-						}
+				if ($filename !== null) {
+					$d = new NLDir($basedir);
+					if (!$d->Exist()) {
+						$d->Create();
 					}
-					$_ = $is_static_call ?
-						self::copyFile($field, $fileArray['tmp_name'], $basedir.$filename) :
-						$this->copyFile($field, $fileArray['tmp_name'], $basedir.$filename);
+					$d->Emptyfy(false);
 
+					$this->copyFile($field, $fileArray['tmp_name'], $basedir . $filename);
 					$invalidateCache = true;
 				}
 			}
 
+			// запрос на удаление файла/файлов
 			if (isset($fileArray['remove']) && is_array($fileArray['remove'])) {
-				foreach ($fileArray['remove'] as $fileName) {
-					if (file_exists($basedir.$fileName)) {
-						unlink($basedir.$fileName);
+
+				foreach ($fileArray['remove'] as $filename) {
+					// удаление файла на файловой системе, если он есть
+					if (file_exists($basedir . $filename)) {
+						unlink($basedir . $filename);
 						$invalidateCache = true;
 					}
+
+					// удаление файла из sys_meta, если есть ссылка на файл
+					$this->removeDataFromMeta(
+						$field,
+						$object,
+						$param,
+						$filename
+					);
 				}
 			}
 		}
 
 		if ($invalidateCache) {
 			unlinkDirTreeIfEmpty($basedir);
-			$_ = $is_static_call ? self::removeFromCache($ai) : $this->removeFromCache($ai);
-		}
-
-		if ($is_static_call) {
-			return null;
+			$this->removeFromCache($ai);
 		}
 
 		// пишем в объект общий результат нормализации
@@ -82,29 +90,56 @@ class PXStorageTypeFile extends PXStorageTypeAbstractFile {
 		// без временных полей.
 		$normalized = $this->__normalize($field, $object, $param);
 		$normalized = is_array($normalized) ? array_filter($normalized) : null;
+
 		return $normalized ? $normalized : null;
 	}
 
+	/**
+	 * {@inheritdoc}
+	 */
 	function __normalize($field, $object, &$param, $allowed = null) {
-		$fileName = NULL;
-		$basedir  = $this->ai($field, $object, $param['format']);
-		$d        = new NLDir(HTDOCS_PATH . $basedir);
 
-		if ($d->Exist()) {
-			while ($entry = $d->Read()) {
+		$fileName = null;
+		$relativeDir = $this->ai($field, $object, $param['format']);
+		$fullDir = path_clear(HTDOCS_PATH . $relativeDir);
+		$storageTypeDir = new NLDir($fullDir);
+
+		if ($storageTypeDir->Exist()) {
+			while ($entry = $storageTypeDir->Read()) {
 				$fileName = $entry;
 			}
 		}
 
-		$file =  array(
-			'filename' => isset($fileName) ? $fileName              : NULL,
-			'path'     => isset($fileName) ? $basedir.$fileName     : NULL,
-			'uri'      => isset($fileName) ? $basedir.$fileName     : NULL, // URI for SecureFile
-			'type'     => (isset($fileName) && is_file($d->name.'/'.$fileName)) ? mime_content_type($d->name.'/'.$fileName) : NULL,
-			'size'     => (isset($fileName) && is_file($d->name.'/'.$fileName)) ? filesize($d->name.'/'.$fileName)          : 0
-		);
-		$file['fullpath'] = &$file['path'];
+		//
+		// файл присутствует на диске, обновляем данные по файлу
+		//
+		if ($fileName !== null) {
+			$fullPath = path_clear($fullDir.DIRECTORY_SEPARATOR.$fileName);
+			$relativePath = path_clear($relativeDir.DIRECTORY_SEPARATOR.$fileName);
+			$mimeType = null;
+			$fileSize = 0;
 
-		return $file;
+			if (is_file($fullPath)) {
+				$mimeType = mime_content_type($fullPath);
+				$fileSize = filesize($fullPath);
+			}
+
+			$fileData = [
+				'filename' => $fileName,
+				'path' => $relativePath,
+				'fullpath' => $relativePath,
+				'uri' => $relativePath, // URI for SecureFile
+				'type' => $mimeType,
+				'size' => $fileSize,
+			];
+
+			return $fileData;
+		}
+
+		//
+		// файл отсутствует на диске
+		// @see getDataFromMeta
+		//
+		return $this->getDataFromMeta($field, $object, $param);
 	}
 }

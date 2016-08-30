@@ -1,6 +1,8 @@
 <?php
+
+// TODO: удалить этот пиздец, начать с unite
 class PXCronRunSearchIndex extends PXAbstractCronRun {
-	function __construct() {	
+	function __construct() {
 		$this->name = 'Индексация данных для поиска';
 	}
 
@@ -329,5 +331,3 @@ class PXCronRunSearchIndex extends PXAbstractCronRun {
 		$this->db->query($sql);
 	}
 }
-
-?>

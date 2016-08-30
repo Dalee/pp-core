@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Список картинок
  * хранятся в site/htdocs/ai/ТИП_ДАННЫХ/ИД_ОБЪЕКТА/ИМЯ_ПОЛЯ/ИМЯ_ФАЙЛА.РАЗРЕШЕННЫЙ_ТИП
@@ -10,38 +11,59 @@
  * storageType imagesarray
  */
 class PXStorageTypeImagesarray extends PXStorageTypeFilesarray {
-	//FIXME: Remove possible static usage of this method from projects !
-	function proceedFile($field, &$object, &$param, $allowed=ENUM_ALLOWED_IMAGETYPES) {
+
+	/**
+	 * {@inheritdoc}
+	 */
+	function proceedFile($field, &$object, &$param, $allowed = ENUM_ALLOWED_IMAGETYPES) {
 		$param['allowed'] = unserialize($allowed); //PHP54: $allowed is for arguments contract at now
 		return parent::proceedFile($field, $object, $param, $allowed);
 	}
 
+	/**
+	 * {@inheritdoc}
+	 */
 	function __normalize($field, $object, &$param, $allowed = null) {
-		$imagesArray = array();
-		$basedir     = $this->ai($field, $object, $param['format']);;
 
-		$d = new NLDir(HTDOCS_PATH . $basedir);
+		$relativeDir = $this->ai($field, $object, $param['format']);
+		$fullDir = HTDOCS_PATH . $relativeDir;
+		$storageTypeDir = new NLDir($fullDir);
 
-		if ($d->Exist()) {
-			foreach ($d->getFileNames() as $entry) {
-				$diskPath = HTDOCS_PATH . $basedir . $entry;
-				$httpPath = $basedir.$entry;
-				list($width, $height, ) = getimagesize($diskPath);
+		//
+		// директория для типа присутствует на диске,
+		// обновляем данные по файлу.
+		//
+		if ($storageTypeDir->Exist()) {
+			$entriesList = [];
 
-				$imagesArray[$entry] = [
-					'path'   => isset($httpPath) ? $httpPath : NULL,
-					'width'  => isset($width)    ? $width    : NULL,
-					'height' => isset($height)   ? $height   : NULL,
-					'entry'  => $entry,
-					'size'   => is_file($diskPath) ? filesize($diskPath) : 0,
+			foreach ($storageTypeDir->getFileNames() as $entry) {
+				$fullPath = path_clear($fullDir.$entry);
+				$relativePath = path_clear($relativeDir.DIRECTORY_SEPARATOR.$entry);
+
+				$width = 0;
+				$height = 0;
+				$size = 0;
+				if (is_file($fullPath)) {
+					list($width, $height,) = getimagesize($fullPath);
+					$size = filesize($fullPath);
+				}
+
+				$entriesList[$entry] = [
+					'entry' => $entry,
+					'path' => $relativePath,
+					'width' => $width,
+					'height' => $height,
+					'size' => $size,
 				];
-
-				unset($httpPath);
-				unset($width);
-				unset($height);
 			}
+
+			return $entriesList;
 		}
 
-		return $imagesArray;
+		//
+		// файл отсутствует на диске
+		// @see getDataFromMeta
+		//
+		return $this->getDataFromMeta($field, $object, $param);
 	}
 }
