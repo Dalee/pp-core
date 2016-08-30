@@ -128,7 +128,9 @@ class PXStorageTypeFilesarray extends PXStorageTypeAbstractFile {
 		// в функцию добавления/обновления объекта возвращаем
 		// только конкретную нормализацию файлового поля объекта
 		// без временных полей.
-		$normalized = array_filter($this->__normalize($field, $object, $param)); // it's always safe
+		$normalized = $this->__normalize($field, $object, $param);
+		$normalized = is_array($normalized) ? array_filter($normalized) : null;
+
 		return count($normalized) ? $normalized : null;
 	}
 

@@ -542,9 +542,8 @@ class PXApplication {
 		}
 
 		$domPlugins = $dom->xpath("/plugins//plugin");
-
 		if (!is_array($domPlugins) || count($domPlugins) == 0) {
-			FatalError("Не описаны плагины проекта");
+			return;
 		}
 
 		foreach($domPlugins as $domPlugin) {

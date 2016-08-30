@@ -91,7 +91,7 @@ class PXStorageTypeFile extends PXStorageTypeAbstractFile {
 		$normalized = $this->__normalize($field, $object, $param);
 		$normalized = is_array($normalized) ? array_filter($normalized) : null;
 
-		return $normalized ? $normalized : null;
+		return $normalized;
 	}
 
 	/**
