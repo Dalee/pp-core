@@ -245,7 +245,6 @@ class NLPGSQLDatabase extends NLAbstractSQLDatabase {
 	function UpdateObjectById($table, $objectId, $fields, $values, $flushCache = true) {
 		$query = "UPDATE {$table} SET ".implode(', ', array_map(array($this, '__mapUpdateData'), $fields, $values))." WHERE id={$objectId}";
 		return $this->ModifyingQuery($query, null, null, $flushCache);
-		return NULL;
 	}
 
 	/*

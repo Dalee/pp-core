@@ -1,10 +1,16 @@
 #!/usr/bin/env php54
 <?php
-set_time_limit(0);
-ini_set('memory_limit','512M'); //for greedy scripts
-require_once dirname(__FILE__).'/../lib/maincommon.inc';
 
-if(file_exists($localLib = dirname(__FILE__).'/../../local/lib/mainsbin.inc')){
+echo "====================================\n";
+echo "DEPRECATED: use ./vendor/bin/pp cron\n";
+echo "Script will be removed soon..\n";
+echo "====================================\n";
+
+set_time_limit(0);
+ini_set('memory_limit', '512M'); //for greedy scripts
+require_once dirname(__FILE__) . '/../lib/maincommon.inc';
+
+if (file_exists($localLib = dirname(__FILE__) . '/../../local/lib/mainsbin.inc')) {
 	include_once $localLib;
 }
 
@@ -18,13 +24,13 @@ if (!isset($app->modules['cronrun'])) {
 }
 
 $cronModule = $app->modules['cronrun']->getModule();
-$jobName    = isset($_SERVER['argv'][1]) ? $_SERVER['argv'][1] : NULL;
+$jobName = isset($_SERVER['argv'][1]) ? $_SERVER['argv'][1] : NULL;
 
-if($jobName) {
+if ($jobName) {
 	ini_set('display_errors', 1);
 
 	if (isset($cronModule->jobs[$jobName])) {
-		Label('Run: '.$jobName);
+		Label('Run: ' . $jobName);
 
 		$cronModule->runJob($cronModule->jobs[$jobName], $app, time());
 
@@ -32,14 +38,14 @@ if($jobName) {
 		Label('Choose job:');
 		echo "\n";
 
-		foreach($cronModule->jobs as $jobName => $j) {
+		foreach ($cronModule->jobs as $jobName => $j) {
 			$stat = $cronModule->getStat($j);
 
 			$_ = array(
 				"\t",
-				str_pad($jobName,             25),
+				str_pad($jobName, 25),
 				str_pad($j['rule']->asString, 25),
-				str_pad($j['job']->name,      25),
+				str_pad($j['job']->name, 25),
 				strftime('%Y-%m-%d %H:%M', $stat['start']),
 				"\t",
 				strftime('%Y-%m-%d %H:%M', $stat['end']),

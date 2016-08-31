@@ -24,67 +24,67 @@ class PXApplication {
 
 	/**
 	 * массив коннекторов к базе данных
-	 * @var Array
+	 * @var NLDBDescription[]
 	 */
 	var $dbDescription;
 
 	/**
 	 * массив описаний datatypes {@link PXTypeDescription}
-	 * @var Array
+	 * @var PXTypeDescription[]
 	 */
-	var $types = array();
+	var $types = [];
 
 	/**
 	 * массив ссылок между datatypes {@link PXRefDescription}
-	 * @var Array
+	 * @var PXRefDescription[]
 	 */
 	var $references;
 
 	/**
 	 * контейнер c триггерами {@link PXTriggersList}
-	 * @var Object
+	 * @var PXTriggersList[]
 	 */
 	var $triggers = null;
 
 	/**
 	 * массив модулей {@link PXModuleDescription}
-	 * @var Array
+	 * @var PXModuleDescription[]
 	 */
 	var $modules;
 
 	/**
 	 * массив плагинов
-	 * @var Array
+	 * @var PXPluginDescription[]
 	 */
 	var $plugins = null;
 
 	/**
 	 * массив настроек из etc/properties.ini
-	 * @var Array
+	 * @var array
 	 */
 	var $properties;
 
 	/**
 	 * массив языковых настроек из (site|local|libpp)/etc/lang.yaml (суммарный)
-	 * @var Array
+	 * @var array
 	 */
 	var $langTree = array();
 
 	/**
 	 * массив правил авторизации из etc/auth.ini
-	 * @var Array
+	 * @var array
 	 */
 	var $authrules;
 
 	/**
 	 * массив описаний каталогов из etc/datatypes.xml
-	 * @var Array
+	 * @var array
 	 */
 	var $directory = array();
 
 	/**
 	 * биндинги модулей из etc/modules.xml modules/bindings
-	 * @var Array
+	 * @var PXBindingDescription[]
 	 */
 	var $bindingsQueue;
 
@@ -97,13 +97,14 @@ class PXApplication {
 	/**
 	 * массив названий полей, чьи объекты требуют инициализации при загрузке из кэша.
 	 * Description объекта должен реализовывать метод initialize
-	 * @var Array
+	 *
+	 * @var array
 	 **/
-	protected $reinitialize = array();
+	protected $reinitialize = [];
 
 	/**
 	 * Singleton array with caching.
-	 *
+	 * @param \PP\Lib\Engine\AbstractEngine $engineObject
 	 */
 	public static function getInstance($engineObject) {
 		static $instance = array();
@@ -134,7 +135,8 @@ class PXApplication {
 	/**
 	 * Конструктор класса
 	 *
-	 * @param String $engineClass - имя класса Engine, используется в имени файла кэша
+	 * @param string $engineClass - имя класса Engine, используется в имени файла кэша
+	 * @param \PP\Lib\Engine\AbstractEngine $engineObject
 	 */
 	private function __construct($engineClass, $engineObject) {
 		$this->engine = $engineObject;
@@ -187,10 +189,11 @@ class PXApplication {
 	/**
 	 * Возвращает элемент из ({@link properties}) по ключу или значение по умолчанию.
 	 *
-	 * @param String $k ключ
-	 * @param String $defaultValue - возвращаемое значение по умолчанию
+	 * @param string $k ключ
+	 * @param string $defaultValue - возвращаемое значение по умолчанию
+	 * @return mixed
 	 */
-	public function getProperty($k, $defaultValue=NULL) {
+	public function getProperty($k, $defaultValue=null) {
 		return (isset($this->properties[$k])) ? $this->properties[$k] : $defaultValue;
 	}
 
@@ -539,9 +542,8 @@ class PXApplication {
 		}
 
 		$domPlugins = $dom->xpath("/plugins//plugin");
-
 		if (!is_array($domPlugins) || count($domPlugins) == 0) {
-			FatalError("Не описаны плагины проекта");
+			return;
 		}
 
 		foreach($domPlugins as $domPlugin) {

@@ -1,5 +1,10 @@
 #!/usr/bin/env php54
 <?php
+	//
+	// @TODO: refactor to MigrateCommand
+	// @see PP\Command\HelloCommand
+	//
+
 	/**
 	 * Proxima Portal simple migration manager
 	 *

@@ -1,9 +1,7 @@
 {
 	"name": "pp/core",
 	"type": "pp-core",
-	"description": "ProximaPortal",
-	"license": "MIT",
-	"minimum-stability": "dev",
+	"description": "Proxima Portal",
 	"authors": [
 		{
 			"name": "Dalee Developers Team",
@@ -19,13 +17,18 @@
 	"require": {
 		"pp/installers": "*",
 		"monolog/monolog": "^1.19",
-		"symfony/http-foundation": "~2.8"
+		"symfony/http-foundation": "~2.8",
+		"ramsey/uuid": "^3.5",
+		"symfony/console": "^2.8"
 	},
 	"config": {
 		"secure-http": false,
 		"preferred-install": {
 			"pp/*": "source",
 			"*": "dist"
+		},
+		"platform": {
+			"php": "5.4.22"
 		}
 	},
 	"autoload": {
@@ -34,5 +37,8 @@
 				"src/"
 			]
 		}
-	}
+	},
+	"bin": [
+		"bin/pp"
+	]
 }

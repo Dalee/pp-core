@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Список файлов
  * хранятся в htdocs/ai/ТИП_ДАННЫХ/ИД_ОБЪЕКТА/ИМЯ_ПОЛЯ/ИМЯ_ФАЙЛА
@@ -10,12 +11,17 @@
  * storageType filesarray
  */
 class PXStorageTypeFilesarray extends PXStorageTypeAbstractFile {
-	function cloneFile($field, $object, &$param, $symlink = false) {
-		$donor = $param['donor'];
 
-		$fileArray       = $donor[$field->name];
-		$ai              = $this->ai($field, $object, $param['format']);
-		$basedir         = HTDOCS_PATH . $ai;
+	/**
+	 * {@inheritdoc}
+	 */
+	function cloneFile($field, $object, &$param, $symlink = false) {
+
+		$donor = $param['donor'];
+		$fileArray = $donor[$field->name];
+
+		$ai = $this->ai($field, $object, $param['format']);
+		$basedir = HTDOCS_PATH . $ai;
 
 		if (!is_array($fileArray) || empty($fileArray)) {
 			return;
@@ -24,7 +30,7 @@ class PXStorageTypeFilesarray extends PXStorageTypeAbstractFile {
 		MakeDirIfNotExists($basedir);
 
 		foreach ($fileArray as $k => $f) {
-			$object[$field->name][$k]['path'] = $ai.$f['entry'];
+			$object[$field->name][$k]['path'] = $ai . $f['entry'];
 
 			if ($symlink) {
 				symlink(
@@ -41,16 +47,16 @@ class PXStorageTypeFilesarray extends PXStorageTypeAbstractFile {
 		}
 	}
 
-	//FIXME: Remove static usage of this method from projects !
+	/**
+	 * {@inheritdoc}
+	 */
 	function proceedFile($field, &$object, &$param, $allowed = null) {
-		$is_static_call  = !isset($this) || !(is_a($this, 'PXStorageTypeAbstractFile')); //see FIXME above
-		$varName         = $field->name;
-		$ai              = $is_static_call ?
-		                      self::ai($field, $object, $param['format']) :
-		                      $this->ai($field, $object, $param['format']);
-		$basedir         = HTDOCS_PATH . $ai;
-		$fileArray       = &$object[$varName];
-		$allowed         = isset($param['allowed']) ? $param['allowed'] : NULL;
+
+		$varName = $field->name;
+		$ai = $this->ai($field, $object, $param['format']);
+		$basedir = HTDOCS_PATH . $ai;
+		$fileArray = &$object[$varName];
+		$allowed = isset($param['allowed']) ? $param['allowed'] : NULL;
 		$invalidateCache = false;
 
 		if (is_array($fileArray) && !empty($fileArray['name'][0])) {
@@ -58,46 +64,52 @@ class PXStorageTypeFilesarray extends PXStorageTypeAbstractFile {
 
 			// if no filter by extension
 			if (!is_array($allowed) || empty($allowed)) {
-				$filename = $basedir.'/'. _TranslitFilename($fileArray['name'][0]);
+				$filename = $basedir . '/' . _TranslitFilename($fileArray['name'][0]);
 
-			// if type in allowed list
+				// if type in allowed list
 			} elseif (in_array($fileArray['type'][0], array_keys($allowed))) {
 				$tmp = _TranslitFilename($fileArray['name'][0]);
-				$tmp = preg_replace('/\.\w+$/'.REGEX_MOD, '', $tmp);
+				$tmp = preg_replace('/\.\w+$/' . REGEX_MOD, '', $tmp);
 
 				if (in_array($fileArray['type'][0], array_keys($allowed))) {
-					$filename = $basedir.'/'.$tmp.'.'.$allowed[$fileArray['type'][0]];
+					$filename = $basedir . '/' . $tmp . '.' . $allowed[$fileArray['type'][0]];
 				}
 			}
 
 			if (!is_null($filename)) {
 				MakeDirIfNotExists($basedir);
 
-				$_ = $is_static_call ?
-					self::copyFile($field, $fileArray['tmp_name'][0], $filename) :
-					$this->copyFile($field, $fileArray['tmp_name'][0], $filename);
-
+				$this->copyFile($field, $fileArray['tmp_name'][0], $filename);
 				$invalidateCache = true;
 			}
 		}
 
 		if (is_array($fileArray) && isset($fileArray['remove']) && is_array($fileArray['remove'])) {
-			foreach ($fileArray['remove'] as $fileName) {
-				if (file_exists($basedir.'/'.$fileName)) {
-					unlink($basedir.'/'.$fileName);
+			$filename = null;
+
+			foreach ($fileArray['remove'] as $filename) {
+
+				if (file_exists($basedir . '/' . $filename)) {
+					unlink($basedir . '/' . $filename);
 					$invalidateCache = true;
 				}
+
+				// удаление файла из sys_meta, если есть ссылка на файл
+				$this->removeDataFromMeta(
+					$field,
+					$object,
+					$param,
+					$filename
+				);
 			}
 		}
 
-		$edited = PXRegistry::getRequest()->GetUploadFile($varName.'_edit', true);
+		$edited = PXRegistry::getRequest()->GetUploadFile($varName . '_edit', true);
 		if (isset($edited['name']) && is_array($edited['name'])) {
-			foreach ($edited['name'] as $k=>$v) {
-				if (file_exists($basedir.'/'.$k) && isset($v) && strlen($v)) {
-					unlink($basedir.'/'.$k);
-					$_ = $is_static_call ?
-						self::copyFile($field, $edited['tmp_name'][$k], $basedir.'/'._TranslitFilename($v)) :
-						$this->copyFile($field, $edited['tmp_name'][$k], $basedir.'/'._TranslitFilename($v));
+			foreach ($edited['name'] as $k => $v) {
+				if (file_exists($basedir . '/' . $k) && isset($v) && strlen($v)) {
+					unlink($basedir . '/' . $k);
+					$this->copyFile($field, $edited['tmp_name'][$k], $basedir . '/' . _TranslitFilename($v));
 					$invalidateCache = true;
 				}
 			}
@@ -105,11 +117,7 @@ class PXStorageTypeFilesarray extends PXStorageTypeAbstractFile {
 
 		if ($invalidateCache) {
 			unlinkDirTreeIfEmpty($basedir);
-			$_ = $is_static_call ? self::removeFromCache($ai) : $this->removeFromCache($ai);
-		}
-
-		if ($is_static_call) {
-			return null;
+			$this->removeFromCache($ai);
 		}
 
 		// пишем в объект общий результат нормализации
@@ -120,36 +128,49 @@ class PXStorageTypeFilesarray extends PXStorageTypeAbstractFile {
 		// в функцию добавления/обновления объекта возвращаем
 		// только конкретную нормализацию файлового поля объекта
 		// без временных полей.
-		$normalized = array_filter($this->__normalize($field, $object, $param)); // it's always safe
+		$normalized = $this->__normalize($field, $object, $param);
+		$normalized = is_array($normalized) ? array_filter($normalized) : null;
+
 		return count($normalized) ? $normalized : null;
 	}
 
+	/**
+	 * {@inheritdoc}
+	 */
 	function __normalize($field, $object, &$param, $allowed = null) {
-		$filesArray = array();
-		$basedir    = $this->ai($field, $object, $param['format']);
-		$d          = new NLDir(HTDOCS_PATH . $basedir);
+		$basedir = $this->ai($field, $object, $param['format']);
+		$storageTypeDir = new NLDir(HTDOCS_PATH . $basedir);
 
-		if (!$d->Exist()) {
+		//
+		// директория присутствует на диске,
+		// обновляем данные по файлу.
+		//
+		if ($storageTypeDir->Exist()) {
+			$filesArray = [];
+			$fileEntries = $storageTypeDir->getFileNames();
+
+			foreach ($fileEntries as $entry) {
+				$diskPath = HTDOCS_PATH . $basedir . $entry;
+				$httpPath = $basedir . $entry;
+
+				$filesArray[$entry] = array(
+					'path' => isset($httpPath) ? $httpPath : NULL,
+					'uri' => isset($httpPath) ? $httpPath : NULL, // same as in PXStorageTypeFile, for SecureFile
+					'filename' => $entry,
+					'size' => filesize($diskPath),
+					'type' => mime_content_type($diskPath),
+					'entry' => $entry
+				);
+				$filesArray[$entry]['fullpath'] = &$filesArray[$entry]['path'];
+			}
+
 			return $filesArray;
 		}
 
-		$fileEntries = $d->getFileNames();
-		foreach ($fileEntries as $entry) {
-			$diskPath = HTDOCS_PATH . $basedir . $entry;
-			$httpPath = $basedir.$entry;
-
-			$filesArray[$entry] = array(
-				'path'     => isset($httpPath) ? $httpPath : NULL,
-				'uri'      => isset($httpPath) ? $httpPath : NULL, // same as in PXStorageTypeFile, for SecureFile
-				'filename' => $entry,
-				'size'     => filesize($diskPath),
-				'type'     => mime_content_type($diskPath),
-				'entry'    => $entry
-			);
-			$filesArray[$entry]['fullpath'] = &$filesArray[$entry]['path'];
-		}
-
-		return $filesArray;
+		//
+		// файл отсутствует на диске
+		// @see getDataFromMeta
+		//
+		return $this->getDataFromMeta($field, $object, $param);
 	}
 }
-?>

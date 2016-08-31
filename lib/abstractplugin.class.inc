@@ -67,31 +67,6 @@ class PXAbstractPlugin {
 		}
 	}
 
-
-	/**
-	 * allow dynamically add methods for plugins
-	 * but waiting for php5.4 to bind $this for $this->path and $this->load()
-	private static $dynamicMethods = array();
-	protected static function declareMethod ($name, $callback) {
-		if (isset(self::$dynamicMethods[$name])) {
-			throw new Exception('Cannot redeclare method.');
-		}
-		self::$dynamicMethods[$name] = $callback;
-	}
-	public function __call($name, $args) {
-		if (!isset(self::$dynamicMethods[$name])) {
-			throw new Exception('Call to undefined method '.__CLASS__.'::'.$name.'()');
-		}
-		$callback = self::$dynamicMethods[$name];
-		if (!is_callable($callback)) {
-			throw new Exception('Invalid callback declared for '.__CLASS__.'::'.$name.'()');
-		}
-		// waiting for php5.4 to bind $this for $this->path and $this->load()
-		// d20(compact('name', 'args'));debug_print_backtrace();die;
-		return call_user_func_array($callback, $args);
-	}
-	*/
-
 	// what the hell is that?
 	public static function autoload($className) {
 		if (!true) {
@@ -113,5 +88,3 @@ class PXAbstractPlugin {
 		}
 	}
 }
-
-?>

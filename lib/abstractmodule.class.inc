@@ -1,31 +1,8 @@
 <?php
-interface PXModuleIF {
-	function adminIndex();
 
-	/**
-	 * @return string
-	 */
-	function adminAction();
+use PP\Lib\Module\ModuleInterface;
 
-	/**
-	 * @return string
-	 */
-	function adminPopup();
-	function userIndex();
-	function userAction();
-
-	/**
-	 * @return array|null
-	 */
-	function userJson();
-
-	/**
-	 * @return string
-	 */
-	function adminJson();
-}
-
-abstract class PXModule implements PXModuleIF {
+abstract class PXModule implements ModuleInterface {
 	var $area;
 	var $settings;
 	protected $__selfDescription;

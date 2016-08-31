@@ -1,5 +1,10 @@
 #!/usr/bin/env php54
 <?php
+	//
+	// @TODO: refactor to CreateMetaCommand
+	// @see PP\Command\HelloCommand
+	//
+
 	ini_set('memory_limit', '512M');
 	set_time_limit(0);
 
@@ -113,12 +118,12 @@
 
 			$obj = null;
 			switch($data['dbtype']) {
-				case 'pgsql': 
-					$obj = new PostgreSQL($data); 
+				case 'pgsql':
+					$obj = new PostgreSQL($data);
 					break;
 				default:
-					printf("Database: %s not supported, yet.\n", $data['dbtype']); 
-					exit(1); 
+					printf("Database: %s not supported, yet.\n", $data['dbtype']);
+					exit(1);
 					break;
 			}
 			return $obj;

@@ -1,6 +1,40 @@
 <?php
 
 /**
+ * @param $path
+ * @return string
+ *
+ * @test ["/hello//world"] >>> "/hello/world"
+ * @test ["hello//world"] >>> "hello/world"
+ * @test ["../etc/passwd"] >>> "etc/passwd"
+ * @test ["/etc/./passwd/?=hello"] >>> "/etc/passwd/?=hello"
+ * @test [""] >>> ""
+ */
+function path_clear($path) {
+	$pathItems = explode(DIRECTORY_SEPARATOR, $path);
+
+	$pathItems = array_map(function ($item) {
+		return filter_var((string)$item, FILTER_SANITIZE_URL);
+	}, $pathItems);
+
+	$pathItems = array_filter($pathItems, function ($item) {
+		$result = true;
+		$result = $result && !empty($item);
+		$result = $result && $item !== "..";
+		$result = $result && $item !== ".";
+
+		return $result;
+	});
+
+	$result = implode(DIRECTORY_SEPARATOR, $pathItems);
+	if (path_is_absolute($path)) {
+		$result = DIRECTORY_SEPARATOR . $result;
+	}
+
+	return $result;
+}
+
+/**
  * path_resolve ([$from, ...], $to)
  * Resolves $to to an absolute path.
  * @param string $from,... unlimited number of paths. cwd by default
@@ -16,7 +50,7 @@
  * @test ["foo/bar", "/tmp/file/", "..", "a/../subfile"] >>> "/tmp/subfile"
  * @test ["/foo/bar", "./baz"] >>> "/foo/bar/baz"
  */
-function path_resolve ($from, $to = null) {
+function path_resolve($from, $to = null) {
 	$res = array();
 
 	$paths = func_get_args();
@@ -61,7 +95,7 @@ function path_resolve ($from, $to = null) {
  * @test ["/data/orandea/test/aaa", "/data/orandea/impl/bbb"] >>> "../../impl/bbb"
  * @test ["f/g", "h/i"] >>> "../../h/i"
  */
-function path_relative ($from, $to) {
+function path_relative($from, $to) {
 	$from = substr(path_resolve($from), 1);
 	$to = substr(path_resolve($to), 1);
 
@@ -96,5 +130,5 @@ function path_relative ($from, $to) {
  * @test ["."] >>> false
  */
 function path_is_absolute ($path) {
-	return $path[0] === '/';
+	return mb_substr($path, 0, 1) === '/';
 }

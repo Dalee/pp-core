@@ -46,7 +46,7 @@ abstract class AbstractEngine {
 	}
 
 	/**
-	 *
+	 * @return $this
 	 */
 	public function start() {
 
@@ -65,6 +65,8 @@ abstract class AbstractEngine {
 
 		$this->db->LoadDirectoriesAutomatic($this->app->directory);
 		$this->initModules();
+
+		return $this;
 	}
 
 	protected function initApplication() {

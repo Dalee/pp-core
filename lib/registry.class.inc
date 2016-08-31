@@ -2,6 +2,7 @@
 
 use Monolog\Registry;
 use PP\Lib\Html\Layout;
+use PP\Lib\Database\DatabaseInterface;
 
 final class PXRegistry {
 	const unknownVarMessage = "Registry - not heap. Store your %s somewhere else!";
@@ -43,7 +44,7 @@ final class PXRegistry {
 					break;
 
 				case 'db':
-					$registry->$varName = new PXDataBase(self::getApp());
+					$registry->$varName = new PXDatabase(self::getApp());
 					break;
 
 				case 'user':
@@ -192,7 +193,7 @@ final class PXRegistry {
 		self::_set('app', $app);
 	}
 
-	public static function setDB(IPXDatabase $db) {
+	public static function setDB(DatabaseInterface $db) {
 		self::_set('db', $db);
 	}
 

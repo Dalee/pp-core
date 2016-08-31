@@ -1,4 +1,7 @@
 <?php
+
+use Ramsey\Uuid\Uuid;
+
 class PXModuleAcl extends PXModule {
 	var $what;
 	var $access;
@@ -313,12 +316,12 @@ class PXModuleAcl extends PXModule {
 		$order = sprintf($order, $this->orderingField);
 		$query = sprintf('SELECT "%s", "id" FROM %s WHERE %s ORDER BY %s ', $this->orderingField, $this->sqlTable, $where, $order);
 
-		$objectsInDB = $db->query($query, false, array($limit, 0));
-		if (!sizeof($objectsInDB)) {
+		$objectsInDb = $db->query($query, false, array($limit, 0));
+		if (!sizeof($objectsInDb)) {
 			return null;
 		}
 
-		return $limit == 1 ? current($objectsInDB) : $objectsInDb;
+		return $limit == 1 ? current($objectsInDb) : $objectsInDb;
 	}
 
 	protected
@@ -437,18 +440,6 @@ class PXModuleAcl extends PXModule {
 				return 'after?!';
 		}
 
-		//$changing = $this->getRulesOrdersBetweenOrders($moving[$oField], $after[$oField], $sid);
-		//if (sizeof($changing) == sizeof(array_unique($changing))) {
-			// equal orders exists. some magic will comes sometimes. write here something if you know how to fix it
-			//$changing
-		//}
-		//if (empty($moving[$this->orderingField)) {
-			// fail... null in sys_order. need to set sys_orders to ALL nulled between moving and passive
-		//}
-		//if (empty($after[$this->orderingField])) {
-			// see above
-		//}
-
 		if ($afterOrder === null) {
 			// hm. cant be moved...
 			return 'do something with nulls!';
@@ -525,7 +516,10 @@ class PXModuleAcl extends PXModule {
 				}
 
 				$fields[] = $this->ruleTypeField;
+				$fields[] = 'sys_uuid';
+
 				$values[$this->ruleTypeField] = $this->objectRule;
+				$values['sys_uuid'] = Uuid::uuid4();
 
 				$rId = $this->db->InsertObject($this->sqlTable, $fields, $values);
 				$this->setOrder($rId, $rId);
@@ -535,7 +529,7 @@ class PXModuleAcl extends PXModule {
 
 			case 'edit':
 				$fields = array_keys($this->_getFields());
-				$values = array();
+				$values = [];
 
 				foreach($fields as $field) {
 					$values[$field] = $this->request->getVar($field);
@@ -568,5 +562,3 @@ class PXModuleAcl extends PXModule {
 		return $redir;
 	}
 }
-
-?>

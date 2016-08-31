@@ -37,12 +37,18 @@ class PXAdminTableSimple extends PXAdminWidget {
 		$this->showEven = false;
 	}
 
+	/**
+	 * @param array $data
+	 * @return $this
+	 */
 	function setData($data) {
 		if(!is_array($data)) {
 			$data = array();
 		}
 
 		$this->data = $data;
+
+		return $this;
 	}
 
 	function setWidths() {
@@ -247,5 +253,3 @@ class PXAdminTableSimple extends PXAdminWidget {
 		return $_;
 	}
 }
-
-?>

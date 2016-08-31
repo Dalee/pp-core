@@ -1,5 +1,10 @@
 #!/usr/bin/env php54
 <?php
+	//
+	// @TODO: refactor to AssetsCompileCommand
+	// @see PP\Command\HelloCommand
+	//
+
 	/**
 	 * Proxima Portal CSS manager
 	 *
