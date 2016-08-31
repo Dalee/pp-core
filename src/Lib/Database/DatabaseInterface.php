@@ -1,6 +1,6 @@
 <?php
 
-namespace PP\Lib\Interfaces;
+namespace PP\Lib\Database;
 
 interface DatabaseInterface {
 

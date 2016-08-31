@@ -1,8 +1,8 @@
 <?php
 
 use Ramsey\Uuid\Uuid;
-use PP\Lib\Interfaces\DatabaseInterface;
-use PP\Lib\Exceptions\DatabaseException;
+use PP\Lib\Database\DatabaseInterface;
+use PP\Lib\Database\DatabaseException;
 
 /**
  * Класс работы с БД

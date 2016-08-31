@@ -1,6 +1,6 @@
 <?php
 
-use PP\Lib\Interfaces\ModuleInterface;
+use PP\Lib\Module\ModuleInterface;
 
 abstract class PXModule implements ModuleInterface {
 	var $area;

@@ -1,5 +1,10 @@
 #!/usr/bin/env php54
 <?php
+	echo "=========================================\n";
+	echo "DEPRECATED: use ./vendor/bin/pp fill-meta\n";
+	echo "Script will be removed soon..\n";
+	echo "=========================================\n";
+
 	set_time_limit(0);
 	require_once dirname(__FILE__).'/../../libpp/lib/maincommon.inc';
 	$localcommon = BASEPATH.'local/lib/maincommon.inc';

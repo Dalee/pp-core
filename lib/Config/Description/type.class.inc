@@ -6,19 +6,22 @@
 * @subpackage Application
 */
 class PXTypeDescription {
-	var $id            = NULL;
-	var $title         = NULL;
-	var $parent        = NULL;
-	var $childs        = array();
-	var $references    = array();
-	var $order         = NULL;
-	var $fields        = array();
+	var $id            = null;
+	var $title         = null;
+	var $parent        = null;
+	var $childs        = [];
+	var $references    = [];
+	var $order         = null;
+
+	/** @var PXFieldDescription[] */
+	public $fields        = [];
+
 	var $groups        = array('' => array('name' => null, 'view' => null)); //TODO|FIXME: need standalone group description ?
-	var $fieldGroups   = array();
-	var $sTypes        = array();
-	var $dTypes        = array();
+	var $fieldGroups   = [];
+	var $sTypes        = [];
+	var $dTypes        = [];
 	var $struct        = 'plain';
-	var $byDefault     = NULL;
+	var $byDefault     = null;
 
 	function parentType() {
 		return PXRegistry::getTypes($this->parent);
@@ -27,7 +30,6 @@ class PXTypeDescription {
 	/**
 	 * Возвращает массив типов потомков для переданного формата
 	 */
-
 	function childTypes() {
 		$cTypes = array();
 
@@ -49,16 +51,17 @@ class PXTypeDescription {
 	}
 
 	function allowedChilds($object) {
-		$cTypes = $this->childTypes();
-
-		$ac = array();
-
+		$ac = [];
 		if (is_object($object)) {
-			$ac = isset($object->content[OBJ_FIELD_CHILDREN]) ? $object->content[OBJ_FIELD_CHILDREN] : array();
+			$ac = (isset($object->content[OBJ_FIELD_CHILDREN]))
+				? $object->content[OBJ_FIELD_CHILDREN]
+				: [];
 		}
 
 		if (is_array($object)) {
-			$ac = isset($object[OBJ_FIELD_CHILDREN]) ? $object[OBJ_FIELD_CHILDREN] : array();
+			$ac = (isset($object[OBJ_FIELD_CHILDREN]))
+				? $object[OBJ_FIELD_CHILDREN]
+				: [];
 		}
 
 		foreach ($ac as $k=>$v) {
@@ -159,8 +162,7 @@ class PXTypeDescription {
 		PXTypeDescription::findParents($app->types);
 	}
 
-	static
-	function findParents(&$types) {
+	static function findParents(&$types) {
 		foreach ($types as $k=>$v) {
 			if (!empty($v->parent)) {
 				if (isset($types[$v->parent])) {
@@ -204,7 +206,7 @@ class PXTypeDescription {
 		}
 
 		if (!isset($this->order)) {
-			$this->order = 'sys_order';
+			$this->order = OBJ_FIELD_ORDER;
 		}
 	}
 
@@ -228,5 +230,3 @@ class PXTypeDescription {
 	}
 
 }
-
-?>

@@ -1,6 +1,6 @@
 <?php
 
-namespace PP\Lib\Exceptions;
+namespace PP\Lib\Database;
 
 /**
  * Class DatabaseException

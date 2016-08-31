@@ -2,7 +2,7 @@
 
 use Monolog\Registry;
 use PP\Lib\Html\Layout;
-use PP\Lib\Interfaces\DatabaseInterface;
+use PP\Lib\Database\DatabaseInterface;
 
 final class PXRegistry {
 	const unknownVarMessage = "Registry - not heap. Store your %s somewhere else!";

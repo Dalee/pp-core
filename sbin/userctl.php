@@ -1,6 +1,11 @@
 #!/usr/bin/env php54
 <?php
 
+//
+// @TODO: refactor to UserControlCommand
+// @see PP\Command\HelloCommand
+//
+
 /* ret codes
  * 0 - ok
  * 1 - show usage

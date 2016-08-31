@@ -12,7 +12,7 @@ if (!isset($_SERVER['REQUEST_METHOD'])) {
 defined('IS_CLI') || define('IS_CLI', PHP_SAPI === 'cli');
 
 // Определение BASEPATH - это полный путь к корню сайта
-if(!defined('BASEPATH')) {
+if (!defined('BASEPATH')) {
 	$basePath = str_replace("/", DIRECTORY_SEPARATOR, $_SERVER["DOCUMENT_ROOT"]);
 	$basePath = rtrim($basePath, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
 	define('BASEPATH', $basePath);
