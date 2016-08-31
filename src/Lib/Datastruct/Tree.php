@@ -3,9 +3,11 @@
 namespace PP\Lib\Datastruct;
 
 /**
- * TODO: refactor constructor method into ::fromTable static method
- * TODO: add chaining support
- * TODO: access level for "leafs" and "levels" should be protected
+ * Class Tree
+ * @package PP\Lib\Datastruct
+ * @todo refactor constructor method into ::fromTable static method
+ * @todo add chaining support
+ * @todo access level for "leafs" and "levels" should be protected
  */
 class Tree {
 	/** @var Leaf[] */

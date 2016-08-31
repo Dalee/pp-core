@@ -2,6 +2,10 @@
 
 namespace PP\Lib\Datastruct;
 
+/**
+ * Class Leaf
+ * @package PP\Lib\Datastruct
+ */
 class Leaf {
 	var $id;
 	var $title;
