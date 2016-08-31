@@ -7,8 +7,8 @@
  * @param array $rows
  * @return array
  */
-function GetColsFromTable($table, $rows) {
-	$results = array();
+function getColsFromTable($table, $rows) {
+	$results = [];
 	if (!is_array($table)) {
 		return $results;
 	}
@@ -21,7 +21,7 @@ function GetColsFromTable($table, $rows) {
 	return $results;
 }
 
-function GetColsFromTableWithIndex($table, $rows, $index) {
+function getColsFromTableWithIndex($table, $rows, $index) {
 	$results = array();
 	if (!is_array($table)) {
 		return $results;
@@ -36,31 +36,31 @@ function GetColsFromTableWithIndex($table, $rows, $index) {
 	return $results;
 }
 
-function GetBlankArray() {
-	return array();
+function getBlankArray() {
+	return [];
 }
 
-function GetColFromTable($table, $rowName) {
-	$retArray = array();
+function getColFromTable($table, $rowName) {
+	$retArray = [];
 	foreach ($table as $row) {
-		if(isset($row[$rowName]) && !is_null($row[$rowName])) {
+		if (isset($row[$rowName]) && !is_null($row[$rowName])) {
 			$retArray[] = $row[$rowName];
 		}
 	}
 	return $retArray;
 }
 
-//grouping hash by key
+// grouping hash by key
 function groupArrayByCol($table, $rowNameOrCallBack, $allowEmptyKeys = false, $fixCallableRowName = false) {
 	$tmp = array();
 	$is_callable = !$fixCallableRowName && is_callable($rowNameOrCallBack);
 
-	foreach($table as $k => $row) {
+	foreach ($table as $k => $row) {
 		$rowName = $is_callable
 			? $rowNameOrCallBack($row)
 			: $rowNameOrCallBack;
 
-		if ($is_callable || ($allowEmptyKeys ? array_key_exists($rowName, $row) : isset($row[$rowName])) ) {
+		if ($is_callable || ($allowEmptyKeys ? array_key_exists($rowName, $row) : isset($row[$rowName]))) {
 			$tmp[$is_callable ? $rowName : $row[$rowName]][] = $row;
 		}
 	}
@@ -68,15 +68,24 @@ function groupArrayByCol($table, $rowNameOrCallBack, $allowEmptyKeys = false, $f
 	return $tmp;
 }
 
-function GetColFromTableWithIndexs($table, $rowName) {
-	$retArray = array();
-	foreach ($table as $index=>$row) {
+function getColFromTableWithIndexs($table, $rowName) {
+	$retArray = [];
+	foreach ($table as $index => $row) {
 		$retArray[$index] = $row[$rowName];
 	}
 	return $retArray;
 }
 
-function GetFromArray($array, $index, $default=NULL) {
+/**
+ * Gets value from array by key if it exists
+ * or $default otherwise
+ *
+ * @param array $array
+ * @param string $index
+ * @param null $default
+ * @return mixed
+ */
+function getFromArray($array, $index, $default = null) {
 	if (isset($array[$index])) {
 		return $array[$index];
 	} else {
@@ -84,14 +93,14 @@ function GetFromArray($array, $index, $default=NULL) {
 	}
 }
 
-function NestedArrayWalk(&$multiArray, $mapper, $optArgs = array(), $nestingLevel = 0){
-	if(!is_callable($mapper)) {
+function nestedArrayWalk(&$multiArray, $mapper, $optArgs = [], $nestingLevel = 0) {
+	if (!is_callable($mapper)) {
 		return false;
 	}
 
-	foreach($multiArray as $key => $value){
-		if(is_array($value) && sizeof($value)){
-			NestedArrayWalk($multiArray[$key], $mapper, $optArgs, (int)$nestingLevel + 1);
+	foreach ($multiArray as $key => $value) {
+		if (is_array($value) && sizeof($value)) {
+			nestedArrayWalk($multiArray[$key], $mapper, $optArgs, (int)$nestingLevel + 1);
 		}
 
 		$mapper($multiArray, $key, $optArgs, $nestingLevel);
@@ -103,14 +112,14 @@ function NestedArrayWalk(&$multiArray, $mapper, $optArgs = array(), $nestingLeve
 function array_recursive_inheritance() {
 	$arrays = func_get_args();
 	$base = array_shift($arrays);
-	if(!is_array($base)) $base = empty($base) ? array() : array($base);
-	foreach($arrays as $append) {
-		foreach((array)$append as $key => $value) {
-			if(!array_key_exists($key, $base)) {
+	if (!is_array($base)) $base = empty($base) ? array() : array($base);
+	foreach ($arrays as $append) {
+		foreach ((array)$append as $key => $value) {
+			if (!array_key_exists($key, $base)) {
 				$base[$key] = $append[$key];
 				continue;
 			}
-			if(is_array($value) or is_array($base[$key])) {
+			if (is_array($value) or is_array($base[$key])) {
 				$base[$key] = array_recursive_inheritance($base[$key], $append[$key]);
 			} else {
 				$base[$key] = $value;
@@ -128,7 +137,7 @@ function array_recursive_inheritance() {
  * @return array transposed 2-dim array
  */
 function array_transpose($array) {
-	$t = array();
+	$t = [];
 
 	foreach ($array as $key => $value) {
 		foreach ($value as $key2 => $value2) {
@@ -152,7 +161,7 @@ function array_remap($array, $map, $strict = false) {
 		return false;
 	}
 
-	$result = array();
+	$result = [];
 
 	if (is_string($map)) {
 		$map = array($map => $map);
@@ -160,7 +169,7 @@ function array_remap($array, $map, $strict = false) {
 
 	if (!$strict && isset($map[0])) {
 		$rmap = array();
-		foreach($map as $k=>$v) {
+		foreach ($map as $k=>$v) {
 			$rmap[ (is_int($k) && isset($array[$v])) ? $v : $k ] = $v;
 		}
 		$map = $rmap;
@@ -174,7 +183,7 @@ function array_remap($array, $map, $strict = false) {
 }
 
 function array_deep_diff($d1, $d2, $excludeKeys) {
-	switch(true){
+	switch (true) {
 		case is_array($d1) && is_array($d2) :
 			$diff = array();
 			foreach (array_unique(array_merge(array_keys($d1), array_keys($d2))) as $key) {
@@ -240,7 +249,7 @@ function array_flat($array, $toKey = false, $toValue = false, $unique = false) {
 		return false;
 	}
 
-	$result = array();
+	$result = [];
 
 	foreach ($array as $key => $value) {
 
@@ -325,7 +334,7 @@ function findNeighborElements($list, $current, $circular = true, $strict = true)
 	$found = false;
 	$pos   = 0;
 
-	foreach($inList as $element) {
+	foreach ($inList as $element) {
 		$pos++;
 		if ($strict ? $current === $element : $current == $element) {
 			$found = true;
@@ -336,7 +345,7 @@ function findNeighborElements($list, $current, $circular = true, $strict = true)
 	$prev = null;
 	$next = null;
 
-	if($found){
+	if ($found) {
 		$last = $pos + 1 > sizeof($inList);
 		$last ? end($inList) : prev($inList);
 		$last || $next = next($inList);
@@ -366,13 +375,13 @@ function getRowsFromTable($array, $colName, $colValues, $strict = true, $count =
 	$found     = array();
 	$nFound    = 0;
 	$colValues = (array)$colValues;
-	foreach($array as $idx => $row) {
+	foreach ($array as $idx => $row) {
 		//FIXME: change in_array() to something more effective, it will be slow for big lists
 		if (!array_key_exists($colName, $row) || !in_array($row[$colName], $colValues, $strict)) {
 			continue;
 		}
 		$found[$idx] = $row;
-		if(++$nFound >= $count){
+		if (++$nFound >= $count) {
 			break;
 		}
 	}
@@ -397,8 +406,11 @@ function getRowFromTable($array, $colName, $colValues, $strict = true) {
 
 /**
  * Checks an array to be a simple array
+ *
+ * @param $array
+ * @return bool|null
  */
-function is_list ($array) {
+function is_list($array) {
 	if (empty($array) || !is_array($array)) {
 		return null;
 	}
@@ -419,9 +431,12 @@ function is_list ($array) {
 }
 
 /**
- * readable alias to "is_array() && !is_list()"
+ * Readable alias to "is_array() && !is_list()"
+ *
+ * @param array $array
+ * @return bool|null
  */
-function is_hash ($array) {
+function is_hash($array) {
 	if (empty($array) || !is_array($array)) {
 		return null;
 	}
