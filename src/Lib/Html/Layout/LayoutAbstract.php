@@ -45,7 +45,7 @@ abstract class LayoutAbstract implements LayoutInterface {
 			}
 		}
 
-		FatalError('Template ' . $filename . ' dosn\'t exists');
+		FatalError('Template ' . $filename . ' does not exists');
 	}
 
 	/**
@@ -259,7 +259,7 @@ abstract class LayoutAbstract implements LayoutInterface {
 				break;
 
 			default:
-				FatalError('Undefined type for layout content ' . d3($value));
+				FatalError('Undefined type for layout content ' . var_export($value, true));
 				break;
 		}
 	}

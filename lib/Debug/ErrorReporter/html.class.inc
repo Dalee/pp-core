@@ -253,7 +253,7 @@ HTML;
 
 			foreach($GLOBALS[$k] as $kk=>$vv) {
 				$node = urldecode($kk);
-				$xml[] = "\t\t".'<'.$node.'><![CDATA['.urldecode(trim(d3($vv,   false))).']]></'.$node.'>';
+				$xml[] = "\t\t".'<'.$node.'><![CDATA['.urldecode(trim(var_export($vv, true))).']]></'.$node.'>';
 			}
 
 			$xml[] = "\t</{$k}>";

@@ -285,9 +285,6 @@ class PXApplication {
 	 * @uses PXDirectoryDescription
 	 * @uses PXRefDescription
 	 * @uses PXTypeDescription
-	 *
-	 * @todo Для вывода сообщений об ошибках используется debug ф-ция d2(), это нормально ?
-	 *
 	 * @param String $fileName	имя файла
 	 */
 	private function FillDataTypes($fileName) {

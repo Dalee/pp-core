@@ -17,18 +17,18 @@ class PXRefDescription {
 	var $restrictBy = NULL;
 
 	var $load       = 'automatic';
-	
-	/** 
-		@var bool Может ли объект A иметь более одной связи с объектом B по какому-либо дополнительному признаку ? 
+
+	/**
+		@var bool Может ли объект A иметь более одной связи с объектом B по какому-либо дополнительному признаку ?
 		@see PXApplication::FillDataTypes()
 	*/
 	var $multiple   = false;
-	/** 
+	/**
 		@var bool По-умолчанию отображать в форме редактирования ссылок все объекты или только привязанные ?
 		@see PXRefDescription::_mapRefByDefaults()
 	*/
 	var $byDefault  = false;
-	/** 
+	/**
 		@var bool Скрывать или нет конкретный тип связи в форме редактирования ссылок ? Используется для служебных связей.
 		@see PXApplication::FillDataTypes()
 	*/
@@ -84,8 +84,7 @@ class PXRefDescription {
 						$ref->addField($field);
 						break;
 					default:
-						d2("Unknown node name in reference: ".$node->nodeName());
-						break;
+						throw new Exception('Unknown node name in reference: ' . $node->nodeName());
 				}
 			}
 			$app->references[$ref->name] = $ref;
@@ -96,7 +95,7 @@ class PXRefDescription {
 			$app->types[$ref->to]->references[$ref->from] = &$app->references[$ref->name];
 		}
 	}
-	
+
 	function _mapRefByDefaults($string){
 		switch($string){
 			default:
@@ -107,4 +106,3 @@ class PXRefDescription {
 		}
 	}
 }
-?>

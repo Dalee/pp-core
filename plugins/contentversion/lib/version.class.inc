@@ -109,20 +109,13 @@ class PXContentVersion {
 	#TODO: WRITE ME/*{{{*/
 	private function proccedFiles($from, $to, $lastVersion) {
 		$notDbFields = array_filter($this->type->fields, array($this, "filterFields"));
-		$typeDir = BASEPATH . "/site/htdocs/ai/{$this->type->id}/";
 
 		foreach(array_keys($notDbFields) as $k) {
 			if(!isset($this->original[$k])) {
 				$edited[] = $k;
 			}
 		}
-
-		d2($this->original);
-
-		/*if(file_exists($typeDir . $o['id'])) {
-			copyr($typeDir . "/" . $o['sys_original']  . "/" . $k, $typeDir . "/" . $id . "/" . $k);
-		}*/
-	}/*}}}*/
+	}
 
 	private function getLastVersion() {
 		$sql = sprintf("select id, max(sys_version) from %s where sys_original = '%s' group by id order by id desc",
@@ -160,6 +153,3 @@ class PXContentVersion {
 		return !$field->storageType->storedInDb() && !$field->storageType->name == 'virtual';
 	}
 }
-
-
-?>

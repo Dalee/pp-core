@@ -124,10 +124,6 @@ class NLMSSQLDatabase extends NLAbstractSQLDatabase {
 				FatalError($query);
 			}
 
-			if(isset($php_errormsg)) {
-				d2($query);
-			}
-
 			if ($flushCache == true) {
 				$this->cache->clear();
 			}
