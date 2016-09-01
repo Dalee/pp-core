@@ -324,7 +324,6 @@ class PXDatabase extends NLSQLDatabaseAdapter implements DatabaseInterface {
 			}
 		}
 
-		PXProfiler::begin('GET DATA: ' . $format->id . '[' . (is_null($status)?'N':($status?'t':'f')) . ', "' . $where . '"]-[' .  (is_array($limit) ? implode('.', $limit) : '') . ']-[' . $order . ']');
 		$where = $this->joinWhere($format, $status, $where);
 
 		$order_by = null;
@@ -360,7 +359,6 @@ class PXDatabase extends NLSQLDatabaseAdapter implements DatabaseInterface {
 			$this->cache->save(array($queryIden, $format->id), $data);
 		}
 
-		PXProfiler::end();
 		return $data;
 	}
 
@@ -887,8 +885,6 @@ class PXDatabase extends NLSQLDatabaseAdapter implements DatabaseInterface {
 			return;
 		}
 
-		PXProfiler::begin('Add '.sizeof($objectsArray).' '.$format->id.' objects');
-
 		if (isset($format->fields['parent'])) {
 			$parentIds = array_unique(GetColFromTable($objectsArray, 'parent'));
 
@@ -918,8 +914,6 @@ class PXDatabase extends NLSQLDatabaseAdapter implements DatabaseInterface {
 
 		$pathnames = array();
 		$nullObj = null;
-
-		PXProfiler::begin('normaize/prepare foreach '.sizeof($format->fields).'x'.sizeof($objectsArray));
 
 		foreach ($objectsArray as $object) {
 			$copyTable[$idx] = array();
@@ -977,13 +971,10 @@ class PXDatabase extends NLSQLDatabaseAdapter implements DatabaseInterface {
 
 			$idx++;
 		}
-		PXProfiler::end();
 
 		$res = $this->ModifyingCopy($format->id, $copyCols, $copyTable);
 		$this->clearObjectTypeCache($format->id);
 		$audit->info('Добавлено '.$idx.' объектов', $format->id);
-
-		PXProfiler::end();
 
 		return $res;
 		// TRIGGER ?
@@ -1988,8 +1979,6 @@ SQL;
 		$mode = (empty($mode)) ? DB_SELECT_TABLE : $mode; // if mode == NULL, function behavior is undefined
 		switch (true) {
 			case $mode & DB_SELECT_TABLE:
-				PXProfiler::begin('PREPARE: '.$format->id.' ['.sizeof($resTable).'x'.sizeof($format->fields).']');
-
 				$this->_NormalizeTable($resTable, $format, !!($mode & DB_SELECT_WITHOUT_EXTERNALS));
 
 				$newTable = array();
@@ -1999,16 +1988,12 @@ SQL;
 					}
 					unset($resTable[$k]);
 				}
-
-				PXProfiler::end();
 
 				return $newTable;
 				break;
 
 			case $mode & DB_SELECT_TREE:
 			case $mode & DB_SELECT_FULL_TREE:
-				PXProfiler::begin('PREPARE: '.$format->id.' ['.sizeof($resTable).'x'.sizeof($format->fields).']');
-
 				$this->_NormalizeTable($resTable, $format, !!($mode & DB_SELECT_WITHOUT_EXTERNALS));
 				$newTable = array();
 
@@ -2018,9 +2003,6 @@ SQL;
 					}
 					unset($resTable[$k]);
 				}
-				PXProfiler::end();
-
-				PXProfiler::begin('TREE: '.$format->id.' ['.sizeof($newTable).']');
 
 				$parentRefName = !isset($format->fields['pid']) ? 'parent' : 'pid';
 
@@ -2028,7 +2010,6 @@ SQL;
 					$t->getTrigger()->OnBeforeBuildTree($this, $format, $newTable, $parentRefName);
 				}
 				$newTree = $this->buildTree($newTable, 'id', $parentRefName, 'title', !!($mode & DB_SELECT_FULL_TREE));
-				PXProfiler::end();
 
 				return $newTree;
 				break;

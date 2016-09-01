@@ -63,10 +63,7 @@ class NLPGSQLDatabase extends NLAbstractSQLDatabase {
 		}
 
 		if ($this->connected) {
-			PXProfiler::begin('SQL: '.$query);
-
 			if (($res = pg_query($this->connection, $query)) == false) {
-				PXProfiler::end();
 				return ERROR_DB_BADQUERY;
 			}
 
@@ -78,16 +75,13 @@ class NLPGSQLDatabase extends NLAbstractSQLDatabase {
 				$table = $this->Query("SELECT {$retField} FROM {$table} WHERE oid = ".pg_last_oid($res), true);
 
 				if (is_array($table) && count($table)) {
-					PXProfiler::end();
 					return $table[0][$retField];
 				} else {
-					PXProfiler::end();
 					return NULL;
 				}
 			} elseif ($retCount) {
 				return pg_affected_rows($res);
 			} else {
-				PXProfiler::end();
 				return $res;
 			}
 
@@ -97,15 +91,12 @@ class NLPGSQLDatabase extends NLAbstractSQLDatabase {
 	}
 
 	function ModifyingCopy($tableName, $cols, $data) {
-		PXProfiler::begin('SQL: COPY '.sizeof($cols).'x'.sizeof($data).' to '.$tableName);
-
 		if (!$this->connected) {
 			$this->Connect();
 		}
 
 		$row = reset($data);
 		if (empty($row)) {
-			PXProfiler::end();
 			return ERROR_DB_BADQUERY;
 		}
 
@@ -114,7 +105,6 @@ class NLPGSQLDatabase extends NLAbstractSQLDatabase {
 			$query = "COPY {$tableName} (\"".implode('", "', $cols)."\") FROM stdin";
 
 			if (pg_query($this->connection, $query) == false) {
-				PXProfiler::end();
 				return ERROR_DB_BADQUERY;
 			}
 
@@ -142,26 +132,21 @@ class NLPGSQLDatabase extends NLAbstractSQLDatabase {
 			} while($row = next($data));
 
 			if (pg_put_line($this->connection, join("\n", $lines)."\n") == false) {
-				PXProfiler::end();
 				return ERROR_DB_BADQUERY;
 			}
 
 			if (pg_put_line($this->connection, "\\.\n") == false) {
-				PXProfiler::end();
 				return ERROR_DB_BADQUERY;
 			}
 
 			if (pg_end_copy($this->connection) == false) {
-				PXProfiler::end();
 				return ERROR_DB_BADQUERY;
 			}
 
 		} else {
-			PXProfiler::end();
 			return ERROR_DB_CANNOTCONNECT;
 		}
 
-		PXProfiler::end();
 		return true;
 	}
 
@@ -174,8 +159,6 @@ class NLPGSQLDatabase extends NLAbstractSQLDatabase {
 
 		$query .= $limitstring;
 
-		PXProfiler::begin('SQL: '.$query);
-
 		if (!is_null($table = $this->_loadFromCache($query, $donotusecache))) {
 			return $table;
 		}
@@ -186,7 +169,6 @@ class NLPGSQLDatabase extends NLAbstractSQLDatabase {
 
 		if ($this->connected) {
 			if (($res = pg_query($this->connection, $query)) === false) {
-				PXProfiler::end();
 				return ERROR_DB_BADQUERY;
 			}
 
@@ -199,11 +181,9 @@ class NLPGSQLDatabase extends NLAbstractSQLDatabase {
 
 			$this->_saveToCache($query, $table, $donotusecache);
 		} else {
-			PXProfiler::end();
 			return ERROR_DB_CANNOTCONNECT;
 		}
 
-		PXProfiler::end();
 		return $table;
 	}
 
