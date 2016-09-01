@@ -19,7 +19,8 @@
 		"monolog/monolog": "^1.19",
 		"symfony/http-foundation": "~2.8",
 		"ramsey/uuid": "^3.5",
-		"symfony/console": "^2.8"
+		"symfony/console": "^2.8",
+		"symfony/event-dispatcher": "^2.8"
 	},
 	"config": {
 		"secure-http": false,
