@@ -201,7 +201,8 @@ class PXTypeDescription {
 				case 'bydefault'     : $this->byDefault     = self::_mapByDefaults($attr->value); break;
 				case 'struct'        : $this->struct        = $attr->value; break;
 
-				default              : d2("Unknown attr name: ".$attr->name); break;
+				default              :
+					throw new Exception('Unknown attr name:' . $attr->name);
 			}
 		}
 

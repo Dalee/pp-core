@@ -69,11 +69,6 @@ class PXAbstractPlugin {
 
 	// what the hell is that?
 	public static function autoload($className) {
-		if (!true) {
-			d2(PXLoader::getInstance()->load_map);
-			d2($className);
-		}
-
 		$f = PXLoader::find($className);
 
 		if (!strstr($f, "/plugins/")) {

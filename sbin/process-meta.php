@@ -12,11 +12,6 @@
 	define('DATABASEINI', BASEDIR.'/site/etc/database.ini');
 	define('DATATYPEXML', BASEDIR.'/local/etc/datatypes.xml');
 
-	function d2($var) {
-		$s = print_r($var, true);
-		echo $s."\n";
-	}
-
 	/**
 	 *
 	 */

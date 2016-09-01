@@ -33,10 +33,6 @@
 	require_once (BASEPATH . 'libpp/lib/Common/functions.etc.inc');
 
 	//
-	function d2($var) {
-		$s = print_r($var, true);
-		echo $s."\n";
-	}
 	function FatalError($a) {
 		echo 'FatalError: ' . $a . PHP_EOL;
 		die(1);

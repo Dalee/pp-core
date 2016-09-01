@@ -295,9 +295,6 @@ class Tree {
 		$parents = array_flip($parents);
 
 		foreach ($this->leafs as $leaf) {
-			if (!isset($leaf->id)) {
-				d2($leaf); // WTF?
-			}
 			if (isset($parents[$leaf->id])) {
 				$retArray = array_merge($retArray, $this->getDescendants($leaf->id));
 			}

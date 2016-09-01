@@ -85,7 +85,6 @@
 		}
 
 		public function ModifyingQuery($query, $table = null, $retField = null, $flushCache = true, $retCount = false) {
-			d2(func_get_args());
 			PXProfiler::begin('SQL: '.$query);
 			if (!$this->connection) {
 				$this->connect();
