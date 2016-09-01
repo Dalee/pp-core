@@ -5,5 +5,17 @@ set_time_limit(0);
 ini_set('memory_limit', '512M');
 define('BASEPATH', realpath(dirname($_SERVER['PHP_SELF']).'/../../').'/');
 
-require BASEPATH.'/vendor/autoload.php';
+$requires = [
+	BASEPATH.'/vendor/autoload.php',
+	BASEPATH.'/libpp/lib/maincommon.inc',
+	BASEPATH.'/local/lib/maincommon.inc',
+];
+
+foreach ($requires as $file) {
+	if (file_exists($file)) {
+		require_once($file);
+	}
+}
+
+unset($requires);
 PP\ConsoleApplication::start();

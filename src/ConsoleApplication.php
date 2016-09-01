@@ -9,8 +9,6 @@ use Symfony\Component\Console\Event\ConsoleCommandEvent;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\Yaml\Yaml;
 
-require_once BASEPATH.'/libpp/lib/maincommon.inc';
-
 class ConsoleApplication extends Application {
 
 	public static function start() {
