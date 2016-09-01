@@ -2042,7 +2042,7 @@ SQL;
 
 	public function buildTree() {
 		$args = func_get_args();
-		$treeKlass = new ReflectionClass("NLTree");
+		$treeKlass = new ReflectionClass('PP\Lib\Datastruct\Tree');
 		return $treeKlass->newInstanceArgs($args);
 	}
 

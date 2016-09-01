@@ -1,8 +1,11 @@
 <?php
+
+use PP\Lib\Datastruct\Tree;
+
 /**
  * Класс - хранилище данных о Каталоге (Directory).
  * Стоится по etc/datatypes.xml /directories/directory
- * 
+ *
  * @subpackage Application
  */
 class PXDirectoryDescription {
@@ -31,7 +34,7 @@ class PXDirectoryDescription {
 		$this->parentField = false;
 	}
 
-	function getList() {
+	public function getList() {
 		$retArray = array();
 
 		foreach ($this->values as $v) {
@@ -41,18 +44,17 @@ class PXDirectoryDescription {
 		return $retArray;
 	}
 
-	function GetTree($saveOrphans=false) {
+	public function GetTree($saveOrphans = false) {
 		$retArray = array();
 
 		if (count($this->values) && $this->parentField !== false) {
-			$retArray = new NLTree($this->values, 'id', $this->parentField, 'title', $saveOrphans);
+			$retArray = new Tree($this->values, 'id', $this->parentField, 'title', $saveOrphans);
 		}
 
 		return $retArray;
 	}
 
-	public
-	function SetLoaded($addDefault = true) {
+	public function SetLoaded($addDefault = true) {
 		if ($addDefault && !isset($this->values[0]) && !isset($this->values[''])) {
 			$this->values[''] = array(
 				'id' => '',
@@ -63,4 +65,3 @@ class PXDirectoryDescription {
 		$this->loaded = true;
 	}
 }
-?>

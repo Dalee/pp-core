@@ -33,12 +33,14 @@
 	},
 	"autoload": {
 		"psr-4": {
-			"PP\\": [
-				"src/"
-			]
+		  	"Tests\\": ["tests/"],
+			"PP\\": ["src/"]
 		}
 	},
 	"bin": [
 		"bin/pp"
-	]
+	],
+	"require-dev": {
+		"phpunit/phpunit": "^4.8"
+	}
 }

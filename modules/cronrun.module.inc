@@ -1,4 +1,7 @@
 <?php
+
+use PP\Lib\Datastruct\Tree;
+
 class PXModuleCronRun extends PXModule {
 	var $TIME_FORMAT   = 'd-m-Y H:i:s';
 	var $rules;
@@ -118,7 +121,7 @@ class PXModuleCronRun extends PXModule {
 		$db->LoadDirectoriesAutomatic($app->directory); //init directory from here !
 
 		if (isset($app->types['struct'])) {
-			$tree = new NLTree($db->getObjects($app->types['struct'], true));
+			$tree = new Tree($db->getObjects($app->types['struct'], true));
 		} else {
 			$tree = null;
 		}
