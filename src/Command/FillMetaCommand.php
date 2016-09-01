@@ -2,10 +2,9 @@
 
 namespace PP\Command;
 
-
-use PP\Lib\Command\AbstractCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use PP\Lib\Command\AbstractCommand;
 
 /**
  * Class CreateMetaCommand
@@ -18,7 +17,7 @@ class FillMetaCommand extends AbstractCommand {
 	 */
 	protected function configure() {
 		$this
-			->setName('fill-meta')
+			->setName('db:fill-meta')
 			->setDescription('Fill all empty sys_meta field');
 	}
 

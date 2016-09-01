@@ -2,13 +2,12 @@
 
 namespace PP\Command;
 
-
-use PP\Lib\Command\AbstractCommand;
 use Ramsey\Uuid\Uuid;
 use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use PP\Lib\Command\AbstractCommand;
 
 class FillUuidCommand extends AbstractCommand {
 
@@ -17,7 +16,7 @@ class FillUuidCommand extends AbstractCommand {
 	 */
 	protected function configure() {
 		$this
-			->setName('fill-uuid')
+			->setName('db:fill-uuid')
 			->setDescription('Fill all empty sys_uuid fields')
 			->setHelp('Process concrete datatype, search for empty sys_uuid field and fill it')
 			->addArgument('datatype', InputArgument::OPTIONAL, 'Datatype name: struct, html, etc..');
@@ -54,9 +53,9 @@ class FillUuidCommand extends AbstractCommand {
 	 */
 	protected function processDatatype($output, $datatype) {
 
+		$output->writeln("<info>Processing:</info> ".$datatype->id);
 		$where = sprintf("(%s is NULL OR %s = '')", OBJ_FIELD_UUID, OBJ_FIELD_UUID);
 		$count = $this->db->getObjectsByWhere($datatype, null, $where, DB_SELECT_COUNT);
-
 		if ($count == 0) {
 			return;
 		}
@@ -68,7 +67,6 @@ class FillUuidCommand extends AbstractCommand {
 		$sqlUpdateFmt = "UPDATE %s SET %s = '%s' WHERE %s = %d";
 
 		// process in batches..
-		$output->writeln("<info>Processing:</info> ".$datatype->id);
 		$progress = new ProgressBar($output, $count);
 
 		while (true) {
