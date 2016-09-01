@@ -1,12 +1,16 @@
 <?php
+
+use Symfony\Component\Yaml\Yaml;
+
 /**
+ * Class PXStorageTypeYaml
+ *
  * Сериализованный массив
  * В базе может храниться как TEXT
  *
  * displayType HIDDEN, STATIC, TABLE, LINKTOFILE
  * storageType yaml
  */
-
 class PXStorageTypeYaml extends PXStorageType {
 	function getFromRequest($field, $object, &$param) {
 		$k = $field->name;
@@ -29,15 +33,14 @@ class PXStorageTypeYaml extends PXStorageType {
 	}
 
 	static function toArray($yaml) {
-		return PXYaml::parse($yaml);
+		return Yaml::parse($yaml);
 	}
 
 	static function toYaml($array) {
-		return PXYaml::dump($array);
+		return Yaml::dump($array);
 	}
 
 	function normalize($field, $object, &$param) {
 		return ($object[$field->name]) ? self::toArray($object[$field->name]) : $object[$field->name];
 	}
 }
-?>
