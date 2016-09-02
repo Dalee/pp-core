@@ -11,7 +11,7 @@ class NLMYSQLDatabase extends NLAbstractSQLDatabase {
 		$this->setCache($dbDescription->cache);
 		$this->setConnectParams($dbDescription);
 	}
-	
+
 	function setConnectParams($dbDesc) {
 		$this->connectArray['port'] = '3306';
 		foreach(array_keys($this->connectArray) as $field) {
@@ -74,11 +74,11 @@ class NLMYSQLDatabase extends NLAbstractSQLDatabase {
 		else if ($value === "now()")          return "now()";
 		else return "'".$this->EscapeString($value)."'";
 	}
-	
+
 	function escapeField($field) {
 		return (is_array($field) ? array_map(array(&$this, 'escapeField'), $field) : '`' . $this->EscapeString($field) . '`');
 	}
-	
+
 	function mapFields($string) {
 		return $this->escapeField($string);
 	}
@@ -93,7 +93,7 @@ class NLMYSQLDatabase extends NLAbstractSQLDatabase {
 
 	function EscapeString($s) {
 		return mysql_escape_string($s);
-	}	
+	}
 
 	function ModifyingCopy($tableName, $cols, $data) {
 		if (!$this->connected) {
@@ -110,8 +110,6 @@ class NLMYSQLDatabase extends NLAbstractSQLDatabase {
 	}
 
 	function Query($query, $donotusecache = false) {
-		PXProfiler::begin('SQL: '.$query);
-
 		if (!is_null($table = $this->_loadFromCache($query, $donotusecache))) {
 			return $table;
 		}
@@ -123,7 +121,6 @@ class NLMYSQLDatabase extends NLAbstractSQLDatabase {
 		$table = array();
 		if ($this->connected) {
 			if (($res = @mysql_query($query, $this->connection)) == false) {
-				PXProfiler::end();
 				return ERROR_DB_BADQUERY;
 			}
 
@@ -136,11 +133,9 @@ class NLMYSQLDatabase extends NLAbstractSQLDatabase {
 				$this->_saveToCache($query, $table, $donotusecache);
 			}
 		} else {
-			PXProfiler::end();
 			return ERROR_DB_CANNOTCONNECT;
 		}
 
-		PXProfiler::end();
 		return $table;
 	}
 
@@ -172,7 +167,7 @@ class NLMYSQLDatabase extends NLAbstractSQLDatabase {
 			implode(',', array_values($fields)),
 			implode(',', array_values($values))
 		);
-		
+
 		$id = $this->ModifyingQuery($sql, $table, 'id');
 		return $id;
 	}
@@ -193,7 +188,7 @@ class NLMYSQLDatabase extends NLAbstractSQLDatabase {
 		}
 		$fields = $this->escapeField($fields);
 		$values = array_combine($fields, $values);
-			
+
 		if ($values) {
 			$update = array();
 			foreach($values as $key => $value) {
@@ -206,7 +201,7 @@ class NLMYSQLDatabase extends NLAbstractSQLDatabase {
 
 	/*
 	 * Transaction related functions
-	 * 
+	 *
 	 */
 	function transactionBegin() {
 		//TODO Check for storage engine is really transaction-safe?
@@ -287,7 +282,7 @@ class NLMYSQLDatabase extends NLAbstractSQLDatabase {
 				}
 			}
 
-			$query = sprintf("%s + (SELECT count(*) FROM %s WHERE %s", 
+			$query = sprintf("%s + (SELECT count(*) FROM %s WHERE %s",
 				$query, $tableName, join(" AND ", $where_clauses));
 
 			if($t['exWhere']) {

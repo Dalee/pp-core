@@ -34,27 +34,16 @@ class PXModuleMain extends PXModule {
 		$this->tree->setAliases($this->_parseAliasesConfig());
 
 		// Loading struct tree
-		PXProfiler::begin('load tree');
 		$this->tree->load($urlPath);
 		$this->tree->getLinks();
-		PXProfiler::end();
 
 		// Loading content objects
-		PXProfiler::begin('load objects');
 		$this->loadObjects($this->tree, $urlFile, $this->objects);
 		$this->objects->getLinks();
-		PXProfiler::end();
 
 		// Loading subcontent objects
-		PXProfiler::begin('load subObjects');
 		$this->loadObjects($this->objects, $urlPart, $this->subObjects);
 		$this->subObjects->getLinks();
-		PXProfiler::end();
-
-		// Loading objects references
-		PXProfiler::begin('Loading references');
-		// $this->user->getLinks(); -- what we must do ???
-		PXProfiler::end();
 
 		$this->check404error($urlFile, $urlPart);
 	}

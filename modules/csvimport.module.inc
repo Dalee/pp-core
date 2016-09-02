@@ -188,8 +188,6 @@ class PXModuleCsvImport extends PXModule {
 	}
 
 	function UploadFileFromUser($file, $dir) {
-		PXProfiler::begin('Upload user file '.number_format($file['size']).' byte');
-
 		$dirO = new NLDir($dir);
 		$dir = $dirO->name;
 
@@ -204,12 +202,10 @@ class PXModuleCsvImport extends PXModule {
 			if (!@chmod($newFileName, 0664)) {
 				FatalError('ERROR_IO_BADPERMISSIONS', $dir);
 			}
-			PXProfiler::end();
 
 			return $newFileName;
 
 		} else {
-			PXProfiler::end();
 			return false;
 		}
 	}
@@ -227,10 +223,7 @@ HTML;
 	}
 
 	function _GetCsvSource($filename, $length=NULL) {
-		PXProfiler::begin('GetCsvSource()');
-
 		if (!is_file($filename) || !is_readable($filename)) {
-			PXProfiler::end();
 			return FALSE;
 		}
 
@@ -255,8 +248,6 @@ HTML;
 				$result[$k] = array_pad($result[$k], $maxLen, NULL);
 			}
 		}
-
-		PXProfiler::end();
 
 		return $result;
 	}

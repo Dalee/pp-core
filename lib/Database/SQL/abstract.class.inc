@@ -124,12 +124,11 @@ abstract class NLAbstractSQLDatabase {
 		if (!$customCacheExpiration || (is_int($customCacheExpiration) && $customCacheExpiration > 0)) {
 			$data = $this->cache->load($query);
 			if ($data !== null) {
-				PXProfiler::end();
 				return $data;
 			}
 		}
 	}
-	
+
 	function _saveToCache($query, $data, $customCacheExpiration){
 		if (!$customCacheExpiration){
 			$this->cache->save($query, $data);
@@ -139,7 +138,7 @@ abstract class NLAbstractSQLDatabase {
 	}
 
 	function loggerSqlFormat($table, $fields) {
-	
+
 	}
 }
 ?>
