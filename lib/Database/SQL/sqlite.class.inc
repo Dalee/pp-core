@@ -85,12 +85,9 @@
 		}
 
 		public function ModifyingQuery($query, $table = null, $retField = null, $flushCache = true, $retCount = false) {
-			d2(func_get_args());
-			PXProfiler::begin('SQL: '.$query);
 			if (!$this->connection) {
 				$this->connect();
 				if (!$this->connection) {
-					PXProfiler::end();
 					return ERROR_DB_CANNOTCONNECT;
 				}
 			}
@@ -98,7 +95,6 @@
 			/** @var PDOStatement $stmt */
 			$stmt = null;
 			if (!($stmt = $this->connection->query($query))) {
-				PXProfiler::end();
 				return ERROR_DB_BADQUERY;
 			}
 
@@ -112,10 +108,8 @@
 				$table = $this->Query("SELECT {$retField} FROM {$table} WHERE id = {$lastInsertId}", true);
 
 				if (is_array($table) && count($table)) {
-					PXProfiler::end();
 					return $table[0][$retField];
 				}
-				PXProfiler::end();
 				return null;
 			}
 
@@ -125,23 +119,19 @@
 				return $rowCount;
 			}
 
-			PXProfiler::end();
 			return ($stmt != null) ? 1 : 0;
 		}
 
 		public function Query($query, $donotusecache = false, $limitpair = NULL) {
 			$query .= (is_array($limitpair)) ? " LIMIT {$limitpair[0]} OFFSET {$limitpair[1]}" : "";
 
-			PXProfiler::begin('SQL: '.$query);
 			if (!is_null($table = $this->_loadFromCache($query, $donotusecache))) {
-				PXProfiler::end();
 				return $table;
 			}
 
 			if (!$this->connection) {
 				$this->connect();
 				if (!$this->connection) {
-					PXProfiler::end();
 					return ERROR_DB_CANNOTCONNECT;
 				}
 			}
@@ -149,7 +139,6 @@
 			/** @var PDOStatement $stmt */
 			$stmt = null;
 			if (!($stmt = $this->connection->query($query))) {
-				PXProfiler::end();
 				return ERROR_DB_BADQUERY;
 			}
 
@@ -169,7 +158,6 @@
 			}
 
 			$this->_saveToCache($query, $table, $donotusecache);
-			PXProfiler::end();
 			return $table;
 		}
 

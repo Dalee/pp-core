@@ -58,11 +58,9 @@ set_include_path(implode(PATH_SEPARATOR, $includePath));
  * Parse and load BASEPATH . /etc/php.ini
  * Some custom variables (not php ones) are:
  *
- * profiler = true | false    # false by default
  * user = someuser            # 'nobody' by default
  *
  */
-$profiler    = false;
 $system_user = 'nobody';
 $env         = 'unknown';
 
@@ -71,11 +69,6 @@ if (file_exists(BASEPATH.'/site/etc/php.ini')) {
 
 	foreach ($ini_params as $key=>$param) {
 		ini_set($key, $param);
-	}
-
-	// Включаем профайлер
-	if(isset($ini_params['profiler']) && $ini_params['profiler']) {
-		$profiler = true;
 	}
 
 	if (isset($ini_params['user'])) {
@@ -87,7 +80,6 @@ if (file_exists(BASEPATH.'/site/etc/php.ini')) {
 	}
 }
 
-define('PROFILER', $profiler);
 define('SYSTEM_USER', $system_user);
 define('ENV', $env);
 define('LOGGER_APP', 'application');

@@ -145,14 +145,9 @@ class PXEngineCommand extends PXEngineSbin {
 	protected static function benchmarks() {
 		if (!defined('con_debug') || !con_debug) return;
 
-		// benchmarks
-		$benchmarks = PXProfiler::getInstance()->finalize();
-
 		// write benchmarking data into output
 		con_head('Benchmarks');
-		con_list($benchmarks);
 	}
-
 
 	// built-in commands
 	protected static function command_ls() {
@@ -176,9 +171,6 @@ class PXEngineCommand extends PXEngineSbin {
 
 		con_list($list);
 		con_eol();
-
-		//var_dump($commands);
-		//var_dump($commands);die;
 	}
 
 }

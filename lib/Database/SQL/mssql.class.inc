@@ -50,8 +50,6 @@ class NLMSSQLDatabase extends NLAbstractSQLDatabase {
 	}
 
 	function Query($query, $donotusecache = false, $limitpair = NULL, $xxxx=false) {
-		PXProfiler::begin('SQL: '.$query);
-
 		$md = (is_array($limitpair)) ? "-{$limitpair[0]}-{$limitpair[1]}" : "";
 
 		if (!is_null($table = $this->_loadFromCache($query.$md, $donotusecache))) {
@@ -67,18 +65,15 @@ class NLMSSQLDatabase extends NLAbstractSQLDatabase {
 				$bquery = "declare @handle int; exec sp_cursoropen @handle OUT, '".$this->__quote($query)."', 1, 1; exec sp_cursorfetch @handle, 16, ".($limitpair[1] + 1).", {$limitpair[0]}; exec sp_cursorclose @handle";
 
 				if (($res = mssql_query($bquery, $this->connection)) === false) {
-					PXProfiler::end();
 					return ERROR_DB_BADQUERY;
 				}
 
 				if (mssql_next_result($res) === false) {
-					PXProfiler::end();
 					return ERROR_DB_BADQUERY;
 				}
 
 			} else {
 				if (($res = mssql_query($query, $this->connection)) === false) {
-					PXProfiler::end();
 					return ERROR_DB_BADQUERY;
 				}
 			}
@@ -102,11 +97,8 @@ class NLMSSQLDatabase extends NLAbstractSQLDatabase {
 
 			$this->_saveToCache($query.$md, $table, $donotusecache);
 		} else {
-			PXProfiler::end();
 			return ERROR_DB_CANNOTCONNECT;
 		}
-
-		PXProfiler::end();
 
 		return $table;
 	}
@@ -122,10 +114,6 @@ class NLMSSQLDatabase extends NLAbstractSQLDatabase {
 
 			if (($res = mssql_query($query, $this->connection)) === false) {
 				FatalError($query);
-			}
-
-			if(isset($php_errormsg)) {
-				d2($query);
 			}
 
 			if ($flushCache == true) {

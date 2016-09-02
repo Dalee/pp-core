@@ -73,8 +73,7 @@ class PXFieldDescription {
 						break;
 
 					default:
-						d2("Unknown attr name: " . $name . ' line: '. __LINE__);
-						break;
+						throw new Exception('Unknown attr name: ' . $name . ' line: ' . __LINE__);
 				}
 			}
 		}
@@ -136,4 +135,3 @@ class PXFieldDescription {
 		$this->storageType = new $cls($this, $name);
 	}
 }
-?>

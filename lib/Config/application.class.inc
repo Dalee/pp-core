@@ -1,4 +1,7 @@
 <?php
+
+use Symfony\Component\Yaml\Yaml;
+
 require_once PPLIBPATH . 'Config/Description/db.class.inc';
 
 require_once PPLIBPATH . 'Config/Description/type.class.inc';
@@ -167,7 +170,7 @@ class PXApplication {
 
 		foreach (array_reverse($filenames) as $filename) {
 			$source = ReadFileToString($filename);
-			$this->langTree = array_recursive_inheritance($this->langTree, PXYaml::parse($source));
+			$this->langTree = array_recursive_inheritance($this->langTree, Yaml::parse($source));
 		}
 	}
 
@@ -285,9 +288,6 @@ class PXApplication {
 	 * @uses PXDirectoryDescription
 	 * @uses PXRefDescription
 	 * @uses PXTypeDescription
-	 *
-	 * @todo Для вывода сообщений об ошибках используется debug ф-ция d2(), это нормально ?
-	 *
 	 * @param String $fileName	имя файла
 	 */
 	private function FillDataTypes($fileName) {

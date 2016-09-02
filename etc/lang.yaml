@@ -1,115 +1,115 @@
 ### COMMON ########################################################################################
 # основные переменные
 isEnglish:
-	rus: 0
-	eng: 1
+  rus: 0
+  eng: 1
 
 isRussian:
-	rus: 1
-	eng: 0
+  rus: 1
+  eng: 0
 
 # стрелка вверх
 up:
-	rus: наверх
-	eng: up
+  rus: наверх
+  eng: up
 
 # размер в килобайтах
 kb:
-	rus: Кб
-	eng: Kb
+  rus: Кб
+  eng: Kb
 
 # Подробнее
 more:
-	rus: Подробнее
-	eng: More
+  rus: Подробнее
+  eng: More
 
 # Вернуться
 back:
-	rus: Вернуться
-	eng: Back
+  rus: Вернуться
+  eng: Back
 
 # дата
 date:
-	rus: %e %B2 %Y
-	eng: %e %BE %Y
+  rus: %e %B2 %Y
+  eng: %e %BE %Y
 
 weekdays:
-	rus:
-		- Понедельник
-		- Вторник
-		- Среда
-		- Четверг
-		- Пятница
-		- Суббота
-		- Воскресенье
-	eng:
-		- Monday
-		- Tuesday
-		- Wednesday
-		- Thursday
-		- Friday
-		- Saturday
-		- Sunday
+  rus:
+    - Понедельник
+    - Вторник
+    - Среда
+    - Четверг
+    - Пятница
+    - Суббота
+    - Воскресенье
+  eng:
+    - Monday
+    - Tuesday
+    - Wednesday
+    - Thursday
+    - Friday
+    - Saturday
+    - Sunday
 
 # месяцы
 months:
-	rus:
-		- Нулябрь
-		- Январь
-		- Февраль
-		- Март
-		- Апрель
-		- Май
-		- Июнь
-		- Июль
-		- Август
-		- Сентябрь
-		- Октябрь
-		- Ноябрь
-		- Декабрь
-	eng:
-		- Nullary
-		- January
-		- February
-		- March
-		- April
-		- May
-		- June
-		- July
-		- August
-		- September
-		- October
-		- November
-		- December
+  rus:
+    - Нулябрь
+    - Январь
+    - Февраль
+    - Март
+    - Апрель
+    - Май
+    - Июнь
+    - Июль
+    - Август
+    - Сентябрь
+    - Октябрь
+    - Ноябрь
+    - Декабрь
+  eng:
+    - Nullary
+    - January
+    - February
+    - March
+    - April
+    - May
+    - June
+    - July
+    - August
+    - September
+    - October
+    - November
+    - December
 
 # правила ACL
 module_acl_rules:
-	actions:
-		read:
-			rus: Просмотр/Чтение
-			eng: View/Read
-		write:
-			rus: Полный доступ на запись
-			eng: Full write access
-		add:
-			rus: Добавление
-			eng: Add
-		modify:
-			rus: Изменение существующих
-			eng: Modification
-		delete:
-			rus: Удаление
-			eng: Delete
-		linkto:
-			rus: Создание связи
-			eng: Make reference
-		admin:
-			rus: Просмотр в админке
-			eng: View in admin area
-	access:
-		allo:
-			rus: Разрешить
-			eng: Allow
-		deny:
-			rus: Запретить
-			eng: Deny
+  actions:
+    read:
+      rus: Просмотр/Чтение
+      eng: View/Read
+    write:
+      rus: Полный доступ на запись
+      eng: Full write access
+    add:
+      rus: Добавление
+      eng: Add
+    modify:
+      rus: Изменение существующих
+      eng: Modification
+    delete:
+      rus: Удаление
+      eng: Delete
+    linkto:
+      rus: Создание связи
+      eng: Make reference
+    admin:
+      rus: Просмотр в админке
+      eng: View in admin area
+  access:
+    allo:
+      rus: Разрешить
+      eng: Allow
+    deny:
+      rus: Запретить
+      eng: Deny
