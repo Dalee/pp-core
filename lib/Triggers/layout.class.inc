@@ -8,5 +8,3 @@ abstract class PXAbstractLayoutTrigger extends PXAbstractTrigger {
 		return $createdPath;
 	}
 }
-
-?>

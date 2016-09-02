@@ -11,7 +11,7 @@ class PXStorageType {
 	var $name;
 	var $triggers;
 
-	function PXStorageType(&$field, $name) {
+	public function __construct(&$field, $name) {
 		$this->field = &$field;
 		$this->name  = $name;
 	}
@@ -63,10 +63,10 @@ class PXStorageType {
 	 * Возвращает нормированное значение поля из запроса
 	 *
 	 * @param PXFieldDescription $field
-	 * @param Array              $object
-	 * @param Array|NULL         $param
+	 * @param array              $object
+	 * @param array|null         $param
 	 *
-	 * @return Mixed
+	 * @return mixed
 	 */
 	function getFromRequest($field, $object, &$param) {
 		return $object[$field->name];
@@ -77,10 +77,10 @@ class PXStorageType {
 	 * поля перед сохранением объекта в базу
 	 *
 	 * @param PXFieldDescription $field
-	 * @param Array              $object
-	 * @param Array|NULL         $param
+	 * @param array              $object
+	 * @param array|null         $param
 	 *
-	 * @return Array
+	 * @return array
 	 */
 	function normalizeObjectAttribute($field, $object, &$param) {
 		return array(NULL, $param['dbFields'], $param['dbValues']);
@@ -107,7 +107,7 @@ class PXStorageType {
 	 *
 	 * @param PXFieldDescription $field
 	 * @param array              $object
-	 * @param array|NULL         $param
+	 * @param array|null         $param
 	 *
 	 * @return string
 	 */

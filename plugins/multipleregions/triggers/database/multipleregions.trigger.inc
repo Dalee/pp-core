@@ -44,7 +44,7 @@ class PXTriggerDatabaseMultipleregions extends PXAbstractDatabaseTrigger {
 
 	function OnBeforeBuildTree($db, $format, &$table, $parentName) {
 		$regions = $this->getRegions();
-		
+
 		if($regions->isFederal() && !$regions->getRid()){ //Federal redactors can see original tree without reflex inserts when choosing "Show all regions"
 			return;
 		}
@@ -84,10 +84,10 @@ class PXTriggerDatabaseMultipleregions extends PXAbstractDatabaseTrigger {
 			}
 
 			$this->isRegionalCloning = true; //flag initalize regional clone
-			
+
 			$cloner = new PXPublicRegionObjectCloner($format, $object, $objectInDB, $this);
 			$nid    = $cloner->cloneObject($allowedRegionsIds);
-			
+
 			$this->isRegionalCloning = null;
 
 			$request = PXRegistry::getRequest();
@@ -205,7 +205,7 @@ class PXTriggerDatabaseMultipleregions extends PXAbstractDatabaseTrigger {
 
 		if(!$permit && $regions->isRegionalObject($format)) {
 			$this->isRegionalCloning = true;
-			
+
 			$cloner = new PXPublicRegionObjectCloner($format, $objectInDB, $objectInDB, $this);
 			$cloner->moveObject($regions->getAllowedRegionsIds());
 
@@ -318,13 +318,13 @@ class PXTriggerDatabaseMultipleregions extends PXAbstractDatabaseTrigger {
 		$request  = PXRegistry::getRequest();
 		$response = PXResponse::getInstance();
 		$returnTo = $request->GetHttpReferer();
-		
+
 		if(empty($returnTo)){
 			$returnTo = '/admin';
 		}
-		
+
 		$response->dontCache();
-		
+
 		if($app->isEngineInstanceof("AdminJSON")){
 			$response->setContentType('text/javascript');
 			$response->send(json_encode(PXEngineJSON::toError($message, "encode to utf8")));
@@ -340,5 +340,3 @@ JS
 		exit;
 	}
 }
-
-?>

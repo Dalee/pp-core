@@ -432,7 +432,7 @@
 
 			$pending = array_diff($available, $applied);
 			if(empty($pending)) {
-				$this->fatal("No pending migrations", 0);
+				$this->display("No pending migrations");
 			}
 
 			foreach($pending as $_ => $filename) {

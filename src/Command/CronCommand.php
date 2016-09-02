@@ -44,30 +44,43 @@ class CronCommand extends AbstractCommand {
 		$task = $input->getArgument('task');
 
 		if ($listTasks === true) {
-			$output->writeln('<info>'.str_repeat("-", 128).'</info>');
+			$output->writeln('<info>'.str_repeat("-", 132).'</info>');
 			$header = [
-				mb_str_pad('Название задачи', 20),
+				mb_str_pad('Название задачи', 25),
 				mb_str_pad('Расписание', 15),
 				mb_str_pad('Описание задачи', 40),
 				mb_str_pad('Дата запуска', 21),
 				mb_str_pad('Дата завершения', 21),
 			];
 			$output->writeln('<info>'.implode(' | ', $header).'</info>');
-			$output->writeln(str_repeat("-", 128));
+			$output->writeln('<info>'.str_repeat("-", 132).'</info>');
 
 			foreach ($cronModule->jobs as $task => $j) {
 				$stat = $cronModule->getStat($j);
+
+				$title = mb_str_pad($task, 25);
+				$title = (mb_strlen($title) > 25)
+					? mb_substr($title, 0, 22).'...'
+					: $title;
+
+				$description = mb_str_pad($j['job']->name, 40);
+				$description = (mb_strlen($description) > 40)
+					? mb_substr($description, 0, 37).'...'
+					: $description;
+
+				// @TODO: make it more pretty..
 				$row = [
-					mb_str_pad($task, 20),
+					'<comment>'.$title.'</comment>',
 					mb_str_pad($j['rule']->asString, 15),
-					mb_str_pad($j['job']->name, 40),
+					$description,
 					mb_str_pad(strftime("%Y-%m-%d %H:%M:%S", $stat['start']), 21),
 					mb_str_pad(strftime("%Y-%m-%d %H:%M:%S", $stat['end']), 21),
 				];
 
 				$output->writeln(implode(' | ', $row));
 			}
-			$output->writeln(str_repeat("-", 128));
+
+			$output->writeln("");
 
 		} elseif ($task !== null) {
 			if (!isset($cronModule->jobs[$task])) {
