@@ -124,6 +124,18 @@ class PXRequest {
 		return preg_replace('/:.+$/' . REGEX_MOD, '', $host);
 	}
 
+	public function getHttpHeaders() {
+		$headers = [];
+		foreach ($_SERVER as $name => $value) {
+			if (mb_substr($name, 0, 5) === 'HTTP_') {
+				$headerName = str_replace(' ', '-', ucwords(strtolower(str_replace('_', ' ', substr($name, 5)))));
+				$headers[$headerName] = $value;
+			}
+		}
+
+		return $headers;
+	}
+
 	static function GetRemoteAddr() {
 		if (isset($_SERVER['HTTP_X_REAL_IP'])) {
 			if (mb_strstr($_SERVER['HTTP_X_REAL_IP'], ",")) {
