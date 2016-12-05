@@ -78,7 +78,7 @@ class Tree {
 
 		foreach ($childrenIds as $childId) {
 			$item = $this->leafs[$childId]->content;
-			if (!in_array($item['type'], $allowedTypes)) {
+			if (!empty($allowedTypes) && !in_array($item['type'], $allowedTypes)) {
 				continue;
 			}
 
