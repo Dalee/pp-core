@@ -51,25 +51,51 @@ class PXAdminForm extends PXAdminComplexWidget {
 		$this->format = $format;
 	}
 
+	/**
+	 * @param $action
+	 * @return $this
+	 */
 	function setAction($action) {
 		$this->action = $action;
+		return $this;
 	}
 
+	/**
+	 * @param $area
+	 * @return $this
+	 */
 	function setArea($area) {
 		$this->area = $area;
+		return $this;
 	}
 
+	/**
+	 * @param $type
+	 * @param null $count
+	 * @return $this
+	 */
 	function setChildren($type, $count = null) {
 		$this->childTypes = $type;
 		$this->childCount = $count;
+		return $this;
 	}
 
+	/**
+	 * @param $title
+	 * @return $this
+	 */
 	function setTitle($title) {
 		$this->title = $title;
+		return $this;
 	}
 
+	/**
+	 * @param $linksParam
+	 * @return $this
+	 */
 	function setLinks($linksParam) {
 		$this->linksParam = $linksParam;
+		return $this;
 	}
 
 	function setDisabledStatus($status) {
@@ -125,15 +151,15 @@ class PXAdminForm extends PXAdminComplexWidget {
 			default:
 				$content = "";
 		}
-		
+
 		$this->setMenu();
 		$this->setControls();
 		$this->showTitle();
-		
+
 		if (strlen($_ = join($this->blocks[self::CONTENT]))) {
 			$content = $_;
 		}
-	
+
 		$html[] =  $content;
 		$html[] =  join($this->blocks[self::AFTER_CONTENT]);
 
@@ -155,7 +181,7 @@ class PXAdminForm extends PXAdminComplexWidget {
 
 	public function rightControls() {
 		$control = NLAbstractHTMLForm::BuildReset('Отменить') . NLAbstractHTMLForm::BuildClose('Закрыть');
-		
+
 		if (strlen($_ = join($this->blocks[self::RIGHTCONTROLS]))) {
 			$control  = $_;
 		}
@@ -197,7 +223,7 @@ class PXAdminForm extends PXAdminComplexWidget {
 			$menuItems['auditlog'] = 'Журнал';
 			$menuItems['remove']   = 'Удаление';
 		}
-//		$menuItems = join($this->blocks[self::MENU]);
+
 		$this->layout->setMenu($menuItems, $this->action, 'action');
 	}
 
@@ -255,7 +281,7 @@ HTML;
 
 	private function auditlogForm() {
 		require_once BASEPATH . '/libpp/lib/Logger/Audit/wrapper.class.inc';
-		
+
 		$this->disable = true; // restrict modify object from audit log view, because it is wrong behaviour
 
 		$audit_wrapper = new PXAdminAuditWrapper();
@@ -299,13 +325,13 @@ HTML;
 				$displayFields[$k] = $f;
 			}
 		}
- 
+
 		$html  = '<h2>Связи с объектами формата &laquo;'.$formatTo->title.'&raquo; ['.sizeof($links).' из '.$fullCount.']</h2>';
 		if($reference->multiple){
 			$html  .= '<!--%%OBJECT2JS%%-->';
 		}
 		$html .= '<table class="objects links">';
- 
+
 		$thead = ''; $enabledFilters = 0;
 		foreach ($displayFields as $f) {
 			if($f->storageType->filterable()){
@@ -318,13 +344,13 @@ HTML;
 			}
 		}
 		$html .= '<thead><tr><th class="c3 ref-filter-'.( $enabledFilters ? 'show' : 'hide').'"><input type="submit" title="Применить фильтр(ы)" value="&gt;&gt;&gt;"/></th>' . $thead;
- 
+
 		foreach ($reference->fields as $k=>$v) {
 			$html .= '<th>'.$v->description.'</th>';
 		}
 		$html .= '</tr></thead><tbody>';
 		#TODO remove
- 
+
 		$params = array('object' => $this->object);
 		foreach ($pLinks as $k=>$v) {
 			$iteration = 0;
@@ -335,13 +361,13 @@ HTML;
 				$html .= '<td class="c3">';
 				$html .= NLAbstractHTMLForm::BuildHidden($reference->name.'['.$iteration.']['.$v['id'].'][id]', $v['id']);
 				$html .= NLAbstractHTMLForm::BuildCheckBox($reference->name.'['.$iteration.']['.$v['id'].'][on]', $linksIsset, NULL, $reference->name.'-'.$iteration.'-'.$v['id']);
- 
+
 				$menuTitle = (mb_strlen($v['title']) > 10) ? trim(mb_substr($v['title'], 0, 10)).'&hellip;' : $v['title'];
 				$context = 'Context(event, \'edit\', '.$v['id'].', '.(int)($v['status']).', \''.$formatTo->id.'\',  \''.$menuTitle.'\', \'\', 1, 0, 0); return false;';
 				$html .= '<a oncontextMenu="'.$context.'" href="javascript:EditContent(\''.$formatTo->id.'\', \''.$v['id'].'\')">';
 				$html .= '<img src="i/icon/edit.gif" alt="Изменить &laquo;'.$v['id'].'&raquo;"></a>';
 				$html .= '</td>';
- 
+
 				foreach ($displayFields as $k => $f) {
 					$html .= '<td>';
 					$html .= '<label checkbox="'.$reference->name.'-'.$iteration.'-'.$v['id'].'" for="'.$reference->name.'-'.$iteration.'-'.$v['id'].'" class="'.($linksIsset ? 'ref-linked' : 'ref-unlinked').'">';
@@ -354,15 +380,15 @@ HTML;
 					}
 					$html .= '</td>';
 				}
- 
+
 				$params['other'] = $v;
- 
+
 				foreach ($reference->fields as $sk=>$sv) {
 					$value = ($linksIsset) ? $links[$v['id']]['fields'][$sk] : $sv->defaultValue;
 					$k = $reference->name.'['.$iteration.']['.$v['id'].'][fields]['.$sk.']';
- 
+
 					$sv->name = $k;
- 
+
 					$html .= '<td>' . $sv->displayType->buildInput($sv, array($k=>$value), $params).'</td>';
 				}
 				$html .= '</tr>';
@@ -381,11 +407,11 @@ HTML;
 			$js .= '</script>';
 			$html = str_replace('<!--%%OBJECT2JS%%-->', $js, $html);
 		}
- 
+
 		$html .= '</tbody></table>';
- 
+
 		$html .= '<div class="perpage" style="zoom: 1;">';
- 
+
 		//Reset current objects pager for All/Linked switch
 		if(isset($layout->getData[$formatTo->id . '_page'])){
 			$currentPager = $layout->getData[$formatTo->id . '_page'];
@@ -396,55 +422,55 @@ HTML;
 		if(isset($currentPager)){
 			$layout->getData[$formatTo->id . '_page'] = $currentPager;
 		}
- 
+
 		if(!is_bool($onlyExistingLinks)){
 			$html .= NLAbstractHTMLForm::BuildHidden($formatTo->id.'_exist', $onlyExistingLinks ? 1 : 0);
 		}
- 
+
 		if ($count > $objectsOnPage && $objectsOnPage > 0) {
 			$allPages = ceil($count/$objectsOnPage)+1;
 			$start    = (ceil($page/10)-1)*10+1;
 			$max      = $start + 10;
- 
+
 			if ($max > $allPages) {
 				$max = $allPages;
 			}
- 
+
 			if ($page > 10) {
 				$prev = (ceil($start/10)-1)*10 - 9;
 			}
- 
+
 			$last = $allPages - $start - 10;
- 
+
 			if ($last > 0) {
 				$next = (ceil($start/10)-1)*10 + 11;
 			}
- 
+
 			if (isset($prev)) {
 				$html .= '<A href="'.$this->layout->_BuildHref($formatTo->id.'_page', $prev).'">';
 				$html .= '<IMG src="i/icon/left.gif" width="4" height="7" border="0" hspace="4" alt="Страница '.$prev.'">';
 				$html .= '</A>';
 			}
- 
+
 			for ($i=$start; $i<$max; $i++) {
 				$html .= '<A';
- 
+
 				if ($i == $page) {
 					$html .= ' class="selected"';
 				}
- 
+
 				$html .= ' href="'.$this->layout->_BuildHref($formatTo->id.'_page', $i).'" title="Страница '.$i.'">'.$i.'</A>';
 			}
- 
+
 			if (isset($next) && $next > 0) {
 				$html .= '<A href="'.$this->layout->_BuildHref($formatTo->id.'_page', $next).'">';
 				$html .= '<IMG src="i/icon/right.gif" width="4" height="7" border="0" hspace="4" alt="Страница '.$next.'">';
 				$html .= '</A>';
 			}
- 
+
 		}
 		$html .= '</DIV>';
- 
+
 		return $html;
 	}
 
@@ -455,7 +481,7 @@ HTML;
 			PP_CHILDREN_FETCH_NONE     => 'Никакие',
 			PP_CHILDREN_FETCH_PAGED    => 'С постраничкой'
 		);
- 
+
 		$name = OBJ_FIELD_CHILDREN;
 		$html[] = <<<HTML
 		<script type="text/javascript">
@@ -468,20 +494,20 @@ HTML;
 			}
 		</script>
 HTML;
- 
+
 		$html[] = '<dl class="allowed">'."\n";
- 
+
 		foreach ($this->childTypes as $k=>$v) {
 			$quantity = (isset($this->childCount[$k])) ? $this->childCount[$k] : 0;
- 
+
 			if (!in_array($k, $this->format->childs)) {
 				continue;
 			}
- 
+
 			$checked  = isset($this->object[OBJ_FIELD_CHILDREN][$k]) ? ' checked'  : '';
 			$disabled = $quantity > 0                                ? ' disabled' : '';
 			$onClick  = ' onclick="changeChildrenDropDown(this.form, \''.$k.'\', this.checked);"';
- 
+
 			$html[] = '<dt>';
 			$html[] = '<input type="checkbox"'.$onClick.$checked.$disabled.' id="'.OBJ_FIELD_CHILDREN.'['.$k.']">';
 			$html[] = '<label for="'.OBJ_FIELD_CHILDREN.'['.$k.']">'.$v->title.'</label>';
@@ -495,13 +521,12 @@ HTML;
 			if ($quantity > 0) {
 				$html[] = ' &#151; отвязка невозможна';
 			}
- 
+
 			$html[] = '</dd>'."\n";
 		}
- 
+
 		$html[] = '</dl>';
- 
+
 		return join('', $html);
 	}
 }
-?>

@@ -88,16 +88,18 @@ class AdminEngineIndex extends AbstractAdminEngine {
 			return;
 		}
 
-		$this->modules[$this->area]->getModule()->adminIndex();
+		$this->modules[$this->area]
+			->getModule()
+			->adminIndex();
 	}
 
 	public function html() {
 		$response = PXResponse::getInstance();
 		$response->dontCache();
 
-		$charset = $this->app->GetProperty('OUTPUT_CHARSET', DEFAULT_CHARSET);
+		$charset = $this->app->getProperty('OUTPUT_CHARSET', DEFAULT_CHARSET);
 
-		$this->db->close();
+		$this->db->Close();
 		$this->layout->flush($charset);
 	}
 }

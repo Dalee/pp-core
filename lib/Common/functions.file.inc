@@ -173,6 +173,7 @@ function ReadFileToString($fileName) {
 		$fsize = filesize($fileName);
 		if ($fsize > 0 && flock($fd, LOCK_SH) === true) {
 			$content = fread($fd, $fsize);
+			flock($fd, LOCK_UN);
 		}
 		fclose($fd);
 	} else {

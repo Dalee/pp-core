@@ -3,15 +3,20 @@ class PXObjectsACL {
 	/** @var boolean */
 	var $ruleclEnabled;
 
-	/** @var PXDatabase */
+	/** @var PXDatabase|NLPGSQLDatabase */
 	var $db;
 
-	/** @var PXUser */
+	/** @var PXUser|PXUserAuthorized */
 	var $user;
 
-	/** @var Array */
+	/** @var array */
 	var $rules;
 
+	/**
+	 * PXObjectsACL constructor.
+	 * @param PXDatabase|NLPGSQLDatabase $db
+	 * @param PXUser|PXUserAuthorized $user
+	 */
 	function __construct(&$db, &$user) {
 		$this->db   =& $db;
 		$this->user =& $user;
@@ -60,4 +65,3 @@ class PXObjectsACL {
 		return $query .= ' ORDER BY sys_order';
 	}
 }
-?>

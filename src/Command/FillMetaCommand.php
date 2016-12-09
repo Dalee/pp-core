@@ -24,7 +24,7 @@ class FillMetaCommand extends AbstractCommand {
 	/**
 	 * {@inheritdoc}
 	 */
-	public function run(InputInterface $input, OutputInterface $output) {
+	public function execute(InputInterface $input, OutputInterface $output) {
 		$limit = 100;
 
 		foreach($this->app->types as $type) {

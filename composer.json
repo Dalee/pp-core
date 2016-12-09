@@ -11,7 +11,7 @@
 	"repositories": [
 		{
 			"type": "composer",
-			"url": "http://packages.git.dalee.ru"
+			"url": "http://packages.dev.dalee.ru"
 		}
 	],
 	"require": {

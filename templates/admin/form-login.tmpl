@@ -12,37 +12,24 @@
 
 						<TR>
 							<TD>
-								<TABLE border="0" cellpadding="0" cellspacing="10" width="325">
-									<COLGROUP>
-										<COL width="20%"/>
-										<COL width="20%"/>
-										<COL width="60%"/>
-									</COLGROUP>
+								<FORM action="{LOGIN.FORMACTION}" method="{LOGIN.FORMMETHOD}">
+									<INPUT type="hidden" name="{LOGIN.REFERERNAME}" value="{LOGIN.REFERERVALUE}">
+									<INPUT type="hidden" name="{LOGIN.AREANAME}" value="{LOGIN.AREAVALUE}">
+									<INPUT type="hidden" name="{CAPTCHA.KEYNAME}" value="{CAPTCHA.KEY}"/>
 
-									<TR>
-										<TD rowspan="5" valign="top">
-											<IMG src="i/auth.gif" width="30" height="32" alt="Пожалуйста введите свой логин и пароль" hspace="10">
-										</TD>
-
-										<TD colspan="2">
-											{LOGIN.ERROR}
-											Пожалуйста, введите свой логин и пароль
-										</TD>
-									</TR>
-
-									<FORM action="{LOGIN.FORMACTION}" method="{LOGIN.FORMMETHOD}">
-										<INPUT type="hidden" name="{LOGIN.REFERERNAME}" value="{LOGIN.REFERERVALUE}">
-										<INPUT type="hidden" name="{LOGIN.AREANAME}" value="{LOGIN.AREAVALUE}">
-										<INPUT type="hidden" name="{CAPTCHA.KEYNAME}" value="{CAPTCHA.KEY}"/>
+									<TABLE border="0" cellpadding="0" cellspacing="10" width="300">
+										<TR>
+											<TD colspan="2">
+												{LOGIN.ERROR}
+											</TD>
+										</TR>
 
 										<TR>
 											<TD>Логин</TD>
-
 											<TD width="100%">
 												<INPUT type="text" name="{LOGIN.LOGINNAME}" value="{LOGIN.LOGINVALUE}" style="width:100%;">
 											</TD>
 										</TR>
-
 										<TR>
 											<TD>Пароль</TD>
 
@@ -61,18 +48,17 @@
 												Вы точно не робот?
 											</TD>
 											<TD>
-												<INPUT type="text" name="{CAPTCHA.VALNAME}" autocomplete="off" style="width: 100%;"/>
-												{CAPTCHA.NOTE}
+												<INPUT type="text" placeholder="{CAPTCHA.NOTE}" name="{CAPTCHA.VALNAME}" autocomplete="off" style="width: 100%;"/>
 											</TD>
 										</TR>
 
 										<TR>
-											<TD align="right" colspan="3">
-												<INPUT type="submit" value="войти" class="button">
+											<TD align="right" colspan="2">
+												<button type="submit" class="button">Войти</button>
 											</TD>
 										</TR>
-									</FORM>
-								</TABLE>
+									</TABLE>
+								</FORM>
 							</TD>
 						</TR>
 					</TABLE>

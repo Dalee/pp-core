@@ -2,9 +2,27 @@
 
 ## [dev-master]
 ### Изменения
-- Для каждой сущности, необходимо поле sys_uuid. Для генерации значения используется Ramsey\Uuid\Uuid::uuid4()
+- Для каждой сущности, необходимо поле sys_uuid. Для генерации значения используется `Ramsey\Uuid\Uuid::uuid4()`
 - Добавлена подсистема для запуска команд `./vendor/bin/pp`. Список доступных команд `app/config/commands.yml`
-- Оптимизирована работа с sys_meta, для работы в админке физическое наличие файлов на файловой системе — не требуется
+- Оптимизирована работа с `sys_meta`, для работы в админке физическое наличие файлов на файловой системе — не требуется
+- Конструктор `blockingnumbers` больше не содержит параметров, капча всегда сохраняется в общем кэше
+- Добавлена функция `property` и модификатор `property` для доступа к параметрам из `Smarty`
+- `PXApplication::properties` теперь объект `ArrayCollection` и имеет область видимости `protected`
+- `PXApplication::langTree` теперь объект `ArrayCollection`
+- Исправлен `run` на правильный `execute` в командах
+- Небольшой тюнинг интерфейса
+- Работа с файлом `properties.ini` удалена, настройки сайта хранятся в базе данных - [properties](docs/properties.module.md) 
+- Рефакторинг Xml классов:
+  - Убрана поддержка устаревшего расширения `domxml`
+  - `PXmlAbstract` -> `PP\Lib\Xml\AbstractXml`
+  - `PXmlAbstractNode` -> `PP\Lib\Xml\AbstractXmlNode`
+  - `PXml` -> `PP\Lib\Xml\Xml`
+  - `IPXml` -> `PP\Lib\Xml\XmlInterface`
+  - `IPXmlNode` -> `PP\Lib\Xml\XmlNodeInterface`
+  - `PXmlErrors` -> `PP\Lib\Xml\XmlErrors`
+  - `PXmlSimplexml` -> `PP\Lib\Xml\SimpleXml`
+  - `PXmlSimplexmlNode` -> `PP\Lib\Xml\SimpleXmlNode`
+
 
 ## [v1.6.9] - 2016-08-03
 ### Изменения

@@ -10,7 +10,7 @@ class PXModuleMAcl extends PXModuleAcl {
 	var $aclObjectTitle = 'Модуль';
 
 	function getAvailableActions() {
-		$actions = array('default' => PXModule::getAclModuleActions());
+		$actions = ['default' => PXModule::getAclModuleActions()];
 
 		foreach($this->app->modules as $name => $module) {
 			if (!class_exists($module->class, false)) {
@@ -23,7 +23,7 @@ class PXModuleMAcl extends PXModuleAcl {
 				require_once $path;
 			}
 
-			$actions[$module->name] = call_user_func(array($module->class, 'getAclModuleActions'));
+			$actions[$module->name] = call_user_func([$module->class, 'getAclModuleActions']);
 		}
 
 		return $actions;
@@ -42,7 +42,18 @@ class PXModuleMAcl extends PXModuleAcl {
 	}
 
 	function getWhatDict() {
-		return $this->what['default'];
+		$defaultActionList = $this->what['default'];
+		$allActions = $this->getAvailableActions();
+
+		foreach ($allActions as $moduleName => $moduleActions) {
+			foreach ($moduleActions as $actionName => $actionTitle) {
+				if (!isset($defaultActionList[$actionName])) {
+					$defaultActionList[$actionName] = $actionTitle;
+				}
+			}
+		}
+
+		return $defaultActionList;
 	}
 
 	function adminJson() {

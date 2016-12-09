@@ -98,6 +98,7 @@ class PXModuleCronRun extends PXModule {
 				}
 			}
 
+			flock($fp, LOCK_UN);
 			fclose($fp);
 
 			if ($fatal) {
@@ -118,7 +119,7 @@ class PXModuleCronRun extends PXModule {
 		PXRegistry::setUser($user);
 		$db->setUser($user);
 
-		$db->LoadDirectoriesAutomatic($app->directory); //init directory from here !
+		$db->loadDirectoriesAutomatic($app->directory); //init directory from here !
 
 		if (isset($app->types['struct'])) {
 			$tree = new Tree($db->getObjects($app->types['struct'], true));
@@ -289,7 +290,7 @@ class PXModuleCronRun extends PXModule {
 		$table = new PXAdminTableSimple($fields);
 		$table->setData($result);
 
-		$layout->Assign('INNER.0.0', $table->html());
+		$layout->assign('INNER.0.0', $table->html());
 	}
 }
 

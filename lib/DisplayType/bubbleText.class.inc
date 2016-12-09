@@ -34,7 +34,7 @@ class PXDisplayTypeBubbleText extends PXDisplayType {
 		if($this->bubbleTextFullContent) {
 			return $this->bubbleTextFullContent;
 		}
-		
+
 		return $object[$field->name];
 	}
 
@@ -78,5 +78,3 @@ HTML;
 HTML;
 	}
 }
-
-?>

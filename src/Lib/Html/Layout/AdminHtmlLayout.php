@@ -35,8 +35,8 @@ class AdminHtmlLayout extends LayoutAbstract {
 
 		$this->types = $types;
 
-		$this->assignTitle();
-		$this->setOuterLogo('i/admin.gif', 'pp/core', 250, 36);
+		$this->assignTitle("Proxima Portal");
+		$this->setOuterLogo('i/admin.gif', 'Proxima Portal', 126, 36);
 		$this->setOuterLayout($outerLayout);
 
 		$this->assign('BODY.CLASS', quot(\PXRegistry::getRequest()->getArea()));
@@ -58,7 +58,7 @@ class AdminHtmlLayout extends LayoutAbstract {
 	function assignTitle($title = NULL) {
 		$title = ((is_null($title) || !mb_strlen(trim($title)))
 				? ''
-				: mb_strtr($title, array('<' => '&lt;', '>' => '&gt;')).' / ')."Proxima CMS Портал";
+				: mb_strtr($title, ['<' => '&lt;', '>' => '&gt;']));
 
 		$this->assign("OUTER.TITLE", $title);
 

@@ -163,6 +163,7 @@ class NLAntiCheating {
 		$fd = fopen($this->cheatersFile, 'a');
 		flock($fd, LOCK_EX);
 		fwrite($fd, $type."\t".date("Y/m/d H:i:s")."\t".$cheater."\n");
+		flock($fd, LOCK_UN);
 		fclose($fd);
 	}
 }

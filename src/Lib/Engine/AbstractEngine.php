@@ -20,7 +20,7 @@ abstract class AbstractEngine {
 	/** @var \PXRequest */
 	protected $request = array('factory' => 'PXRequest');
 
-	/** @var \PXDatabase */
+	/** @var \PXDatabase|\NLPGSQLDatabase */
 	protected $db = array('factory' => 'PXDatabase', 'helper' => true);
 
 	/** @var LayoutInterface */
@@ -63,7 +63,9 @@ abstract class AbstractEngine {
 			$trigger->OnAfterEngineStart($this);
 		}
 
-		$this->db->LoadDirectoriesAutomatic($this->app->directory);
+		$this->app->loadProperties($this->db);
+		$this->db->loadDirectoriesAutomatic($this->app->directory);
+
 		$this->initModules();
 
 		return $this;
@@ -75,7 +77,9 @@ abstract class AbstractEngine {
 				continue;
 			}
 
-			class_exists($this->{$var}['factory']) or \FatalError("Factory class '{$this->{$var}['factory']}' for '{$var}' is not exists !");
+			if (!class_exists($this->{$var}['factory'])) {
+				\FatalError("Factory class '{$this->{$var}['factory']}' for '{$var}' is not exists !");
+			}
 
 			$initHelper = (!empty($this->{$var}['helper']) && method_exists($this, 'init' . ucfirst($var)) ? 'init' . ucfirst($var) : false);
 

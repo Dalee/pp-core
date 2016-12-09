@@ -122,7 +122,7 @@ class PXDatabase extends NLSQLDatabaseAdapter implements DatabaseInterface {
 	 *
 	 * @param array $directories reference to PXDirectoryDescription objects array
 	 */
-	function LoadDirectoriesAutomatic(&$directories) {
+	function loadDirectoriesAutomatic(&$directories) {
 		foreach ($directories as $k=>$v) {
 			if ($v->schema != 'sql')       continue;
 			if ($v->load   != 'automatic') continue;

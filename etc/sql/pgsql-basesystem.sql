@@ -46,6 +46,18 @@ CREATE TABLE sgroup2suser (
 	suserid       INT4 NOT NULL REFERENCES suser ON DELETE CASCADE ON UPDATE CASCADE
 ) WITH OIDS;
 
+-- sys_property
+CREATE TABLE sys_properties (
+	id            SERIAL PRIMARY KEY,
+
+	sys_order     INT4,
+	sys_uuid      VARCHAR(36),
+
+	"name"        VARCHAR UNIQUE,
+	description   VARCHAR,
+	"value"       VARCHAR
+) WITH OIDS;
+
 CREATE TABLE acl_objects (
 	id            SERIAL PRIMARY KEY,
 
@@ -70,6 +82,15 @@ VALUES (
 );
 
 UPDATE suser SET parent = (SELECT id FROM sgroup WHERE title = 'Администраторы' LIMIT 1);
+
+-- PROPERTIES
+INSERT INTO sys_properties (description, "name", "value", sys_uuid)
+VALUES (
+	'Отладочный режим (отключить в production)',
+	'ENVIRONMENT',
+	'DEVELOPER',
+	'16b33fe4-f24f-4a24-8c67-482f9e15c092'
+);
 
 -- ACL
 INSERT INTO acl_objects (what, access, objectrule, sys_uuid)
@@ -165,6 +186,27 @@ VALUES (
 	'module',
 	'e0eb8142-e641-4fba-aa6f-4e6b9b416ce0'
 );
+
+INSERT INTO acl_objects (sgroupid, objecttype, what, access, objectrule, sys_uuid)
+VALUES (
+	(SELECT id FROM sgroup WHERE title = 'Администраторы' LIMIT 1),
+	'properties',
+	'viewmenu',
+	'allo',
+	'module',
+	'a52895f4-b74f-40b9-8f5a-04419c6a09ba'
+);
+
+INSERT INTO acl_objects (sgroupid, objecttype, what, access, objectrule, sys_uuid)
+VALUES (
+	(SELECT id FROM sgroup WHERE title = 'Администраторы' LIMIT 1),
+	'properties',
+	'sys_properties_edit',
+	'allo',
+	'module',
+	'e456b476-c3d4-4831-af5e-307361f0abc8'
+);
+
 
 UPDATE acl_objects SET sys_order = id;
 
