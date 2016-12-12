@@ -55,7 +55,7 @@ class PropertyLoader {
 		}
 
 		$loadSql = sprintf(
-			'SELECT id, "name", description, "value", sys_uuid FROM %s WHERE id=%s',
+			'SELECT id, "name", description, "value", sys_uuid FROM %s WHERE id=%d',
 			DT_PROPERTIES,
 			$database->EscapeString($id)
 		);

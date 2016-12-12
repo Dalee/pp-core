@@ -33,7 +33,7 @@ abstract class AbstractXmlNode implements XmlNodeInterface {
 	/**
 	 * {@inheritdoc}
 	 */
-	function xpath($query) {
+	public function xpath($query) {
 		$this->_createXmlContext();
 		return $this->_xml->xpath($query);
 	}
@@ -41,38 +41,38 @@ abstract class AbstractXmlNode implements XmlNodeInterface {
 	/**
 	 * {@inheritdoc}
 	 */
-	function nodeName() {
+	public function nodeName() {
 	}
 
 	/**
 	 * {@inheritdoc}
 	 */
-	function nodeValue() {
+	public function nodeValue() {
 	}
 
 	/**
 	 * {@inheritdoc}
 	 */
-	function nodeType() {
+	public function nodeType() {
 	}
 
 	/**
 	 * {@inheritdoc}
 	 */
-	function attributes() {
+	public function attributes() {
 	}
 
 	/**
 	 * {@inheritdoc}
 	 */
-	function isXmlNode() {
+	public function isXmlNode() {
 		return $this->nodeType() == XML_ELEMENT_NODE;
 	}
 
 	/**
 	 * {@inheritdoc}
 	 */
-	function childNodes() {
+	public function childNodes() {
 		if (isset($this->_childNodes)) {
 			return $this->_childNodes;
 		}
@@ -96,7 +96,7 @@ abstract class AbstractXmlNode implements XmlNodeInterface {
 	/**
 	 * {@inheritdoc}
 	 */
-	function getChildObjects() {
+	public function getChildObjects() {
 		return array();
 	}
 
@@ -104,7 +104,7 @@ abstract class AbstractXmlNode implements XmlNodeInterface {
 	 * @param $nodeName
 	 * @return array|mixed|null
 	 */
-	function getChildNode($nodeName) {
+	public function getChildNode($nodeName) {
 		$find = array();
 
 		foreach ($this->childNodes() as $node) {
@@ -124,7 +124,7 @@ abstract class AbstractXmlNode implements XmlNodeInterface {
 	 * @param $name
 	 * @return array|bool|mixed|null
 	 */
-	function __get($name) {
+	public function __get($name) {
 		$attr = $this->getAttribute($name);
 
 		if ($attr !== FALSE) {
@@ -138,7 +138,7 @@ abstract class AbstractXmlNode implements XmlNodeInterface {
 	/**
 	 * {@inheritdoc}
 	 */
-	function getAttribute($attrName) {
+	public function getAttribute($attrName) {
 		$this->attributes();
 
 		if (count($this->_attributes) > 0 && isset($this->_attributes[$attrName])) {
@@ -151,7 +151,7 @@ abstract class AbstractXmlNode implements XmlNodeInterface {
 	/**
 	 * {@inheritdoc}
 	 */
-	function parent($selector = null) {
+	public function parent($selector = null) {
 		$ret = $this->xpath('..'); //TODO: make here selector context apply
 		return reset($ret);
 	}

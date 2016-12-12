@@ -23,7 +23,7 @@ class SimpleXmlNode extends AbstractXmlNode {
 	/**
 	 * {@inheritdoc}
 	 */
-	function nodeName() {
+	public function nodeName() {
 		if (isset($this->_nodeName)) {
 			return $this->_nodeName;
 		}
@@ -35,7 +35,7 @@ class SimpleXmlNode extends AbstractXmlNode {
 	/**
 	 * {@inheritdoc}
 	 */
-	function nodeValue() {
+	public function nodeValue() {
 		if (isset($this->_nodeValue)) {
 			return $this->_nodeValue;
 		}
@@ -47,7 +47,7 @@ class SimpleXmlNode extends AbstractXmlNode {
 	/**
 	 * {@inheritdoc}
 	 */
-	function nodeType() {
+	public function nodeType() {
 		if (isset($this->_nodeType)) {
 			return $this->_nodeType;
 		}
@@ -74,7 +74,7 @@ class SimpleXmlNode extends AbstractXmlNode {
 	/**
 	 * {@inheritdoc}
 	 */
-	function nodeXValue($xpath) {
+	public function nodeXValue($xpath) {
 		list ($node) = (array)($this->_node->xpath($xpath)) + array(0 => '');
 		return (string)$node;
 	}
@@ -82,7 +82,7 @@ class SimpleXmlNode extends AbstractXmlNode {
 	/**
 	 * {@inheritdoc}
 	 */
-	function attributes() {
+	public function attributes() {
 		if (isset($this->_attributes)) {
 			return array_values($this->_attributes);
 		}
@@ -105,7 +105,7 @@ class SimpleXmlNode extends AbstractXmlNode {
 	/**
 	 * {@inheritdoc}
 	 */
-	function getChildObjects() {
+	public function getChildObjects() {
 		$xmlChilds = $this->_node->children();
 		return $xmlChilds;
 	}

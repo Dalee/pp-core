@@ -47,5 +47,5 @@ abstract class AbstractXml implements XmlInterface {
 	/**
 	 * {@inheritdoc}
 	 */
-	abstract function xpath($query);
+	abstract public function xpath($query);
 }

@@ -74,10 +74,10 @@ abstract class PXModule implements ModuleInterface {
 		$link = sprintf('/admin/action.phtml?area=%s&action=%s', $this->area, urlencode($action));
 		$sid = $this->request->getSid();
 		if (!empty($sid)) {
-			$link = $link.'&sid='.urlencode($sid);
+			$link = $link . '&sid=' . urlencode($sid);
 		}
 		if ($addIdParam) {
-			$link = $link.'&id=';
+			$link = $link . '&id=';
 		}
 		return $link;
 	}
@@ -91,10 +91,10 @@ abstract class PXModule implements ModuleInterface {
 		$link = sprintf('/admin/popup.phtml?area=%s&action=%s', $this->area, urlencode($action));
 		$sid = $this->request->getSid();
 		if (!empty($sid)) {
-			$link = $link.'&sid='.urlencode($sid);
+			$link = $link . '&sid=' . urlencode($sid);
 		}
 		if ($addIdParam) {
-			$link = $link.'&id=';
+			$link = $link . '&id=';
 		}
 
 		return $link;

@@ -16,6 +16,9 @@
 Пример описания:
 ```
 <module name="properties" description="Параметры" class="PXModuleProperties">
+	<attribute>name=CHILDREN_ON_PAGE|description=Количество элементов на странице (админка)|displaytype=TEXT</attribute>
+	<attribute>name=LINKS_ON_PAGE|description=Количество элементов на странице (админка)|displaytype=TEXT</attribute>
+
 	<attribute>name=SAMPLE_CHECKBOX|description=Тестовый параметр|displaytype=CHECKBOX</attribute>
 	<attribute>name=SAMPLE_TEXTAREA1|description=Тестовый параметр|displaytype=TEXT</attribute>
 	<attribute>name=SAMPLE_TEXTAREA2|description=Тестовый параметр|displaytype=TEXT,500,100</attribute>
@@ -28,4 +31,5 @@
 
 Редактирование параметров SAMPLE_* доступно группе `Администраторы`
 
-Все параметры находящиеся в таблице `DT_PROPERTIES` по-умолчанию трактуются как системные
+Все параметры находящиеся в таблице `DT_PROPERTIES` и не описанные в параметрах модуля, 
+по умолчанию трактуются как системные.

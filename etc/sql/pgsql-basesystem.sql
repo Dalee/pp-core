@@ -248,7 +248,7 @@ CREATE TABLE html (
 	status        BOOL
 ) WITH OIDS;
 
--- 002_auditlog.sql
+-- auditlog
 CREATE TABLE log_audit (
 	id      SERIAL PRIMARY KEY,
 	ts      TIMESTAMP DEFAULT NOW(),
@@ -266,7 +266,7 @@ CREATE INDEX type_idx ON log_audit (type);
 CREATE INDEX data_idx ON log_audit(date_trunc('day', ts));
 CREATE VIEW log_audit_view AS SELECT "id", "ts", to_date(ts::text, 'DD.MM.YYYY'::text) as date, "level", "type", "source", "user", "ip", "description", "diff" FROM log_audit;
 
--- 003_search.sql
+-- search
 CREATE SEQUENCE stem_key  START 1 INCREMENT 1 MAXVALUE 2147483647 MINVALUE 1 CACHE 1;
 CREATE TABLE stems (
 	id          SERIAL PRIMARY KEY,

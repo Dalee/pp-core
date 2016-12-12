@@ -19,7 +19,7 @@ class Xml {
 	function __construct($xmlEntity) {
 
 		switch (true) {
-			case extension_loaded("simplexml"):
+			case extension_loaded('simplexml'):
 				$this->xml = new SimpleXml($xmlEntity);
 				break;
 

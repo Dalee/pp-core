@@ -84,6 +84,19 @@ months:
 
 # настройки сайта
 module_properties:
+  table_ctrl:
+    empty_value:
+      rus: Пустое значение
+      eng: Empty value
+    edit:
+      rus: редактировать этот параметр
+      eng: edit this property
+    delete:
+      rus: удалить этот параметр
+      eng: delete this property
+    add:
+      rus: Параметр
+      eng: Property
   action:
     add:
       rus: Добавление нового параметра

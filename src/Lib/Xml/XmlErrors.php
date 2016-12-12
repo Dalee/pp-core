@@ -6,7 +6,7 @@ class XmlErrors {
 	public $errors;
 
 	private function __construct() {
-		$this->errors = array();
+		$this->errors = [];
 	}
 
 	private function __clone() {}

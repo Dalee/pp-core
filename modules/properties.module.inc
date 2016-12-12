@@ -65,13 +65,20 @@ class PXModuleProperties extends PXModule {
 		$table = (new PXAdminTableSimple($colsDef))
 			->setTableId('properties')
 			->showEven()
-			->setNullText('Пустое значение')
-			->setControls($this->buildAdminPopupUrl('edit', true), 'редактировать этот параметр', 'edit', false, true)
-			->setData($this->getPropertyList($sid));
+			->setNullText($this->app->langTree->getByPath('module_properties.table_ctrl.empty_value.rus'))
+			->setData($this->getPropertyList($sid))
+			->setControls(
+				$this->buildAdminPopupUrl('edit', true),
+				$this->app->langTree->getByPath('module_properties.table_ctrl.edit.rus'),
+				'edit',
+				false,
+				true
+			);
+
 		if ($this->isPowerUser()) {
 			$table->setControls(
 				$this->buildAdminActionUrl('delete', true),
-				'удалить этот параметр',
+				$this->app->langTree->getByPath('module_properties.table_ctrl.delete.rus'),
 				'del',
 				true,
 				false
@@ -83,8 +90,9 @@ class PXModuleProperties extends PXModule {
 		// build additional controls
 		if ($this->isPowerUser()) {
 			$link = sprintf("Popup('%s');", $this->buildAdminPopupUrl('main'));
+			$label = $this->app->langTree->getByPath('module_properties.table_ctrl.add.rus');
 
-			$button = (new \PXControlButton('Параметр'))
+			$button = (new \PXControlButton($label))
 				->setClickCode($link)
 				->setClass('add');
 
@@ -186,7 +194,7 @@ class PXModuleProperties extends PXModule {
 			return;
 		}
 
-		$deleteQuery = sprintf("DELETE FROM %s WHERE id=%s", DT_PROPERTIES, $this->db->EscapeString($id));
+		$deleteQuery = sprintf("DELETE FROM %s WHERE id=%d", DT_PROPERTIES, $this->db->EscapeString($id));
 		$this->db->ModifyingQuery($deleteQuery, DT_PROPERTIES);
 	}
 
@@ -276,23 +284,20 @@ class PXModuleProperties extends PXModule {
 	protected function getPropertyList($sid) {
 		$propertyList = PropertyLoader::getRawPropertyList($this->db);
 
-		// filter property list based on sid
-		$propertyList = array_filter($propertyList, function ($propertyRaw) use (&$sid) {
-			if ($sid === 'pub') {
-				return $this->isPropertySystem($propertyRaw) === false;
-			} else {
-				return $this->isPropertySystem($propertyRaw);
-			}
-		});
-
-		// fetch and filter defined settings
-		$propertyListDef = array_filter($this->predefinedPropertyDefList, function ($propertyDef) use ($sid) {
+		// filtering callable
+		$propertySidFilter = function ($propertyDef) use (&$sid) {
 			if ($sid === 'pub') {
 				return $this->isPropertySystem($propertyDef) === false;
 			} else {
 				return $this->isPropertySystem($propertyDef);
 			}
-		});
+		};
+
+		// filter property list based on sid
+		$propertyList = array_filter($propertyList, $propertySidFilter);
+
+		// fetch and filter defined settings
+		$propertyListDef = array_filter($this->predefinedPropertyDefList, $propertySidFilter);
 
 		// extract properties already present in database and defined in module settings
 		$createdDef = array_filter($propertyList, function ($propertyRaw) use (&$propertyListDef) {
@@ -413,7 +418,7 @@ class PXModuleProperties extends PXModule {
 	protected function buildTypeFromArray($objectDef) {
 		$typeDescription = new PXTypeDescription();
 		$typeDescription->id = 'sys_property';
-		$typeDescription->title = 'Параметр';
+		$typeDescription->title = $this->app->langTree->getByPath('module_properties.table.name.rus');
 
 		foreach ($objectDef as $dataDef) {
 			$_tmpSource = null;
