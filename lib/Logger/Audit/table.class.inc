@@ -1,7 +1,8 @@
 <?php
 class PXAdminAuditTable extends PXAdminTableSimple {
-	function PXAdminAuditTable($cols) {
-		parent::PXAdminTableSimple($cols);
+
+	function __construct($cols) {
+		parent::__construct($cols);
 		$this->app = PXRegistry::getApp();
 		$this->setDict('datatypes', $this->app->types);
 	}
@@ -59,4 +60,3 @@ class PXAdminAuditTable extends PXAdminTableSimple {
 		return '<a href="'.$url.'" target="_blank">'.$text.'</a>';
 	}
 }
-?>

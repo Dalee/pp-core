@@ -70,6 +70,27 @@ abstract class LayoutAbstract implements LayoutInterface {
 	/**
 	 * {@inheritdoc}
 	 */
+	function getLang() {
+		return null;
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	function getSmarty() {
+		return null;
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	function getIndexTemplate() {
+		return null;
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
 	public function setContent($content) {
 		return $this;
 	}

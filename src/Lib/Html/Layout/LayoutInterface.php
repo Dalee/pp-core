@@ -25,14 +25,33 @@ interface LayoutInterface {
 	function setApp(\PXApplication $app);
 
 	/**
+	 * TODO: should be refactored to setLangCode
+	 *
 	 * @param string $lang
 	 * @return $this
 	 */
 	function setLang($lang = 'rus');
 
 	/**
+	 *
+	 * @return \PXUserHTMLLang
+	 */
+	function getLang();
+
+	/**
+	 * @return \Smarty
+	 */
+	function getSmarty();
+
+	/**
+	 * @return string
+	 */
+	function getIndexTemplate();
+
+	/**
 	 * Null layout in action/json handler Null layout is used, so it should be in interface
 	 *
+	 * @param object
 	 * @return $this
 	 */
 	function setContent($content);

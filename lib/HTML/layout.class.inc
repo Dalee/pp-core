@@ -163,6 +163,27 @@ class PXUserHTMLLayout implements LayoutInterface  {
 	/**
 	 * {@inheritdoc}
 	 */
+	public function getLang() {
+		return $this->lang;
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function getSmarty() {
+		return $this->smarty;
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function getIndexTemplate() {
+		return $this->indexTemplate;
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
 	public function setContent($content) {
 		return $this;
 	}
