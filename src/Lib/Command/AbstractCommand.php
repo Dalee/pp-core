@@ -9,7 +9,7 @@ abstract class AbstractCommand extends Command {
 	/** @var \PXApplication */
 	protected $app;
 
-	/** @var \PXDatabase */
+	/** @var \PXDatabase|\NLPGSQLDatabase */
 	protected $db;
 
 	/**
