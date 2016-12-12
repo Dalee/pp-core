@@ -15,7 +15,10 @@ class NLPGSQLDatabase extends NLAbstractSQLDatabase {
 	protected $insideTransaction = false;
 	protected $transactionsStack = [];
 
-
+	/**
+	 * NLPGSQLDatabase constructor.
+	 * @param NLDBDescription $dbDescription
+	 */
 	public function __construct($dbDescription) {
 		$this->setCache($dbDescription->cache);
 		$this->connectArray = array_merge($this->connectArray, $this->includeOptions);
