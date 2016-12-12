@@ -1,3 +1,3 @@
 <?php
 
-define('PP_VERSION', 'v1.6.1');
+define('PP_VERSION', 'v1.7.0');
