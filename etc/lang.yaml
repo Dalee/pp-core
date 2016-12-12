@@ -82,6 +82,49 @@ months:
     - November
     - December
 
+# настройки сайта
+module_properties:
+  table_ctrl:
+    empty_value:
+      rus: Пустое значение
+      eng: Empty value
+    edit:
+      rus: редактировать этот параметр
+      eng: edit this property
+    delete:
+      rus: удалить этот параметр
+      eng: delete this property
+    add:
+      rus: Параметр
+      eng: Property
+  action:
+    add:
+      rus: Добавление нового параметра
+      eng: Add new property
+    edit:
+      rus: Редактирование параметра
+      eng: Edit property
+  table:
+    name:
+      rus: Параметр
+      eng: Property
+    description:
+      rus: Описание
+      eng: Description
+    value:
+      rus: Значение
+      eng: Value
+  menu:
+    all:
+      rus: Все параметры
+      eng: All properties
+    general:
+      rus: Общие параметры
+      eng: General properties
+    system:
+      rus: Системные параметры
+      eng: System properties
+
 # правила ACL
 module_acl_rules:
   actions:
@@ -106,6 +149,15 @@ module_acl_rules:
     admin:
       rus: Просмотр в админке
       eng: View in admin area
+    madmin:
+      rus: Доступ в админке
+      eng: Access in admin
+    viewmenu:
+      rus: Показывать в меню
+      eng: Show in menu
+    sys_properties_edit:
+      rus: Редактирование системных настроек
+      eng: Edit system properties
   access:
     allo:
       rus: Разрешить

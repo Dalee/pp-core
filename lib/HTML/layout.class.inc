@@ -11,14 +11,24 @@ class PXUserHTMLLayout implements LayoutInterface  {
 	var $smarty;
 	var $_filters;
 
+	/** @var string  */
+	protected $indexTemplate;
+
+	/** @var PXUserHTMLLang */
+	protected $lang;
+
 	function __construct() {
 		require_once PPPATH . 'vendor/Smarty/Smarty.class.php';
 
 		$this->_initSmarty();
-		$this->_filters  = array();
+
+		$this->_filters  = [];
 		$this->indexTemplate = 'index.tmpl';
-		$this->addTemplateFunction('pager', array(&$this, 'pager'));
-		$this->AddTemplateBlock('dev', 'smarty_block_dev'); //FIXME: see functions.etc.inc
+
+		$this->addTemplateFunction('property', [$this, 'getProperty']);
+		$this->addTemplateModifier('property', [$this, 'getPropertyModifier']);
+		$this->addTemplateFunction('pager', [$this, 'pager']);
+
 		$this->_initLang();
 	}
 
@@ -59,18 +69,15 @@ class PXUserHTMLLayout implements LayoutInterface  {
 		require_once PPLIBPATH . 'HTML/lang.class.inc';
 
 		$this->lang = new PXUserHTMLLang();
-		$this->AddTemplateFunction('lang', array($this->lang, 'lang'));
+		$this->addTemplateFunction('lang', array($this->lang, 'lang'));
 		$this->addTemplateModifier('lang', array($this->lang, 'lang_modifier'));
 
-		$this->AddTemplateFunction('pager', array($this, 'pager'));
-		$this->AddTemplateFunction('autopager', array($this, 'autopager'));
-
-		$this->AddTemplateBlock('dev', 'smarty_block_dev'); //FIXME: see functions.etc.inc
+		$this->addTemplateFunction('pager', array($this, 'pager'));
+		$this->addTemplateFunction('autopager', array($this, 'autopager'));
 	}
 
 	function htmlPager($totalObjects, $objectsPerPage, &$smarty, $param) {
 		$maxPage = ceil($totalObjects/$objectsPerPage);
-		$objectsPerPage = $objectsPerPage;
 
 		$request     = PXRegistry::getRequest();
 
@@ -110,14 +117,38 @@ class PXUserHTMLLayout implements LayoutInterface  {
 		/* Нужна ли постраничка? */
 		$p = mb_strtoupper($param['format']).'_PER_PAGE';
 
-		$app = PXRegistry::getApp();
-		$a_per_page = $app->GetProperty($p, $total);
-
+		$a_per_page = (int)PXRegistry::getApp()->getProperty($p, $total);
 		if ($a_per_page == 0) {
 			return '';
 		}
 
 		return $this->htmlPager($total, $a_per_page, $smarty, $param);
+	}
+
+	/**
+	 * Get property inside template, function
+	 *
+	 * @param $param
+	 * @param $smarty
+	 * @return string
+	 */
+	function getProperty($param, &$smarty) {
+		$default = '';
+		if (isset($param['default'])) {
+			$default = $param['default'];
+		}
+
+		return PXRegistry::getApp()->getProperty($param['name'], $default);
+	}
+
+	/**
+	 * Get property inside template, modifier
+	 *
+	 * @param string $name
+	 * @return string
+	 */
+	function getPropertyModifier($name) {
+		return PXRegistry::getApp()->getProperty($name);
 	}
 
 	/**

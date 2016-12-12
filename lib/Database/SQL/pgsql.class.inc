@@ -12,7 +12,14 @@ class NLPGSQLDatabase extends NLAbstractSQLDatabase {
 	protected $includeOptions = array('connect_timeout' => '');
 	protected $excludeOptions = array('encoding');
 
-	function __construct($dbDescription) {
+	protected $insideTransaction = false;
+	protected $transactionsStack = [];
+
+	/**
+	 * NLPGSQLDatabase constructor.
+	 * @param NLDBDescription $dbDescription
+	 */
+	public function __construct($dbDescription) {
 		$this->setCache($dbDescription->cache);
 		$this->connectArray = array_merge($this->connectArray, $this->includeOptions);
 		$this->setConnectParams($dbDescription);
@@ -227,13 +234,10 @@ class NLPGSQLDatabase extends NLAbstractSQLDatabase {
 		return $this->ModifyingQuery($query, null, null, $flushCache);
 	}
 
-	/*
-	 * Transaction related functions
-	 *
-	 */
-	protected $insideTransaction = false;
-	protected $transactionsStack = array();
 
+	/**
+	 * @return $this
+	 */
 	function transactionBegin() {
 		if (!$this->insideTransaction) {
 			$this->Query('BEGIN',true);
@@ -243,8 +247,12 @@ class NLPGSQLDatabase extends NLAbstractSQLDatabase {
 			$this->savepointCreate($savepointId);
 			$this->transactionsStack[] = $savepointId;
 		}
+		return $this;
 	}
 
+	/**
+	 * @return $this
+	 */
 	function transactionCommit() {
 		if (empty($this->transactionsStack)) {
 			$this->Query('END',true);
@@ -253,6 +261,7 @@ class NLPGSQLDatabase extends NLAbstractSQLDatabase {
 			$savepointId = array_pop($this->transactionsStack);
 			$this->savepointRelease($savepointId);
 		}
+		return $this;
 	}
 
 	function transactionRollback() {
@@ -386,4 +395,3 @@ class NLPGSQLDatabase extends NLAbstractSQLDatabase {
 		return sprintf("INSERT INTO %s (%s) VALUES(%s)", $table, $fieldNames, $fieldValues);
 	}
 }
-?>

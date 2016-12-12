@@ -2,37 +2,62 @@
 
 class PXAdminTableSimple extends PXAdminWidget {
 
-	const DEFAULT_MODE      = 0;
-	const HIDEHEADER_MODE   = 1;
-	const HIDEFOOTER_MODE   = 2;
-	const BODY_MODE         = 3;
+	const DEFAULT_MODE = 0;
+	const HIDEHEADER_MODE = 1;
+	const HIDEFOOTER_MODE = 2;
+	const BODY_MODE = 3;
 
+	/**
+	 * @var array
+	 */
 	protected $cols;
+
 	protected $widths;
 
 	protected $dict;
+
 	protected $data;
+
 	protected $footer;
 
 	protected $controls;
 
+	/**
+	 * @var string
+	 */
 	protected $nullText;
+
+	/**
+	 * @var string
+	 */
 	protected $caption;
 
+	/**
+	 * @var string
+	 */
 	protected $tableId;
 
-	function PXAdminTableSimple($cols) {
-		$this->cols   = $cols;
-		$this->widths = array();
+	/**
+	 * @var bool
+	 */
+	protected $showEven;
 
-		$this->dict   = array();
-		$this->data   = array();
-		$this->footer = array();
 
-		$this->controls     = array();
+	/**
+	 * PXAdminTableSimple constructor.
+	 * @param array $cols
+	 */
+	public function __construct($cols) {
+		$this->cols = $cols;
+		$this->widths = [];
+
+		$this->dict = [];
+		$this->data = [];
+		$this->footer = [];
+		$this->controls = [];
 
 		$this->nullText = '';
-		$this->caption  = '';
+		$this->caption = '';
 
 		$this->showEven = false;
 	}
@@ -42,7 +67,7 @@ class PXAdminTableSimple extends PXAdminWidget {
 	 * @return $this
 	 */
 	function setData($data) {
-		if(!is_array($data)) {
+		if (!is_array($data)) {
 			$data = array();
 		}
 
@@ -51,34 +76,62 @@ class PXAdminTableSimple extends PXAdminWidget {
 		return $this;
 	}
 
+	/**
+	 * @return $this
+	 */
 	function setWidths() {
 		$this->widths = func_get_args();
+
+		return $this;
 	}
 
+	/**
+	 * @param string $text
+	 * @return $this
+	 */
 	function setCaption($text) {
 		$this->caption = (string)$text;
+
+		return $this;
 	}
 
+	/**
+	 * @param $cells
+	 * @return $this
+	 */
 	function setFooter($cells) {
 		$this->footer = $cells;
+
+		return $this;
 	}
 
+	/**
+	 * @param string|null $id
+	 * @return $this
+	 */
 	function setTableId($id = null) {
 		$this->tableId = $id ? $id : md5(microtime(1));
+
+		return $this;
 	}
 
+	/**
+	 * @return string
+	 */
 	function htmlCaption() {
-		if(!mb_strlen($this->caption)) {
+		if (!mb_strlen($this->caption)) {
 			return '';
 		}
 
 		return '<caption>'.$this->caption.'</caption>';
 	}
 
+	/**
+	 * @return string
+	 */
 	function htmlBody() {
-		$_  = '';
-		$i = 0;
-		foreach($this->data as $row) {
+		$_ = '';
+		foreach ($this->data as $row) {
 			$id = isset($row['id']) ? $row['id'] : 0;
 			$_ .= '<tr'.($this->tableId && $id ? ' id="'.$this->tableId.'-'.$id.'"' : '').'>';
 
@@ -86,7 +139,7 @@ class PXAdminTableSimple extends PXAdminWidget {
 				$_ .= $this->cellCTRL($id);
 			}
 
-			foreach($this->cols as $col=>$title) {
+			foreach ($this->cols as $col => $title) {
 				$_ .= $this->cell($row, $col);
 			}
 
@@ -96,41 +149,69 @@ class PXAdminTableSimple extends PXAdminWidget {
 		return $_;
 	}
 
+	/**
+	 * @param $col
+	 * @param $dictArray
+	 * @return $this
+	 */
 	function setDict($col, $dictArray) {
 		$this->dict[$col] = $dictArray;
+
+		return $this;
 	}
 
-	function setControls($url, $title, $icon, $confirm=false, $popup=false) {
+	/**
+	 * @param $url
+	 * @param $title
+	 * @param $icon
+	 * @param bool $confirm
+	 * @param bool $popup
+	 * @return $this
+	 */
+	function setControls($url, $title, $icon, $confirm = false, $popup = false) {
 		$this->controls[] = array(
-			'title'   => $title,
-			'url'     => $url,
-			'icon'    => $icon,
+			'title' => $title,
+			'url' => $url,
+			'icon' => $icon,
 			'confirm' => $confirm,
-			'popup'   => $popup,
+			'popup' => $popup,
 		);
+
+		return $this;
 	}
 
+	/**
+	 * @param string $text
+	 * @return $this
+	 */
 	function setNullText($text) {
 		$this->nullText = $text;
+
+		return $this;
 	}
 
-	function showEven(){
+	/**
+	 * @return $this
+	 */
+	function showEven() {
 		$this->showEven = true;
+
+		return $this;
 	}
 
 	function cellCTRL($id) {
-		if(!sizeof($this->controls)) {
+		if (!sizeof($this->controls)) {
 			return '';
 		}
 
-		$_  = '<td class="c">';
+		$_ = '<td class="c">';
 
-		foreach($this->controls as $c) {
+		foreach ($this->controls as $c) {
 			$url = $c['url'].$id;
 
 			$_ .= '<a href="'.$url.'"';
 
-			if($c['confirm']) {
+			if ($c['confirm']) {
 				$_ .= ' onclick="return window.confirm(\'Вы действительно решили '.$c['title'].'?\');"';
 
 			} elseif ($c['popup']) {
@@ -151,21 +232,21 @@ class PXAdminTableSimple extends PXAdminWidget {
 
 		$class = array();
 
-		if(is_null($val)) {
+		if (is_null($val)) {
 			$class[] = 'null';
 		}
 
-		if(isset($this->dict[$col]) && !isset($this->dict[$col][$val])) {
+		if (isset($this->dict[$col]) && !isset($this->dict[$col][$val])) {
 			$class[] = 'not-in-dict';
 		}
 
 		$_ = '<td'.(sizeof($class) ? ' class="'.implode(' ', $class).'"' : '').'>';
 
-		if(is_null($val)) {
+		if (is_null($val)) {
 			$val = $this->nullText;
 		}
 
-		if(isset($this->dict[$col][$val])) {
+		if (isset($this->dict[$col][$val])) {
 			$val = $this->dict[$col][$val];
 		}
 
@@ -178,7 +259,7 @@ class PXAdminTableSimple extends PXAdminWidget {
 
 	function html($mode = self::DEFAULT_MODE) {
 
-		$_  = '<table class="objects">';
+		$_ = '<table class="objects">';
 
 		$_ .= $this->htmlCaption();
 
@@ -212,10 +293,10 @@ class PXAdminTableSimple extends PXAdminWidget {
 	function htmlHeader() {
 		$_ = '';
 
-		if(sizeof($this->widths)) {
+		if (sizeof($this->widths)) {
 			$_ .= '<colgroup>';
 
-			foreach($this->widths as $width) {
+			foreach ($this->widths as $width) {
 				$_ .= '<col'.($width > 0 ? ' width="'.$width.'"' : '').'>';
 			}
 
@@ -224,11 +305,13 @@ class PXAdminTableSimple extends PXAdminWidget {
 
 		$_ .= '<thead><tr>';
 
-		if(sizeof($this->controls)) {
-			$_ .= '<th class="c c'.sizeof($this->controls).'"><img src="/admin/i/icon/order.gif" /></th>';   // !!! FIXME !!!
+		if (sizeof($this->controls)) {
+			$_ .= '<th class="c c'.sizeof(
+					$this->controls
+				).'"><img src="/admin/i/icon/order.gif" /></th>';   // !!! FIXME !!!
 		}
 
-		foreach($this->cols as $colTitle)  {
+		foreach ($this->cols as $colTitle) {
 			$_ .= '<th>'.$colTitle.'</th>'."\n";
 		}
 
@@ -240,10 +323,10 @@ class PXAdminTableSimple extends PXAdminWidget {
 	function htmlFooter() {
 		$_ = '';
 
-		if(sizeof($this->footer)) {
+		if (sizeof($this->footer)) {
 			$_ .= '<tfoot><tr>';
 
-			foreach($this->cols as $col=>$title) {
+			foreach ($this->cols as $col => $title) {
 				$_ .= $this->cell($this->footer, $col);
 			}
 

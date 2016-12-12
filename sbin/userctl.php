@@ -1,10 +1,11 @@
 #!/usr/bin/env php54
 <?php
 
-//
-// @TODO: refactor to UserControlCommand
-// @see PP\Command\HelloCommand
-//
+/**
+ * TODO: refactor to UserControlCommand
+ * @see PP\Command\HelloCommand
+ *
+ */
 
 /* ret codes
  * 0 - ok
@@ -13,7 +14,6 @@
  * 3 - incorrect params
  * 255 - unknown error
  */
-
 
 ini_set('display_errors', 1);
 

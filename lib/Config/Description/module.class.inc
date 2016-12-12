@@ -6,11 +6,12 @@
  * @subpackage Application
  */
 class PXModuleDescription {
-	var $name        = NULL;
-	var $description = NULL;
-	var $class       = NULL;
-	var $settings    = array();
-	var $package     = NULL;
+
+	var $name        = null;
+	var $description = null;
+	var $class       = null;
+	var $settings    = [];
+	var $package     = null;
 	var $hidetab     = false;
 	var $trigger     = false;
 
@@ -34,9 +35,12 @@ class PXModuleDescription {
 		}
 	}
 
+	/**
+	 * TODO: refactor for PSR-4 load support
+	 */
 	function checkClass() {
 		if(is_null($this->name)) {
-			FatalError('Not defined module name');
+			FatalError('Module name is not defined');
 		}
 
 		if(is_null($this->class)) {
@@ -56,6 +60,9 @@ class PXModuleDescription {
 		$this->package = $package;
 	}
 
+	/**
+	 * @return string
+	 */
 	function getName() {
 		return $this->name;
 	}
@@ -113,4 +120,4 @@ class PXModuleDescription {
 		}
 	}
 }
-?>
+

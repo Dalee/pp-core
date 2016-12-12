@@ -25,11 +25,11 @@ class FillUuidCommand extends AbstractCommand {
 	/**
 	 * {@inheritdoc}
 	 */
-	public function run(InputInterface $input, OutputInterface $output) {
+	public function execute(InputInterface $input, OutputInterface $output) {
 		$datatype = $input->getArgument('datatype');
 		if ($datatype !== null) {
 			if (!isset($this->app->types[$datatype])) {
-				$output->writeln('<error>Unknown datatype:</error> '.$datatype);
+				$output->writeln('<error>Error:</error> Unknown datatype '.$datatype);
 				return 1;
 			}
 

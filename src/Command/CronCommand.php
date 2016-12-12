@@ -7,7 +7,6 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Style\SymfonyStyle;
 
 /**
  * Cron command
@@ -31,7 +30,7 @@ class CronCommand extends AbstractCommand {
 	/**
 	 * {@inheritdoc}
 	 */
-	public function run(InputInterface $input, OutputInterface $output) {
+	public function execute(InputInterface $input, OutputInterface $output) {
 
 		if (!isset($this->app->modules['cronrun'])) {
 			return;

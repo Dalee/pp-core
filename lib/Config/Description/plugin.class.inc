@@ -1,5 +1,8 @@
 <?php
-class PXPluginDescription {
+
+use PP\Lib\Config\Description\InitializableDescriptionInterface;
+
+class PXPluginDescription implements InitializableDescriptionInterface {
 	private $name     = null;
 	private $class    = null;
 	private $instance = NULL;
@@ -9,7 +12,10 @@ class PXPluginDescription {
 	public  $modules  = array();
 	public  $triggers = array();
 
-	public function initialize($app) {
+	/**
+	 * {@inheritdoc}
+	 */
+	public function initialize(PXApplication $app) {
 		$this->getPlugin($app);
 	}
 
@@ -88,4 +94,3 @@ class PXPluginDescription {
 		return array_keys($o_vars);
 	}
 }
-?>

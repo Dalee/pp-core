@@ -108,11 +108,10 @@ class PXModuleAcl extends PXModule {
 	}
 
 	function addNewRuleButton() {
-		$_  = '';
-		$_ .= '<a href="/admin/popup.phtml?area=' . $this->area . '" onclick="Popup(this.href); return false;" class="button">';
-		$_ .= '<img src="i/icon/add.gif" alt="Добавить правило" />';
-		$_ .= 'Правило доступа';
-		return $_ .= '</a>';
+		$button = new \PXControlButton('Правило доступа');
+		$button->setClickCode('Popup(\'' . '/admin/popup.phtml?area=' . $this->area . '\')');
+		$button->setClass('add');
+		return $button->html();
 	}
 
 	function adminPopup() {
@@ -142,13 +141,13 @@ class PXModuleAcl extends PXModule {
 
 		//set save buttons
 		$form = new PXAdminForm(null, null);
-		$form->LeftControls();
-		$form->RightControls();
+		$form->leftControls();
+		$form->rightControls();
 
 		$_ = '';
-		$_ .= NLAbstractHTMLForm::buildHidden('id', $rId);
-		$_ .= NLAbstractHTMLForm::buildHidden('area', $this->area);
-		$_ .= NLAbstractHTMLForm::buildHidden('action', ($rId ? 'edit' : 'add'));
+		$_ .= NLAbstractHTMLForm::BuildHidden('id', $rId);
+		$_ .= NLAbstractHTMLForm::BuildHidden('area', $this->area);
+		$_ .= NLAbstractHTMLForm::BuildHidden('action', ($rId ? 'edit' : 'add'));
 
 		$_ .= '<table class="mainform">';
 		foreach($fields as $col=>$title) {
@@ -191,10 +190,10 @@ class PXModuleAcl extends PXModule {
 		}
 		$_ .= '</table>';
 
-		$layout->Append('OUTER.CONTENT', $_);
+		$layout->append('OUTER.CONTENT', $_);
 
 		$title = ($rId == 0) ? 'Добавление нового правила' : 'Редактирование правила &#8470;'.$rId;
-		$layout->AssignTitle($title);
+		$layout->assignTitle($title);
 	}
 
 	function _getFields() {
@@ -248,13 +247,11 @@ class PXModuleAcl extends PXModule {
 	}
 
 	function _getDicts() {
-		$db =& $this->db;
-
-		$dicts = array();
+		$dicts = [];
 
 		// sgroup
-		$db->LoadDirectoriesByType($db->types['sgroup']);
-		$dicts['sgroup']     = GetColFromTableWithIndexs($db->app->directory['sgroup']->values, 'title');
+		$this->db->LoadDirectoriesByType($this->db->types['sgroup']);
+		$dicts['sgroup']     = GetColFromTableWithIndexs($this->db->app->directory['sgroup']->values, 'title');
 		$dicts['types']      = $this->_getTypes();
 		$dicts['what']       = $this->getWhatDict();
 
@@ -358,7 +355,6 @@ class PXModuleAcl extends PXModule {
 
 	protected
 	function _moveRule($rId, $direction, $sid = false) {
-		$db = $this->db;
 
 		$moving = $this->getRuleById($rId, $sid);
 		$passive = $this->getRulesByRuleAndDirection($moving, $direction, $sid);
@@ -544,7 +540,7 @@ class PXModuleAcl extends PXModule {
 				$rule = $this->db->query('SELECT count(id) as count FROM '.$this->sqlTable.' WHERE id = '.$rId);
 
 				if(!isset($rule[0]['count'])) {
-					FatalError('Какой то косяк с таблицей '.$this->sqlTable);
+					FatalError('Ошибка в таблице: '.$this->sqlTable);
 				}
 
 				if((int)$rule[0]['count'] !== 1) {

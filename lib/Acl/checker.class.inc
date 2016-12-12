@@ -1,19 +1,24 @@
 <?php
+
 class CheckerObject {
-	public static function get(&$format){
-		if($format === NULL){
+
+	/**
+	 * @param $format
+	 * @return ModuleChecker|ObjectChecker
+	 */
+	public static function get(&$format) {
+		if ($format === NULL) {
 			$format = new PXTypeDescription;
 		}
 
-		if(is_a($format, 'PXTypeDescription')) {
+		if ($format instanceof PXTypeDescription) {
 			return new ObjectChecker();
-
-		} else if(is_a($format, 'PXModuleDescription')) {
-			return new ModuleChecker();
-
-		} else {
-			FatalError("This Acl type doesn't implements!");
 		}
+
+		if ($format instanceof PXModuleDescription) {
+			return new ModuleChecker();
+		}
+
+		FatalError("This Acl type doesn't implements!");
 	}
 }
-?>

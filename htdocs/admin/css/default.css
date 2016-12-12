@@ -14,7 +14,7 @@ img.logo {
 }
 
 span.version {
-	color: #ffffff;
+	color: #C9CED6;
 	font-size: 1em;
 	display: block;
 	clear: both;
@@ -79,9 +79,10 @@ table {
 
 table.inner-layout {
 	width: 100%;
-	border-spacing: 7px;
+	border-spacing: 2px;
 	background-color: #C9CED6;
 	height: 100%;
+	padding-top: 4px;
 }
 
 table.inner-layout td {
@@ -319,7 +320,8 @@ DIV.content .tree__container {
 	position: relative;
 }
 DIV.content h2 {
-	padding: 10px 0 5px 10px;
+	margin: 0;
+	padding: 10px 0 10px 10px;
 }
 DIV.context {
 	padding: 1px;
@@ -417,16 +419,25 @@ a.button-exit, span.current-user {
 	display: block;
 	border: 1px solid #385A94;
 	padding: 5px;
-	margin: 8px;
 	behavior: url(css/button-exit.htc);
 }
 
+a.button-leave {
+	text-decoration: none;
+	color: #FFFFFF;
+	display: block;
+	border: 1px solid #385A94;
+	padding: 7px;
+	behavior: url(css/button-exit.htc);
+}
+
+
 span.current-user {
-	background: url(../i/icon/user.jpeg) 0 6px no-repeat;
 	padding-left: 20px;
 	margin-bottom: 0;
 	padding-bottom: 0;
 	font-weight: bold;
+	color: #C9CED6;
 }
 
 a.tabs {
@@ -499,6 +510,12 @@ input, select, button {
 	font-family: Verdana;
 	text-align: center;
 	margin: 20px;
+}
+
+.login-error {
+	font-weight: bold !important;
+	color: #990000 !important;
+	font-size: 12px !important;
 }
 
 .error, .error a {
@@ -1087,7 +1104,7 @@ button.add {
 	background-color: transparent;
 	background-position: 7px 50%;
 	background-repeat: no-repeat;
-	padding: 0 0 0 20px;
+	padding: 5px 5px 5px 20px;
 	margin: 0 5px 0 0;
 }
 
@@ -1147,13 +1164,11 @@ div.field-group-inline label {
 /* new tabs menu */
 
 ul.topmenu {
-	margin: 0;
 	clear: both;
 	overflow: hidden;
 	float: right;
 	list-style: none;
 	margin: 7px 0 0 0;
-	backgroud: red;
 	font: 10px Verdana, Arial, serif;
 }
 ul.topmenu li {
@@ -1165,7 +1180,6 @@ ul.topmenu li {
 	overflow: hidden;
 }
 ul.topmenu li a {
-	display: block;
 	padding: 7px 13px;
 	height: 20px;
 	color: #000;

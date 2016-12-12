@@ -101,7 +101,7 @@ class PXTypeDescription {
 		}
 
 		foreach ($domDatatypes as $domDatatype) {
-			$type  = new PXTypeDescription();
+			$type  = new static();
 
 			$type->parseTypeAttributes($domDatatype->attributes());
 
@@ -159,7 +159,7 @@ class PXTypeDescription {
 			$app->types[$type->id] = $type;
 		}
 
-		PXTypeDescription::findParents($app->types);
+		static::findParents($app->types);
 	}
 
 	static function findParents(&$types) {
@@ -178,6 +178,14 @@ class PXTypeDescription {
 	function addField(&$field) {
 		$name = $field->name;
 		$this->fields[$name] = $field;
+	}
+
+	/**
+	 * @param string $name
+	 * @return bool
+	 */
+	function hasField($name) {
+		return isset($this->fields[$name]);
 	}
 
 	function assignToGroup($field) {

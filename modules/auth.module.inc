@@ -13,7 +13,7 @@ class PXModuleAuth extends PXModule {
 			: 0;
 
 		$captchaNote = $this->app->isDevelopmentMode()
-			? '<br/><strong>(капчу можно не вводить)</strong>'
+			? 'капча не требуется'
 			: '';
 
 		$this->layout->setLoginForm(
@@ -41,14 +41,14 @@ class PXModuleAuth extends PXModule {
 			$this->user->unAuth();
 			$this->layout->assign(
 				'LOGIN.ERROR',
-				'<strong class="error">Нет доступа</strong><br/><br/>'
+				'<strong class="login-error">Нет доступа</strong>'
 			);
 
 
 		} else if ($this->request->GetAction() == 'error') {
 			$this->layout->assign(
 				'LOGIN.ERROR',
-				'<strong class="error">Ошибка авторизации</strong><br/><br/>'
+				'<strong class="login-error">Ошибка авторизации</strong>'
 			);
 		}
 	}

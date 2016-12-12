@@ -155,7 +155,17 @@ function Popup(url, width, height) {
 	if (width  == undefined) width  = 760;
 	if (height == undefined) height = 550;
 
-	g = window.open(url, '', 'width='+width+', height='+height+',toolbar=no,status=no,location=no,menubar=no,resizable=yes,scrollbars=yes');
+	var left = (window.screen.width / 2) - ((width / 2) + 10);
+	var top = (window.screen.height / 2) - ((height / 2) + 50);
+	var g = window.open(
+		url,
+		'',
+		'toolbar=no, status=no, location=no, menubar=no, resizable=yes, scrollbars=yes,'+
+		', width=' + width +
+		', height='+ height +
+		', left=' + left +
+		', top=' + top
+	);
 	g.focus();
 	false;
 }

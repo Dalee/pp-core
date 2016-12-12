@@ -12,16 +12,16 @@ use Symfony\Component\Yaml\Yaml;
 class ConsoleApplication extends Application {
 
 	public static function start() {
-		// set dispatcher
+		// initialize sbin engine
+		(new \PXEngineSbin())->start();
+
+		// set command loader
 		$dispatcher = new EventDispatcher();
 		$dispatcher->addListener(ConsoleEvents::COMMAND, function (ConsoleCommandEvent $event) {
 			$cmd = $event->getCommand();
 
-			// if command is belongs to pp/core, it should be instance of ConsoleCommand
 			if ($cmd instanceof AbstractCommand) {
-				(new \PXEngineSbin())->start();
-				$cmd
-					->setApp(\PXRegistry::getApp())
+				$cmd->setApp(\PXRegistry::getApp())
 					->setDb(\PXRegistry::getDb());
 			}
 		});

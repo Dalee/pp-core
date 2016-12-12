@@ -27,6 +27,9 @@ abstract class PXUser {
 	 */
 	protected $db;
 
+	/** @var PXObjectsACL */
+	protected $acl;
+
 	/**
 	 * @var \PXRequest
 	 */

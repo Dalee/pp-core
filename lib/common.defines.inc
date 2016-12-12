@@ -148,6 +148,7 @@ define('OBJ_FIELD_CREATED', 'sys_created');
 define('OBJ_FIELD_MODIFIED', 'sys_modified');
 define('OBJ_FIELD_META', 'sys_meta');
 define('OBJ_FIELD_OWNER', 'sys_owner');
+define('OBJ_FIELD_TITLE', 'title');
 
 define('PP_CHILDREN_FETCH_ALL',      1);
 define('PP_CHILDREN_FETCH_SELECTED', 2);
@@ -165,6 +166,7 @@ define('PX_ENGINE_ADMIN',   2);
 define('PX_ENGINE_SBIN',    3);
 
 define('DT_STRUCT', 'struct');
+define('DT_PROPERTIES', 'sys_properties');
 
 if (!defined('PP_DONT_FORCE_SUDO')) {
 	$system_user = posix_getpwnam(SYSTEM_USER);
