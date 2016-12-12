@@ -16,19 +16,13 @@ class PropertyLoader {
 	 * @internal should be used only in PXApplication context
 	 */
 	public static function getPropertyList($database) {
-		$propertyList = [];
 		$loadSql = sprintf(
 			'SELECT "name", "value" FROM %s',
 			DT_PROPERTIES
 		);
 
 		$propertyListRaw = $database->Query($loadSql);
-		foreach ($propertyListRaw as $property) {
-			$key = $property['name'];
-			$propertyList[$key] = $property['value'];
-		}
-
-		return $propertyList;
+		return array_flat($propertyListRaw, 'name', 'value');
 	}
 
 	/**
@@ -48,9 +42,11 @@ class PropertyLoader {
 	}
 
 	/**
+	 * Fetch property by id
+	 *
 	 * @param int $id
 	 * @param \PXDatabase|\NLPGSQLDatabase $database
-	 * @return array
+	 * @return array|null
 	 * @internal should be used only in properties.module.inc
 	 */
 	public static function getPropertyById($id, $database) {

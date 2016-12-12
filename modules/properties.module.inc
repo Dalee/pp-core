@@ -93,33 +93,6 @@ class PXModuleProperties extends PXModule {
 	}
 
 	/**
-	 * @param $id
-	 * @return array|null
-	 */
-	protected function getPropertyDefById($id) {
-		if (isset($this->predefinedPropertyDefList[$id])) {
-			$propertyDef = $this->predefinedPropertyDefList[$id];
-			$propertyDef['id'] = $propertyDef['name'];
-			$propertyDef['sys_uuid'] = '';
-			$propertyDef['value'] = '';
-
-		} else {
-			$propertyDef = PropertyLoader::getPropertyById($id, $this->db);
-			if ($propertyDef === null) {
-				$propertyDef = [
-					'id' => null,
-					'sys_uuid' => '',
-					'name' => '',
-					'description' => '',
-					'value' => '',
-				];
-			}
-		}
-
-		return $propertyDef;
-	}
-
-	/**
 	 * {@inheritdoc}
 	 */
 	public function adminPopup() {
@@ -127,7 +100,6 @@ class PXModuleProperties extends PXModule {
 
 		$propertyDef = $this->getPropertyDefById($id);
 		$typeDef = $this->getTypeDescription($propertyDef);
-
 		$form = new PXAdminForm(
 			[
 				'id' => $propertyDef['id'],
@@ -152,14 +124,10 @@ class PXModuleProperties extends PXModule {
 		$sid = $this->request->getSid();
 
 		$propertyDef = $this->getPropertyDefById($id);
-		if (!$this->isPowerUser() && $this->isPropertySystem($propertyDef)) {
-			FatalError("Access denied");
-		}
-
 		$typeDef = $this->getTypeDescription($propertyDef);
 		$object = $this->request->getContentObject($typeDef);
 
-		$redirect = '/admin/?area='.$this->area.'&sid='.$sid;
+		$redirect = '/admin/?area=' . $this->area . '&sid=' . $sid;
 		switch ($this->request->getAction()) {
 			case 'main':
 				$redirect = $this->saveAction($id, $object);
@@ -174,11 +142,46 @@ class PXModuleProperties extends PXModule {
 	}
 
 	/**
+	 * @param $id
+	 * @return array|null
+	 */
+	protected function getPropertyDefById($id) {
+		if (isset($this->predefinedPropertyDefList[$id])) {
+			$propertyDef = $this->predefinedPropertyDefList[$id];
+			$propertyDef['id'] = $propertyDef['name'];
+			$propertyDef['sys_uuid'] = '';
+			$propertyDef['value'] = '';
+
+		} else {
+			$propertyDef = PropertyLoader::getPropertyById($id, $this->db);
+			if ($propertyDef === null) {
+				$propertyDef = [
+					'id' => null,
+					'sys_uuid' => '',
+					'name' => '',
+					'description' => '',
+					'value' => '',
+				];
+			}
+		}
+
+		// protect from non-power users..
+		if (!$this->isPowerUser() && $this->isPropertySystem($propertyDef)) {
+			FatalError("Access denied");
+		}
+
+		return $propertyDef;
+	}
+
+	/**
+	 * Delete property by id.
+	 * Public defined properties will be displayed anyway.
+	 *
 	 * @param mixed $id
 	 * @param array $object
 	 */
 	protected function deleteAction($id, $object) {
-		$id = is_numeric($id)? $id : null;
+		$id = is_numeric($id) ? $id : null;
 		if (empty($id)) {
 			return;
 		}
@@ -188,6 +191,9 @@ class PXModuleProperties extends PXModule {
 	}
 
 	/**
+	 * Update/Insert new property to database.
+	 * Only power users can create new properties.
+	 *
 	 * @param mixed $id
 	 * @param array $object
 	 * @return string
@@ -200,7 +206,7 @@ class PXModuleProperties extends PXModule {
 
 		$fields = array_keys($object);
 		$values = array_values($object);
-		$id = is_numeric($id)? $id : null;
+		$id = is_numeric($id) ? $id : null;
 
 		if (empty($id)) {
 			$id = $this->db->InsertObject(DT_PROPERTIES, $fields, $values);
@@ -230,10 +236,6 @@ class PXModuleProperties extends PXModule {
 			$propertyDef['description'] = isset($propertyDef['description'])
 				? pp_simplexml_encode_string($propertyDef['description'])
 				: $propertyDef['name'];
-
-			$propertyDef['storagetype'] = isset($propertyDef['storagetype'])
-				? $propertyDef['storagetype']
-				: 'string';
 
 			$propertyDef['displaytype'] = isset($propertyDef['displaytype'])
 				? str_replace(',', '|', $propertyDef['displaytype'])
@@ -275,92 +277,83 @@ class PXModuleProperties extends PXModule {
 		$propertyList = PropertyLoader::getRawPropertyList($this->db);
 
 		// filter property list based on sid
-		$propertyList = array_filter(
-			$propertyList,
-			function ($propertyRaw) use (&$sid) {
-				if ($sid === 'pub') {
-					return $this->isPropertySystem($propertyRaw) === false;
-				} else {
-					return $this->isPropertySystem($propertyRaw);
-				}
+		$propertyList = array_filter($propertyList, function ($propertyRaw) use (&$sid) {
+			if ($sid === 'pub') {
+				return $this->isPropertySystem($propertyRaw) === false;
+			} else {
+				return $this->isPropertySystem($propertyRaw);
 			}
-		);
+		});
 
-		// mixin public properties defined in module definition even if they are not set
-		$propertyListDef = array_filter(
-			$this->predefinedPropertyDefList,
-			function ($propertyDef) use ($sid) {
-				if ($sid === 'pub') {
-					return $this->isPropertySystem($propertyDef) === false;
-				} else {
-					return $this->isPropertySystem($propertyDef);
-				}
+		// fetch and filter defined settings
+		$propertyListDef = array_filter($this->predefinedPropertyDefList, function ($propertyDef) use ($sid) {
+			if ($sid === 'pub') {
+				return $this->isPropertySystem($propertyDef) === false;
+			} else {
+				return $this->isPropertySystem($propertyDef);
 			}
-		);
+		});
 
-		// extract properties already present in database
-		$createdDef = array_filter(
-			$propertyList,
-			function ($propertyRaw) use (&$propertyListDef) {
-				return isset($propertyListDef[$propertyRaw['name']]);
-			}
-		);
+		// extract properties already present in database and defined in module settings
+		$createdDef = array_filter($propertyList, function ($propertyRaw) use (&$propertyListDef) {
+			return isset($propertyListDef[$propertyRaw['name']]);
+		});
 
 		$createdDef = array_flat($createdDef, 'name');
 		$missingDef = array_diff_key($propertyListDef, $createdDef);
 
-		// mixin available properties
+		// mixin defined, but not yet created properties
 		foreach ($missingDef as $propertyDef) {
 			$format = $this->getTypeDescription($propertyDef);
-			$table = [
-				[
-					'id' => $propertyDef['name'], // hack to
-					'sys_created' => null,
-					'sys_modified' => null,
-					'name' => $propertyDef['name'],
-					'description' => $propertyDef['description'],
-					'value' => null,
-				],
-			];
-
-			$this->db->_NormalizeTable($table, $format, true);
+			$table = $this->normalizeType($propertyDef, $format);
 			$propertyList = array_merge($table, $propertyList);
 		}
 
-		// transform and mixin created properties..
+		// transform and mixin defined and created properties..
 		$propertyList = array_map(
 			function ($propertyRaw) use (&$createdDef) {
 				$key = $propertyRaw['name'];
 				if (isset($createdDef[$key])) {
-					$format = $this->getTypeDescription($createdDef[$key]);
-					$table = [
-						[
-							'id' => $propertyRaw['id'],
-							'sys_created' => null,
-							'sys_modified' => null,
-							'name' => $propertyRaw['name'],
-							'description' => $propertyRaw['description'],
-							'value' => $propertyRaw['value'],
-						],
-					];
-
-					$this->db->_NormalizeTable($table, $format, true);
-					return $table[0];
+					$propertyDef = $createdDef[$key];
+					$format = $this->getTypeDescription($propertyDef);
+					$table = $this->normalizeType($propertyDef, $format);
+					return reset($table);
 				}
+
 				return $propertyRaw;
 			},
 			$propertyList
 		);
 
 		// resort all properties
-		usort(
-			$propertyList,
-			function ($left, $right) {
-				return mb_strcasecmp($left['name'], $right['name']);
-			}
-		);
+		usort($propertyList, function ($left, $right) {
+			return mb_strcasecmp($left['name'], $right['name']);
+		});
 
 		return $propertyList;
+	}
+
+	/**
+	 * Perform property normalization after database fetch.
+	 *
+	 * @param array $propertyRaw
+	 * @param PXTypeDescription $format
+	 * @return array
+	 */
+	protected function normalizeType($propertyRaw, $format) {
+		$table = [
+			[
+				'id' => isset($propertyRaw['id']) ? $propertyRaw['id'] : $propertyRaw['name'],
+				'sys_created' => null,
+				'sys_modified' => null,
+				'name' => $propertyRaw['name'],
+				'description' => $propertyRaw['description'],
+				'value' => isset($propertyRaw['value']) ? $propertyRaw['value'] : null,
+			],
+		];
+
+		$this->db->_NormalizeTable($table, $format, true);
+		return $table;
 	}
 
 	/**
@@ -369,79 +362,46 @@ class PXModuleProperties extends PXModule {
 	 */
 	protected function getTypeDescription($object) {
 		$name = isset($object['name']) ? $object['name'] : null;
+		$storageTypeDef = [];
 
+		// build predefined datatype?
 		if ($name !== null && isset($this->predefinedPropertyDefList[$name])) {
-			// build predefined datatype
 			$storageTypeDef = $this->predefinedPropertyDefList[$name];
-			$objectDef = [
-				'id' => [
-					'name' => 'id',
-					'description' => 'PK',
-					'displaytype' => 'HIDDEN',
-					'storagetype' => 'pk',
-				],
-				'sys_uuid' => [
-					'name' => 'sys_uuid',
-					'description' => '',
-					'displaytype' => 'HIDDEN',
-					'storagetype' => 'string',
-				],
-				'name' => [
-					'name' => 'name',
-					'description' => $this->app->langTree->getByPath('module_properties.table.name.rus'),
-					'displaytype' => 'TEXT',
-					'storagetype' => 'string',
-				],
-				'value' => [
-					'name' => 'value',
-					'description' => $this->app->langTree->getByPath('module_properties.table.value.rus'),
-					'displaytype' => $storageTypeDef['displaytype'],
-					'storagetype' => $storageTypeDef['storagetype'],
-				],
-				'description' => [
-					'name' => 'description',
-					'description' => $this->app->langTree->getByPath('module_properties.table.description.rus'),
-					'displaytype' => 'TEXT|500|100',
-					'storagetype' => 'string',
-				],
-			];
-
-
-		} else {
-			// build default datatype
-			$objectDef = [
-				'id' => [
-					'name' => 'id',
-					'description' => 'PK',
-					'displaytype' => 'HIDDEN',
-					'storagetype' => 'pk',
-				],
-				'sys_uuid' => [
-					'name' => 'sys_uuid',
-					'description' => '',
-					'displaytype' => 'HIDDEN',
-					'storagetype' => 'string',
-				],
-				'name' => [
-					'name' => 'name',
-					'description' => $this->app->langTree->getByPath('module_properties.table.name.rus'),
-					'displaytype' => 'TEXT',
-					'storagetype' => 'string',
-				],
-				'value' => [
-					'name' => 'value',
-					'description' => $this->app->langTree->getByPath('module_properties.table.value.rus'),
-					'displaytype' => 'TEXT',
-					'storagetype' => 'string',
-				],
-				'description' => [
-					'name' => 'description',
-					'description' => $this->app->langTree->getByPath('module_properties.table.description.rus'),
-					'displaytype' => 'TEXT|500|100',
-					'storagetype' => 'string',
-				],
-			];
 		}
+
+		$objectDef = [
+			'id' => [
+				'name' => 'id',
+				'description' => 'PK',
+				'displaytype' => 'HIDDEN',
+				'storagetype' => 'pk',
+			],
+			'sys_uuid' => [
+				'name' => 'sys_uuid',
+				'description' => '',
+				'displaytype' => 'HIDDEN',
+				'storagetype' => 'string',
+			],
+			'name' => [
+				'name' => 'name',
+				'description' => $this->app->langTree->getByPath('module_properties.table.name.rus'),
+				'displaytype' => 'TEXT',
+				'storagetype' => 'string',
+			],
+			'value' => [
+				'name' => 'value',
+				'description' => $this->app->langTree->getByPath('module_properties.table.value.rus'),
+				'displaytype' => isset($storageTypeDef['displaytype']) ? $storageTypeDef['displaytype'] : 'TEXT',
+				'storagetype' => 'string',
+			],
+			'description' => [
+				'name' => 'description',
+				'description' => $this->app->langTree->getByPath('module_properties.table.description.rus'),
+				'displaytype' => 'TEXT|500|100',
+				'storagetype' => 'string',
+			],
+		];
+
 
 		return $this->buildTypeFromArray($objectDef);
 	}
