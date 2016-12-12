@@ -1,6 +1,6 @@
 # Change log
 
-## [dev-master]
+## [v1.7.0] - 2016-12-12
 ### Изменения
 - Для каждой сущности, необходимо поле sys_uuid. Для генерации значения используется `Ramsey\Uuid\Uuid::uuid4()`
 - Добавлена подсистема для запуска команд `./vendor/bin/pp`. Список доступных команд `app/config/commands.yml`
@@ -11,7 +11,7 @@
 - `PXApplication::langTree` теперь объект `ArrayCollection`
 - Исправлен `run` на правильный `execute` в командах
 - Небольшой тюнинг интерфейса
-- Работа с файлом `properties.ini` удалена, настройки сайта хранятся в базе данных - [properties](docs/properties.module.md) 
+- Работа с файлом `properties.ini` удалена, настройки сайта хранятся в базе данных - [properties](docs/properties.module.md)
 - Рефакторинг Xml классов:
   - Убрана поддержка устаревшего расширения `domxml`
   - `PXmlAbstract` -> `PP\Lib\Xml\AbstractXml`
