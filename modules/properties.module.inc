@@ -20,7 +20,9 @@ class PXModuleProperties extends PXModule {
 	public function __construct($area, $settings, $selfDescription) {
 		parent::__construct($area, $settings, $selfDescription);
 
-		$this->parsePredefinedProperties((array)$this->settings['attribute']);
+		if (!empty($this->settings['attribute'])) {
+			$this->parsePredefinedProperties((array)$this->settings['attribute']);
+		}
 	}
 
 	/**
