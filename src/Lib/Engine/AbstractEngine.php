@@ -29,15 +29,7 @@ abstract class AbstractEngine {
 	/** @var \PXUserAuthorized */
 	protected $user = array('factory' => 'PXUserAuthorized');
 
-	/**
-	 * Should be initialized only in AbstractAdminEngine
-	 *
-	 * @var Session
-	 */
-	protected $session;
-
 	protected $initOrder = array('app', 'db', 'request', 'user', 'layout');
-
 
 	// TODO: refactor
 	function __construct() {
@@ -123,13 +115,6 @@ abstract class AbstractEngine {
 
 	public function engineClass() {
 		return PX_ENGINE_USER;
-	}
-
-	/**
-	 * @return null|Session
-	 */
-	public function getSession() {
-		return $this->session;
 	}
 
 	protected function checkArea($area) {

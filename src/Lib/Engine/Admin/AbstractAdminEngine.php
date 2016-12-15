@@ -5,7 +5,6 @@ namespace PP\Lib\Engine\Admin;
 use PP\Lib\Session\DatabaseHandler;
 use PXApplication;
 use PP\Lib\Engine\AbstractEngine;
-use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\HttpFoundation\Session\Storage\NativeSessionStorage;
 
 
@@ -17,18 +16,22 @@ abstract class AbstractAdminEngine extends AbstractEngine {
 	// info about its authorizable behaviour, like this -> (bool)$module->thisIsAdminAuthModule() ?
 	protected $authArea = 'auth';
 
+	/**
+	 * @var Session
+	 */
+	protected $session = array('factory' => 'Symfony\Component\HttpFoundation\Session\Session', 'helper' => true);
 
-	function __construct() {
-		parent::__construct();
-
-		$storage = new NativeSessionStorage([], new DatabaseHandler($this->db));
-		$this->session = new Session($storage);
-		$this->session->setName(static::SESSION_NAME);
-		$this->session->start();
-	}
+	protected $initOrder = array('app', 'db', 'request', 'session', 'user', 'layout');
 
 	public function engineClass() {
 		return PX_ENGINE_ADMIN;
+	}
+
+	protected function initSession($klass) {
+		$storage = new NativeSessionStorage([], new DatabaseHandler($this->db));
+		$this->session = new $klass($storage);
+		$this->session->setName(static::SESSION_NAME);
+		$this->session->start();
 	}
 
 	// static because PXEngineAdminJSON inherited from PXEngineJSON (stupid, but traits available only from php 5.4)

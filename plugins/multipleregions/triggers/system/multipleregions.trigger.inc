@@ -10,7 +10,7 @@ class PXTriggerSystemMultipleregions extends PXAbstractSystemTrigger {
 	 */
 	function OnAfterEngineStart($engine) {
 		$plugin = PXMultiRegions::getInstance($this->engines[$engine->engineClass()]);
-		$plugin->setSession($engine->getSession()); // prevent opening session in plugin
+		$plugin->setSession(PXRegistry::getSession()); // prevent opening session in plugin
 		$plugin->setRid();
 	}
 }
