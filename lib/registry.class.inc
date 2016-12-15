@@ -16,6 +16,7 @@ final class PXRegistry {
 	private $user;
 	private $layout;
 	private $struct;
+	private $session;
 
 	private $userRegistry;
 
@@ -65,6 +66,11 @@ final class PXRegistry {
 
 				case 'struct':
 					$registry->$varName  = self::getDB()->getObjects(self::getApp()->types['struct'], null, DB_SELECT_TREE);
+					break;
+
+				case 'session':
+					//TODO: should we initialize some default session handler here?
+					$registry->$varName = null;
 					break;
 
 				default:
@@ -126,6 +132,10 @@ final class PXRegistry {
 
 	public static function getStruct() {
 		return self::get('struct');
+	}
+
+	public static function getSession() {
+		return self::get('session');
 	}
 
 	/**
@@ -207,6 +217,10 @@ final class PXRegistry {
 
 	public static function setLayout($layout) {
 		self::_set('layout', $layout);
+	}
+
+	public static function setSession($session) {
+		self::_set('session', $session);
 	}
 }
 
