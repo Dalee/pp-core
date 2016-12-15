@@ -31,7 +31,6 @@ abstract class AbstractEngine {
 
 	protected $initOrder = array('app', 'db', 'request', 'user', 'layout');
 
-
 	// TODO: refactor
 	function __construct() {
 		$this->initApplication();
