@@ -10,12 +10,6 @@
 	 *
 	 *
 	 */
-//	define('BASEPATH',   rtrim(realpath(dirname(__FILE__).'/../../'), '/') . '/');
-//	define('PPPATH',     BASEPATH . 'libpp/');
-//	define('LOCALPATH',  BASEPATH . 'local/');
-//	define('SHAREDPATH', BASEPATH . 'site/');
-//	define('PP_DONT_FORCE_SUDO', 1);
-
 	set_time_limit(0);
 	require_once dirname(__FILE__).'/../../libpp/lib/maincommon.inc';
 	$localcommon = BASEPATH.'local/lib/maincommon.inc';
