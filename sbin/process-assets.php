@@ -10,33 +10,24 @@
 	 *
 	 *
 	 */
-	define('BASEPATH',   rtrim(realpath(dirname(__FILE__).'/../../'), '/') . '/');
-	define('PPPATH',     BASEPATH . 'libpp/');
-	define('LOCALPATH',  BASEPATH . 'local/');
-	define('SHAREDPATH', BASEPATH . 'site/');
+	set_time_limit(0);
+	require_once dirname(__FILE__).'/../../libpp/lib/maincommon.inc';
+	$localcommon = BASEPATH.'local/lib/maincommon.inc';
+	if (file_exists($localcommon)) {
+		require_once($localcommon);
+	}
+
+	require_once BASEPATH.'/libpp/vendor/CSSMin/CssMin.php';
+	require_once BASEPATH.'/libpp/lib/HTML/inlineimage.class.inc';
+
+	ini_set('display_errors', '1');
+	define('DEBUGMODE',  false);
 	define('WORKPATH',   BASEPATH . 'local/htdocs');
 	define('SOURCEPATH', BASEPATH . 'local/htdocs');
-	define('DEBUGMODE',  false);
-	define('PP_DONT_FORCE_SUDO', 1);
 
-	set_time_limit(0);
-	ini_set('memory_limit', '512M');
-	umask(0);
 
-	require_once (BASEPATH . 'libpp/lib/common.defines.inc');
-	require_once (BASEPATH . 'libpp/lib/HTML/inlineimage.class.inc');
-	require_once (BASEPATH . 'libpp/vendor/CSSMin/CssMin.php');
-	require_once (BASEPATH . 'libpp/lib/Common/functions.compatibility.inc');
-	require_once (BASEPATH . 'libpp/lib/Common/functions.string.inc');
-	require_once (BASEPATH . 'libpp/lib/Common/functions.pp.inc');
-	require_once (BASEPATH . 'libpp/lib/Common/functions.file.inc');
-	require_once (BASEPATH . 'libpp/lib/Common/functions.etc.inc');
-
-	//
-	function FatalError($a) {
-		echo 'FatalError: ' . $a . PHP_EOL;
-		die(1);
-	}
+	$engine = new PXEngineSbin();
+	$engine->start();
 
 	//
 	class DirectorySubtree {
@@ -268,7 +259,7 @@
 
 		MakeDirIfNotExists(pathinfo($destinationFile, PATHINFO_DIRNAME));
 		$tempFile = tempnam(BASEPATH . 'tmp', 'css');
-		print ("Processing {$sourceFile} thru {$tempFile} to {$destinationFile}\n");
+		print ("Processing {$sourceFile}\n");
 		$resultData = CssMin::minify(
 			file_get_contents($sourceFile),
 			array(),
@@ -301,7 +292,7 @@
 
 		MakeDirIfNotExists(pathinfo($destinationFile, PATHINFO_DIRNAME));
 		$tempFile = tempnam(BASEPATH . 'tmp', 'js');
-		print ("Processing {$sourceFile} thru {$tempFile} to {$destinationFile}\n");
+		print ("Processing {$sourceFile}\n");
 
 		if (PXHtmlAssets::getInstance()->assets_yui &&
 			($compressorBinary = FindSystemFile('yui-compressor'))) {
@@ -311,7 +302,6 @@
 			$cmd[] = $compressorBinary; // /usr/bin/yui-compressor
 			$cmd[] = $sourceFile;   // .../asset-....(js|css)
 			$cmd[] = "--type js";
-//			$cmd[] = "--charset=koi8-r";
 			$cmd[] = "-o";
 			$cmd[] = $tempFile;
 
