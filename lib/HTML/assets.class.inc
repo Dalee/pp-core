@@ -6,7 +6,7 @@
  * # list of servers ready to serve static content
  * server1 = "//fully-qualified-domain1"
  * server2 = "//fully-qualified-domain2"
- * ... 
+ * ...
  */
 if (!defined('BASEPATH')) {
 	FatalError('BASEPATH is not defined');
@@ -19,12 +19,15 @@ if (!defined('BASEPATH')) {
  * @property-read bool $inline_images Trigger for inlining images
  * @property-read int $inline_images_max_treshold Maximal size in bytes to force inlining of images
  * @property-read bool $delayed_print Lazy print of makeBundles. True by default
- * @property-read array $delayed_assets 
+ * @property-read array $delayed_assets
  */
 final class PXHTMLAssets {
 
 	// singleton, yeah
 	private static $instance;
+
+	protected $config;
+
 	public static function getInstance () {
 		self::$instance || self::$instance = new PXHTMLAssets();
 		return self::$instance;
@@ -94,33 +97,14 @@ final class PXHTMLAssets {
 	}
 
 
-
-	protected $config;
-
-	/**
-	 * loading configuration file
-	 */
-	protected function loadConfig () {
-		$file = pp_fetch_file('etc', 'properties.ini');
-		$file || FatalError("Can't open ./etc/properties.ini");
-		$this->config = parse_ini_file($file, true);
+	public function getProperty($propertyName, $defaultValue = null) {
+		return PXRegistry::getApp()->getProperty($propertyName, $defaultValue);
 	}
-
-	public function getProperty ($propertyName, $defaultValue = null) {
-		$ret = $defaultValue;
-		if (array_key_exists($propertyName, $this->config)) {
-			$ret = $this->config[$propertyName];
-		}
-		return $ret;
-	}
-
-
 
 
 	private function __construct () {
 
 		// config and final initialize
-		$this->loadConfig();
 		$this->initialize();
 	}
 
@@ -151,7 +135,7 @@ final class PXHTMLAssets {
 	/**
 	 * CDNize url
 	 * @param string $url of some resource (img, js, css, font, swf)
-	 * @param callable $filter a callback to filter  
+	 * @param callable $filter a callback to filter
 	 * @return null or full path to image
 	 */
 	public function findLocalPathByURL ($url, $filter = null) {
@@ -166,7 +150,7 @@ final class PXHTMLAssets {
 		empty($parts['host'])   && $parts['host'] = $murl['host'];
 		empty($parts['scheme']) && $parts['scheme'] = $murl['scheme'];
 
-		// don't touch external urls 
+		// don't touch external urls
 		if (!empty($parts['host'])) { //todo: || $parts['host'] not in $localDomains
 			return null;
 		}
