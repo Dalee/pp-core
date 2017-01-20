@@ -1,17 +1,21 @@
 <?php
 
+use PP\Cron\CronAbstract;
+
 /**
  * Deferred objects publication
  * Отложенная публикация объектов
  */
+class PXCronRunDeferredStatus extends CronAbstract {
 
-class PXCronRunDeferredStatus extends PXAbstractCronRun {
-
-	function __construct() {
+	public function __construct() {
 		$this->name = 'Отложенная публикация объектов';
 	}
 
-	function Run(&$app, &$db, &$tree, $matchedTime, $matchedRule) {
+	/**
+	 * {@inheritdoc}
+	 */
+	public function Run(&$app, &$db, &$tree, $matchedTime, $matchedRule) {
 
 		$this->plugin = $app->plugins['deferredstatus'];
 
@@ -59,14 +63,13 @@ SQL_WHERE
 				// stats ^.^
 				$v['status'] ? $shown[$type]++ : $hidden[$type]++;
 			}
-			PXTriggerDatabaseAdvert::finishMassADLoad();
 
 			WorkProgress(true);
 		}
 
 		if ($dropCache) {
 			$db->cacheOn();
-			$db->clearCache();
+			$db->ClearCache();
 		}
 
 		$shown = json_encode($shown);
@@ -74,7 +77,9 @@ SQL_WHERE
 		$stats = "Shown: {$shown}, hidden: {$hidden}, cacheDropped: {$dropCache}";
 		Label($stats);
 
-		return array('status' => 1, 'note' => $stats);
+		return [
+			'status' => 1,
+			'note' => $stats
+		];
 	}
-
 }

@@ -1,13 +1,13 @@
 <?php
-//sql view required:
-//CREATE VIEW log_audit_view AS SELECT "id", "ts", to_date(ts::text, 'DD.MM.YYYY'::text) as date, "level", "type", "source", "user", "ip", "description", "diff" FROM log_audit;
+
+use PP\Module\ModuleAbstract;
 
 /**
  * Класс модуля вывода Журнала Аудита.
  *
  * @author Andrey Nikolaev <na@index20.ru>
  */
-class PXModuleAuditLog extends PXModule {
+class PXModuleAuditLog extends ModuleAbstract {
 	function PXModuleAuditLog($area, $settings) {
 		parent::__construct($area, $settings);
 		if(is_callable(array($this->layout, 'setOneColumn'))){
@@ -21,4 +21,3 @@ class PXModuleAuditLog extends PXModule {
 		$audit_wrapper->init_and_render();
 	}
 }
-?>

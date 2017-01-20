@@ -1,5 +1,7 @@
 <?php
 
+use PP\Lib\Cache\ObjectCache;
+
 require_once PPLIBPATH . 'Config/Description/db.class.inc';
 
 abstract class NLAbstractSQLDatabase {
@@ -141,4 +143,3 @@ abstract class NLAbstractSQLDatabase {
 
 	}
 }
-?>

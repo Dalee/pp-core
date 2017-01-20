@@ -1,6 +1,14 @@
 <?php
 
-class PXCacheMemcached implements IPXCache {
+namespace PP\Lib\Cache\Driver;
+
+use PP\Lib\Cache\CacheInterface;
+
+/**
+ * Class Memcached
+ * @package PP\Lib\Cache\Driver
+ */
+class Memcached implements CacheInterface  {
 	private $_mcHandler;
 	private $expirationTime;
 	private $cacheNamespace;
@@ -20,16 +28,16 @@ class PXCacheMemcached implements IPXCache {
 
 	private function connect() {
 		//Avoid persistent connections from cronruns! Non-threadsafe!
-		$mcObject = new Memcached($this->cacheNamespace . getmypid()); //threadsafe cronjob protection
+		$mcObject = new \Memcached($this->cacheNamespace . getmypid()); //threadsafe cronjob protection
 
 		if (!count($mcObject->getServerList())) {
 			//Persistent connection settings must be set only once!
 			$mcObject->setOptions(
 				array(
-					Memcached::OPT_HASH => Memcached::HASH_MURMUR,
-					Memcached::OPT_BINARY_PROTOCOL => true,
-					Memcached::OPT_PREFIX_KEY => $this->cacheNamespace,
-					Memcached::OPT_TCP_NODELAY => true //for small data packets
+					\Memcached::OPT_HASH => \Memcached::HASH_MURMUR,
+					\Memcached::OPT_BINARY_PROTOCOL => true,
+					\Memcached::OPT_PREFIX_KEY => $this->cacheNamespace,
+					\Memcached::OPT_TCP_NODELAY => true //for small data packets
 				)
 			);
 
@@ -44,7 +52,7 @@ class PXCacheMemcached implements IPXCache {
 
 	function exists($key) {
 		$this->_mcHandler->get($this->key($key));
-		return $this->_mcHandler->getResultCode() !== Memcached::RES_NOTFOUND;
+		return $this->_mcHandler->getResultCode() !== \Memcached::RES_NOTFOUND;
 	}
 
 	function save($key, $data, $expTime = null){
@@ -54,7 +62,7 @@ class PXCacheMemcached implements IPXCache {
 
 	function load($key) {
 		$res = $this->_mcHandler->get($this->key($key)); // look at that: https://github.com/php-memcached-dev/php-memcached/issues/21
-		return $this->_mcHandler->getResultCode() == Memcached::RES_NOTFOUND ? null : $res;
+		return $this->_mcHandler->getResultCode() == \Memcached::RES_NOTFOUND ? null : $res;
 	}
 
 	function delete($key) {

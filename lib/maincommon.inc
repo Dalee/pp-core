@@ -44,4 +44,5 @@ require_once PPLIBPATH . 'XML/classes.inc';
 
 require_once PPLIBPATH . 'LazyLoader/blockcontent.class.inc';
 
-spl_autoload_register(array('PXAbstractPlugin', 'autoload'));
+// TODO: should be ripped off after PSR-4 switch
+spl_autoload_register(['PP\Plugin\PluginAbstract', 'autoload']);

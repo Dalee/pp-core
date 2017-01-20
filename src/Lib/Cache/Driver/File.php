@@ -1,10 +1,19 @@
 <?php
-class PXCacheFile implements IPXCache {
+
+namespace PP\Lib\Cache\Driver;
+
+use PP\Lib\Cache\CacheInterface;
+
+/**
+ * Class File
+ * @package PP\Lib\Cache\Driver
+ */
+class File implements CacheInterface {
 	protected $cache_dir;
 	protected $expire;
 	protected $orderLevel = 0;
 
-	function PXCacheFile($cacheDomain = null, $defaultExpire = 3600) {
+	public function __construct($cacheDomain = null, $defaultExpire = 3600) {
 		$this->cache_dir = CACHE_PATH.'/';
 
 		if ($cacheDomain !== null) {
@@ -209,4 +218,3 @@ class PXCacheFile implements IPXCache {
 		return time() >= (int) fread($fp, 10); // note: valid until 2038 ;)
 	}
 }
-?>

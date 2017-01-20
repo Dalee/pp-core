@@ -1,5 +1,7 @@
 <?php
 
+use PP\Lib\Cache\ObjectCache;
+
 /**
  * Базовый класс для работы с файлами
  */

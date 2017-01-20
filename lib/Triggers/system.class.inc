@@ -1,4 +1,5 @@
 <?php
+
 abstract class PXAbstractSystemTrigger extends PXAbstractTrigger {
 
 	function onAfterUserAuth($currentUser){
@@ -7,4 +8,4 @@ abstract class PXAbstractSystemTrigger extends PXAbstractTrigger {
 	function OnAfterEngineStart($currentEngine){
 	}
 }
-?>
+

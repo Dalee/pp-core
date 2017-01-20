@@ -1,5 +1,16 @@
 # Change log
 
+## [1.8-dev]
+### Unreleased
+- `lib/Cache/*` перенесена в PSR-4 `src/lib/Cache`
+	- `ObjectCache` - `PP\Lib\Cache\ObjectCache`
+	- `PXCache*` - `PP\Lib\Cache\Driver\*`
+	- `IPXCache` - `PP\Lib\Cache\CacheInterface`
+- `PXAbstractCronRun` — deprecated, использовать `PP\Cron\CronAbstract`
+- `PXCronRule` — deprecated, использовать `PP\Cron\CronRule`
+- `PXAbstractPlugin` — deprecated, использовать `PP\Plugin\PluginAbstract`
+- `charcheck` - убран из всех форм, javascript и php кода
+
 ## [v1.7.2] - 2016-12-23
 ### Багфикс релиз
 - Исправлены ошибки при отсутствующих параметрах для модуля `properties`

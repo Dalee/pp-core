@@ -53,7 +53,7 @@ function RenameFile(dir, file, href, side, outside, fileName) {
 		newName = prompt('Введите новое имя файла', file);
 
 		if(newName !== null && newName.length) {
-			window.location.href = 'action.phtml'+href+'&'+side+'dir='+dir+'&action=rename&mdir=' + dir + '&mfile=' + fileName +'&nfile=' + newName+'&side='+side+'&outside='+outside+'&charcheck=йцукен';
+			window.location.href = 'action.phtml'+href+'&'+side+'dir='+dir+'&action=rename&mdir=' + dir + '&mfile=' + fileName +'&nfile=' + newName+'&side='+side+'&outside='+outside;
 		}
 	}
 }
@@ -61,7 +61,7 @@ function RenameFile(dir, file, href, side, outside, fileName) {
 function RemoveFile(dir, file, href, side, outside, fileName) {
 	if(dir !== undefined && file != undefined) {
 		if(confirm('Вы действительно хотите удалить '+file)) {
-			window.location.href = 'action.phtml'+href+'&'+side+'dir='+dir+'&action=delete&mdir=' + dir + '&mfile=' + fileName +'&side='+side+'&outside='+outside +'&charcheck=йцукен';
+			window.location.href = 'action.phtml'+href+'&'+side+'dir='+dir+'&action=delete&mdir=' + dir + '&mfile=' + fileName +'&side='+side+'&outside='+outside;
 		}
 	}
 }

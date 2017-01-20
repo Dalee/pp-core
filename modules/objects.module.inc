@@ -1,5 +1,11 @@
 <?php
-class PXModuleObjects extends PXModule {
+
+use PP\Module\ModuleAbstract;
+
+/**
+ * Class PXModuleObjects
+ */
+class PXModuleObjects extends ModuleAbstract {
 	var $formats;
 	var $object;
 
@@ -444,14 +450,9 @@ class PXModuleObjects extends PXModule {
 			} else {
 				$filterOnWhere  = substr($filterOnWhere, 0, -4); //remove last AND or OR
 				$filterOnWhere .= ')';
-				$this->layout->SetGetVarToSave('charcheck', $this->request->GetVar('charcheck'));
 			}
 		}
 		return $filterOnWhere;
-	}
-
-	function appendCharCheck(){
-		$this->nextLocation .= '&charcheck='.urlencode('йцукен');
 	}
 
 	function appendLinksExistFlag(){
@@ -509,7 +510,6 @@ class PXModuleObjects extends PXModule {
 
 		if(count($filters = (array)$this->request->GetVar('filters', array()))){
 			$this->applyFiltersToUri($filters);
-			$this->appendCharCheck();
 		}
 		$this->appendLinksExistFlag();
 		$this->returnToId($id);

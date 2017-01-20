@@ -1,8 +1,10 @@
 <?php
 
+use PP\Module\ModuleAbstract;
+
 require_once PPLIBPATH . '/Security/blockingnumbers.class.inc';
 
-class PXModuleAuth extends PXModule {
+class PXModuleAuth extends ModuleAbstract {
 
 	function adminIndex() {
 
@@ -85,7 +87,7 @@ class PXModuleAuth extends PXModule {
 			}
 		}
 
-		return $nextLocation;
+		$this->response->redirect($nextLocation);
 	}
 
 	function userAction() {

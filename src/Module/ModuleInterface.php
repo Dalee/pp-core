@@ -1,6 +1,6 @@
 <?php
 
-namespace PP\Lib\Module;
+namespace PP\Module;
 
 interface ModuleInterface {
 

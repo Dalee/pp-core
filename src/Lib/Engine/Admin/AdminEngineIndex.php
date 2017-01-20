@@ -10,7 +10,7 @@ use PP\Lib\Html\Layout\AdminHtmlLayout;
 class AdminEngineIndex extends AbstractAdminEngine {
 
 	/** @var AdminHtmlLayout */
-	protected $layout = array('factory' => 'PP\Lib\Html\Layout\AdminHtmlLayout', 'helper' => true);
+	protected $layout = ['factory' => 'PP\Lib\Html\Layout\AdminHtmlLayout', 'helper' => true];
 	protected $menu;
 	protected $outerLayout = 'index';
 	protected $templateMainArea = 'INNER.0.0';

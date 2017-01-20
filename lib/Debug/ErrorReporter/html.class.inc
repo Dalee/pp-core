@@ -1,4 +1,7 @@
 <?php
+
+use PP\Lib\Cache\ObjectCache;
+
 class PXErrorReporterHTML extends PXErrorReporter {
 	function PXErrorReporterHTML() {
 		$this->computer = @rtrim(`hostname`);

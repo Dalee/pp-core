@@ -92,7 +92,7 @@ final class PXRegistry {
 
 	/**
 	 * @static
-	 * @return PXDatabase
+	 * @return PXDatabase|NLPGSQLDatabase
 	 */
 	public static function getDb() {
 		return self::get('db');

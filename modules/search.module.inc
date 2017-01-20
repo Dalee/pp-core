@@ -1,5 +1,8 @@
 <?php
-class PXModuleSearch extends PXModule {
+
+use PP\Module\ModuleAbstract;
+
+class PXModuleSearch extends ModuleAbstract  {
 	var $word;
 
 	function adminIndex() {
@@ -87,8 +90,6 @@ HTML;
 		foreach($checkedTypes as $k => $v){
 			$this->layout->setGetVarToSave('d[' . $k . ']', 'on');
 		}
-
-		$this->layout->setGetVarToSave('charcheck', $this->request->getVar('charcheck'));
 	}
 
 	function find(&$datatype) {

@@ -3,6 +3,7 @@
 class PXResponse {
 	var $STATUS_OK                      = '200 OK';
 	var $STATUS_MOVED                   = '301 Moved Permanently';
+	var $STATUS_FOUND                   = '302 Found';
 	var $STATUS_NOT_MODIFIED            = '304 Not Modified';
 	var $STATUS_NOT_FOUND               = '404 Not Found';
 	var $STATUS_FORBIDDEN               = '403 Forbidden';
@@ -60,6 +61,9 @@ class PXResponse {
 			)
 		);
 
+		// this is non-RFC compliant mode
+		// @see: https://github.com/guzzle/guzzle3/blob/b3f5050cb6270c7a728a0b74ac2de50a262b3e02/src/Guzzle/Http/RedirectPlugin.php#L128
+		// for explanations
 		$this->status = $this->STATUS_MOVED;
 
 		$this->addHeader('Location', $url);
@@ -233,7 +237,7 @@ class PXResponse {
 		if (!is_numeric($expire)) {
 			$expire = 0;
 		}
-		
+
 		return setcookie($name, $value, $expire, $path, $domain, $secure, $httponly);
 	}
 }

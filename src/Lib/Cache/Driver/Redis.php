@@ -1,5 +1,15 @@
 <?php
-class PXCacheRedis implements IPXCache {
+
+namespace PP\Lib\Cache\Driver;
+
+use PP\Lib\Cache\CacheInterface;
+
+/**
+ * Class PXCacheRedis
+ * @package PP\Lib\Cache\Driver
+ */
+class Redis implements CacheInterface {
+	/** @var \Redis */
 	protected $impl = null;
 	protected $host = "localhost";
 	protected $port = 6379;
@@ -9,7 +19,7 @@ class PXCacheRedis implements IPXCache {
 	public function __construct($cacheDomain = null, $defaultExpire = 3600, $connectorArgs = null) {
 		extension_loaded("redis") or FatalError(get_class($this) . " error: redis extension doesn't loaded or installed");
 
-		$this->impl = new Redis();
+		$this->impl = new \Redis();
 		$this->host = empty($connectorArgs['host']) ? $this->host : $connectorArgs['host'];
 		$this->port = empty($connectorArgs['port']) ? $this->port : intval($connectorArgs['port']);
 		$this->database = empty($connectorArgs['path']) ? $this->database : intval(ltrim($connectorArgs['path'], '/'));
@@ -20,12 +30,12 @@ class PXCacheRedis implements IPXCache {
 	private function connect() {
 		try {
 			$this->impl->connect($this->host, $this->port, 1);
-			$this->impl->setOption(Redis::OPT_SERIALIZER, Redis::SERIALIZER_PHP);
+			$this->impl->setOption(\Redis::OPT_SERIALIZER, \Redis::SERIALIZER_PHP);
 			if (!empty($this->cacheDomain)) {
-				$this->impl->setOption(Redis::OPT_PREFIX, $this->cacheDomain.':');
+				$this->impl->setOption(\Redis::OPT_PREFIX, $this->cacheDomain.':');
 			}
 			$this->impl->select($this->database);
-		} catch (Exception $e) {
+		} catch (\Exception $e) {
 			trigger_error("Can't connect to Redis: {$this->host}:{$this->port}");
 			$this->impl = null;
 		}
@@ -78,10 +88,9 @@ class PXCacheRedis implements IPXCache {
 		if(!$this->impl) return false;
 		$keys = $this->impl->keys($this->key($group, true));
 		$ok = true;
-		foreach($key as $keys) {
+		foreach($keys as $key) {
 			$ok = $this->impl->delete($key) && $ok;
 		}
 		return $ok;
 	}
 }
-?>
