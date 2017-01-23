@@ -21,6 +21,11 @@ class PXInputInput extends PXAdminWidget {
 	var $maxlength = null;
 
 	/**
+	 * @var array
+	 */
+	var $classes = [];
+
+	/**
 	 * @var string
 	 */
 	protected $placeholder = '';
@@ -55,15 +60,34 @@ class PXInputInput extends PXAdminWidget {
 	}
 
 	/**
+	 * @return array
+	 */
+	public function getClasses() {
+		return $this->classes;
+	}
+
+	/**
+	 * @param array $classes
+	 * @return PXInputInput
+	 */
+	public function setClasses(array $classes) {
+		$this->classes = $classes;
+		return $this;
+	}
+
+	/**
 	 * {@inheritdoc}
 	 */
 	public function html() {
 		$value = htmlspecialchars($this->value, ENT_COMPAT | ENT_HTML401, DEFAULT_CHARSET);
 		$maxlength = '';
 		if (!is_null($this->maxlength)) {
-			$maxlength = sprintf('maxlength="%d"', $this->maxlength);
+			$maxlength = 'maxlength=' . $this->maxlength;
 		}
 
-		return sprintf('<input type="text" placeholder="%s" value="%s" name="%s" %s %s />', $this->placeholder, $value, $this->name, $this->disable, $maxlength);
+		return sprintf(
+			'<input type="text" class="%s" placeholder="%s" value="%s" name="%s" %s %s />',
+			join(' ', $this->classes), $this->placeholder, $value, $this->name, $this->disable, $maxlength
+		);
 	}
 }
