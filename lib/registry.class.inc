@@ -3,6 +3,7 @@
 use Monolog\Registry;
 use PP\Lib\Html\Layout;
 use PP\Lib\Database\DatabaseInterface;
+use PP\Lib\Database\Driver\PostgreSqlDriver;
 
 final class PXRegistry {
 	const unknownVarMessage = "Registry - not heap. Store your %s somewhere else!";
@@ -92,7 +93,7 @@ final class PXRegistry {
 
 	/**
 	 * @static
-	 * @return PXDatabase
+	 * @return PXDatabase|PostgreSqlDriver
 	 */
 	public static function getDb() {
 		return self::get('db');

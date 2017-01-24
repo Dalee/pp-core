@@ -1,33 +1,57 @@
 <?php
+
+use PP\Properties\EnvLoader;
+use PP\Lib\Database\DatabaseException;
+use PP\Lib\Database\Driver\PostgreSqlDriver;
+
 define('ERROR_DB_CANNOTCONNECT', -1);
-define('ERROR_DB_BADQUERY',      -2);
+define('ERROR_DB_BADQUERY', -2);
 
 class NLDBDescription {
 	//REMOVE THESE STUPID FIELD DESCRIPTIONS !!!
-	private $user;
-	private $password;
+	private $user = '';
+	private $password = '';
 
-	private $dbname;
-	public  $dbtype; // FIXME
+	private $dbtype; // FIXME
+	private $dbname = '';
 	private $dbids;
 
-	private $host;
-	private $port;
+	private $host = '';
+	private $port = 0;
 
 	private $options;
 	private $tty;
 
-	public  $cache;
-	public  $aicache; // private or public? I don't know
-	public  $encoding;
+	public $cache;
+	public $aicache; // private or public? I don't know
+	private $encoding;
 
-	function __construct($config) {
-		foreach($config as $k=>$v) {
+	public function __construct($config) {
+		foreach ($config as $k => $v) {
 			$this->$k = $v;
 		}
 	}
 
-	//RESOLVE ME!
+	/**
+	 *
+	 * @return static
+	 */
+	public static function fromEnv() {
+		$config = EnvLoader::getMappedArray([
+			'DB_USER' => 'user',
+			'DB_PASSWORD' => 'password',
+			'DB_TYPE' => 'dbtype',
+			'DB_NAME' => 'dbname',
+			'DB_HOST' => 'host',
+			'DB_PORT' => 'port',
+			'DB_CACHE' => 'cache',
+			'DB_ENCODING' => 'encoding',
+		]);
+
+		return new static($config);
+	}
+
+	//TODO: remove magic constants
 	function __get($name) {
 		return (property_exists($this, $name) ? $this->$name : NULL);
 	}
@@ -37,19 +61,24 @@ class NLDBDescription {
 	}
 	//
 
-	function getDriver() {
-		$class_file = "Database/SQL/{$this->dbtype}.class.inc";
+	/**
+	 *
+	 * @return PostgreSqlDriver
+	 * @throws \PP\Lib\Database\DatabaseException
+	 */
+	public function getDriver() {
+		$db = null;
 
-		if(file_exists(BASEPATH . "/libpp/lib/" . $class_file)) {
-			require_once($class_file);
-			$class_name = "NL".strtoupper($this->dbtype)."Database";
+		switch ($this->dbtype) {
+			case PostgreSqlDriver::TYPE:
+				$db = new PostgreSqlDriver($this);
+				break;
 
-			$db = new $class_name($this);
-			return $db;
-		} else {
-			FatalError("Вы не выбрали тип базы данных");
-			FatalError("Указан некорректный тип базы данных");
+			default:
+				throw new DatabaseException("Can't find class: {$this->dbtype}");
+				break;
 		}
+
+		return $db;
 	}
 }
-?>

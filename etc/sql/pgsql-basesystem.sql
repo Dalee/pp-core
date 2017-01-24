@@ -312,3 +312,9 @@ CREATE TABLE queue_job (
 	state        VARCHAR DEFAULT 'fresh',
 	status       BOOLEAN DEFAULT true
 ) WITH OIDS;
+
+-- migrations support
+CREATE TABLE _migrations (
+	id       SERIAL PRIMARY KEY,
+	filename VARCHAR
+) WITH OIDS;

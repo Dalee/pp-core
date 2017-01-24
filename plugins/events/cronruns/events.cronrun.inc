@@ -1,20 +1,23 @@
 <?php
 
-/*
+use PP\Cron\CronAbstract;
+
+/**
  * Обработка региональных объектов
  * Удаление, добавление региона.
  */
-
-class PXCronRunEvents extends PXAbstractCronRun {
+class PXCronRunEvents extends CronAbstract {
 	var $name;
 	const SUCCESS_STATE = 'ok';
 
-	function __construct() {
+	public function __construct() {
 		$this->name = 'Обработка отложенных событий';
 	}
 
-
-	function Run($app, $db, $tree, $matchedTime, $matchedRule) {
+	/**
+	 * {@inheritdoc}
+	 */
+	public function Run($app, $db, $tree, $matchedTime, $matchedRule) {
 		$this->app = $app;
 		$db->Close();
 
@@ -65,9 +68,7 @@ class PXCronRunEvents extends PXAbstractCronRun {
 
 	function write_audit($class, $method, $event, $resultState) {
 		$logMethod = $resultState == self::SUCCESS_STATE ?  'info' : 'error';
-		$audit = PXAuditLogger::getLogger(PXRegistry::getApp(), PXRegistry::getDB());
+		$audit = PXAuditLogger::getLogger();
 		$audit->$logMethod(join('/', array($class, $method)), "events/{$event['id']}");
 	}
 }
-
-?>

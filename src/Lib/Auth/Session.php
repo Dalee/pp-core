@@ -9,7 +9,6 @@ class Session extends AuthAbstract {
 	const AUTHORIZED_USER_ID = '__auth_user_id';
 	const AUTHORIZED_USER_IP = '__auth_user_ip';
 
-
 	public function isCredentialsValid() {
 		// if no session opened, credentials are invalid
 		if (!($this->session instanceof SystemSession)) {

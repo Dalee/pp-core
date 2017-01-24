@@ -119,12 +119,8 @@ $(function() {
 
 		var join = [];
 		for (i in search_properties) {
-			if(i != 'charcheck') {
-				join.push(i + '=' + encodeURIComponent(search_properties[i]));
-			}
+			join.push(i + '=' + encodeURIComponent(search_properties[i]));
 		}
-
-		join.push('charcheck=' + encodeURIComponent('йцукен'));
 
 		window.location.search = '?' +  join.join('&');
 		return false;

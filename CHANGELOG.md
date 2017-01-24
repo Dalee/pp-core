@@ -1,5 +1,34 @@
 # Change log
 
+## [1.8.0]
+### Unreleased
+- `lib/Cache/*` перенесена в PSR-4 `src/lib/Cache`
+	- `ObjectCache` - `PP\Lib\Cache\ObjectCache`
+	- `PXCache*` - `PP\Lib\Cache\Driver\*`
+	- `IPXCache` - `PP\Lib\Cache\CacheInterface`
+- `PXAbstractCronRun` — deprecated, использовать `PP\Cron\CronAbstract`
+- `PXCronRule` — deprecated, использовать `PP\Cron\CronRule`
+- `PXAbstractPlugin` — deprecated, использовать `PP\Plugin\PluginAbstract`
+- `NLPGSQLDatabase` — deprecated, использовать `PP\Lib\Database\DatabaseSqlAbstract`
+- `charcheck` - убран из всех форм, javascript и php кода
+- Работа с файлом `database.ini` удалена, настройки подключения к базе хранятся в environment
+	- [Документация](docs/configuration.md)
+- В файле `app/config/commands.yml` больше не нужно перечислять команды из namespace `PP\`. 
+Встроенные команды `pp/core` автоматически регистрируются.
+- `sbin` - директория удалена
+- Переписаны миграции, используется `pp` интерфейс для работы с миграциями `pp:migrate:*`
+- `etc/sql/psql-basesystem.sql` теперь содержит таблицу для миграций
+- Удалено:
+	- `htdocs/js/cookie.js`
+	- `htdocs/js/forum.js`
+	- `css/ie6.css`
+	- `anticheating`
+	- устаревшие драйвера баз данных: `pgsqlcluster`, `mysql`, `mssql`, `sqlite`
+	- `vendor/CSSMin`
+	- `vendor/phpdoc`
+	- `vendor/rels`
+	- `vendor/simpletest`
+
 ## [v1.7.2] - 2016-12-23
 ### Багфикс релиз
 - Исправлены ошибки при отсутствующих параметрах для модуля `properties`

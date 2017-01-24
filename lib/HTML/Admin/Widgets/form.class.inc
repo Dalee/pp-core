@@ -196,13 +196,12 @@ class PXAdminForm extends PXAdminComplexWidget {
 		$this->leftControls();
 		$this->rightControls();
 
-		$control = join('', array(
+		$control = join('', [
 			NLAbstractHTMLForm::BuildHidden('id',         ((isset($this->object['id'])) ? $this->object['id'] : '')),
 			NLAbstractHTMLForm::BuildHidden('area',       $this->area),
 			NLAbstractHTMLForm::BuildHidden('action',     $this->action),
 			NLAbstractHTMLForm::BuildHidden('format',     $this->format->id),
-			NLAbstractHTMLForm::BuildHidden('charcheck', 'йцукен')
-		));
+		]);
 
 		$this->layout->append('OUTER.CONTENT', $control);
 	}

@@ -188,7 +188,6 @@ class PXRequest {
 	 */
 	function SetCookieVar($varName, $value = '', $expire = NULL) {
 		$response = PXRegistry::getResponse();
-		$response->SetCookie('charcheck', 'йцукен', $expire);
 		return $response->SetCookie($varName, $value, $expire);
 	}
 

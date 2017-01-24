@@ -1,5 +1,8 @@
 <?php
-class PXModuleCsvImport extends PXModule {
+
+use PP\Module\ModuleAbstract;
+
+class PXModuleCsvImport extends ModuleAbstract {
 	var $htmlEsc;
 	var $settings;
 

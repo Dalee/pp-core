@@ -1,6 +1,7 @@
 <?php
 
 namespace PP\Properties;
+use PP\Lib\Database\Driver\PostgreSqlDriver;
 
 /**
  * Class PropertyLoader
@@ -11,7 +12,7 @@ class PropertyLoader {
 	/**
 	 * Load all properties as key => value.
 	 *
-	 * @param \PXDatabase|\NLPGSQLDatabase $database
+	 * @param \PXDatabase|PostgreSqlDriver $database
 	 * @return array
 	 * @internal should be used only in PXApplication context
 	 */
@@ -28,7 +29,7 @@ class PropertyLoader {
 	/**
 	 * Load raw property list.
 	 *
-	 * @param \PXDatabase|\NLPGSQLDatabase $database
+	 * @param \PXDatabase|PostgreSqlDriver $database
 	 * @return array
 	 * @internal should be used only in properties.module.inc
 	 */
@@ -45,7 +46,7 @@ class PropertyLoader {
 	 * Fetch property by id
 	 *
 	 * @param int $id
-	 * @param \PXDatabase|\NLPGSQLDatabase $database
+	 * @param \PXDatabase|PostgreSqlDriver $database
 	 * @return array|null
 	 * @internal should be used only in properties.module.inc
 	 */

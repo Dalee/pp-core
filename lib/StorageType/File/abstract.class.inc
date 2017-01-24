@@ -1,5 +1,7 @@
 <?php
 
+use PP\Lib\Cache\ObjectCache;
+
 /**
  * Базовый класс для работы с файлами
  */
@@ -11,7 +13,12 @@ class PXStorageTypeAbstractFile extends PXStorageType {
 		$pid = getmypid(); //cronjob protection
 		if (!isset($aiCache[$pid])) {
 			$db = PXRegistry::getDb(); //FIXME: possibly unsafe DB link getter
-			$cacheType = isset($db->selfDescription->aicache) ? $db->selfDescription->aicache : 'null';
+
+			// TODO: property accessor
+			$cacheType = isset($db->getSelfDescription()->aicache)
+				? $db->getSelfDescription()->aicache
+				: 'null';
+
 			$aiCache[$pid] = ObjectCache::get($cacheType, 'ai', 24 * 60 * 60);
 		}
 

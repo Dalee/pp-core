@@ -1,12 +1,14 @@
 <?php
 
+use PP\Plugin\PluginAbstract;
+
 require_once dirname(__FILE__) . '/../additional/abstract.class.inc';
 
 class PXFiltersPluginAdditionalLoader {
-	
+
 	private static $settingsCache = null;
 	private static $classCache = array();
-	
+
 	/**
 	 * @return array of PXAdditionalFilter
 	 */
@@ -15,13 +17,13 @@ class PXFiltersPluginAdditionalLoader {
 		self::fillClassCache($formatId, $pluginFolder);
 		return self::$classCache[$formatId];
 	}
-	
+
 	private static function fillSettingsCache() {
 		if (!is_null(self::$settingsCache)) {
 			return;
 		}
 		self::$settingsCache = array();
-		$additionalFilters = PXAbstractPlugin::getParam('filters', 'additional_filters');
+		$additionalFilters = PluginAbstract::getParam('filters', 'additional_filters');
 		if ($additionalFilters) {
 			foreach (explode(',', $additionalFilters) as $f) {
 				if (!$f) {
@@ -38,7 +40,7 @@ class PXFiltersPluginAdditionalLoader {
 			}
 		}
 	}
-	
+
 	private static function fillClassCache($formatId, $pluginFolder) {
 		if (isset(self::$classCache[$formatId])) {
 			return;
@@ -59,7 +61,4 @@ class PXFiltersPluginAdditionalLoader {
 			}
 		}
 	}
-	
 }
-
-?>

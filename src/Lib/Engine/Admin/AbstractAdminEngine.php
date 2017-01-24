@@ -6,22 +6,21 @@ use PP\Lib\Session\DatabaseHandler;
 use PXApplication;
 use PP\Lib\Engine\AbstractEngine;
 use Symfony\Component\HttpFoundation\Session\Storage\NativeSessionStorage;
-
+use Symfony\Component\HttpFoundation\Session\Session;
 
 abstract class AbstractAdminEngine extends AbstractEngine {
 
 	const SESSION_NAME = 'sid';
 
-	// TODO: it is better if auth module will export
-	// info about its authorizable behaviour, like this -> (bool)$module->thisIsAdminAuthModule() ?
+	// TODO: auth module should export authorizable behaviour, like this -> (bool)$module->thisIsAdminAuthModule()
 	protected $authArea = 'auth';
 
 	/**
 	 * @var Session
 	 */
-	protected $session = array('factory' => 'Symfony\Component\HttpFoundation\Session\Session', 'helper' => true);
+	protected $session = ['factory' => 'Symfony\Component\HttpFoundation\Session\Session', 'helper' => true];
 
-	protected $initOrder = array('app', 'db', 'request', 'session', 'user', 'layout');
+	protected $initOrder = ['app', 'db', 'request', 'session', 'user', 'layout'];
 
 	public function engineClass() {
 		return PX_ENGINE_ADMIN;

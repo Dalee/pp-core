@@ -22,10 +22,6 @@ class PXTriggerDatabaseFilters extends PXAbstractDatabaseTrigger {
 
 		$layout->setGetVarToSave('filters', $filters);
 
-		if($req->isSetVar('charcheck')) {
-			$layout->setGetVarToSave('charcheck', $req->getVar('charcheck'));
-		}
-
 		if (empty($filters[$format->id])) {
 			return;
 		}

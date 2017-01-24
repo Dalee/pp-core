@@ -1,8 +1,12 @@
 <?php
 
 use Ramsey\Uuid\Uuid;
+use PP\Module\ModuleAbstract;
 
-class PXModuleAcl extends PXModule {
+/**
+ * Class PXModuleAcl
+ */
+class PXModuleAcl extends ModuleAbstract {
 	var $what;
 	var $access;
 	var $objectRule     = 'user';

@@ -3,31 +3,7 @@
 use Ramsey\Uuid\Uuid;
 use PP\Lib\Database\DatabaseInterface;
 use PP\Lib\Database\DatabaseException;
-
-/**
- * Класс работы с БД
- */
-require_once PPLIBPATH . 'Database/sqladapter.class.inc';
-
-/**Вернуть данные и таблицы в виде массива*/
-define('DB_SELECT_TABLE', 1);
-
-/**Вернуть количество строк COUNT()*/
-define('DB_SELECT_COUNT', 2);
-
-/**Вернуть данные и таблицы в виде дерева, исключая orphaned ветки */
-define('DB_SELECT_TREE',  4);
-
-/**Вернуть данные и таблицы в виде LIST*/
-define('DB_SELECT_LIST',  8);
-
-/**Вернуть данные и таблицы в виде дерева, включая orphaned ветки в корневой раздел*/
-define('DB_SELECT_FULL_TREE',  16);
-
-define('DB_SELECT_WITHOUT_EXTERNALS',  32);
-
-/**Значение не NULL*/
-define('NOT_NULL', '~~___IS_NOT_NULL___~~');
+use PP\Lib\Database\DatabaseAdapter;
 
 /**
  * Class PXDatabase
@@ -43,8 +19,9 @@ define('NOT_NULL', '~~___IS_NOT_NULL___~~');
  * @method void transactionBegin()
  * @method void transactionCommit()
  * @method void transactionRollback()
+ * @method mixed importDateTime($value)
  */
-class PXDatabase extends NLSQLDatabaseAdapter implements DatabaseInterface {
+class PXDatabase extends DatabaseAdapter implements DatabaseInterface {
 
 	/** @var PXApplication */
 	public $app;
@@ -1109,7 +1086,7 @@ class PXDatabase extends NLSQLDatabaseAdapter implements DatabaseInterface {
 				}
 			}
 
-			$dbFields[] = 'sys_modified';
+			$dbFields[] = OBJ_FIELD_MODIFIED;
 			$dbValues[] = '##now##';
 
 			$this->transactionBegin();
@@ -1175,7 +1152,8 @@ class PXDatabase extends NLSQLDatabaseAdapter implements DatabaseInterface {
 				//
 
 				$sqlUpdateRule = sprintf(
-					"sys_meta = %s",
+					"%s = %s",
+					OBJ_FIELD_META,
 					(count($sysMetaField) > 0)
 						? $this->MapData(json_encode($sysMetaField))
 						: 'NULL'
@@ -1207,7 +1185,6 @@ class PXDatabase extends NLSQLDatabaseAdapter implements DatabaseInterface {
 				OBJ_FIELD_MODIFIED,
 				OBJ_FIELD_META,
 				OBJ_FIELD_OWNER,
-				'sys_reflex_id',
 				OBJ_FIELD_ORDER,
 				OBJ_FIELD_UUID,
 				OBJ_FIELD_CHILDREN,
@@ -1913,7 +1890,7 @@ SQL;
 		$inMeta = [];
 		foreach ($table as $k=>$v) {
 
-			$isMetaPresent = !empty($v['sys_meta']);
+			$isMetaPresent = !empty($v[OBJ_FIELD_META]);
 
 			foreach ($format->fields as $fk=>$fv) {
 				if (!isset($inMeta[$fk])) { // cache results, cuz lots of rows in table
@@ -1927,19 +1904,19 @@ SQL;
 				$table[$k][$fk] = $fv->storageType->normalize($fv, $table[$k], $p);
 			}
 
-			$table[$k]['sys_created']  = $this->importDateTime($table[$k]['sys_created']);
-			$table[$k]['sys_modified'] = $this->importDateTime($table[$k]['sys_modified']);
+			$table[$k][OBJ_FIELD_CREATED] = $this->importDateTime($table[$k][OBJ_FIELD_CREATED]);
+			$table[$k][OBJ_FIELD_MODIFIED] = $this->importDateTime($table[$k][OBJ_FIELD_MODIFIED]);
 
 			if ($isMetaPresent) {
-				$sysMeta = ($table[$k]['sys_meta'] != null)
-					? json_decode($table[$k]['sys_meta'], true)
+				$sysMeta = ($table[$k][OBJ_FIELD_META] != null)
+					? json_decode($table[$k][OBJ_FIELD_META], true)
 					: [];
 
 				$sysMeta = is_array($sysMeta)
 					? $sysMeta
 					: [];
 
-				$table[$k]['sys_meta'] = $sysMeta; // нормализуем sys_meta
+				$table[$k][OBJ_FIELD_META] = $sysMeta; // нормализуем sys_meta
 
 				// загружаем сохраненные мета-поля, в случае их
 				// отсутствия (например работаем в режиме ноды кластера)
@@ -1953,7 +1930,7 @@ SQL;
 
 			if (count($format->childs)) {
 				if (!empty($table[$k][OBJ_FIELD_CHILDREN])) {
-					// TODO: replace with json_decode
+					// TODO: replace with json_decode and provide migration script
 					$table[$k][OBJ_FIELD_CHILDREN] = unserialize($table[$k][OBJ_FIELD_CHILDREN]);
 				} else {
 					$table[$k][OBJ_FIELD_CHILDREN] = [];

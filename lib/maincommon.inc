@@ -17,7 +17,6 @@ require_once PPLIBPATH . 'Request/classes.inc';
 require_once PPLIBPATH . 'Mail/message.class.inc';
 require_once PPLIBPATH . 'Mail/EventCalendar/classes.inc';
 require_once PPLIBPATH . 'Logger/nllogger.class.inc';
-require_once PPLIBPATH . 'monolog.php';
 
 require_once PPLIBPATH . 'Config/application.class.inc';
 require_once PPLIBPATH . 'Database/database.class.inc';
@@ -44,4 +43,19 @@ require_once PPLIBPATH . 'XML/classes.inc';
 
 require_once PPLIBPATH . 'LazyLoader/blockcontent.class.inc';
 
-spl_autoload_register(array('PXAbstractPlugin', 'autoload'));
+// TODO: should be ripped off after PSR-4 switch
+spl_autoload_register(['PP\Plugin\PluginAbstract', 'autoload']);
+
+// Initialize environment
+(new \PP\Properties\EnvLoader(BASEPATH))
+	->addRequired(['DB_TYPE', 'DB_NAME', 'DB_USER', 'DB_HOST'])
+	->load();
+
+// Initialize monolog
+$logger = new Monolog\Logger(LOGGER_APP);
+$logger->pushHandler(new Monolog\Handler\StreamHandler(BASEPATH . '/site/var/application.log'));
+Monolog\Registry::addLogger($logger);
+
+$logger = new Monolog\Logger(LOGGER_CRON);
+$logger->pushHandler(new Monolog\Handler\StreamHandler(BASEPATH . '/site/var/cron.log'));
+Monolog\Registry::addLogger($logger);

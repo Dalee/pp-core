@@ -1,13 +1,6 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: arkady
- * Date: 30/05/16
- * Time: 21:31
- */
 
 namespace PP\Lib\Auth;
-
 
 use Symfony\Component\HttpFoundation\Session\Session;
 
