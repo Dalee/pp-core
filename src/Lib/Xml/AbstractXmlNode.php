@@ -127,7 +127,7 @@ abstract class AbstractXmlNode implements XmlNodeInterface {
 	public function __get($name) {
 		$attr = $this->getAttribute($name);
 
-		if ($attr !== FALSE) {
+		if ($attr !== false) {
 			return $attr;
 		}
 

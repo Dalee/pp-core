@@ -54,4 +54,3 @@ class Xml {
 		return (object)array('name' => $name, 'value' => $value);
 	}
 }
-

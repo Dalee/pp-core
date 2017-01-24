@@ -2,7 +2,10 @@
 
 namespace PP\Lib\Html\Layout;
 
-
+/**
+ * Class Null
+ * @package PP\Lib\Html\Layout
+ */
 class Null implements LayoutInterface {
 
 	/**

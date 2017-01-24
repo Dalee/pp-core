@@ -55,7 +55,7 @@ class Memcached implements CacheInterface  {
 		return $this->_mcHandler->getResultCode() !== \Memcached::RES_NOTFOUND;
 	}
 
-	function save($key, $data, $expTime = null){
+	function save($key, $data, $expTime = null) {
 		$expTime = (int)$expTime;
 		$this->_mcHandler->set($this->key($key), $data, $expTime > 0 ? $expTime : $this->expirationTime);
 	}
@@ -73,16 +73,16 @@ class Memcached implements CacheInterface  {
 		$prefix = $this->key($group, true);
 		$prefLen = mb_strlen($prefix);
 		$allKeys = $this->_mcHandler->getAllKeys();
-		if(empty($allKeys)){
+		if (empty($allKeys)) {
 			return;
 		}
-		$toDelete = array();
-		foreach($allKeys as $key) {
-			if(mb_substr($key, 0, $prefLen) == $prefix){
+		$toDelete = [];
+		foreach ($allKeys as $key) {
+			if (mb_substr($key, 0, $prefLen) == $prefix) {
 				$toDelete[] = $key;
 			}
 		}
-		if(empty($toDelete)) {
+		if (empty($toDelete)) {
 			return;
 		}
 		$this->_mcHandler->deleteMulti($toDelete);
@@ -96,7 +96,7 @@ class Memcached implements CacheInterface  {
 	}
 
 	private function key($key, $glob = false) {
-		if(is_array($key)) {
+		if (is_array($key)) {
 			$keyPart   = $this->key(array_shift($key));
 			$groupPart = $this->key(array_shift($key));
 			return $groupPart . '_' . $keyPart;

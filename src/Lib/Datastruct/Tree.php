@@ -210,7 +210,7 @@ class Tree {
 
 	public function getFullPathString($id, $varName = 'pathname', $omitFirst = true) {
 		$pathArray = $this->getFullPath($id);
-		$pathString = NULL;
+		$pathString = null;
 		if (is_array($pathArray) && count($pathArray) && isset($this->leafs[$pathArray[0]]->content[$varName])) {
 			$pathString = '/';
 			foreach ($pathArray as $k => $v) {
@@ -252,8 +252,8 @@ class Tree {
 	public function getPlainTree(
 		$restrictedId,
 		$id = 0,
-		$parent = NULL,
-		$current = NULL,
+		$parent = null,
+		$current = null,
 		$level = 1,
 		$prefix = ''
 	) {
@@ -271,7 +271,7 @@ class Tree {
 		}
 
 		if ($id == 0) {
-			$t[NULL] = 'Корень';
+			$t[null] = 'Корень'; // TODO: lang
 		}
 
 		return $t;

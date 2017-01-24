@@ -35,15 +35,17 @@ class PostgreSqlDriver extends DatabaseSqlAbstract  {
 
 	function setConnectParams($dbDescription) {
 		$keys = array_keys($this->connectArray);
-		$connectString = array();
-		foreach($keys as $key) {
-			if ($dbDescription->$key !== NULL) {
-				$this->connectArray[$key] = $dbDescription->$key;
+		$connectString = [];
+
+		foreach ($keys as $key) {
+			if ($dbDescription->$key !== null) {
+				$this->connectArray[$key] = $dbDescription->$key; // TODO: refactor
 				if (!in_array($key, $this->excludeOptions)) {
-					$connectString[] = $key . '=' . $dbDescription->$key;
+					$connectString[] = $key . '=' . $dbDescription->$key; // TODO: refactor
 				}
 			}
 		}
+
 		$this->connectString = trim(implode(' ', $connectString));
 	}
 
@@ -71,7 +73,7 @@ class PostgreSqlDriver extends DatabaseSqlAbstract  {
 		}
 	}
 
-	function ModifyingQuery($query, $table=NULL, $retField=NULL, $flushCache = true, $retCount = false) {
+	function ModifyingQuery($query, $table=null, $retField=null, $flushCache = true, $retCount = false) {
 		if (!$this->connected) {
 			$this->Connect();
 		}
@@ -82,7 +84,7 @@ class PostgreSqlDriver extends DatabaseSqlAbstract  {
 			}
 
 			if ($flushCache == true) {
-				$this->cache->clear();
+				$this->cache->clear(); // TODO: refactor
 			}
 
 			if ($table && $retField) {
@@ -91,7 +93,7 @@ class PostgreSqlDriver extends DatabaseSqlAbstract  {
 				if (is_array($table) && count($table)) {
 					return $table[0][$retField];
 				} else {
-					return NULL;
+					return null;
 				}
 			} elseif ($retCount) {
 				return pg_affected_rows($res);
@@ -143,7 +145,7 @@ class PostgreSqlDriver extends DatabaseSqlAbstract  {
 
 				$lines[] = $line;
 
-			} while($row = next($data));
+			} while ($row = next($data));
 
 			if (pg_put_line($this->connection, join("\n", $lines)."\n") == false) {
 				return ERROR_DB_BADQUERY;
@@ -164,7 +166,7 @@ class PostgreSqlDriver extends DatabaseSqlAbstract  {
 		return true;
 	}
 
-	function Query($query, $donotusecache = false, $limitpair = NULL) {
+	function Query($query, $donotusecache = false, $limitpair = null) {
 		if (is_array($limitpair)) {
 			$limitstring = " LIMIT {$limitpair[0]} OFFSET {$limitpair[1]}";
 		} else {
@@ -208,7 +210,7 @@ class PostgreSqlDriver extends DatabaseSqlAbstract  {
 	}
 
 	function MapData($value) {
-		switch(true) {
+		switch (true) {
 			case is_null($value) || $value === '' :
 				return "NULL";
 			case $value === "##now##" || $value === "now()":
@@ -247,7 +249,7 @@ class PostgreSqlDriver extends DatabaseSqlAbstract  {
 	 */
 	function transactionBegin() {
 		if (!$this->insideTransaction) {
-			$this->Query('BEGIN',true);
+			$this->Query('BEGIN', true);
 			$this->insideTransaction = true;
 		} else { // emulating nested transactions
 			$savepointId = uniqid('px_');
@@ -262,7 +264,7 @@ class PostgreSqlDriver extends DatabaseSqlAbstract  {
 	 */
 	function transactionCommit() {
 		if (empty($this->transactionsStack)) {
-			$this->Query('END',true);
+			$this->Query('END', true);
 			$this->insideTransaction = false;
 		} else { // emulating nested transactions
 			$savepointId = array_pop($this->transactionsStack);
@@ -273,7 +275,7 @@ class PostgreSqlDriver extends DatabaseSqlAbstract  {
 
 	function transactionRollback() {
 		if (empty($this->transactionsStack)) {
-			$this->Query('ROLLBACK',true);
+			$this->Query('ROLLBACK', true);
 			$this->insideTransaction = false;
 		} else { // emulating nested transactions
 			$savepointId = array_pop($this->transactionsStack);
@@ -306,7 +308,7 @@ class PostgreSqlDriver extends DatabaseSqlAbstract  {
 	}
 
 	function exportDateTime($string) {
-		return $string == '00.00. 00:00:00' ? NULL : $string;
+		return $string == '00.00. 00:00:00' ? null : $string;
 	}
 
 	function importBoolean($string) {
@@ -323,15 +325,15 @@ class PostgreSqlDriver extends DatabaseSqlAbstract  {
 		}
 
 		$query = "SELECT (0 ";
-		foreach($tables as $t) {
-			list($where_clauses, $tableName) = array(array(), $t['tableName']);
+		foreach ($tables as $t) {
+			list($where_clauses, $tableName) = [[], $t['tableName']];
 
-			foreach($colValues as $c => $v) {
+			foreach ($colValues as $c => $v) {
 				$where_clauses[] = sprintf("%s = '%s'", $c, $v);
 			}
 
-			if(sizeof($exception)) {
-				foreach($exception as $c=>$v) {
+			if (sizeof($exception)) {
+				foreach ($exception as $c=>$v) {
 					$where_clauses[] = sprintf("%s != '%s'", $c, $v);
 				}
 			}
@@ -339,15 +341,15 @@ class PostgreSqlDriver extends DatabaseSqlAbstract  {
 			$query = sprintf("%s + (SELECT count(*) FROM %s WHERE %s",
 				$query, $tableName, join(" AND ", $where_clauses));
 
-			if($t['exWhere']) {
-				$query = sprintf("%s and %s", $query,  $t['exWhere']);
+			if ($t['exWhere']) {
+				$query = sprintf("%s and %s", $query, $t['exWhere']);
 			}
 
 			$query .= ")";
 		}
 		$query .= ")";
 
-		return (int)(current(current($this->Query($query, TRUE))));
+		return (int)(current(current($this->Query($query, true)))); // TODO: refactor
 	}
 
 	function getError() {
@@ -358,15 +360,15 @@ class PostgreSqlDriver extends DatabaseSqlAbstract  {
 		return count($this->query("SELECT relname FROM pg_class WHERE relname='{$tableName}'"));
 	}
 
-	function LIKE($condition, $percs){
+	function LIKE($condition, $percs) {
 		return $this->_searchMethod("ILIKE", $condition, $percs);
 	}
 
-	function inArray($arrayField, $value, $sane = false){
+	function inArray($arrayField, $value, $sane = false) {
 		return sprintf("%s @> ARRAY[%s]", $sane ? $arrayField : $this->EscapeString($arrayField), $sane ? $value : $this->EscapeString($value));
 	}
 
-	function arrayIn($arrayField, $value, $sane = false){
+	function arrayIn($arrayField, $value, $sane = false) {
 		return sprintf("%s <@ ARRAY[%s]", $sane ? $arrayField : $this->EscapeString($arrayField), $sane ? $value : $this->EscapeString($value));
 	}
 

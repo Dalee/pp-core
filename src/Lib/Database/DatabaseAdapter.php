@@ -16,6 +16,9 @@ class DatabaseAdapter {
 		$this->init($dbDescription);
 	}
 
+	/**
+	 * @param \NLDBDescription $dbDescription
+	 */
 	function init($dbDescription) {
 		$this->dbDriver = $dbDescription->getDriver();
 		$this->selfDescription = $dbDescription;
@@ -44,10 +47,10 @@ class DatabaseAdapter {
 			FatalError('Undefined method ' . $method . ' in ' . get_class($this->dbDriver));
 		}
 
-		return call_user_func_array(array($this->dbDriver, $method), $args);
+		return call_user_func_array([$this->dbDriver, $method], $args);
 	}
 
-	function query($query, $donotusecache = false, $limitpair = NULL) {
+	function query($query, $donotusecache = false, $limitpair = null) {
 		return $this->dbDriver->query($query, $donotusecache, $limitpair);
 	}
 
@@ -75,9 +78,7 @@ class DatabaseAdapter {
 		return $this->selfDescription;
 	}
 
-	function LIKE($condition, $percs = NULL) {
+	function LIKE($condition, $percs = null) {
 		return $this->dbDriver->LIKE($condition, is_null($percs) ? P_LEFT | P_RIGHT : $percs);
 	}
 }
-
-

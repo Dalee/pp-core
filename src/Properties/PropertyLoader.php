@@ -1,6 +1,7 @@
 <?php
 
 namespace PP\Properties;
+
 use PP\Lib\Database\Driver\PostgreSqlDriver;
 
 /**

@@ -27,7 +27,7 @@ class FillMetaCommand extends AbstractCommand {
 	public function execute(InputInterface $input, OutputInterface $output) {
 		$limit = 100;
 
-		foreach($this->app->types as $type) {
+		foreach ($this->app->types as $type) {
 			$needProcess = false;
 			foreach ($type->fields as $v) {
 				if (!$v->storageType->storedInDb()) {

@@ -2,7 +2,10 @@
 
 namespace PP\Lib\Engine\Admin;
 
-
+/**
+ * Class AdminEnginePopup
+ * @package PP\Lib\Engine\Admin
+ */
 class AdminEnginePopup extends AdminEngineIndex {
 
 	protected $outerLayout = 'popup';

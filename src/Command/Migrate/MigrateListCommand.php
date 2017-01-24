@@ -6,7 +6,6 @@ use PP\Lib\Command\MigrateAbstractCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-
 /**
  * Class MigrateListCommand
  * @package PP\Command
