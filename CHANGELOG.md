@@ -1,7 +1,7 @@
 # Change log
 
-## [1.8.0]
-### Unreleased
+## [1.8.0] - 2017-01-24 
+### СУБД и DotEnv релиз
 - `lib/Cache/*` перенесена в PSR-4 `src/lib/Cache`
 	- `ObjectCache` - `PP\Lib\Cache\ObjectCache`
 	- `PXCache*` - `PP\Lib\Cache\Driver\*`
