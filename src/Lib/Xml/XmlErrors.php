@@ -9,7 +9,8 @@ class XmlErrors {
 		$this->errors = [];
 	}
 
-	private function __clone() {}
+	private function __clone() {
+	}
 
 	public static function getErrors() {
 		$instance = self::getInstance();
@@ -24,7 +25,7 @@ class XmlErrors {
 	public static function getInstance() {
 		static $instance;
 
-		if(!is_object($instance)) {
+		if (!is_object($instance)) {
 			$instance = new self();
 		}
 

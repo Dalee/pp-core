@@ -18,7 +18,10 @@ use PP\Command\Migrate\MigrateListCommand;
 use PP\Command\Migrate\MigrateUpCommand;
 use PP\Command\Migrate\MigrateCreateCommand;
 
-
+/**
+ * Class ConsoleApplication
+ * @package PP
+ */
 class ConsoleApplication extends Application {
 
 	public static function start() {

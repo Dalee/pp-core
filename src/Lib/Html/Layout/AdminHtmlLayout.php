@@ -2,7 +2,10 @@
 
 namespace PP\Lib\Html\Layout;
 
-
+/**
+ * Class AdminHtmlLayout
+ * @package PP\Lib\Html\Layout
+ */
 class AdminHtmlLayout extends LayoutAbstract {
 
 	var $types;
@@ -55,7 +58,7 @@ class AdminHtmlLayout extends LayoutAbstract {
 	 * @param null|string $title
 	 * @return $this
 	 */
-	function assignTitle($title = NULL) {
+	function assignTitle($title = null) {
 		$title = ((is_null($title) || !mb_strlen(trim($title)))
 				? ''
 				: mb_strtr($title, ['<' => '&lt;', '>' => '&gt;']));
@@ -132,7 +135,7 @@ class AdminHtmlLayout extends LayoutAbstract {
 		}
 	}
 
-	function appendTable($label, $objectFormat, $table, $selected = NULL, $varToTitle = NULL, $page=1, $objectsOnPage=0, $count=0, $withLinks=TRUE, $parentPathname=NULL) {
+	function appendTable($label, $objectFormat, $table, $selected = null, $varToTitle = null, $page=1, $objectsOnPage=0, $count=0, $withLinks=true, $parentPathname=null) {
 		$htmltable = new \PXAdminTable($table, $this->types[$objectFormat], $this->getData);
 		$htmltable->setCaption($this->types[$objectFormat]->title . '(' . $count . ')');
 
@@ -144,7 +147,7 @@ class AdminHtmlLayout extends LayoutAbstract {
 
 	function appendUserTable($label, $objectFormat, $title, $table, &$userClassName, $userFuncName, $page=1, $objectsOnPage=0, $count=0) {
 		$this->Append($label, '<H2>'.$title.' ('.$count.')</H2>');
-		$html  = NULL;
+		$html  = null;
 		$page  = $page ? $page : 1; // ?
 
 		if (!count($table)) {
@@ -212,24 +215,24 @@ class AdminHtmlLayout extends LayoutAbstract {
 		parent::AssignKeyValueList($label, $list, $varName, $selected);
 	}
 
-	function assignJS($pathToScript){
+	function assignJS($pathToScript) {
 		$this->_renderScript($pathToScript, ':js', true);
 	}
 
-	function assignInlineJS($scriptBody, $uniq = true){
+	function assignInlineJS($scriptBody, $uniq = true) {
 		$this->_renderScript($scriptBody, ':inline_js', $uniq);
 	}
 
-	function assignCSS($pathToScript){
+	function assignCSS($pathToScript) {
 		$this->_renderScript($pathToScript, ':css', true);
 	}
 
-	function assignInlineCSS($scriptBody){
+	function assignInlineCSS($scriptBody) {
 		$this->_renderScript($scriptBody, ':inline_css', true);
 	}
 
-	function _renderScript($body, $template, $singleton){
-		if(!mb_strlen($body) || ($singleton && isset($this->_scripts[$hash = md5($body)]))) {
+	function _renderScript($body, $template, $singleton) {
+		if (!mb_strlen($body) || ($singleton && isset($this->_scripts[$hash = md5($body)]))) {
 			return false;
 		}
 

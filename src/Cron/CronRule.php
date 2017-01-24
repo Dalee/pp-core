@@ -29,7 +29,7 @@ class CronRule {
 		$this->match['mon'] = $this->_parse($params[3], 1, 12);
 		$this->match['wday'] = $this->_parse($params[4], 0, 7);
 
-		if (in_array(NULL, $this->match)) {
+		if (in_array(null, $this->match)) {
 			return;
 		}
 
@@ -85,17 +85,17 @@ class CronRule {
 				$step = (int)$m[2];
 
 				if ($step <= 0 || $step >= $max) {
-					return NULL;
+					return null;
 				}
 			}
 
 			if (preg_match('#^(\d+)-(\d+)$#' . REGEX_MOD, $k, $m)) {
 				if ($m[1] >= $m[2]) {
-					return NULL;
+					return null;
 				}
 
 				if ($m[1] < $min || $m[2] > $max) {
-					return NULL;
+					return null;
 				}
 
 				for ($i = $m[1]; $i <= $m[2]; $i += $step) {
@@ -110,14 +110,14 @@ class CronRule {
 
 				} else {
 					if ($m[1] < $min || $m[1] > $max) {
-						return NULL;
+						return null;
 					}
 
 					$result[$m[1]] = true;
 				}
 
 			} else {
-				return NULL;
+				return null;
 			}
 		}
 

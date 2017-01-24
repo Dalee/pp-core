@@ -14,10 +14,10 @@ class File implements CacheInterface {
 	protected $orderLevel = 0;
 
 	public function __construct($cacheDomain = null, $defaultExpire = 3600) {
-		$this->cache_dir = CACHE_PATH.'/';
+		$this->cache_dir = CACHE_PATH . '/';
 
 		if ($cacheDomain !== null) {
-			$this->cache_dir .= $cacheDomain .'/';
+			$this->cache_dir .= $cacheDomain . '/';
 		}
 
 		$this->setExpire((int)$defaultExpire);
@@ -29,7 +29,7 @@ class File implements CacheInterface {
 		return $this->cache_dir;
 	}
 
-	function setOrderLevel($level=0) {
+	function setOrderLevel($level = 0) {
 		$this->orderLevel = $level;
 	}
 
@@ -43,7 +43,7 @@ class File implements CacheInterface {
 		return file_exists($fileName);
 	}
 
-	function save($objectId, $data, $expTime = null)  {
+	function save($objectId, $data, $expTime = null) {
 		$fileName = $this->_getFilename($objectId);
 		$serialized = serialize($data);
 		$this->_doSave($fileName, $serialized, (int)$expTime);
@@ -54,7 +54,7 @@ class File implements CacheInterface {
 		return $this->_doLoad($fileName);
 	}
 
-	function increment($numberKey, $offset = 1 , $initial = 0, $expTime = null) {
+	function increment($numberKey, $offset = 1, $initial = 0, $expTime = null) {
 		$fileName = $this->_getFilename($numberKey);
 		$fp = @fopen($fileName, 'a+b');
 
@@ -62,7 +62,9 @@ class File implements CacheInterface {
 			if (flock($fp, LOCK_EX)) {
 				if (!$this->_isExpired($fp)) { // note: valid until 2038 ;)
 					$data = '';
-					while(!feof($fp)) $data .= fread($fp, 8192);
+					while (!feof($fp)) {
+						$data .= fread($fp, 8192);
+					}
 				}
 				isset($data) || $data = $initial;
 				$data += $offset;
@@ -74,8 +76,8 @@ class File implements CacheInterface {
 
 			fclose($fp);
 		}
-		if(!isset($data)) {
-			FatalError('Reading/writing file error "'.$fileName . '"');
+		if (!isset($data)) {
+			FatalError('Reading/writing file error "' . $fileName . '"');
 		}
 		return isset($data) ? $data : $initial;
 	}
@@ -85,7 +87,7 @@ class File implements CacheInterface {
 		return $this->_doLoad($fileName, 'expired');
 	}
 
-	function delete($key){
+	function delete($key) {
 		$file = $this->_getFilename($key);
 		@unlink($file);
 	}
@@ -109,37 +111,34 @@ class File implements CacheInterface {
 	}
 
 	function clear() {
-		$this->_cleanDir($this->cache_dir.'/');
+		$this->_cleanDir($this->cache_dir . '/');
 	}
 
 	function deleteGroup($gorup) {
 		$fileGlob = $this->_getFilename($gorup, true);
 		$files = glob($fileGlob, GLOB_MARK | GLOB_NOSORT);
 
-		foreach($files as $file) {
-			if(pathinfo($file, PATHINFO_BASENAME) == '.' || pathinfo($file, PATHINFO_BASENAME) == '..') {
+		foreach ($files as $file) {
+			if (pathinfo($file, PATHINFO_BASENAME) == '.' || pathinfo($file, PATHINFO_BASENAME) == '..') {
 				continue;
 			}
-			if(is_dir($file)){
-				$this->_cleanDir($file.'/');
+			if (is_dir($file)) {
+				$this->_cleanDir($file . '/');
 			} else {
 				@unlink($file);
 			}
 		}
 	}
-	/*
-	   protected:
-	*/
 
 	protected function _cleanDir($dirName) {
 		if ($handle = opendir($dirName)) {
 			while (false !== ($file = readdir($handle))) {
-				if($file == '.' || $file == '..') {
+				if ($file == '.' || $file == '..') {
 					continue;
 				}
-				$file = $dirName.$file;
-				if(is_dir($file)){
-					$this->_cleanDir($file.'/');
+				$file = $dirName . $file;
+				if (is_dir($file)) {
+					$this->_cleanDir($file . '/');
 				} else {
 					@unlink($file);
 				}
@@ -153,18 +152,18 @@ class File implements CacheInterface {
 		if (is_array($str)) {
 			$key = array_shift($str);
 			$group = array_shift($str);
-			$md5 = md5($group).md5($key);
+			$md5 = md5($group) . md5($key);
 		} else {
 			$md5 = md5($str) . ($glob ? '*' : '');
 		}
 
-		if($this->orderLevel) {
-			$prefix = explode('',$md5, $this->orderLevel + 1);
+		if ($this->orderLevel) {
+			$prefix = explode('', $md5, $this->orderLevel + 1);
 			$md5 = array_pop($prefix);
 			$prefix = join('/', $prefix) . '/';
 
-			MakeDirIfNotExists($this->cache_dir.$prefix);
-			$md5 = $prefix.$md5;
+			MakeDirIfNotExists($this->cache_dir . $prefix);
+			$md5 = $prefix . $md5;
 		}
 
 		return $this->cache_dir . $md5;
@@ -183,15 +182,19 @@ class File implements CacheInterface {
 		}
 	}
 
-	/** @return String - serialized data */
-	protected function _doLoad($fileName, $expired=false) {
+	/**
+	 * @return string - serialized data
+	 */
+	protected function _doLoad($fileName, $expired = false) {
 		$unserialized = $serialized = null;
 		$fp = @fopen($fileName, 'rb');
 
 		if ($fp !== false) {
 			if (flock($fp, LOCK_SH)) {
 				if (!$this->_isExpired($fp) || $expired) { // note: valid until 2038 ;)
-					while(!feof($fp)) $serialized .= fread($fp, 8192);
+					while (!feof($fp)) {
+						$serialized .= fread($fp, 8192);
+					}
 				}
 				flock($fp, LOCK_UN);
 			}
@@ -201,7 +204,7 @@ class File implements CacheInterface {
 		//avoiding error on: unserialize(serialize(false))
 		if ($serialized === 'b:0;') {
 			$unserialized = false;
-		} elseif ($serialized !== NULL) {
+		} elseif ($serialized !== null) {
 			if (($tmp = @unserialize($serialized)) !== false) {
 				$unserialized = $tmp;
 			}
@@ -215,6 +218,6 @@ class File implements CacheInterface {
 	}
 
 	protected function _isExpired($fp) {
-		return time() >= (int) fread($fp, 10); // note: valid until 2038 ;)
+		return time() >= (int)fread($fp, 10); // note: valid until 2038 ;)
 	}
 }

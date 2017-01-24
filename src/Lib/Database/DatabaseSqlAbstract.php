@@ -35,13 +35,13 @@ class DatabaseSqlAbstract {
 		$this->cache = ObjectCache::get($cacheType, 'database');
 	}
 
-	function modifyingQuery($query, $table = NULL, $retField = NULL, $flushCache = true, $retCount = false) {
+	function modifyingQuery($query, $table = null, $retField = null, $flushCache = true, $retCount = false) {
 	}
 
 	function modifyingCopy($tableName, $cols, $data) {
 	}
 
-	function query($query, $donotusecache = false, $limitpair = NULL) {
+	function query($query, $donotusecache = false, $limitpair = null) {
 	}
 
 	function insertObject($table, $fields, $values) {
@@ -90,7 +90,7 @@ class DatabaseSqlAbstract {
 	function vacuumTable($tableName) {
 	}
 
-	function tableExists($tableName) { /* E_STRICT */
+	function tableExists($tableName) {
 		return true;
 	}
 

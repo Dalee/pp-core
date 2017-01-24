@@ -12,9 +12,6 @@ class EnvLoader {
 
 	const TYPE_NOT_EMPTY = 0; // default
 
-	/** @var Dotenv */
-	protected $dotenv;
-
 	/** @var string[] */
 	protected $errors;
 
@@ -24,13 +21,33 @@ class EnvLoader {
 	/** @var bool */
 	protected $valid;
 
-	public function __construct($path, $file = '.env') {
-		$this->dotenv = new Dotenv($path, $file);
-		$this->errors = [];
+	/** @var string */
+	protected $path;
 
+	/** @var string */
+	protected $file;
+
+	/**
+	 * EnvLoader constructor.
+	 *
+	 * @param string $path
+	 * @param string $file
+	 */
+	public function __construct($path, $file = '.env') {
+		$this->path = $path;
+		$this->file = $file;
+
+		$this->errors = [];
 		$this->required = [];
 	}
 
+	/**
+	 * Add key or list of keys to be required in environment,
+	 * otherwise, exception will be raised.
+	 *
+	 * @param string|string[] $key
+	 * @return $this
+	 */
 	public function addRequired($key) {
 		if (!is_array($key)) {
 			$key = [$key];
@@ -43,10 +60,19 @@ class EnvLoader {
 		return $this;
 	}
 
+	/**
+	 * Load environment variables
+	 *
+	 * @throws EnvLoaderException
+	 */
 	public function load() {
-		$this->dotenv->load();
-		$this->validate();
+		$envFile = join(DIRECTORY_SEPARATOR, [rtrim($this->path, DIRECTORY_SEPARATOR), $this->file]);
+		if (file_exists($envFile)) {
+			$dotenv = new Dotenv($this->path, $this->file);
+			$dotenv->overload();
+		}
 
+		$this->validate();
 		if (!$this->valid) {
 			throw new EnvLoaderException(join(', ', $this->errors));
 		}
@@ -79,6 +105,9 @@ class EnvLoader {
 		return $result;
 	}
 
+	/**
+	 * Just validation loop
+	 */
 	protected function validate() {
 		$validationResult = true;
 
@@ -93,6 +122,10 @@ class EnvLoader {
 		$this->valid = $validationResult;
 	}
 
+	/**
+	 * @param string $key
+	 * @return bool
+	 */
 	protected function isNotEmpty($key) {
 		$res = (isset($_ENV[$key])) && (strlen($_ENV[$key]) > 0);
 

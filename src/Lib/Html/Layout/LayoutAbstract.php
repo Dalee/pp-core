@@ -191,7 +191,7 @@ abstract class LayoutAbstract implements LayoutInterface {
 			$table[$hk] = array();
 
 			foreach ($widthArray as $wk => $width) {
-				$table[$hk][$wk] = array($width, $height, NULL, NULL);
+				$table[$hk][$wk] = array($width, $height, null, null);
 			}
 		}
 
@@ -422,7 +422,7 @@ abstract class LayoutAbstract implements LayoutInterface {
 		return $this->html;
 	}
 
-	function flush($charset = NULL) {
+	function flush($charset = null) {
 		$result = $this->html();
 		$response = \PXResponse::getInstance();
 		$response->send($result);
