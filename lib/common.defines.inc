@@ -19,11 +19,12 @@ if (!defined('BASEPATH')) {
 }
 
 // Объявляем PPPATH, LOCALPATH, SHAREDPATH
-defined('PPPATH')     || define('PPPATH',     BASEPATH . 'libpp' . DIRECTORY_SEPARATOR);
-defined('PPLIBPATH')  || define('PPLIBPATH',  PPPATH   . 'lib' . DIRECTORY_SEPARATOR);
-defined('LOCALPATH')  || define('LOCALPATH',  BASEPATH . 'local' . DIRECTORY_SEPARATOR);
-defined('SHAREDPATH') || define('SHAREDPATH', BASEPATH . 'site' . DIRECTORY_SEPARATOR);
-defined('APPPATH')    || define('APPPATH',    BASEPATH . 'app' . DIRECTORY_SEPARATOR);
+define('PPCOREPATH', realpath(__DIR__ . '/../') . DIRECTORY_SEPARATOR);
+define('PPPATH', realpath(__DIR__ . '/../') . DIRECTORY_SEPARATOR);
+define('PPLIBPATH', PPPATH . 'lib' . DIRECTORY_SEPARATOR);
+define('LOCALPATH', BASEPATH . 'local' . DIRECTORY_SEPARATOR);
+define('SHAREDPATH', BASEPATH . 'site' . DIRECTORY_SEPARATOR);
+define('APPPATH', BASEPATH . 'app' . DIRECTORY_SEPARATOR);
 
 //
 if (isset($_SERVER['HTTP_X_REWRITE_URL'])) {
@@ -42,16 +43,16 @@ if (isset($_SERVER['HTTP_X_REWRITE_URL'])) {
 }
 
 // расширяем корневые каталоги для подключаемых файлов - только, нахуа?
-$includePath = array(
-	BASEPATH.'/libpp/lib/',
-	BASEPATH.'/local/lib/',
+$includePath = [
+	PPLIBPATH,
+	LOCALPATH . '/lib/',
 	BASEPATH,
 	'.',
-	BASEPATH.'/libpp/vendor',
-	BASEPATH.'/libpp/vendor/PEAR',
+	PPCOREPATH . '/vendor',
+	PPCOREPATH . '/vendor/PEAR',
 	get_include_path(),
 	'/usr/local/lib/php/'
-);
+];
 set_include_path(implode(PATH_SEPARATOR, $includePath));
 
 /*
@@ -62,12 +63,12 @@ set_include_path(implode(PATH_SEPARATOR, $includePath));
  *
  */
 $system_user = 'nobody';
-$env         = 'unknown';
+$env = 'unknown';
 
-if (file_exists(BASEPATH.'/site/etc/php.ini')) {
-	$ini_params = parse_ini_file(BASEPATH.'/site/etc/php.ini');
+if (file_exists(SHAREDPATH . '/etc/php.ini')) {
+	$ini_params = parse_ini_file(SHAREDPATH . '/etc/php.ini');
 
-	foreach ($ini_params as $key=>$param) {
+	foreach ($ini_params as $key => $param) {
 		ini_set($key, $param);
 	}
 
@@ -91,20 +92,20 @@ define('DEBUG', true);
 define('ENV_DEVELOPER', 'DEVELOPER');
 
 // charset based defines
-define('CHARSET_KOI8R',              'koi8-r');
-define('CHARSET_WINDOWS',            'windows-1251');
-define('CHARSET_ISO',                'iso-8859-5');
-define('CHARSET_LATIN1',             'iso-8859-1');
-define('CHARSET_ANSI',               'cp866');
-define('CHARSET_DOS',                CHARSET_ANSI);
-define('CHARSET_MAC',                'mac-cyrillic');
-define('CHARSET_UTF8',               'utf-8');
-define('CHARSET_UCS2BE',             'ucs-2be');
-define('CHARSET_UTF16BE',            'utf-16be');
+define('CHARSET_KOI8R', 'koi8-r');
+define('CHARSET_WINDOWS', 'windows-1251');
+define('CHARSET_ISO', 'iso-8859-5');
+define('CHARSET_LATIN1', 'iso-8859-1');
+define('CHARSET_ANSI', 'cp866');
+define('CHARSET_DOS', CHARSET_ANSI);
+define('CHARSET_MAC', 'mac-cyrillic');
+define('CHARSET_UTF8', 'utf-8');
+define('CHARSET_UCS2BE', 'ucs-2be');
+define('CHARSET_UTF16BE', 'utf-16be');
 
-define('DEFAULT_CHARSET',            CHARSET_UTF8);
-define('DEFAULT_LOCALE',             json_encode(array('Russian_Russia.UTF-8', 'ru_RU.UTF-8', 'UTF-8')));
-define('REGEX_MOD',                  'u'); // UTF-8 mod for regexp
+define('DEFAULT_CHARSET', CHARSET_UTF8);
+define('DEFAULT_LOCALE', json_encode(array('Russian_Russia.UTF-8', 'ru_RU.UTF-8', 'UTF-8')));
+define('REGEX_MOD', 'u'); // UTF-8 mod for regexp
 
 if (setlocale(LC_ALL, json_decode(DEFAULT_LOCALE)) === false) {
 	die(sprintf('Unable to set setlocale: %s', DEFAULT_LOCALE));
@@ -118,17 +119,17 @@ if (function_exists('mb_internal_encoding')) {
 
 // разрешенные форматы изображений
 define('ENUM_ALLOWED_IMAGETYPES', serialize(array(
-	'image/gif'   => 'gif',
-	'image/jpeg'  => 'jpg',
+	'image/gif' => 'gif',
+	'image/jpeg' => 'jpg',
 	'image/pjpeg' => 'jpg',
-	'image/png'   => 'png',
+	'image/png' => 'png',
 	'image/x-png' => 'png'
 )));
 
 
 // разрешенные форматы флешей
 define('ENUM_ALLOWED_FLASHTYPES', serialize(array(
-	'application/x-shockwave-flash'   => 'swf'
+	'application/x-shockwave-flash' => 'swf'
 )));
 
 
@@ -138,6 +139,26 @@ define('ENUM_ALLOWED_PATHNAMES', serialize(array(
 	'htm',
 	'wml',
 )));
+
+/**Вернуть данные и таблицы в виде массива*/
+define('DB_SELECT_TABLE', 1);
+
+/**Вернуть количество строк COUNT()*/
+define('DB_SELECT_COUNT', 2);
+
+/**Вернуть данные и таблицы в виде дерева, исключая orphaned ветки */
+define('DB_SELECT_TREE', 4);
+
+/**Вернуть данные и таблицы в виде LIST*/
+define('DB_SELECT_LIST', 8);
+
+/**Вернуть данные и таблицы в виде дерева, включая orphaned ветки в корневой раздел*/
+define('DB_SELECT_FULL_TREE', 16);
+
+define('DB_SELECT_WITHOUT_EXTERNALS', 32);
+
+/**Значение не NULL*/
+define('NOT_NULL', '~~___IS_NOT_NULL___~~');
 
 define('OBJ_FIELD_ID', 'id');
 define('OBJ_FIELD_CHILDREN', 'allowed');
@@ -150,20 +171,20 @@ define('OBJ_FIELD_META', 'sys_meta');
 define('OBJ_FIELD_OWNER', 'sys_owner');
 define('OBJ_FIELD_TITLE', 'title');
 
-define('PP_CHILDREN_FETCH_ALL',      1);
+define('PP_CHILDREN_FETCH_ALL', 1);
 define('PP_CHILDREN_FETCH_SELECTED', 2);
-define('PP_CHILDREN_FETCH_NONE',     3);
-define('PP_CHILDREN_FETCH_PAGED',    4);
+define('PP_CHILDREN_FETCH_NONE', 3);
+define('PP_CHILDREN_FETCH_PAGED', 4);
 
-define('DEFAULT_CHILDREN_PER_PAGE',  20);
+define('DEFAULT_CHILDREN_PER_PAGE', 20);
 
-define('P_LEFT',  1);
+define('P_LEFT', 1);
 define('P_RIGHT', 2);
 
 
-define('PX_ENGINE_USER',    1);
-define('PX_ENGINE_ADMIN',   2);
-define('PX_ENGINE_SBIN',    3);
+define('PX_ENGINE_USER', 1);
+define('PX_ENGINE_ADMIN', 2);
+define('PX_ENGINE_SBIN', 3);
 
 define('DT_STRUCT', 'struct');
 define('DT_PROPERTIES', 'sys_properties');
@@ -184,9 +205,9 @@ if (!defined('PP_DONT_FORCE_SUDO')) {
 			break;
 
 		default:
-			die("This script must be runned as " . SYSTEM_USER . " (uid ".$system_user['uid'].") or root. \nNow it runned as ".posix_getlogin()."(uid ".posix_getuid().")\n");
+			die("This script must be runned as " . SYSTEM_USER . " (uid " . $system_user['uid'] . ") or root. \nNow it runned as " . posix_getlogin() . "(uid " . posix_getuid() . ")\n");
 	}
 }
 
-define('HTDOCS_PATH', BASEPATH.'/site/htdocs');
-define('CACHE_PATH', BASEPATH.'/tmp/cache.'.strval(PHP_VERSION_ID).'.'.strtolower(DEFAULT_CHARSET));
+define('HTDOCS_PATH', BASEPATH . '/site/htdocs');
+define('CACHE_PATH', BASEPATH . '/tmp/cache.' . strval(PHP_VERSION_ID) . '.' . strtolower(DEFAULT_CHARSET));

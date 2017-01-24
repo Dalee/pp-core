@@ -1,5 +1,9 @@
 <?php
+
+use PP\Lib\Database\Driver\PostgreSqlDriver;
+
 abstract class PXAbstractDatabaseTrigger extends PXAbstractTrigger {
+
 	//All ObBefore* triggers MUST return TRUE, otherwise object will not be added/modifyed/deleted !
 	//It can be used for additional content checks in order to forbid addition/modification/deletion of object.
 	function OnBeforeAddObject(&$db, &$objId, &$format, &$object, &$dbFields, &$dbValues) {
@@ -7,7 +11,7 @@ abstract class PXAbstractDatabaseTrigger extends PXAbstractTrigger {
 	}
 
 	/**
-	 * @param PXDatabase|NLPGSQLDatabase $db
+	 * @param PXDatabase|PostgreSqlDriver $db
 	 * @param int $objId
 	 * @param PXTypeDescription $format
 	 * @param array $object
@@ -22,7 +26,7 @@ abstract class PXAbstractDatabaseTrigger extends PXAbstractTrigger {
 	}
 
 	/**
-	 * @param PXDatabase|NLPGSQLDatabase $db
+	 * @param PXDatabase|PostgreSqlDriver $db
 	 * @param int $objId
 	 * @param PXTypeDescription $format
 	 * @param array $object
@@ -85,4 +89,3 @@ abstract class PXAbstractDatabaseTrigger extends PXAbstractTrigger {
 	}
 }
 
-?>

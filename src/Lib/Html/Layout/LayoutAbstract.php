@@ -13,18 +13,20 @@ require_once PPLIBPATH . 'Common/functions.string.inc';
 abstract class LayoutAbstract implements LayoutInterface {
 
 	private $html = '';
-	private $labels = array();
+	private $labels = [];
+
+	/** @var array */
+	protected $template_dirs;
 
 	public $getData;
 	public $outerLayout;
 
 	public function __construct() {
-		$this->getData = array();
-
-		$this->template_dirs = array(
-			BASEPATH . 'local/templates/admin/',
-			BASEPATH . 'libpp/templates/admin/'
-		);
+		$this->getData = [];
+		$this->template_dirs = [
+			LOCALPATH . '/templates/admin/',
+			PPCOREPATH . '/templates/admin/'
+		];
 	}
 
 	/**

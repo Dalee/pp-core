@@ -2,14 +2,18 @@
 
 namespace PP\Lib\Command;
 
-use Symfony\Component\Console\Command\Command;
+use PP\Lib\Database\Driver\PostgreSqlDriver;
 
-abstract class AbstractCommand extends Command {
+/**
+ * Class AbstractCommand
+ * @package PP\Lib\Command
+ */
+abstract class AbstractCommand extends AbstractBasicCommand {
 
 	/** @var \PXApplication */
 	protected $app;
 
-	/** @var \PXDatabase|\NLPGSQLDatabase */
+	/** @var \PXDatabase|PostgreSqlDriver */
 	protected $db;
 
 	/**

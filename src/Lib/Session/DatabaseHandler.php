@@ -2,16 +2,15 @@
 
 namespace PP\Lib\Session;
 
+use PP\Lib\Database\Driver\PostgreSqlDriver;
 use PXDatabase;
-use NLPGSQLDatabase;
-
 use Symfony\Component\HttpFoundation\Session\Storage\Handler\NullSessionHandler;
 
 class DatabaseHandler extends NullSessionHandler {
 
 	const SESSION_TABLE = 'admin_session';
 
-	/** @var PXDatabase|NLPGSQLDatabase */
+	/** @var PXDatabase|PostgreSqlDriver */
 	protected $db;
 	protected $gcCalled;
 

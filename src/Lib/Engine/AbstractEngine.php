@@ -2,9 +2,9 @@
 
 namespace PP\Lib\Engine;
 
+use PP\Lib\Database\Driver\PostgreSqlDriver;
 use PXApplication;
 use PP\Lib\Html\Layout\LayoutInterface;
-use Symfony\Component\HttpFoundation\Session\Session;
 
 abstract class AbstractEngine {
 
@@ -20,7 +20,7 @@ abstract class AbstractEngine {
 	/** @var \PXRequest */
 	protected $request = array('factory' => 'PXRequest');
 
-	/** @var \PXDatabase|\NLPGSQLDatabase */
+	/** @var \PXDatabase|PostgreSqlDriver */
 	protected $db = array('factory' => 'PXDatabase', 'helper' => true);
 
 	/** @var LayoutInterface */

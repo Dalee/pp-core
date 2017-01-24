@@ -1,10 +1,13 @@
 <?php
 
+use PP\Lib\Database\Driver\PostgreSqlDriver;
+
 class PXObjectsACL {
+
 	/** @var boolean */
 	var $ruleclEnabled;
 
-	/** @var PXDatabase|NLPGSQLDatabase */
+	/** @var PXDatabase|PostgreSqlDriver */
 	var $db;
 
 	/** @var PXUser|PXUserAuthorized */
@@ -15,8 +18,9 @@ class PXObjectsACL {
 
 	/**
 	 * PXObjectsACL constructor.
-	 * @param PXDatabase|NLPGSQLDatabase $db
-	 * @param PXUser|PXUserAuthorized $user
+	 *
+	 * @param PXDatabase $db
+	 * @param PXUser $user
 	 */
 	function __construct(&$db, &$user) {
 		$this->db =& $db;

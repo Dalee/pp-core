@@ -2,6 +2,8 @@
 
 namespace PP\Cron;
 
+use PP\Lib\Database\Driver\PostgreSqlDriver;
+
 /**
  * Class CronAbstract
  * @package PP\Cron
@@ -16,7 +18,7 @@ abstract class CronAbstract {
 
 	/**
 	 * @param \PXApplication $app
-	 * @param \PXDatabase|\NLPGSQLDatabase $db
+	 * @param \PXDatabase|PostgreSqlDriver $db
 	 * @param \PXTreeObjects $tree
 	 * @param int $matchedTime
 	 * @param \PXCronRule $matchedRule

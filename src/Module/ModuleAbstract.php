@@ -2,7 +2,12 @@
 
 namespace PP\Module;
 
+use PP\Lib\Database\Driver\PostgreSqlDriver;
 
+/**
+ * Class ModuleAbstract
+ * @package PP\Module
+ */
 abstract class ModuleAbstract implements ModuleInterface {
 	var $area;
 	var $settings;
@@ -14,7 +19,7 @@ abstract class ModuleAbstract implements ModuleInterface {
 	var $app;
 
 	/**
-	 * @var \PXDatabase|\NLPGSQLDatabase
+	 * @var \PXDatabase|PostgreSqlDriver
 	 */
 	var $db;
 

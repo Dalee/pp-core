@@ -5,6 +5,7 @@ use PP\Lib\ArrayCollection;
 use PP\Lib\Config\Description\InitializableDescriptionInterface;
 use PP\Lib\Xml\Xml;
 use PP\Properties\PropertyLoader;
+use PP\Properties\EnvLoader;
 
 require_once PPLIBPATH . 'Config/Description/db.class.inc';
 
@@ -158,7 +159,7 @@ class PXApplication {
 		// should be refactored, in order to use ENV variables,
 		// so database.ini should be optional, BUT,
 		// either environment variable should be set or database.ini present.
-		$this->fillDBDescription($this->findConfigFile('database.ini'));
+		$this->fillDBDescription();
 		$this->fillTriggers($this->findConfigFile('triggers.xml', false));
 		$this->fillPlugins($this->findConfigFile('plugins.xml', false));
 		$this->fillModules($this->findConfigFile('modules.xml'));
@@ -194,18 +195,12 @@ class PXApplication {
 	}
 
 	/**
-	 * Заполняет массив коннекторов к базам данных.
+	 * Создает описание подключения к базе данных
 	 * @see NLDBDescription, $dbDescription
 	 *
-	 * @param string $file
 	 */
-	private function fillDBDescription($file) {
-		$result = self::parseIniFile($file);
-
-		$this->dbDescription = [];
-		foreach ($result as $k => $v) {
-			$this->dbDescription[$k] = new NLDBDescription($v);
-		}
+	private function fillDBDescription() {
+		$this->dbDescription = ['database' => NLDBDescription::fromEnv()];
 	}
 
 	/**
@@ -390,7 +385,7 @@ class PXApplication {
 	/**
 	 * Load properties from database.
 	 *
-	 * @param \NLPGSQLDatabase|PXDatabase $database
+	 * @param PXDatabase $database
 	 */
 	public function loadProperties(PXDatabase $database) {
 		$propertyList = PropertyLoader::getPropertyList($database);
