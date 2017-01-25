@@ -72,7 +72,10 @@ PHP;
 			$full[] = $fileName->getBasename();
 		}
 
-		return array_diff($full, $applied);
+		$finalResult = array_diff($full, $applied);
+		sort($finalResult);
+
+		return $finalResult;
 	}
 
 	/**
