@@ -24,11 +24,14 @@ class ObjectCache {
 		$cacheClass = '';
 
 		switch (true) {
-			case ($cache === "1" || $cache === 'file'):
+			case $cache === '1':
+			case $cache === 'file':
 				$cacheClass = 'PP\Lib\Cache\Driver\File';
 				break;
 
-			case empty($cache):
+			case $cache === '':
+			case $cache === 'null':
+			case $cache === null:
 				$cacheClass = 'PP\Lib\Cache\Driver\Null';
 				break;
 
