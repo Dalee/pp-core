@@ -17,7 +17,7 @@ class FillMetaCommand extends AbstractCommand {
 	 */
 	protected function configure() {
 		$this
-			->setName('db:fill-meta')
+			->setName('db:fill:meta')
 			->setDescription('Fill all empty sys_meta field');
 	}
 

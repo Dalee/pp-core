@@ -16,7 +16,7 @@ class FillUuidCommand extends AbstractCommand {
 	 */
 	protected function configure() {
 		$this
-			->setName('db:fill-uuid')
+			->setName('db:fill:uuid')
 			->setDescription('Fill all empty sys_uuid fields')
 			->setHelp('Process concrete datatype, search for empty sys_uuid field and fill it')
 			->addArgument('datatype', InputArgument::OPTIONAL, 'Datatype name: struct, html, etc..');

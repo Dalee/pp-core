@@ -21,7 +21,7 @@ class SetPropertyCommand extends AbstractCommand {
 	 */
 	protected function configure() {
 		$this
-			->setName('db:set-property')
+			->setName('db:property:set')
 			->setDescription('Set application property')
 			->setHelp('Set property')
 			->addArgument('key', InputArgument::REQUIRED, 'property name')

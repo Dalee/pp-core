@@ -28,7 +28,7 @@ class GetPropertyCommand extends AbstractCommand {
 	 */
 	protected function configure() {
 		$this
-			->setName('db:get-property')
+			->setName('db:property:get')
 			->setDescription('Get application property')
 			->setHelp('Get property')
 			->addArgument('key', InputArgument::REQUIRED, 'property name');

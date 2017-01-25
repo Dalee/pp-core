@@ -1,7 +1,7 @@
 # Change log
 
 ## [1.8.1] Unreleased
-### Правки после интеграции с Unite v1
+### Правки после интеграции с Unite (багфикс v1)
 - Багфикс в ObjectCache
 - `PXContentObjectsInterface` перенесен в `PP\Lib\Objects\ContentObjectsInterface`
 - Сортировка списка миграций перед выполнением
@@ -9,6 +9,11 @@
 - Исправлена ошибка обязательного наличия файла `.env`
 - Добавлена команда `pp db:get-property`
 - Добавлен новый класс `AbstractBasicCommand` для команд которые не требуют доступа к App/Db
+- Переименованы команды pp/core:
+	- `pp db:get-property` - `pp db:property:get`
+	- `pp db:set-property` - `pp db:property:set`
+	- `pp db:fill-meta` - `pp db:fill:meta`
+	- `pp db:fill-uuid` - `pp db:fill:uuid`
 
 ## [1.8.0] - 2017-01-24 
 ### СУБД и DotEnv релиз
