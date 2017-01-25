@@ -51,7 +51,10 @@ class MigrateUpCommand extends MigrateAbstractCommand  {
 
 				// applying sql
 				foreach ($sqlList as $sql) {
-					$this->dbDriver->ModifyingQuery($sql);
+					$result = $this->dbDriver->ModifyingQuery($sql);
+					if ($result === ERROR_DB_BADQUERY || $result === ERROR_DB_CANNOTCONNECT) {
+						throw new \Exception("Migration failed: ${fileName}");
+					}
 				}
 
 				$output->writeln("<info>${fileName}</info> migrated successfully");
