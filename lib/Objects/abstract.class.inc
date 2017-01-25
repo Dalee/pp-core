@@ -49,4 +49,3 @@ abstract class PXContentObjects extends ArrayObject implements ContentObjectsInt
 		}
 	}
 }
-?>

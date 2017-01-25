@@ -91,4 +91,3 @@ class PXObjects extends PXContentObjects {
 		}
 	}
 }
-?>

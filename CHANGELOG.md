@@ -6,6 +6,7 @@
 - `PXContentObjectsInterface` перенесен в `PP\Lib\Objects\ContentObjectsInterface`
 - Сортировка списка миграций перед выполнением
 - Убраны ссылки на `PXAbstractPlugin`
+- Исправлена ошибка обязательного наличия файла `.env`
 
 ## [1.8.0] - 2017-01-24 
 ### СУБД и DotEnv релиз
