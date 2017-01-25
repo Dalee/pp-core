@@ -2,6 +2,7 @@
 
 namespace PP;
 
+use PP\Command\GetPropertyCommand;
 use PP\Lib\Command\AbstractCommand;
 use PP\Lib\Command\MigrateAbstractCommand;
 use Symfony\Component\Console\Application;
@@ -60,6 +61,7 @@ class ConsoleApplication extends Application {
 	 */
 	protected function registerCoreCommands() {
 		$this->add(new CronCommand());
+		$this->add(new GetPropertyCommand());
 		$this->add(new SetPropertyCommand());
 		$this->add(new FillMetaCommand());
 		$this->add(new FillUuidCommand());
