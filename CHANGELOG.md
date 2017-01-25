@@ -1,6 +1,6 @@
 # Change log
 
-## [1.8.1] Unreleased
+## [1.8.1] - 2017-01-25
 ### Правки после интеграции с Unite (багфикс v1)
 - Багфикс в ObjectCache
 - `PXContentObjectsInterface` перенесен в `PP\Lib\Objects\ContentObjectsInterface`
