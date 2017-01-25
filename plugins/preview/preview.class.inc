@@ -1,6 +1,8 @@
 <?php
 
-class PXPluginPreview extends PXAbstractPlugin {
+use PP\Plugin\PluginAbstract;
+
+class PXPluginPreview extends PluginAbstract {
 	const MODULE_NAME = 'adminpreview';
 	const PREVIEW_ACL_TYPE = 'admin_preview';
 	const ENABLE_PREVIEW_FLAG = 'admin_preview';
@@ -12,5 +14,3 @@ class PXPluginPreview extends PXAbstractPlugin {
 		$this->loadOnlyInAdmin('decorators.php');
 	}
 }
-
-?>

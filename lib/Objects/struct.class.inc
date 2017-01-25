@@ -1,4 +1,7 @@
-<?php 
+<?php
+
+use PP\Lib\Objects\ContentObjectsInterface;
+
 /* TODO: move this code to NLLeaf */
 class PXStructLeaf implements Iterator {
 	private $data, $struct;
@@ -13,7 +16,7 @@ class PXStructLeaf implements Iterator {
 			return call_user_func_array(array($this->data, $name), $arguments);
 
 		} else {
-			$trace = pxtrace();
+			$trace = PXTrace(); // TODO: refactor
 			FatalError('Call to undefined method '.__CLASS__.'::'.$name.'() in '.$trace[1]['file'].' on line '.$trace[1]['line']);
 		}
 	}
@@ -130,14 +133,14 @@ class PXStructLeaf404 extends PXStructLeaf {
 	}
 }
 
-class PXTreeObjects implements PXContentObjectsInterface, ArrayAccess, Iterator {
+class PXTreeObjects implements ContentObjectsInterface, ArrayAccess, Iterator {
 	public $format;
 	public $tree; //FIXME: really public ? Has some direct calls from PXStructLeaf.
 
 	public $pathId = array();
 	public $rootId = -1;
 	public $currentId;
-	
+
 	private $leafsCache = array();
 	private $treeIsLoaded = false;
 
@@ -161,18 +164,18 @@ class PXTreeObjects implements PXContentObjectsInterface, ArrayAccess, Iterator 
 				$conds['root'] = array($this->rootId !== -1, $this->rootId);
 			case 'current':
 				$conds['current'] = array($this->hasCurrent(), $this->currentId);
-				
+
 				if($conds[$key][0]) {
 					return $this->getLeaf($this->tree->leafs[$conds[$key][1]]);
 				}
-				
+
 				return new PXStructLeaf404();
 			default:
 				if(isset($this->tree->$key)) {
 					return $this->tree->$key;
 				}
 		}
-		
+
 		return null;
 	}
 
@@ -212,9 +215,9 @@ class PXTreeObjects implements PXContentObjectsInterface, ArrayAccess, Iterator 
 		if(!$this->hasCurrent()) {
 			return false;
 		}
-		
+
 		$this->tree->leafs[$this->currentId]->content['type'] = $type;
-		
+
 		return true;
 	}
 
@@ -328,7 +331,7 @@ class PXTreeObjects implements PXContentObjectsInterface, ArrayAccess, Iterator 
 	}
 
 	function current() {
-		return $this->getLeaf($this->tree->leafs[$this->key()]); 
+		return $this->getLeaf($this->tree->leafs[$this->key()]);
 	}
 
 	function key() {

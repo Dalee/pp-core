@@ -1,15 +1,8 @@
 <?php
-interface PXContentObjectsInterface {
-	function hasCurrent();
-	function getCurrent();
-	function getAllowedChilds();
-	function hasType($type);
-	function getCurrentType();
-	function getLinks();
-//	function findCurrent($urlPath); FIXME!!!
-}
 
-abstract class PXContentObjects extends ArrayObject implements PXContentObjectsInterface {
+use PP\Lib\Objects\ContentObjectsInterface;
+
+abstract class PXContentObjects extends ArrayObject implements ContentObjectsInterface {
 	protected $data, $links, $linkedObjs; //FIXME
 	protected $currentId, $currentType;
 

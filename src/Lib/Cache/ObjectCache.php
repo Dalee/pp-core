@@ -13,7 +13,7 @@ class ObjectCache {
 	 * Cache definition can contains extra args string for concrete engine after its name@
 	 * Now cache definition is URL scheme base, with backward compatibility
 	 *
-	 * @param $cache
+	 * @param string $cache
 	 * @param null $cacheDomain
 	 * @param int $defaultExpire
 	 * @return CacheInterface

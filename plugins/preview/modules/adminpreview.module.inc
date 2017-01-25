@@ -1,6 +1,8 @@
 <?php
 
-class PXModuleAdminPreview extends PXModule {
+use PP\Module\ModuleAbstract;
+
+class PXModuleAdminPreview extends ModuleAbstract {
 	function adminIndex() {
 		$response = PXResponse::getInstance();
 		$response->dontCache();

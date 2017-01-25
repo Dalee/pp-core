@@ -1,6 +1,7 @@
 <?php
 
 use PP\Lib\Engine\AbstractEngine;
+use PP\Module\ModuleAbstract;
 
 class PXEngineJSON extends AbstractEngine {
 	protected $result;
@@ -21,7 +22,11 @@ class PXEngineJSON extends AbstractEngine {
 		exit;
 	}
 
-	function getJson(\PXModule $module) {
+	/**
+	 * @param ModuleAbstract $module
+	 * @return mixed
+	 */
+	function getJson($module) {
 		return $module->userJson();
 	}
 

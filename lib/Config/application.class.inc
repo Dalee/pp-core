@@ -5,7 +5,7 @@ use PP\Lib\ArrayCollection;
 use PP\Lib\Config\Description\InitializableDescriptionInterface;
 use PP\Lib\Xml\Xml;
 use PP\Properties\PropertyLoader;
-use PP\Properties\EnvLoader;
+use PP\Module\ModuleAbstract;
 
 require_once PPLIBPATH . 'Config/Description/db.class.inc';
 
@@ -233,7 +233,7 @@ class PXApplication {
 	/**
 	 * Возвращает модуль по его имени с проверкой доступа к нему.
 	 *
-	 * @return PXModule модуль
+	 * @return ModuleAbstract модуль
 	 */
 	public function getAvailableModule($module_name) {
 		return isset($this->modules[$module_name]) && PXRegistry::getUser()->can('admin', $this->modules[$module_name]) ? $this->modules[$module_name] : null;

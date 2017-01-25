@@ -1,5 +1,8 @@
 <?php
-class PXPluginMultiRegions extends PXAbstractPlugin {
+
+use PP\Plugin\PluginAbstract;
+
+class PXPluginMultiRegions extends PluginAbstract {
 
 	function initialize($app) {
 		$this->load("lib/staticregion.class.inc");

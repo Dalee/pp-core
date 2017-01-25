@@ -1,5 +1,12 @@
 # Change log
 
+## [1.8.1] Unreleased
+### Правки после интеграции с Unite v1
+- Багфикс в ObjectCache
+- `PXContentObjectsInterface` перенесен в `PP\Lib\Objects\ContentObjectsInterface`
+- Сортировка списка миграций перед выполнением
+- Убраны ссылки на `PXAbstractPlugin`
+
 ## [1.8.0] - 2017-01-24 
 ### СУБД и DotEnv релиз
 - `lib/Cache/*` перенесена в PSR-4 `src/lib/Cache`

@@ -21,7 +21,7 @@ abstract class CronAbstract {
 	 * @param \PXDatabase|PostgreSqlDriver $db
 	 * @param \PXTreeObjects $tree
 	 * @param int $matchedTime
-	 * @param \PXCronRule $matchedRule
+	 * @param CronRule $matchedRule
 	 *
 	 * @return array
 	 */
