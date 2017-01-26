@@ -17,6 +17,10 @@ final class PXRegistry {
 	private $user;
 	private $layout;
 	private $struct;
+
+	/**
+	 * @var null|\Symfony\Component\HttpFoundation\Session\SessionInterface
+	 */
 	private $session;
 
 	private $userRegistry;
@@ -135,6 +139,9 @@ final class PXRegistry {
 		return self::get('struct');
 	}
 
+	/**
+	 * @return null|\Symfony\Component\HttpFoundation\Session\SessionInterface
+	 */
 	public static function getSession() {
 		return self::get('session');
 	}

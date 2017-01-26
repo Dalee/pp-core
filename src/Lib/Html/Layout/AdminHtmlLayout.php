@@ -9,29 +9,28 @@ namespace PP\Lib\Html\Layout;
 class AdminHtmlLayout extends LayoutAbstract {
 
 	var $types;
-	var $_scripts = array();
+	var $_scripts = [];
 
 
 	//TODO: there must be right places in <HEAD> for this
-	var $_scriptsTemplates  = array(
-		':css' => array(
+	var $_scriptsTemplates  = [
+		':css' => [
 			':area'  => 'OUTER.FORMBEGIN',
 			':proto' => '<link rel="stylesheet" href="%s" type="text/css" />'
-		),
-		':js'  => array(
+		],
+		':js'  => [
 			':area'  => 'OUTER.FORMEND',
 			':proto' => '<script src="%s" type="text/javascript"></script>'
-		),
-		':inline_js'  => array(
+		],
+		':inline_js'  => [
 			':area'  => 'OUTER.FORMEND',
 			':proto' => "<script type=\"text/javascript\">\n%s\n</script>"
-		),
-		':inline_css'  => array(
+		],
+		':inline_css'  => [
 			':area'  => 'OUTER.FORMBEGIN',
 			':proto' => "<style type=\"text/css\">\n%s\n</style>"
-		)
-
-	);
+		]
+	];
 
 	public function __construct($outerLayout, $types) {
 		parent::__construct();
@@ -52,6 +51,26 @@ class AdminHtmlLayout extends LayoutAbstract {
 			: '';
 
 		$this->assign('OUTER.VERSION', $version);
+	}
+
+	/**
+	 * Retrieves all flash messages from session, makes html and
+	 * assigns it to layout.
+	 */
+	public function assignFlashes() {
+		$htmlFlashes = '';
+		$session = \PXRegistry::getSession();
+
+		foreach ($session->getFlashBag()->all() as $type => $messages) {
+			foreach ($messages as $message) {
+				$htmlFlashes .= sprintf(
+					'<div class="flash flash_%s"><a class="flash_close" href="#">×</a>%s</div>',
+					$type, $message
+				);
+			}
+		}
+
+		$this->assign('FLASHES', $htmlFlashes);
 	}
 
 	/**
@@ -116,12 +135,12 @@ class AdminHtmlLayout extends LayoutAbstract {
 	function appendContextMenu($label, $selectedSid, $allowedFormats) {
 		// store formats and labels for each parent
 		// some times there are same parents so we can share context menus
-		static $stored = array();
+		static $stored = [];
 		if (!isset($stored[$selectedSid])) {
-			$stored[$selectedSid] = array(
-				'labels'  => array(),
-				'formats' => array()
-			);
+			$stored[$selectedSid] = [
+				'labels'  => [],
+				'formats' => []
+			];
 		}
 
 		// append to label
@@ -156,11 +175,11 @@ class AdminHtmlLayout extends LayoutAbstract {
 			return;
 		}
 
-		$html .= call_user_func(array($userClassName, $userFuncName), 'header');
+		$html .= call_user_func([$userClassName, $userFuncName], 'header');
 		foreach ($table as $rowPos=>$row) {
-			$html .= call_user_func(array($userClassName, $userFuncName), 'row', $row);
+			$html .= call_user_func([$userClassName, $userFuncName], 'row', $row);
 		}
-		$html .= call_user_func(array($userClassName, $userFuncName), 'footer');
+		$html .= call_user_func([$userClassName, $userFuncName], 'footer');
 
 		if ($count > $objectsOnPage && $objectsOnPage > 0) {
 			$html .= '<DIV style="padding: 2px;">';

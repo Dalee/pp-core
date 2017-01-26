@@ -773,6 +773,15 @@ $(function() {
 		}
 		return false;
 	});
+
+	$('.flash_close').on('click', function (e) {
+		e.preventDefault();
+
+		var flashMessage = $(this).closest('.flash');
+		if (flashMessage.length > 0) {
+			flashMessage.fadeOut();
+		}
+	});
 });
 
 function ShowHideFilter(container){
