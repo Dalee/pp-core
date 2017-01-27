@@ -7,3 +7,7 @@ Work-in-progress. Don't be shy, add new articles.
 ## Модули
 
 [Настройки сайта](properties.module.md)
+
+## Сессии
+
+[Уведомления](session/flashes.md)
