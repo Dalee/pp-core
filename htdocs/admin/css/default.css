@@ -1389,3 +1389,42 @@ form.simpleform select {
 .objects .shown {
 	color: #000;
 }
+
+.flash {
+	font-size: 13px;
+	padding: 5px 0 5px 10px;
+}
+
+.flash_error {
+	color: #a94442;
+	background-color: #f2dede;
+	border-color: #ebccd1;
+}
+
+.flash_warn {
+	color: #8a6d3b;
+	background-color: #fcf8e3;
+	border-color: #faebcc;
+}
+
+.flash_info {
+	color: #31708f;
+	background-color: #d9edf7;
+	border-color: #bce8f1;
+}
+
+.flash_success {
+	background-color: #dff0d8;
+	border-color: #d6e9c6;
+	color: #3c763d;
+}
+
+.flash_close {
+	position: relative;
+	right: 5px;
+	color: inherit;
+	float: right;
+	text-decoration: none;
+	font-size: 18px;
+	line-height: 15px;
+}

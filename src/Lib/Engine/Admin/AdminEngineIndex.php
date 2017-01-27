@@ -46,6 +46,7 @@ class AdminEngineIndex extends AbstractAdminEngine {
 	}
 
 	function fillLayout() {
+		$this->layout->assignFlashes();
 		$this->layout->setLogoutForm('?area=exit');
 		$this->layout->setMenu($this->menu, $this->area, 'area', false);
 

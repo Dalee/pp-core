@@ -17,6 +17,7 @@ class AdminEnginePopup extends AdminEngineIndex {
 	}
 
 	function fillLayout($area = null) {
+		$this->layout->assignFlashes();
 		$this->layout->setGetVarToSave('area', $this->area);
 	}
 
