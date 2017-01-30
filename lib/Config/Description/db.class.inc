@@ -53,7 +53,15 @@ class NLDBDescription {
 
 	//TODO: remove magic constants
 	function __get($name) {
-		return (property_exists($this, $name) ? $this->$name : NULL);
+		$val = null;
+		if (property_exists($this, $name)) {
+			$val = $this->$name;
+			if (empty($val)) {
+				$val = null;
+			}
+		}
+
+		return $val;
 	}
 
 	function __set($name, $value) {
