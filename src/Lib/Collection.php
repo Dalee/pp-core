@@ -71,6 +71,13 @@ class Collection implements Countable, IteratorAggregate {
 	}
 
 	/**
+	 * @return mixed
+	 */
+	public function last() {
+		return end($this->elements);
+	}
+
+	/**
 	 * @return ArrayIterator
 	 */
 	public function getIterator() {
