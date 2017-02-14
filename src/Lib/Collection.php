@@ -6,12 +6,13 @@ use Closure;
 use Countable;
 use IteratorAggregate;
 use ArrayIterator;
+use JsonSerializable;
 
 /**
  * Class Collection
  * @package PP\Lib
  */
-class Collection implements Countable, IteratorAggregate {
+class Collection implements Countable, IteratorAggregate, JsonSerializable {
 
 	/**
 	 * @var array
@@ -128,6 +129,13 @@ class Collection implements Countable, IteratorAggregate {
 		$this->set(null, $value);
 
 		return $this;
+	}
+
+	/**
+	 * @inheritdoc
+	 */
+	public function jsonSerialize() {
+		return $this->toArray();
 	}
 
 }
