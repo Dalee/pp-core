@@ -18,4 +18,14 @@ class CollectionTest extends AbstractUnitTest {
 		$this->assertEquals('third', $last);
 	}
 
+	public function testJsonSerializeEqualsToArray() {
+		$collection = new Collection();
+		$collection->push(1)->push(2);
+
+		$this->assertJsonStringEqualsJsonString(
+			json_encode($collection->toArray()),
+			json_encode($collection)
+		);
+	}
+
 }

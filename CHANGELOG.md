@@ -2,6 +2,7 @@
 
 ## [1.8.3] - UNRELEASED
 - Добавлен метод `Collection::last`
+- Реализован интерфейс `JsonSerializable` у класса `Collection`
 
 ## [1.8.2] - 2017-01-30
 ### Правки после интеграции с Product Catalog 
