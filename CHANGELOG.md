@@ -30,7 +30,7 @@
 	- `ObjectCache` - `PP\Lib\Cache\ObjectCache`
 	- `PXCache*` - `PP\Lib\Cache\Driver\*`
 	- `IPXCache` - `PP\Lib\Cache\CacheInterface`
-- `PXAbstractCronRun` — deprecated, использовать `PP\Cron\CronAbstract`
+- `PXAbstractCronRun` — deprecated, использовать `PP\Cron\AbstractCron`
 - `PXCronRule` — deprecated, использовать `PP\Cron\CronRule`
 - `PXAbstractPlugin` — deprecated, использовать `PP\Plugin\PluginAbstract`
 - `NLPGSQLDatabase` — deprecated, использовать `PP\Lib\Database\DatabaseSqlAbstract`

@@ -5,10 +5,10 @@ namespace PP\Cron;
 use PP\Lib\Database\Driver\PostgreSqlDriver;
 
 /**
- * Class CronAbstract
+ * Class AbstractCron
  * @package PP\Cron
  */
-abstract class CronAbstract {
+abstract class AbstractCron {
 
 	/**
 	 * TODO: should be protected

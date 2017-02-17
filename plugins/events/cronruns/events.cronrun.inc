@@ -1,12 +1,12 @@
 <?php
 
-use PP\Cron\CronAbstract;
+use PP\Cron\AbstractCron;
 
 /**
  * Обработка региональных объектов
  * Удаление, добавление региона.
  */
-class PXCronRunEvents extends CronAbstract {
+class PXCronRunEvents extends AbstractCron {
 	var $name;
 	const SUCCESS_STATE = 'ok';
 
