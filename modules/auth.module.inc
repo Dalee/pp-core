@@ -1,10 +1,10 @@
 <?php
 
-use PP\Module\ModuleAbstract;
+use PP\Module\AbstractModule;
 
 require_once PPLIBPATH . '/Security/blockingnumbers.class.inc';
 
-class PXModuleAuth extends ModuleAbstract {
+class PXModuleAuth extends AbstractModule {
 
 	function adminIndex() {
 

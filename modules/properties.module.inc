@@ -1,6 +1,6 @@
 <?php
 
-use PP\Module\ModuleAbstract;
+use PP\Module\AbstractModule;
 use PP\Properties\PropertyLoader;
 use Ramsey\Uuid\Uuid;
 use PP\Lib\Xml\SimpleXmlNode;
@@ -10,7 +10,7 @@ use PP\Lib\Xml\SimpleXmlNode;
  *
  * Class PXModuleProperties
  */
-class PXModuleProperties extends ModuleAbstract {
+class PXModuleProperties extends AbstractModule {
 
 	/** @var array */
 	protected $predefinedPropertyDefList = [];

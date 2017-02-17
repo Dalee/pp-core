@@ -1,11 +1,11 @@
 <?php
 
-use PP\Module\ModuleAbstract;
+use PP\Module\AbstractModule;
 
 /**
  * Class PXModuleObjects
  */
-class PXModuleObjects extends ModuleAbstract {
+class PXModuleObjects extends AbstractModule {
 	var $formats;
 	var $object;
 

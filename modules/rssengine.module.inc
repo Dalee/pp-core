@@ -1,8 +1,8 @@
 <?php
 
-use PP\Module\ModuleAbstract;
+use PP\Module\AbstractModule;
 
-class PXModuleRSSEngine extends ModuleAbstract {
+class PXModuleRSSEngine extends AbstractModule {
 	function __construct($area, $settings) {
 		parent::__construct($area, $settings);
 

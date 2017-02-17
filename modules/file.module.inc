@@ -1,11 +1,11 @@
 <?php
 
-use PP\Module\ModuleAbstract;
+use PP\Module\AbstractModule;
 
 require_once PPLIBPATH . 'Filesys/listing.class.inc';
 require_once PPLIBPATH . 'HTML/filelisting.class.inc';
 
-class PXModuleFile extends ModuleAbstract {
+class PXModuleFile extends AbstractModule {
 	var $settings;
 	var $area;
 

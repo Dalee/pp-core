@@ -1,8 +1,8 @@
 <?php
 
-use PP\Module\ModuleAbstract;
+use PP\Module\AbstractModule;
 
-class PXModuleMultiopsMasschange extends ModuleAbstract {
+class PXModuleMultiopsMasschange extends AbstractModule {
 
 	private $helper;
 
