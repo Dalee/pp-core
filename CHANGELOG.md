@@ -1,6 +1,6 @@
 # Change log
 
-## [1.8.3] - UNRELEASED
+## [1.8.3] - 2017-02-17
 - Добавлен метод `Collection::last`
 - Реализован интерфейс `JsonSerializable` у класса `Collection`
 
