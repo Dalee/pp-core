@@ -5,10 +5,10 @@ namespace PP\Module;
 use PP\Lib\Database\Driver\PostgreSqlDriver;
 
 /**
- * Class ModuleAbstract
+ * Class AbstractModule
  * @package PP\Module
  */
-abstract class ModuleAbstract implements ModuleInterface {
+abstract class AbstractModule implements ModuleInterface {
 	var $area;
 	var $settings;
 	protected $__selfDescription;

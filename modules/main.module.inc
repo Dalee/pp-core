@@ -1,12 +1,12 @@
 <?php
 
-use PP\Module\ModuleAbstract;
+use PP\Module\AbstractModule;
 use PP\Lib\Html\Layout\AdminHtmlLayout;
 
 /**
  * Class PXModuleMain
  */
-class PXModuleMain extends ModuleAbstract {
+class PXModuleMain extends AbstractModule {
 	private $rootFormatId;
 	private $objectsLoadMode;
 

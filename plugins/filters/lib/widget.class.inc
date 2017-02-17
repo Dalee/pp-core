@@ -3,7 +3,7 @@
 require_once dirname(__FILE__) . '/additional_loader.class.inc';
 
 use PP\Lib\Html\Layout\LayoutAbstract;
-use PP\Plugin\PluginAbstract;
+use PP\Plugin\AbstractPlugin;
 
 class PXFiltersAdminWidget extends PXAdminWidget {
 	protected $pluginFolder;
@@ -25,7 +25,7 @@ class PXFiltersAdminWidget extends PXAdminWidget {
 	}
 
 	public /* override */ function html() {
-		$ignoredTypes = array_map('trim', explode(',', PluginAbstract::getParam('filters', 'ignore')));
+		$ignoredTypes = array_map('trim', explode(',', AbstractPlugin::getParam('filters', 'ignore')));
 		if (empty($this->dtype) || in_array($this->dtype->id, $ignoredTypes)) {
 			return '';
 		}
@@ -205,7 +205,7 @@ class PXOnPageAdminWidget extends PXAdminWidget {
 	//HARD
 	function onPageControll() {
 		// list on page: 10,30,50,100
-		$this->onPageValues = explode(',', PluginAbstract::getParam('filters', 'on_page'));
+		$this->onPageValues = explode(',', AbstractPlugin::getParam('filters', 'on_page'));
 
 		$req     = PXRegistry::getRequest();
 		$param   = PXAdminPager::getPerPageParamByFormatId($this->parentWidget->getPagerName());

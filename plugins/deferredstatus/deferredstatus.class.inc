@@ -1,8 +1,8 @@
 <?php
 
-use PP\Plugin\PluginAbstract;
+use PP\Plugin\AbstractPlugin;
 
-class PXPluginDeferredStatus extends PluginAbstract {
+class PXPluginDeferredStatus extends AbstractPlugin {
 
 	function initialize ($app) {
 		$this->load('lib/deferredstatus_helper.class.inc');

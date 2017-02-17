@@ -1,13 +1,13 @@
 <?php
 
-use PP\Module\ModuleAbstract;
+use PP\Module\AbstractModule;
 
 /**
- * Once all modules will be switched to extends ModuleAbstract
+ * Once all modules will be switched to extends AbstractModule
  * This file should be removed.
  *
  * Class PXModule
- * @deprecated Please use PP\Module\ModuleAbstract
+ * @deprecated Please use PP\Module\AbstractModule
  */
-abstract class PXModule extends ModuleAbstract {
+abstract class PXModule extends AbstractModule {
 }

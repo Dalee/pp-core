@@ -1,8 +1,8 @@
 <?php
 
-use PP\Cron\CronAbstract;
+use PP\Cron\AbstractCron;
 
-class PXCronRunNull extends CronAbstract {
+class PXCronRunNull extends AbstractCron {
 	public $name;
 
 	public function __construct() {

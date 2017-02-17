@@ -1,8 +1,8 @@
 <?php
 
-use PP\Plugin\PluginAbstract;
+use PP\Plugin\AbstractPlugin;
 
-class PXPluginPreview extends PluginAbstract {
+class PXPluginPreview extends AbstractPlugin {
 	const MODULE_NAME = 'adminpreview';
 	const PREVIEW_ACL_TYPE = 'admin_preview';
 	const ENABLE_PREVIEW_FLAG = 'admin_preview';

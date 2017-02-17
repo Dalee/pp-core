@@ -1,13 +1,13 @@
 <?php
 
-use PP\Module\ModuleAbstract;
+use PP\Module\AbstractModule;
 
 /**
  * Класс модуля вывода Журнала Аудита.
  *
  * @author Andrey Nikolaev <na@index20.ru>
  */
-class PXModuleAuditLog extends ModuleAbstract {
+class PXModuleAuditLog extends AbstractModule {
 	function PXModuleAuditLog($area, $settings) {
 		parent::__construct($area, $settings);
 		if(is_callable(array($this->layout, 'setOneColumn'))){

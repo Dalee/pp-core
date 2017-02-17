@@ -1,13 +1,13 @@
 <?php
 
-use PP\Cron\CronAbstract;
+use PP\Cron\AbstractCron;
 use PP\Cron\CronRule;
 
 /**
  * Class PXAbstractCronRun
- * @deprecated Please use PP\Cron\CronAbstract
+ * @deprecated Please use PP\Cron\AbstractCron
  */
-abstract class PXAbstractCronRun extends CronAbstract {
+abstract class PXAbstractCronRun extends AbstractCron {
 }
 
 /**

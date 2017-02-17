@@ -1,12 +1,12 @@
 <?php
 
-use PP\Cron\CronAbstract;
+use PP\Cron\AbstractCron;
 
 /**
  * Deferred objects publication
  * Отложенная публикация объектов
  */
-class PXCronRunDeferredStatus extends CronAbstract {
+class PXCronRunDeferredStatus extends AbstractCron {
 
 	public function __construct() {
 		$this->name = 'Отложенная публикация объектов';

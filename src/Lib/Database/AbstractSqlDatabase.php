@@ -5,10 +5,10 @@ namespace PP\Lib\Database;
 use PP\Lib\Cache\ObjectCache;
 
 /**
- * Class DatabaseSqlAbstract
+ * Class AbstractSqlDatabase
  * @package PP\Lib\Database
  */
-class DatabaseSqlAbstract {
+class AbstractSqlDatabase {
 
 	/** @var ObjectCache */
 	public $cache = null;

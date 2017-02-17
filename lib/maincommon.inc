@@ -44,7 +44,7 @@ require_once PPLIBPATH . 'XML/classes.inc';
 require_once PPLIBPATH . 'LazyLoader/blockcontent.class.inc';
 
 // TODO: should be ripped off after PSR-4 switch
-spl_autoload_register(['PP\Plugin\PluginAbstract', 'autoload']);
+spl_autoload_register(['PP\Plugin\AbstractPlugin', 'autoload']);
 
 // Initialize environment
 (new \PP\Properties\EnvLoader(BASEPATH))

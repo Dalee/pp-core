@@ -2,13 +2,13 @@
 
 namespace PP\Lib\Database\Driver;
 
-use PP\Lib\Database\DatabaseSqlAbstract;
+use PP\Lib\Database\AbstractSqlDatabase;
 
 /**
  * Class PostgreSqlDriver
  * @package PP\Lib\Database\Driver
  */
-class PostgreSqlDriver extends DatabaseSqlAbstract  {
+class PostgreSqlDriver extends AbstractSqlDatabase  {
 
 	const TYPE = 'pgsql';
 

@@ -1,10 +1,10 @@
 <?php
 
-use PP\Module\ModuleAbstract;
+use PP\Module\AbstractModule;
 use PP\Lib\Datastruct\Tree;
 use PP\Cron\CronRule;
 
-class PXModuleCronRun extends ModuleAbstract {
+class PXModuleCronRun extends AbstractModule {
 	var $TIME_FORMAT = 'd-m-Y H:i:s';
 	var $rules;
 

@@ -1,8 +1,8 @@
 <?php
 
-use PP\Module\ModuleAbstract;
+use PP\Module\AbstractModule;
 
-class PXModuleSearch extends ModuleAbstract  {
+class PXModuleSearch extends AbstractModule  {
 	var $word;
 
 	function adminIndex() {

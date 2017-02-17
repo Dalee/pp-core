@@ -1,8 +1,8 @@
 <?php
 
-use PP\Plugin\PluginAbstract;
+use PP\Plugin\AbstractPlugin;
 
-class PXPluginFilters extends PluginAbstract {
+class PXPluginFilters extends AbstractPlugin {
 	private static $enabled = false;
 
 	function initialize($app) {
