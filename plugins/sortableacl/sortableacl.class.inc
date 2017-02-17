@@ -1,8 +1,8 @@
 <?php
 
-use PP\Plugin\PluginAbstract;
+use PP\Plugin\AbstractPlugin;
 
-class PXPluginSortableAcl extends PluginAbstract {
+class PXPluginSortableAcl extends AbstractPlugin {
 	function initialize($app) {
 		$this->loadModule('sortableacl');
 	}

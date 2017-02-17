@@ -1,10 +1,10 @@
 <?php
 
-use PP\Plugin\PluginAbstract;
+use PP\Plugin\AbstractPlugin;
 
 /**
  * Class PXAbstractPlugin
- * @deprecated Please use PP\Plugin\PluginAbstract
+ * @deprecated Please use PP\Plugin\AbstractPlugin
  */
-class PXAbstractPlugin extends PluginAbstract {
+class PXAbstractPlugin extends AbstractPlugin {
 }

@@ -1,6 +1,6 @@
 <?php
 
-use PP\Plugin\PluginAbstract;
+use PP\Plugin\AbstractPlugin;
 
 require_once dirname(__FILE__) . '/../additional/abstract.class.inc';
 
@@ -23,7 +23,7 @@ class PXFiltersPluginAdditionalLoader {
 			return;
 		}
 		self::$settingsCache = array();
-		$additionalFilters = PluginAbstract::getParam('filters', 'additional_filters');
+		$additionalFilters = AbstractPlugin::getParam('filters', 'additional_filters');
 		if ($additionalFilters) {
 			foreach (explode(',', $additionalFilters) as $f) {
 				if (!$f) {

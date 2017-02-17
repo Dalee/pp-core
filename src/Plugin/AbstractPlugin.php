@@ -5,10 +5,10 @@ namespace PP\Plugin;
 /**
  * TODO: should be abstract, but, it has some references
  *
- * Class PluginAbstract
+ * Class AbstractPlugin
  * @package PP\Plugin
  */
-class PluginAbstract {
+class AbstractPlugin {
 
 	protected $name = null;
 
