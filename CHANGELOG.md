@@ -33,7 +33,7 @@
 - `PXAbstractCronRun` — deprecated, использовать `PP\Cron\AbstractCron`
 - `PXCronRule` — deprecated, использовать `PP\Cron\CronRule`
 - `PXAbstractPlugin` — deprecated, использовать `PP\Plugin\AbstractPlugin`
-- `NLPGSQLDatabase` — deprecated, использовать `PP\Lib\Database\DatabaseSqlAbstract`
+- `NLPGSQLDatabase` — deprecated, использовать `PP\Lib\Database\AbstractSqlDatabase`
 - `charcheck` - убран из всех форм, javascript и php кода
 - Работа с файлом `database.ini` удалена, настройки подключения к базе хранятся в environment
 	- [Документация](docs/configuration.md)
