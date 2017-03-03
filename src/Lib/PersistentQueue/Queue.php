@@ -2,11 +2,12 @@
 
 namespace PP\Lib\PersistentQueue;
 
-use PXApplication;
-use PXDatabase;
+use \PXApplication;
+use \PXDatabase;
 
 /**
- * Class Queue
+ * Class Queue.
+ *
  * @package PP\Lib\PersistentQueue
  */
 class Queue {
@@ -24,28 +25,22 @@ class Queue {
 	/**
 	 * @var PXApplication
 	 */
-	private $app;
+	protected $app;
 
 	/**
 	 * @var PXDatabase
 	 */
-	private $db;
+	protected $db;
 
 	/**
-	 * @var array
-	 */
-	private $workers = [];
-
-	/**
-	 * Queue constructor
+	 * Queue constructor.
+	 *
+	 * @param PXApplication $app
+	 * @param PXDatabase $db
 	 */
 	public function __construct(PXApplication $app, PXDatabase $db) {
 		$this->app = $app;
 		$this->db = $db;
-
-		$directory = $app->directory['content-generators'];
-		$directory->loaded || $db->loadDirectory($directory, null);
-		$this->workers = $directory->values;
 	}
 
 	/**
@@ -68,7 +63,7 @@ class Queue {
 	 */
 	protected function updateJob(Job $job) {
 		$contentType = $this->app->types[static::JOB_DB_TYPE];
-		return $this->db->ModifyContentObject($contentType, $job->toArray());
+		return $this->db->modifyContentObject($contentType, $job->toArray());
 	}
 
 	/**
@@ -113,48 +108,6 @@ class Queue {
 		return array_map(function ($object) {
 			return Job::fromArray($object);
 		}, $objects);
-	}
-
-	/**
-	 * @param string $id
-	 * @return mixed|null
-	 */
-	public function getWorkerClassByID($id) {
-		if (!isset($this->workers[$id]['class'])) {
-			return null;
-		}
-
-		return $this->workers[$id]['class'];
-	}
-
-	/**
-	 * @return array
-	 */
-	public function getWorkers() {
-		return $this->workers;
-	}
-
-	/**
-	 * @param Job $job
-	 *
-	 * @return mixed
-	 * @throws \Exception
-	 */
-	public function instanciateWorkerForJob(Job $job) {
-		$worker = $job->getWorker();
-		$workerClass = $this->getWorkerClassByID($worker);
-
-		if (!$workerClass || !class_exists($workerClass)) {
-			throw new \Exception;
-		}
-
-		$interfaces = class_implements($workerClass);
-		// miss you 5.5 - WorkerInterface::class
-		if (!isset($interfaces['PP\Lib\PersistentQueue\WorkerInterface'])) {
-			throw new \Exception;
-		}
-
-		return new $workerClass($this->app, $this->db);
 	}
 
 }

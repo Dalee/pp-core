@@ -1,5 +1,10 @@
 # Change log
 
+## [1.8.4] - 2017-03-03
+- Исправлен `PersistentQueue`, раньше он был завязан на МегаФон. Изменился интерфейс и добавились тесты
+- Добавлен крон для запуска воркеров из `PersistentQueue`
+- Добавлены параметры БД в `phpunit.xml` и `maincommon.inc` в тестовый `bootstrap.php`
+
 ## [1.8.3] - 2017-02-17
 - Добавлен метод `Collection::last`
 - Реализован интерфейс `JsonSerializable` у класса `Collection`

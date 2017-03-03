@@ -2,10 +2,12 @@
 
 namespace PP\Lib\PersistentQueue;
 
+use \UnexpectedValueException;
 use PP\Lib\IArrayable;
 
 /**
- * Class Job
+ * Class Job.
+ *
  * @package PP\Lib\PersistentQueue
  */
 class Job implements IArrayable {
@@ -33,22 +35,22 @@ class Job implements IArrayable {
 	/**
 	 * @var int
 	 */
-	private $id = 0;
+	protected $id = 0;
 
 	/**
 	 * @var array
 	 */
-	private $payload;
+	protected $payload;
+
+	/**
+	 * @var WorkerInterface
+	 */
+	protected $worker;
 
 	/**
 	 * @var string
 	 */
-	private $worker;
-
-	/**
-	 * @var string
-	 */
-	private $state;
+	protected $state;
 
 	/**
 	 * Job constructor
@@ -58,21 +60,35 @@ class Job implements IArrayable {
 	}
 
 	/**
-	 * Converts instance to array
+	 * Converts instance to array.
 	 *
 	 * @return array
 	 */
 	public function toArray() {
 		return [
-			'id' => $this->getId(),
-			'worker' => $this->getWorker(),
-			'payload' => $this->getPayload(),
-			'state' => $this->getState()
+			'id' => $this->id,
+			'worker' => get_class($this->worker),
+			'payload' => $this->payload,
+			'state' => $this->state
 		];
 	}
 
 	/**
-	 * Creates instance from array
+	 * Returns all valid states.
+	 *
+	 * @return array
+	 */
+	public static function getValidStates() {
+		return [
+			static::STATE_FRESH,
+			static::STATE_FAILED,
+			static::STATE_FINISHED,
+			static::STATE_IN_PROGRESS
+		];
+	}
+
+	/**
+	 * Creates instance from array.
 	 *
 	 * @param array $object
 	 * @return static
@@ -80,9 +96,26 @@ class Job implements IArrayable {
 	public static function fromArray(array $object) {
 		$job = new static;
 		$job->setId(getFromArray($object, 'id', 0));
-		$job->setState(getFromArray($object, 'state', static::STATE_FRESH));
-		$job->setPayload($object['payload']);
-		$job->setWorker($object['worker']);
+
+		$state = getFromArray($object, 'state', static::STATE_FRESH);
+		$job->setState($state);
+		$job->setPayload(getFromArray($object, 'payload', []));
+
+		$workerClass = getFromArray($object, 'worker');
+		if (!class_exists($workerClass)) {
+			throw new UnexpectedValueException(
+				sprintf('Worker class does not exist: %s', $workerClass)
+			);
+		}
+
+		$worker = new $workerClass();
+		if (!($worker instanceof WorkerInterface)) {
+			throw new UnexpectedValueException(
+				sprintf('Worker class does not implement %s', WorkerInterface::class)
+			);
+		}
+
+		$job->setWorker($worker);
 
 		return $job;
 	}
@@ -105,17 +138,17 @@ class Job implements IArrayable {
 	}
 
 	/**
-	 * @param string $worker
+	 * @param WorkerInterface $worker
 	 * @return $this
 	 */
-	public function setWorker($worker) {
+	public function setWorker(WorkerInterface $worker) {
 		$this->worker = $worker;
 
 		return $this;
 	}
 
 	/**
-	 * @return string
+	 * @return WorkerInterface
 	 */
 	public function getWorker() {
 		return $this->worker;
@@ -133,6 +166,13 @@ class Job implements IArrayable {
 	 * @return $this
 	 */
 	public function setState($state) {
+		$validStates = static::getValidStates();
+		if (!in_array($state, $validStates, true)) {
+			throw new UnexpectedValueException(
+				sprintf('State is invalid. Valid states: %s', join(', ', $validStates))
+			);
+		}
+
 		$this->state = $state;
 
 		return $this;
@@ -146,7 +186,8 @@ class Job implements IArrayable {
 	}
 
 	/**
-	 * @param int $id
+	 * @param $id
+	 * @return $this
 	 */
 	public function setId($id) {
 		$this->id = $id;

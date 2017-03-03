@@ -3,14 +3,16 @@
 namespace PP\Lib\PersistentQueue;
 
 /**
- * Interface WorkerInterface
+ * Interface WorkerInterface.
+ *
  * @package PP\Lib\PersistentQueue
  */
 interface WorkerInterface {
 
 	/**
-	 * Fires worker
+	 * @param array $payload
+	 * @return mixed
 	 */
-	public function run(array $params = []);
+	public function run(array $payload = []);
 
 }
