@@ -60,7 +60,7 @@ class Job implements IArrayable {
 	}
 
 	/**
-	 * Converts instance to array
+	 * Converts instance to array.
 	 *
 	 * @return array
 	 */
@@ -74,7 +74,7 @@ class Job implements IArrayable {
 	}
 
 	/**
-	 * Return all valid states.
+	 * Returns all valid states.
 	 *
 	 * @return array
 	 */
@@ -88,7 +88,7 @@ class Job implements IArrayable {
 	}
 
 	/**
-	 * Creates instance from array
+	 * Creates instance from array.
 	 *
 	 * @param array $object
 	 * @return static
@@ -98,13 +98,6 @@ class Job implements IArrayable {
 		$job->setId(getFromArray($object, 'id', 0));
 
 		$state = getFromArray($object, 'state', static::STATE_FRESH);
-		$validStates = static::getValidStates();
-		if (!in_array($state, $validStates, true)) {
-			throw new UnexpectedValueException(
-				sprintf('State is invalid. Valid states: %s', join(', ', $validStates))
-			);
-		}
-
 		$job->setState($state);
 		$job->setPayload(getFromArray($object, 'payload', []));
 
@@ -173,6 +166,13 @@ class Job implements IArrayable {
 	 * @return $this
 	 */
 	public function setState($state) {
+		$validStates = static::getValidStates();
+		if (!in_array($state, $validStates, true)) {
+			throw new UnexpectedValueException(
+				sprintf('State is invalid. Valid states: %s', join(', ', $validStates))
+			);
+		}
+
 		$this->state = $state;
 
 		return $this;

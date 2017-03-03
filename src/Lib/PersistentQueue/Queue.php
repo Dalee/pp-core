@@ -63,7 +63,7 @@ class Queue {
 	 */
 	protected function updateJob(Job $job) {
 		$contentType = $this->app->types[static::JOB_DB_TYPE];
-		return $this->db->ModifyContentObject($contentType, $job->toArray());
+		return $this->db->modifyContentObject($contentType, $job->toArray());
 	}
 
 	/**

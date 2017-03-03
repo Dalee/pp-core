@@ -4,6 +4,15 @@
 		 backupGlobals="false"
 		 colors="true"
 		 bootstrap="tests/bootstrap.php">
+	<php>
+		<env name="DB_TYPE" value="pgsql" />
+		<env name="DB_NAME" value="not_exists" />
+		<env name="DB_HOST" value="not_exists" />
+		<env name="DB_PORT" value="0" />
+		<env name="DB_USER" value="not_exists" />
+		<env name="DB_PASSWORD" value="not_exists" />
+		<env name="DB_ENCODING" value="utf-8" />
+	</php>
 	<testsuites>
 		<testsuite name="unit">
 			<directory suffix=".php">tests/Unit</directory>

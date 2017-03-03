@@ -11,4 +11,5 @@ $_SERVER["REQUEST_METHOD"] = 'GET';
 $_SERVER["DOCUMENT_ROOT"] = __DIR__ . '/../';
 
 require __DIR__ . '/../lib/common.defines.inc';
+require __DIR__ . '/../lib/maincommon.inc';
 require __DIR__ . '/../vendor/autoload.php';
