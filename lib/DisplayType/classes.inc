@@ -40,3 +40,4 @@ require_once PPLIBPATH . 'DisplayType/ipAddr.class.inc';
 
 require_once PPLIBPATH . 'DisplayType/bubbleText.class.inc';
 require_once PPLIBPATH . 'DisplayType/radiolist.class.inc';
+require_once PPLIBPATH . 'DisplayType/jobResult.class.inc';

@@ -307,10 +307,11 @@ CREATE TABLE queue_job (
 	sys_modified TIMESTAMP WITHOUT TIME ZONE DEFAULT now(),
 	sys_uuid     VARCHAR(36),
 
-	worker       VARCHAR(150),
+	title        VARCHAR(150),
 	payload      JSON,
 	state        VARCHAR DEFAULT 'fresh',
 	status       BOOLEAN DEFAULT true
+	result       JSON
 ) WITH OIDS;
 
 -- migrations support

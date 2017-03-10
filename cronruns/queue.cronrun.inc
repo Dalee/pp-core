@@ -16,6 +16,10 @@ class PXCronRunQueue extends AbstractCron {
 	 */
 	const MAX_JOBS_PER_RUN = 10;
 
+	protected function notify($email) {
+		//
+	}
+
 	/**
 	 * @param PXApplication $app
 	 * @param PXDatabase $db
@@ -41,7 +45,7 @@ class PXCronRunQueue extends AbstractCron {
 			try {
 				$this->log(sprintf('Processing job #%d with %s', $jobId, get_class($worker)));
 
-				$worker->run($payload);
+				$worker->setJob($job)->run($payload);
 				$queue->finishJob($job);
 				$db->transactionCommit();
 
@@ -50,6 +54,7 @@ class PXCronRunQueue extends AbstractCron {
 				$this->log(Label('Successful with job: ' . $jobId));
 			} catch (Exception $ex) {
 				$db->transactionRollback();
+				$job->getResultBag()->addError($ex->getMessage());
 				$queue->failJob($job);
 
 				$this->log('Failed with job: ' . $jobId);

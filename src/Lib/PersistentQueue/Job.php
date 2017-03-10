@@ -53,10 +53,16 @@ class Job implements IArrayable {
 	protected $state;
 
 	/**
+	 * @var JobResult
+	 */
+	protected $resultBag;
+
+	/**
 	 * Job constructor
 	 */
 	public function __construct() {
 		$this->state = static::STATE_FRESH;
+		$this->resultBag = new JobResult();
 	}
 
 	/**
@@ -67,9 +73,10 @@ class Job implements IArrayable {
 	public function toArray() {
 		return [
 			'id' => $this->id,
-			'worker' => get_class($this->worker),
+			'title' => get_class($this->worker),
 			'payload' => $this->payload,
-			'state' => $this->state
+			'state' => $this->state,
+			'result' => $this->resultBag->toArray()
 		];
 	}
 
@@ -191,6 +198,23 @@ class Job implements IArrayable {
 	 */
 	public function setId($id) {
 		$this->id = $id;
+
+		return $this;
+	}
+
+	/**
+	 * @return JobResult
+	 */
+	public function getResultBag() {
+		return $this->resultBag;
+	}
+
+	/**
+	 * @param JobResult $resultBag
+	 * @return $this
+	 */
+	public function setResultBag(JobResult $resultBag) {
+		$this->resultBag = $resultBag;
 
 		return $this;
 	}
