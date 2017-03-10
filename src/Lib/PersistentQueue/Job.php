@@ -108,7 +108,7 @@ class Job implements IArrayable {
 		$job->setState($state);
 		$job->setPayload(getFromArray($object, 'payload', []));
 
-		$workerClass = getFromArray($object, 'worker');
+		$workerClass = getFromArray($object, 'title');
 		if (!class_exists($workerClass)) {
 			throw new UnexpectedValueException(
 				sprintf('Worker class does not exist: %s', $workerClass)
