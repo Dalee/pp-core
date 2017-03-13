@@ -61,7 +61,7 @@ class PXCronRunQueue extends AbstractCron {
 				$worker->setJob($job)->run($payload);
 				$queue->finishJob($job);
 				$db->transactionCommit();
-				$subject = 'Success XLSX Import';
+				$subject = 'Successful Job #' . $jobId;
 
 				$processedIds[] = $jobId;
 
@@ -70,7 +70,7 @@ class PXCronRunQueue extends AbstractCron {
 				$db->transactionRollback();
 				$job->getResultBag()->addError(nl2br($ex->getMessage()));
 				$queue->failJob($job);
-				$subject = 'Failed XLSX Import';
+				$subject = 'Failed Job #' . $jobId;
 
 				$this->log('Failed with job: ' . $jobId);
 				$this->log($ex);
