@@ -25,9 +25,9 @@ class {{class}} extends MigrationAbstract {
 
 	/** 
 	 * {@inheritdoc}
-     */
-    public function up() {
-    }
+	 */
+	public function up() {
+	}
 
 }
 PHP;
