@@ -312,7 +312,7 @@ CREATE TABLE queue_job (
 	title        VARCHAR(150),
 	payload      JSON,
 	state        VARCHAR DEFAULT 'fresh',
-	status       BOOLEAN DEFAULT true
+	status       BOOLEAN DEFAULT true,
 	result       JSON
 ) WITH OIDS;
 
