@@ -53,10 +53,21 @@ class Job implements IArrayable {
 	protected $state;
 
 	/**
+	 * @var JobResult
+	 */
+	protected $resultBag;
+
+	/**
+	 * @var int
+	 */
+	protected $ownerId;
+
+	/**
 	 * Job constructor
 	 */
 	public function __construct() {
 		$this->state = static::STATE_FRESH;
+		$this->resultBag = new JobResult();
 	}
 
 	/**
@@ -67,9 +78,11 @@ class Job implements IArrayable {
 	public function toArray() {
 		return [
 			'id' => $this->id,
-			'worker' => get_class($this->worker),
+			'title' => get_class($this->worker),
 			'payload' => $this->payload,
-			'state' => $this->state
+			'state' => $this->state,
+			'result' => $this->resultBag->toArray(),
+			'sys_owner' => $this->ownerId
 		];
 	}
 
@@ -101,7 +114,7 @@ class Job implements IArrayable {
 		$job->setState($state);
 		$job->setPayload(getFromArray($object, 'payload', []));
 
-		$workerClass = getFromArray($object, 'worker');
+		$workerClass = getFromArray($object, 'title');
 		if (!class_exists($workerClass)) {
 			throw new UnexpectedValueException(
 				sprintf('Worker class does not exist: %s', $workerClass)
@@ -111,11 +124,12 @@ class Job implements IArrayable {
 		$worker = new $workerClass();
 		if (!($worker instanceof WorkerInterface)) {
 			throw new UnexpectedValueException(
-				sprintf('Worker class does not implement %s', WorkerInterface::class)
+				'Worker class does not implement PP\Lib\PersistentQueue\WorkerInterface'
 			);
 		}
 
 		$job->setWorker($worker);
+		$job->setOwnerId(getFromArray($object, 'sys_owner', 0));
 
 		return $job;
 	}
@@ -191,6 +205,40 @@ class Job implements IArrayable {
 	 */
 	public function setId($id) {
 		$this->id = $id;
+
+		return $this;
+	}
+
+	/**
+	 * @return JobResult
+	 */
+	public function getResultBag() {
+		return $this->resultBag;
+	}
+
+	/**
+	 * @param JobResult $resultBag
+	 * @return $this
+	 */
+	public function setResultBag(JobResult $resultBag) {
+		$this->resultBag = $resultBag;
+
+		return $this;
+	}
+
+	/**
+	 * @return int
+	 */
+	public function getOwnerId() {
+		return $this->ownerId;
+	}
+
+	/**
+	 * @param int $ownerId
+	 * @return $this
+	 */
+	public function setOwnerId($ownerId) {
+		$this->ownerId = $ownerId;
 
 		return $this;
 	}

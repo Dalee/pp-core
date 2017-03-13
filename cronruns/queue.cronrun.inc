@@ -8,13 +8,30 @@ use PP\Cron\AbstractCron;
  */
 class PXCronRunQueue extends AbstractCron {
 
-	/** @var string */
+	/**
+	 * @var string
+	 */
 	public $name = 'Queue worker';
 
 	/**
 	 * @var int
 	 */
 	const MAX_JOBS_PER_RUN = 10;
+
+	/**
+	 * @return string
+	 */
+	protected function getMailTemplatePath() {
+		return PPPATH . '/mail_templates/job_notification.tmpl';
+	}
+
+	/**
+	 * @param ArrayIterator $results
+	 * @return string
+	 */
+	protected function formatResults(ArrayIterator $results) {
+		return join('<br />', $results->getArrayCopy());
+	}
 
 	/**
 	 * @param PXApplication $app
@@ -41,19 +58,43 @@ class PXCronRunQueue extends AbstractCron {
 			try {
 				$this->log(sprintf('Processing job #%d with %s', $jobId, get_class($worker)));
 
-				$worker->run($payload);
+				$worker->setJob($job)->run($payload);
 				$queue->finishJob($job);
 				$db->transactionCommit();
+				$subject = 'Successful Job #' . $jobId;
 
 				$processedIds[] = $jobId;
 
 				$this->log(Label('Successful with job: ' . $jobId));
 			} catch (Exception $ex) {
 				$db->transactionRollback();
+				$job->getResultBag()->addError(nl2br($ex->getMessage()));
 				$queue->failJob($job);
+				$subject = 'Failed Job #' . $jobId;
 
 				$this->log('Failed with job: ' . $jobId);
 				$this->log($ex);
+			}
+
+			$owner = $db->getObjectById($app->types['suser'], $job->getOwnerId());
+			$toEmail = getFromArray($owner, 'email');
+			$toName = getFromArray($owner, 'title');
+			$resultBag = $job->getResultBag();
+
+			if ($toName && isEmail($toEmail)) {
+				$message = new NLMailMessage();
+				$message->setFormat('html');
+				$message->setTemplate($this->getMailTemplatePath(), true, [
+					'subject' => $subject,
+					'id' => $jobId,
+					'errors' => $this->formatResults($resultBag->getErrors()),
+					'info' => $this->formatResults($resultBag->getInfo()),
+					'notices' => $this->formatResults($resultBag->getNotices())
+				]);
+				$message->setTo($toName, $toEmail);
+				if (!$message->send()) {
+					$this->log(sprintf('Failed to notify %s on job #%d.', $toEmail, $jobId));
+				}
 			}
 		}
 

@@ -15,4 +15,10 @@ interface WorkerInterface {
 	 */
 	public function run(array $payload = []);
 
+	/**
+	 * @param Job $job
+	 * @return $this
+	 */
+	public function setJob(Job $job);
+
 }
