@@ -124,7 +124,7 @@ class Job implements IArrayable {
 		$worker = new $workerClass();
 		if (!($worker instanceof WorkerInterface)) {
 			throw new UnexpectedValueException(
-				sprintf('Worker class does not implement %s', WorkerInterface::class)
+				'Worker class does not implement PP\Lib\PersistentQueue\WorkerInterface'
 			);
 		}
 
