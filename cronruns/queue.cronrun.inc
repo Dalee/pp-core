@@ -8,7 +8,9 @@ use PP\Cron\AbstractCron;
  */
 class PXCronRunQueue extends AbstractCron {
 
-	/** @var string */
+	/**
+	 * @var string
+	 */
 	public $name = 'Queue worker';
 
 	/**
@@ -16,8 +18,19 @@ class PXCronRunQueue extends AbstractCron {
 	 */
 	const MAX_JOBS_PER_RUN = 10;
 
-	protected function notify($email) {
-		//
+	/**
+	 * @return string
+	 */
+	protected function getMailTemplatePath() {
+		return PPPATH . '/mail_templates/job_notification.tmpl';
+	}
+
+	/**
+	 * @param ArrayIterator $results
+	 * @return string
+	 */
+	protected function formatResults(ArrayIterator $results) {
+		return join('<br />', $results->getArrayCopy());
 	}
 
 	/**
@@ -48,17 +61,40 @@ class PXCronRunQueue extends AbstractCron {
 				$worker->setJob($job)->run($payload);
 				$queue->finishJob($job);
 				$db->transactionCommit();
+				$subject = 'Success XLSX Import';
 
 				$processedIds[] = $jobId;
 
 				$this->log(Label('Successful with job: ' . $jobId));
 			} catch (Exception $ex) {
 				$db->transactionRollback();
-				$job->getResultBag()->addError($ex->getMessage());
+				$job->getResultBag()->addError(nl2br($ex->getMessage()));
 				$queue->failJob($job);
+				$subject = 'Failed XLSX Import';
 
 				$this->log('Failed with job: ' . $jobId);
 				$this->log($ex);
+			}
+
+			$owner = $db->getObjectById($app->types['suser'], $job->getOwnerId());
+			$toEmail = getFromArray($owner, 'email');
+			$toName = getFromArray($owner, 'title');
+			$resultBag = $job->getResultBag();
+
+			if ($toName && isEmail($toEmail)) {
+				$message = new NLMailMessage();
+				$message->setFormat('html');
+				$message->setTemplate($this->getMailTemplatePath(), true, [
+					'subject' => $subject,
+					'id' => $jobId,
+					'errors' => $this->formatResults($resultBag->getErrors()),
+					'info' => $this->formatResults($resultBag->getInfo()),
+					'notices' => $this->formatResults($resultBag->getNotices())
+				]);
+				$message->setTo($toName, $toEmail);
+				if (!$message->send()) {
+					$this->log(sprintf('Failed to notify %s on job #%d.', $toEmail, $jobId));
+				}
 			}
 		}
 

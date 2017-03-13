@@ -58,6 +58,11 @@ class Job implements IArrayable {
 	protected $resultBag;
 
 	/**
+	 * @var int
+	 */
+	protected $ownerId;
+
+	/**
 	 * Job constructor
 	 */
 	public function __construct() {
@@ -76,7 +81,8 @@ class Job implements IArrayable {
 			'title' => get_class($this->worker),
 			'payload' => $this->payload,
 			'state' => $this->state,
-			'result' => $this->resultBag->toArray()
+			'result' => $this->resultBag->toArray(),
+			'sys_owner' => $this->ownerId
 		];
 	}
 
@@ -123,6 +129,7 @@ class Job implements IArrayable {
 		}
 
 		$job->setWorker($worker);
+		$job->setOwnerId(getFromArray($object, 'sys_owner', 0));
 
 		return $job;
 	}
@@ -215,6 +222,23 @@ class Job implements IArrayable {
 	 */
 	public function setResultBag(JobResult $resultBag) {
 		$this->resultBag = $resultBag;
+
+		return $this;
+	}
+
+	/**
+	 * @return int
+	 */
+	public function getOwnerId() {
+		return $this->ownerId;
+	}
+
+	/**
+	 * @param int $ownerId
+	 * @return $this
+	 */
+	public function setOwnerId($ownerId) {
+		$this->ownerId = $ownerId;
 
 		return $this;
 	}

@@ -8,6 +8,7 @@ CREATE TABLE suser (
 	sys_uuid      VARCHAR(36),
 
 	title         VARCHAR,
+	email         VARCHAR,
 	passwd        VARCHAR,
 	realname      VARCHAR,
 
@@ -32,9 +33,10 @@ CREATE TABLE sgroup (
 ALTER TABLE suser  ADD COLUMN parent INT4 DEFAULT NULL REFERENCES sgroup ON DELETE SET NULL ON UPDATE CASCADE;
 ALTER TABLE sgroup ADD COLUMN parent INT4 DEFAULT NULL REFERENCES sgroup ON DELETE SET NULL ON UPDATE CASCADE;
 
-INSERT INTO suser (title, passwd, realname, status, sys_uuid)
+INSERT INTO suser (title, email, passwd, realname, status, sys_uuid)
 VALUES (
 	'admin',
+	'admin@localhost.local',
 	md5('1010'),
 	'Администратор',
 	true,

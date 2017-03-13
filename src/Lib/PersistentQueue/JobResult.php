@@ -135,4 +135,25 @@ class JobResult implements IArrayable {
 			->setNotices(getFromArray($object, static::RESULT_NOTICES, []));
 	}
 
+	/**
+	 * @return ArrayIterator
+	 */
+	public function getErrors() {
+		return $this->errors;
+	}
+
+	/**
+	 * @return ArrayIterator
+	 */
+	public function getInfo() {
+		return $this->info;
+	}
+
+	/**
+	 * @return ArrayIterator
+	 */
+	public function getNotices() {
+		return $this->notices;
+	}
+
 }
