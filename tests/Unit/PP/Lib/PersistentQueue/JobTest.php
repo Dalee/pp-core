@@ -36,14 +36,14 @@ class JobTest extends AbstractUnitTest {
 	 * @expectedExceptionMessageRegExp /Worker class does not implement/
 	 */
 	public function testFromArrayWorkerInvalidInterface() {
-		$arrayJob = ['worker' => 'PP\Lib\PersistentQueue\Job'];
+		$arrayJob = ['title' => 'PP\Lib\PersistentQueue\Job'];
 		Job::fromArray($arrayJob);
 	}
 
 	public function testFromArrayWorker() {
 		$worker = $this->getMockForAbstractClass('PP\Lib\PersistentQueue\WorkerInterface', []);
 		$workerClass = get_class($worker);
-		$arrayJob = ['worker' => $workerClass];
+		$arrayJob = ['title' => $workerClass];
 		$job = Job::fromArray($arrayJob);
 
 		$this->assertEquals($worker, $job->getWorker());
@@ -54,13 +54,20 @@ class JobTest extends AbstractUnitTest {
 		$worker = $this->getMockForAbstractClass('PP\Lib\PersistentQueue\WorkerInterface', []);
 		$job->setPayload(['test_key' => 'test_value']);
 		$job->setWorker($worker);
+		$job->setOwnerId(2);
 		$actual = $job->toArray();
 
 		$expected = [
 			'id' => 0,
-			'worker' => get_class($worker),
+			'title' => get_class($worker),
 			'payload' => ['test_key' => 'test_value'],
-			'state' => Job::STATE_FRESH
+			'state' => Job::STATE_FRESH,
+			'sys_owner' => 2,
+			'result' => [
+				'errors' => [],
+				'notices' => [],
+				'info' => []
+			]
 		];
 		$this->assertEquals($expected, $actual);
 	}
