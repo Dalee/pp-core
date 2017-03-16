@@ -13,14 +13,14 @@ abstract class AbstractUrlGenerator implements GeneratorInterface {
 	const ACTION_JSON = 'json';
 	const ACTION_POPUP = 'popup';
 
-	/** @var \PP\Lib\UrlGenerator\ContextUrlGenerator  */
+	/** @var ContextUrlGenerator  */
 	protected $context;
 
 	/**
 	 * AbstractUrlGenerator constructor.
 	 * @param $context
 	 */
-	public function __construct(\PP\Lib\UrlGenerator\ContextUrlGenerator $context) {
+	public function __construct(ContextUrlGenerator $context) {
 		$this->context = $context;
 	}
 
@@ -50,14 +50,14 @@ abstract class AbstractUrlGenerator implements GeneratorInterface {
 	}
 
 	/**
-	 * @return \PP\Lib\UrlGenerator\ContextUrlGenerator
+	 * @return ContextUrlGenerator
 	 */
 	public function getContext() {
 		return $this->context;
 	}
 
 	/**
-	 * @param \PP\Lib\UrlGenerator\ContextUrlGenerator $context
+	 * @param ContextUrlGenerator $context
 	 * @return AbstractUrlGenerator
 	 */
 	public function setContext($context) {

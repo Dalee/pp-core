@@ -2,6 +2,8 @@
 
 namespace PP\Lib\UrlGenerator;
 
+use PP\Module\AbstractModule;
+
 /**
  * Class ContextUrlGenerator
  * @package PP\Lib\UrlGenerator
@@ -16,6 +18,9 @@ class ContextUrlGenerator {
 
 	/** @var null|string */
 	protected $targetModule;
+
+	/** @var AbstractModule */
+	protected $currentModule;
 
 	/**
 	 * Context constructor.
@@ -60,9 +65,16 @@ class ContextUrlGenerator {
 	 * @param null|\PXRequest $request
 	 * @return ContextUrlGenerator
 	 */
-	public function setRequest($request) {
+	public function setRequest(\PXRequest$request) {
 		$this->request = $request;
 		return $this;
+	}
+
+	/**
+	 * @return bool
+	 */
+	public function hasTargetModule() {
+		return isset($this->targetModule);
 	}
 
 	/**
@@ -78,6 +90,29 @@ class ContextUrlGenerator {
 	 */
 	public function setTargetModule($targetModule) {
 		$this->targetModule = $targetModule;
+		return $this;
+	}
+
+	/**
+	 * @return bool
+	 */
+	public function hasCurrentModule() {
+		return isset($this->currentModule);
+	}
+
+	/**
+	 * @return AbstractModule
+	 */
+	public function getCurrentModule() {
+		return $this->currentModule;
+	}
+
+	/**
+	 * @param AbstractModule $currentModule
+	 * @return ContextUrlGenerator
+	 */
+	public function setCurrentModule(AbstractModule $currentModule) {
+		$this->currentModule = $currentModule;
 		return $this;
 	}
 
