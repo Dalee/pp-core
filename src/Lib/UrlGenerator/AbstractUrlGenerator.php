@@ -65,4 +65,27 @@ abstract class AbstractUrlGenerator implements GeneratorInterface {
 		return $this;
 	}
 
+	/**
+	 * @return string
+	 */
+	protected function getArea() {
+		if (!$this->context->hasCurrentModule() && !$this->context->hasTargetModule()) {
+			throw new \LogicException('Don\'t given target module and current module.');
+		}
+		$area = $this->context->getTargetModule();
+		if ($area === null) {
+			$area = $this->context->getCurrentModule()->area;
+		}
+		return $area;
+	}
+
+	/**
+	 * @param string $url
+	 * @param array [string]string $params
+	 * @return string
+	 */
+	protected function generateUrl($url, $params = []) {
+		$queryString = http_build_query($params);
+		return "$url?$queryString";
+	}
 }

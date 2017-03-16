@@ -55,6 +55,13 @@ class ContextUrlGenerator {
 	}
 
 	/**
+	 * @return bool
+	 */
+	public function hasRequest() {
+		return isset($this->request);
+	}
+
+	/**
 	 * @return null|\PXRequest
 	 */
 	public function getRequest() {
