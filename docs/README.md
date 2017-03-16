@@ -11,3 +11,7 @@ Work-in-progress. Don't be shy, add new articles.
 ## Сессии
 
 [Уведомления](session/flashes.md)
+
+## Прочее
+
+[Dependency Injection](di.md)
