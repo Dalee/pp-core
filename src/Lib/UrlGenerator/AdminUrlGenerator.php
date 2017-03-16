@@ -1,16 +1,15 @@
 <?php
 
-namespace PP\Lib\UrlGenerator\Roles;
+namespace PP\Lib\UrlGenerator;
 
-class UserUrlGenerator extends AbstractUrlGenerator {
-
+class AdminUrlGenerator extends AbstractUrlGenerator {
 
 	/**
 	 * @param array [string]string $params
 	 * @return string
 	 */
 	public function indexUrl($params = []) {
-		// TODO: Implement indexUrl() method.
+		return str_replace('action.phtml', '', $_SERVER['SCRIPT_URL']) . '?area=' . $this->area;
 	}
 
 	/**
@@ -36,4 +35,6 @@ class UserUrlGenerator extends AbstractUrlGenerator {
 	public function popupUrl($params = []) {
 		// TODO: Implement popupUrl() method.
 	}
+
+
 }

@@ -1,9 +1,12 @@
 <?php
 
-namespace PP\Lib\UrlGenerator\Roles;
+namespace PP\Lib\UrlGenerator;
 
-class AdminUrlGenerator extends AbstractUrlGenerator {
-
+/**
+ * Class UserUrlGenerator
+ * @package PP\Lib\UrlGenerator
+ */
+class UserUrlGenerator extends AbstractUrlGenerator {
 
 	/**
 	 * @param array [string]string $params

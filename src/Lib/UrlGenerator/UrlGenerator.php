@@ -2,37 +2,51 @@
 
 namespace PP\Lib\UrlGenerator;
 
-use PP\Lib\UrlGenerator\Roles\GeneratorInterface;
-
+/**
+ * Class UrlGenerator
+ * @package PP\Lib\UrlGenerator
+ */
 class UrlGenerator {
 
+	/** @var ContextUrlGenerator */
+	protected $context;
+
 	/**
-	 * @param GeneratorInterface $generator
-	 * @param string $action
-	 * @param array[string]string $params
-	 * @return string
-	 * @throws Exception
+	 * UrlGenerator constructor.
+	 * @param ContextUrlGenerator $context
 	 */
-	public static function generate(GeneratorInterface $generator, $action, $params =[]) {
+	public function __construct(ContextUrlGenerator $context) {
+		$this->context = $context;
+	}
 
-		switch ($action) {
-			case GeneratorInterface::ACTION_INDEX:
-				$url = $generator->indexUrl($params);
-				break;
-			case GeneratorInterface::ACTION_ACTION:
-				$url = $generator->actionUrl($params);
-				break;
-			case GeneratorInterface::ACTION_JSON:
-				$url = $generator->jsonUrl($params);
-				break;
-			case GeneratorInterface::ACTION_POPUP:
-				$url = $generator->popupUrl($params);
-				break;
-			default:
-				throw new Exception("Action '$action' doesn't exist.");
-		}
+	/**
+	 * @return UserUrlGenerator
+	 */
+	public function getUserGenerator() {
+		return new UserUrlGenerator($this->context);
+	}
 
-		return $url;
+	/**
+	 * @return AdminUrlGenerator
+	 */
+	public function getAdminGenerator() {
+		return new AdminUrlGenerator($this->context);
+	}
+
+	/**
+	 * @return ContextUrlGenerator
+	 */
+	public function getContext() {
+		return $this->context;
+	}
+
+	/**
+	 * @param ContextUrlGenerator $context
+	 * @return UrlGenerator
+	 */
+	public function setContext($context) {
+		$this->context = $context;
+		return $this;
 	}
 
 }

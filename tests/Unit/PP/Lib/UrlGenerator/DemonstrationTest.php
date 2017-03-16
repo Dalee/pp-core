@@ -2,7 +2,7 @@
 
 namespace Tests\Unit\PP\Lib\UrlGeneratorTest;
 
-use PP\Lib\UrlGenerator\Context;
+use PP\Lib\UrlGenerator\ContextUrlGenerator;
 use PP\Lib\UrlGenerator\Roles\GeneratorInterface;
 use Tests\Base\AbstractUnitTest;
 
@@ -14,7 +14,7 @@ class DemonstrationTest extends AbstractUnitTest {
 
 		// Оборачиваем реквест объектом контекст, для добавления каких-либо контекстных вещей
 		// пока что это только название целевого модуля
-		$context = new Context($request, 'targetModule');
+		$context = new ContextUrlGenerator($request, 'targetModule');
 
 		// Два сценария, для админки, для юзера
 		$userGenerator = new \PP\Lib\UrlGenerator\Roles\UserUrlGenerator($context);

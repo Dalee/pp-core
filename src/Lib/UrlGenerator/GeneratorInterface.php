@@ -1,13 +1,18 @@
 <?php
 
-namespace PP\Lib\UrlGenerator\Roles;
+namespace PP\Lib\UrlGenerator;
 
+/**
+ * Interface GeneratorInterface
+ * @package PP\Lib\UrlGenerator
+ */
 interface GeneratorInterface {
 
-	const ACTION_INDEX = 'index';
-	const ACTION_ACTION = 'action';
-	const ACTION_JSON = 'json';
-	const ACTION_POPUP = 'popup';
+	/**
+	 * @param array[string]string $params
+	 * @return string
+	 */
+	public function generate($params = []);
 
 	/**
 	 * @param array[string]string $params
