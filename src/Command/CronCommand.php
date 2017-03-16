@@ -2,11 +2,12 @@
 
 namespace PP\Command;
 
-use PP\Lib\Command\AbstractCommand;
+use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use PP\Lib\Command\AbstractCommand;
 
 /**
  * Cron command
@@ -31,13 +32,16 @@ class CronCommand extends AbstractCommand {
 	 * {@inheritdoc}
 	 */
 	public function execute(InputInterface $input, OutputInterface $output) {
-
 		if (!isset($this->app->modules['cronrun'])) {
 			return;
 		}
 
 		/** @var \PXModuleCronRun $cronModule */
 		$cronModule = $this->app->modules['cronrun']->getModule();
+
+		if ($cronModule instanceof ContainerAwareInterface) {
+			$cronModule->setContainer($this->container);
+		}
 
 		$listTasks = $input->getOption('list');
 		$task = $input->getArgument('task');
@@ -51,15 +55,16 @@ class CronCommand extends AbstractCommand {
 				mb_str_pad('Дата запуска', 21),
 				mb_str_pad('Дата завершения', 21),
 			];
-			$output->writeln('<info>'.implode(' | ', $header).'</info>');
-			$output->writeln('<info>'.str_repeat("-", 132).'</info>');
+
+			$output->writeln('<info>' . join(' | ', $header) . '</info>');
+			$output->writeln('<info>' . str_repeat('-', 132) . '</info>');
 
 			foreach ($cronModule->jobs as $task => $j) {
 				$stat = $cronModule->getStat($j);
 
 				$title = mb_str_pad($task, 25);
 				$title = (mb_strlen($title) > 25)
-					? mb_substr($title, 0, 22).'...'
+					? mb_substr($title, 0, 22) . '...'
 					: $title;
 
 				$description = mb_str_pad($j['job']->name, 40);
@@ -69,7 +74,7 @@ class CronCommand extends AbstractCommand {
 
 				// @TODO: make it more pretty..
 				$row = [
-					'<comment>'.$title.'</comment>',
+					'<comment>' . $title . '</comment>',
 					mb_str_pad($j['rule']->asString, 15),
 					$description,
 					mb_str_pad(strftime("%Y-%m-%d %H:%M:%S", $stat['start']), 21),
@@ -79,7 +84,7 @@ class CronCommand extends AbstractCommand {
 				$output->writeln(implode(' | ', $row));
 			}
 
-			$output->writeln("");
+			$output->writeln('');
 
 		} elseif ($task !== null) {
 			if (!isset($cronModule->jobs[$task])) {

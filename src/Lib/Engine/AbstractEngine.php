@@ -148,4 +148,8 @@ abstract class AbstractEngine {
 		}
 	}
 
+	public function getContainer() {
+		return $this->container;
+	}
+
 }

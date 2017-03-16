@@ -36,4 +36,5 @@ class PXEngineSbin extends AbstractEngine {
 	public function engineClass() {
 		return PX_ENGINE_SBIN;
 	}
+
 }
