@@ -5,7 +5,8 @@ namespace PP\Module;
 use PP\Lib\Database\Driver\PostgreSqlDriver;
 
 /**
- * Class AbstractModule
+ * Class AbstractModule.
+ *
  * @package PP\Module
  */
 abstract class AbstractModule implements ModuleInterface {

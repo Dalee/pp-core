@@ -2,6 +2,11 @@
 
 namespace PP\Module;
 
+/**
+ * Interface ModuleInterface.
+ *
+ * @package PP\Module
+ */
 interface ModuleInterface {
 
 	/**
