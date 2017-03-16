@@ -16,7 +16,7 @@ class PXEngineSbin extends AbstractEngine {
 	 */
 	protected $session = ['factory' => 'Symfony\Component\HttpFoundation\Session\Session', 'helper' => true];
 
-	protected $initOrder = ['app', 'db', 'request', 'session', 'user', 'layout'];
+	protected $initOrder = ['container', 'app', 'db', 'request', 'session', 'user', 'layout'];
 
 	protected function initSession($klass) {
 		$storage = new NativeSessionStorage([], new NullSessionHandler());

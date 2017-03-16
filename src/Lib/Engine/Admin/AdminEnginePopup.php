@@ -2,8 +2,11 @@
 
 namespace PP\Lib\Engine\Admin;
 
+use Symfony\Component\DependencyInjection\ContainerAwareInterface;
+
 /**
- * Class AdminEnginePopup
+ * Class AdminEnginePopup.
+ *
  * @package PP\Lib\Engine\Admin
  */
 class AdminEnginePopup extends AdminEngineIndex {
@@ -34,6 +37,9 @@ class AdminEnginePopup extends AdminEngineIndex {
 		$this->fillLayout();
 
 		$instance = $this->modules[$this->area]->getModule();
+		if ($instance instanceof ContainerAwareInterface) {
+			$instance->setContainer($this->container);
+		}
 
 		$this->layout->append($this->templateMainArea, $instance->adminPopup());
 	}

@@ -1,11 +1,16 @@
 <?php
 
+use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use PP\Lib\Engine\AbstractEngine;
 
 class PXEngineIndex extends AbstractEngine {
-	var  $layout = array('factory' => 'PXUserHTMLLayout');
+	var $layout = ['factory' => 'PXUserHTMLLayout'];
 
-	function __construct() {     // Инициализация основных объектов приложения
+	/**
+	 * Инициализация основных объектов приложения
+	 * Initializes application's main objects
+	 */
+	public function __construct() {
 		parent::__construct();
 
 		$this->content             = new StdClass; // FIXME
@@ -87,13 +92,17 @@ class PXEngineIndex extends AbstractEngine {
 			}
 
 			$moduleDescription = $bind->getModuleDescription();
-			$module = $moduleDescription->getModule();
+			$instance = $moduleDescription->getModule();
 
-			$module->tree       =& $this->content->tree;
-			$module->objects    =& $this->content->objects;
-			$module->subObjects =& $this->content->subObjects;
+			if ($instance instanceof ContainerAwareInterface) {
+				$instance->setContainer($this->container);
+			}
 
-			$module->userIndex();
+			$instance->tree       =& $this->content->tree;
+			$instance->objects    =& $this->content->objects;
+			$instance->subObjects =& $this->content->subObjects;
+
+			$instance->userIndex();
 		}
 	}
 }

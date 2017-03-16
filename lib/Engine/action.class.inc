@@ -1,5 +1,6 @@
 <?php
 
+use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use PP\Lib\Engine\AbstractEngine;
 
 class PXEngineAction extends AbstractEngine {
@@ -8,12 +9,16 @@ class PXEngineAction extends AbstractEngine {
 	protected $nextLocation;
 
 	function runModules() {
-		$module = $this->modules[$this->area]->getModule();
+		$instance = $this->modules[$this->area]->getModule();
 
 		$response = PXResponse::getInstance();
 		$response->dontCache();
 
-		$this->nextLocation = $module->userAction();
+		if ($instance instanceof ContainerAwareInterface) {
+			$instance->setContainer($this->container);
+		}
+
+		$this->nextLocation = $instance->userAction();
 	}
 
 	function redirect() {
@@ -30,4 +35,5 @@ class PXEngineAction extends AbstractEngine {
 		$response = PXResponse::getInstance();
 		$response->redirect($nextLocation);
 	}
+
 }

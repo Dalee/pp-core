@@ -20,7 +20,7 @@ abstract class AbstractAdminEngine extends AbstractEngine {
 	 */
 	protected $session = ['factory' => 'Symfony\Component\HttpFoundation\Session\Session', 'helper' => true];
 
-	protected $initOrder = ['app', 'db', 'request', 'session', 'user', 'layout'];
+	protected $initOrder = ['container', 'app', 'db', 'request', 'session', 'user', 'layout'];
 
 	public function engineClass() {
 		return PX_ENGINE_ADMIN;

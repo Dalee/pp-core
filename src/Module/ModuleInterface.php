@@ -2,12 +2,14 @@
 
 namespace PP\Module;
 
+use Symfony\Component\DependencyInjection\ContainerAwareInterface;
+
 /**
  * Interface ModuleInterface.
  *
  * @package PP\Module
  */
-interface ModuleInterface {
+interface ModuleInterface extends ContainerAwareInterface {
 
 	/**
 	 * @return mixed
