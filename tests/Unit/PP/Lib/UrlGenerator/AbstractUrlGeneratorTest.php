@@ -133,4 +133,33 @@ class AbstractUrlGeneratorTest extends AbstractUnitTest {
 		$content->setTargetAction(ModuleInterface::ACTION_POPUP);
 		$generator->generate([]);
 	}
+
+	public function testGetSid() {
+		$sid = '100';
+		/** @var \PHPUnit_Framework_MockObject_MockObject | ContextUrlGenerator $content */
+		$content = $this->getMockBuilder('\PP\Lib\UrlGenerator\ContextUrlGenerator')
+			->setMethods(['_'])
+			->getMock();
+		/** @var \PHPUnit_Framework_MockObject_MockObject | \PXRequest $request */
+		$request = $this->getMockBuilder('\PXRequest')
+			->disableOriginalConstructor()
+			->setMethods(['getSid'])
+			->getMock();
+
+		$request->expects($this->any())
+			->method('getSid')
+			->willReturn($sid);
+
+		$content->setRequest($request);
+
+		/** @var AbstractUrlGenerator | \PHPUnit_Framework_MockObject_MockObject $generator */
+		$generator = $this->getMockBuilder('\PP\Lib\UrlGenerator\AbstractUrlGenerator')
+			->setConstructorArgs([$content])
+			->setMethods(['indexUrl', 'actionUrl', 'jsonUrl', 'popupUrl'])
+			->getMock();
+
+		$actualSid = $this->callProtectedMethod($generator, 'getSid', []);
+
+		$this->assertEquals($sid, $actualSid);
+	}
 }
