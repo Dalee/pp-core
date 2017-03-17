@@ -1,6 +1,6 @@
 <?php
 
-namespace Unit\PP\Lib\UrlGenerator;
+namespace Tests\Unit\PP\Lib\UrlGenerator;
 
 use Tests\Base\AbstractUnitTest;
 use PP\Lib\UrlGenerator\UrlGenerator;

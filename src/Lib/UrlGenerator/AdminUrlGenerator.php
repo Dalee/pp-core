@@ -13,7 +13,8 @@ class AdminUrlGenerator extends AbstractUrlGenerator {
 	 */
 	public function indexUrl($params = []) {
 		$url = '/admin/';
-		$params['area'] = $this->getArea();
+		$oldParams['area'] = $this->getArea();
+		$params = array_replace($oldParams, $params);
 		return $this->generateUrl($url, $params);
 	}
 
@@ -22,14 +23,12 @@ class AdminUrlGenerator extends AbstractUrlGenerator {
 	 */
 	public function actionUrl($params = []) {
 		$url = '/admin/action.phtml';
-		$params['area'] = $this->getArea();
-
-		if ($this->context->hasRequest()) {
-			$sid = $this->context->getRequest()->getSid();
-			if (!empty($sid)) {
-				$params['sid'] = $sid;
-			}
+		$oldParams['area'] = $this->getArea();
+		$sid = $this->getSid();
+		if ($sid !== null) {
+			$oldParams['sid'] = $sid;
 		}
+		$params = array_replace($oldParams, $params);
 		return $this->generateUrl($url, $params);
 	}
 
@@ -37,14 +36,24 @@ class AdminUrlGenerator extends AbstractUrlGenerator {
 	 * @inheritdoc
 	 */
 	public function jsonUrl($params = []) {
-		// TODO: Implement jsonUrl() method.
+		$url = '/admin/json.phtml';
+		$oldParams['area'] = $this->getArea();
+		$params = array_replace($oldParams, $params);
+		return $this->generateUrl($url, $params);
 	}
 
 	/**
 	 * @inheritdoc
 	 */
 	public function popupUrl($params = []) {
-		// TODO: Implement popupUrl() method.
+		$url = '/admin/popup.phtml';
+		$oldParams['area'] = $this->getArea();
+		$sid = $this->getSid();
+		if ($sid !== null) {
+			$oldParams['sid'] = $sid;
+		}
+		$params = array_replace($oldParams, $params);
+		return $this->generateUrl($url, $params);
 	}
 
 }

@@ -12,27 +12,29 @@ class UserUrlGenerator extends AbstractUrlGenerator {
 	 * @inheritdoc
 	 */
 	public function indexUrl($params = []) {
-		// TODO: Implement indexUrl() method.
+		throw new \LogicException('You cannot use the method: ' . __METHOD__);
 	}
 
 	/**
 	 * @inheritDoc
 	 */
 	public function actionUrl($params = []) {
-		// TODO: Implement actionUrl() method.
+		$url = '/' . $this->getArea() . '.action';
+		return $this->generateUrl($url, $params);
 	}
 
 	/**
 	 * @inheritDoc
 	 */
 	public function jsonUrl($params = []) {
-		// TODO: Implement jsonUrl() method.
+		$url = '/' . $this->getArea() . '.json';
+		return $this->generateUrl($url, $params);
 	}
 
 	/**
 	 * @inheritDoc
 	 */
 	public function popupUrl($params = []) {
-		// TODO: Implement popupUrl() method.
+		throw new \LogicException('You cannot use the method: ' . __METHOD__);
 	}
 }

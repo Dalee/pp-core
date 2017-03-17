@@ -1,55 +1,20 @@
 <?php
 
-namespace Unit\PP\Lib\UrlGenerator;
+namespace Tests\Unit\PP\Lib\UrlGenerator;
 
 use PP\Lib\UrlGenerator\AdminUrlGenerator;
 use PP\Lib\UrlGenerator\ContextUrlGenerator;
-use PP\Module\AbstractModule;
 use Tests\Base\AbstractUnitTest;
 
 class AdminUrlGeneratorTest extends AbstractUnitTest {
 
-	/**
-	 * @expectedException \Exception
-	 * @expectedExceptionMessage Don't given target module and current module.
-	 */
-	public function testIndexUrlError() {
-		/** @var \PHPUnit_Framework_MockObject_MockObject | ContextUrlGenerator $content */
-		$content = $this->getMockBuilder('\PP\Lib\UrlGenerator\ContextUrlGenerator')
-			->getMock();
-
-		$generator = new AdminUrlGenerator($content);
-		$generator->indexUrl();
-	}
-
-	public function testIndexUrlWithCurrentModule() {
-		$testArea = 'currentArea';
-		$params = [
-			'a' => '1',
-			'b' => '2',
-		];
-		$expectedUrl = '/admin/?a=1&b=2&area=currentArea';
-
-		/** @var \PHPUnit_Framework_MockObject_MockObject | ContextUrlGenerator $content */
-		$content = $this->getMockBuilder('\PP\Lib\UrlGenerator\ContextUrlGenerator')
-			->setMethods(['_'])
-			->getMock();
-
-		$content->setCurrentModule($testArea);
-
-		$generator = new AdminUrlGenerator($content);
-		$actualUrl = $generator->indexUrl($params);
-
-		$this->assertEquals($expectedUrl, $actualUrl);
-	}
-
-	public function testIndexUrlWithTargetModule() {
+	public function testIndexUrl() {
 		$testArea = 'targetArea';
 		$params = [
 			'a' => '1',
 			'b' => '2',
 		];
-		$expectedUrl = '/admin/?a=1&b=2&area=targetArea';
+		$expectedUrl = '/admin/?area=targetArea&a=1&b=2';
 
 		/** @var \PHPUnit_Framework_MockObject_MockObject | ContextUrlGenerator $content */
 		$content = $this->getMockBuilder('\PP\Lib\UrlGenerator\ContextUrlGenerator')
@@ -64,24 +29,113 @@ class AdminUrlGeneratorTest extends AbstractUnitTest {
 		$this->assertEquals($expectedUrl, $actualUrl);
 	}
 
-	public function testActionUrl() {
-		$testArea = 'testArea';
+	/**
+	 * @dataProvider actionUrlProvider
+	 */
+	public function testActionUrl($sid, $testArea, $overriderParams, $expectedActionUrl) {
+		/** @var \PHPUnit_Framework_MockObject_MockObject | ContextUrlGenerator $content */
+		$content = $this->getMockBuilder('\PP\Lib\UrlGenerator\ContextUrlGenerator')
+			->setMethods(['_'])
+			->getMock();
+		/** @var \PHPUnit_Framework_MockObject_MockObject | \PXRequest $request */
+		$request = $this->getMockBuilder('\PXRequest')
+			->disableOriginalConstructor()
+			->setMethods(['getSid'])
+			->getMock();
+
+		$request->expects($this->any())
+			->method('getSid')
+			->willReturn($sid);
+
+		$content->setTargetModule($testArea);
+		$content->setRequest($request);
+		$generator = new AdminUrlGenerator($content);
+
+
+		$actualUrl = $generator->actionUrl($overriderParams);
+		$this->assertEquals($expectedActionUrl, $actualUrl);
+	}
+
+	public function actionUrlProvider() {
+		return [
+			[
+				'123',
+				'targetArea',
+				['a' => '1', 'b' => '2'],
+				'/admin/action.phtml?area=targetArea&sid=123&a=1&b=2'
+			],
+			[
+				'123',
+				'targetArea',
+				['sid' => '1', 'area' => '2'],
+				'/admin/action.phtml?area=2&sid=1'
+			],
+		];
+	}
+
+	public function testJsonUrl() {
+		$testArea = 'targetArea';
 		$params = [
 			'a' => '1',
 			'b' => '2',
 		];
-		$expectedUrl = '';
+		$expectedUrl = '/admin/json.phtml?area=targetArea&a=1&b=2';
 
 		/** @var \PHPUnit_Framework_MockObject_MockObject | ContextUrlGenerator $content */
 		$content = $this->getMockBuilder('\PP\Lib\UrlGenerator\ContextUrlGenerator')
+			->setMethods(['_'])
 			->getMock();
 
-		$generator = $this->getMockBuilder('\PP\Lib\UrlGenerator\ContextUrlGenerator')
-			->setConstructorArgs([$content])
-			->getMock();
+		$content->setTargetModule($testArea);
 
-		$actualUrl = $generator->actionUrl($params);
+		$generator = new AdminUrlGenerator($content);
+		$actualUrl = $generator->jsonUrl($params);
 
 		$this->assertEquals($expectedUrl, $actualUrl);
 	}
+
+	/**
+	 * @dataProvider popupUrlProvider
+	 */
+	public function testPopupUrl($sid, $testArea, $overriderParams, $expectedPopupUrl) {
+		/** @var \PHPUnit_Framework_MockObject_MockObject | ContextUrlGenerator $content */
+		$content = $this->getMockBuilder('\PP\Lib\UrlGenerator\ContextUrlGenerator')
+			->setMethods(['_'])
+			->getMock();
+		/** @var \PHPUnit_Framework_MockObject_MockObject | \PXRequest $request */
+		$request = $this->getMockBuilder('\PXRequest')
+			->disableOriginalConstructor()
+			->setMethods(['getSid'])
+			->getMock();
+
+		$request->expects($this->any())
+			->method('getSid')
+			->willReturn($sid);
+
+		$content->setTargetModule($testArea);
+		$content->setRequest($request);
+		$generator = new AdminUrlGenerator($content);
+
+
+		$actualUrl = $generator->popupUrl($overriderParams);
+		$this->assertEquals($expectedPopupUrl, $actualUrl);
+	}
+
+	public function popupUrlProvider() {
+		return [
+			[
+				'123',
+				'targetArea',
+				['a' => '1', 'b' => '2'],
+				'/admin/popup.phtml?area=targetArea&sid=123&a=1&b=2'
+			],
+			[
+				'123',
+				'targetArea',
+				['sid' => '1', 'area' => '2'],
+				'/admin/popup.phtml?area=2&sid=1'
+			],
+		];
+	}
+
 }

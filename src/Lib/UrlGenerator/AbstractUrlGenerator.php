@@ -78,4 +78,14 @@ abstract class AbstractUrlGenerator implements GeneratorInterface {
 		return "$url?$queryString";
 	}
 
+	/**
+	 * @return string|null
+	 */
+	protected function getSid() {
+		$sid = null;
+		if ($this->context->hasRequest()) {
+			$sid = $this->context->getRequest()->getSid();
+		}
+		return $sid;
+	}
 }
