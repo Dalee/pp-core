@@ -2,9 +2,11 @@
 
 namespace PP\Lib\Engine;
 
+use Symfony\Component\Config\FileLocator;
+use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 use PP\Lib\Database\Driver\PostgreSqlDriver;
-use PXApplication;
 use PP\Lib\Html\Layout\LayoutInterface;
+use PXApplication;
 
 abstract class AbstractEngine {
 
@@ -15,21 +17,29 @@ abstract class AbstractEngine {
 	protected $area;
 
 	/** @var \PXApplication */
-	protected $app = array('factory' => 'PXApplication', 'helper' => true);
+	protected $app = ['factory' => 'PXApplication', 'helper' => true];
 
 	/** @var \PXRequest */
-	protected $request = array('factory' => 'PXRequest');
+	protected $request = ['factory' => 'PXRequest'];
 
 	/** @var \PXDatabase|PostgreSqlDriver */
-	protected $db = array('factory' => 'PXDatabase', 'helper' => true);
+	protected $db = ['factory' => 'PXDatabase', 'helper' => true];
 
 	/** @var LayoutInterface */
-	protected $layout = array('factory' => 'PP\Lib\Html\Layout\Null');
+	protected $layout = ['factory' => 'PP\Lib\Html\Layout\Null'];
 
 	/** @var \PXUserAuthorized */
-	protected $user = array('factory' => 'PXUserAuthorized');
+	protected $user = ['factory' => 'PXUserAuthorized'];
 
-	protected $initOrder = array('app', 'db', 'request', 'user', 'layout');
+	/**
+	 * @var \Symfony\Component\DependencyInjection\ContainerInterface
+	 */
+	protected $container = ['factory' => 'Symfony\Component\DependencyInjection\ContainerBuilder', 'helper' => true];
+
+	/**
+	 * @var array
+	 */
+	protected $initOrder = ['container', 'app', 'db', 'request', 'user', 'layout'];
 
 	// TODO: refactor
 	function __construct() {
@@ -61,6 +71,21 @@ abstract class AbstractEngine {
 		$this->initModules();
 
 		return $this;
+	}
+
+	/**
+	 * Initializes DI container.
+	 *
+	 * @param string $klass
+	 * @throws \InvalidArgumentException if services.yml is not found
+	 */
+	protected function initContainer($klass) {
+		$path = APPPATH . 'config';
+		$container = new $klass();
+		$loader = new YamlFileLoader($container, new FileLocator($path));
+
+		$loader->load('services.yml');
+		$this->container = $container;
 	}
 
 	protected function initApplication() {
@@ -121,6 +146,10 @@ abstract class AbstractEngine {
 		if (!isset($this->modules[$area])) {
 			FatalError('Некорректный параметр area = <em>' . strip_tags($this->area) . '</em>');
 		}
+	}
+
+	public function getContainer() {
+		return $this->container;
 	}
 
 }

@@ -1,8 +1,9 @@
 <?php
+
 class PXPreviewEngine extends PXEngineIndex {
 
 	// @overload
-	protected $db = array('factory' => 'PXPreviewDB', 'helper' => true);
+	protected $db = ['factory' => 'PXPreviewDB', 'helper' => true];
 
 	private $path;
 

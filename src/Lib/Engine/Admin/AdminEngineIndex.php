@@ -2,11 +2,16 @@
 
 namespace PP\Lib\Engine\Admin;
 
+use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use PXModuleDescription;
 use PXResponse;
-
 use PP\Lib\Html\Layout\AdminHtmlLayout;
 
+/**
+ * Class AdminEngineIndex.
+ *
+ * @package PP\Lib\Engine\Admin
+ */
 class AdminEngineIndex extends AbstractAdminEngine {
 
 	/** @var AdminHtmlLayout */
@@ -89,9 +94,11 @@ class AdminEngineIndex extends AbstractAdminEngine {
 			return;
 		}
 
-		$this->modules[$this->area]
-			->getModule()
-			->adminIndex();
+		$instance = $this->modules[$this->area]->getModule();
+		if ($instance instanceof ContainerAwareInterface) {
+			$instance->setContainer($this->container);
+		}
+		$instance->adminIndex();
 	}
 
 	public function html() {

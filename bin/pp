@@ -3,12 +3,12 @@
 
 set_time_limit(0);
 ini_set('memory_limit', '512M');
-define('BASEPATH', realpath(dirname($_SERVER['PHP_SELF']).'/../../').'/');
+define('BASEPATH', realpath(dirname($_SERVER['PHP_SELF']) . '/../../') . '/');
 
 $requires = [
-	BASEPATH.'/vendor/autoload.php',
-	BASEPATH.'/libpp/lib/maincommon.inc',
-	BASEPATH.'/local/lib/maincommon.inc',
+	BASEPATH . '/vendor/autoload.php',
+	BASEPATH . '/libpp/lib/maincommon.inc',
+	BASEPATH . '/local/lib/maincommon.inc',
 ];
 
 foreach ($requires as $file) {

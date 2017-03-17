@@ -1,9 +1,13 @@
 <?php
 
+use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use PP\Module\AbstractModule;
 use PP\Lib\Datastruct\Tree;
 use PP\Cron\CronRule;
 
+/**
+ * Class PXModuleCronRun
+ */
 class PXModuleCronRun extends AbstractModule {
 	var $TIME_FORMAT = 'd-m-Y H:i:s';
 	var $rules;
@@ -45,27 +49,27 @@ class PXModuleCronRun extends AbstractModule {
 				continue;
 			}
 
-			$file = strtolower($jobname) . ".cronrun.inc";
+			$file = strtolower($jobname) . '.cronrun.inc';
 
 			if (!class_exists(sprintf("pxcronrun%s", strtolower($jobname)), false)) {
 				if (file_exists(BASEPATH . '/local/cronruns/' . $file)) {
 					include_once BASEPATH . '/local/cronruns/' . $file;
-
 				} elseif (file_exists(BASEPATH . '/libpp/cronruns/' . $file)) {
 					include_once BASEPATH . '/libpp/cronruns/' . $file;
-
 				} else {
 					continue;
 				}
 			}
 
 			$class = 'PXCronRun' . $jobname;
-			$rm = array(
+			$instance = new $class();
+
+			$rm = [
 				'rule' => $rule,
 				'jobhash' => $rule->matchHash . md5($jobname),
 				'jobname' => strtolower($jobname),
-				'job' => new $class()
-			);
+				'job' => $instance
+			];
 
 			$this->rules[$count] = $rm;
 			$this->jobs[$jobname] = &$this->rules[$count];
@@ -127,6 +131,10 @@ class PXModuleCronRun extends AbstractModule {
 			$tree = new Tree($db->getObjects($app->types['struct'], true));
 		} else {
 			$tree = null;
+		}
+
+		if ($job['job'] instanceof ContainerAwareInterface) {
+			$job['job']->setContainer($this->container);
 		}
 
 		$res = $job['job']->Run($app, $db, $tree, $matchedTime, $job['rule']);

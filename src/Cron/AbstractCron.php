@@ -2,13 +2,18 @@
 
 namespace PP\Cron;
 
+use Symfony\Component\DependencyInjection\ContainerAwareInterface;
+use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 use PP\Lib\Database\Driver\PostgreSqlDriver;
 
 /**
- * Class AbstractCron
+ * Class AbstractCron.
+ *
  * @package PP\Cron
  */
-abstract class AbstractCron {
+abstract class AbstractCron implements ContainerAwareInterface {
+
+	use ContainerAwareTrait;
 
 	/**
 	 * TODO: should be protected

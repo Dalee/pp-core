@@ -2,13 +2,17 @@
 
 namespace PP\Lib\Command;
 
+use Symfony\Component\DependencyInjection\ContainerAwareInterface;
+use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 use PP\Lib\Database\Driver\PostgreSqlDriver;
 
 /**
  * Class AbstractCommand
  * @package PP\Lib\Command
  */
-abstract class AbstractCommand extends AbstractBasicCommand {
+abstract class AbstractCommand extends AbstractBasicCommand implements ContainerAwareInterface {
+
+	use ContainerAwareTrait;
 
 	/** @var \PXApplication */
 	protected $app;

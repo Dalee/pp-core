@@ -1,5 +1,6 @@
 <?php
 
+use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use PP\Lib\Engine\AbstractEngine;
 use PP\Module\AbstractModule;
 
@@ -7,12 +8,16 @@ class PXEngineJSON extends AbstractEngine {
 	protected $result;
 
 	function runModules() {
-		$module = $this->modules[$this->area]->getModule();
+		$instance = $this->modules[$this->area]->getModule();
 
 		$response = PXResponse::getInstance();
 		$response->dontCache();
 
-		$this->result = $this->getJson($module);
+		if ($instance instanceof ContainerAwareInterface) {
+			$instance->setContainer($this->container);
+		}
+
+		$this->result = $this->getJson($instance);
 	}
 
 	function sendJson() {

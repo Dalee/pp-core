@@ -2,15 +2,17 @@
 
 namespace PP;
 
-use PP\Command\GetPropertyCommand;
-use PP\Lib\Command\AbstractCommand;
-use PP\Lib\Command\MigrateAbstractCommand;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\ConsoleEvents;
 use Symfony\Component\Console\Event\ConsoleCommandEvent;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\Yaml\Yaml;
+use Symfony\Component\DependencyInjection\ContainerAwareInterface;
+use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 
+use PP\Command\GetPropertyCommand;
+use PP\Lib\Command\AbstractCommand;
+use PP\Lib\Command\MigrateAbstractCommand;
 use PP\Command\CronCommand;
 use PP\Command\FillMetaCommand;
 use PP\Command\FillUuidCommand;
@@ -20,10 +22,13 @@ use PP\Command\Migrate\MigrateUpCommand;
 use PP\Command\Migrate\MigrateCreateCommand;
 
 /**
- * Class ConsoleApplication
+ * Class ConsoleApplication.
+ *
  * @package PP
  */
 class ConsoleApplication extends Application {
+
+	use ContainerAwareTrait;
 
 	public static function start() {
 		// set command loader
@@ -32,9 +37,9 @@ class ConsoleApplication extends Application {
 			$cmd = $event->getCommand();
 
 			if ($cmd instanceof AbstractCommand) {
-				(new \PXEngineSbin())->start();
-				$cmd
-					->setApp(\PXRegistry::getApp())
+				$engine = (new \PXEngineSbin())->start();
+				$cmd->setContainer($engine->getContainer());
+				$cmd->setApp(\PXRegistry::getApp())
 					->setDb(\PXRegistry::getDb());
 			}
 

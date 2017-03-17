@@ -2,8 +2,14 @@
 
 namespace PP\Lib\Engine\Admin;
 
+use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use PXResponse;
 
+/**
+ * Class AdminEngineAction.
+ *
+ * @package PP\Lib\Engine\Admin
+ */
 class AdminEngineAction extends AbstractAdminEngine {
 	var $nextLocation;
 
@@ -21,6 +27,9 @@ class AdminEngineAction extends AbstractAdminEngine {
 		$this->checkArea($this->area);
 
 		$instance = $this->modules[$this->area]->getModule();
+		if ($instance instanceof ContainerAwareInterface) {
+			$instance->setContainer($this->container);
+		}
 		$this->nextLocation = $instance->adminAction();
 	}
 

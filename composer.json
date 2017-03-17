@@ -23,7 +23,9 @@
 		"symfony/event-dispatcher": "^2.8",
 		"symfony/yaml": "^2.8",
 		"symfony/var-dumper": "^2.8",
-		"vlucas/phpdotenv": "^2.4"
+		"vlucas/phpdotenv": "^2.4",
+		"symfony/config": "^2.8",
+		"symfony/dependency-injection": "^2.8"
 	},
 	"config": {
 		"secure-http": false,
