@@ -68,49 +68,6 @@ abstract class AbstractModule implements ModuleInterface {
 		];
 	}
 
-	function buildAdminUrl() {
-		return str_replace('action.phtml', '', $_SERVER['SCRIPT_URL']);
-	}
-
-	function buildAdminIndexUrl() {
-		return str_replace('action.phtml', '', $_SERVER['SCRIPT_URL']) . '?area=' . $this->area;
-	}
-
-	/**
-	 * @param string $action
-	 * @param bool $addIdParam
-	 * @return string
-	 */
-	protected function buildAdminActionUrl($action = 'main', $addIdParam = false) {
-		$link = sprintf('/admin/action.phtml?area=%s&action=%s', $this->area, urlencode($action));
-		$sid = $this->request->getSid();
-		if (!empty($sid)) {
-			$link = $link . '&sid=' . urlencode($sid);
-		}
-		if ($addIdParam) {
-			$link = $link . '&id=';
-		}
-		return $link;
-	}
-
-	/**
-	 * @param string $action
-	 * @param bool $addIdParam
-	 * @return string
-	 */
-	protected function buildAdminPopupUrl($action = 'main', $addIdParam = false) {
-		$link = sprintf('/admin/popup.phtml?area=%s&action=%s', $this->area, urlencode($action));
-		$sid = $this->request->getSid();
-		if (!empty($sid)) {
-			$link = $link . '&sid=' . urlencode($sid);
-		}
-		if ($addIdParam) {
-			$link = $link . '&id=';
-		}
-
-		return $link;
-	}
-
 	/**
 	 * {@inheritdoc}
 	 */

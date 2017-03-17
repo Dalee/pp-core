@@ -1,5 +1,13 @@
 # Change log
 
+## [1.8.7] - UNRELEASED
+- `\PP\Module\AbstractModule`
+	- `buildAdminUrl()` — deprecated
+	- `buildAdminIndexUrl()` — deprecated
+	- `buildAdminActionUrl()` — deprecated
+	- `buildAdminPopupUrl()` — deprecated
+- Добавлен генератор URL к методам модуля `\PP\Lib\UrlGenerator\UrlGenerator`
+	
 ## [1.8.6] - UNRELEASED
 - Исправлены пробелы на табы в шаблоне миграции
 - Поправлены тесты на `PersistentQueue\Job`
