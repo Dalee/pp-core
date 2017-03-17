@@ -15,6 +15,8 @@ interface GeneratorInterface {
 	public function generate($params = []);
 
 	/**
+	 * dfgdfg
+	 *
 	 * @param array[string]string $params
 	 * @return string
 	 */

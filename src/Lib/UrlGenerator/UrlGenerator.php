@@ -11,6 +11,12 @@ class UrlGenerator {
 	/** @var ContextUrlGenerator */
 	protected $context;
 
+	/** @var AdminUrlGenerator */
+	protected $adminGeneratorInstance;
+
+	/** @var UserUrlGenerator */
+	protected $userGeneratorInstance;
+
 	/**
 	 * UrlGenerator constructor.
 	 * @param ContextUrlGenerator $context
@@ -23,14 +29,20 @@ class UrlGenerator {
 	 * @return UserUrlGenerator
 	 */
 	public function getUserGenerator() {
-		return new UserUrlGenerator($this->context);
+		if ($this->userGeneratorInstance === null) {
+			$this->userGeneratorInstance = new UserUrlGenerator($this->context);
+		}
+		return $this->userGeneratorInstance;
 	}
 
 	/**
 	 * @return AdminUrlGenerator
 	 */
 	public function getAdminGenerator() {
-		return new AdminUrlGenerator($this->context);
+		if ($this->adminGeneratorInstance === null) {
+			$this->adminGeneratorInstance = new AdminUrlGenerator($this->context);
+		}
+		return $this->adminGeneratorInstance;
 	}
 
 	/**
@@ -45,6 +57,10 @@ class UrlGenerator {
 	 * @return UrlGenerator
 	 */
 	public function setContext($context) {
+		if ($this->context !== $context) {
+			$this->adminGeneratorInstance = null;
+			$this->userGeneratorInstance = null;
+		}
 		$this->context = $context;
 		return $this;
 	}

@@ -35,14 +35,7 @@ class AdminUrlGeneratorTest extends AbstractUnitTest {
 			->setMethods(['_'])
 			->getMock();
 
-		/** @var \PHPUnit_Framework_MockObject_MockObject | AbstractModule $currentModule */
-		$currentModule = $this->getMockBuilder('\PP\Module\AbstractModule')
-			->disableOriginalConstructor()
-			->getMock();
-
-		$content->setCurrentModule($currentModule);
-		$this->setProtectedProperty($content, 'currentModule', $currentModule);
-		$this->setProtectedProperty($currentModule, 'area', $testArea);
+		$content->setCurrentModule($testArea);
 
 		$generator = new AdminUrlGenerator($content);
 		$actualUrl = $generator->indexUrl($params);
@@ -67,6 +60,27 @@ class AdminUrlGeneratorTest extends AbstractUnitTest {
 
 		$generator = new AdminUrlGenerator($content);
 		$actualUrl = $generator->indexUrl($params);
+
+		$this->assertEquals($expectedUrl, $actualUrl);
+	}
+
+	public function testActionUrl() {
+		$testArea = 'testArea';
+		$params = [
+			'a' => '1',
+			'b' => '2',
+		];
+		$expectedUrl = '';
+
+		/** @var \PHPUnit_Framework_MockObject_MockObject | ContextUrlGenerator $content */
+		$content = $this->getMockBuilder('\PP\Lib\UrlGenerator\ContextUrlGenerator')
+			->getMock();
+
+		$generator = $this->getMockBuilder('\PP\Lib\UrlGenerator\ContextUrlGenerator')
+			->setConstructorArgs([$content])
+			->getMock();
+
+		$actualUrl = $generator->actionUrl($params);
 
 		$this->assertEquals($expectedUrl, $actualUrl);
 	}

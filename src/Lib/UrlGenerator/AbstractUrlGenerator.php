@@ -2,16 +2,13 @@
 
 namespace PP\Lib\UrlGenerator;
 
+use PP\Module\ModuleInterface;
+
 /**
  * Class AbstractUrlGenerator
  * @package PP\Lib\UrlGenerator
  */
 abstract class AbstractUrlGenerator implements GeneratorInterface {
-
-	const ACTION_INDEX = 'index';
-	const ACTION_ACTION = 'action';
-	const ACTION_JSON = 'json';
-	const ACTION_POPUP = 'popup';
 
 	/** @var ContextUrlGenerator  */
 	protected $context;
@@ -31,17 +28,17 @@ abstract class AbstractUrlGenerator implements GeneratorInterface {
 	public function generate($params = []) {
 		$action = $this->context->getTargetAction();
 		switch ($action) {
-			case static::ACTION_INDEX:
+			case ModuleInterface::ACTION_INDEX:
 				$url = $this->indexUrl($params);
 				break;
-			case static::ACTION_ACTION:
-				$url = $this->indexUrl($params);
+			case ModuleInterface::ACTION_ACTION:
+				$url = $this->actionUrl($params);
 				break;
-			case static::ACTION_JSON:
-				$url = $this->indexUrl($params);
+			case ModuleInterface::ACTION_JSON:
+				$url = $this->jsonUrl($params);
 				break;
-			case static::ACTION_POPUP:
-				$url = $this->indexUrl($params);
+			case ModuleInterface::ACTION_POPUP:
+				$url = $this->popupUrl($params);
 				break;
 			default:
 				throw new \LogicException("Action '$action' doesn't exist.");
@@ -57,16 +54,8 @@ abstract class AbstractUrlGenerator implements GeneratorInterface {
 	}
 
 	/**
-	 * @param ContextUrlGenerator $context
-	 * @return AbstractUrlGenerator
-	 */
-	public function setContext($context) {
-		$this->context = $context;
-		return $this;
-	}
-
-	/**
 	 * @return string
+	 * @throws \LogicException
 	 */
 	protected function getArea() {
 		if (!$this->context->hasCurrentModule() && !$this->context->hasTargetModule()) {
@@ -74,7 +63,7 @@ abstract class AbstractUrlGenerator implements GeneratorInterface {
 		}
 		$area = $this->context->getTargetModule();
 		if ($area === null) {
-			$area = $this->context->getCurrentModule()->area;
+			$area = $this->context->getCurrentModule();
 		}
 		return $area;
 	}
@@ -88,4 +77,5 @@ abstract class AbstractUrlGenerator implements GeneratorInterface {
 		$queryString = http_build_query($params);
 		return "$url?$queryString";
 	}
+
 }

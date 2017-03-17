@@ -3,6 +3,7 @@
 namespace PP\Lib\UrlGenerator;
 
 use PP\Module\AbstractModule;
+use PP\Module\ModuleInterface;
 
 /**
  * Class ContextUrlGenerator
@@ -19,7 +20,7 @@ class ContextUrlGenerator {
 	/** @var null|string */
 	protected $targetModule;
 
-	/** @var AbstractModule */
+	/** @var null|string */
 	protected $currentModule;
 
 	/**
@@ -29,7 +30,7 @@ class ContextUrlGenerator {
 	 * @param string $targetModule
 	 */
 	public function __construct(
-		$targetAction = AbstractUrlGenerator::ACTION_INDEX,
+		$targetAction = ModuleInterface::ACTION_INDEX,
 		\PXRequest $request = null,
 		$targetModule = null
 	) {
@@ -47,7 +48,7 @@ class ContextUrlGenerator {
 
 	/**
 	 * @param string $targetAction
-	 * @return ContextUrlGenerator
+	 * @return $this
 	 */
 	public function setTargetAction($targetAction) {
 		$this->targetAction = $targetAction;
@@ -70,7 +71,7 @@ class ContextUrlGenerator {
 
 	/**
 	 * @param null|\PXRequest $request
-	 * @return ContextUrlGenerator
+	 * @return $this
 	 */
 	public function setRequest(\PXRequest$request) {
 		$this->request = $request;
@@ -93,7 +94,7 @@ class ContextUrlGenerator {
 
 	/**
 	 * @param null|string $targetModule
-	 * @return ContextUrlGenerator
+	 * @return $this
 	 */
 	public function setTargetModule($targetModule) {
 		$this->targetModule = $targetModule;
@@ -108,17 +109,17 @@ class ContextUrlGenerator {
 	}
 
 	/**
-	 * @return AbstractModule
+	 * @return null|string
 	 */
 	public function getCurrentModule() {
 		return $this->currentModule;
 	}
 
 	/**
-	 * @param AbstractModule $currentModule
-	 * @return ContextUrlGenerator
+	 * @param string $currentModule
+	 * @return $this
 	 */
-	public function setCurrentModule(AbstractModule $currentModule) {
+	public function setCurrentModule($currentModule) {
 		$this->currentModule = $currentModule;
 		return $this;
 	}

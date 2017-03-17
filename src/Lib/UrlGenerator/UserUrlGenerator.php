@@ -9,32 +9,28 @@ namespace PP\Lib\UrlGenerator;
 class UserUrlGenerator extends AbstractUrlGenerator {
 
 	/**
-	 * @param array [string]string $params
-	 * @return string
+	 * @inheritdoc
 	 */
 	public function indexUrl($params = []) {
 		// TODO: Implement indexUrl() method.
 	}
 
 	/**
-	 * @param array [string]string $params
-	 * @return string
+	 * @inheritDoc
 	 */
 	public function actionUrl($params = []) {
 		// TODO: Implement actionUrl() method.
 	}
 
 	/**
-	 * @param array [string]string $params
-	 * @return string
+	 * @inheritDoc
 	 */
 	public function jsonUrl($params = []) {
 		// TODO: Implement jsonUrl() method.
 	}
 
 	/**
-	 * @param array [string]string $params
-	 * @return string
+	 * @inheritDoc
 	 */
 	public function popupUrl($params = []) {
 		// TODO: Implement popupUrl() method.

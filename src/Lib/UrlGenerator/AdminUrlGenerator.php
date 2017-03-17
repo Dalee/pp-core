@@ -2,11 +2,14 @@
 
 namespace PP\Lib\UrlGenerator;
 
+/**
+ * Class AdminUrlGenerator
+ * @package PP\Lib\UrlGenerator
+ */
 class AdminUrlGenerator extends AbstractUrlGenerator {
 
 	/**
-	 * @param array [string]string $params
-	 * @return string
+	 * {@inheritdoc}
 	 */
 	public function indexUrl($params = []) {
 		$url = '/admin/';
@@ -15,8 +18,7 @@ class AdminUrlGenerator extends AbstractUrlGenerator {
 	}
 
 	/**
-	 * @param array [string]string $params
-	 * @return string
+	 * @inheritdoc
 	 */
 	public function actionUrl($params = []) {
 		$url = '/admin/action.phtml';
@@ -28,21 +30,18 @@ class AdminUrlGenerator extends AbstractUrlGenerator {
 				$params['sid'] = $sid;
 			}
 		}
-
 		return $this->generateUrl($url, $params);
 	}
 
 	/**
-	 * @param array [string]string $params
-	 * @return string
+	 * @inheritdoc
 	 */
 	public function jsonUrl($params = []) {
 		// TODO: Implement jsonUrl() method.
 	}
 
 	/**
-	 * @param array [string]string $params
-	 * @return string
+	 * @inheritdoc
 	 */
 	public function popupUrl($params = []) {
 		// TODO: Implement popupUrl() method.
