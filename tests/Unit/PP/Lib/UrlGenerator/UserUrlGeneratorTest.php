@@ -2,7 +2,6 @@
 
 namespace Tests\Unit\PP\Lib\UrlGenerator;
 
-
 use PP\Lib\UrlGenerator\UserUrlGenerator;
 
 class UserUrlGeneratorTest extends \PHPUnit_Framework_TestCase {

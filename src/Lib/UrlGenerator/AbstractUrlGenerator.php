@@ -15,7 +15,7 @@ abstract class AbstractUrlGenerator implements GeneratorInterface {
 
 	/**
 	 * AbstractUrlGenerator constructor.
-	 * @param $context
+	 * @param ContextUrlGenerator $context
 	 */
 	public function __construct(ContextUrlGenerator $context) {
 		$this->context = $context;

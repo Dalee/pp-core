@@ -19,6 +19,7 @@ class UrlGeneratorTest extends AbstractUnitTest {
 		$userUrlGenerator2 = $urlGenerator->getUserGenerator();
 		$this->assertTrue($userUrlGenerator === $userUrlGenerator2);
 
+		/** @var \PHPUnit_Framework_MockObject_MockObject | ContextUrlGenerator $content2 */
 		$content2 = $this->getMockBuilder('\PP\Lib\UrlGenerator\ContextUrlGenerator')
 			->getMock();
 		$urlGenerator->setContext($content2);
@@ -37,6 +38,7 @@ class UrlGeneratorTest extends AbstractUnitTest {
 		$adminUrlGenerator2 = $urlGenerator->getAdminGenerator();
 		$this->assertTrue($adminUrlGenerator === $adminUrlGenerator2);
 
+		/** @var \PHPUnit_Framework_MockObject_MockObject | ContextUrlGenerator $content2 */
 		$content2 = $this->getMockBuilder('\PP\Lib\UrlGenerator\ContextUrlGenerator')
 			->getMock();
 		$urlGenerator->setContext($content2);
