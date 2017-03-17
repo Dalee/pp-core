@@ -11,7 +11,7 @@ use PP\Module\ModuleInterface;
  */
 class ContextUrlGenerator {
 
-	/** @var string */
+	/** @var null|string */
 	protected $targetAction;
 
 	/** @var null|\PXRequest */
@@ -24,23 +24,7 @@ class ContextUrlGenerator {
 	protected $currentModule;
 
 	/**
-	 * Context constructor.
-	 * @param string $targetAction
-	 * @param \PXRequest $request
-	 * @param string $targetModule
-	 */
-	public function __construct(
-		$targetAction = ModuleInterface::ACTION_INDEX,
-		\PXRequest $request = null,
-		$targetModule = null
-	) {
-		$this->request = $request;
-		$this->targetModule = $targetModule;
-		$this->targetAction = $targetAction;
-	}
-
-	/**
-	 * @return string
+	 * @return null|string
 	 */
 	public function getTargetAction() {
 		return $this->targetAction;
