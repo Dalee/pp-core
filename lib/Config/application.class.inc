@@ -487,7 +487,7 @@ class PXApplication {
 		$modulesBindings = getFromArray($modules, 'bindings', []);
 		foreach ($modulesBindings as $bindingType => $bindings) {
 			foreach ($bindings as $binding) {
-				$this->bindingsQueue->addFromArray($binding, $bindingType);
+				$this->bindingsQueue->add($binding, $bindingType);
 			}
 		}
 
