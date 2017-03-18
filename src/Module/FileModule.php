@@ -1,11 +1,17 @@
 <?php
 
-use PP\Module\AbstractModule;
+namespace PP\Module;
 
 require_once PPLIBPATH . 'Filesys/listing.class.inc';
 require_once PPLIBPATH . 'HTML/filelisting.class.inc';
 
-class PXModuleFile extends AbstractModule {
+/**
+ * Class FileModule.
+ *
+ * @package PP\Module
+ */
+class FileModule extends AbstractModule {
+
 	var $settings;
 	var $area;
 
@@ -85,7 +91,7 @@ class PXModuleFile extends AbstractModule {
 
 			$listing->setDestination($othDir);
 			$listing->getList($curDir);
-			$listing->setDecorator(new PXHTMLFileListing($href, $tab['side']));
+			$listing->setDecorator(new \PXHTMLFileListing($href, $tab['side']));
 
 			$this->layout->assign('INNER.'.$tab['cell'].'.0', $listing->html());
 
@@ -130,7 +136,6 @@ HTML;
 			'MDIR'    => ($side == 'l' ? $ldir : $rdir),
 			'LDIR'    => $ldir,
 			'RDIR'    => $rdir,
-			'SIDE'    => $side,
 			'NAME'    => $name,
 		);
 
@@ -207,7 +212,7 @@ HTML;
 
 				$listing->setDestination($othDir);
 				$listing->getList($curDir);
-				$listing->setDecorator(new PXHTMLFileListingLink($href, 'l', $rName));
+				$listing->setDecorator(new \PXHTMLFileListingLink($href, 'l', $rName));
 
 				$this->layout->assign('OUTER.LEFTCONTROLS', '<button class="unlink" onclick="return UnLinkFile(\''.$rName.'\');">Отвязать</button>');
 
@@ -227,14 +232,13 @@ HTML;
 
 		if(is_file($filePath) && is_writable($filePath) && !is_binary($filePath)) {
 			$object = array();
-			$form   = new PXAdminForm($object, null);
+			$form   = new \PXAdminForm($object, null);
 
 			$this->layout->assign('OUTER.TITLE', 'Редактирование файла &laquo;'.$this->mFile.'&raquo;');
 			$form->leftControls();
 			$form->rightControls();
 
 			return $form->editTextFileForm($this->mFile, $this->catalog);
-
 		} else {
 			return 'Редактирование файлов подобного формата еще не реализовано';
 		}
@@ -247,7 +251,7 @@ HTML;
 
 		$outSide      = $this->request->getVar('outside');
 
-		$this->catObject = new PXFileListing($this->settings);
+		$this->catObject = new \PXFileListing($this->settings);
 
 		$this->redir  = (!empty($outSide) && $outSide !== $this->area ? 'popup.phtml?action='.$outSide.'&name='.$this->request->getVar('name').'&' : './?');
 		$this->redir .= 'area='.$this->area.'&ldir='.$lDir.'&rdir='.$rDir;
@@ -267,14 +271,11 @@ HTML;
 
 		switch($this->request->getVar('action')) {
 			case 'createdir': $this->withArgs(array($this->catalog), '_aCreateDir'); break;
-
 			case 'copy':      $this->withArgs(array($this->catalog, $this->destination, $this->mFile), '_aCopy');    break;
 			case 'move':      $this->withArgs(array($this->catalog, $this->destination, $this->mFile), '_aMove');    break;
 			case 'rename':    $this->withArgs(array($this->catalog, $this->mFile, $this->nFile),       '_aRename');  break;
 			case 'delete':    $this->withArgs(array($this->catalog, $this->mFile),                     '_aDelete');  break;
-
 			case 'edit':      $this->withArgs(array($this->mFile),                                     '_aEdit');    break;
-
 			case 'unzip':     $this->withArgs(array($this->catalog, $this->mFile),                     '_aUnZip');   break;
 			case 'upload':    $this->withArgs(array($this->catalog),                                   '_aUpload');  break;
 		}
@@ -303,11 +304,11 @@ HTML;
 			return;
 		}
 
-		$mdir        = $this->fullPath($mdir);
-		$source      = $this->request->getVar('filesource');
-		$filePath    = $mdir . $this->mFile;
+		$mdir = $this->fullPath($mdir);
+		$source = $this->request->getVar('filesource');
+		$filePath = $mdir . $this->mFile;
 
-		if(is_file($filePath) && is_writable($filePath) && !is_binary($filePath)) {
+		if (is_file($filePath) && is_writable($filePath) && !is_binary($filePath)) {
 			$fp = fopen($filePath, 'w');
 			fwrite($fp, $source);
 			fclose($fp);
@@ -327,7 +328,7 @@ HTML;
 				break;
 
 			case is_dir($filePath):
-				$d = new NLDir($filePath);
+				$d = new \NLDir($filePath);
 				$d->Delete();
 				break;
 		}
@@ -344,7 +345,7 @@ HTML;
 	function _aMove() {
 		$entry = $this->mFile;
 
-		if(file_exists($this->catalog.$entry) && is_writable($this->destination) && is_writable($this->catalog)) {
+		if (file_exists($this->catalog.$entry) && is_writable($this->destination) && is_writable($this->catalog)) {
 			copyr($this->catalog.$entry, $this->destination.$entry);
 
 			$this->_aDelete();
@@ -354,7 +355,7 @@ HTML;
 	function _aCreateDir() {
 		$ndir = $this->_escapeFileName($this->request->getVar('ndir'));
 
-		if(is_dir($this->catalog) && is_writable($this->catalog) && !is_dir($this->catalog . $ndir)) {
+		if (is_dir($this->catalog) && is_writable($this->catalog) && !is_dir($this->catalog . $ndir)) {
 			MakeDirIfNotExists($this->catalog.$ndir);
 		}
 	}
@@ -363,19 +364,19 @@ HTML;
 		$oldFile = $this->mFile;
 		$newFile = $this->nFile;
 
-		if((is_file($this->catalog.$oldFile) || is_dir($this->catalog.$oldFile)) && is_writable($this->catalog) && (!is_file($this->catalog.$newFile) && !is_dir($this->catalog.$newFile))) {
+		if ((is_file($this->catalog.$oldFile) || is_dir($this->catalog.$oldFile)) && is_writable($this->catalog) && (!is_file($this->catalog.$newFile) && !is_dir($this->catalog.$newFile))) {
 			rename($this->catalog.$oldFile, $this->catalog.$newFile);
 		}
 	}
 
 	function _aUnZip() {
-		if(is_file($this->catalog.$this->mFile) && is_writable($this->catalog)) {
+		if (is_file($this->catalog.$this->mFile) && is_writable($this->catalog)) {
 			system(sprintf("unzip -oq %s -d %s", escapeshellarg($this->catalog.$this->mFile), escapeshellarg($this->catalog)));
 		}
 	}
 
 	function _aUpload() {
-		if($this->request->GetUploadFile('uploadfile')) {
+		if ($this->request->GetUploadFile('uploadfile')) {
 			$this->uploadFileFromUser($this->request->GetUploadFile('uploadfile'));
 		} elseif($this->request->GetVar('uploadfileurl')) {
 			$this->uploadFileFromWeb($this->request->GetVar('uploadfileurl'));
@@ -437,7 +438,7 @@ HTML;
 
 					$fileAttr = getimagesize($filename);
 
-					if(isset($map[$fileAttr[2]])) {
+					if (isset($map[$fileAttr[2]])) {
 						$subname = str_replace($this->catalog, '', $filename);
 						if(mb_strpos($subname, '.')) {
 							$subname = mb_substr($subname, 0, mb_strpos($subname, '.'));
@@ -452,4 +453,5 @@ HTML;
 			}
 		}
 	}
+
 }

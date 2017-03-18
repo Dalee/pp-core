@@ -1,23 +1,25 @@
 <?php
 
-use PP\Module\AbstractModule;
+namespace PP\Module;
 
-class PXModuleRSSEngine extends AbstractModule {
+/**
+ * Class RssEngineModule.
+ *
+ * @package PP\Module
+ */
+class RssEngineModule extends AbstractModule {
+
 	function __construct($area, $settings) {
 		parent::__construct($area, $settings);
 
 		$this->encoding = CHARSET_UTF8;
 	}
 
-	function _GetChannel() {
-		return $channel;
-	}
-
 	function _GetItems() {
 		return $this->items;
 	}
 
-	function userIndex(){ //&$app, &$request, &$user, &$db, &$layout, &$tree, &$objects, &$subObjects, &$references, &$heap, $currentSid, $currentCid, $currentCtype, $currentSCid, $currentSCtype, $rootId, $pathId) {
+	function userIndex() { // &$app, &$request, &$user, &$db, &$layout, &$tree, &$objects, &$subObjects, &$references, &$heap, $currentSid, $currentCid, $currentCtype, $currentSCid, $currentSCtype, $rootId, $pathId) {
 		FatalError('It\'s interface method. ReWrite it.');
 		exit;
 	}
@@ -37,7 +39,7 @@ class PXModuleRSSEngine extends AbstractModule {
 		return $string;
 	}
 
-	function date2time ($string) {
+	function date2time($string) {
 		if ($string == 'today') {
 			$time = mktime(0,0,0);
 
@@ -70,7 +72,7 @@ class PXModuleRSSEngine extends AbstractModule {
 
 		$xml = $this->unhtmlentities($xml);
 
-		$response = PXResponse::getInstance();
+		$response = \PXResponse::getInstance();
 		$response->setOk();
 		$response->setContentType('text/xml', $this->encoding);
 		$response->send($xml);
@@ -93,7 +95,7 @@ class PXModuleRSSEngine extends AbstractModule {
 
 class PXRssXML {
 	function _node($nodeName, $value) {
-		if(is_array($value)) {
+		if (is_array($value)) {
 			$value = implode("", $value);
 		}
 
@@ -104,9 +106,9 @@ XML;
 	}
 
 	function nodeSet($nodes) {
-		$_ = array();
+		$_ = [];
 
-		foreach($nodes as $node) {
+		foreach ($nodes as $node) {
 			if(method_exists($this, $node)) {
 				$_[] = $this->$node();
 
@@ -181,5 +183,5 @@ class PXRssItem extends PXRssXML {
 	function description() {
 		return $this->_node('description', '<![CDATA['.$this->_data['description'].']]>');
 	}
+
 }
-?>

@@ -25,6 +25,25 @@ class PXBindingsQueue implements Iterator {
 		$this->rules[] = new $cls($rule, $this->pOrder++);
 	}
 
+	public function addFromArray($binding, $type) {
+		$rule = [
+			'type' => $type,
+			'var' => getFromArray($binding, 'var'),
+			'value' => getFromArray($binding, 'value'),
+			'order' => getFromArray($binding, 'order'),
+			'module' => getFromArray($binding, 'module')
+		];
+
+		$cls = 'PXBindingDescription';
+		$type = preg_replace('/[^0-9a-z]/' . REGEX_MOD, '', $type);
+
+		if (class_exists($cls . $type)) {
+			$cls .= $type;
+		}
+
+		$this->__addRule($cls, $rule);
+	}
+
 	function add($xmlNode, $type) {
 		$rule = array(
 			'type'   => $type,
@@ -98,7 +117,7 @@ class PXBindingsQueue implements Iterator {
 
 		return 0;
 	}
-	
+
 	function stopLoading() {
 		$this->finalize = true;
 	}

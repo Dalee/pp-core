@@ -1,8 +1,14 @@
 <?php
 
-use PP\Module\AbstractModule;
+namespace PP\Module;
 
-class PXModuleSearch extends AbstractModule  {
+/**
+ * Class SearchModule.
+ *
+ * @package PP\Module
+ */
+class SearchModule extends AbstractModule  {
+
 	var $word;
 
 	function adminIndex() {
@@ -13,7 +19,7 @@ class PXModuleSearch extends AbstractModule  {
 			$allCount = 0;
 
 			$checkedTypes = $this->request->getVar('d', array());
-			foreach($this->app->types as $datatype) {
+			foreach ($this->app->types as $datatype) {
 				if(!isset($checkedTypes[$datatype->id])) {
 					continue;
 				}
@@ -21,7 +27,7 @@ class PXModuleSearch extends AbstractModule  {
 				$allCount += $this->find($datatype);
 			}
 
-			if(!$allCount) {
+			if (!$allCount) {
 				$this->layout->append('INNER.1.0', '<h2 class="error">Ничего не найдено</h2>');
 			}
 		}
@@ -87,20 +93,20 @@ HTML;
 		$this->layout->setGetVarToSave('word', $this->word);
 
 		// build the string for datatypes check
-		foreach($checkedTypes as $k => $v){
+		foreach ($checkedTypes as $k => $v){
 			$this->layout->setGetVarToSave('d[' . $k . ']', 'on');
 		}
 	}
 
 	function find(&$datatype) {
-		$count   = $this->db->getObjectsBySearchWord($datatype, NULL, $this->word, DB_SELECT_COUNT);
+		$count = $this->db->getObjectsBySearchWord($datatype, NULL, $this->word, DB_SELECT_COUNT);
 
-		if($count) {
-			$table = new PXAdminTableObjects($datatype, $this->word, 'BySearchWord');
+		if ($count) {
+			$table = new \PXAdminTableObjects($datatype, $this->word, 'BySearchWord');
 			$table->addToParent('INNER.1.0');
 		}
 
 		return $count;
-
 	}
+
 }

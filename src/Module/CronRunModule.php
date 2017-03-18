@@ -1,14 +1,17 @@
 <?php
 
+namespace PP\Module;
+
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
-use PP\Module\AbstractModule;
 use PP\Lib\Datastruct\Tree;
 use PP\Cron\CronRule;
 
 /**
- * Class PXModuleCronRun
+ * Class CronRunModule.
+ *
+ * @package PP\Module
  */
-class PXModuleCronRun extends AbstractModule {
+class CronRunModule extends AbstractModule {
 	var $TIME_FORMAT = 'd-m-Y H:i:s';
 	var $rules;
 
@@ -118,11 +121,12 @@ class PXModuleCronRun extends AbstractModule {
 		$tmStart = time();
 
 		// !!! run code here !!!
-		$db = new PXDatabase($app); //add NEW connect to the database from current child
-		$user = new PXUserCron();
+		// add NEW connect to the database from current child
+		$db = new \PXDatabase($app);
+		$user = new \PXUserCron();
 
-		PXRegistry::setDB($db);
-		PXRegistry::setUser($user);
+		\PXRegistry::setDB($db);
+		\PXRegistry::setUser($user);
 		$db->setUser($user);
 
 		$db->loadDirectoriesAutomatic($app->directory); //init directory from here !
@@ -176,7 +180,7 @@ class PXModuleCronRun extends AbstractModule {
 
 			if ($fp) {
 				do {
-					//nothing;
+					// nothing;
 				} while (!flock($fp, LOCK_EX));
 			}
 		}
@@ -220,8 +224,7 @@ class PXModuleCronRun extends AbstractModule {
 		);
 	}
 
-	private
-	function _loadStat() {
+	private function _loadStat() {
 		$fp = @fopen(BASEPATH . '/site/var/cron.results', 'r');
 
 		if ($fp) {
@@ -299,7 +302,7 @@ class PXModuleCronRun extends AbstractModule {
 			$result[] = $_;
 		}
 
-		$table = new PXAdminTableSimple($fields);
+		$table = new \PXAdminTableSimple($fields);
 		$table->setData($result);
 
 		$layout->assign('INNER.0.0', $table->html());

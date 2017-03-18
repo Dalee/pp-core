@@ -1,123 +1,121 @@
 <?php
+
+use PP\Module\ModuleInterface;
+
 /**
- * Класс - хранилище информации о модуле.
- * Стоится по etc/modules.xml /modules/module.
+ * Class PXModuleDescription.
  *
- * @subpackage Application
+ * Holds module configuration from modules.yml
  */
 class PXModuleDescription {
 
-	var $name        = null;
-	var $description = null;
-	var $class       = null;
-	var $settings    = [];
-	var $package     = null;
-	var $hidetab     = false;
-	var $trigger     = false;
-
+	/**
+	 * @var string
+	 */
 	const EMPTY_DESCRIPTION = '---';
 
 	/**
-	 * @return \PXModule
+	 * @var string
 	 */
-	public function getModule() {
-		if (!class_exists($this->class, false)) {
-			$this->load();
-		}
+	protected $name;
 
-		return new $this->class($this->name, $this->settings, $this);
-	}
+	/**
+	 * @var string
+	 */
+	protected $description;
 
-	function setAttrs($attrs) {
-		foreach($attrs as $item) {
-			$name = $item->name;
-			$this->$name = pp_simplexml_decode_string($item->value);
-		}
+	/**
+	 * @var string
+	 */
+	protected $class;
+
+	/**
+	 * @var array
+	 */
+	protected $settings = [];
+
+	/**
+	 * @return string
+	 */
+	public function getName() {
+		return $this->name;
 	}
 
 	/**
-	 * TODO: refactor for PSR-4 load support
+	 * @param string $name
+	 * @return $this
 	 */
-	function checkClass() {
-		if(is_null($this->name)) {
-			FatalError('Module name is not defined');
-		}
+	public function setName($name) {
+		$this->name = $name;
 
-		if(is_null($this->class)) {
-			$cls = 'PXModule';
-
-			if(!is_null($this->package)) {
-				$cls .= str_replace('/', '', $this->package);
-			}
-
-			$cls .= preg_replace('/[^0-9a-z_]/i'.REGEX_MOD, '', $this->name);
-
-			$this->class = $cls;
-		}
-	}
-
-	function setToPackage($package) {
-		$this->package = $package;
+		return $this;
 	}
 
 	/**
 	 * @return string
 	 */
-	function getName() {
-		return $this->name;
+	public function getDescription() {
+		return $this->description;
 	}
 
 	/**
-	* Подключает файл модуля, проверяет сначала local/modules, затем lib/modules
-	*/
-	function load() {
-		$file = $this->getPathToClass();
+	 * @param string $description
+	 * @return $this
+	 */
+	public function setDescription($description) {
+		$this->description = $description;
 
-		if(is_string($file)) {
-			include_once $file;
-		}
+		return $this;
 	}
 
-	function getPathToClass($type = 'module') {
-		$file = sprintf(
-			"%s.%s.inc",
-			str_replace('pxmodule', '', strtolower($this->class)),
-			$type
-		);
-
-		if (strlen($this->package) > 0) {
-			$package = str_replace(".", "/", $this->package);
-			$packageLengthWithoutSlashes = strlen(str_replace("/", "", $package));
-			$file = sprintf("%s/%s", $package, strtolower(substr($file, $packageLengthWithoutSlashes)));
-		}
-
-		$file = sprintf("%ss/%s", $type, $file);
-
-		$findBy = array(
-			"local",
-			"libpp");
-
-		foreach ($findBy as $folder) {
-			$requiredPath = sprintf("%s/%s/%s", BASEPATH, $folder, $file);
-
-			if (file_exists($requiredPath)) {
-				return $requiredPath;
-			}
-		}
+	/**
+	 * @return string
+	 */
+	public function getClass() {
+		return $this->class;
 	}
 
-	function lookPackage($dom) {
-		$path    = array();
-		$package = $dom->xpath("/modules//module[@name='".$this->getName()."']/ancestor::package/@folder");
+	/**
+	 * @param string $class
+	 * @return $this
+	 */
+	public function setClass($class) {
+		$this->class = $class;
 
-		if ($package) {
-			$tmp = $package;
-			foreach($tmp  as $pack) {
-				$path[] = $pack->nodeValue();
-			}
-
-			$this->setToPackage(join(DIRECTORY_SEPARATOR, $path));
-		}
+		return $this;
 	}
+
+	/**
+	 * @return array
+	 */
+	public function getSettings() {
+		return $this->settings;
+	}
+
+	/**
+	 * @param $setting
+	 * @return string|null
+	 */
+	public function getSetting($setting) {
+		return isset($this->settings[$setting])? $this->settings[$setting]: null;
+	}
+
+	/**
+	 * @param array $settings
+	 * @return $this
+	 */
+	public function setSettings($settings) {
+		$this->settings = $settings;
+
+		return $this;
+	}
+
+	/**
+	 * @return ModuleInterface
+	 */
+	public function getModule() {
+		return new $this->class($this->name, $this->settings, $this);
+	}
+
 }
 

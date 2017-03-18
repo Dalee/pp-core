@@ -1,18 +1,24 @@
 <?php
 
-use PP\Module\AbstractModule;
+namespace PP\Module;
+
 use PP\Lib\Html\Layout\AdminHtmlLayout;
 
 /**
- * Class PXModuleMain
+ * Class PXModuleMain.
+ *
+ * @package PP\Module
  */
-class PXModuleMain extends AbstractModule {
+class MainModule extends AbstractModule {
+
 	private $rootFormatId;
 	private $objectsLoadMode;
+	private $rootFormat;
 
 	function __construct($area, $settings) {
 		parent::__construct($area, $settings);
-		$this->rootFormatId    = $settings['rootFormat'];
+
+		$this->rootFormatId = $settings['rootFormat'];
 
 		$this->objectsLoadMode = array(
 			PP_CHILDREN_FETCH_NONE     => 'none',
@@ -98,14 +104,14 @@ class PXModuleMain extends AbstractModule {
 		}
 
 		foreach ($allowed as $type => $behaviour) {
-			$format = PXRegistry::getTypes($type);
+			$format = \PXRegistry::getTypes($type);
 
-			if(!is_object($format)) {
+			if (!is_object($format)) {
 				continue;
 			}
 
-			$loadingMethod  = 'load'.ucfirst($this->objectsLoadMode[$behaviour]).'Objects';
-			$objsArray      = $this->$loadingMethod($object, $format, $pathName);
+			$loadingMethod = 'load' . ucfirst($this->objectsLoadMode[$behaviour]).'Objects';
+			$objsArray = $this->$loadingMethod($object, $format, $pathName);
 
 			$fillObj->add($type, $objsArray);
 			$fillObj->findCurrent($type, $pathName);
@@ -131,8 +137,8 @@ class PXModuleMain extends AbstractModule {
 			$objsArray = $this->loadSelectedObjects($object, $format, $pathName);
 
 		} else {
-			$a_per_page  = $this->app->getProperty(strtoupper($format->id).'_PER_PAGE', DEFAULT_CHILDREN_PER_PAGE);
-			$count       = $this->_loadContent($format, true, 'parent', $object->currentId, DB_SELECT_COUNT);
+			$a_per_page = $this->app->getProperty(strtoupper($format->id).'_PER_PAGE', DEFAULT_CHILDREN_PER_PAGE);
+			$count = $this->_loadContent($format, true, 'parent', $object->currentId, DB_SELECT_COUNT);
 			$currentPage = $this->getCurrentPage($format, $count, $a_per_page);
 
 			$this->layout->assign('FP_' . strtoupper($format->id) . '_TOTAL',        $count);
@@ -176,10 +182,10 @@ class PXModuleMain extends AbstractModule {
 			// {Нам это необходимо, чтобы работал PXAdminAjaxTreeObjects
 			$layout = new AdminHtmlLayout("index", $this->app->types);
 			$layout->setGetVarToSave('area', $this->area);
-			PXRegistry::setLayout($layout);
+			\PXRegistry::setLayout($layout);
 			// нам это необходимо, чтобы работал PXAdminAjaxTreeObjects}
 
-			$hTree = new PXAdminAjaxTreeObjects($format, null, null, true, $id);
+			$hTree = new \PXAdminAjaxTreeObjects($format, null, null, true, $id);
 			isset($cl) && $hTree->showChildren($cl);
 
 			$answer = $hTree->html();
@@ -196,15 +202,16 @@ class PXModuleMain extends AbstractModule {
 		$request = $this->request;
 		$layout  = $this->layout;
 
-		$rootFormat = $this->rootFormat = $app->types[$this->rootFormatId];
+		$this->rootFormat = $app->types[$this->rootFormatId];
 
 		$rqSid = $request->getSid();
 		$rqCid = $request->getCid();
 
-		$hTree = new PXAdminAjaxTreeObjects($this->rootFormat, null, null, true);
+		$hTree = new \PXAdminAjaxTreeObjects($this->rootFormat, null, null, true);
 
-		($this->rootFormatId == $this->app->modules['main']->settings['rootFormat']) &&
-		$this->fillPathnamedAliases($hTree->getTree());
+		if ($this->rootFormatId == $this->app->modules['main']->getSetting('rootFormat')) {
+			$this->fillPathnamedAliases($hTree->getTree());
+		}
 
 		$hTree->hideCaption();
 		$hTree->showChildren('sid');
@@ -222,13 +229,13 @@ class PXModuleMain extends AbstractModule {
 
 			$structHasInnerBlocks = false;
 
-			foreach($this->rootFormat->fields as $fieldName => $field) {
-				if(!is_a($field->storageType, 'PXStorageTypeBlockcontent')) {
+			foreach ($this->rootFormat->fields as $fieldName => $field) {
+				if (!is_a($field->storageType, 'PXStorageTypeBlockcontent')) {
 					continue;
 				}
-				$blocks = new PXAdminBlocksTree($this->rootFormat, $fieldName, $rqSid);
+
+				$blocks = new \PXAdminBlocksTree($this->rootFormat, $fieldName, $rqSid);
 				$blocks->addToParent('INNER.1.0');
-				$hasInnerBlocks = true;
 			}
 
 			$allowedChilds = $app->getAllowedChildsKeys($this->rootFormat->id, $parentObject);
@@ -240,10 +247,10 @@ class PXModuleMain extends AbstractModule {
 					}
 
 					if ($app->types[$childFormat]->struct == 'tree' && $request->GetVar($childFormat.'_view') != 'plain') {
-						$objects = new PXAdminTreeObjects($childFormat, $rqSid, 'ByParent', true);
+						$objects = new \PXAdminTreeObjects($childFormat, $rqSid, 'ByParent', true);
 
 					} else {
-						$objects =  new PXAdminTableObjects($childFormat, $rqSid, 'ByParent');
+						$objects = new \PXAdminTableObjects($childFormat, $rqSid, 'ByParent');
 					}
 
 					$objects->showChildren('cid');
@@ -268,7 +275,7 @@ class PXModuleMain extends AbstractModule {
 						if(!is_a($field->storageType, 'PXStorageTypeBlockcontent')) {
 							continue;
 						}
-						$blocks = new PXAdminBlocksTree($this->app->types[$cidType], $fieldName, $rqCid);
+						$blocks = new \PXAdminBlocksTree($this->app->types[$cidType], $fieldName, $rqCid);
 						$blocks->addToParent('INNER.2.0');
 						$childHasInnerBlocks = true;
 					}
@@ -279,10 +286,10 @@ class PXModuleMain extends AbstractModule {
 					if (count($allowedChilds)) {
 						foreach ($allowedChilds as $childFormat) {
 							if ($app->types[$childFormat]->struct == 'tree' && $request->GetVar($childFormat.'_view') != 'plain') {
-								$subObjects = new PXAdminTreeObjects($childFormat, $rqCid, 'ByParent');
+								$subObjects = new \PXAdminTreeObjects($childFormat, $rqCid, 'ByParent');
 
 							} else {
-								$subObjects =  new PXAdminTableObjects($childFormat, $rqCid, 'ByParent');
+								$subObjects =  new \PXAdminTableObjects($childFormat, $rqCid, 'ByParent');
 							}
 
 							$subObjects->setControlParent($rqCid);
@@ -325,7 +332,7 @@ class PXModuleMain extends AbstractModule {
 		}
 
 		// set current host
-		is_null($host) && $host = PXRegistry::getRequest()->getHTTPHost();
+		is_null($host) && $host = \PXRegistry::getRequest()->getHTTPHost();
 		$aliases = $this->_parseAliasesConfig();
 
 		// находим соответствие между хостом, на который мы зашли - fixme: use case?

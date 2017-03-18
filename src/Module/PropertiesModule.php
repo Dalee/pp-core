@@ -1,18 +1,20 @@
 <?php
 
+namespace PP\Module;
+
 use PP\Lib\UrlGenerator\ContextUrlGenerator;
 use PP\Lib\UrlGenerator\UrlGenerator;
-use PP\Module\AbstractModule;
 use PP\Properties\PropertyLoader;
 use Ramsey\Uuid\Uuid;
 use PP\Lib\Xml\SimpleXmlNode;
 
 /**
- * Check documentation: libpp/docs/properties.module.md
+ * Class PropertiesModule.
  *
- * Class PXModuleProperties
+ * @see libpp/docs/properties.module.md
+ * @package PP\Module
  */
-class PXModuleProperties extends AbstractModule {
+class PropertiesModule extends AbstractModule {
 
 	/** @var array */
 	protected $predefinedPropertyDefList = [];
@@ -33,7 +35,7 @@ class PXModuleProperties extends AbstractModule {
 	 */
 	public static function getAclModuleActions() {
 		$defaults = parent::getAclModuleActions();
-		$defaults['sys_properties_edit'] = PXRegistry::getApp()
+		$defaults['sys_properties_edit'] = \PXRegistry::getApp()
 			->langTree
 			->getByPath('module_acl_rules.actions.sys_properties_edit.rus');
 
@@ -78,7 +80,7 @@ class PXModuleProperties extends AbstractModule {
 			'id' => '',
 		];
 
-		$table = (new PXAdminTableSimple($colsDef))
+		$table = (new \PXAdminTableSimple($colsDef))
 			->setTableId('properties')
 			->showEven()
 			->setNullText($this->app->langTree->getByPath('module_properties.table_ctrl.empty_value.rus'))
@@ -128,7 +130,7 @@ class PXModuleProperties extends AbstractModule {
 
 		$propertyDef = $this->getPropertyDefById($id);
 		$typeDef = $this->getTypeDescription($propertyDef);
-		$form = new PXAdminForm(
+		$form = new \PXAdminForm(
 			[
 				'id' => $propertyDef['id'],
 				'sys_uuid' => $propertyDef['sys_uuid'],
@@ -266,7 +268,7 @@ class PXModuleProperties extends AbstractModule {
 
 			parseStrMagic($formatString, $propertyDef);
 			if (!isset($propertyDef['name'])) {
-				FatalError("В параметрах модуля, для одного из полей отсутствует обязательный параметр name");
+				FatalError('В параметрах модуля, для одного из полей отсутствует обязательный параметр name');
 			}
 
 			$propertyDef['description'] = isset($propertyDef['description'])
@@ -370,7 +372,7 @@ class PXModuleProperties extends AbstractModule {
 	 * Perform property normalization after database fetch.
 	 *
 	 * @param array $propertyRaw
-	 * @param PXTypeDescription $format
+	 * @param \PXTypeDescription $format
 	 * @return array
 	 */
 	protected function normalizeType($propertyRaw, $format) {
@@ -391,7 +393,7 @@ class PXModuleProperties extends AbstractModule {
 
 	/**
 	 * @param array $object
-	 * @return PXTypeDescription
+	 * @return \PXTypeDescription
 	 */
 	protected function getTypeDescription($object) {
 		$name = isset($object['name']) ? $object['name'] : null;
@@ -409,7 +411,7 @@ class PXModuleProperties extends AbstractModule {
 				'displaytype' => 'HIDDEN',
 				'storagetype' => 'pk',
 			],
-			'sys_uuid' => [
+			OBJ_FIELD_UUID => [
 				'name' => 'sys_uuid',
 				'description' => '',
 				'displaytype' => 'HIDDEN',
@@ -435,7 +437,6 @@ class PXModuleProperties extends AbstractModule {
 			],
 		];
 
-
 		return $this->buildTypeFromArray($objectDef);
 	}
 
@@ -444,7 +445,7 @@ class PXModuleProperties extends AbstractModule {
 	 * @return PXTypeDescription
 	 */
 	protected function buildTypeFromArray($objectDef) {
-		$typeDescription = new PXTypeDescription();
+		$typeDescription = new \PXTypeDescription();
 		$typeDescription->id = 'sys_property';
 		$typeDescription->title = $this->app->langTree->getByPath('module_properties.table.name.rus');
 

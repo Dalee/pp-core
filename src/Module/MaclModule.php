@@ -1,8 +1,14 @@
 <?php
 
-require_once PPPATH . 'modules/acl.module.inc';
+namespace PP\Module;
 
-class PXModuleMAcl extends PXModuleAcl {
+/**
+ * Class MaclModule.
+ *
+ * @package PP\Module
+ */
+class MaclModule extends AclModule {
+
 	var $what;
 	var $access;
 	var $objectRule     = 'module';
@@ -10,30 +16,24 @@ class PXModuleMAcl extends PXModuleAcl {
 	var $aclObjectTitle = 'Модуль';
 
 	function getAvailableActions() {
-		$actions = ['default' => PXModule::getAclModuleActions()];
+		$actions = ['default' => \PXModule::getAclModuleActions()];
 
 		foreach($this->app->modules as $name => $module) {
-			if (!class_exists($module->class, false)) {
-				$path = $module->getPathToClass();
-
-				if(!mb_strlen($path) && !file_exists($path)) {
-					FatalError(sprintf("Can't find file with '%s' module", $name));
-				}
-
-				require_once $path;
-			}
-
-			$actions[$module->name] = call_user_func([$module->class, 'getAclModuleActions']);
+			$actions[$module->getName()] = call_user_func([$module->getClass(), 'getAclModuleActions']);
 		}
 
 		return $actions;
 	}
 
 	function _getTypes() {
-		$types = array();
+		$types = [];
 
-		foreach($this->app->modules as $module) {
-			$types[$module->name] = $module->description == '' || $module->description == PXModuleDescription::EMPTY_DESCRIPTION ? $module->name : $module->description;
+		foreach ($this->app->modules as $module) {
+			if ($module->getDescription() == '' || $module->getDescription() == \PXModuleDescription::EMPTY_DESCRIPTION) {
+				$types[$module->getName()] = $module->getName();
+			} else {
+				$types[$module->getName()] = $module->getDescription();
+			}
 		}
 
 		$types[null] = '-- любой --';
@@ -67,4 +67,5 @@ class PXModuleMAcl extends PXModuleAcl {
 
 		return $result;
 	}
+
 }
