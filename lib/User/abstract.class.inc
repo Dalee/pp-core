@@ -94,7 +94,7 @@ abstract class PXUser {
 
 	function isAdmin() {
 		foreach ($this->app->modules as $module) {
-			if ($module->name != 'auth' && $this->can('admin', $module)) {
+			if ($module->getName() != 'auth' && $this->can('admin', $module)) {
 				return true;
 			}
 		}

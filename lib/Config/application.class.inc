@@ -502,13 +502,13 @@ class PXApplication {
 	}
 
 	/**
-	 * Пользовательская функция для регистрации модулей не через конфиг modules.xml, а при загрузке плагинов
+	 * Пользовательская функция для регистрации модулей не через конфиг modules.yml, а при загрузке плагинов
 	 * @param  string   $name - имя
 	 * @param  array    $args - массив с параметрами триггера, имя => значение
 	 * @return bool
 	 * @throws \Exception
 	 */
-	public function registerModule($name, array $args = null) {
+	public function registerModule($name, array $args = []) {
 		if (!ctype_alnum($name)) {
 			throw new Exception('Invalid module name');
 		}
@@ -536,7 +536,7 @@ class PXApplication {
 	 * @param string $fileName
 	 */
 	private function fillPlugins($fileName) {
-		if($fileName === false) {
+		if ($fileName === false) {
 			return;
 		}
 
@@ -566,7 +566,7 @@ class PXApplication {
 			}
 
 			$this->plugins[$plugin->getName()] = $plugin;
-			$plugin->getPlugin($this); //initialize plugin
+			$plugin->getPlugin($this); // initialize plugin
 		}
 
 		$this->reinitialize['plugins'] = true;

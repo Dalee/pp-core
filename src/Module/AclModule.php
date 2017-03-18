@@ -103,7 +103,14 @@ class AclModule extends AbstractModule {
 				continue;
 			}
 
-			$title = (!empty($v->title) ? $v->title : (!empty($v->description) ? $v->description : (!empty($v->name) ? $v->name : $k)));
+			if ($v instanceof \PXModuleDescription) {
+				$title = $v->getDescription() == '' || $v->getDescription() == \PXModuleDescription::EMPTY_DESCRIPTION
+					? $v->getName()
+					: $v->getDescription();
+			} else {
+				$title = (!empty($v->title) ? $v->title : (!empty($v->description) ? $v->description : (!empty($v->name) ? $v->name : $k)));
+			}
+
 			$count = (int)$counts[$k];
 			$types[$k] = "$title ($count)";
 		}
