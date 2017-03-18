@@ -5,7 +5,7 @@ namespace PP\Module;
 use PP\Lib\Html\Layout\AdminHtmlLayout;
 
 /**
- * Class PXModuleMain.
+ * Class MainModule.
  *
  * @package PP\Module
  */

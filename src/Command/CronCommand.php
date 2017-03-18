@@ -36,7 +36,7 @@ class CronCommand extends AbstractCommand {
 			return;
 		}
 
-		/** @var \PXModuleCronRun $cronModule */
+		/** @var \PP\Module\CronRunModule $cronModule */
 		$cronModule = $this->app->modules['cronrun']->getModule();
 
 		if ($cronModule instanceof ContainerAwareInterface) {
