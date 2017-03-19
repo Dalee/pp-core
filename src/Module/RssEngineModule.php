@@ -2,6 +2,8 @@
 
 namespace PP\Module;
 
+use PP\Lib\Rss\RssChannel;
+
 /**
  * Class RssEngineModule.
  *
@@ -19,7 +21,7 @@ class RssEngineModule extends AbstractModule {
 		return $this->items;
 	}
 
-	function userIndex() { // &$app, &$request, &$user, &$db, &$layout, &$tree, &$objects, &$subObjects, &$references, &$heap, $currentSid, $currentCid, $currentCtype, $currentSCid, $currentSCtype, $rootId, $pathId) {
+	function userIndex() {
 		FatalError('It\'s interface method. ReWrite it.');
 		exit;
 	}
@@ -41,10 +43,10 @@ class RssEngineModule extends AbstractModule {
 
 	function date2time($string) {
 		if ($string == 'today') {
-			$time = mktime(0,0,0);
+			$time = mktime(0, 0, 0);
 
 		} elseif ($string == 'month') {
-			$time = mktime(0,0,0,date('n'),1);
+			$time = mktime(0, 0, 0, date('n'), 1);
 
 		} elseif ($string != '') {
 			preg_match("/^(\d{2})\.(\d{2})\.(\d{4})\s+(\d{2}):(\d{2}):(\d{2})(?:\.\d+)?$/si", trim($string), $date);
@@ -80,108 +82,15 @@ class RssEngineModule extends AbstractModule {
 	}
 
 	function xml($channel, $items) {
-		$channelO = new PXRssChannel($channel, $this);
+		$channelO = new RssChannel($channel, $this);
 
-		$_ = array();
+		$_ = [];
 
-		$_[] = '<?xml version="1.0" encoding="'.$this->encoding.'"?>';
+		$_[] = '<?xml version="1.0" encoding="' . $this->encoding . '"?>';
 		$_[] = '<rss version="2.0">';
 		$_[] = $channelO->xml($items);
 		$_[] = '</rss>';
 
 		return implode("\n", $_);
 	}
-}
-
-class PXRssXML {
-	function _node($nodeName, $value) {
-		if (is_array($value)) {
-			$value = implode("", $value);
-		}
-
-		return
-<<<XML
-	<$nodeName>$value</$nodeName>
-XML;
-	}
-
-	function nodeSet($nodes) {
-		$_ = [];
-
-		foreach ($nodes as $node) {
-			if(method_exists($this, $node)) {
-				$_[] = $this->$node();
-
-			} elseif (isset($this->_data[$node])) {
-				$_[] = $this->_node($node, $this->_data[$node]);
-			}
-		}
-
-		return implode("\n", $_);
-	}
-}
-
-class PXRssChannel extends PXRssXML {
-	function PXRssChannel($channel, &$rssEngine) {
-		$this->_data     =  $channel;
-		$this->rss       =& $rssEngine;
-
-		$this->nodeNames =  array('title', 'link', 'description', 'language', 'copyright', 'managingEditor', 'webMaster', 'generator', 'ttl', 'image', 'lastBuildDate');
-	}
-
-	function link() {
-		return $this->_node('link', $this->_data['link'].'?from=rss');
-	}
-
-	function image() {
-		$_ = array(
-			$this->_node('url',   $this->_data['image']),
-			$this->_node('title', $this->_data['title']),
-			$this->link()
-		);
-
-		return $this->_node('image', $_);
-	}
-
-	function xml($items) {
-		$_ = array(
-			$this->nodeSet($this->nodeNames),
-		);
-
-		foreach($items as $i) {
-			$i['pubDate'] = $this->rss->rssDateFormat($i['pubDate']);
-
-			$itemO = new PXRssItem($i);
-			$_[] = $itemO->xml();
-		}
-
-
-		return $this->_node('channel', $_);
-	}
-}
-
-class PXRssItem extends PXRssXML {
-	function PXRssItem($item) {
-		$this->_data = $item;
-		$this->nodeNames = array('title', 'link', 'guid', 'category', 'author', 'description', 'pubDate');
-	}
-
-	function xml() {
-		$_ = $this->nodeSet($this->nodeNames);
-
-		return $this->_node('item', $_);
-	}
-
-	function link() {
-		return $this->_node('link', $this->_data['link'].'?from=rss');
-	}
-
-	function guid() {
-		return $this->_node('guid', $this->_data['link'].'?from=rss');
-	}
-
-	function description() {
-		return $this->_node('description', '<![CDATA['.$this->_data['description'].']]>');
-	}
-
 }
