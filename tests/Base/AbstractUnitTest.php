@@ -7,4 +7,5 @@ namespace Tests\Base;
  * @package Tests\Base
  */
 abstract class AbstractUnitTest extends AbstractApplicationTest {
+
 }

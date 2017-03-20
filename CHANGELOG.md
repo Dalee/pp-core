@@ -1,10 +1,16 @@
 # Change log
-
+	
 ## [1.8.6] - UNRELEASED
 - Исправлены пробелы на табы в шаблоне миграции
 - Поправлены тесты на `PersistentQueue\Job`
 - Добавлен `Symfony DI Container` в модули, кроны и команды
   - [Небольшое описание с ссылками на документацию](docs/di.md)
+- `PP\Module\AbstractModule`
+	- `buildAdminUrl()` — removed
+	- `buildAdminIndexUrl()` — removed
+	- `buildAdminActionUrl()` — removed
+	- `buildAdminPopupUrl()` — removed
+- Добавлен генератор URL к методам модуля `PP\Lib\UrlGenerator\UrlGenerator`
 
 ## [1.8.5] - 2017-03-13
 - Пользователям добавлено поле `E-mail`
