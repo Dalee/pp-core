@@ -10,7 +10,7 @@ class UrlGeneratorTest extends AbstractUnitTest {
 
 	public function testGetUserGenerator() {
 		/** @var \PHPUnit_Framework_MockObject_MockObject | ContextUrlGenerator $content */
-		$content = $this->getMockBuilder('\PP\Lib\UrlGenerator\ContextUrlGenerator')
+		$content = $this->getMockBuilder('PP\Lib\UrlGenerator\ContextUrlGenerator')
 			->getMock();
 		$urlGenerator = new UrlGenerator($content);
 		$userUrlGenerator = $urlGenerator->getUserGenerator();
@@ -20,7 +20,7 @@ class UrlGeneratorTest extends AbstractUnitTest {
 		$this->assertSame($userUrlGenerator, $userUrlGenerator2);
 
 		/** @var \PHPUnit_Framework_MockObject_MockObject | ContextUrlGenerator $content2 */
-		$content2 = $this->getMockBuilder('\PP\Lib\UrlGenerator\ContextUrlGenerator')
+		$content2 = $this->getMockBuilder('PP\Lib\UrlGenerator\ContextUrlGenerator')
 			->getMock();
 		$urlGenerator->setContext($content2);
 		$userUrlGenerator3 = $urlGenerator->getUserGenerator();
@@ -29,7 +29,7 @@ class UrlGeneratorTest extends AbstractUnitTest {
 
 	public function testGetAdminGenerator() {
 		/** @var \PHPUnit_Framework_MockObject_MockObject | ContextUrlGenerator $content */
-		$content = $this->getMockBuilder('\PP\Lib\UrlGenerator\ContextUrlGenerator')
+		$content = $this->getMockBuilder('PP\Lib\UrlGenerator\ContextUrlGenerator')
 			->getMock();
 		$urlGenerator = new UrlGenerator($content);
 		$adminUrlGenerator = $urlGenerator->getAdminGenerator();
@@ -39,7 +39,7 @@ class UrlGeneratorTest extends AbstractUnitTest {
 		$this->assertSame($adminUrlGenerator, $adminUrlGenerator2);
 
 		/** @var \PHPUnit_Framework_MockObject_MockObject | ContextUrlGenerator $content2 */
-		$content2 = $this->getMockBuilder('\PP\Lib\UrlGenerator\ContextUrlGenerator')
+		$content2 = $this->getMockBuilder('PP\Lib\UrlGenerator\ContextUrlGenerator')
 			->getMock();
 		$urlGenerator->setContext($content2);
 		$adminUrlGenerator3 = $urlGenerator->getAdminGenerator();

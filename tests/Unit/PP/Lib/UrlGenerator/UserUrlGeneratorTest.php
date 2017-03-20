@@ -55,7 +55,7 @@ class UserUrlGeneratorTest extends AbstractUnitTest {
 	 */
 	protected function getGenerator() {
 		/** @var UserUrlGenerator | \PHPUnit_Framework_MockObject_MockObject $generator */
-		$generator = $this->getMockBuilder('\PP\Lib\UrlGenerator\UserUrlGenerator')
+		$generator = $this->getMockBuilder('PP\Lib\UrlGenerator\UserUrlGenerator')
 			->disableOriginalConstructor()
 			->setMethods(['getArea'])
 			->getMock();
@@ -69,12 +69,12 @@ class UserUrlGeneratorTest extends AbstractUnitTest {
 
 	public function testGenerate() {
 		/** @var \PHPUnit_Framework_MockObject_MockObject | ContextUrlGenerator $content */
-		$content = $this->getMockBuilder('\PP\Lib\UrlGenerator\ContextUrlGenerator')
+		$content = $this->getMockBuilder('PP\Lib\UrlGenerator\ContextUrlGenerator')
 			->setMethods(['_'])
 			->getMock();
 
 		/** @var UserUrlGenerator | \PHPUnit_Framework_MockObject_MockObject $generator */
-		$generator = $this->getMockBuilder('\PP\Lib\UrlGenerator\UserUrlGenerator')
+		$generator = $this->getMockBuilder('PP\Lib\UrlGenerator\UserUrlGenerator')
 			->setConstructorArgs([$content])
 			->setMethods(['indexUrl', 'actionUrl', 'jsonUrl', 'popupUrl'])
 			->getMock();
@@ -112,14 +112,14 @@ class UserUrlGeneratorTest extends AbstractUnitTest {
 	public function testGenerateError() {
 		$targetAction = 'targetAction';
 		/** @var \PHPUnit_Framework_MockObject_MockObject | ContextUrlGenerator $content */
-		$content = $this->getMockBuilder('\PP\Lib\UrlGenerator\ContextUrlGenerator')
+		$content = $this->getMockBuilder('PP\Lib\UrlGenerator\ContextUrlGenerator')
 			->setMethods(['_'])
 			->getMock();
 
 		$content->setTargetAction($targetAction);
 
 		/** @var UserUrlGenerator $generator */
-		$generator = $this->getMockBuilder('\PP\Lib\UrlGenerator\UserUrlGenerator')
+		$generator = $this->getMockBuilder('PP\Lib\UrlGenerator\UserUrlGenerator')
 			->setConstructorArgs([$content])
 			->setMethods(['indexUrl', 'actionUrl', 'jsonUrl', 'popupUrl'])
 			->getMock();
