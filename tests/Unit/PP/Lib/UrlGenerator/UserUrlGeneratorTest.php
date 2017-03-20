@@ -126,4 +126,5 @@ class UserUrlGeneratorTest extends AbstractUnitTest {
 
 		$generator->generate([]);
 	}
+
 }

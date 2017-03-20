@@ -232,4 +232,5 @@ class AdminUrlGeneratorTest extends AbstractUnitTest {
 
 		$generator->generate([]);
 	}
+
 }
