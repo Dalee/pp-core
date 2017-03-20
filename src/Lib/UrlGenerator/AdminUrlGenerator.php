@@ -9,7 +9,7 @@ namespace PP\Lib\UrlGenerator;
 class AdminUrlGenerator extends AbstractUrlGenerator {
 
 	/**
-	 * {@inheritdoc}
+	 * {@inheritDoc}
 	 */
 	public function indexUrl($params = []) {
 		$url = '/admin/';
@@ -19,7 +19,7 @@ class AdminUrlGenerator extends AbstractUrlGenerator {
 	}
 
 	/**
-	 * @inheritdoc
+	 * {@inheritDoc}
 	 */
 	public function actionUrl($params = []) {
 		$url = '/admin/action.phtml';
@@ -33,7 +33,7 @@ class AdminUrlGenerator extends AbstractUrlGenerator {
 	}
 
 	/**
-	 * @inheritdoc
+	 * {@inheritDoc}
 	 */
 	public function jsonUrl($params = []) {
 		$url = '/admin/json.phtml';
@@ -43,7 +43,7 @@ class AdminUrlGenerator extends AbstractUrlGenerator {
 	}
 
 	/**
-	 * @inheritdoc
+	 * {@inheritDoc}
 	 */
 	public function popupUrl($params = []) {
 		$url = '/admin/popup.phtml';

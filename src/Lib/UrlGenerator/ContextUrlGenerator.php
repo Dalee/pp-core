@@ -2,9 +2,6 @@
 
 namespace PP\Lib\UrlGenerator;
 
-use PP\Module\AbstractModule;
-use PP\Module\ModuleInterface;
-
 /**
  * Class ContextUrlGenerator
  * @package PP\Lib\UrlGenerator
@@ -54,10 +51,10 @@ class ContextUrlGenerator {
 	}
 
 	/**
-	 * @param null|\PXRequest $request
+	 * @param \PXRequest $request
 	 * @return $this
 	 */
-	public function setRequest(\PXRequest$request) {
+	public function setRequest(\PXRequest $request) {
 		$this->request = $request;
 		return $this;
 	}

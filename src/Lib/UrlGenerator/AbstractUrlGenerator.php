@@ -22,8 +22,7 @@ abstract class AbstractUrlGenerator implements GeneratorInterface {
 	}
 
 	/**
-	 * @param array [string]string $params
-	 * @return string
+	 * {@inheritDoc}
 	 */
 	public function generate($params = []) {
 		$action = $this->context->getTargetAction();

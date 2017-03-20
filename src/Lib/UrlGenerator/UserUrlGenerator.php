@@ -9,14 +9,14 @@ namespace PP\Lib\UrlGenerator;
 class UserUrlGenerator extends AbstractUrlGenerator {
 
 	/**
-	 * @inheritdoc
+	 * {@inheritDoc}
 	 */
 	public function indexUrl($params = []) {
 		throw new \LogicException('You cannot use the method: ' . __METHOD__);
 	}
 
 	/**
-	 * @inheritDoc
+	 * {@inheritDoc}
 	 */
 	public function actionUrl($params = []) {
 		$url = '/' . $this->getArea() . '.action';
@@ -24,7 +24,7 @@ class UserUrlGenerator extends AbstractUrlGenerator {
 	}
 
 	/**
-	 * @inheritDoc
+	 * {@inheritDoc}
 	 */
 	public function jsonUrl($params = []) {
 		$url = '/' . $this->getArea() . '.json';
@@ -32,7 +32,7 @@ class UserUrlGenerator extends AbstractUrlGenerator {
 	}
 
 	/**
-	 * @inheritDoc
+	 * {@inheritDoc}
 	 */
 	public function popupUrl($params = []) {
 		throw new \LogicException('You cannot use the method: ' . __METHOD__);

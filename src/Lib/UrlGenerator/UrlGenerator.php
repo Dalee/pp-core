@@ -26,7 +26,7 @@ class UrlGenerator {
 	}
 
 	/**
-	 * @return UserUrlGenerator
+	 * @return GeneratorInterface
 	 */
 	public function getUserGenerator() {
 		if ($this->userGeneratorInstance === null) {
@@ -36,7 +36,7 @@ class UrlGenerator {
 	}
 
 	/**
-	 * @return AdminUrlGenerator
+	 * @return GeneratorInterface
 	 */
 	public function getAdminGenerator() {
 		if ($this->adminGeneratorInstance === null) {
@@ -54,7 +54,7 @@ class UrlGenerator {
 
 	/**
 	 * @param ContextUrlGenerator $context
-	 * @return UrlGenerator
+	 * @return $this
 	 */
 	public function setContext($context) {
 		if ($this->context !== $context) {
