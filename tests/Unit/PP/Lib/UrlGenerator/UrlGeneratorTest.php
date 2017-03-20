@@ -14,7 +14,7 @@ class UrlGeneratorTest extends AbstractUnitTest {
 			->getMock();
 		$urlGenerator = new UrlGenerator($content);
 		$userUrlGenerator = $urlGenerator->getUserGenerator();
-		$this->assertInstanceOf('\PP\Lib\UrlGenerator\UserUrlGenerator', $userUrlGenerator);
+		$this->assertInstanceOf('PP\Lib\UrlGenerator\UserUrlGenerator', $userUrlGenerator);
 
 		$userUrlGenerator2 = $urlGenerator->getUserGenerator();
 		$this->assertSame($userUrlGenerator, $userUrlGenerator2);
@@ -33,7 +33,7 @@ class UrlGeneratorTest extends AbstractUnitTest {
 			->getMock();
 		$urlGenerator = new UrlGenerator($content);
 		$adminUrlGenerator = $urlGenerator->getAdminGenerator();
-		$this->assertInstanceOf('\PP\Lib\UrlGenerator\AdminUrlGenerator', $adminUrlGenerator);
+		$this->assertInstanceOf('PP\Lib\UrlGenerator\AdminUrlGenerator', $adminUrlGenerator);
 
 		$adminUrlGenerator2 = $urlGenerator->getAdminGenerator();
 		$this->assertSame($adminUrlGenerator, $adminUrlGenerator2);
@@ -45,4 +45,5 @@ class UrlGeneratorTest extends AbstractUnitTest {
 		$adminUrlGenerator3 = $urlGenerator->getAdminGenerator();
 		$this->assertNotSame($adminUrlGenerator3, $adminUrlGenerator2);
 	}
+
 }
