@@ -15,3 +15,5 @@ Work-in-progress. Don't be shy, add new articles.
 ## Прочее
 
 [Dependency Injection](di.md)
+
+[Генерация ссылок](urlgenerator.md)
