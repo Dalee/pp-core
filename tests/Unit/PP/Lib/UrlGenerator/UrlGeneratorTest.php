@@ -8,7 +8,7 @@ use PP\Lib\UrlGenerator\ContextUrlGenerator;
 
 class UrlGeneratorTest extends AbstractUnitTest {
 
-	public function testGetUserGenerator() {
+	public function testGetUserGeneratorForDifferentContext() {
 		/** @var \PHPUnit_Framework_MockObject_MockObject | ContextUrlGenerator $content */
 		$content = $this->getMockBuilder('PP\Lib\UrlGenerator\ContextUrlGenerator')
 			->getMock();
@@ -27,7 +27,7 @@ class UrlGeneratorTest extends AbstractUnitTest {
 		$this->assertNotSame($userUrlGenerator3, $userUrlGenerator2);
 	}
 
-	public function testGetAdminGenerator() {
+	public function testGetAdminGeneratorForDifferentContext() {
 		/** @var \PHPUnit_Framework_MockObject_MockObject | ContextUrlGenerator $content */
 		$content = $this->getMockBuilder('PP\Lib\UrlGenerator\ContextUrlGenerator')
 			->getMock();
