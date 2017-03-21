@@ -1,5 +1,7 @@
 <?php
 
+use PP\Lib\UrlGenerator\ContextUrlGenerator;
+use PP\Lib\UrlGenerator\UrlGenerator;
 use PP\Module\AbstractModule;
 use PP\Properties\PropertyLoader;
 use Ramsey\Uuid\Uuid;
@@ -65,13 +67,24 @@ class PXModuleProperties extends AbstractModule {
 			'name' => $this->app->langTree->getByPath('module_properties.table.name.rus'),
 			'value' => $this->app->langTree->getByPath('module_properties.table.value.rus'),
 		];
+
+		$context = new ContextUrlGenerator();
+		$context->setCurrentModule($this->area);
+		$generator = new UrlGenerator($context);
+		$adminGenerator = $generator->getAdminGenerator();
+
+		$popupParams = [
+			'action' => 'edit',
+			'id' => '',
+		];
+
 		$table = (new PXAdminTableSimple($colsDef))
 			->setTableId('properties')
 			->showEven()
 			->setNullText($this->app->langTree->getByPath('module_properties.table_ctrl.empty_value.rus'))
 			->setData($this->getPropertyList($sid))
 			->setControls(
-				$this->buildAdminPopupUrl('edit', true),
+				$adminGenerator->popupUrl($popupParams),
 				$this->app->langTree->getByPath('module_properties.table_ctrl.edit.rus'),
 				'edit',
 				false,
@@ -79,8 +92,12 @@ class PXModuleProperties extends AbstractModule {
 			);
 
 		if ($this->isPowerUser()) {
+			$actionParams = [
+				'action' => 'delete',
+				'id' => '',
+			];
 			$table->setControls(
-				$this->buildAdminActionUrl('delete', true),
+				$adminGenerator->actionUrl($actionParams),
 				$this->app->langTree->getByPath('module_properties.table_ctrl.delete.rus'),
 				'del',
 				true,
@@ -92,7 +109,7 @@ class PXModuleProperties extends AbstractModule {
 
 		// build additional controls
 		if ($this->isPowerUser()) {
-			$link = sprintf("Popup('%s');", $this->buildAdminPopupUrl('main'));
+			$link = sprintf("Popup('%s');", $adminGenerator->popupUrl(['action' => 'main']));
 			$label = $this->app->langTree->getByPath('module_properties.table_ctrl.add.rus');
 
 			$button = (new \PXControlButton($label))
@@ -225,8 +242,16 @@ class PXModuleProperties extends AbstractModule {
 			$this->db->UpdateObjectById(DT_PROPERTIES, $id, $fields, $values);
 		}
 
-		$redirect = $this->buildAdminPopupUrl('main', true);
-		$redirect .= urlencode($id);
+		$context = new ContextUrlGenerator();
+		$context->setCurrentModule($this->area);
+		$generator = new UrlGenerator($context);
+
+		$popupParams = [
+			'action' => 'main',
+			'id' => $id,
+		];
+
+		$redirect = $generator->getAdminGenerator()->popupUrl($popupParams);
 
 		return $redirect;
 	}

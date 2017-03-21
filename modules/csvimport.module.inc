@@ -1,5 +1,7 @@
 <?php
 
+use PP\Lib\UrlGenerator\ContextUrlGenerator;
+use PP\Lib\UrlGenerator\UrlGenerator;
 use PP\Module\AbstractModule;
 
 class PXModuleCsvImport extends AbstractModule {
@@ -81,22 +83,26 @@ class PXModuleCsvImport extends AbstractModule {
 		$app     = $this->app;
 		$db      = $this->db;
 
-		$redir_to = $this->buildAdminIndexUrl();
+		$context = new ContextUrlGenerator();
+		$context->setCurrentModule($this->area);
+		$generator = new UrlGenerator($context);
+
+		$redirTo = $generator->getAdminGenerator()->indexUrl();
 
 		if (($filename = $this->UploadFile($request->GetUploadFile('file')))) {
 			$quantity = $this->ImportToDb($this->_GetCsvSource($filename), $app, $db, $request);
 
 			if(is_numeric($quantity)) {
-				$redir_to .= '&status=success&quantity='.$quantity;
+				$redirTo .= '&status=success&quantity='.$quantity;
 			} else {
-				$redir_to .= '&status=error&error='.$quantity;
+				$redirTo .= '&status=error&error='.$quantity;
 			}
 
 		} else {
-			$redir_to .= '&status=error&error=notupload';
+			$redirTo .= '&status=error&error=notupload';
 		}
 
-		return $redir_to;
+		return $redirTo;
 	}
 
 	function ImportToDB($csv) {
