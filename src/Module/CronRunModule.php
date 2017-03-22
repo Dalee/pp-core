@@ -35,10 +35,6 @@ class CronRunModule extends AbstractModule {
 			return;
 		}
 
-		if (count($settings['rule']) == 1) {
-			$settings['rule'] = array($settings['rule']);
-		}
-
 		$count = 0;
 		foreach ($settings['rule'] as $s) {
 			if (!preg_match("/^\s*(.+?)\s+(\w+?)\s*$/", $s, $m)) {
