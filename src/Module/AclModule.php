@@ -1,15 +1,18 @@
 <?php
 
+namespace PP\Module;
+
 use Ramsey\Uuid\Uuid;
-use PP\Module\AbstractModule;
 
 /**
- * Class PXModuleAcl
+ * Class AclModule.
+ *
+ * @package PP\Module
  */
-class PXModuleAcl extends AbstractModule {
+class AclModule extends AbstractModule {
 	var $what;
 	var $access;
-	var $objectRule     = 'user';
+	var $objectRule = 'user';
 	var $aclObjectTitle = 'Тип объекта';
 
 	protected $ruleTypeField;
@@ -54,7 +57,7 @@ class PXModuleAcl extends AbstractModule {
 
 		$this->indexSetMenu($sid);
 
-		$table = new PXAdminTableSimple($fields);
+		$table = new \PXAdminTableSimple($fields);
 
 		$table->setData($rules);
 
@@ -94,14 +97,24 @@ class PXModuleAcl extends AbstractModule {
 		$objects = $this->objectRule === 'user'
 			? $this->app->types
 			: $this->app->getAvailableModules();
+
 		foreach ($objects as $k => $v) {
 			if (!isset($counts[$k])) {
 				continue;
 			}
-			$title = (!empty($v->title) ? $v->title : (!empty($v->description) ? $v->description : (!empty($v->name) ? $v->name : $k)));
+
+			if ($v instanceof \PXModuleDescription) {
+				$title = $v->getDescription() == '' || $v->getDescription() == \PXModuleDescription::EMPTY_DESCRIPTION
+					? $v->getName()
+					: $v->getDescription();
+			} else {
+				$title = (!empty($v->title) ? $v->title : (!empty($v->description) ? $v->description : (!empty($v->name) ? $v->name : $k)));
+			}
+
 			$count = (int)$counts[$k];
 			$types[$k] = "$title ($count)";
 		}
+
 		asort($types);
 
 		if (!isset($types[$rSid])) {
@@ -144,19 +157,19 @@ class PXModuleAcl extends AbstractModule {
 
 
 		//set save buttons
-		$form = new PXAdminForm(null, null);
+		$form = new \PXAdminForm(null, null);
 		$form->leftControls();
 		$form->rightControls();
 
 		$_ = '';
-		$_ .= NLAbstractHTMLForm::BuildHidden('id', $rId);
-		$_ .= NLAbstractHTMLForm::BuildHidden('area', $this->area);
-		$_ .= NLAbstractHTMLForm::BuildHidden('action', ($rId ? 'edit' : 'add'));
+		$_ .= \NLAbstractHTMLForm::BuildHidden('id', $rId);
+		$_ .= \NLAbstractHTMLForm::BuildHidden('area', $this->area);
+		$_ .= \NLAbstractHTMLForm::BuildHidden('action', ($rId ? 'edit' : 'add'));
 
 		$_ .= '<table class="mainform">';
 		foreach($fields as $col=>$title) {
 			$p = array();
-			$fieldType = new PXFieldDescription(array(), $app, $p);
+			$fieldType = new \PXFieldDescription(array(), $app, $p);
 			$fieldType->name = $col;
 			$fieldType->description = $title;
 			$param = array(
@@ -180,7 +193,7 @@ class PXModuleAcl extends AbstractModule {
 					$tmpVals[] = array('id' => $id, 'title' => $val);
 				}
 
-				$directory = new PXDirectoryDescription($col);
+				$directory = new \PXDirectoryDescription($col);
 				$directory->values = $tmpVals;
 				$directory->displayField = 'title';
 
@@ -240,8 +253,9 @@ class PXModuleAcl extends AbstractModule {
 	}
 
 	function _getTypes() {
-		$types  = array();
-		foreach ($this->db->types as $typeName=>$type) {
+		$types = [];
+
+		foreach ($this->db->types as $typeName => $type) {
 			$types[$typeName] = $type->title;
 		}
 

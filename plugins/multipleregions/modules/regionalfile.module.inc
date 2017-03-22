@@ -1,18 +1,18 @@
 <?php
 
-require_once BASEPATH . "libpp/modules/file.module.inc";
+use PP\Module\FileModule;
 
-class PXModuleRegionalFile extends PXModuleFile {
+class PXModuleRegionalFile extends FileModule {
 	function adminIndex() {
 		$this->_addRegionSuffix();
 		parent::adminIndex();
 	}
-	
+
 	function adminAction() {
 		$this->_addRegionSuffix();
 		return parent::adminAction();
 	}
-	
+
 	function adminPopup() {
 		$this->_addRegionSuffix();
 		return parent::adminPopup();
@@ -28,12 +28,12 @@ class PXModuleRegionalFile extends PXModuleFile {
 		$rid            = $regions->getRid();
 
 		if ($isTree && is_object($myRegions)) { //work with tree
-			$myRegions = $rid && isset($myRegions->leafs[$rid]) 
+			$myRegions = $rid && isset($myRegions->leafs[$rid])
 				? array($myRegions->leafs[$rid]->id) : (isset($myRegions->levels[1]) ? $myRegions->levels[1] : array()); //show only first level pathnames because other levels already inside
 		} else { //work with list
 			$myRegions = $rid && isset($myRegions[$rid]) ? array($rid) : array_keys($myRegions);
 		}
-		
+
 		$fieldname = 'shortname';
 		$params = PXRegistry::getApp()->plugins['multipleregions']->params;
 		if(array_key_exists('fieldname', $params)) {
@@ -65,7 +65,7 @@ class PXModuleRegionalFile extends PXModuleFile {
 		if (isset($tree->leafs[$id]->parent) && $tree->leafs[$id]->parent) {
 			return $this->createDirectoryTree($tree, $tree->leafs[$id]->parent, $fieldname) . $delim . $path;
 		}
-		
+
 		return $delim . $path;
 	}
 
@@ -79,14 +79,13 @@ class PXModuleRegionalFile extends PXModuleFile {
 		if (strlen($path)) {
 			return $path;
 		}
-		
+
 		$params = PXRegistry::getApp()->plugins['multipleregions']->params;
 		$path   = '';
 		if(array_key_exists('defaultfieldvalue', $params)) {
 			$path = $params['defaultfieldvalue'];
 		}
-		
+
 		return $path;
 	}
 }
-?>

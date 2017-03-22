@@ -1,6 +1,6 @@
 # Техническая документация Proxima CMS
 
-Work-in-progress. Don't be shy, add new articles.
+Work-in-progress. Don't hesitate to add new articles.
 
 [Конфигурация](configuration.md)
 
@@ -15,5 +15,7 @@ Work-in-progress. Don't be shy, add new articles.
 ## Прочее
 
 [Dependency Injection](di.md)
+
+[Модули](modules.md)
 
 [Генерация ссылок](urlgenerator.md)

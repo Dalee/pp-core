@@ -1,7 +1,7 @@
 <?php
 /**
  * Ссылка на файл, лежащий где то еще (например в /download/)
- * для выбора файла используется модуль PXModuleFile
+ * для выбора файла используется модуль PP\Module\FileModule
  *
  * storageType serialized
  * displayType LINKTOFILE

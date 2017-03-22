@@ -1,10 +1,17 @@
 <?php
 
+namespace PP\Module;
+
 use PP\Lib\UrlGenerator\ContextUrlGenerator;
 use PP\Lib\UrlGenerator\UrlGenerator;
-use PP\Module\AbstractModule;
 
-class PXModuleCsvImport extends AbstractModule {
+/**
+ * Class CsvImportModule.
+ *
+ * @package PP\Module
+ */
+class CsvImportModule extends AbstractModule {
+
 	var $htmlEsc;
 	var $settings;
 
@@ -14,7 +21,7 @@ class PXModuleCsvImport extends AbstractModule {
 		$this->settings = $settings;
 		$this->area = $area;
 
-		$this->htmlEsc = array(
+		$this->htmlEsc = [
 			chr(145) => '&lsquo;',
 			chr(146) => '&rsquo;',
 			chr(147) => '&ldquo;',
@@ -26,13 +33,12 @@ class PXModuleCsvImport extends AbstractModule {
 			chr(185) => '&#8470;', // russian number
 			chr(133) => '&#8230;', // &hellip;
 			chr(153) => '&#8482;'  // &trade;
-		);
+		];
 	}
 
 	function adminIndex() {
-		$layout  = $this->layout;
+		$layout = $this->layout;
 		$request = $this->request;
-		$app     = $this->app;
 
 		$layout->setOneColumn();
 		$html = '';
@@ -65,13 +71,13 @@ class PXModuleCsvImport extends AbstractModule {
 				$html .= $this->_UploadTable();
 				break;
 		}
-		$layout->Assign("INNER.0.0", $html);
+
+		$layout->Assign('INNER.0.0', $html);
 	}
 
 	function _Success() {
 		$request = $this->request;
-		$app     = $this->app;
-		$db      = $this->db;
+		$app = $this->app;
 
 		$html  = '<h2>Импорт данных &laquo;'.$app->types[$this->settings['datatype']]->title.'&raquo; успешно произведен</h2>';
 		$html .= '<p>В базу внесено <strong>'.htmlspecialchars($request->GetVar('quantity'), ENT_COMPAT|ENT_HTML401, DEFAULT_CHARSET).'</strong> объектов.</p>';
@@ -106,20 +112,19 @@ class PXModuleCsvImport extends AbstractModule {
 	}
 
 	function ImportToDB($csv) {
-		$request = $this->request;
-		$app     = $this->app;
-		$db      = $this->db;
+		$app = $this->app;
+		$db = $this->db;
 
-		$objects = array();
-		$fields  = array();
-		$parent  = NULL;
+		$objects = [];
+		$fields = [];
+		$parent = null;
 
 		$format = $app->types[$this->settings['datatype']];
 
 		foreach ($this->settings['field'] as $f) {
 			list($k, $v) = explode('|', $f);
 
-			if(trim($k) == 'parent') {
+			if (trim($k) == 'parent') {
 				$v = $app->GetProperty(trim($v));
 				$parent = $v;
 			}
@@ -127,19 +132,23 @@ class PXModuleCsvImport extends AbstractModule {
 			$fields[trim($k)] = trim($v);
 		}
 
-		foreach($csv as $ln=>$line) {
-			if($ln === 1 && isset($this->settings['skipfirst']) && $this->settings['skipfirst'] === 'true') {
+		foreach ($csv as $ln=>$line) {
+			if ($ln === 1 && isset($this->settings['skipfirst']) && $this->settings['skipfirst'] === 'true') {
 				continue;
 			}
 
 			$valid = 0;
-			foreach($line as $d) {
-				if(mb_strlen($d)) $valid++;
+			foreach ($line as $d) {
+				if (mb_strlen($d)) {
+					$valid++;
+				}
 			}
 
-			if(!$valid) continue;
+			if (!$valid) {
+				continue;
+			}
 
-			$object = array();
+			$object = [];
 
 			$this->constructObject($object, $fields, $line);
 
@@ -157,12 +166,12 @@ class PXModuleCsvImport extends AbstractModule {
 	}
 
 	function constructObject(&$object, $fields, $row){
-		foreach($fields as $fk=>$fv) {
-			if($fk === 'parent') {
+		foreach ($fields as $fk=>$fv) {
+			if ($fk === 'parent') {
 				$object[$fk] = $fv;
-			} elseif(is_numeric($fv)) {
+			} elseif (is_numeric($fv)) {
 				$object[$fk] = $row[$fv];
-			} elseif(($fv === 'true' && ($fv = true)) || ($fv === 'false' && (($fv = false) || true))){
+			} elseif (($fv === 'true' && ($fv = true)) || ($fv === 'false' && (($fv = false) || true))){
 				$object[$fk] = $fv;
 			} else {
 				$object[$fk] = $fv;
@@ -171,7 +180,7 @@ class PXModuleCsvImport extends AbstractModule {
 	}
 
 	function deleteOldObjects(&$db, &$format, $parent = null){
-		if(!is_null($parent)) {
+		if (!is_null($parent)) {
 			$sql = 'DELETE FROM '.$format->id.' WHERE parent = '.$parent.';';
 		} else {
 			$sql = 'DELETE FROM '.$format->id;
@@ -185,11 +194,11 @@ class PXModuleCsvImport extends AbstractModule {
 	function UploadFile($file, $uploadDir = NULL) {
 		$uploadDir = !is_null($uploadDir) ? $uploadDir : BASEPATH.'/tmp/csvimport';
 
-		if(!isset($file['name'])) {
+		if (!isset($file['name'])) {
 			return false;
 		}
 
-		if(!preg_match('/\.(csv|txt)$/i', $file['name'])) {
+		if (!preg_match('/\.(csv|txt)$/i', $file['name'])) {
 			return false;
 		}
 
@@ -197,23 +206,23 @@ class PXModuleCsvImport extends AbstractModule {
 	}
 
 	function UploadFileFromUser($file, $dir) {
-		$dirO = new NLDir($dir);
+		$dirO = new \NLDir($dir);
 		$dir = $dirO->name;
 
 		MakeDirIfNotExists($dir);
+
 		if ($file && $file != 'none' && $file['name'] && is_writable($dir)) {
 			$newFileName = $dir.'/'._TranslitFilename(_stripBadFileChars($file['name']));
 
 			if (!@copy($file['tmp_name'], $newFileName)) {
-				FatalError('ERROR_IO_BADPERMISSIONS', $dir);
+				FatalError('ERROR_IO_BADPERMISSIONS: ' . $dir);
 			}
 
 			if (!@chmod($newFileName, 0664)) {
-				FatalError('ERROR_IO_BADPERMISSIONS', $dir);
+				FatalError('ERROR_IO_BADPERMISSIONS: ' . $dir);
 			}
 
 			return $newFileName;
-
 		} else {
 			return false;
 		}
@@ -261,8 +270,9 @@ HTML;
 		return $result;
 	}
 
-	#method for safe access
+	// method for safe access
 	function getParsedCsv($filename, $length=null) {
 		return $this->_GetCsvSource($filename, $length);
 	}
+
 }

@@ -1,8 +1,8 @@
 <?php
 
-require_once BASEPATH  . '/libpp/modules/acl.module.inc';
+use PP\Module\AclModule;
 
-class PXModuleSortableAcl extends PXModuleAcl {
+class PXModuleSortableAcl extends AclModule {
 	function addNewRuleButton() {
 		$this->js();
 		return parent::addNewRuleButton();
@@ -174,5 +174,3 @@ inlinejs
 		);
 	}
 }
-
-?>

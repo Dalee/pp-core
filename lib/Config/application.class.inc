@@ -162,7 +162,7 @@ class PXApplication {
 		$this->fillDBDescription();
 		$this->fillTriggers($this->findConfigFile('triggers.xml', false));
 		$this->fillPlugins($this->findConfigFile('plugins.xml', false));
-		$this->fillModules($this->findConfigFile('modules.xml'));
+		$this->fillModules(APPPATH . join(DIRECTORY_SEPARATOR, ['config', 'modules.yml']));
 		$this->fillDataTypes($this->findConfigFile('datatypes.xml'));
 		$this->fillDirectories($this->findConfigFile('datatypes.xml'));
 		$this->fillLang($this->findConfigFiles('lang.yaml'));
@@ -464,77 +464,30 @@ class PXApplication {
 		$directory->SetLoaded($addDefault);
 	}
 
-	/**
-	 * Заполняет {@link PXApplication::$modules} данными из файла.
-	 *
-	 * В качестве параметра обычно используется файл etc/modules.xml. <br>
-	 * XPath /modules/module
-	 *
-	 * @uses PXModuleDescription
-	 *
-	 * @param String $fileName имя файла
-	 */
 	private function fillModules($fileName) {
-		if (!($dom = Xml::load($fileName))) {
-			FatalError("Ошибка в файле настроек <em>$fileName</em>");
+		$modules = Yaml::parse(file_get_contents($fileName));
+
+		$modulesList = getFromArray($modules, 'modules', []);
+		if (!is_array($modulesList) || count($modulesList) == 0) {
+			FatalError('Не определены модули проекта');
 		}
 
-		$domModules = $dom->xpath("/modules//module");
-		if (!is_array($domModules) || count($domModules) == 0) {
-			FatalError("Не определены модули проекта");
+		foreach ($modulesList as $moduleName => $module) {
+			$description = (new PXModuleDescription())
+				->setName($moduleName)
+				->setDescription($module['description'])
+				->setClass($module['class'])
+				->setSettings(getFromArray($module, 'params', []));
+
+			$this->setModules($description);
 		}
 
-		/** @var \PP\Lib\Xml\XmlNodeInterface $domModule */
-		foreach ($domModules as $domModule) {
-			$module = new PXModuleDescription();
-			$module->setAttrs($domModule->attributes());
-			$module->lookPackage($dom);
-			$module->checkClass();
-
-			$nodes = $domModule->childNodes();
-			foreach ($nodes as $node) {
-				if (!$node->isXmlNode()) {
-					continue;
-				}
-
-				$childNodes = $node->childNodes();
-				if (!empty($childNodes)) {
-					$settings = [];
-					foreach ($node->childNodes() as $child) {
-						$chunk = [];
-						foreach ($child->attributes() as $attr) {
-							$chunk[$attr->name] = $attr->value;
-						}
-						$settings[] = $chunk;
-					}
-					$module->settings[$node->nodeName()] = $settings;
-				} else {
-					$module->settings[$node->nodeName()][] = pp_simplexml_decode_string($node->nodeValue());
-				}
-			}
-
-			foreach ($module->settings as $k=>$v) {
-				if (count($v) == 1) {
-					$module->settings[$k] = $v[0];
-				}
-			}
-
-			$this->setModules($module);
-		}
-
-		$domBindings = $dom->xpath('/modules/bindings');
 		$this->bindingsQueue = new PXBindingsQueue();
 
-		/** @var \PP\Lib\Xml\XmlNodeInterface $domBinding */
-		foreach($domBindings as $domBinding) {
-			$nodes = $domBinding->childNodes();
-
-			foreach ($nodes as $node) {
-				$domRules = $node->childNodes();
-
-				foreach($domRules as $domRule) {
-					$this->bindingsQueue->add($domRule, $node->nodeName());
-				}
+		$modulesBindings = getFromArray($modules, 'bindings', []);
+		foreach ($modulesBindings as $bindingType => $bindings) {
+			foreach ($bindings as $binding) {
+				$this->bindingsQueue->add($binding, $bindingType);
 			}
 		}
 
@@ -544,18 +497,18 @@ class PXApplication {
 	/**
 	 * @param PXModuleDescription $module
 	 */
-	function setModules($module) {
+	function setModules(PXModuleDescription $module) {
 		$this->modules[$module->getName()] = $module;
 	}
 
 	/**
-	 * Пользовательская функция для регистрации модулей не через конфиг modules.xml, а при загрузке плагинов
+	 * Пользовательская функция для регистрации модулей не через конфиг modules.yml, а при загрузке плагинов
 	 * @param  string   $name - имя
 	 * @param  array    $args - массив с параметрами триггера, имя => значение
 	 * @return bool
 	 * @throws \Exception
 	 */
-	public function registerModule($name, array $args = null) {
+	public function registerModule($name, array $args = []) {
 		if (!ctype_alnum($name)) {
 			throw new Exception('Invalid module name');
 		}
@@ -567,10 +520,11 @@ class PXApplication {
 			return false;
 		}
 
-		$module = new PXModuleDescription();
-		$module->name        = $lcname;
-		$module->description = isset($args['description'])? $args['description'] : $ucfname;
-		$module->class       = isset($args['class'])? $args['class'] : 'PXModule' . $ucfname;
+		$module = (new PXModuleDescription())
+			->setName($lcname)
+			->setDescription(isset($args['description'])? $args['description'] : $ucfname)
+			->setClass(isset($args['class'])? $args['class'] : 'PXModule' . $ucfname);
+
 		$this->setModules($module);
 
 		return true;
@@ -582,7 +536,7 @@ class PXApplication {
 	 * @param string $fileName
 	 */
 	private function fillPlugins($fileName) {
-		if($fileName === false) {
+		if ($fileName === false) {
 			return;
 		}
 
@@ -612,7 +566,7 @@ class PXApplication {
 			}
 
 			$this->plugins[$plugin->getName()] = $plugin;
-			$plugin->getPlugin($this); //initialize plugin
+			$plugin->getPlugin($this); // initialize plugin
 		}
 
 		$this->reinitialize['plugins'] = true;
@@ -640,10 +594,10 @@ class PXApplication {
 			FatalError("Ошибка в файле настроек <em>$fileName</em>");
 		}
 
-		$domTriggers = $dom->xpath("/triggers//trigger");
+		$domTriggers = $dom->xpath('/triggers//trigger');
 
 		if (!is_array($domTriggers) || count($domTriggers) == 0) {
-			FatalError("Не описаны триггеры проекта");
+			FatalError('Не описаны триггеры проекта');
 		}
 
 		foreach ($domTriggers as $domTrigger) {

@@ -1,11 +1,13 @@
 <?php
 
-use PP\Module\AbstractModule;
+namespace PP\Module;
 
 /**
- * Class PXModuleObjects
+ * Class ObjectsModule.
+ *
+ * @package PP\Module
  */
-class PXModuleObjects extends AbstractModule {
+class ObjectsModule extends AbstractModule {
 	var $formats;
 	var $object;
 
@@ -33,7 +35,7 @@ class PXModuleObjects extends AbstractModule {
 		$this->datatype = $this->getDatatype('sid');
 		$format = $this->datatype->id;
 
-		$rView = $this->request->getVar($format.'_view');
+		$rView = $this->request->getVar($format . '_view');
 
 		if ($rView === 'plain' || $this->datatype->struct === 'plain' ) {
 			$this->indexAppendTable();
@@ -59,10 +61,10 @@ class PXModuleObjects extends AbstractModule {
 	}
 
 	function indexAppendTable() {
-		$table = new PXAdminTableObjects($this->datatype);
+		$table = new \PXAdminTableObjects($this->datatype);
 		$table->addToParent('INNER.1.0');
 
-		$cId  = $this->request->getCid();
+		$cId = $this->request->getCid();
 		$table->showChildren('cid');
 
 		if($cId && $table->has($cId)) {
@@ -82,10 +84,10 @@ class PXModuleObjects extends AbstractModule {
 		if (count($allowedChilds)) {
 			foreach ($allowedChilds as $childFormat) {
 				if ($this->app->types[$childFormat]->struct == 'tree' && $this->request->GetVar($childFormat.'_view') != 'plain') {
-					$objects = new PXAdminTreeObjects($childFormat, $rqCid, 'ByParent');
+					$objects = new \PXAdminTreeObjects($childFormat, $rqCid, 'ByParent');
 
 				} else {
-					$objects = new PXAdminTableObjects($childFormat, $rqCid, 'ByParent');
+					$objects = new \PXAdminTableObjects($childFormat, $rqCid, 'ByParent');
 				}
 
 				$objects->setControlParent($rqCid);
@@ -99,7 +101,7 @@ class PXModuleObjects extends AbstractModule {
 
 
 	function indexAppendTree() {
-		$objects = new PXAdminAjaxTreeObjects($this->datatype);
+		$objects = new \PXAdminAjaxTreeObjects($this->datatype);
 		$objects->addToParent('INNER.1.0');
 	}
 
@@ -129,17 +131,18 @@ class PXModuleObjects extends AbstractModule {
 		// warn about parent if need
 		if (!empty($this->datatype->parent) && empty($object['parent']) && $this->datatype->struct != 'tree') {
 			$parentDatatype = $this->app->types[$this->datatype->parent];
-			PXDecorativeWidgetsCollection::addToCollection(
+
+			\PXDecorativeWidgetsCollection::addToCollection(
 				"<em class='warning'>Внимание!</em> " .
 				"Объект типа '<b>{$this->datatype->title}</b>' может не быть создан вне контекста объекта '<b>{$parentDatatype->title}</b>'.<br/>" .
 				"Рекомендуется не использовать данный функционал для создания объектов данного типа.",
 				'PXAdminForm',
 				'notices',
-				PXAdminForm::NOTICES_CONTENT
+				\PXAdminForm::NOTICES_CONTENT
 			);
 		}
 
-		$form = new PXAdminForm($object, $this->datatype);
+		$form = new \PXAdminForm($object, $this->datatype);
 		$form->setDisabledStatus($this->popupCheckAccess($object));
 		$form->setAction($this->request->getAction());
 		$form->setArea($this->getArea());
@@ -370,7 +373,7 @@ class PXModuleObjects extends AbstractModule {
 	function actionCloneContentObject() {
 		$donor = $this->request->getContentObject($this->datatype);
 
-		if(!is_numeric($donor['id']) || !$donor['id']) {
+		if (!is_numeric($donor['id']) || !$donor['id']) {
 			FatalError('Клонировать можно только существующие объекты');
 		}
 
@@ -407,20 +410,20 @@ class PXModuleObjects extends AbstractModule {
 		$this->returnToReferer();
 	}
 
-	function applyFiltersToUri($filters){
-		foreach($filters as $dt => $fields){
-			if(is_array($fields) && count($fields) > 0){
-				foreach($fields as $field => $filter){
-					if(empty($filter)) continue;
+	function applyFiltersToUri($filters) {
+		foreach ($filters as $dt => $fields) {
+			if (is_array($fields) && count($fields) > 0) {
+				foreach ($fields as $field => $filter) {
+					if (empty($filter)) continue;
 					$this->nextLocation .= '&filters['.$dt.']'.'['.$field.']='.rawurlencode($filter);
 				}
 			}
 		}
 	}
 
-	function applyFiltersToWhere($refFilters, $refDatatype){
+	function applyFiltersToWhere($refFilters, $refDatatype) {
 		$filterOnWhere = NULL;
-		if(isset($refFilters[$refDatatype->id])    &&
+		if (isset($refFilters[$refDatatype->id])    &&
 		   is_array($refFilters[$refDatatype->id]) &&
 		   count($refFilters[$refDatatype->id]) > 0
 		  ){
@@ -432,11 +435,11 @@ class PXModuleObjects extends AbstractModule {
 				$this->layout->setGetVarToSave('filters['.$refDatatype->id.']['.$field.']', $filter);
 				//apply simple filter logic, ex. : ^search string$
 				$modifiers = P_LEFT|P_RIGHT;
-				if(substr($filter, 0, 1) == '^'){
+				if (substr($filter, 0, 1) == '^'){
 					$modifiers &= P_RIGHT;
 					$filter = substr($filter, 1);
 				}
-				if(substr($filter, -1) == '$'){
+				if (substr($filter, -1) == '$'){
 					$modifiers &= P_LEFT;
 					$filter  = substr($filter, 0, -1);
 				}
@@ -466,7 +469,7 @@ class PXModuleObjects extends AbstractModule {
 	function returnToId($id, $action = null) {
 		$this->nextLocation .= '&id='.$id;
 
-		if(is_string($action)) {
+		if (is_string($action)) {
 			$this->nextLocation .= '&action='.$action;
 		}
 	}
@@ -508,7 +511,7 @@ class PXModuleObjects extends AbstractModule {
 			$this->db->ModifyLinks($reference, $this->datatype->id, $id, $ll, false);
 		}
 
-		if(count($filters = (array)$this->request->GetVar('filters', array()))){
+		if (count($filters = (array)$this->request->GetVar('filters', array()))) {
 			$this->applyFiltersToUri($filters);
 		}
 		$this->appendLinksExistFlag();
@@ -516,14 +519,14 @@ class PXModuleObjects extends AbstractModule {
 	}
 
 	function _makeLinkedListFrom($ref){
-		$linkedList = array();
-		foreach($this->request->getLinks($ref) as $values){
-			foreach($values as $id => $data){
+		$linkedList = [];
+		foreach ($this->request->getLinks($ref) as $values){
+			foreach ($values as $id => $data){
 				$node = & $linkedList[$id];
-				if(isset($linkedList[$id])){
+				if (isset($linkedList[$id])){
 					while(!is_null($node = & $node['next']));
 				}
-				$node         = $data;
+				$node = $data;
 				$node['next'] = NULL;
 			}
 		}
@@ -534,4 +537,3 @@ class PXModuleObjects extends AbstractModule {
 		return strcoll($a, $b);
 	}
 }
-?>

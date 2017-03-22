@@ -7,7 +7,7 @@ class PXBindingsQueue implements Iterator {
 
 	function __construct() {
 		$this->pOrder   = 0;
-		$this->rules    = array();
+		$this->rules = [];
 		$this->finalize = false;
 	}
 
@@ -16,7 +16,7 @@ class PXBindingsQueue implements Iterator {
 
 		if(strlen($rArea) && sizeof(PXRegistry::getRequest()->getHostAndDir()) <= 1) {
 			// FIXME
-			//array_unshift($this->rules, new PXBindingDescription($this->app, array('type' => 'request', 'module' => $rArea), $this->pOrder++));
+			// array_unshift($this->rules, new PXBindingDescription($this->app, array('type' => 'request', 'module' => $rArea), $this->pOrder++));
 			$this->__addRule('PXBindingDescription', array('type' => 'request', 'module' => $rArea));
 		}
 	}
@@ -25,20 +25,19 @@ class PXBindingsQueue implements Iterator {
 		$this->rules[] = new $cls($rule, $this->pOrder++);
 	}
 
-	function add($xmlNode, $type) {
-		$rule = array(
-			'type'   => $type,
-			'rule'   => $xmlNode->getAttribute('rule'),
-			'var'    => $xmlNode->getAttribute('var'),
-			'value'  => $xmlNode->getAttribute('value'),
-			'order'  => $xmlNode->getAttribute('order'),
-			'module' => $xmlNode->getAttribute('module'));
+	public function add($binding, $type) {
+		$rule = [
+			'type' => $type,
+			'var' => getFromArray($binding, 'var'),
+			'value' => getFromArray($binding, 'value'),
+			'order' => getFromArray($binding, 'order'),
+			'module' => getFromArray($binding, 'module')
+		];
 
 		$cls = 'PXBindingDescription';
+		$type = preg_replace('/[^0-9a-z]/' . REGEX_MOD, '', $type);
 
-		$type = preg_replace('/[^0-9a-z]/'.REGEX_MOD, '', $rule['type']);
-
-		if(class_exists($cls.$type)) {
+		if (class_exists($cls . $type)) {
 			$cls .= $type;
 		}
 
@@ -98,9 +97,8 @@ class PXBindingsQueue implements Iterator {
 
 		return 0;
 	}
-	
+
 	function stopLoading() {
 		$this->finalize = true;
 	}
 }
-?>

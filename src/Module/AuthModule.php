@@ -1,14 +1,19 @@
 <?php
 
-use PP\Module\AbstractModule;
+namespace PP\Module;
 
 require_once PPLIBPATH . '/Security/blockingnumbers.class.inc';
 
-class PXModuleAuth extends AbstractModule {
+/**
+ * Class AuthModule.
+ *
+ * @package PP\Module
+ */
+class AuthModule extends AbstractModule {
 
 	function adminIndex() {
 
-		$captcha = new NLBlockingNumbers();
+		$captcha = new \NLBlockingNumbers();
 
 		$captchaKey = $captcha->CreateNew()
 			? $captcha->getKey()
@@ -60,7 +65,7 @@ class PXModuleAuth extends AbstractModule {
 		// TODO: refactor, accept referrer for current domain only
 		// TODO: remove this shitty magic with nextLocation guessing
 
-		$captcha = new NLBlockingNumbers();
+		$captcha = new \NLBlockingNumbers();
 		$captchaKey = $this->request->getPostVar('captchaKey');
 		$captchaVal = $this->request->getPostVar('captchaVal');
 
@@ -110,7 +115,7 @@ class PXModuleAuth extends AbstractModule {
 
 
 	function _auth() {
-		$audit = PXAuditLogger::getLogger();
+		$audit = \PXAuditLogger::getLogger();
 
 		switch ($this->request->getVar('action')) {
 			case 'exit':

@@ -34,7 +34,11 @@ class AdminEngineIndex extends AbstractAdminEngine {
 		foreach ($this->modules as $module) {
 			// check modules acl rules
 			if ($this->user->can('viewmenu', $module)) {
-				$menuItems[$module->name] = $module->description == '' || $module->description == PXModuleDescription::EMPTY_DESCRIPTION ? $module->name : $module->description;
+				if ($module->getDescription() == '' || $module->getDescription() == PXModuleDescription::EMPTY_DESCRIPTION) {
+					$menuItems[$module->getName()] = $module->getName();
+				} else {
+					$menuItems[$module->getName()] = $module->getDescription();
+				}
 			}
 		}
 
@@ -43,7 +47,7 @@ class AdminEngineIndex extends AbstractAdminEngine {
 
 	function showAuthForm() {
 		if (!isset($this->modules[$this->authArea])) {
-			\FatalError('Undefined auth module or you forget insert "allo" for "admin" auth module in acl_objects');
+			FatalError('Undefined auth module or you forget insert "allo" for "admin" auth module in acl_objects');
 		}
 
 		$auth = $this->modules[$this->authArea]->getModule();
