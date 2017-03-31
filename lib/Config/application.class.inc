@@ -393,14 +393,14 @@ class PXApplication {
 	}
 
 	/**
-	 * Загружает справочник (directory) по ссылке
-	 * Использует {@link PXDatabase::_GetData()} для загрузки каталогов из базы данных
+	 * Loads a directory by link.
+	 * Uses {@link PXDatabase::_GetData()} to load directories from database.
 	 *
 	 * @param PXDirectoryDescription $directory
 	 * @param bool $addDefault
 	 */
 	public function LoadXMLDirectory(&$directory, $addDefault = true) {
-		$file          = $directory->sourceDir.$directory->source;
+		$file = self::findConfigFile($directory->source);
 		$xpathSelector = $directory->location;
 
 		$idField       = $directory->sourceKeyField;
