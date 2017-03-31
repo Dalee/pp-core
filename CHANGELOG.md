@@ -1,5 +1,11 @@
 # Change log
 
+## [1.9.1] - 2017-03-31
+- Автоматически-загружаемые `XML`-словари теперь ищутся во всех конфигурационных папках:
+    - `site/etc/`
+    - `local/etc/`
+    - `libpp/etc/`
+
 ## [1.9.0] - 2017-03-22
 - Глобальная переделка загрузки модулей
   - [Документация](docs/modules.md)
@@ -13,6 +19,9 @@
   - `PXRssXML` => `PP\Lib\Rss\AbstractRssNode`
   - `PXRssChannel` => `PP\Lib\Rss\RssChannel`
   - `PXRssItem` => `PP\Lib\Rss\RssItem`
+
+## [1.8.7] - 2017-03-21
+- Замена старых генераторов ссылок на `PP\Lib\UrlGenerator\UrlGenerator`
 
 ## [1.8.6] - 2017-03-21
 - Исправлены пробелы на табы в шаблоне миграции
