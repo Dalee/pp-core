@@ -308,6 +308,7 @@ CREATE TABLE queue_job (
 	sys_created  TIMESTAMP WITHOUT TIME ZONE DEFAULT now(),
 	sys_modified TIMESTAMP WITHOUT TIME ZONE DEFAULT now(),
 	sys_uuid     VARCHAR(36),
+	sys_meta     VARCHAR,
 
 	title        VARCHAR(150),
 	payload      JSON,
