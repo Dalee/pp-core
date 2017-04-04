@@ -50,7 +50,7 @@ class Collection implements Countable, IteratorAggregate, JsonSerializable {
 
 	/**
 	 * @param Closure $func
-	 * @return Collection
+	 * @return array
 	 */
 	public function map(Closure $func) {
 		return array_map($func, $this->elements);
