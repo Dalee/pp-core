@@ -209,7 +209,7 @@ if (!defined('PP_DONT_FORCE_SUDO')) {
 			break;
 
 		default:
-			die("This script must be runned as " . SYSTEM_USER . " (uid " . $system_user['uid'] . ") or root. \nNow it runned as " . posix_getlogin() . "(uid " . posix_getuid() . ")\n");
+			die("This script must be run as " . SYSTEM_USER . " (uid " . $system_user['uid'] . ") or root. \nIt's been run as " . posix_getlogin() . "(uid " . posix_getuid() . ")\n");
 	}
 }
 

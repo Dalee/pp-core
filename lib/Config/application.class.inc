@@ -821,10 +821,12 @@ class PXApplication {
 	}
 
 	private static function configDirs() {
-		return array(
-			BASEPATH.'/site/etc/',
-			BASEPATH.'/local/etc/',
-			BASEPATH.'/libpp/etc/');
+		return [
+			APPPATH . 'config/',
+			BASEPATH . '/site/etc/',
+			BASEPATH . '/local/etc/',
+			BASEPATH . '/libpp/etc/'
+		];
 	}
 
 	/**
