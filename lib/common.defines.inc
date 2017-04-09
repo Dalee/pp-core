@@ -189,6 +189,10 @@ define('PX_ENGINE_SBIN', 3);
 define('DT_STRUCT', 'struct');
 define('DT_PROPERTIES', 'sys_properties');
 
+if (getenv('PP_DONT_FORCE_SUDO')) {
+	define('PP_DONT_FORCE_SUDO', 1);
+}
+
 if (!defined('PP_DONT_FORCE_SUDO')) {
 	$system_user = posix_getpwnam(SYSTEM_USER);
 
@@ -205,7 +209,7 @@ if (!defined('PP_DONT_FORCE_SUDO')) {
 			break;
 
 		default:
-			die("This script must be runned as " . SYSTEM_USER . " (uid " . $system_user['uid'] . ") or root. \nNow it runned as " . posix_getlogin() . "(uid " . posix_getuid() . ")\n");
+			die("This script must be run as " . SYSTEM_USER . " (uid " . $system_user['uid'] . ") or root. \nIt's been run as " . posix_getlogin() . "(uid " . posix_getuid() . ")\n");
 	}
 }
 
