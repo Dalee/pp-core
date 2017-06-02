@@ -1,7 +1,7 @@
 <?php
 class PXWidgetFieldGroupsInlineView extends PXWidgetFieldGroups {
-	function PXWidgetFieldGroupsInlineView($groupName, $group, &$dType, &$object) {
-		parent::PXWidgetFieldGroups($groupName, $group, $dType, $object);
+	public function __construct($groupName, $group, &$dType, &$object) {
+		parent::__construct($groupName, $group, $dType, $object);
 	}
 
 	function html(){

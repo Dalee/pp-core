@@ -2,20 +2,17 @@
 // Участник (attendee) отвечает на request события
 
 class NLMailReplyEvent extends NLMailVEvent {
-	
-	function NLMailReplyEvent() {
+
+	public function __construct() {
 		$this->_method = 'REPLY';
-		
-		$this->_requiredProps = array(
+		$this->_requiredProps = [
 			'attendee',
 			'DTStamp',
 			'organizer',
 			'uid'
-		);
-		
-		$this->_uselessProps = array('alarm');
-		
-		$this->NLMailVEvent();
+		];
+
+		$this->_uselessProps = ['alarm'];
+		parent::__construct();
 	}
 }
-?>

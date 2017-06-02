@@ -9,7 +9,7 @@ class NLMailVEvent {
 	var $_uselessProps;    // массив неиспользуемых полей объекта vEvent конкретного типа
 	var $eventProps;       // все поля объекта vEvent
 
-	function NLMailVEvent() {
+	public function __construct() {
 		$this->_calScale = null;                    //тип календаря, если не установлен, по умолчанию GREGORIAN
 		$this->_prodId   = '-//Microsoft Corporation//Outlook 11.0 MIMEDIR//EN'; // почтовый клиент - обязательное свойство
 
@@ -431,5 +431,3 @@ class NLMailVEvent {
 		}
 	}
 }
-
-?>

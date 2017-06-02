@@ -35,7 +35,7 @@ class NLLogger {
 
 	var $parent = null; //parent logger uplink
 
-	function NLLogger($name) {
+	public function __construct($name) {
 		$this->name = $name;
 	}
 
@@ -95,7 +95,7 @@ class NLLogger {
 	function setLevel($level){
 		$this->level = $level;
 	}
-	
+
 	function getLevel(){
 		return $this->level;
 	}
@@ -141,7 +141,7 @@ class Appender {
 	var $format  = '[%t] %1 ';
 
 	//constructor
-	function Appender($name) {
+	public function __construct($name) {
 		$this->name = $name;
 	}
 
@@ -255,8 +255,8 @@ class FileAppender extends Appender {
 class SQLAppender extends Appender {
 	var $db;
 
-	function SQLAppender($name) {
-		parent::Appender($name);
+	public function __construct($name) {
+		parent::__construct($name);
 		$this->format = "";
 	}
 
@@ -288,8 +288,8 @@ class SyslogAppender extends Appender{
 	var $facility    = 'LOG_USER';
 	var $facilitymap = null;
 
-	function SyslogAppender($name) {
-		parent::Appender($name);
+	public function __construct($name) {
+		parent::__construct($name);
 		if (!defined('LOG_PID')) {
 			define_syslog_variables();
 		}
@@ -329,4 +329,3 @@ class SyslogAppender extends Appender{
 		syslog($this->map[$level], $this->_compileMessage($level, $message));
 	}
 }
-?>

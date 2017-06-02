@@ -26,7 +26,7 @@ abstract class AbstractEngine {
 	protected $db = ['factory' => 'PXDatabase', 'helper' => true];
 
 	/** @var LayoutInterface */
-	protected $layout = ['factory' => 'PP\Lib\Html\Layout\Null'];
+	protected $layout = ['factory' => 'PP\Lib\Html\Layout\NullLayout'];
 
 	/** @var \PXUserAuthorized */
 	protected $user = ['factory' => 'PXUserAuthorized'];

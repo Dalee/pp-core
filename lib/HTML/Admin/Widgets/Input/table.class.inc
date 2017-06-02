@@ -1,4 +1,5 @@
 <?php
+
 class PXInputTable extends PXAdminWidget {
 	var $name;
 	var $value;
@@ -6,13 +7,13 @@ class PXInputTable extends PXAdminWidget {
 	var $height;
 	var $header;
 
-	function PXInputTable($name, $value, $cols, $height, $header = array()) {
-		$this->name    = $name;
-		$this->value   = $value;
-		$this->value[] = NULL;
-		$this->height  = $height;
-		$this->header  = $header;
-		
+	public function __construct($name, $value, $cols, $height, $header = array()) {
+		$this->name = $name;
+		$this->value = $value;
+		$this->value[] = null;
+		$this->height = $height;
+		$this->header = $header;
+
 		if (is_array($cols)) {
 			$this->colsWidth = $cols;
 		} else {
@@ -22,29 +23,32 @@ class PXInputTable extends PXAdminWidget {
 			}
 		}
 	}
-	
-	function header(){
-		return sizeof($this->header) ? sprintf("<thead><tr><th>%s</th></tr></thead>", join('</th><th>', $this->header)) : '';
+
+	function header() {
+		return sizeof($this->header) ? sprintf(
+			"<thead><tr><th>%s</th></tr></thead>",
+			join('</th><th>', $this->header)
+		) : '';
 	}
-	
+
 	function colgroup() {
 		$html = '<colgroup>';
-		for ($i=0; $i<count($this->colsWidth); $i++) {
-			$width = ceil(100*$this->colsWidth[$i]/array_sum($this->colsWidth));
+		for ($i = 0; $i < count($this->colsWidth); $i++) {
+			$width = ceil(100 * $this->colsWidth[$i] / array_sum($this->colsWidth));
 			$html .= '<col width="' . $width . '%">';
 		}
 		$html .= '</colgroup>';
 		return $html;
 	}
-	
+
 	function maketd() {
-		
+
 	}
 
 	function html() {
 		$idx = 0;
 
-		$html  = '<table id="table' . quot($this->name) . '" class="datagrid">';
+		$html = '<table id="table' . quot($this->name) . '" class="datagrid">';
 		$html .= $this->header();
 		$html .= $this->colgroup();
 
@@ -56,12 +60,12 @@ class PXInputTable extends PXAdminWidget {
 			for ($i = 0, $cols = count($this->colsWidth); $i < $cols; $i++) {
 				$html .= '<td>';
 
-				$currentValue = (isset($row[$i])) ? $row[$i] : NULL;
-				
+				$currentValue = (isset($row[$i])) ? $row[$i] : null;
+
 				if ($this->height == 0) {
-					$text = new PXInputInput($this->name.'['.$idx.'][]', $currentValue);
+					$text = new PXInputInput($this->name . '[' . $idx . '][]', $currentValue);
 				} else {
-					$text = new PXInputTextarea($this->name.'['.$idx.'][]', $currentValue, $this->height);
+					$text = new PXInputTextarea($this->name . '[' . $idx . '][]', $currentValue, $this->height);
 				}
 
 				$html .= $text->html();

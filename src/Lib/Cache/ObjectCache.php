@@ -34,7 +34,7 @@ class ObjectCache {
 			case $cache === 'null':
 			case $cache === null:
 			case $cache === false:
-				$cacheClass = 'PP\Lib\Cache\Driver\Null';
+				$cacheClass = 'PP\Lib\Cache\Driver\NullCache';
 				break;
 
 			case strpos($cache, '://') !== false:

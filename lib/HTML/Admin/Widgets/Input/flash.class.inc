@@ -2,8 +2,8 @@
 class PXInputFlash extends PXInputImage {
 	var $_default;
 	var $_default_full;
-	
-	function PXInputFlash($name, $value, $entry = NUll) {
+
+	public function __construct($name, $value, $entry = null) {
 		$this->_default = 'i/v.swf';
 		$this->_default_full = '/admin/i/v.swf';
 		$this->value = $value;
@@ -11,7 +11,7 @@ class PXInputFlash extends PXInputImage {
 		$this->entry = $entry;
 		$this->type = 'flash';
 	}
-	
+
 	function preview() {
 		return <<<HTML
 			<div>
@@ -20,4 +20,3 @@ class PXInputFlash extends PXInputImage {
 HTML;
 	}
 }
-?>

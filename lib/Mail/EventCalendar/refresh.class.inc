@@ -2,18 +2,17 @@
 // Используется участником (attendee) для получения последней версии события
 
 class NLMailRefreshEvent extends NLMailVEvent {
-	
-	function NLMailRefreshEvent() {
+
+	public function __construct() {
 		$this->_method = 'REFRESH';
-		
-		$this->_requiredProps = array(
+		$this->_requiredProps = [
 			'attendee',
 			'DTStamp',
 			'organizer',
 			'uid'
-		);
-		
-		$this->_uselessProps = array(
+		];
+
+		$this->_uselessProps = [
 			'attach',
 			'categories',
 			'class',
@@ -38,9 +37,8 @@ class NLMailRefreshEvent extends NLMailVEvent {
 			'transp',
 			'url',
 			'alarm'
-		);
-		
-		$this->NLMailVEvent();
+		];
+
+		parent::__construct();
 	}
 }
-?>

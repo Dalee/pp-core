@@ -8,7 +8,7 @@ class PXAdminList extends PXAdminWidget {
 	var	$_selected;
 	var	$_getData;
 
-	function PXAdminList($list) {
+	public function __construct($list) {
 		$this->_list     = $list;
 		$this->_varName  = '';
 		$this->_selected = '';

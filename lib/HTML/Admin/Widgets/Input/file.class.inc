@@ -8,7 +8,7 @@ class PXInputFile extends PXAdminWidget {
 	var $entry;
 	var $distension;
 
-	function PXInputFile($name, $value, $entry = NULL) {
+	public function __construct($name, $value, $entry = NULL) {
 		$this->value = $value;
 		$this->name  = $name;
 		$this->entry = $entry;

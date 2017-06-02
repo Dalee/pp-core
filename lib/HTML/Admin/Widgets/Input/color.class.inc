@@ -2,8 +2,8 @@
 class PXInputColor extends PXAdminWidget {
 	var $name;
 	var $value;
-	
-	function PXInputColor($name, $value) {
+
+	public function __construct($name, $value) {
 		$this->name = $name;
 		$this->value = $value;
 	}

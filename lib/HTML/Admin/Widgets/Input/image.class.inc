@@ -5,7 +5,7 @@ class PXInputImage extends PXInputFile {
 	var $width;
 	var $height;
 
-	function PXInputImage($name, $value, $entry = NULL) {
+	public function __construct($name, $value, $entry = NULL) {
 		$this->_default = 'i/v.gif';
 		$this->value = $value;
 		$this->name = $name;

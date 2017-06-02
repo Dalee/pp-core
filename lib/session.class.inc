@@ -19,7 +19,7 @@ class PXSession {
 	 * @param null $dirName
 	 * @deprecated
 	 */
-	function PXSession($sessionName, $dirName = null) {
+	public function __construct($sessionName, $dirName = null) {
 		$this->sessionName    = $sessionName;
 		$this->saveDirectory  = $dirName ? $dirName : BASEPATH.'/site/var/sessions/';
 

@@ -34,7 +34,7 @@ class PXAuditLogger {
 	 * @param PXApplication $app ссылка на PXApplication {@link $app}
 	 * @param PXDatabase $db ссылка на PXDatabase {@link $db}
 	 */
-	function PXAuditLogger($app, $db) {
+	public function __construct($app, $db) {
 		$this->app = $app;
 		$this->db  = $db;
 

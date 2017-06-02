@@ -22,7 +22,7 @@ class NLMailMessage {
 	var $_listHeadersFields;
 	var $listHeaders;
 
-	function NLMailMessage($logFile=NULL) {
+	public function __construct($logFile=NULL) {
 		$this->fromName         = NULL;
 		$this->fromEmail        = NULL;
 		$this->replyEmail       = NULL;
@@ -44,34 +44,34 @@ class NLMailMessage {
 		$this->_listHeadersFields = array('help', 'subscribe', 'unsubscribe', 'owner', 'archive');
 		$this->listHeaders      = array();
 	}
- 
+
 	function setCharset($charset) {
 		$this->charset = $charset;
 	}
- 
+
 	function setFrom($name, $email) {
 		$this->fromName  = $name;
 		$this->fromEmail = $email;
 	}
- 
+
 	function setTo($name, $email) {
 		$this->toName  = mb_strlen($name) ? $name : $email;
 		$this->toEmail = $email;
 	}
- 
+
 	function setCC($email, $hide=true) {
 		if($hide) {
 			$this->bccEmail = $email;
- 
+
 		} else {
 			$this->ccEmail = $email;
 		}
 	}
- 
+
 	function setReply($email) {
 		$this->replyEmail = $email;
 	}
- 
+
 	function setSubject($string) {
 		$this->subject = $string;
 	}
@@ -99,28 +99,28 @@ class NLMailMessage {
 		$string = str_replace("\xd", '', $string);
 		$this->body = $string;
 	}
- 
+
 	function setTemplate($filename, $withSubject=TRUE, $variables=NULL) {
 		if(!is_file($filename)) {
 			FatalError('Файл '.$filename.' не найден');
 		}
- 
+
 		$template = file($filename);
- 
+
 		if($withSubject) {
 			$subject = trim($template[0]);
- 
+
 			$subject = $this->parseTemplate($subject, $variables);
 			$this->setSubject($subject);
 			array_shift($template);
 		}
- 
+
 		$template = implode('', $template);
 		$template = $this->parseTemplate($template, $variables);
- 
+
 		$this->setBody($template);
 	}
- 
+
 	function parseTemplate($text, $variables) {
 		if(!is_array($variables)) {
 			return $text;
@@ -191,10 +191,10 @@ class NLMailMessage {
 		} else {
 			$_subject = NULL;
 		}
- 
+
 		return $_subject;
 	}
- 
+
 	function _strip() {
 		if ($this->format != 'html' and function_exists('strip1251')) {
 			$this->fromName = strip1251($this->fromName);
@@ -203,32 +203,32 @@ class NLMailMessage {
 			$this->body     = strip1251($this->body);
 		}
 	}
- 
+
 	function createFullSmtpMail() {
 		$subject  = $this->createSmtpMail();
- 
+
 		$content  = "Subject: $subject\n";
 		$content .= $this->addHeaders;
 		$content .= "\n\n";
 		$content .= $this->body;
- 
+
 		return $content;
 	}
- 
+
 	function send() {
 		if (!isset($this->toEmail)) {
 			$this->Log(false);
 			return false;
 		}
- 
+
 		$_subject = $this->createSmtpMail();
- 
+
 		ini_set('track_errors', 1);
 		$oldError = error_reporting(0);
- 
+
 		if (!mb_strlen($this->getError()) && @mail($this->toEmail, $_subject, $this->body, $this->addHeaders)) {
 			error_reporting($oldError);
- 
+
 			$this->log(true);
 			return true;
 		} else {
@@ -236,14 +236,14 @@ class NLMailMessage {
 			if (!mb_strlen($this->getError())) {
 				$this->setError(@$php_errormsg);
 			}
- 
+
 			$this->log(false);
 			return false;
 		}
 	}
- 
+
 	function log($status) {
- 
+
 		if(@touch($this->log) && is_file($this->log)) {
 			$message = array(
 				($status ? 'OK ' : 'ERR'),
@@ -254,26 +254,26 @@ class NLMailMessage {
 				mb_strlen($this->body),
 				$this->getError()
 			);
- 
+
 			appendStringToFile($this->log, implode("\t", $message)."\n");
 		}
 	}
- 
+
 	function setError($string) {
 		$this->_errorMessage = $string;
 	}
- 
+
 	function getError() {
 		return $this->_errorMessage;
 	}
- 
+
 	function _attachText($text, $contentType='text/plain') {
 		$out  = "--".$this->boundary."\n";
 		$out .= "Content-Type: ".$contentType."; charset=\"".$this->charset."\"\n\n";
 		$out .= $text."\n";
 		return $out;
 	}
- 
+
 	function _attachTextAsFile($encoded, $file, $id, $type='application/octet-stream', $inline = false) {
 		$out  = "--".$this->boundary . "\n";
 		$out .= "Content-type: " . $type . "; name=\"$file\";\n";
@@ -283,28 +283,28 @@ class NLMailMessage {
 		$out .= $encoded . "\n";
 		return $out;
 	}
- 
+
 	function _attachFile($file, $name, $id, $type='application/octet-stream', $source='', $inline = false) {
 		if(mb_strlen($source)) {
 			$encoded = $this->_encodeString($source);
 		} else {
 			$encoded = $this->_encodeFile($file);
 		}
- 
+
 		if (mb_strlen($name)) {
 			$file = $name;
 		}
- 
+
 		return $this->_attachTextAsFile($encoded, $file, $id, $type, $inline);
 	}
- 
+
 	function _writeSmtpHeaders() {
 		$addHeaders = NULL;
- 
+
 		if (isset($this->returnPath)) {
 			$addHeaders = "Return-Path: <{$this->returnPath}>\n";
 		}
- 
+
 		if (isset($this->fromName)) {
 			$addHeaders .= "From: =?".$this->charset."?B?".base64_encode($this->fromName)."?= <{$this->fromEmail}>\n";
 			$addHeaders .= "Reply-To: {$this->replyEmail}\n";
@@ -312,11 +312,11 @@ class NLMailMessage {
 			$addHeaders .= "From: {$this->fromEmail}\n";
 			$addHeaders .= "Reply-To: {$this->replyEmail}\n";
 		}
- 
+
 		if (isset($this->ccEmail)) {
 			$addHeaders .= "CC: {$this->ccEmail}\n";
 		}
- 
+
 		if (isset($this->bccEmail)) {
 			$addHeaders .= "BCC: {$this->bccEmail}\n";
 		}
@@ -335,7 +335,7 @@ class NLMailMessage {
 		$addHeaders .= "MIME-Version: 1.0\n";
 		return $addHeaders;
 	}
- 
+
 	function _writeMimeHeaders() {
 		$out = "MIME-version: 1.0\n";
 		$out .= "Content-type: multipart/{$this->multipart}; ";
@@ -343,17 +343,17 @@ class NLMailMessage {
 		$out .= "Content-transfer-encoding: 7BIT\n";
 		return $out;
 	}
- 
+
 	function _encodeFile($sourcefile) {
 		if (is_readable($sourcefile)) {
 			return $this->_encodeString(ReadFileToString($sourcefile));
 		}
 	}
- 
+
 	function _encodeString($string) {
 		return chunk_split(base64_encode($string));
 	}
- 
+
 	function _checkEmails() {
 		if(!$this->_validateEmails){
 			return;
@@ -365,7 +365,7 @@ class NLMailMessage {
 			}
 		}
 	}
- 
+
 	function validateEmails($flag) {
 		$this->_validateEmails = (bool)$flag;
 	}
@@ -403,4 +403,3 @@ class NLMailMessage {
 		$this->body = $text;
 	}
 }
-?>

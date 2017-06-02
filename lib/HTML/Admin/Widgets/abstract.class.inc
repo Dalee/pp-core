@@ -8,7 +8,7 @@ abstract class PXAdminWidget implements PXAdminWidgetIF{
 	var $disable;
 	var $parentWidget = null;
 
-	function PXAdminWidget() {
+	public function __construct() {
 	}
 
 	function html() {
@@ -56,8 +56,8 @@ abstract class PXAdminWidget implements PXAdminWidgetIF{
 
 abstract class PXAdminComplexWidget extends PXAdminWidget {
 	var $blocks;
-	function PXAdminComplexWidget() {
-		$this->PXAdminWidget();
+	public function __construct() {
+		parent::__construct();
 	}
 
 	function append($block, $label) { // $block commonly used for instances of PXAdminWidget or PXAdminComplexWidget, but can apply string
@@ -72,4 +72,3 @@ abstract class PXAdminComplexWidget extends PXAdminWidget {
 		}
 	}
 }
-?>

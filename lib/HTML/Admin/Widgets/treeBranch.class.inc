@@ -1,7 +1,7 @@
 <?php
 class PXAdminTreeBranch extends PXAdminWidget {
 
-	function PXAdminTreeBranch($leaf, $htmlTree, $parentLeaf) {
+	public function __construct($leaf, $htmlTree, $parentLeaf) {
 		$this->leaf     = $leaf;
 		$this->htmlTree = $htmlTree;
 		$this->parent   = $parentLeaf;

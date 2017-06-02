@@ -9,16 +9,16 @@ class PXInputDropDown extends PXAdminWidget {
 
 	protected $empty = array(null => 0);
 
-	function PXInputDropDown($name, $value, $values) {
+	public function __construct($name, $value, $values) {
 		$this->name = $name;
 		$this->value = $value;
 		$this->values = $values;
 	}
-	
+
 	function setMultiple($multiple){
 		$this->multiple = $multiple ? 'multiple="multiple"' : '';
 	}
-	
+
 	function setSize($size){
 		$this->size = is_numeric($size) ? 'size="'.$size.'"' : '';
 	}

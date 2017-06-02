@@ -4,7 +4,7 @@ class PXXSLT {
 	var $xsl;
 	var $parameters = array();
 
-	function PXXSLT($xslFile) {
+	public function __construct($xslFile) {
 		$this->xsl = $xslFile;
 	}
 
@@ -21,4 +21,3 @@ class PXXSLT {
 		FatalError('It\s  abstract method');
 	}
 }
-?>
