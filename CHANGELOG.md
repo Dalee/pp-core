@@ -1,10 +1,14 @@
 # Change log
 
-## [1.9.2] - UNRELEASED
+## [1.9.2] - 2017-06-02
 - Добавлено поле `sys_meta` к таблице `queue_job`
 - Поправлен phpdoc для `PP\Lib\Collection::map`
 - Если передана переменная окружения `PP_DONT_FORCE_SUDO`, то выключается проверка текущего пользователя
 - В список директорий для автоматического поиска `XML`-словарей добавлена `app/config`
+- Экспериментальная поддержка PHP 7.1, переименованы классы:
+	- `src/Lib/Auth/Null.php` => `src/Lib/Auth/NullAuth.php`
+	- `src/Lib/Cache/Driver/Null.php` => `src/Lib/Cache/Driver/NullCache.php`
+	- `src/Lib/Html/Layout/Null.php` => `src/Lib/Html/Layout/NullLayout.php`
 
 ## [1.9.1] - 2017-03-31
 - Автоматически-загружаемые `XML`-словари теперь ищутся во всех конфигурационных папках:
