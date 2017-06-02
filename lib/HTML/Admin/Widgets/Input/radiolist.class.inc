@@ -22,7 +22,11 @@ class PXInputRadiolist extends PXAdminWidget {
 		$out = '';
 		foreach ($this->list as $value => $title) {
 			// hm... I don't like it
-			$id = str_replace(array('[', ']'), array('_', ''), $this->name) . '_' . preg_replace('/[^a-z0-9\-]/i'.REGEX_MOD, '', $value);
+			$id = str_replace(array('[', ']'), array('_', ''), $this->name) . '_' . preg_replace(
+					'/[^a-z0-9\-]/i' . REGEX_MOD,
+					'',
+					$value
+				);
 			$input = new PXInputRadioButton($this->name, $this->selected === (string)$value, $value);
 			$input->setId($id);
 			$out .= sprintf($this->pattern, $input->html(), quot($id), quot($title));

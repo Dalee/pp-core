@@ -3,7 +3,8 @@
 use PP\Lib\Cache\ObjectCache;
 
 class PXErrorReporterHTML extends PXErrorReporter {
-	function PXErrorReporterHTML() {
+
+	public function __construct() {
 		$this->computer = @rtrim(`hostname`);
 
 		$this->toEmail = !empty($_SERVER['SERVER_ADMIN']) ? $_SERVER['SERVER_ADMIN'] : 'support@dalee.ru';

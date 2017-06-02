@@ -2,7 +2,7 @@
 
 namespace PP\Lib\Auth;
 
-class Null extends AuthAbstract {
+class NullAuth extends AuthAbstract {
 
 	/**
 	 * {@inheritdoc}

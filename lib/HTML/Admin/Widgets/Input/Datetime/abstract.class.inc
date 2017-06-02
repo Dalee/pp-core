@@ -1,10 +1,10 @@
 <?php
 // Abstract
-class PXInputDateTime extends PXAdminWidget { 
+class PXInputDateTime extends PXAdminWidget {
 	var $name;
 	var $date;   // array(year, month, day, hour, minute, second);
 
-	function PXInputDateTime($name, $value, $notNull=true) {
+	public function __construct($name, $value, $notNull=true) {
 		$this->name    = $name;
 		$this->notNull = $notNull;
 

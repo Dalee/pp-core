@@ -58,7 +58,7 @@ final class PXRegistry {
 					break;
 
 				case 'layout':
-					$registry->$varName = new Layout\Null();
+					$registry->$varName = new Layout\NullLayout();
 					break;
 
 				case 'request':
@@ -121,7 +121,7 @@ final class PXRegistry {
 
 	/**
 	 * @static
-	 * @return Layout\Null|PXUserHTMLLayout
+	 * @return Layout\NullLayout|PXUserHTMLLayout
 	 */
 	public static function getLayout() {
 		return self::get('layout');

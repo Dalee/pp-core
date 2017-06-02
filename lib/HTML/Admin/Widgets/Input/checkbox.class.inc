@@ -5,7 +5,7 @@ class PXInputCheckbox extends PXAdminWidget {
 	var $value = NULL;
 	var $id = NULL;
 
-	function PXInputCheckbox($name, $on=false, $value=NULL) {
+	public function __construct($name, $on=false, $value=NULL) {
 		$this->name = $name;
 		$this->setOn($on);
 		$this->setValue($value);
@@ -33,4 +33,3 @@ class PXInputCheckbox extends PXAdminWidget {
 		return $html;
 	}
 }
-?>

@@ -2,25 +2,24 @@
 // добавление одной или более сущностей к существующему событию, выполняется организатором (organizer)
 
 class NLMailAddEvent extends NLMailVEvent {
-	
-	function NLMailAddEvent() {
+
+	public function __construct() {
 		$this->_method = 'ADD';
-		
-		$this->_requiredProps = array(
+
+		$this->_requiredProps = [
 			'DTStamp',
 			'DTStart',
 			'organizer',
 			'sequence',
 			'summary',
 			'uid'
-		);
-		
-		$this->_uselessProps = array(
+		];
+
+		$this->_uselessProps = [
 			'recurrenceId',
 			'requestStatus'
-		);
-		
-		$this->NLMailVEvent();
+		];
+
+		parent::__construct();
 	}
 }
-?>

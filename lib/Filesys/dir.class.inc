@@ -42,9 +42,8 @@ class NLDir {
 	 * The class constructor.
 	 *
 	 * @param string $catalog name of the directory - absolute (begins with '/' or not)
-	 * @return void
 	 */
-	function NLDir($catalog) {
+	public function __construct($catalog) {
 		$this->_block = false;
 		$catalog = $this->_prepare($catalog);
 

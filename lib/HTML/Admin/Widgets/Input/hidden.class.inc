@@ -3,7 +3,7 @@ class PXInputHidden extends PXAdminWidget {
 	var $value;
 	var $name;
 
-	function PXInputHidden($name, $value) {
+	public function __construct($name, $value) {
 		$this->value = $value;
 		$this->name  = $name;
 	}

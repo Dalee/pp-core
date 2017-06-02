@@ -2,10 +2,10 @@
 // Используется когда участник (attendee) хочет внести предложения либо изменить, например время события и т.п
 
 class NLMailCounterEvent extends NLMailVEvent {
-	
-	function NLMailCounterEvent() {
+
+	public function __construct() {
 		$this->_method = 'COUNTER';
-		
+
 		$this->_requiredProps = array(
 			'DTStamp',
 			'DTStart',
@@ -13,10 +13,8 @@ class NLMailCounterEvent extends NLMailVEvent {
 			'summary',
 			'uid'
 		);
-		
+
 		$this->_uselessProps = array();
-		
-		$this->NLMailVEvent();
+		parent::__construct();
 	}
 }
-?>

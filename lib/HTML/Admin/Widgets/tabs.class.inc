@@ -42,5 +42,3 @@ class PXWidgetTabs extends PXAdminComplexWidget {
 		return join($html);
 	}
 }
-
-?>

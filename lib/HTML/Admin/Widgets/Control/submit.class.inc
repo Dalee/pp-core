@@ -5,7 +5,7 @@ class PXControlSubmit extends PXAdminWidget {
 	var $name = null;
 	var $accessKey = null;
 
-	function PXControlSubmit($value, $name = null, $accessKey = null) {
+	public function __construct($value, $name = null, $accessKey = null) {
 		$this->value = $value;
 		$this->name = $name;
 		$this->accessKey = $accessKey;

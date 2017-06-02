@@ -2,22 +2,21 @@
 // отмена одной или более сущностей существующего события, выполняется организатором (organizer)
 
 class NLMailCancelEvent extends NLMailVEvent {
-	
-	function NLMailCancelEvent() {
+
+	public function __construct() {
 		$this->_method = 'CANCEL';
-		
-		$this->requiredMethods = array(
+		$this->requiredMethods = [
 			'DTStamp',
 			'organizer',
 			'sequence',
 			'uid'
-		);
-		$this->_uselessProps = array(
+		];
+
+		$this->_uselessProps = [
 			'requestStatus',
 			'alarm'
-		);
-		
-		$this->NLMailVEvent();
+		];
+
+		parent::__construct();
 	}
 }
-?>

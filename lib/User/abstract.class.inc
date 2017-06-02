@@ -10,7 +10,7 @@ define('LINK_GROUP2USER', 'sgroup2suser');
 
 require_once PPLIBPATH . 'Acl/classes.inc';
 
-use PP\Lib\Auth\Null;
+use PP\Lib\Auth\NullAuth;
 
 abstract class PXUser {
 	var $id;
@@ -40,7 +40,7 @@ abstract class PXUser {
 		$this->login = null;
 		$this->groups = [0];
 		$this->data = [];
-		$this->auth = new Null();
+		$this->auth = new NullAuth();
 	}
 
 	/**
@@ -136,7 +136,7 @@ abstract class PXUser {
 		}
 
 		if (is_null($authDriverList)) {
-			$authDriverList[] = 'PP\Lib\Auth\Null';
+			$authDriverList[] = 'PP\Lib\Auth\NullAuth';
 		}
 
 		return $authDriverList;
