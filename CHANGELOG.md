@@ -1,5 +1,10 @@
 # Change log
 
+## [1.9.3] - 2017-06-05
+- Команда `pp` теперь подключает только `libpp/lib/mainadmin.inc`, `libpp/lib/mainuser.inc`
+вместо `libpp/lib/maincommon.inc` и его локальной версии. Последние подключаются внутри, также как и
+локальные `mainuser.inc` и `mainadmin.inc`. `vendor/autoload.php` тоже подключается внутри.
+
 ## [1.9.2] - 2017-06-02
 - Добавлено поле `sys_meta` к таблице `queue_job`
 - Поправлен phpdoc для `PP\Lib\Collection::map`
