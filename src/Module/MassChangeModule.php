@@ -23,21 +23,24 @@ class MassChangeModule extends AbstractModule {
 
 		$this->helper->options = is_object($this->helper->options) ? $this->helper->options : null;
 		$this->helper->objectIds = (array)$this->request->getVar('objects', []);
+		$this->helper->objectIds = array_filter($this->helper->objectIds, 'is_numeric');
 
-		if (!(
-			isset($this->app->types[$this->helper->objectType]) ||
-			sizeof($this->helper->objectIds = array_filter($this->helper->objectIds, 'is_numeric'))
-		)
-		) {
+		if (!(isset($this->app->types[$this->helper->objectType]) || count($this->helper->objectIds))) {
 			FatalError('Malformed action params');
 		}
 
-		return $this->makeOperation();
+		return $this->doOperation();
 	}
 
-	private function doParentChangeOperation() {
+	/**
+	 * @return null|object
+	 */
+	private function doChangeParent() {
 		$dtype = $this->app->types[$this->helper->objectType];
-		$parentField = isset($dtype->fields['parent']) ? 'parent' : (isset($dtype->fields['pid']) ? 'pid' : null);
+		$parentField = isset($dtype->fields['parent'])
+			? 'parent'
+			: (isset($dtype->fields['pid']) ? 'pid' : null);
+
 		$newParent = !empty($this->helper->options->parent) && is_numeric($this->helper->options->parent)
 			? $this->helper->options->parent
 			: 0;
@@ -59,7 +62,10 @@ class MassChangeModule extends AbstractModule {
 		return \PXEngineJSON::toError('Недопустимый родитель объекта');
 	}
 
-	private function doCommonMultipleDeleteOperation() {
+	/**
+	 * @return object
+	 */
+	private function doCommonMultipleDelete() {
 		foreach ($this->helper->objectIds as $objectId) {
 			$this->db->DeleteContentObject($this->app->types[$this->helper->objectType], $objectId);
 		}
@@ -75,7 +81,10 @@ class MassChangeModule extends AbstractModule {
 		return \PXEngineJSON::toSuccess($res);
 	}
 
-	private function doCommonMultipleStatusChangeOperation() {
+	/**
+	 * @return null|object
+	 */
+	private function doCommonMultipleStatusChange() {
 		$dtype = $this->app->types[$this->helper->objectType];
 		$states = ['true' => true, 'false' => false];
 		$status = (isset($this->helper->options->status) && in_array($this->helper->options->status, ['true', 'false']))
@@ -100,24 +109,37 @@ class MassChangeModule extends AbstractModule {
 		return \PXEngineJSON::toError('Недопустимый статус объекта');
 	}
 
-	private function makeOperation() {
+	/**
+	 * @return object
+	 */
+	private function doOperation() {
+		$operationName = strtolower($this->helper->operation);
 		$result = null;
-		$operation = $this->helper->operation;
-		$operation .= 'Operation';
 
-		if (method_exists($this, $operation)) {
-			$result = $this->$operation();
+		// operation names defined in lib/HTML/Admin/Widgets/Multiops/*.class.inc
+		switch ($operationName) {
+			case 'docommonmultiplestatuschange':
+				$result = $this->doCommonMultipleStatusChange();
+				break;
+
+			case 'dochangeparent':
+				$result = $this->doChangeParent();
+				break;
+
+			case 'docommonmultipledelete':
+				$result = $this->doCommonMultipleDelete();
+				break;
 		}
 
-		return $this->route($result);
-	}
+		$result = ($result === null)
+			? (object)$result
+			: $result;
 
-	private function route($res) {
-		if (isset($res->redirect)) {
-			$this->response->redirect($res->redirect);
+		if (isset($result->redirect)) {
+			$this->response->redirect($result->redirect);
 		}
 
-		return (object)$res;
+		return $result;
 	}
 
 }
