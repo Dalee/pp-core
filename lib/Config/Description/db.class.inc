@@ -8,23 +8,18 @@ define('ERROR_DB_CANNOTCONNECT', -1);
 define('ERROR_DB_BADQUERY', -2);
 
 class NLDBDescription {
-	//REMOVE THESE STUPID FIELD DESCRIPTIONS !!!
+
 	private $user = '';
 	private $password = '';
-
-	private $dbtype; // FIXME
+	private $dbtype;
 	private $dbname = '';
-	private $dbids;
-
 	private $host = '';
 	private $port = 0;
-
 	private $options;
-	private $tty;
+	private $encoding;
 
 	public $cache;
 	public $aicache; // private or public? I don't know
-	private $encoding;
 
 	public function __construct($config) {
 		foreach ($config as $k => $v) {
@@ -33,20 +28,26 @@ class NLDBDescription {
 	}
 
 	/**
+	 * Create DbDescription from environment variables.
 	 *
 	 * @return static
 	 */
 	public static function fromEnv() {
-		$config = EnvLoader::getMappedArray([
-			'DB_USER' => 'user',
-			'DB_PASSWORD' => 'password',
-			'DB_TYPE' => 'dbtype',
-			'DB_NAME' => 'dbname',
-			'DB_HOST' => 'host',
-			'DB_PORT' => 'port',
-			'DB_CACHE' => 'cache',
-			'DB_ENCODING' => 'encoding',
-		]);
+		EnvLoader::inject();
+
+		$q = [];
+		$r = parse_url(EnvLoader::get('DATABASE_DSN'));
+		parse_str(getFromArray($r, 'query', ''), $q);
+
+		$config = [
+			'dbtype' => getFromArray($r, 'scheme', ''),
+			'user' => getFromArray($r,'user',''),
+			'password' => getFromArray($r,'pass', ''),
+			'dbname' => ltrim(getFromArray($r,'path', ''), '/'),
+			'host' => getFromArray($r,'host', ''),
+			'port' => getFromArray($r, 'port', ''),
+			'encoding' => getFromArray($q, 'encoding', DEFAULT_CHARSET),
+		];
 
 		return new static($config);
 	}

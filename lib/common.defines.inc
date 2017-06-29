@@ -1,97 +1,9 @@
 <?php
 
-// Default timezone settings for formated date output
+// Default timezone settings
 date_default_timezone_set('Europe/Moscow');
 
-// Определение корня сайта в случае запуска скрипта из консоли (CLI)
-if (!isset($_SERVER['REQUEST_METHOD'])) {
-	$_SERVER['DOCUMENT_ROOT'] = realpath(dirname(__FILE__) . '/../../');
-}
-
-// cli
-defined('IS_CLI') || define('IS_CLI', PHP_SAPI === 'cli');
-
-// Определение BASEPATH - это полный путь к корню сайта
-if (!defined('BASEPATH')) {
-	$basePath = str_replace("/", DIRECTORY_SEPARATOR, $_SERVER["DOCUMENT_ROOT"]);
-	$basePath = rtrim($basePath, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
-	define('BASEPATH', $basePath);
-}
-
-// Объявляем PPPATH, LOCALPATH, SHAREDPATH
-define('PPCOREPATH', realpath(__DIR__ . '/../') . DIRECTORY_SEPARATOR);
-define('PPPATH', realpath(__DIR__ . '/../') . DIRECTORY_SEPARATOR);
-define('PPLIBPATH', PPPATH . 'lib' . DIRECTORY_SEPARATOR);
-define('LOCALPATH', BASEPATH . 'local' . DIRECTORY_SEPARATOR);
-define('SHAREDPATH', BASEPATH . 'site' . DIRECTORY_SEPARATOR);
-define('APPPATH', BASEPATH . 'app' . DIRECTORY_SEPARATOR);
-
-//
-if (isset($_SERVER['HTTP_X_REWRITE_URL'])) {
-	$tmp = @parse_url($_SERVER['HTTP_X_REWRITE_URL']);
-	$_SERVER['SCRIPT_NAME'] = $tmp['path'];
-	$_SERVER['REQUEST_URI'] = $_SERVER['HTTP_X_REWRITE_URL'];
-
-	if (isset($tmp['query'])) {
-		$_SERVER['QUERY_STRING'] = $tmp['query'];
-		parse_str($tmp['query'], $_GET);
-	} else {
-		$_SERVER['QUERY_STRING'] = '';
-	}
-
-	unset($_SERVER['HTTP_X_REWRITE_URL']);
-}
-
-// расширяем корневые каталоги для подключаемых файлов - только, нахуа?
-$includePath = [
-	PPLIBPATH,
-	LOCALPATH . '/lib/',
-	BASEPATH,
-	'.',
-	PPCOREPATH . '/vendor',
-	PPCOREPATH . '/vendor/PEAR',
-	get_include_path(),
-	'/usr/local/lib/php/'
-];
-set_include_path(implode(PATH_SEPARATOR, $includePath));
-
-/*
- * Parse and load BASEPATH . /etc/php.ini
- * Some custom variables (not php ones) are:
- *
- * user = someuser            # 'nobody' by default
- *
- */
-$system_user = 'nobody';
-$env = 'unknown';
-
-if (file_exists(SHAREDPATH . '/etc/php.ini')) {
-	$ini_params = parse_ini_file(SHAREDPATH . '/etc/php.ini');
-
-	foreach ($ini_params as $key => $param) {
-		ini_set($key, $param);
-	}
-
-	if (isset($ini_params['user'])) {
-		$system_user = $ini_params['user'];
-	}
-
-	if (isset($ini_params['env'])) {
-		$env = $ini_params['env'];
-	}
-}
-
-define('SYSTEM_USER', $system_user);
-define('ENV', $env);
-define('LOGGER_APP', 'application');
-define('LOGGER_CRON', 'cron');
-
-// Влючаем дебаг
-error_reporting(E_ALL);
-define('DEBUG', true);
-define('ENV_DEVELOPER', 'DEVELOPER');
-
-// charset based defines
+// Charset constants
 define('CHARSET_KOI8R', 'koi8-r');
 define('CHARSET_WINDOWS', 'windows-1251');
 define('CHARSET_ISO', 'iso-8859-5');
@@ -103,6 +15,7 @@ define('CHARSET_UTF8', 'utf-8');
 define('CHARSET_UCS2BE', 'ucs-2be');
 define('CHARSET_UTF16BE', 'utf-16be');
 
+// Default charset settings
 define('DEFAULT_CHARSET', CHARSET_UTF8);
 define('DEFAULT_LOCALE', json_encode(array('Russian_Russia.UTF-8', 'ru_RU.UTF-8', 'UTF-8')));
 define('REGEX_MOD', 'u'); // UTF-8 mod for regexp
@@ -110,12 +23,79 @@ define('REGEX_MOD', 'u'); // UTF-8 mod for regexp
 if (setlocale(LC_ALL, json_decode(DEFAULT_LOCALE)) === false) {
 	die(sprintf('Unable to set setlocale: %s', DEFAULT_LOCALE));
 }
-
 if (function_exists('mb_internal_encoding')) {
 	if (mb_internal_encoding(DEFAULT_CHARSET) === false) {
 		die(sprintf('Unable to internal encoding to: %s', DEFAULT_CHARSET));
 	}
 }
+
+// CLI mode?
+if (!defined('IS_CLI')) {
+	define('IS_CLI', PHP_SAPI === 'cli');
+}
+
+if (IS_CLI || empty($_SERVER['DOCUMENT_ROOT'])) {
+	// TODO: this will be wrong in case of vendor/pp/core
+	$_SERVER['DOCUMENT_ROOT'] = realpath(dirname(__FILE__) . '/../../');
+}
+
+// Определение BASEPATH - это полный путь к корню сайта
+if (!defined('BASEPATH')) {
+	$basePath = str_replace("/", DIRECTORY_SEPARATOR, $_SERVER["DOCUMENT_ROOT"]);
+	$basePath = rtrim($basePath, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
+	define('BASEPATH', $basePath);
+}
+
+// Constants
+define('PPCOREPATH', realpath(__DIR__ . '/../') . DIRECTORY_SEPARATOR);
+define('PPLIBPATH', PPCOREPATH . 'lib' . DIRECTORY_SEPARATOR);
+define('LOCALPATH', BASEPATH . 'local' . DIRECTORY_SEPARATOR);
+define('SHAREDPATH', BASEPATH . 'site' . DIRECTORY_SEPARATOR);
+define('APPPATH', BASEPATH . 'app' . DIRECTORY_SEPARATOR);
+define('HTDOCS_PATH', BASEPATH . '/site/htdocs' . DIRECTORY_SEPARATOR);
+define('CACHE_PATH', BASEPATH . '/app/cache/tmp.' . strval(PHP_VERSION_ID) . '.' . strtolower(DEFAULT_CHARSET));
+
+// Default include path
+set_include_path(implode(PATH_SEPARATOR, [
+	PPLIBPATH,
+	LOCALPATH . '/lib/',
+	BASEPATH,
+	'.',
+	PPCOREPATH . '/vendor',
+	PPCOREPATH . '/vendor/PEAR',
+	get_include_path(),
+	'/usr/local/lib/php/'
+]));
+
+/*
+ * Parse and load BASEPATH . /etc/php.ini
+ * Some custom variables (not php ones) are:
+ *
+ * user = someuser            # 'nobody' by default
+ *
+ */
+$systemUser = 'nobody';
+$systemEnv = 'unknown';
+
+if (file_exists(SHAREDPATH . '/etc/php.ini')) {
+	$params = parse_ini_file(SHAREDPATH . '/etc/php.ini');
+	foreach ($params as $key => $param) {
+		ini_set($key, $param);
+	}
+
+	$systemUser = (isset($params['user'])) ? $params['user'] : $systemUser;
+	$systemEnv = (isset($params['env'])) ? $params['env'] : $systemEnv;
+}
+
+define('SYSTEM_USER', $systemUser);
+define('ENV', $systemEnv);
+define('LOGGER_APP', 'application');
+define('LOGGER_CRON', 'cron');
+
+// Влючаем дебаг
+error_reporting(E_ALL);
+define('DEBUG', true);
+define('ENV_DEVELOPER', 'DEVELOPER');
 
 // разрешенные форматы изображений
 define('ENUM_ALLOWED_IMAGETYPES', serialize(array(
@@ -194,24 +174,19 @@ if (getenv('PP_DONT_FORCE_SUDO')) {
 }
 
 if (!defined('PP_DONT_FORCE_SUDO')) {
-	$system_user = posix_getpwnam(SYSTEM_USER);
-
+	$systemUser = posix_getpwnam(SYSTEM_USER);
 	switch (posix_getuid()) {
-
-		case $system_user['uid']:
+		case $systemUser['uid']:
 			// all ok we have target user
 			break;
 
 		case 0:
 			// root
-			posix_setuid($system_user['uid']);
-			posix_setgid($system_user['gid']);
+			posix_setuid($systemUser['uid']);
+			posix_setgid($systemUser['gid']);
 			break;
 
 		default:
-			die("This script must be run as " . SYSTEM_USER . " (uid " . $system_user['uid'] . ") or root. \nIt's been run as " . posix_getlogin() . "(uid " . posix_getuid() . ")\n");
+			die("This script must be run as " . SYSTEM_USER . " (uid " . $systemUser['uid'] . ") or root. \nIt's been run as " . posix_getlogin() . "(uid " . posix_getuid() . ")\n");
 	}
 }
-
-define('HTDOCS_PATH', BASEPATH . '/site/htdocs');
-define('CACHE_PATH', BASEPATH . '/tmp/cache.' . strval(PHP_VERSION_ID) . '.' . strtolower(DEFAULT_CHARSET));

@@ -22,7 +22,7 @@ class PXCronRunQueue extends AbstractCron {
 	 * @return string
 	 */
 	protected function getMailTemplatePath() {
-		return PPPATH . '/mail_templates/job_notification.tmpl';
+		return PPCOREPATH . '/mail_templates/job_notification.tmpl';
 	}
 
 	/**

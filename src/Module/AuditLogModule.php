@@ -18,7 +18,7 @@ class AuditLogModule extends AbstractModule {
 	}
 
 	function adminIndex() {
-		require_once PPPATH . 'lib/Logger/Audit/wrapper.class.inc';
+		require_once PPCOREPATH . 'lib/Logger/Audit/wrapper.class.inc';
 
 		$auditWrapper = new \PXAdminAuditWrapper();
 		$auditWrapper->init_and_render();

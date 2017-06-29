@@ -62,7 +62,7 @@ abstract class AbstractEngine {
 
 			/** @var \PXAbstractSystemTrigger $trigger */
 			$trigger = $t->getTrigger();
-			$trigger->OnAfterEngineStart($this);
+			$trigger->onAfterEngineStart($this);
 		}
 
 		$this->app->loadProperties($this->db);

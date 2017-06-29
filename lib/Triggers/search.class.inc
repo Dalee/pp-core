@@ -1,4 +1,5 @@
 <?php
+
 abstract class PXAbstractSearchTrigger extends PXAbstractTrigger {
 	function onBeforeSearchStems($config, &$where) {
 	}
@@ -19,4 +20,4 @@ abstract class PXAbstractSearchTrigger extends PXAbstractTrigger {
 		return true;
 	}
 }
-?>
+
