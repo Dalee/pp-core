@@ -1,5 +1,20 @@
 # Change log
 
+## [1.10.0] - Unreleased
+- Константа `PPPATH` удалена
+- Проверка `DB_*` убрана из `maincommon.inc`, функция `EnvLoader::inject` добавлена,
+и должна быть использована каждый раз когда требуется доступ к environment переменным
+- Замена `DB_*` на единую `DATABASE_DSN` формата: `pgsql://user:web@example.com:port/database?encoding=utf-8`
+- Из `application.class.inc` убраны места относящиеся к плагину `blocks`
+- В `PXApplication` добавлена функция для подгрузки дополнительных языковых массивов 
+(плагин `blocks::onAfterEngineStart` триггер для загрузки языкового файла блоков)
+- `AbstractBasicCommand` может быть использована в рамках билда без базы данных
+- `BASEPATH/tmp` - deprecated, `BASEPATH/app/cache/tmp.*` используется для хранения
+временных данных.
+
+## [1.9.4] - 2017-06-20
+- MassChangeModule багфикс
+
 ## [1.9.3] - 2017-06-05
 - Команда `pp` теперь подключает только `libpp/lib/mainadmin.inc`, `libpp/lib/mainuser.inc`
 вместо `libpp/lib/maincommon.inc` и его локальной версии. Последние подключаются внутри, также как и

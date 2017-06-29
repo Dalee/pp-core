@@ -42,6 +42,16 @@ class EnvLoader {
 	}
 
 	/**
+	 * Perform ENV injection
+	 * it's safe to call it multiple times
+	 */
+	public static function inject() {
+		(new EnvLoader(BASEPATH))
+			->addRequired(['DATABASE_DSN'])
+			->load();
+	}
+
+	/**
 	 * Add key or list of keys to be required in environment,
 	 * otherwise, exception will be raised.
 	 *
@@ -103,6 +113,21 @@ class EnvLoader {
 		}
 
 		return $result;
+	}
+
+	/**
+	 * Return single value of key.
+	 *
+	 * @param string $key
+	 * @return string
+	 * @throws EnvLoaderException
+	 */
+	public static function get($key) {
+		if (isset($_ENV[$key])) {
+			return $_ENV[$key];
+		}
+
+		return null;
 	}
 
 	/**

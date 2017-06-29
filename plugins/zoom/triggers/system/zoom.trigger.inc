@@ -4,7 +4,7 @@ class PXTriggerSystemZoom extends PXAbstractSystemTrigger {
 	public $app;
 	public $layout;
 
-	function OnAfterEngineStart($engine) {
+	function onAfterEngineStart($engine) {
 		PXRegistry::assignToObject($this);
 
 		if (!$this->app->isAdminEngine() && $this->layout instanceof PXUserHTMLLayout) {

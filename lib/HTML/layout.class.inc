@@ -18,7 +18,7 @@ class PXUserHTMLLayout implements LayoutInterface  {
 	protected $lang;
 
 	function __construct() {
-		require_once PPPATH . 'vendor/Smarty/Smarty.class.php';
+		require_once PPCOREPATH . 'vendor/Smarty/Smarty.class.php';
 
 		$this->_initSmarty();
 

@@ -2,6 +2,7 @@
 
 namespace PP;
 
+use PP\Properties\EnvLoader;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\ConsoleEvents;
 use Symfony\Component\Console\Event\ConsoleCommandEvent;

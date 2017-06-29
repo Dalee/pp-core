@@ -34,7 +34,7 @@ function pp_base_paths($sub = null, $withPlugins = false) {
 		}
 	}
 
-	$r[] = PPPATH . $sub;
+	$r[] = PPCOREPATH . $sub;
 
 	$cache[$ck] = $r;
 

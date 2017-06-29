@@ -46,11 +46,6 @@ require_once PPLIBPATH . 'LazyLoader/blockcontent.class.inc';
 // TODO: should be ripped off after PSR-4 switch
 spl_autoload_register(['PP\Plugin\AbstractPlugin', 'autoload']);
 
-// Initialize environment
-(new \PP\Properties\EnvLoader(BASEPATH))
-	->addRequired(['DB_TYPE', 'DB_NAME', 'DB_USER', 'DB_HOST'])
-	->load();
-
 // Initialize monolog
 $logger = new Monolog\Logger(LOGGER_APP);
 $logger->pushHandler(new Monolog\Handler\StreamHandler(BASEPATH . '/site/var/application.log'));

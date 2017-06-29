@@ -2,10 +2,10 @@
 
 abstract class PXAbstractSystemTrigger extends PXAbstractTrigger {
 
-	function onAfterUserAuth($currentUser){
+	function onAfterUserAuth($currentUser) {
 	}
 
-	function OnAfterEngineStart($currentEngine){
+	function onAfterEngineStart($currentEngine) {
 	}
 }
 
