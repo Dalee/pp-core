@@ -2,6 +2,7 @@
 
 namespace PP\Cron;
 
+use PP\Lib\Datastruct\Tree;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 use PP\Lib\Database\Driver\PostgreSqlDriver;
@@ -24,7 +25,7 @@ abstract class AbstractCron implements ContainerAwareInterface {
 	/**
 	 * @param \PXApplication $app
 	 * @param \PXDatabase|PostgreSqlDriver $db
-	 * @param \PXTreeObjects $tree
+	 * @param Tree $tree
 	 * @param int $matchedTime
 	 * @param CronRule $matchedRule
 	 *

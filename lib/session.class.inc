@@ -21,7 +21,7 @@ class PXSession {
 	 */
 	public function __construct($sessionName, $dirName = null) {
 		$this->sessionName    = $sessionName;
-		$this->saveDirectory  = $dirName ? $dirName : BASEPATH.'/site/var/sessions/';
+		$this->saveDirectory  = $dirName ? $dirName : CACHE_PATH. '/sessions/';
 
 		$this->lifeTime       = 60*60*24*7;
 		$this->cookieLifeTime = 60*60*24*7;

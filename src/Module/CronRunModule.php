@@ -2,9 +2,14 @@
 
 namespace PP\Module;
 
+use PP\Cron\AbstractCron;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use PP\Lib\Datastruct\Tree;
 use PP\Cron\CronRule;
+use PXRegistry;
+use PXUserCron;
+use PXDatabase;
+use PXAdminTableSimple;
 
 /**
  * Class CronRunModule.
@@ -12,20 +17,31 @@ use PP\Cron\CronRule;
  * @package PP\Module
  */
 class CronRunModule extends AbstractModule {
-	var $TIME_FORMAT = 'd-m-Y H:i:s';
-	var $rules;
+	protected $timeFormat = 'd-m-Y H:i:s';
 
-	private $RESULTS_FILE;
+	/** @var array */
+	public $rules;
+
+	/** @var array */
+	public $job2rule;
+
+	/** @var array */
+	public $jobs;
+
+	/** @var string */
+	protected $resultsFile;
+
+	/** @var string */
+	protected $tempDir;
 
 	public function __construct($area, $settings) {
 		parent::__construct($area, $settings);
 
-		$this->RESULTS_FILE = BASEPATH . '/site/var/cron.results';
-		MakeDirIfNotExists(dirname($this->RESULTS_FILE));
-
-		$this->rules = array();
-		$this->job2rule = array();
-		$this->jobs = array();
+		$this->resultsFile = CACHE_PATH . '/cron.results';
+		$this->tempDir = CACHE_PATH . '/lock/cronrun';
+		$this->rules = [];
+		$this->job2rule = [];
+		$this->jobs = [];
 
 		$this->_parseRules($settings);
 	}
@@ -42,15 +58,15 @@ class CronRunModule extends AbstractModule {
 			}
 
 			$rule = new CronRule($m[1]);
-			$jobname = $m[2];
+			$jobName = $m[2];
 
 			if (!$rule->valid) {
 				continue;
 			}
 
-			$file = strtolower($jobname) . '.cronrun.inc';
+			$file = strtolower($jobName) . '.cronrun.inc';
 
-			if (!class_exists(sprintf("pxcronrun%s", strtolower($jobname)), false)) {
+			if (!class_exists(sprintf("pxcronrun%s", strtolower($jobName)), false)) {
 				if (file_exists(BASEPATH . '/local/cronruns/' . $file)) {
 					include_once BASEPATH . '/local/cronruns/' . $file;
 				} elseif (file_exists(BASEPATH . '/libpp/cronruns/' . $file)) {
@@ -60,29 +76,28 @@ class CronRunModule extends AbstractModule {
 				}
 			}
 
-			$class = 'PXCronRun' . $jobname;
+			$class = 'PXCronRun' . $jobName;
 			$instance = new $class();
 
 			$rm = [
 				'rule' => $rule,
-				'jobhash' => $rule->matchHash . md5($jobname),
-				'jobname' => strtolower($jobname),
+				'jobhash' => $rule->matchHash . md5($jobName),
+				'jobname' => strtolower($jobName),
 				'job' => $instance
 			];
 
 			$this->rules[$count] = $rm;
-			$this->jobs[$jobname] = &$this->rules[$count];
+			$this->jobs[$jobName] = &$this->rules[$count];
 			$this->job2rule[$rm['jobhash']] = $count;
 			$count++;
 		}
 	}
 
 	function RunJob(&$job, &$app, $matchedTime) {
-		$tmpDir = BASEPATH . 'tmp/lock/cronrun';
-		MakeDirIfNotExists($tmpDir);
+		MakeDirIfNotExists($this->tempDir);
 
 		// ******* child code ******
-		$fname = $tmpDir . '/' . $job['jobname'] . '.lock';
+		$fname = $this->tempDir . DIRECTORY_SEPARATOR . $job['jobname'] . '.lock';
 		$fp = @fopen($fname, 'r');
 
 		if (!$fp) {
@@ -118,17 +133,16 @@ class CronRunModule extends AbstractModule {
 
 		// !!! run code here !!!
 		// add NEW connect to the database from current child
-		$db = new \PXDatabase($app);
-		$user = new \PXUserCron();
-
-		\PXRegistry::setDB($db);
-		\PXRegistry::setUser($user);
+		$db = new PXDatabase($app);
+		$user = new PXUserCron();
 		$db->setUser($user);
 
-		$db->loadDirectoriesAutomatic($app->directory); //init directory from here !
+		PXRegistry::setDB($db);
+		PXRegistry::setUser($user);
 
-		if (isset($app->types['struct'])) {
-			$tree = new Tree($db->getObjects($app->types['struct'], true));
+		$db->loadDirectoriesAutomatic($app->directory);
+		if (isset($app->types[DT_STRUCT])) {
+			$tree = new Tree($db->getObjects($app->types[DT_STRUCT], true));
 		} else {
 			$tree = null;
 		}
@@ -137,18 +151,17 @@ class CronRunModule extends AbstractModule {
 			$job['job']->setContainer($this->container);
 		}
 
-		$res = $job['job']->Run($app, $db, $tree, $matchedTime, $job['rule']);
+		/** @var AbstractCron $jobInstance */
+		$jobInstance = $job['job'];
+		$res = $jobInstance->Run($app, $db, $tree, $matchedTime, $job['rule']);
 
 		// !!! run code here !!!
 		$tmEnd = time();
 		flock($fp, LOCK_UN);
 		fclose($fp);
 
-		// log here
-		// log  up
-
-		$cronStat = array();
-		$fp = @fopen($this->RESULTS_FILE, "r+");
+		$cronStat = [];
+		$fp = @fopen($this->resultsFile, "r+");
 
 		if ($fp) {
 			do {
@@ -172,7 +185,7 @@ class CronRunModule extends AbstractModule {
 			}
 
 		} else {
-			$fp = @fopen($this->RESULTS_FILE, "w");
+			$fp = @fopen($this->resultsFile, "w");
 
 			if ($fp) {
 				do {
@@ -221,7 +234,7 @@ class CronRunModule extends AbstractModule {
 	}
 
 	private function _loadStat() {
-		$fp = @fopen(BASEPATH . '/site/var/cron.results', 'r');
+		$fp = @fopen($this->resultsFile, 'r');
 
 		if ($fp) {
 			flock($fp, LOCK_EX);
@@ -286,7 +299,7 @@ class CronRunModule extends AbstractModule {
 				$dmin = (int)($diff / 60);
 				$dsec = $diff - $dmin * 60;
 
-				$_['time'] = date($this->TIME_FORMAT, $t['start']) . '<br>' . date($this->TIME_FORMAT, $t['end']) . ' (' . $dmin . ' min ' . $dsec . ' sec)';
+				$_['time'] = date($this->timeFormat, $t['start']) . '<br>' . date($this->timeFormat, $t['end']) . ' (' . $dmin . ' min ' . $dsec . ' sec)';
 				$note = isset($t['result']['note']) ? htmlentities($t['result']['note'], ENT_COMPAT | ENT_HTML401, DEFAULT_CHARSET) : '';
 				$_['comment'] = ($t['result']['status'] >= 0) ? '<b>' . $note . '</b>' : '<b class="error">' . $note . '</b>';
 
@@ -298,7 +311,7 @@ class CronRunModule extends AbstractModule {
 			$result[] = $_;
 		}
 
-		$table = new \PXAdminTableSimple($fields);
+		$table = new PXAdminTableSimple($fields);
 		$table->setData($result);
 
 		$layout->assign('INNER.0.0', $table->html());

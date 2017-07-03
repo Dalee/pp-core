@@ -164,4 +164,3 @@ class PXAuditLogger {
 	 	return $self->logger->NONE == $self->logger->getLevel();
 	 }
 }
-?>
