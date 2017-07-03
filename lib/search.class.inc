@@ -44,7 +44,7 @@ class PXSearch {
 		$this->word2stem = array();
 		$this->stem2id = array();
 
-		$fname = BASEPATH.'/site/var/word2stem.cdb';
+		$fname = CACHE_PATH . '/word2stem.cdb';
 		$this->dbah = null;
 		if (file_exists($fname)) {
 			$this->dbah = dba_open($fname, 'r', 'cdb');

@@ -72,7 +72,6 @@ class CronCommand extends AbstractCommand {
 					? mb_substr($description, 0, 37).'...'
 					: $description;
 
-				// @TODO: make it more pretty..
 				$row = [
 					'<comment>' . $title . '</comment>',
 					mb_str_pad($j['rule']->asString, 15),

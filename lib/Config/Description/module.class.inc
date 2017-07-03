@@ -30,9 +30,10 @@ class PXModuleDescription {
 	protected $class;
 
 	/**
+	 * used by local/cronruns/subscribenews.cronrun.inc:105
 	 * @var array
 	 */
-	protected $settings = [];
+	public $settings = [];
 
 	/**
 	 * @return string

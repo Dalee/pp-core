@@ -46,11 +46,13 @@ require_once PPLIBPATH . 'LazyLoader/blockcontent.class.inc';
 // TODO: should be ripped off after PSR-4 switch
 spl_autoload_register(['PP\Plugin\AbstractPlugin', 'autoload']);
 
-// Initialize monolog
+// TODO: syslog udp with custom source hostname
+// syslog udp packet should be in full form:
+// @see https://github.com/Dalee/node-logger/blob/master/test/unit/adapters/syslog.test.js#L44
 $logger = new Monolog\Logger(LOGGER_APP);
-$logger->pushHandler(new Monolog\Handler\StreamHandler(BASEPATH . '/site/var/application.log'));
+$logger->pushHandler(new Monolog\Handler\StreamHandler(CACHE_PATH . '/application.log'));
 Monolog\Registry::addLogger($logger);
 
 $logger = new Monolog\Logger(LOGGER_CRON);
-$logger->pushHandler(new Monolog\Handler\StreamHandler(BASEPATH . '/site/var/cron.log'));
+$logger->pushHandler(new Monolog\Handler\StreamHandler(CACHE_PATH . '/cron.log'));
 Monolog\Registry::addLogger($logger);

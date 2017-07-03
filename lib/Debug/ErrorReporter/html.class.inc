@@ -8,7 +8,7 @@ class PXErrorReporterHTML extends PXErrorReporter {
 		$this->computer = @rtrim(`hostname`);
 
 		$this->toEmail = !empty($_SERVER['SERVER_ADMIN']) ? $_SERVER['SERVER_ADMIN'] : 'support@dalee.ru';
-		$this->fromEmail = 'robot@'.$this->computer;
+		$this->fromEmail = 'robot@' . $this->computer;
 	}
 
 	function warning($error) {
@@ -16,9 +16,9 @@ class PXErrorReporterHTML extends PXErrorReporter {
 	}
 
 	function fatalWarning($error) {
-		$response    = PXResponse::getInstance();
-		$host        = quot(PXRequest::GetHttpHost());
-		$uri         = quot(urldecode(PXRequest::GetRequestUri()));
+		$response = PXResponse::getInstance();
+		$host = quot(PXRequest::GetHttpHost());
+		$uri = quot(urldecode(PXRequest::GetRequestUri()));
 		$response->unavailable();
 		$response->send(<<<HTML
 			<html>
@@ -49,25 +49,25 @@ HTML
 
 	function _throttling() {
 		try {
-			$app         = PXRegistry::getApp(); // APP may not be initialized yet and throws exception
-			$errorRepDir = $app->GetProperty('PP_ERROR_REPORTER_ANTIFLOOD_DIR', 'error_reporter');
-			$cacheTime   = (int)$app->GetProperty('PP_ERROR_REPORTER_ANTIFLOOD_LAG', 30);
+			$app = PXRegistry::getApp(); // APP may not be initialized yet and throws exception
+			$errorRepDir = $app->getProperty('PP_ERROR_REPORTER_ANTIFLOOD_DIR', 'error_reporter');
+			$cacheTime = (int)$app->getProperty('PP_ERROR_REPORTER_ANTIFLOOD_LAG', 30);
 		} catch (Exception $e) {
 			$errorRepDir = 'error_reporter';
-			$cacheTime   = 30;
+			$cacheTime = 30;
 		}
 
 		if (empty($cacheTime) || empty($errorRepDir)) {
-			return array(null, false);
+			return [null, false];
 		}
 
-		$cache          = ObjectCache::get('file', $errorRepDir, $cacheTime);
+		$cache = ObjectCache::get('file', $errorRepDir, $cacheTime);
 		$errorSignature = json_encode($this->errorsMap);
 
-		$inLoop   = !$cache->expired($errorSignature);
+		$inLoop = !$cache->expired($errorSignature);
 		$curCount = $cache->loadStaled($errorSignature);
-		$timer    = time();
-		$count    = $inLoop && $curCount ? array($curCount[0], $curCount[1] + 1) : array($timer, 0);
+		$timer = time();
+		$count = $inLoop && $curCount ? array($curCount[0], $curCount[1] + 1) : array($timer, 0);
 
 		$cache->save($errorSignature, $count, $cacheTime - ($timer - $count[0]));
 		return array(is_array($curCount) ? $curCount[1] : null, $inLoop);
@@ -75,43 +75,35 @@ HTML
 
 	function _getMailSubject($cyclesCount) {
 		$errorTypes = array();
-		foreach($this->errors as $e) {
+		foreach ($this->errors as $e) {
 			@$errorTypes[$e['type']]++;
 		}
 
-		uksort(
-			$errorTypes,
-			create_function(
-				"\$b, \$a",
-				<<<SORT_FUNCTION
-					if(\$a == \$b) {
-						return 0;
-					}
+		uksort($errorTypes, function ($a, $b) {
+			switch (true) {
+				case ($a == $b):
+					return 0;
 
-					if(\$a == 'Fatal Error') {
-						return 1;
-					}
-
-					if(\$b == 'Fatal Error') {
-						return -1;
-					}
-
-					if(\$a == 'Notice') {
-						return -1;
-					}
-
-					if(\$b == 'Notice') {
-						return 1;
-					}
-
+				case ($a == 'Fatal Error'):
 					return 1;
-SORT_FUNCTION
-			)
-		);
 
-		$subject = array();
-		foreach($errorTypes as $type=>$count) {
-			$subject[] = $type .'('.$count.')';
+				case ($b == 'Fatal Error'):
+					return -1;
+
+				case ($a == 'Notice'):
+					return -1;
+
+				case ($b == 'Notice'):
+					return 1;
+
+				default:
+					return 1;
+			}
+		});
+
+		$subject = [];
+		foreach ($errorTypes as $type => $count) {
+			$subject[] = $type . '(' . $count . ')';
 		}
 
 		return sprintf("%s: %s%s", $this->computer, join(', ', $subject), $cyclesCount ? "; this message throttled $cyclesCount times" : '');
@@ -138,7 +130,7 @@ SORT_FUNCTION
 		$mail->setCharset(CHARSET_UTF8);
 
 		$errorsListHTML = array();
-		foreach($this->errors as $errPos=>$error) {
+		foreach ($this->errors as $errPos => $error) {
 			$cls = strtolower(str_replace(' ', '', $error['type']));
 			$this->attachError($error, $errPos);
 
@@ -158,106 +150,76 @@ HTML;
 			<html>
 				<head>
 					<title>{$subject}</title>
-
 					<style type="text/css">
-						body {
-							background-color: #ffffff;
-							font-family: Lucida Consolas, monospace;
-							color: #000000;
-						}
-
-						dl {
-							overflow: hidden;
-						}
-
-						dt, dd {
-							float: left;
-							display: block;
-							padding: 0;
-							margin: 0;
-						}
-
-						dt {
-							width: 10em;
-							clear: left;
-						}
-
-						dd {
-						}
-
+						body { background-color: #ffffff; font-family: Lucida Consolas, monospace; color: #000000; }
+						dl { overflow: hidden; }
+						dt, dd { float: left; display: block; padding: 0; margin: 0; }
+						dt { width: 10em;clear: left; }
 						li.fatalerror { color: #ff0000; }
 						li.notice     { color: #999999; }
 					</style>
 				</head>
-
 				<body>
-					<ol>
-						{$errorsListHTML}
-					</ol>
-
-					<dl>
-						{$environmentsUris}
-					</dl>
+					<ol>{$errorsListHTML}</ol>
+					<dl>{$environmentsUris}</dl>
 				</body>
 			</html>
 HTML;
 
 		$this->addEnvironments();
-
 		$mail->setBody($body);
 		$mail->send();
 	}
 
 	function environmentsUris() {
-		$requestUri  = PXRequest::GetHttpProto().'://'.quot(PXRequest::GetHttpHost()).quot(urldecode(PXRequest::GetRequestUri()));
-		$remoteAddr  = PXRequest::GetRemoteAddr();
+		$requestUri = PXRequest::GetHttpProto() . '://' . quot(PXRequest::GetHttpHost()) . quot(urldecode(PXRequest::GetRequestUri()));
+		$remoteAddr = PXRequest::GetRemoteAddr();
 		$httpReferer = quot(urldecode(PXRequest::GetHttpReferer()));
 
 		return <<<HTML
 			<dt>RequestUri:</dt>
-			<dd>
-				<a target="_blank" href="{$requestUri}">{$requestUri}</a>
-			</dd>
-
+			<dd><a target="_blank" href="{$requestUri}">{$requestUri}</a></dd>
 			<dt>RemoteAddr:</dt>
-			<dd>
-				{$remoteAddr} <a target="_blank" href="http://www.nic.ru/whois/?ip={$remoteAddr}">whois</a>
-			</dd>
-
+			<dd>{$remoteAddr} <a target="_blank" href="http://www.nic.ru/whois/?ip={$remoteAddr}">whois</a></dd>
 			<dt>HttpReferer:</dt>
-			<dd>
-				<a target="_blank" href="{$httpReferer}">{$httpReferer}</a>
-			</dd>
+			<dd><a target="_blank" href="{$httpReferer}">{$httpReferer}</a></dd>
 HTML;
 	}
 
 	function applyXSLT($xml) {
 		static $xslt;
 
-		if(is_null($xslt)) {
-			$xslt = new PXLibXSLT(dirname(__FILE__).'/style.xsl');
+		if (is_null($xslt)) {
+			$xslt = new PXLibXSLT(dirname(__FILE__) . '/style.xsl');
 		}
 
 		return $xslt->transform($xml, false);
 	}
 
 	function addEnvironments() {
-		$xml   = array('<?xml version="1.0" encoding="UTF-8"?>');
+		$xml = array('<?xml version="1.0" encoding="UTF-8"?>');
 		$xml[] = '<?xml-stylesheet type="text/xsl" href="error_reporter.xsl"?>';
 		$xml[] = '<environments>';
 
-		$attach = array('_POST'=>NULL, '_GET'=>NULL, '_COOKIE'=>NULL, '_SESSION'=>NULL, '_SERVER'=>NULL, '_FILES'=>NULL);
+		$attach = [
+			'_POST' => null,
+			'_GET' => null,
+			'_COOKIE' => null,
+			'_SESSION' => null,
+			'_SERVER' => null,
+			'_FILES' => null
+		];
 
-		foreach($attach as $k=>$v) {
-			if(!isset($GLOBALS[$k]) || !is_array($GLOBALS[$k]) || !sizeof($GLOBALS[$k])) {
+		foreach ($attach as $k => $v) {
+			if (!isset($GLOBALS[$k]) || !is_array($GLOBALS[$k]) || !sizeof($GLOBALS[$k])) {
 				continue;
 			}
 
 			$xml[] = "\t<{$k}>";
 
-			foreach($GLOBALS[$k] as $kk=>$vv) {
+			foreach ($GLOBALS[$k] as $kk => $vv) {
 				$node = urldecode($kk);
-				$xml[] = "\t\t".'<'.$node.'><![CDATA['.urldecode(trim(var_export($vv, true))).']]></'.$node.'>';
+				$xml[] = "\t\t" . '<' . $node . '><![CDATA[' . urldecode(trim(var_export($vv, true))) . ']]></' . $node . '>';
 			}
 
 			$xml[] = "\t</{$k}>";
@@ -266,15 +228,14 @@ HTML;
 		$xml[] = '</environments>';
 
 		$html = $this->applyXSLT(implode("\n", $xml));
-
-		$this->mail->addFile(null, 'environments.debug_html', 'text/html', $html);
+		$this->mail->addFile(null, 'environments.debug.html', 'text/html', $html);
 	}
 
 	function attachError($error, $errPos) {
-		if($errPos < 15) {
-			$xml  = $this->errorToXML($error);
+		if ($errPos < 15) {
+			$xml = $this->errorToXML($error);
 			$html = $this->applyXSLT($xml);
-			$this->mail->addFile(null, 'error_'.($errPos + 1).'.debug_html', 'text/html', $html);
+			$this->mail->addFile(null, 'error_' . ($errPos + 1) . '.debug.html', 'text/html', $html);
 		}
 	}
 
