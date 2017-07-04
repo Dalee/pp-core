@@ -51,12 +51,18 @@ PHP;
 	}
 
 	/**
-	 * Return filename list of pending migrations
+	 * Return filename list of pending migrations.
+	 * Query should run without any cache.
 	 *
 	 * @return string[]
+	 * @throws \Exception
 	 */
 	protected function getPendingMigrations() {
-		$applied = $this->dbDriver->Query("SELECT * FROM _migrations");
+		$applied = $this->dbDriver->Query("SELECT * FROM _migrations", true);
+		if (!is_array($applied)) {
+			throw new \Exception("migrate:up failed, invalid query");
+		}
+
 		$applied = array_map(function ($item) {
 			return $item['filename'];
 		}, $applied);
