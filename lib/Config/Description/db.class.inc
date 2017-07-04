@@ -47,6 +47,7 @@ class NLDBDescription {
 			'host' => getFromArray($r,'host', ''),
 			'port' => getFromArray($r, 'port', ''),
 			'encoding' => getFromArray($q, 'encoding', DEFAULT_CHARSET),
+			'cache' => getFromArray($q, 'cache', 'file')
 		];
 
 		return new static($config);
@@ -68,7 +69,6 @@ class NLDBDescription {
 	function __set($name, $value) {
 		$this->$name = $value;
 	}
-	//
 
 	/**
 	 *
@@ -85,9 +85,9 @@ class NLDBDescription {
 
 			default:
 				throw new DatabaseException("Can't find class: {$this->dbtype}");
-				break;
 		}
 
+		$db->setCache($this->cache);
 		return $db;
 	}
 }
