@@ -39,6 +39,14 @@ class NLDBDescription {
 		$r = parse_url(EnvLoader::get('DATABASE_DSN'));
 		parse_str(getFromArray($r, 'query', ''), $q);
 
+		// either cache is supplied via &cache parameter of DATABASE_DSN
+		// or cache is defined as additional environment variable.
+		$cache = getFromArray($q, 'cache', 'file');
+		$cacheOverride = EnvLoader::get('DATABASE_CACHE');
+		if ($cacheOverride) {
+			$cache = $cacheOverride;
+		}
+
 		$config = [
 			'dbtype' => getFromArray($r, 'scheme', ''),
 			'user' => getFromArray($r,'user',''),
@@ -47,7 +55,7 @@ class NLDBDescription {
 			'host' => getFromArray($r,'host', ''),
 			'port' => getFromArray($r, 'port', ''),
 			'encoding' => getFromArray($q, 'encoding', DEFAULT_CHARSET),
-			'cache' => getFromArray($q, 'cache', 'file')
+			'cache' => $cache,
 		];
 
 		return new static($config);
