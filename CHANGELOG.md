@@ -1,16 +1,24 @@
 # Change log
 
-## [1.10.0] - Unreleased
+## [1.10.0] - 2017-07-12
+- Багфикс: команда db:migrate:up не передавала флаг не использования кэша (sic!)
 - Константа `PPPATH` удалена
 - Проверка `DB_*` убрана из `maincommon.inc`, функция `EnvLoader::inject` добавлена,
 и должна быть использована каждый раз когда требуется доступ к environment переменным
 - Замена `DB_*` на единую `DATABASE_DSN` формата: `pgsql://user:web@example.com:port/database?encoding=utf-8`
-- Из `application.class.inc` убраны места относящиеся к плагину `blocks`
+- Параметр `cache` для базы данных может быть указан как в `DATABASE_DSN` в виде
+аргумента query string `&cache=file` либо отдельной переменной окружения: `DATABASE_CACHE`
+- Переменная окружения имеет бОльший приоритет чем параметр `cache` в `DATABASE_DSN`
+- Из `application.class.inc` убран код относящийся к плагину `blocks`
 - В `PXApplication` добавлена функция для подгрузки дополнительных языковых массивов 
-(плагин `blocks::onAfterEngineStart` триггер для загрузки языкового файла блоков)
-- `AbstractBasicCommand` может быть использована в рамках билда без базы данных
+(используется плагином `blocks` в `onAfterEngineStart` триггере)
+- `AbstractBasicCommand` может быть использована в рамках Docker-билда без базы данных
+и установленных переменных окружения
 - `BASEPATH/tmp` - deprecated, `BASEPATH/app/cache/tmp.*` используется для хранения
-временных данных.
+временных данных
+- Директория `CACHE_PATH` теперь установлена в `BASEPATH/app/cache/tmp.PHP_VERSION.CHARSET`
+- Логгер `LOGGER_APP` и `LOGGER_CRON` по-умолчанию пишут в файлы
+`CACHE_PATH/application.log` и `CACHE_PATH/cron.log` соответственно
 
 ## [1.9.4] - 2017-06-20
 - MassChangeModule багфикс
