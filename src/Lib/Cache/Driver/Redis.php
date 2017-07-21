@@ -7,43 +7,42 @@ use PP\Lib\Cache\CacheInterface;
 /**
  * Class PXCacheRedis
  * @package PP\Lib\Cache\Driver
+ *
+ * BEWARE, please read this: https://github.com/phpredis/phpredis/issues/1117
  */
 class Redis implements CacheInterface {
+
 	/** @var \Redis */
-	protected $impl = null;
-	protected $host = "localhost";
-	protected $port = 6379;
+	protected $connection;
+
+	protected $cachePrefix = '';
+	protected $host;
+	protected $port;
 	protected $database = 0;
-	protected $cacheDomain = null;
 
 	public function __construct($cacheDomain = null, $defaultExpire = 3600, $connectorArgs = null) {
 		extension_loaded("redis") or FatalError(get_class($this) . " error: redis extension doesn't loaded or installed");
 
-		$this->impl = new \Redis();
-		$this->host = empty($connectorArgs['host']) ? $this->host : $connectorArgs['host'];
-		$this->port = empty($connectorArgs['port']) ? $this->port : intval($connectorArgs['port']);
+		$this->connection = new \Redis();
+		$this->host = getFromArray($connectorArgs, 'host', '127.0.0.1');
+		$this->port = getFromArray($connectorArgs, 'port', 6379);
 		$this->database = empty($connectorArgs['path']) ? $this->database : intval(ltrim($connectorArgs['path'], '/'));
-		$this->cacheDomain = $cacheDomain;
+		$this->cachePrefix = ($cacheDomain === null) ? '' : $cacheDomain . ':';
 		$this->connect();
 	}
 
 	private function connect() {
-		try {
-			$this->impl->connect($this->host, $this->port, 1);
-			$this->impl->setOption(\Redis::OPT_SERIALIZER, \Redis::SERIALIZER_PHP);
-			if (!empty($this->cacheDomain)) {
-				$this->impl->setOption(\Redis::OPT_PREFIX, $this->cacheDomain.':');
-			}
-			$this->impl->select($this->database);
-		} catch (\Exception $e) {
-			trigger_error("Can't connect to Redis: {$this->host}:{$this->port}");
-			$this->impl = null;
+		$this->connection->connect($this->host, $this->port, 1);
+		$this->connection->setOption(\Redis::OPT_SERIALIZER, \Redis::SERIALIZER_PHP);
+		if (!empty($this->cachePrefix)) {
+			$this->connection->setOption(\Redis::OPT_PREFIX, $this->cachePrefix);
 		}
+		$this->connection->select($this->database);
 	}
 
 	private function key($key, $glob = false) {
 		if (is_array($key)) {
-			$keyPart   = $this->key(array_shift($key));
+			$keyPart = $this->key(array_shift($key));
 			$groupPart = $this->key(array_shift($key));
 			return $groupPart . '_' . $keyPart;
 		}
@@ -51,60 +50,51 @@ class Redis implements CacheInterface {
 	}
 
 	public function exists($key) {
-		if (!$this->impl) {
-			return false;
-		}
-		return $this->impl->exists($this->key($key));
+		return $this->connection->exists($this->key($key));
 	}
 
-	public function save($key, $data, $expTime = null) {
-		if (!$this->impl) {
-			return false;
-		}
-		return $this->impl->set($this->key($key), $data, $expTime);
+	public function save($key, $data, $expTime = 3600) {
+		return $this->connection->set($this->key($key), $data, $expTime);
 	}
 
 	public function load($key) {
-		if (!$this->impl) {
-			return null;
-		}
-		$data = $this->impl->get($this->key($key));
+		$data = $this->connection->get($this->key($key));
 		$data = ($data === false) ? null : $data;
+
 		return $data;
 	}
 
-	public function increment($key, $offset = 1 , $initial = 0, $expTime = null) {
-		if (!$this->impl) {
-			return $initial;
-		}
+	public function increment($key, $offset = 1, $initial = 0, $expTime = null) {
 		$key = $this->key($key);
-		$this->impl->exists($key) || $this->impl->set($key, $initial);
-		return $this->impl->incrBy($key, $offset);
+		if (!$this->connection->exists($key)) {
+			$this->connection->set($key, $initial);
+		}
+
+		return $this->connection->incrBy($key, $offset);
 	}
 
 	public function delete($key) {
-		if (!$this->impl) {
-			return false;
-		}
-		return $this->impl->delete($this->key($key));
+		return $this->connection->delete($this->key($key));
 	}
 
 	public function clear() {
-		if (!$this->impl) {
-			return false;
-		}
-		return $this->impl->flushDB();
+		return $this->connection->flushDB();
 	}
 
+	// @see https://github.com/phpredis/phpredis/issues/1117
 	public function deleteGroup($group) {
-		if (!$this->impl) {
-			return false;
-		}
-		$keys = $this->impl->keys($this->key($group, true));
-		$ok = true;
+		// find keys to delete
+		$keyGroup = $this->key($group, true);
+		$keys = $this->connection->keys($keyGroup);
+		$cachePrefixLen = strlen($this->cachePrefix);
+
 		foreach ($keys as $key) {
-			$ok = $this->impl->delete($key) && $ok;
+			if (substr($key, 0, $cachePrefixLen) === $this->cachePrefix) {
+				$key = substr($key, $cachePrefixLen);
+				$this->connection->del($key);
+			}
 		}
-		return $ok;
+
+		return true;
 	}
 }
