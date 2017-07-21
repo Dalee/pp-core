@@ -2,6 +2,7 @@
 
 namespace PP\Lib\Database\Driver;
 
+use PP\Lib\Cache\CacheInterface;
 use PP\Lib\Database\AbstractSqlDatabase;
 
 /**
@@ -14,7 +15,11 @@ class PostgreSqlDriver extends AbstractSqlDatabase  {
 
 	var $connectString;
 	var $connection;
+
+	/** @var CacheInterface */
 	var $cache;
+
+	/** @var bool */
 	var $connected;
 
 	protected $includeOptions = ['connect_timeout' => ''];
