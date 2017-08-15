@@ -2,13 +2,20 @@
 
 namespace PP\Lib\Console\Report;
 
+use Exception;
+use NLMailMessage;
+
+/**
+ * Class Mailer
+ * @package PP\Lib\Console\Report
+ */
 class Mailer {
 
 	/** @var string */
-	protected $mails = '';
+	protected $to = '';
 
 	/** @var string */
-	protected $from = 'example@example.com';
+	protected $from = '';
 
 	/** @var string */
 	protected $commandName = 'example:command';
@@ -22,11 +29,11 @@ class Mailer {
 	/**
 	 * Set list of e-mails.
 	 *
-	 * @param string $mails - list of emails separated with comma
+	 * @param string $to - list of emails separated with comma
 	 * @return $this
 	 */
-	public function setMails($mails) {
-		$this->mails = $mails;
+	public function setTo($to) {
+		$this->to = $to;
 
 		return $this;
 	}
@@ -34,8 +41,8 @@ class Mailer {
 	/**
 	 * @return string
 	 */
-	public function getMails() {
-		return $this->mails;
+	public function getTo() {
+		return $this->to;
 	}
 
 	/**
@@ -45,7 +52,7 @@ class Mailer {
 	 * @return $this
 	 */
 	public function setFrom($from) {
-		$this->from = $from ? : $this->from;
+		$this->from = $from;
 
 		return $this;
 	}
@@ -113,28 +120,36 @@ class Mailer {
 	 *
 	 * @param string $data
 	 * @return bool
+	 * @throws Exception
 	 */
 	public function sendReport($data = '') {
-		$mails = $this->getMails();
-		if (!$mails) {
-			return false;
+		$address = $this->getTo();
+		if (!$address) {
+			throw new Exception('Empty email list.');
 		}
 
-		$mail = new \NLMailMessage();
-		$mail->setSubject("{$this->getProjectName()} PP {$this->getCommandName()} script results");
-		$mail->setFrom("{$this->getProjectName()} PP", $this->getFrom());
+		if (!$this->getFrom()) {
+			throw new Exception('Empty from field.');
+		}
+
+		$project = $this->getProjectName();
+		$command = $this->getCommandName();
+
+		$mail = new NLMailMessage();
+		$mail->setSubject(sprintf('%s PP %s script results', $project, $command));
+		$mail->setFrom(sprintf('%s PP', $project), $this->getFrom());
 		$mail->setBody($this->formatResultMailBody());
 
 		if ($data) {
 			$date = date('y:m:d_H:m:s');
-			$fileName = sprintf("%s_%s_%s_report.txt", $date, $this->getProjectName(), $this->getCommandName());
+			$fileName = sprintf('%s_%s_%s_report.txt', $date, $project, $command);
 			$fileName = str_replace(':', '-', $fileName);
 			$mail->addFile($fileName, basename($fileName), 'text/plain', $data);
 		}
 
-		$mails = explode(',', $mails);
-		$to = array_shift($mails);
-		$cc = join(',', $mails);
+		$addresses = explode(',', $address);
+		$to = array_shift($addresses);
+		$cc = join(',', $addresses);
 
 		if ($cc) {
 			$mail->setCC($cc, false);
@@ -150,13 +165,13 @@ class Mailer {
 	 * @return string
 	 */
 	public function formatResultMailBody() {
-		$body = [sprintf("%s PP %s script finished evaluation", $this->getProjectName(), $this->getCommandName())];
-
-		if (!empty($this->getOptions())) {
-			$body[] = '';
-			$body[] = 'Used options:';
-			$body[] = print_r($this->getOptions(), true);
-		}
+		$finishFormat = '%s PP %s script finished evaluation';
+		$body = [
+			sprintf($finishFormat, $this->getProjectName(), $this->getCommandName()),
+			'',
+			'Used options:',
+			print_r($this->getOptions(), true)
+		];
 
 		return join(PHP_EOL, $body);
 	}

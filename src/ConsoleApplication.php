@@ -2,6 +2,8 @@
 
 namespace PP;
 
+use PXRegistry;
+
 use PP\Properties\EnvLoader;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\ConsoleEvents;
@@ -39,6 +41,9 @@ class ConsoleApplication extends Application {
 
 	use ContainerAwareTrait;
 
+	/** Proxima application instance */
+	protected $pxApp;
+
 	/**
 	 * @inheritdoc
 	 */
@@ -55,18 +60,19 @@ class ConsoleApplication extends Application {
 	}
 
 	public static function start() {
+		$app = new static('pp', PP_VERSION);
+
 		// set command loader
 		$dispatcher = new EventDispatcher();
-		$dispatcher->addListener(ConsoleEvents::COMMAND, function (ConsoleCommandEvent $event) {
-			static::consoleCommandHandler($event);
+		$dispatcher->addListener(ConsoleEvents::COMMAND, function (ConsoleCommandEvent $event) use ($app) {
+			$app->consoleCommandHandler($event);
 		});
 
-		$dispatcher->addListener(ConsoleEvents::TERMINATE, function (ConsoleTerminateEvent $event) {
-			static::consoleTerminateHandler($event);
+		$dispatcher->addListener(ConsoleEvents::TERMINATE, function (ConsoleTerminateEvent $event) use ($app) {
+			$app->consoleTerminateHandler($event);
 		});
 
 		// create and run command set..
-		$app = new static('pp', PP_VERSION);
 		$app->setDispatcher($dispatcher);
 		$app->registerCoreCommands();
 		$app->registerProjectCommands();
@@ -75,35 +81,62 @@ class ConsoleApplication extends Application {
 
 	/**
 	 * Handles console command event of application.
-	 * Configures command before executing.
 	 *
 	 * @param ConsoleCommandEvent $event
 	 */
-	protected static function consoleCommandHandler(ConsoleCommandEvent $event) {
+	protected function consoleCommandHandler(ConsoleCommandEvent $event) {
 		$cmd = $event->getCommand();
 
 		if ($cmd instanceof AbstractCommand) {
-			$engine = (new \PXEngineSbin())->start();
-			$cmd->setContainer($engine->getContainer());
-			$cmd->setApp(\PXRegistry::getApp())
-				->setDb(\PXRegistry::getDb());
-
-			if (static::isReporting($event)) {
-				$text = [
-					'<info>After command execution auto-report will be sent to next mails:</info>',
-					static::getMails($event->getInput()),
-					''
-				];
-			} else {
-				$text = ['<comment>Auto-report will not be sent after command execution</comment>', ''];
-			}
-			$event->getOutput()->writeln($text, OutputInterface::VERBOSITY_QUIET);
+			$this->commonCommandHandler($event);
 		}
 
 		if ($cmd instanceof MigrateAbstractCommand) {
-			$dbDescription = \NLDBDescription::fromEnv();
-			$cmd->setDbDriver($dbDescription->getDriver());
+			$this->migrateCommandHandler($event);
 		}
+	}
+
+	/**
+	 * Configures common command before executing.
+	 *
+	 * @param ConsoleCommandEvent $event
+	 */
+	protected function commonCommandHandler(ConsoleCommandEvent $event) {
+		$cmd = $event->getCommand();
+
+		$engine = (new \PXEngineSbin())->start();
+		$this->pxApp = PXRegistry::getApp();
+		$cmd->setContainer($engine->getContainer());
+		$cmd->setApp($this->pxApp)
+			->setDb(PXRegistry::getDb());
+
+		$address = $this->getTo($event->getInput());
+		if ($this->isReporting($event) && !empty($address)) {
+			$text = [
+				'<info>After command execution auto-report will be sent to next e-mails:</info>',
+				$address,
+				''
+			];
+		} else {
+			$text = [
+				'<comment>Auto-report will not be sent after command execution</comment>',
+				empty($address) ? 'No e-mail addresses' : '',
+				''
+			];
+		}
+		$event->getOutput()->writeln($text, OutputInterface::VERBOSITY_QUIET);
+	}
+
+	/**
+	 * Configures migration-type command before execution.
+	 *
+	 * @param ConsoleCommandEvent $event
+	 */
+	protected function migrateCommandHandler(ConsoleCommandEvent $event) {
+		$cmd = $event->getCommand();
+
+		$dbDescription = \NLDBDescription::fromEnv();
+		$cmd->setDbDriver($dbDescription->getDriver());
 	}
 
 	/**
@@ -111,22 +144,26 @@ class ConsoleApplication extends Application {
 	 * Collects command output and sends email report.
 	 *
 	 * @param ConsoleTerminateEvent $event
+	 * @throws \Exception
 	 */
-	protected static function consoleTerminateHandler(ConsoleTerminateEvent $event) {
+	protected function consoleTerminateHandler(ConsoleTerminateEvent $event) {
+		if (!$this->isReporting($event)) {
+			return;
+		}
+
 		$cmd = $event->getCommand();
 		$input = $event->getInput();
 		$output = $event->getOutput();
 
-		if (!static::isReporting($event)) {
-			return;
-		}
+		$project = $this->pxApp->getProperty('SYS_PROJECT_NAME', '');
+		$from = $this->pxApp->getProperty('SYS_COMMAND_REPORT_FROM', '');
 
 		$reporter = new Mailer();
 		$reporter->setCommandName($cmd->getName())
 			->setOptions($input->getOptions())
-			->setProjectName(\PXRegistry::getApp()->getProperty('SYS_PROJECT_NAME', ''))
-			->setFrom(\PXRegistry::getApp()->getProperty('SYS_COMMAND_REPORT_FROM', ''))
-			->setMails(static::getMails($input))
+			->setProjectName($project)
+			->setFrom($from)
+			->setTo($this->getTo($input))
 			->sendReport($output->fetch());
 	}
 
@@ -136,7 +173,7 @@ class ConsoleApplication extends Application {
 	 * @param ConsoleEvent $event
 	 * @return bool
 	 */
-	protected static function isReporting(ConsoleEvent $event) {
+	protected function isReporting(ConsoleEvent $event) {
 		$cmd = $event->getCommand();
 		$input = $event->getInput();
 
@@ -150,16 +187,12 @@ class ConsoleApplication extends Application {
 	 * @param InputInterface $input
 	 * @return string
 	 */
-	protected static function getMails(InputInterface $input) {
-		$mails = join(',', $input->getOption('mail'));
-		if (empty($mails)) {
-			$mails = EnvLoader::get('PP_COMMAND_REPORT_MAIL');
-			if (empty($mails)) {
-				$mails = \PXRegistry::getApp()->getProperty('SYS_COMMAND_REPORT_MAIL', '');
-			}
-		}
+	protected function getTo(InputInterface $input) {
+		$addresses = join(',', $input->getOption('mail'))
+			?: EnvLoader::get('PP_COMMAND_REPORT_MAIL')
+			?: $this->pxApp->getProperty('SYS_COMMAND_REPORT_MAIL', '');
 
-		return $mails;
+		return $addresses;
 	}
 
 	/**

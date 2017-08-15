@@ -19,11 +19,10 @@ class BuferringOutput extends ConsoleOutput {
 	public function write($messages, $newline = false, $options = self::OUTPUT_NORMAL) {
 		$messages = (array) $messages;
 
-		foreach ($messages as $message) {
-			$msg = strip_tags($message);
-			$msg = $newline ? $msg . PHP_EOL : $msg;
-			$this->buffer .= $msg;
-		}
+		$cleanMessages = array_map('strip_tags', $messages);
+		$sep = $newline ? "\n" : '';
+
+		$this->buffer .= join($sep, $cleanMessages) . $sep;
 
 		parent::write($messages, $newline, $options);
 	}
