@@ -42,7 +42,7 @@ class ConsoleApplication extends Application {
 	use ContainerAwareTrait;
 
 	/** Proxima application instance */
-	protected $pxApp;
+	protected $app;
 
 	/**
 	 * @inheritdoc
@@ -105,9 +105,9 @@ class ConsoleApplication extends Application {
 		$cmd = $event->getCommand();
 
 		$engine = (new \PXEngineSbin())->start();
-		$this->pxApp = PXRegistry::getApp();
+		$this->app = PXRegistry::getApp();
 		$cmd->setContainer($engine->getContainer());
-		$cmd->setApp($this->pxApp)
+		$cmd->setApp($this->app)
 			->setDb(PXRegistry::getDb());
 
 		$address = $this->getTo($event->getInput());
@@ -155,8 +155,8 @@ class ConsoleApplication extends Application {
 		$input = $event->getInput();
 		$output = $event->getOutput();
 
-		$project = $this->pxApp->getProperty('SYS_PROJECT_NAME', '');
-		$from = $this->pxApp->getProperty('SYS_COMMAND_REPORT_FROM', '');
+		$project = $this->app->getProperty('SYS_PROJECT_NAME', '');
+		$from = $this->app->getProperty('SYS_COMMAND_REPORT_FROM', '');
 
 		$reporter = new Mailer();
 		$reporter->setCommandName($cmd->getName())
@@ -190,7 +190,7 @@ class ConsoleApplication extends Application {
 	protected function getTo(InputInterface $input) {
 		$addresses = join(',', $input->getOption('mail'))
 			?: EnvLoader::get('PP_COMMAND_REPORT_MAIL')
-			?: $this->pxApp->getProperty('SYS_COMMAND_REPORT_MAIL', '');
+			?: $this->app->getProperty('SYS_COMMAND_REPORT_MAIL', '');
 
 		return $addresses;
 	}

@@ -173,7 +173,7 @@ class Mailer {
 			print_r($this->getOptions(), true)
 		];
 
-		return join(PHP_EOL, $body);
+		return join("\n", $body);
 	}
 
 }
