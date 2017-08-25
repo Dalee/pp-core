@@ -84,6 +84,11 @@ class PXRequest {
 		if (preg_match('#/(' . join('|', array_map('preg_quote', $this->rootPathsList)) . ')/#' . REGEX_MOD, $path)) {
 			return true;
 		}
+		// All bytes in path should be valid utf-8 sequences
+		if (!isUtfString($path)) {
+			return true;
+		}
+
 		return false;
 	}
 
