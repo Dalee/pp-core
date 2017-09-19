@@ -3,43 +3,97 @@
 namespace PP\Lib\Cache\Driver;
 
 use PP\Lib\Cache\CacheInterface;
+use \Redis as RedisDriver;
 
 /**
  * Class PXCacheRedis
  * @package PP\Lib\Cache\Driver
  *
- * BEWARE, please read this: https://github.com/phpredis/phpredis/issues/1117
+ * Usage: redis://127.0.0.1:6379/0?timeout=2.0
+ *
+ * Explanation:
+ *  * Redis instance running on 127.0.0.1:6379
+ *  * use Redis database number "0" (Redis accept database numbers from 0 to 15, by default)
+ *  * connection timeout is set to 2.0 seconds (float)
+ *
  */
 class Redis implements CacheInterface {
 
 	/** @var \Redis */
 	protected $connection;
 
+	/** @var string */
 	protected $cachePrefix = '';
+
+	/** @var string */
 	protected $host;
+
+	/** @var int */
 	protected $port;
+
+	/** @var float connection timeout, default is 1.5 */
+	protected $timeout;
+
+	/** @var int database number */
 	protected $database = 0;
 
+	/**
+	 * Redis cache driver constructor.
+	 *
+	 * @param null|string $cacheDomain
+	 * @param int $defaultExpire
+	 * @param null|array $connectorArgs
+	 */
 	public function __construct($cacheDomain = null, $defaultExpire = 3600, $connectorArgs = null) {
-		extension_loaded("redis") or FatalError(get_class($this) . " error: redis extension doesn't loaded or installed");
+		if (!extension_loaded("redis")) {
+			FatalError("Redis extension is not loaded!");
+		}
 
-		$this->connection = new \Redis();
+		// parse additional arguments..
+		$paramsRaw = getFromArray($connectorArgs, 'query', '');
+		parse_str($paramsRaw, $params);
+
+		// create connection..
 		$this->host = getFromArray($connectorArgs, 'host', '127.0.0.1');
 		$this->port = getFromArray($connectorArgs, 'port', 6379);
 		$this->database = empty($connectorArgs['path']) ? $this->database : intval(ltrim($connectorArgs['path'], '/'));
 		$this->cachePrefix = ($cacheDomain === null) ? '' : $cacheDomain . ':';
+		$this->timeout = (float)getFromArray($params, 'timeout', 1.5);
 		$this->connect();
 	}
 
+	/**
+	 * Initiate Redis non-persistent connection.
+	 */
 	private function connect() {
-		$this->connection->connect($this->host, $this->port, 1);
-		$this->connection->setOption(\Redis::OPT_SERIALIZER, \Redis::SERIALIZER_PHP);
+		$this->connection = new RedisDriver();
+		$this->connection->connect(
+			$this->host,
+			$this->port,
+			$this->timeout
+		);
+
+		$this->connection->setOption(
+			RedisDriver::OPT_SERIALIZER,
+			RedisDriver::SERIALIZER_PHP
+		);
+
 		if (!empty($this->cachePrefix)) {
-			$this->connection->setOption(\Redis::OPT_PREFIX, $this->cachePrefix);
+			$this->connection->setOption(
+				RedisDriver::OPT_PREFIX,
+				$this->cachePrefix
+			);
 		}
 		$this->connection->select($this->database);
 	}
 
+	/**
+	 * Convert Proxima key into Redis key.
+	 *
+	 * @param string $key
+	 * @param bool $glob
+	 * @return string
+	 */
 	private function key($key, $glob = false) {
 		if (is_array($key)) {
 			$keyPart = $this->key(array_shift($key));
@@ -49,14 +103,23 @@ class Redis implements CacheInterface {
 		return md5($key) . ($glob ? '_*' : '');
 	}
 
+	/**
+	 * {@inheritdoc}
+	 */
 	public function exists($key) {
 		return $this->connection->exists($this->key($key));
 	}
 
+	/**
+	 * {@inheritdoc}
+	 */
 	public function save($key, $data, $expTime = 3600) {
 		return $this->connection->set($this->key($key), $data, $expTime);
 	}
 
+	/**
+	 * {@inheritdoc}
+	 */
 	public function load($key) {
 		$data = $this->connection->get($this->key($key));
 		$data = ($data === false) ? null : $data;
@@ -64,6 +127,9 @@ class Redis implements CacheInterface {
 		return $data;
 	}
 
+	/**
+	 * {@inheritdoc}
+	 */
 	public function increment($key, $offset = 1, $initial = 0, $expTime = null) {
 		$key = $this->key($key);
 		if (!$this->connection->exists($key)) {
@@ -73,6 +139,9 @@ class Redis implements CacheInterface {
 		return $this->connection->incrBy($key, $offset);
 	}
 
+	/**
+	 * {@inheritdoc}
+	 */
 	public function delete($key) {
 		return $this->connection->delete($this->key($key));
 	}
@@ -81,7 +150,11 @@ class Redis implements CacheInterface {
 		return $this->connection->flushDB();
 	}
 
-	// @see https://github.com/phpredis/phpredis/issues/1117
+	/**
+	 * {@inheritdoc}
+	 *
+	 * @see https://github.com/phpredis/phpredis/issues/1117
+	 */
 	public function deleteGroup($group) {
 		// find keys to delete
 		$keyGroup = $this->key($group, true);
