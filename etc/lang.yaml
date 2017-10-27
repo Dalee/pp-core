@@ -29,8 +29,8 @@ back:
 
 # дата
 date:
-  rus: %e %B2 %Y
-  eng: %e %BE %Y
+  rus: "%e %B2 %Y"
+  eng: "%e %BE %Y"
 
 weekdays:
   rus:
