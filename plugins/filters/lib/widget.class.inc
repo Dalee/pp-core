@@ -54,6 +54,27 @@ class PXFiltersAdminWidget extends PXAdminWidget {
 					$filters_html .= sprintf($spformat, 't', $filter_value == 't' ? ' checked="checked"' : '', 'Да');
 					$filters_html .= sprintf('&ndash; <label>%s</label></div>', $field->description);
 					break;
+
+				case $field->displayType instanceof PXDisplayTypeDropdown:
+					$values = !empty($field->values->values) ? $field->values->values : [];
+
+					if (!$field->values instanceof PXDirectoryDescription && empty($values)) {
+						break;
+					}
+
+					$option = array_map(function($value) use ($filter_value) {
+						$selected = $filter_value == $value['id'] ? ' selected' : '';
+						return sprintf('<option value="%s"%s>%s</option>',
+							$value['id'],
+							$selected,
+							$value['title']
+						);
+					}, $values);
+
+					$selectElem = sprintf('<select name="filters[%s][%s]">%s</select>', $this->dtype->id, $field->name, implode($option));
+					$filters_html .= sprintf('<div>%s &ndash; <label>%s</label></div>', $selectElem, $field->description);
+					break;
+
 				default:
 					$filters_html .= sprintf('<div><input type="text" value="%s" name="filters[%s][%s]" /> &ndash; <label>%s</label></div>', $filter_value, $this->dtype->id, $field->name, $field->description);
 			}
