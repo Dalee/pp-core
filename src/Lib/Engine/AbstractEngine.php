@@ -2,6 +2,7 @@
 
 namespace PP\Lib\Engine;
 
+use PP\Properties\EnvLoader;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 use PP\Lib\Database\Driver\PostgreSqlDriver;
@@ -45,6 +46,9 @@ abstract class AbstractEngine {
 	function __construct() {
 		$this->initApplication();
 		$this->saveToRegistry();
+
+		EnvLoader::inject();
+		$this->container->compile(true);
 	}
 
 	/**

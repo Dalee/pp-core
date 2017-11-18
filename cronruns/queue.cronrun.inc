@@ -2,6 +2,7 @@
 
 use PP\Lib\PersistentQueue;
 use PP\Cron\AbstractCron;
+use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 
 /**
  * Class PXCronRunQueue
@@ -54,6 +55,10 @@ class PXCronRunQueue extends AbstractCron {
 
 			$queue->startJob($job);
 			$worker = $job->getWorker();
+
+			if ($worker instanceof ContainerAwareInterface) {
+				$worker->setContainer($this->container);
+			}
 
 			try {
 				$this->log(sprintf('Processing job #%d with %s', $jobId, get_class($worker)));
