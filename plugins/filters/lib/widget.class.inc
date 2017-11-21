@@ -58,7 +58,7 @@ class PXFiltersAdminWidget extends PXAdminWidget {
 				case $field->displayType instanceof PXDisplayTypeDropdown:
 					$values = !empty($field->values->values) ? $field->values->values : [];
 
-					if (!$field->values instanceof PXDirectoryDescription && empty($values)) {
+					if (!$field->values instanceof PXDirectoryDescription || empty($values)) {
 						break;
 					}
 
