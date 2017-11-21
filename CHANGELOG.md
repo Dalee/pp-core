@@ -1,5 +1,8 @@
 # Change log
 
+## [2.0.1] UNRELEASED
+- Добавлен вывод select для фильтра, если для атрибута установлено displaytype="DROPDOWN"
+
 ## [2.0.0] 2017-10-31
 - Обновлена версия php до 5.6 - в composer.json прописана platform.php 5.6.31
 - Обновлены мажорные версии зависимостей symfony:
