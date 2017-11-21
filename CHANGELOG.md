@@ -1,5 +1,31 @@
 # Change log
 
+## [2.0.1] UNRELEASED
+- Добавлен вывод select для фильтра, если для атрибута установлено displaytype="DROPDOWN"
+
+## [2.0.0] 2017-10-31
+- Обновлена версия php до 5.6 - в composer.json прописана platform.php 5.6.31
+- Обновлены мажорные версии зависимостей symfony:
+    - `symfony/http-foundation` `~3.3.0` lock = `3.3.10`
+        https://github.com/symfony/http-foundation/blob/master/CHANGELOG.md
+    - `symfony/console` `~3.3.0` lock = `3.3.10`
+        https://github.com/symfony/console/blob/master/CHANGELOG.md
+    - `symfony/event-dispatcher` `~3.3.0` lock = `3.3.10`
+        https://github.com/symfony/event-dispatcher/blob/master/CHANGELOG.md
+    - `symfony/yaml` `~3.3.0` lock = `3.3.10`
+        https://github.com/symfony/yaml/blob/master/CHANGELOG.md
+    - `symfony/var-dumper` `~3.3.0` lock = `3.3.10`
+        https://github.com/symfony/var-dumper/blob/master/CHANGELOG.md
+    - `symfony/config` `~3.3.0` lock = `3.3.10`
+        https://github.com/symfony/config/blob/master/CHANGELOG.md
+    - `symfony/dependency-injection` `~3.3.0` lock = `3.3.10`
+        https://github.com/symfony/dependency-injection/blob/master/CHANGELOG.md
+- Добавлена dev зависимость `friendsofphp/php-cs-fixer` `^2.7` lock = `2.7.1`
+
+### [BC] Встречено влияние следующих breaking changes:
+- yaml parser кидает notice, если встречает не обернутое в кавычки значение, начинающееся с символа `%`.
+- yaml parser кидает notice, если встречает дублирование в ключах.
+
 ## [1.10.5] 2017-11-19
 - Добавлен вывод select для фильтра, если для атрибута установлено displaytype="DROPDOWN"
 
