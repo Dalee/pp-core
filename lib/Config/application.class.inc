@@ -147,6 +147,7 @@ class PXApplication {
 	 * @param \PP\Lib\Engine\AbstractEngine $engineObject
 	 */
 	private function __construct($engineClass, $engineObject) {
+		EnvLoader::inject();
 		$this->langTree = new ArrayCollection();
 		$this->properties = new ArrayCollection(); // properties will be filled via call in PXAbstractEngine
 		$this->engine = $engineObject;
@@ -812,8 +813,9 @@ class PXApplication {
 	 * @throws Exception
 	 */
 	function __wakeup() {
-		foreach ($this->reinitialize as $name => $bool) {
+		EnvLoader::inject();
 
+		foreach ($this->reinitialize as $name => $bool) {
 			foreach ((array)$this->{$name} as $o) {
 				if (!$o instanceof InitializableDescriptionInterface) {
 					throw new \Exception(

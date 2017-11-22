@@ -11,7 +11,7 @@ class PXRequest {
 	var $postData;
 	var $cookieData;
 
-	protected $headers;
+	protected $headers = [];
 
 	protected $rootPathsList = array(
 		'index.html',

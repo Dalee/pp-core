@@ -33,8 +33,6 @@ class NLDBDescription {
 	 * @return static
 	 */
 	public static function fromEnv() {
-		EnvLoader::inject();
-
 		$q = [];
 		$r = parse_url(EnvLoader::get('DATABASE_DSN'));
 		parse_str(getFromArray($r, 'query', ''), $q);
