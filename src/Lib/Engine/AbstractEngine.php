@@ -105,7 +105,6 @@ abstract class AbstractEngine {
 			} else {
 				$this->$var = new $this->{$var}['factory'];
 			}
-
 		}
 	}
 
@@ -115,6 +114,8 @@ abstract class AbstractEngine {
 				call_user_func_array(array("PXRegistry", 'set' . ucfirst($var)), array(&$this->$var));
 			}
 		}
+
+		$this->container->compile(true);
 	}
 
 	protected function initApp($klass) {

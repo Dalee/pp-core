@@ -11,6 +11,8 @@ class PXRequest {
 	var $postData;
 	var $cookieData;
 
+	protected $headers = [];
+
 	protected $rootPathsList = array(
 		'index.html',
 		'index.shtml',
@@ -28,6 +30,10 @@ class PXRequest {
 		$this->host = $this->GetHttpHost();
 		$this->remoteAddr = $this->GetRemoteAddr();
 		$this->path = self::GetOriginalPath(); //PHP54/52: <static> is better but for 52 using <self>
+
+		foreach ($this->getHttpHeaders() as $name => $value) {
+			$this->headers[strtolower($name)] = $value;
+		}
 
 		$this->getData = new NLGetData();
 		$this->postData = new NLPostData();
@@ -129,16 +135,38 @@ class PXRequest {
 		return preg_replace('/:.+$/' . REGEX_MOD, '', $host);
 	}
 
+	protected function cleanHeaderName($name) {
+		return str_replace(' ', '-', ucwords(strtolower(str_replace('_', ' ', substr($name, 5)))));
+	}
+
+	/**
+	 * Keep this public as is not to make BC.
+	 *
+	 * @todo Need to return headers from this where keys are lower cased.
+	 * @return array
+	 */
 	public function getHttpHeaders() {
 		$headers = [];
+
 		foreach ($_SERVER as $name => $value) {
 			if (mb_substr($name, 0, 5) === 'HTTP_') {
-				$headerName = str_replace(' ', '-', ucwords(strtolower(str_replace('_', ' ', substr($name, 5)))));
+				$headerName = $this->cleanHeaderName($name);
 				$headers[$headerName] = $value;
 			}
 		}
 
 		return $headers;
+	}
+
+	/**
+	 * Looks up $headerName in headers (case insensitive!).
+	 *
+	 * @param string $headerName
+	 * @param null $default
+	 * @return mixed
+	 */
+	public function getHttpHeader($headerName, $default = null) {
+		return getFromArray($this->headers, $headerName, $default);
 	}
 
 	static function GetRemoteAddr() {
