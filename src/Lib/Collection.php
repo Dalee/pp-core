@@ -58,7 +58,7 @@ class Collection implements Countable, IteratorAggregate, JsonSerializable {
 
 	/**
 	 * @param Closure $func
-	 * @return Collection
+	 * @return static
 	 */
 	public function filter(Closure $func) {
 		return new static(array_filter($this->elements, $func));
