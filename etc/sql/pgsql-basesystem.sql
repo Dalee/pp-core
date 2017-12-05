@@ -258,7 +258,7 @@ CREATE TABLE log_audit (
 	"type"  CHAR(8),
 	source  VARCHAR(128),
 	"user"  VARCHAR(32),
-	ip      VARCHAR(32),
+	ip      VARCHAR(40),
 	description VARCHAR,
 	diff	TEXT
 ) WITH OIDS;
