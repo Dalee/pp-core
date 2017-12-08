@@ -1,5 +1,8 @@
 # Change log
 
+## [2.1.1] 2017-12-08
+- Фикс переменных окружения апм `db:migrate:up`.
+
 ## [2.1.0] 2017-12-08
 - Инструменты для дебага, `symfony/var-dumper` и `PXErrorReporter` (dev-режим) удалены. Теперь
 необходимо использовать плагин [pp/debug](http://git.dalee.ru/pp/debug).
