@@ -1,19 +1,22 @@
 <?php
 
-require_once PPLIBPATH . 'Debug/ErrorReporter/html.dev.class.inc';
-require_once PPLIBPATH . 'Debug/ErrorReporter/text.dev.class.inc';
-
 require_once PPLIBPATH . 'Debug/ErrorReporter/html.class.inc';
 require_once PPLIBPATH . 'Debug/ErrorReporter/text.class.inc';
 
 define('NL_FATAL_ERROR', 16384);
 
 function FatalError($message='') {
+	if (ini_get('display_errors')) {
+		trigger_error($message, E_USER_ERROR);
+	}
+
 	PXErrorReporter::fatalError($message);
 }
 
-set_error_handler(array('PXErrorReporter', 'catchError'));
-register_shutdown_function(array('PXErrorReporter', 'shutdown'));
+if (!ini_get('display_errors')) {
+	set_error_handler(array('PXErrorReporter', 'catchError'));
+	register_shutdown_function(array('PXErrorReporter', 'shutdown'));
+}
 
 // abstract
 class PXErrorReporter {
@@ -29,7 +32,6 @@ class PXErrorReporter {
 		if(is_null($instance)) {
 			$cls  = 'PXErrorReporter';
 			$cls .= CLI ? 'Text' : 'HTML';
-			$cls .= ini_get('display_errors') ? 'Dev' : '';
 
 			$instance = new $cls();
 		}

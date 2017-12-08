@@ -31,7 +31,6 @@
 		"symfony/console": "~3.3.0",
 		"symfony/event-dispatcher": "~3.3.0",
 		"symfony/yaml": "~3.3.0",
-		"symfony/var-dumper": "~3.3.0",
 		"vlucas/phpdotenv": "^2.4",
 		"symfony/config": "~3.3.0",
 		"symfony/dependency-injection": "~3.3.0"
