@@ -17,7 +17,6 @@ use Symfony\Component\Console\Event\ConsoleTerminateEvent;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\Yaml\Yaml;
-use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 
 use PP\Command\GetPropertyCommand;
@@ -135,6 +134,7 @@ class ConsoleApplication extends Application {
 	protected function migrateCommandHandler(ConsoleCommandEvent $event) {
 		$cmd = $event->getCommand();
 
+		EnvLoader::inject();
 		$dbDescription = \NLDBDescription::fromEnv();
 		$cmd->setDbDriver($dbDescription->getDriver());
 	}
