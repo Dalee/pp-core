@@ -5,6 +5,7 @@ namespace PP;
 use PXApplication;
 use Psr\SimpleCache\CacheInterface;
 use Symfony\Component\Cache\Simple\FilesystemCache;
+use Symfony\Component\Finder\Finder;
 
 /**
  * Class ApplicationCacheFactory.
@@ -50,29 +51,18 @@ class ApplicationCacheFactory {
 		if ($cachedApplication = $cache->get($cacheKey)) {
 			$paths = $cachedApplication->getConfigurationPaths();
 			$created = $cachedApplication->getCreated();
-			$reinit = false;
+			$finder = new Finder();
+			$finder->files()
+				->ignoreUnreadableDirs()
+				->depth('== 0')
+				->date('>= @' . $created)
+				->in($paths);
 
-			foreach ($paths as $path) {
-				$d = new \NLDir($path);
-
-				while ($entry = $d->ReadFull()) {
-					$tmp = stat($entry);
-
-					if ($tmp['mtime'] >= $created) {
-						$reinit = true;
-						break;
-					}
-				}
-
-				if ($reinit) {
-					$cache->delete($cacheKey);
-					break;
-				}
-			}
-
-			if (!$reinit) {
+			if (count($finder) === 0) {
 				return $cachedApplication;
 			}
+
+			$cache->delete($cacheKey);
 		}
 
 		$application = new PXApplication($engineClass, $engine);
