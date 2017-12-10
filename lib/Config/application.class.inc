@@ -554,7 +554,7 @@ final class PXApplication {
 	 * @param string $fileName
 	 */
 	private function fillPlugins($fileName) {
-		if ($fileName === false) {
+		if (empty($fileName)) {
 			return;
 		}
 
@@ -604,7 +604,7 @@ final class PXApplication {
 	private function fillTriggers($fileName) {
 		$this->triggers = new PXTriggersList;
 
-		if ($fileName === false) {
+		if (empty($fileName)) {
 			return;
 		}
 

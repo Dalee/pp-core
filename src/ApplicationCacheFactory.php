@@ -53,7 +53,7 @@ class ApplicationCacheFactory {
 			$reinit = false;
 
 			foreach ($paths as $path) {
-				$d = new NLDir($path);
+				$d = new \NLDir($path);
 
 				while ($entry = $d->ReadFull()) {
 					$tmp = stat($entry);

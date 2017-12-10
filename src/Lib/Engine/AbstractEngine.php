@@ -17,7 +17,7 @@ abstract class AbstractEngine {
 	protected $area;
 
 	/** @var ApplicationCacheFactory */
-	protected $app = ['factory' => 'ApplicationCacheFactory', 'helper' => true];
+	protected $app = ['factory' => 'PP\ApplicationCacheFactory', 'helper' => true];
 
 	/** @var \PXRequest */
 	protected $request = ['factory' => 'PXRequest'];
