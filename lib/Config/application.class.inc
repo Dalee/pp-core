@@ -139,10 +139,9 @@ final class PXApplication {
 	/**
 	 * Конструктор класса
 	 *
-	 * @param string $engineClass - имя класса Engine, используется в имени файла кэша
 	 * @param \PP\Lib\Engine\AbstractEngine $engineObject
 	 */
-	public function __construct($engineClass, $engineObject) {
+	public function __construct($engineObject) {
 		EnvLoader::inject();
 
 		$this->langTree = new ArrayCollection();

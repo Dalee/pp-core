@@ -43,7 +43,6 @@ class ApplicationCacheFactory {
 	 * @return PXApplication
 	 */
 	public static function create($engine, CacheInterface $cache = null) {
-		$engineClass = get_class($engine);
 		$cacheKey = static::makeEngineCacheKey($engine);
 		$cachePath = static::getDefaultEngineCachePath();
 		$cache = $cache ?: new FilesystemCache($cacheKey, 0, $cachePath);
@@ -65,7 +64,7 @@ class ApplicationCacheFactory {
 			$cache->delete($cacheKey);
 		}
 
-		$application = new PXApplication($engineClass, $engine);
+		$application = new PXApplication($engine);
 
 		MakeDirIfNotExists($cachePath);
 		$cache->set($cacheKey, $application);
