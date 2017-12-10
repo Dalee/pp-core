@@ -7,6 +7,8 @@ use PP\Lib\Xml\Xml;
 use PP\Properties\PropertyLoader;
 use PP\Module\AbstractModule;
 use PP\Properties\EnvLoader;
+use PP\ConfigurationLocator;
+use Symfony\Component\Config\FileLocator;
 
 require_once PPLIBPATH . 'Config/Description/db.class.inc';
 
@@ -29,7 +31,7 @@ require_once PPLIBPATH . 'Config/Description/plugin.class.inc';
  *
  * @subpackage Application
  */
-class PXApplication {
+final class PXApplication {
 
 	/**
 	 * массив коннекторов к базе данных
@@ -115,30 +117,24 @@ class PXApplication {
 	protected $reinitialize = [];
 
 	/**
-	 * Singleton array with caching.
-	 * @param \PP\Lib\Engine\AbstractEngine $engineObject
-	 * @return $this
+	 * @var ConfigurationLocator
 	 */
-	public static function getInstance($engineObject) {
-		/** @var PXApplication[] $instance */
-		static $instance = [];
+	protected $locator;
 
-		$engineClass = get_class($engineObject);
-		$instance[$engineClass] = self::loadFromCache($engineClass);
+	/**
+	 * @var int
+	 */
+	protected $created;
 
-		if (!empty($instance[$engineClass])) {
-			return $instance[$engineClass];
-		}
-
-		if (empty($instance[$engineClass])) {
-			$instance[$engineClass] = new PXApplication(
-				$engineClass,
-				$engineObject
-			);
-		}
-
-		return $instance[$engineClass];
-	}
+	/**
+	 * @var array
+	 */
+	protected $configurationPaths = [
+		APPPATH . 'config/',
+		BASEPATH . '/site/etc/',
+		BASEPATH . '/local/etc/',
+		BASEPATH . '/libpp/etc/'
+	];
 
 	/**
 	 * Конструктор класса
@@ -146,23 +142,43 @@ class PXApplication {
 	 * @param string $engineClass - имя класса Engine, используется в имени файла кэша
 	 * @param \PP\Lib\Engine\AbstractEngine $engineObject
 	 */
-	private function __construct($engineClass, $engineObject) {
+	public function __construct($engineClass, $engineObject) {
 		EnvLoader::inject();
+
 		$this->langTree = new ArrayCollection();
 		$this->properties = new ArrayCollection(); // properties will be filled via call in PXAbstractEngine
 		$this->engine = $engineObject;
 
-		$this->fillDbDescription();
-		$this->fillTriggers($this->findConfigFile('triggers.xml', false));
-		$this->fillPlugins($this->findConfigFile('plugins.xml', false));
-		$this->fillModules(APPPATH . join(DIRECTORY_SEPARATOR, ['config', 'modules.yml']));
-		$this->fillDataTypes($this->findConfigFile('datatypes.xml'));
-		$this->fillDirectories($this->findConfigFile('datatypes.xml'));
-		$this->fillLang($this->findConfigFiles('lang.yaml'));
-		$this->fillAuthRules($this->findConfigFiles('auth.ini'));
+		$this->locator = new ConfigurationLocator(new FileLocator($this->configurationPaths));
 
-		// save constructed app to cache
-		$this->saveToCache($engineClass);
+		$this->fillDbDescription();
+
+		$this->fillTriggers($this->locator->locateQuiet('triggers.xml'));
+		$this->fillPlugins($this->locator->locateQuiet('plugins.xml'));
+		$this->fillModules($this->locator->locate('modules.yml'));
+
+		$dataTypes = $this->locator->locate('datatypes.xml');
+		$this->fillDataTypes($dataTypes);
+		$this->fillDirectories($dataTypes);
+
+		$this->fillLang($this->locator->locate('lang.yaml', false));
+		$this->fillAuthRules($this->locator->locate('auth.ini', false));
+
+		$this->created = time();
+	}
+
+	/**
+	 * @return int
+	 */
+	public function getCreated() {
+		return $this->created;
+	}
+
+	/**
+	 * @return array
+	 */
+	public function getConfigurationPaths() {
+		return $this->configurationPaths;
 	}
 
 	/**
@@ -402,7 +418,7 @@ class PXApplication {
 	 * @param bool $addDefault
 	 */
 	public function LoadXMLDirectory(&$directory, $addDefault = true) {
-		$file = self::findConfigFile($directory->source);
+		$file = $this->locator->locate($directory->source);
 		$xpathSelector = $directory->location;
 
 		$idField = $directory->sourceKeyField;
@@ -635,57 +651,6 @@ class PXApplication {
 		return $this;
 	}
 
-	/**
-	 * Проверяет наличие кешированного файла настроек и загружает его.
-	 *
-	 * Если существует актуальный tmp/cache/config файл то он десериализуется в this.
-	 * Актуальность проверяется по времени последнего изменения каталога с конфиг файлами.
-	 *
-	 * @param  string $engineClass каталог с файлами
-	 * @return static|null serialized engine
-	 */
-	private static function loadFromCache($engineClass) {
-		$cacheFile = self::_cacheFilename($engineClass);
-
-		if (!file_exists($cacheFile)) {
-			return null;
-		}
-
-		$tmp = stat($cacheFile);
-		$cacheMtime = $tmp['mtime'];
-
-		foreach (self::configDirs() as $configDir) {
-			$d = new NLDir($configDir);
-
-			while ($entry = $d->ReadFull()) {
-				$tmp = stat($entry);
-
-				if ($tmp['mtime'] >= $cacheMtime) {
-					return null;
-				}
-			}
-		}
-
-		$app = unserialize(ReadFileToString($cacheFile));
-		return $app;
-	}
-
-	/**
-	 * Кеширует настройки PXApplication в файл.
-	 *
-	 * Весь PXApplication сериализуется в tmp/cache/config файл.
-	 */
-	private function saveToCache($engineClass) {
-		$cacheFile = self::_cacheFilename($engineClass);
-
-		MakeDirIfNotExists(dirname($cacheFile));
-		WriteStringToFile($cacheFile, serialize($this));
-	}
-
-	private static function _cacheFilename($name) {
-		return CACHE_PATH . '/config/' . strtolower($name);
-	}
-
 	private static function parseIniFile($file) {
 		return (array)parse_ini_file($file, true);
 	}
@@ -709,87 +674,6 @@ class PXApplication {
 		}
 
 		return $result;
-	}
-
-	/**
-	 * Searches for the first file in order - site, local, libpp
-	 * @param string $filename
-	 * @param bool $required
-	 * @return string|bool
-	 */
-	private static function findConfigFile($filename, $required = true) {
-		$files = self::findFilesUnless($filename, function ($files) {
-			return count($files) > 0;
-		});
-
-		if ($files) {
-			return $files[0];
-		}
-
-		if ($required) {
-			FatalError('Отсутствует файл настроек ' . $filename);
-		}
-
-		return false;
-	}
-
-	/**
-	 * Searches for all files at site, local, libpp dirs.
-	 * @param string $filename
-	 * @param bool $required
-	 *
-	 * @return array|null
-	 */
-	private static function findConfigFiles($filename, $required = true) {
-		$files = self::findFilesUnless($filename);
-		if (!empty($files)) {
-			return $files;
-		}
-
-		if ($required) {
-			FatalError('Отсутствует файл настроек ' . $filename);
-		}
-
-		return null;
-	}
-
-	/*
-	 * function is_enough($files_array) { <return TRUE when enough files collected> }
-	 * @param string $filename
-	 * @param callable $is_enough
-	 */
-	private static function findFilesUnless($filename, $is_enough = NULL) {
-		$files = array();
-
-		foreach (self::configDirs() as $configDir) {
-			$path = $configDir . $filename;
-
-			if (file_exists($path)) {
-				$files[] = $path;
-			}
-
-			if (is_callable($is_enough) && $is_enough($files)) {
-				return $files;
-			}
-		}
-
-		return $files;
-	}
-
-	private static function configDirs() {
-		return [
-			APPPATH . 'config/',
-			BASEPATH . '/site/etc/',
-			BASEPATH . '/local/etc/',
-			BASEPATH . '/libpp/etc/'
-		];
-	}
-
-	/**
-	 * Returns application path
-	 */
-	public function getAppPath() {
-		return APPPATH;
 	}
 
 	/**
@@ -820,7 +704,7 @@ class PXApplication {
 				if (!$o instanceof InitializableDescriptionInterface) {
 					throw new \Exception(
 						sprintf(
-							"Class: %s is not instanceof IInitializableDescription",
+							"Class: %s is not instanceof InitializableDescriptionInterface",
 							get_class($o)
 						)
 					);
