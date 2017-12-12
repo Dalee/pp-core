@@ -142,6 +142,7 @@ final class PXApplication {
 	 * @param \PP\Lib\Engine\AbstractEngine $engineObject
 	 */
 	public function __construct($engineObject) {
+		// inject variables from .env into $_ENV
 		EnvLoader::inject();
 
 		$this->langTree = new ArrayCollection();

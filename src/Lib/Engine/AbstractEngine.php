@@ -6,7 +6,7 @@ use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 use PP\Lib\Database\Driver\PostgreSqlDriver;
 use PP\Lib\Html\Layout\LayoutInterface;
-use PP\ApplicationCacheFactory;
+use PP\ApplicationFactory;
 
 abstract class AbstractEngine {
 
@@ -16,8 +16,8 @@ abstract class AbstractEngine {
 	/** @var string */
 	protected $area;
 
-	/** @var ApplicationCacheFactory */
-	protected $app = ['factory' => 'PP\ApplicationCacheFactory', 'helper' => true];
+	/** @var ApplicationFactory */
+	protected $app = ['factory' => 'PP\ApplicationFactory', 'helper' => true];
 
 	/** @var \PXRequest */
 	protected $request = ['factory' => 'PXRequest'];
@@ -119,7 +119,7 @@ abstract class AbstractEngine {
 	}
 
 	protected function initApp($klass) {
-		$this->app = ApplicationCacheFactory::create($this);
+		$this->app = ApplicationFactory::create($this);
 	}
 
 	protected function initDb($klass) {

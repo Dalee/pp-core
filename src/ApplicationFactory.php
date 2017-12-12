@@ -8,11 +8,11 @@ use Symfony\Component\Cache\Simple\FilesystemCache;
 use Symfony\Component\Finder\Finder;
 
 /**
- * Class ApplicationCacheFactory.
+ * Class ApplicationFactory.
  *
  * @package PP
  */
-class ApplicationCacheFactory {
+class ApplicationFactory {
 
 	/**
 	 * Makes cache key out of engine instance.
@@ -36,7 +36,8 @@ class ApplicationCacheFactory {
 	}
 
 	/**
-	 * Creates or loads application instance.
+	 * Creates application instance.
+	 * The default cache type is FilesystemCache.
 	 *
 	 * @param \PP\Lib\Engine\AbstractEngine $engine
 	 * @param CacheInterface|null $cache
@@ -65,8 +66,6 @@ class ApplicationCacheFactory {
 		}
 
 		$application = new PXApplication($engine);
-
-		MakeDirIfNotExists($cachePath);
 		$cache->set($cacheKey, $application);
 
 		return $application;
