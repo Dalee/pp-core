@@ -15,13 +15,13 @@ use Symfony\Component\Finder\Finder;
 class ApplicationFactory {
 
 	/**
-	 * Makes cache key out of engine instance.
+	 * Makes cache namespace out of engine instance.
 	 * Use this to instanciate your own cacher.
 	 *
 	 * @param \PP\Lib\Engine\AbstractEngine $engine
 	 * @return string
 	 */
-	public static function makeEngineCacheKey($engine) {
+	public static function makeEngineCacheNamespace($engine) {
 		return strtolower(get_class($engine));
 	}
 
@@ -44,11 +44,11 @@ class ApplicationFactory {
 	 * @return PXApplication
 	 */
 	public static function create($engine, CacheInterface $cache = null) {
-		$cacheKey = static::makeEngineCacheKey($engine);
-		$cachePath = static::getDefaultEngineCachePath();
-		$cache = $cache ?: new FilesystemCache($cacheKey, 0, $cachePath);
+		$namespace = static::makeEngineCacheNamespace($engine);
+		$path = static::getDefaultEngineCachePath();
+		$cache = $cache ?: new FilesystemCache($namespace, 0, $path);
 
-		if ($cachedApplication = $cache->get($cacheKey)) {
+		if ($cachedApplication = $cache->get(PXApplication::class)) {
 			$paths = $cachedApplication->getConfigurationPaths();
 			$created = $cachedApplication->getCreated();
 			$finder = new Finder();
@@ -58,15 +58,13 @@ class ApplicationFactory {
 				->date('>= @' . $created)
 				->in($paths);
 
-			if (count($finder) === 0) {
+			if (!$finder->hasResults()) {
 				return $cachedApplication;
 			}
-
-			$cache->delete($cacheKey);
 		}
 
 		$application = new PXApplication($engine);
-		$cache->set($cacheKey, $application);
+		$cache->set(PXApplication::class, $application);
 
 		return $application;
 	}
