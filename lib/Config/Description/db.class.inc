@@ -39,7 +39,7 @@ class NLDBDescription {
 
 		// either cache is supplied via &cache parameter of DATABASE_DSN
 		// or cache is defined as additional environment variable.
-		$cache = getFromArray($q, 'cache', 'file');
+		$cache = getFromArray($q, 'cache');
 		$cacheOverride = EnvLoader::get('DATABASE_CACHE');
 		if ($cacheOverride) {
 			$cache = $cacheOverride;
