@@ -604,10 +604,6 @@ class PXDatabase extends DatabaseAdapter implements DatabaseInterface {
 					$val = sprintf(' IS %sNULL', $not ? "NOT " : "");
 					break;
 
-				case $v === NOT_NULL:
-					$val = ' IS NOT NULL';
-					break;
-
 				case is_array($v):
 					empty($v) && $this->FatalError("Array value for db#getObjectsByField* can't be empty!");
 					$db = $this;

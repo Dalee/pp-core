@@ -137,9 +137,6 @@ define('DB_SELECT_FULL_TREE', 16);
 
 define('DB_SELECT_WITHOUT_EXTERNALS', 32);
 
-/**Значение не NULL*/
-define('NOT_NULL', '~~___IS_NOT_NULL___~~');
-
 define('OBJ_FIELD_ID', 'id');
 define('OBJ_FIELD_CHILDREN', 'allowed');
 define('OBJ_FIELD_ORDER', 'sys_order');
