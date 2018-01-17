@@ -58,7 +58,7 @@ class ApplicationFactory {
 				->date('>= @' . $created)
 				->in($paths);
 
-			if (!$finder->hasResults()) {
+			if (count($finder) === 0) {
 				return $cachedApplication;
 			}
 		}

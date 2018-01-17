@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "7532c607715dfa999df557c2ccfb4ea4",
+    "content-hash": "de3174692cb120ebf89e4c4f6e476455",
     "packages": [
         {
             "name": "monolog/monolog",
@@ -428,16 +428,16 @@
         },
         {
             "name": "symfony/cache",
-            "version": "v3.4.1",
+            "version": "v3.3.15",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/cache.git",
-                "reference": "1accdf8ee7d479e2f6d867a18c99a9a859ba99c0"
+                "reference": "dc16c474b7bc57bda5b7685495427426f03ef403"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/cache/zipball/1accdf8ee7d479e2f6d867a18c99a9a859ba99c0",
-                "reference": "1accdf8ee7d479e2f6d867a18c99a9a859ba99c0",
+                "url": "https://api.github.com/repos/symfony/cache/zipball/dc16c474b7bc57bda5b7685495427426f03ef403",
+                "reference": "dc16c474b7bc57bda5b7685495427426f03ef403",
                 "shasum": ""
             },
             "require": {
@@ -463,7 +463,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "3.4-dev"
+                    "dev-master": "3.3-dev"
                 }
             },
             "autoload": {
@@ -494,7 +494,7 @@
                 "caching",
                 "psr6"
             ],
-            "time": "2017-11-19T21:17:36+00:00"
+            "time": "2018-01-03T17:13:53+00:00"
         },
         {
             "name": "symfony/config",
@@ -866,16 +866,16 @@
         },
         {
             "name": "symfony/finder",
-            "version": "v3.4.1",
+            "version": "v3.3.15",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/finder.git",
-                "reference": "dac8d7db537bac7ad8143eb11360a8c2231f251a"
+                "reference": "03da5d9bac613d2095373df9ca8697b9fa571789"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/finder/zipball/dac8d7db537bac7ad8143eb11360a8c2231f251a",
-                "reference": "dac8d7db537bac7ad8143eb11360a8c2231f251a",
+                "url": "https://api.github.com/repos/symfony/finder/zipball/03da5d9bac613d2095373df9ca8697b9fa571789",
+                "reference": "03da5d9bac613d2095373df9ca8697b9fa571789",
                 "shasum": ""
             },
             "require": {
@@ -884,7 +884,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "3.4-dev"
+                    "dev-master": "3.3-dev"
                 }
             },
             "autoload": {
@@ -911,7 +911,7 @@
             ],
             "description": "Symfony Finder Component",
             "homepage": "https://symfony.com",
-            "time": "2017-11-05T16:10:10+00:00"
+            "time": "2018-01-03T07:37:11+00:00"
         },
         {
             "name": "symfony/http-foundation",
