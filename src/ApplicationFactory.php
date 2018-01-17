@@ -22,7 +22,10 @@ class ApplicationFactory {
 	 * @return string
 	 */
 	public static function makeEngineCacheNamespace($engine) {
-		return strtolower(get_class($engine));
+		$namespace = strtolower(get_class($engine));
+		$namespace = str_replace('\\', '', $namespace);
+
+		return $namespace;
 	}
 
 	/**
