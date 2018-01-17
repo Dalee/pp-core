@@ -53,10 +53,11 @@ class ApplicationFactory {
 			$created = $cachedApplication->getCreated();
 			$finder = new Finder();
 			$finder->files()
-				->ignoreUnreadableDirs()
+				->ignoreUnreadableDirs()->ignoreDotFiles(false)
+				->name('*.{yml,xml,ini}')->name('.env')
 				->depth('== 0')
 				->date('>= @' . $created)
-				->in($paths);
+				->in(BASEPATH)->in($paths);
 
 			if (count($finder) === 0) {
 				return $cachedApplication;
