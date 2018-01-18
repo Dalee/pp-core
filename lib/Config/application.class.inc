@@ -1,6 +1,7 @@
 <?php
 
 use Symfony\Component\Yaml\Yaml;
+use PP\Lib\Engine\EngineInterface;
 use PP\Lib\ArrayCollection;
 use PP\Lib\Config\Description\InitializableDescriptionInterface;
 use PP\Lib\Xml\Xml;
@@ -685,7 +686,7 @@ final class PXApplication {
 	}
 
 	function isAdminEngine() {
-		return $this->engine->engineClass() == PX_ENGINE_ADMIN;
+		return $this->engine->engineClass() === EngineInterface::ADMIN_ENGINE_ID;
 	}
 
 	function isEngineInstanceof($engineName) {

@@ -1,4 +1,7 @@
 <?php
+
+use PP\Lib\Engine\EngineInterface;
+
 /**
  * Базовый класс описывающий ввод, вывод
  * (и что-то еще) полей объекта с определенным
@@ -193,7 +196,7 @@ class PXDisplayType {
 	function getClassByName($name, $type) {
 		$baseClass = 'PXDisplayType';
 
-		$autoload = $type->app->engine->engineClass() != PX_ENGINE_USER;
+		$autoload = $type->app->engine->engineClass() != EngineInterface::USER_ENGINE_ID;
 		$inputClass  = $baseClass.mb_ucfirst(mb_strtolower($name));
 		return class_exists($inputClass, $autoload) ? $inputClass : $baseClass;
 	}

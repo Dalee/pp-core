@@ -23,7 +23,7 @@ abstract class AbstractAdminEngine extends AbstractEngine {
 	protected $initOrder = ['container', 'app', 'db', 'request', 'session', 'user', 'layout'];
 
 	public function engineClass() {
-		return PX_ENGINE_ADMIN;
+		return static::ADMIN_ENGINE_ID;
 	}
 
 	protected function initSession($klass) {
@@ -43,4 +43,9 @@ abstract class AbstractAdminEngine extends AbstractEngine {
 		// because $this->modules are filtered with $user->can('admin'...) before
 		return count($this->modules) > 1 || (count($this->modules) == 1 && !isset($this->modules[$this->authArea]));
 	}
+	/** {@inheritdoc} */
+	public function engineType() {
+		return static::ADMIN_ENGINE_TAG;
+	}
+
 }

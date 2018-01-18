@@ -8,7 +8,7 @@ use PP\Lib\Database\Driver\PostgreSqlDriver;
 use PP\Lib\Html\Layout\LayoutInterface;
 use PP\ApplicationFactory;
 
-abstract class AbstractEngine {
+abstract class AbstractEngine implements EngineInterface {
 
 	/** @var \PXModuleDescription[] */
 	protected $modules;
@@ -48,7 +48,7 @@ abstract class AbstractEngine {
 	}
 
 	/**
-	 * @return $this
+	 * {@inheritdoc}
 	 */
 	public function start() {
 
@@ -115,6 +115,10 @@ abstract class AbstractEngine {
 			}
 		}
 
+		$this->compileContainer();
+	}
+
+	protected function compileContainer() {
 		$this->container->compile(true);
 	}
 
@@ -140,7 +144,7 @@ abstract class AbstractEngine {
 	abstract function runModules();
 
 	public function engineClass() {
-		return PX_ENGINE_USER;
+		return static::USER_ENGINE_ID;
 	}
 
 	protected function checkArea($area) {
@@ -153,4 +157,13 @@ abstract class AbstractEngine {
 		return $this->container;
 	}
 
+	public function __wakeup() {
+		$this->compileContainer();
+	}
+
+	/** {@inheritdoc} */
+	abstract public function engineType();
+
+	/** {@inheritdoc} */
+	abstract public function engineBehavior();
 }

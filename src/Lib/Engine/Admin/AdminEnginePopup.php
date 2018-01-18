@@ -35,12 +35,31 @@ class AdminEnginePopup extends AdminEngineIndex {
 		}
 
 		$this->fillLayout();
-
-		$instance = $this->modules[$this->area]->getModule();
+		$moduleDescription = $this->modules[$this->area];
+		$instance = $moduleDescription->getModule();
 		if ($instance instanceof ContainerAwareInterface) {
 			$instance->setContainer($this->container);
 		}
 
-		$this->layout->append($this->templateMainArea, $instance->adminPopup());
+		$eventData = [
+			'engine_type' => $this->engineType(),
+			'engine_behavior' => $this->engineBehavior()
+		];
+		foreach ($this->app->triggers->system as $t) {
+			$t->getTrigger()->onBeforeModuleRun($this, $moduleDescription, $eventData);
+		}
+
+		$popup = $instance->adminPopup();
+
+		foreach ($this->app->triggers->system as $t) {
+			$t->getTrigger()->onAfterModuleRun($this, $moduleDescription, $eventData);
+		}
+
+		$this->layout->append($this->templateMainArea, $popup);
+	}
+
+	/** {@inheritdoc} */
+	public function engineBehavior() {
+		return static::POPUP_BEHAVIOR;
 	}
 }
