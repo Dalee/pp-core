@@ -7,6 +7,7 @@ use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 use PP\Lib\Database\Driver\PostgreSqlDriver;
 use PP\Lib\Html\Layout\LayoutInterface;
 use PP\ApplicationFactory;
+use PP\Properties\EnvLoader;
 
 abstract class AbstractEngine implements EngineInterface {
 
@@ -158,6 +159,7 @@ abstract class AbstractEngine implements EngineInterface {
 	}
 
 	public function __wakeup() {
+		EnvLoader::inject();
 		$this->compileContainer();
 	}
 
