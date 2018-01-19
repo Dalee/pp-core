@@ -2,6 +2,8 @@
 
 require_once PPLIBPATH . 'Request/HttpVars/classes.inc';
 
+use Ramsey\Uuid\Uuid;
+
 class PXRequest {
 	var $httpMethod;
 	var $host;
@@ -10,6 +12,9 @@ class PXRequest {
 	var $getData;
 	var $postData;
 	var $cookieData;
+
+	/** @var string unique request identifier */
+	protected $uuid;
 
 	protected $headers = [];
 
@@ -519,6 +524,17 @@ class PXRequest {
 		return isset($_SERVER[$name]) ? $_SERVER[$name] : $default;
 	}
 
+	/**
+	 * Returns unique identifier for the request
+	 *
+	 * @return string
+	 */
+	public function getRequestId() {
+		if (!$this->uuid) {
+			$this->uuid = Uuid::uuid4()->toString();
+		}
+		return $this->uuid;
+	}
 }
 
 ?>

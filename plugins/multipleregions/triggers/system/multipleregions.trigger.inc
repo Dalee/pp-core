@@ -1,9 +1,14 @@
 <?php
 
 use PP\Lib\Engine\AbstractEngine;
+use PP\Lib\Engine\EngineInterface;
 
 class PXTriggerSystemMultipleregions extends PXAbstractSystemTrigger {
-	private $engines = array(PX_ENGINE_USER => 'user', PX_ENGINE_ADMIN => 'admin', PX_ENGINE_SBIN => 'script');
+	private $engines = [
+		EngineInterface::USER_ENGINE_ID => 'user',
+		EngineInterface::ADMIN_ENGINE_ID => 'admin',
+		EngineInterface::SBIN_ENGINE_ID => 'script'
+	];
 
 	/**
 	 * @param AbstractEngine $engine

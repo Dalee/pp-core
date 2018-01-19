@@ -49,9 +49,22 @@ class AdminEngineIndex extends AbstractAdminEngine {
 		if (!isset($this->modules[$this->authArea])) {
 			FatalError('Undefined auth module or you forget insert "allo" for "admin" auth module in acl_objects');
 		}
+		$moduleDescription = $this->modules[$this->authArea];
+		$auth = $moduleDescription->getModule();
 
-		$auth = $this->modules[$this->authArea]->getModule();
+		$eventData = [
+			'engine_type' => $this->engineType(),
+			'engine_behavior' => $this->engineBehavior()
+		];
+		foreach ($this->app->triggers->system as $t) {
+			$t->getTrigger()->onBeforeModuleRun($this, $moduleDescription, $eventData);
+		}
+
 		$auth->adminIndex();
+
+		foreach ($this->app->triggers->system as $t) {
+			$t->getTrigger()->onAfterModuleRun($this, $moduleDescription, $eventData);
+		}
 	}
 
 	function fillLayout() {
@@ -98,11 +111,25 @@ class AdminEngineIndex extends AbstractAdminEngine {
 			return;
 		}
 
-		$instance = $this->modules[$this->area]->getModule();
+		$moduleDescription = $this->modules[$this->area];
+		$instance = $moduleDescription->getModule();
 		if ($instance instanceof ContainerAwareInterface) {
 			$instance->setContainer($this->container);
 		}
+
+		$eventData = [
+			'engine_type' => $this->engineType(),
+			'engine_behavior' => $this->engineBehavior()
+		];
+		foreach ($this->app->triggers->system as $t) {
+			$t->getTrigger()->onBeforeModuleRun($this, $moduleDescription, $eventData);
+		}
+
 		$instance->adminIndex();
+
+		foreach ($this->app->triggers->system as $t) {
+			$t->getTrigger()->onAfterModuleRun($this, $moduleDescription, $eventData);
+		}
 	}
 
 	public function html() {
@@ -113,5 +140,10 @@ class AdminEngineIndex extends AbstractAdminEngine {
 
 		$this->db->Close();
 		$this->layout->flush($charset);
+	}
+
+	/** {@inheritdoc} */
+	public function engineBehavior() {
+		return static::INDEX_BEHAVIOR;
 	}
 }

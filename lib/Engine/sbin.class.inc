@@ -34,7 +34,18 @@ class PXEngineSbin extends AbstractEngine {
 	}
 
 	public function engineClass() {
-		return PX_ENGINE_SBIN;
+		return static::SBIN_ENGINE_ID;
 	}
+
+	/** {@inheritdoc} */
+	public function engineType() {
+		return static::SBIN_ENGINE_TAG;
+	}
+
+	/** {@inheritdoc} */
+	public function engineBehavior() {
+		return static::SBIN_BEHAVIOR;
+	}
+
 
 }

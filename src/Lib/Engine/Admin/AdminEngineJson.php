@@ -27,11 +27,25 @@ class AdminEngineJson extends AbstractAdminEngine {
 
 		$this->checkArea($this->area);
 
-		$instance = $this->modules[$this->area]->getModule();
+		$moduleDescription = $this->modules[$this->area];
+		$instance = $moduleDescription->getModule();
 		if ($instance instanceof ContainerAwareInterface) {
 			$instance->setContainer($this->container);
 		}
+
+		$eventData = [
+			'engine_type' => $this->engineType(),
+			'engine_behavior' => $this->engineBehavior()
+		];
+		foreach ($this->app->triggers->system as $t) {
+			$t->getTrigger()->onBeforeModuleRun($this, $moduleDescription, $eventData);
+		}
+
 		$this->result = $instance->adminJson();
+
+		foreach ($this->app->triggers->system as $t) {
+			$t->getTrigger()->onAfterModuleRun($this, $moduleDescription, $eventData);
+		}
 	}
 
 	function sendJson() {
@@ -42,5 +56,10 @@ class AdminEngineJson extends AbstractAdminEngine {
 		$response->setLength(strlen($body));
 		$response->send($body);
 		exit;
+	}
+
+	/** {@inheritdoc} */
+	public function engineBehavior() {
+		return static::JSON_BEHAVIOR;
 	}
 }

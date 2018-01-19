@@ -102,8 +102,30 @@ class PXEngineIndex extends AbstractEngine {
 			$instance->objects    =& $this->content->objects;
 			$instance->subObjects =& $this->content->subObjects;
 
+			$eventData = [
+				'engine_type' => $this->engineType(),
+				'engine_behavior' => $this->engineBehavior()
+			];
+			foreach ($this->app->triggers->system as $t) {
+				$t->getTrigger()->onBeforeModuleRun($this, $moduleDescription, $eventData);
+			}
+
 			$instance->userIndex();
+
+			foreach ($this->app->triggers->system as $t) {
+				$t->getTrigger()->onAfterModuleRun($this, $moduleDescription, $eventData);
+			}
 		}
+	}
+
+	/** {@inheritdoc} */
+	public function engineType() {
+		return static::USER_ENGINE_TAG;
+	}
+
+	/** {@inheritdoc} */
+	public function engineBehavior() {
+		return static::INDEX_BEHAVIOR;
 	}
 }
 

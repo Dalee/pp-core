@@ -8,7 +8,8 @@ class PXEngineJSON extends AbstractEngine {
 	protected $result;
 
 	function runModules() {
-		$instance = $this->modules[$this->area]->getModule();
+		$moduleDescription = $this->modules[$this->area];
+		$instance = $moduleDescription->getModule();
 
 		$response = PXResponse::getInstance();
 		$response->dontCache();
@@ -17,7 +18,19 @@ class PXEngineJSON extends AbstractEngine {
 			$instance->setContainer($this->container);
 		}
 
+		$eventData = [
+			'engine_type' => $this->engineType(),
+			'engine_behavior' => $this->engineBehavior()
+		];
+		foreach ($this->app->triggers->system as $t) {
+			$t->getTrigger()->onBeforeModuleRun($this, $moduleDescription, $eventData);
+		}
+
 		$this->result = $this->getJson($instance);
+
+		foreach ($this->app->triggers->system as $t) {
+			$t->getTrigger()->onAfterModuleRun($this, $moduleDescription, $eventData);
+		}
 	}
 
 	function sendJson() {
@@ -49,4 +62,13 @@ class PXEngineJSON extends AbstractEngine {
 		return (object)array($key => (object)array('notice' => $value));
 	}
 
+	/** {@inheritdoc} */
+	public function engineType() {
+		return static::USER_ENGINE_TAG;
+	}
+
+	/** {@inheritdoc} */
+	public function engineBehavior() {
+		return static::JSON_BEHAVIOR;
+	}
 }
