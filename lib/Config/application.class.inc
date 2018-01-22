@@ -179,7 +179,7 @@ final class PXApplication {
 	 * @return array
 	 */
 	public function getConfigurationPaths() {
-		return $this->configurationPaths;
+		return array_filter($this->configurationPaths, 'file_exists');
 	}
 
 	/**
