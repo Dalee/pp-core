@@ -53,7 +53,8 @@ define('LOCALPATH', BASEPATH . 'local' . DIRECTORY_SEPARATOR);
 define('SHAREDPATH', BASEPATH . 'site' . DIRECTORY_SEPARATOR);
 define('APPPATH', BASEPATH . 'app' . DIRECTORY_SEPARATOR);
 define('HTDOCS_PATH', BASEPATH . '/site/htdocs' . DIRECTORY_SEPARATOR);
-define('CACHE_PATH', BASEPATH . '/app/cache/tmp.' . strval(PHP_VERSION_ID) . '.' . strtolower(DEFAULT_CHARSET));
+define('CACHE_PATH', APPPATH . 'cache/tmp.' . strval(PHP_VERSION_ID) . '.' . strtolower(DEFAULT_CHARSET));
+define('RUNTIME_PATH', APPPATH . 'runtime' . DIRECTORY_SEPARATOR);
 
 // Default include path
 set_include_path(implode(PATH_SEPARATOR, [
