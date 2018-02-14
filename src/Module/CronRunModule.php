@@ -37,8 +37,8 @@ class CronRunModule extends AbstractModule {
 	public function __construct($area, $settings) {
 		parent::__construct($area, $settings);
 
-		$this->resultsFile = CACHE_PATH . '/cron.results';
-		$this->tempDir = CACHE_PATH . '/lock/cronrun';
+		$this->resultsFile = RUNTIME_PATH . 'cron.results';
+		$this->tempDir = RUNTIME_PATH . 'lock' . DIRECTORY_SEPARATOR . 'cronrun';
 		$this->rules = [];
 		$this->job2rule = [];
 		$this->jobs = [];
