@@ -2055,10 +2055,6 @@ SQL;
 		}
 	}
 
-	function importBoolean($string) {
-		return $this->dbDriver->importBoolean($string);
-	}
-
 	protected function clearObjectTypeCache($format) {
 		$this->cache->deleteGroup($format);
 		foreach($this->app->references as $ref){
