@@ -1,6 +1,6 @@
 # Change log
 
-## [2.2.1] UNRELEASED
+## [2.2.1] 2018-02-19
 - Из `PXDatabase` убран метод `importBoolean()`, дублировавший функциональность метода `__call()`
 - `PXDatabase::clearObjectTypeCache` теперь публичный метод для сброса кэша ручками после комплексного запроса
 
