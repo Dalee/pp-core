@@ -2055,12 +2055,20 @@ SQL;
 		}
 	}
 
-	protected function clearObjectTypeCache($format) {
+	/**
+	 * Removes all format records from cache with
+	 * links.
+	 *
+	 * @param string $format
+	 */
+	public function clearObjectTypeCache($format) {
 		$this->cache->deleteGroup($format);
-		foreach($this->app->references as $ref){
-			if($ref->from != $format && $ref->to != $format) {
+
+		foreach ($this->app->references as $ref){
+			if ($ref->from != $format && $ref->to != $format) {
 				continue;
 			}
+
 			$this->clearLinksCache($ref->name);
 		}
 	}
