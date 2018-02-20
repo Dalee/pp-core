@@ -50,7 +50,8 @@ class Predis implements CacheInterface {
 	 * {@inheritdoc}
 	 */
 	public function save($key, $data, $expTime = 3600) {
-		$this->client->set($this->key($key), serialize($data), 'ex', $expTime);
+		$result = $this->client->set($this->key($key), serialize($data), 'ex', $expTime);
+		return $result->getPayload() === 'OK';
 	}
 
 	/**
@@ -73,7 +74,7 @@ class Predis implements CacheInterface {
 			$this->client->set($key, $initial);
 		}
 
-		$this->client->incrby($key, $offset);
+		return $this->client->incrby($key, $offset);
 	}
 
 	/**
@@ -95,7 +96,7 @@ class Predis implements CacheInterface {
 	 */
 	public function deleteGroup($group) {
 		$keyGroup = $this->key($group, true);
-		$keys = $this->client->keys([$keyGroup]);
+		$keys = $this->client->keys($keyGroup);
 		$cachePrefixLen = strlen($this->cachePrefix);
 
 		foreach ($keys as $key) {
