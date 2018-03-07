@@ -57,7 +57,7 @@ class ApplicationFactory {
 			$finder = new Finder();
 			$finder->files()
 				->ignoreUnreadableDirs()->ignoreDotFiles(false)
-				->name('*.{yml,xml,ini}')->name('.env')
+				->name('*.{yml,yaml,xml,ini}')->name('.env')
 				->depth('== 0')
 				->date('>= @' . $created)
 				->in(BASEPATH)->in($paths);
