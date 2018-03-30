@@ -1,6 +1,8 @@
 <?php
 
 namespace PP\Lib\Cache;
+use PP\Serializer\SerializerAwareInterface;
+use PP\Serializer\SerializerFactory;
 
 /**
  *
@@ -53,6 +55,16 @@ class ObjectCache {
 		}
 
 		$instance = new $cacheClass($cacheDomain, $defaultExpire, $extraArgs);
+
+		if ($instance instanceof SerializerAwareInterface) {
+			$paramsRaw = getFromArray($extraArgs, 'query', '');
+			parse_str($paramsRaw, $params);
+
+			$serializerDriver = getFromArray($params, 'serializer', 'default');
+			$serializer = SerializerFactory::create($serializerDriver);
+			$instance->setSerializer($serializer);
+		}
+
 		if (!$instance instanceof CacheInterface) {
 			FatalError("Caching method:'{$cache}' - doesn't follow CacheInterface");
 		}

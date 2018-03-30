@@ -3,17 +3,23 @@
 namespace PP\Lib\Cache\Driver;
 
 use PP\Lib\Cache\CacheInterface;
+use PP\Serializer\SerializerAwareInterface;
+use PP\Serializer\SerializerAwareTrait;
+use PP\Serializer\DefaultSerializer;
 
 /**
  * Class File
  * @package PP\Lib\Cache\Driver
  */
-class File implements CacheInterface {
+class File implements CacheInterface, SerializerAwareInterface {
+	use SerializerAwareTrait;
+
 	protected $cache_dir;
 	protected $expire;
 	protected $orderLevel = 0;
 
 	public function __construct($cacheDomain = null, $defaultExpire = 3600) {
+		$this->serializer = new DefaultSerializer();
 		$this->cache_dir = CACHE_PATH . '/';
 
 		if ($cacheDomain !== null) {
@@ -45,7 +51,7 @@ class File implements CacheInterface {
 
 	function save($objectId, $data, $expTime = null) {
 		$fileName = $this->_getFilename($objectId);
-		$serialized = serialize($data);
+		$serialized = $this->serializer->serialize($data);
 		$this->_doSave($fileName, $serialized, (int)$expTime);
 	}
 
@@ -201,11 +207,12 @@ class File implements CacheInterface {
 			fclose($fp);
 		}
 
-		//avoiding error on: unserialize(serialize(false))
+		// avoiding error on: unserialize(serialize(false))
 		if ($serialized === 'b:0;') {
 			$unserialized = false;
 		} elseif ($serialized !== null) {
-			if (($tmp = @unserialize($serialized)) !== false) {
+			$tmp = $this->serializer->unserialize($serialized);
+			if ($tmp !== false) {
 				$unserialized = $tmp;
 			}
 		}

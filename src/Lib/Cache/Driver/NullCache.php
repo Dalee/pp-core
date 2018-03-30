@@ -9,7 +9,6 @@ use PP\Lib\Cache\CacheInterface;
  * @package PP\Lib\Cache\Driver
  */
 class NullCache implements CacheInterface {
-
 	function exists($objectKey) {
 	}
 
