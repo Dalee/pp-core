@@ -3,6 +3,9 @@
 namespace PP\Lib\Cache\Driver;
 
 use PP\Lib\Cache\CacheInterface;
+use PP\Serializer\DefaultSerializer;
+use PP\Serializer\SerializerAwareInterface;
+use PP\Serializer\SerializerAwareTrait;
 use \Redis as RedisDriver;
 
 /**
@@ -17,7 +20,8 @@ use \Redis as RedisDriver;
  *  * connection timeout is set to 2.0 seconds (float)
  *
  */
-class Redis implements CacheInterface {
+class Redis implements CacheInterface, SerializerAwareInterface {
+	use SerializerAwareTrait;
 
 	/** @var \Redis */
 	protected $connection;
@@ -45,8 +49,8 @@ class Redis implements CacheInterface {
 	 * @param null|array $connectorArgs
 	 */
 	public function __construct($cacheDomain = null, $defaultExpire = 3600, $connectorArgs = null) {
-		if (!extension_loaded("redis")) {
-			FatalError("Redis extension is not loaded!");
+		if (!extension_loaded('redis')) {
+			FatalError('Redis extension is not loaded!');
 		}
 
 		// parse additional arguments..
@@ -59,6 +63,7 @@ class Redis implements CacheInterface {
 		$this->database = empty($connectorArgs['path']) ? $this->database : intval(ltrim($connectorArgs['path'], '/'));
 		$this->cachePrefix = ($cacheDomain === null) ? '' : $cacheDomain . ':';
 		$this->timeout = (float)getFromArray($params, 'timeout', 1.5);
+		$this->serializer = new DefaultSerializer();
 		$this->connect();
 	}
 
@@ -71,11 +76,6 @@ class Redis implements CacheInterface {
 			$this->host,
 			$this->port,
 			$this->timeout
-		);
-
-		$this->connection->setOption(
-			RedisDriver::OPT_SERIALIZER,
-			RedisDriver::SERIALIZER_PHP
 		);
 
 		if (!empty($this->cachePrefix)) {
@@ -114,7 +114,8 @@ class Redis implements CacheInterface {
 	 * {@inheritdoc}
 	 */
 	public function save($key, $data, $expTime = 3600) {
-		return $this->connection->set($this->key($key), $data, $expTime);
+		$serialized = $this->serializer->serialize($data);
+		return $this->connection->set($this->key($key), $serialized, $expTime);
 	}
 
 	/**
@@ -122,9 +123,10 @@ class Redis implements CacheInterface {
 	 */
 	public function load($key) {
 		$data = $this->connection->get($this->key($key));
-		$data = ($data === false) ? null : $data;
+		$unserialized = $this->serializer->unserialize($data);
+		$unserialized = $unserialized === false ? null : $data;
 
-		return $data;
+		return $unserialized;
 	}
 
 	/**

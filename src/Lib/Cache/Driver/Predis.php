@@ -3,6 +3,9 @@
 namespace PP\Lib\Cache\Driver;
 
 use PP\Lib\Cache\CacheInterface;
+use PP\Serializer\SerializerAwareInterface;
+use PP\Serializer\SerializerAwareTrait;
+use PP\Serializer\DefaultSerializer;
 use Predis\Client;
 
 /**
@@ -12,7 +15,8 @@ use Predis\Client;
  *
  * @package PP\Lib\Cache\Driver
  */
-class Predis implements CacheInterface {
+class Predis implements CacheInterface, SerializerAwareInterface {
+	use SerializerAwareTrait;
 
 	/**
 	 * @var Client
@@ -34,6 +38,7 @@ class Predis implements CacheInterface {
 	public function __construct($cacheDomain = null, $defaultExpire = 3600, $connectorArgs = null) {
 		$this->cachePrefix = $cacheDomain === null ? '' : $cacheDomain . ':';
 		$connectorArgs = str_replace('predis', 'redis', $connectorArgs);
+		$this->serializer = new DefaultSerializer();
 		$this->client = new Client($connectorArgs, [
 			'prefix' => $this->cachePrefix
 		]);
@@ -50,7 +55,9 @@ class Predis implements CacheInterface {
 	 * {@inheritdoc}
 	 */
 	public function save($key, $data, $expTime = 3600) {
-		$result = $this->client->set($this->key($key), serialize($data), 'ex', $expTime);
+		$serialized = $this->serializer->serialize($data);
+		$result = $this->client->set($this->key($key), $serialized, 'ex', $expTime);
+
 		return $result->getPayload() === 'OK';
 	}
 
@@ -58,10 +65,11 @@ class Predis implements CacheInterface {
 	 * {@inheritdoc}
 	 */
 	public function load($key) {
-		$data = @unserialize($this->client->get($this->key($key)));
-		$data = $data === false ? null : $data;
+		$data = $this->client->get($this->key($key));
+		$unserialized = $this->serializer->unserialize($data);
+		$unserialized = $unserialized === false ? null : $unserialized;
 
-		return $data;
+		return $unserialized;
 	}
 
 	/**
