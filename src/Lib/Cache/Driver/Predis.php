@@ -96,6 +96,9 @@ class Predis implements CacheInterface, SerializerAwareInterface {
 	 * {@inheritdoc}
 	 */
 	public function clear() {
+		$trace = var_export(debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 8), true);
+		AppendStringToFile(RUNTIME_PATH . 'flush_log.log', $trace);
+
 		return $this->client->flushdb()->getPayload() === 'OK';
 	}
 
