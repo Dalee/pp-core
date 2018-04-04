@@ -43,7 +43,7 @@ class PXFileListing {
 	var $_catalog;
 	var $_destination;
 
-	function PXFileListing($catalogs) {
+	function __construct($catalogs) {
 		$this->_roots = array();
 		$this->_files = null;
 
@@ -178,7 +178,7 @@ class PXFileListing {
 }
 
 class PXFileListingItem {
-	function PXFileListingItem($filename, $parent) {
+	function __construct($filename, $parent) {
 		$this->parent      =& $parent;
 
 		$this->name        = $filename;
