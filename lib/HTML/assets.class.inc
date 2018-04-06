@@ -29,7 +29,7 @@ final class PXHTMLAssets {
 	protected $config;
 
 	public static function getInstance () {
-		self::$instance || self::$instance = new PXHTMLAssets();
+		self::$instance || self::$instance = new static();
 		return self::$instance;
 	}
 	private function __clone() {
