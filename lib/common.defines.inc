@@ -63,7 +63,6 @@ set_include_path(implode(PATH_SEPARATOR, [
 	BASEPATH,
 	'.',
 	PPCOREPATH . '/vendor',
-	PPCOREPATH . '/vendor/PEAR',
 	get_include_path(),
 	'/usr/local/lib/php/'
 ]));
