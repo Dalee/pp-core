@@ -104,12 +104,6 @@ final class PXApplication {
 	var $bindingsQueue;
 
 	/**
-	 * экземпляр класса Engine
-	 * @var \PP\Lib\Engine\AbstractEngine
-	 */
-	protected static $engine;
-
-	/**
 	 * массив названий полей, чьи объекты требуют инициализации при загрузке из кэша.
 	 * Description объекта должен реализовывать метод initialize
 	 *
@@ -140,7 +134,6 @@ final class PXApplication {
 	/**
 	 * Конструктор класса
 	 *
-	 * @param \PP\Lib\Engine\AbstractEngine $engineObject
 	 */
 	public function __construct() {
 		// inject variables from .env into $_ENV
@@ -688,7 +681,7 @@ final class PXApplication {
 	 * @return bool
 	 */
 	function isAdminEngine() {
-		return static::getEngine()->engineClass() === EngineInterface::ADMIN_ENGINE_ID;
+		return PXRegistry::getEngine()->engineClass() === EngineInterface::ADMIN_ENGINE_ID;
 	}
 
 	/**
@@ -697,21 +690,7 @@ final class PXApplication {
 	 */
 	function isEngineInstanceof($engineName) {
 		$engineName = 'PxEngine' . $engineName;
-		return static::getEngine() instanceof $engineName;
-	}
-
-	/**
-	 * @param $engine
-	 */
-	public static function setEngine($engine) {
-		static::$engine = $engine;
-	}
-
-	/**
-	 * @return \PP\Lib\Engine\AbstractEngine
-	 */
-	public static function getEngine() {
-		return static::$engine;
+		return PXRegistry::getEngine() instanceof $engineName;
 	}
 
 	/**
@@ -720,12 +699,11 @@ final class PXApplication {
 	 */
 	public function __get($name) {
 		if (strtolower($name) === 'engine') {
-			return static::getEngine();
+			return PXRegistry::getEngine();
 		}
 
 		return null;
 	}
-
 
 	/**
 	 * @throws Exception

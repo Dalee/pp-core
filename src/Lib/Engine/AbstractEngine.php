@@ -50,6 +50,8 @@ abstract class AbstractEngine implements EngineInterface {
 
 	// TODO: refactor
 	function __construct() {
+		\PXRegistry::setEngine($this);
+
 		$this->initApplication();
 		$this->saveToRegistry();
 	}
