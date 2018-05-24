@@ -7,7 +7,6 @@ use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 use PP\Lib\Database\Driver\PostgreSqlDriver;
 use PP\Lib\Html\Layout\LayoutInterface;
 use PP\ApplicationFactory;
-use Symfony\Component\DependencyInjection\Dumper\PhpDumper;
 use Symfony\Component\Config\ConfigCache;
 
 abstract class AbstractEngine implements EngineInterface {
@@ -89,7 +88,7 @@ abstract class AbstractEngine implements EngineInterface {
 	 * @throws \Exception
 	 */
 	protected function initContainer($klass) {
-		$file = CACHE_PATH . 'container.php';
+		$file = CACHE_PATH . DIRECTORY_SEPARATOR . 'container.php';
 		$this->containerConfigCache = new ConfigCache($file, false);
 
 		if ($this->containerConfigCache->isFresh()) {
@@ -138,12 +137,6 @@ abstract class AbstractEngine implements EngineInterface {
 		}
 
 		$this->container->compile(true);
-
-		$dumper = new PhpDumper($this->container);
-		$this->containerConfigCache->write(
-			$dumper->dump(['class' => 'MyCachedContainer']),
-			$this->container->getResources()
-		);
 	}
 
 	protected function initApp($klass) {
