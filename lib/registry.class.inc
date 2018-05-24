@@ -17,6 +17,7 @@ final class PXRegistry {
 	private $user;
 	private $layout;
 	private $struct;
+	private $engine;
 
 	/**
 	 * @var null|\Symfony\Component\HttpFoundation\Session\SessionInterface
@@ -45,6 +46,7 @@ final class PXRegistry {
 
 		if(!is_object($registry->$varName)) {
 			switch($varName) {
+				case 'engine':
 				case 'app':
 					throw new Exception("{$varName} wasn't set yet.");
 					break;
@@ -85,6 +87,14 @@ final class PXRegistry {
 		}
 
 		return $registry->$varName;
+	}
+
+	/**
+	 * @static
+	 * @return \PP\Lib\Engine\AbstractEngine
+	 */
+	public static function getEngine() {
+		return self::get('engine');
 	}
 
 	/**
@@ -205,6 +215,10 @@ final class PXRegistry {
 		}
 
 		$registry->$varName = $variable;
+	}
+
+	public static function setEngine($engine) {
+		self::_set('engine', $engine);
 	}
 
 	public static function setApp($app) {

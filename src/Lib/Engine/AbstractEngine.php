@@ -7,7 +7,7 @@ use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 use PP\Lib\Database\Driver\PostgreSqlDriver;
 use PP\Lib\Html\Layout\LayoutInterface;
 use PP\ApplicationFactory;
-use PP\Properties\EnvLoader;
+use Symfony\Component\Config\ConfigCache;
 
 abstract class AbstractEngine implements EngineInterface {
 
@@ -38,12 +38,19 @@ abstract class AbstractEngine implements EngineInterface {
 	protected $container = ['factory' => 'Symfony\Component\DependencyInjection\ContainerBuilder', 'helper' => true];
 
 	/**
+	 * @var ConfigCache
+	 */
+	protected $containerConfigCache;
+
+	/**
 	 * @var array
 	 */
 	protected $initOrder = ['container', 'app', 'db', 'request', 'user', 'layout'];
 
 	// TODO: refactor
 	function __construct() {
+		\PXRegistry::setEngine($this);
+
 		$this->initApplication();
 		$this->saveToRegistry();
 	}
@@ -52,7 +59,6 @@ abstract class AbstractEngine implements EngineInterface {
 	 * {@inheritdoc}
 	 */
 	public function start() {
-
 		$this->user->setDb($this->db);
 		$this->user->setApp($this->app);
 		$this->user->setRequest($this->request);
@@ -79,8 +85,18 @@ abstract class AbstractEngine implements EngineInterface {
 	 *
 	 * @param string $klass
 	 * @throws \InvalidArgumentException if services.yml is not found
+	 * @throws \Exception
 	 */
 	protected function initContainer($klass) {
+		$file = CACHE_PATH . DIRECTORY_SEPARATOR . 'container.php';
+		$this->containerConfigCache = new ConfigCache($file, false);
+
+		if ($this->containerConfigCache->isFresh()) {
+			require_once $file;
+			$this->container = new \MyCachedContainer();
+			return;
+		}
+
 		$path = APPPATH . 'config';
 		$container = new $klass();
 		$loader = new YamlFileLoader($container, new FileLocator($path));
@@ -112,14 +128,14 @@ abstract class AbstractEngine implements EngineInterface {
 	protected function saveToRegistry() {
 		foreach (array_keys(get_object_vars($this)) as $var) {
 			if (is_object($this->$var) && \PXRegistry::canSaveIt($var)) {
-				call_user_func_array(array("PXRegistry", 'set' . ucfirst($var)), array(&$this->$var));
+				call_user_func_array(['PXRegistry', 'set' . ucfirst($var)], [&$this->$var]);
 			}
 		}
 
-		$this->compileContainer();
-	}
+		if ($this->containerConfigCache->isFresh()) {
+			return;
+		}
 
-	protected function compileContainer() {
 		$this->container->compile(true);
 	}
 
@@ -156,11 +172,6 @@ abstract class AbstractEngine implements EngineInterface {
 
 	public function getContainer() {
 		return $this->container;
-	}
-
-	public function __wakeup() {
-		EnvLoader::inject();
-		$this->compileContainer();
 	}
 
 	/** {@inheritdoc} */

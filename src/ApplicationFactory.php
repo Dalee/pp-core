@@ -45,6 +45,7 @@ class ApplicationFactory {
 	 * @param \PP\Lib\Engine\AbstractEngine $engine
 	 * @param CacheInterface|null $cache
 	 * @return PXApplication
+	 * @throws \Psr\SimpleCache\InvalidArgumentException
 	 */
 	public static function create($engine, CacheInterface $cache = null) {
 		$namespace = static::makeEngineCacheNamespace($engine);
@@ -67,7 +68,9 @@ class ApplicationFactory {
 			}
 		}
 
-		$application = new PXApplication($engine);
+		$application = new PXApplication();
+		$application->init();
+
 		$cache->set(PXApplication::class, $application);
 
 		return $application;
