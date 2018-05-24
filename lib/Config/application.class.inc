@@ -107,7 +107,7 @@ final class PXApplication {
 	 * экземпляр класса Engine
 	 * @var \PP\Lib\Engine\AbstractEngine
 	 */
-	public $engine;
+	protected static $engine;
 
 	/**
 	 * массив названий полей, чьи объекты требуют инициализации при загрузке из кэша.
@@ -142,16 +142,17 @@ final class PXApplication {
 	 *
 	 * @param \PP\Lib\Engine\AbstractEngine $engineObject
 	 */
-	public function __construct($engineObject) {
+	public function __construct() {
 		// inject variables from .env into $_ENV
 		EnvLoader::inject();
 
 		$this->langTree = new ArrayCollection();
 		$this->properties = new ArrayCollection(); // properties will be filled via call in PXAbstractEngine
-		$this->engine = $engineObject;
-
 		$this->locator = new ConfigurationLocator(new FileLocator($this->configurationPaths));
+		$this->created = time();
+	}
 
+	public function init() {
 		$this->fillDbDescription();
 
 		$this->fillTriggers($this->locator->locateQuiet('triggers.xml'));
@@ -164,8 +165,6 @@ final class PXApplication {
 
 		$this->fillLang($this->locator->locate('lang.yaml', false));
 		$this->fillAuthRules($this->locator->locate('auth.ini', false));
-
-		$this->created = time();
 	}
 
 	/**
@@ -282,7 +281,7 @@ final class PXApplication {
 	 */
 	public function getAllowedChilds($formatName, &$object) {
 		if (!isset($this->types[$formatName])) {
-			return array();
+			return [];
 		}
 
 		return $this->types[$formatName]->allowedChilds($object);
@@ -306,7 +305,7 @@ final class PXApplication {
 	 * @return array
 	 */
 	public function initContentObject($formatName) {
-		$object = array();
+		$object = [];
 
 		foreach ($this->types[$formatName]->fields as $k => $v) {
 			$object[$k] = $v->defaultValue;
@@ -685,14 +684,48 @@ final class PXApplication {
 		return $this->getProperty('ENVIRONMENT') === ENV_DEVELOPER;
 	}
 
+	/**
+	 * @return bool
+	 */
 	function isAdminEngine() {
-		return $this->engine->engineClass() === EngineInterface::ADMIN_ENGINE_ID;
+		return static::getEngine()->engineClass() === EngineInterface::ADMIN_ENGINE_ID;
 	}
 
+	/**
+	 * @param string $engineName
+	 * @return bool
+	 */
 	function isEngineInstanceof($engineName) {
 		$engineName = 'PxEngine' . $engineName;
-		return $this->engine instanceof $engineName;
+		return static::getEngine() instanceof $engineName;
 	}
+
+	/**
+	 * @param $engine
+	 */
+	public static function setEngine($engine) {
+		static::$engine = $engine;
+	}
+
+	/**
+	 * @return \PP\Lib\Engine\AbstractEngine
+	 */
+	public static function getEngine() {
+		return static::$engine;
+	}
+
+	/**
+	 * @param $name
+	 * @return null|\PP\Lib\Engine\AbstractEngine
+	 */
+	public function __get($name) {
+		if (strtolower($name) === 'engine') {
+			return static::getEngine();
+		}
+
+		return null;
+	}
+
 
 	/**
 	 * @throws Exception
