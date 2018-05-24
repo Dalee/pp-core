@@ -87,7 +87,7 @@ abstract class AbstractEngine implements EngineInterface {
 	 * @throws \Exception
 	 */
 	protected function initContainer($klass) {
-		$file = RUNTIME_PATH . 'container.php';
+		$file = CACHE_PATH . 'container.php';
 		$this->containerConfigCache = new ConfigCache($file, false);
 
 		if ($this->containerConfigCache->isFresh()) {
