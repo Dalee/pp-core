@@ -9,14 +9,14 @@ use Symfony\Component\DependencyInjection\Dumper\PhpDumper;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 use Symfony\Component\Config\ConfigCache;
-use PP\Lib\Command\AbstractCommand;
+use PP\Lib\Command\AbstractBasicCommand;
 
 /**
  * Class CompileContainerCommand.
  *
  * @package PP\Command
  */
-class CompileContainerCommand extends AbstractCommand {
+class CompileContainerCommand extends AbstractBasicCommand {
 
 	/**
 	 * {@inheritdoc}
