@@ -179,12 +179,8 @@ class PXTreeObjects implements ContentObjectsInterface, ArrayAccess, Iterator {
 		return null;
 	}
 
-	/**
-	 * isset($tree->something)
-	 * dont use it for $tree->current or $tree->root.
-	 */
 	function __isset($key) {
-		return isset($this->tree->$key);
+		return isset($this->$key) || isset($this->tree->$key);
 	}
 
 	function getLeaf($leafArray) {
