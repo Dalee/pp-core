@@ -7,6 +7,7 @@ use PP\Serializer\SerializerAwareInterface;
 use PP\Serializer\SerializerAwareTrait;
 use PP\Serializer\DefaultSerializer;
 use Predis\Client;
+use Predis\Collection\Iterator\Keyspace;
 
 /**
  * Class Predis
@@ -27,6 +28,28 @@ class Predis implements CacheInterface, SerializerAwareInterface {
 	 * @var string
 	 */
 	protected $cachePrefix = '';
+
+	/**
+	 * @var int
+	 * @see https://redis.io/commands/scan#the-count-option
+	 */
+	protected $scanDefault = 50;
+
+	/**
+	 * @return int
+	 */
+	public function getScanDefault() {
+		return $this->scanDefault;
+	}
+
+	/**
+	 * @param int $scanDefault
+	 * @return $this
+	 */
+	public function setScanDefault($scanDefault) {
+		$this->scanDefault = $scanDefault;
+		return $this;
+	}
 
 	/**
 	 * Predis constructor.
@@ -104,14 +127,10 @@ class Predis implements CacheInterface, SerializerAwareInterface {
 	 */
 	public function deleteGroup($group) {
 		$keyGroup = $this->key($group, true);
-		$keys = $this->client->keys($keyGroup);
-		$cachePrefixLen = strlen($this->cachePrefix);
-
+		$pattern = $this->cachePrefix . $keyGroup;
+		$keys = new Keyspace($this->client, $pattern, $this->scanDefault);
 		foreach ($keys as $key) {
-			if (substr($key, 0, $cachePrefixLen) === $this->cachePrefix) {
-				$key = substr($key, $cachePrefixLen);
-				$this->client->del([$key]);
-			}
+			$this->client->del([$key]);
 		}
 
 		return true;
