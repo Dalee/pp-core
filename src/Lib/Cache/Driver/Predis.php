@@ -127,10 +127,13 @@ class Predis implements CacheInterface, SerializerAwareInterface {
 	 */
 	public function deleteGroup($group) {
 		$keyGroup = $this->key($group, true);
+		$cachePrefixLen = strlen($this->cachePrefix);
 		$pattern = $this->cachePrefix . $keyGroup;
 		$keys = new Keyspace($this->client, $pattern, $this->scanDefault);
+
 		foreach ($keys as $key) {
-			$this->client->del([$key]);
+			$prefixlessKey = substr($key, $cachePrefixLen);
+			$this->client->del([$prefixlessKey]);
 		}
 
 		return true;
