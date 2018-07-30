@@ -821,8 +821,8 @@ class PXDatabase extends DatabaseAdapter implements DatabaseInterface {
 				false
 			);
 
-			$this->clearObjectTypeCache($format->id);
 			$this->transactionCommit();
+			$this->clearObjectTypeCache($format->id);
 
 			$object[OBJ_FIELD_ORDER] = $newId;
 			$object[OBJ_FIELD_META] = $sysMetaField;
@@ -947,6 +947,7 @@ class PXDatabase extends DatabaseAdapter implements DatabaseInterface {
 
 		$res = $this->ModifyingCopy($format->id, $copyCols, $copyTable);
 		$this->clearObjectTypeCache($format->id);
+
 		$audit->info('Добавлено '.$idx.' объектов', $format->id);
 
 		return $res;
@@ -1087,7 +1088,6 @@ class PXDatabase extends DatabaseAdapter implements DatabaseInterface {
 
 			$this->transactionBegin();
 			$result = $this->UpdateObjectById($format->id, $object['id'], $dbFields, $dbValues, false);
-			$this->clearObjectTypeCache($format->id);
 
 			if ($result <  0) {
 				$audit->error($this->GetError(), $format->id .'/'. $object['id']);
@@ -1160,6 +1160,8 @@ class PXDatabase extends DatabaseAdapter implements DatabaseInterface {
 			}
 
 			$this->transactionCommit();
+			$this->clearObjectTypeCache($format->id);
+
 			$object[OBJ_FIELD_ORDER] = isset($objectInDB[OBJ_FIELD_ORDER]) ? $objectInDB[OBJ_FIELD_ORDER] : null;
 			$object[OBJ_FIELD_META] = $sysMetaField;
 			$object[OBJ_FIELD_UUID] = $objectInDB[OBJ_FIELD_UUID];
@@ -1398,8 +1400,8 @@ class PXDatabase extends DatabaseAdapter implements DatabaseInterface {
 				$this->ModifyingQuery($qry, null, null, false);
 				$qry = sprintf('UPDATE %s SET sys_order = %d WHERE %1$s.id = %d', $format->id, $nearObject['sys_order'] + ($down ? 1 : 0), $objectInDB['id']);
 				$this->ModifyingQuery($qry, null, null, false);
-				$this->clearObjectTypeCache($format->id);
 			$this->transactionCommit();
+			$this->clearObjectTypeCache($format->id);
 
 			foreach ($this->triggers as $t) {
 				$t->getTrigger()->OnMoveObject($this, $objectId, $format, $objectInDB);
@@ -1867,8 +1869,8 @@ SQL;
 			if (count($data)) {
 				$this->ModifyingCopy($reference->name, array_keys(reset($data)), $data);
 			}
-			$this->clearLinksCache($reference->name);
 			$this->transactionCommit();
+			$this->clearLinksCache($reference->name);
 
 			foreach ($this->triggers as $t)
 				$t->getTrigger()->OnModifyLinks($this, $id, $format, $links, $linkedFormat);
