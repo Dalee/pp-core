@@ -1,5 +1,8 @@
 # Change log
 
+## [2.3.8] 2018-11-30
+- Фикс использования non-static calls в DisplayType FilesArray.
+
 ## [2.3.7] 2018-06-05
 - Фикс `PP\Lib\Cache\Driver\Predis::deleteGroup` чтобы вырезал префиксы перед удалением. 
 

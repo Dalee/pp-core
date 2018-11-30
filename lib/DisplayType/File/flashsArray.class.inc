@@ -12,7 +12,7 @@ class PXDisplayTypeFlashsarray extends PXDisplayTypeImagesarray {
 
 	function buildCellHtml() {
 		list($value, $id) = func_get_args(); // PHP54 args contract violation
-		return PXDisplayTypeFlash::buildCellHtml($value, $id);
+		return (new PXDisplayTypeFlash($this->display, $this->name))->buildCellHtml($value, $id);
 	}
 }
 ?>
