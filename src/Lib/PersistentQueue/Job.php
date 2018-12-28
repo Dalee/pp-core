@@ -43,7 +43,7 @@ class Job implements IArrayable {
 	protected $payload;
 
 	/**
-	 * @var WorkerInterface
+	 * @var string
 	 */
 	protected $worker;
 
@@ -78,7 +78,7 @@ class Job implements IArrayable {
 	public function toArray() {
 		return [
 			'id' => $this->id,
-			'title' => get_class($this->worker),
+			'title' => $this->worker,
 			'payload' => $this->payload,
 			'state' => $this->state,
 			'result' => $this->resultBag->toArray(),
@@ -109,29 +109,13 @@ class Job implements IArrayable {
 	public static function fromArray(array $object) {
 		$job = new static;
 		$job->setId(getFromArray($object, 'id', 0));
-
-		$state = getFromArray($object, 'state', static::STATE_FRESH);
-		$job->setState($state);
-		$job->setPayload(getFromArray($object, 'payload', []));
-
 		$workerClass = getFromArray($object, 'title');
-		if (!class_exists($workerClass)) {
-			throw new UnexpectedValueException(
-				sprintf('Worker class does not exist: %s', $workerClass)
-			);
-		}
+		$state = getFromArray($object, 'state', static::STATE_FRESH);
 
-		$worker = new $workerClass();
-		if (!($worker instanceof WorkerInterface)) {
-			throw new UnexpectedValueException(
-				'Worker class does not implement PP\Lib\PersistentQueue\WorkerInterface'
-			);
-		}
-
-		$job->setWorker($worker);
-		$job->setOwnerId(getFromArray($object, 'sys_owner', 0));
-
-		return $job;
+		return $job->setState($state)
+			->setPayload(getFromArray($object, 'payload', []))
+			->setWorkerClass($workerClass)
+			->setOwnerId(getFromArray($object, 'sys_owner', 0));
 	}
 
 	/**
@@ -156,6 +140,17 @@ class Job implements IArrayable {
 	 * @return $this
 	 */
 	public function setWorker(WorkerInterface $worker) {
+		$this->setWorkerClass(get_class($worker));
+
+		return $this;
+	}
+
+	/**
+	 * @param string $worker
+	 *
+	 * @return $this
+	 */
+	public function setWorkerClass($worker) {
 		$this->worker = $worker;
 
 		return $this;
@@ -165,7 +160,20 @@ class Job implements IArrayable {
 	 * @return WorkerInterface
 	 */
 	public function getWorker() {
-		return $this->worker;
+		if (!class_exists($this->worker)) {
+			throw new UnexpectedValueException(
+				sprintf('Worker class does not exist: %s', $this->worker)
+			);
+		}
+
+		$worker = new $this->worker();
+		if (!($worker instanceof WorkerInterface)) {
+			throw new UnexpectedValueException(
+				'Worker class does not implement PP\Lib\PersistentQueue\WorkerInterface'
+			);
+		}
+
+		return $worker;
 	}
 
 	/**
