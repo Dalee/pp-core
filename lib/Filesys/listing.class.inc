@@ -3,7 +3,7 @@
 include_once PPLIBPATH . 'Filesys/dir.class.inc';
 
 class PXFileListingRoots extends PXFileListing {
-	var $_comments;
+	public $_comments;
 
 	function getList($catalog) {
 		return;
@@ -38,10 +38,11 @@ class PXFileListingRoots extends PXFileListing {
 }
 
 class PXFileListing {
-	var $_roots;
-	var $_files;
-	var $_catalog;
-	var $_destination;
+	public $_roots;
+	public $_files;
+	public $_catalog;
+	public $_destination;
+	public $_decorator;
 
 	function __construct($catalogs) {
 		$this->_roots = array();
@@ -50,8 +51,8 @@ class PXFileListing {
 		$this->setRoots($catalogs);
 	}
 
-	function setDecorator(&$htmlDecorator) {
-		$this->_decorator =& $htmlDecorator;
+	function setDecorator($htmlDecorator) {
+		$this->_decorator = $htmlDecorator;
 	}
 
 	function writable() {

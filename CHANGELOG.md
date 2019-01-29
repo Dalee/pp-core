@@ -1,5 +1,8 @@
 # Change log
 
+## [2.3.9] 2019-01-29
+- Фикс передачи аргумента `PXFileListing::setDecorator` по ссылке.
+
 ## [2.3.8] 2018-11-30
 - Фикс использования non-static calls в DisplayType FilesArray.
 
