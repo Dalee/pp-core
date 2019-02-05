@@ -27,7 +27,12 @@ abstract class AbstractAdminEngine extends AbstractEngine {
 	}
 
 	protected function initSession($klass) {
-		$storage = new NativeSessionStorage([], new DatabaseHandler($this->db));
+		$storage = new NativeSessionStorage([
+			'cookie_httponly' => true,
+			'cookie_secure' => \PXRegistry::getRequest()->GetHttpProto() === 'https',
+			'use_strict_mode' => true,
+			], new DatabaseHandler($this->db));
+
 		$this->session = new $klass($storage);
 		$this->session->setName(static::SESSION_NAME);
 		$this->session->start();

@@ -43,6 +43,7 @@ class Session extends AuthAbstract {
 	function auth() {
 		$this->session->set(static::AUTHORIZED_USER_ID, $this->user->id);
 		$this->session->set(static::AUTHORIZED_USER_IP, $this->request->GetRemoteAddr());
+		$this->session->migrate(true);
 		return true;
 	}
 
