@@ -2,6 +2,7 @@
 
 ## [2.3.10] 2019-02-05
 - Усиление безопасности admin session (httponly, regenerate id после авторизации, secure если https и т.д.)
+- Исправлено поведение заголовка X-Real-IP, когда он содержит список из X-Forwarded-For
 
 ## [2.3.9] 2019-01-29
 - Фикс передачи аргумента `PXFileListing::setDecorator` по ссылке.
