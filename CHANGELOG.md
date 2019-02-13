@@ -1,5 +1,9 @@
 # Change log
 
+## [2.3.11] 2019-02-13
+### PHP7 Compatibility fixes (1 changes)
+- PXStorageTypeFilesarray - исправлена ошибка Warning: count(): Parameter must be an array or an object that implements Countable
+
 ## [2.3.10] 2019-02-05
 - Усиление безопасности admin session (httponly, regenerate id после авторизации, secure если https и т.д.)
 - Исправлено поведение заголовка X-Real-IP, когда он содержит список из X-Forwarded-For
