@@ -1,5 +1,8 @@
 # Change log
 
+## [2.3.12] 2019-03-12
+- Исправлен memory leak в `PP\Lib\PersistentQueue\Job`, воркеры инстанциируются on demand вместо хранения в списке тасков
+
 ## [2.3.11] 2019-02-13
 ### PHP7 Compatibility fixes (1 changes)
 - PXStorageTypeFilesarray - исправлена ошибка Warning: count(): Parameter must be an array or an object that implements Countable
