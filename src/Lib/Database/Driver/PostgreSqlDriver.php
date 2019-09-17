@@ -84,6 +84,11 @@ class PostgreSqlDriver extends AbstractSqlDatabase  {
 		}
 
 		if ($this->connected) {
+			if ($retField) {
+				$retField = $this->EscapeString($retField);
+				$query .= " RETURNING {$retField}";
+			}
+
 			if (($res = pg_query($this->connection, $query)) == false) {
 				return ERROR_DB_BADQUERY;
 			}
@@ -93,10 +98,8 @@ class PostgreSqlDriver extends AbstractSqlDatabase  {
 			}
 
 			if ($table && $retField) {
-				$table = $this->Query("SELECT {$retField} FROM {$table} WHERE oid = ".pg_last_oid($res), true);
-
-				if (is_array($table) && count($table)) {
-					return $table[0][$retField];
+				if ($returnResult = pg_fetch_result($res, 0, $retField)) {
+					return $returnResult;
 				} else {
 					return null;
 				}

@@ -1,5 +1,8 @@
 # Change log
 
+## [2.3.13] 2019-09-17
+- Изменен механизм получения last insert id в драйвере postgresql.
+
 ## [2.3.12] 2019-03-12
 - Исправлен memory leak в `PP\Lib\PersistentQueue\Job`, воркеры инстанциируются on demand вместо хранения в списке тасков
 
