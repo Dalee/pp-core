@@ -1542,7 +1542,15 @@ class PXDatabase extends DatabaseAdapter implements DatabaseInterface {
 				{$reference->name}
 SQL;
 
-		return $this->query($query);
+		$queryIden = $this->_getCacheIden($query, DB_SELECT_TABLE, null);
+		$resTable = $this->cache->load(array($queryIden, $reference->name));
+
+		if ($resTable === null) {
+			$resTable = $this->query($query, true);
+			$this->cache->save(array($queryIden, $reference->name), $resTable);
+		}
+
+		return $resTable;
 	}
 
 	/**
