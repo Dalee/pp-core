@@ -257,8 +257,8 @@ CREATE TABLE log_audit (
 	"level" INT4,
 	"type"  CHAR(8),
 	source  VARCHAR(128),
-	"user"  VARCHAR(32),
-	ip      VARCHAR(40),
+	"user"  VARCHAR(128),
+	ip      INET,
 	description VARCHAR,
 	diff	TEXT
 ) WITH OIDS;
@@ -266,6 +266,7 @@ CREATE TABLE log_audit (
 CREATE INDEX source_idx ON log_audit(split_part(source, '/', 2));
 CREATE INDEX type_idx ON log_audit (type);
 CREATE INDEX data_idx ON log_audit(date_trunc('day', ts));
+CREATE INDEX log_audit_ip_idx ON log_audit(ip);
 CREATE VIEW log_audit_view AS SELECT "id", "ts", to_date(ts::text, 'DD.MM.YYYY'::text) as date, "level", "type", "source", "user", "ip", "description", "diff" FROM log_audit;
 
 -- search

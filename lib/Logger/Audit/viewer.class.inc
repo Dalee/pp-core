@@ -10,7 +10,6 @@ class PXAuditViewer {
 		foreach($filters as $field=>$var) {
 			switch($field) {
 				case 'description':
-				case 'ip':
 					$filters[$field] = $this->db->mapFields($field) . $this->db->LIKE($var);
 					break;
 
@@ -40,6 +39,7 @@ class PXAuditViewer {
 				case 'type':
 				case 'source':
 				case 'user':
+				case 'ip':
 					$filters[$field] = $this->db->mapFields($field) . "=" .  $this->db->mapData($var);
 					break;
 
