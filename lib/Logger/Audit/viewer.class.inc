@@ -13,6 +13,10 @@ class PXAuditViewer {
 					$filters[$field] = $this->db->mapFields($field) . $this->db->LIKE($var);
 					break;
 
+				case 'ip':
+					$filters[$field] = $this->db->mapFields($field) . "<<=" .  $this->db->mapData($var);
+					break;
+
 				case 'date':
 				case 'ts':
 					if(is_array($var) && checkdate((int)getFromArray($var, 'month'), (int)getFromArray($var, 'day'), (int)getFromArray($var, 'year'))) {
@@ -39,7 +43,6 @@ class PXAuditViewer {
 				case 'type':
 				case 'source':
 				case 'user':
-				case 'ip':
 					$filters[$field] = $this->db->mapFields($field) . "=" .  $this->db->mapData($var);
 					break;
 
