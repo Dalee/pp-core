@@ -5,13 +5,13 @@
 	"authors": [
 		{
 			"name": "Dalee Dev Team",
-			"email": "dev@dalee.ru"
+			"email": "topdev@dalee.ru"
 		}
 	],
 	"repositories": [
 		{
-			"type": "composer",
-			"url": "http://packages.dev.dalee.ru"
+			"type": "github",
+			"url": "https://github.com/Dalee/pp-installers"
 		}
 	],
 	"config": {
