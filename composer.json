@@ -1,17 +1,11 @@
 {
-	"name": "pp/core",
+	"name": "dalee/pp-core",
 	"type": "pp-core",
 	"description": "Proxima CMS",
 	"authors": [
 		{
 			"name": "Dalee Dev Team",
 			"email": "topdev@dalee.ru"
-		}
-	],
-	"repositories": [
-		{
-			"type": "github",
-			"url": "https://github.com/Dalee/pp-installers"
 		}
 	],
 	"config": {
@@ -24,7 +18,7 @@
 		"bin/pp"
 	],
 	"require": {
-		"pp/installers": "*",
+		"dalee/pp-installers": "~1.0.4",
 		"monolog/monolog": "^1.19",
 		"symfony/http-foundation": "~3.3.0",
 		"ramsey/uuid": "^3.5",
