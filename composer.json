@@ -2,6 +2,7 @@
 	"name": "dalee/pp-core",
 	"type": "pp-core",
 	"description": "Proxima CMS",
+	"license": "MIT",
 	"authors": [
 		{
 			"name": "Dalee Dev Team",
