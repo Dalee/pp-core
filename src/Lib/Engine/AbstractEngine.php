@@ -2,7 +2,10 @@
 
 namespace PP\Lib\Engine;
 
+use PP\DependencyInjection\Compiler\AddLoggingHandlersPass;
+use PP\DependencyInjection\CoreExtension;
 use Symfony\Component\Config\FileLocator;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 use PP\Lib\Database\Driver\PostgreSqlDriver;
 use PP\Lib\Html\Layout\LayoutInterface;
@@ -53,6 +56,7 @@ abstract class AbstractEngine implements EngineInterface {
 
 		$this->initApplication();
 		$this->saveToRegistry();
+		$this->compileContainer();
 	}
 
 	/**
@@ -98,11 +102,22 @@ abstract class AbstractEngine implements EngineInterface {
 		}
 
 		$path = APPPATH . 'config';
+		/** @var ContainerBuilder $container */
 		$container = new $klass();
+		$container->registerExtension(new CoreExtension());
+		$container->addCompilerPass(new AddLoggingHandlersPass());
+
 		$loader = new YamlFileLoader($container, new FileLocator($path));
 
 		$loader->load('services.yml');
+
 		$this->container = $container;
+	}
+
+	protected function compileContainer() {
+		if (!$this->containerConfigCache->isFresh()) {
+			$this->container->compile(true);
+		}
 	}
 
 	protected function initApplication() {
@@ -131,12 +146,6 @@ abstract class AbstractEngine implements EngineInterface {
 				call_user_func_array(['PXRegistry', 'set' . ucfirst($var)], [&$this->$var]);
 			}
 		}
-
-		if ($this->containerConfigCache->isFresh()) {
-			return;
-		}
-
-		$this->container->compile(true);
 	}
 
 	protected function initApp($klass) {

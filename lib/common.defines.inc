@@ -49,6 +49,7 @@ if (!defined('BASEPATH')) {
 // Constants
 define('PPCOREPATH', realpath(__DIR__ . '/../') . DIRECTORY_SEPARATOR);
 define('PPLIBPATH', PPCOREPATH . 'lib' . DIRECTORY_SEPARATOR);
+define('PPSERVICESPATH', PPCOREPATH . 'etc' . DIRECTORY_SEPARATOR . 'services');
 define('LOCALPATH', BASEPATH . 'local' . DIRECTORY_SEPARATOR);
 define('SHAREDPATH', BASEPATH . 'site' . DIRECTORY_SEPARATOR);
 define('APPPATH', BASEPATH . 'app' . DIRECTORY_SEPARATOR);
