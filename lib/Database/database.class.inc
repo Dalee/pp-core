@@ -108,22 +108,42 @@ class PXDatabase extends DatabaseAdapter implements DatabaseInterface {
 	}
 
 	/**
-	 * Загружает справочники (directories)
+	 * Загружает справочники (directories) для одного объекта
 	 *
+	 * @param PXTypeDescription $format
+	 * @param array|null $object
 	 * @uses LoadDirectory
 	 *
-	 * @todo docme подробнее
-	 *
-	 * @param mixed $format
 	 */
-	function LoadDirectoriesByType(&$format, $object=NULL) {
+	function LoadDirectoriesByType(PXTypeDescription $format, ?array $object = null): void {
 		foreach ($format->fields as $k=>$v) {
 			if (
 				is_object($v->values) &&
-				strtolower(get_class($v->values)) == 'pxdirectorydescription' &&
+				$v->values instanceof PXDirectoryDescription &&
 				!$v->values->loaded
 			) {
 				$this->LoadDirectory($format->fields[$k]->values, $object, true, $format);
+			}
+		}
+	}
+
+	/**
+	 * Загружает справочники (directories) для таблиц (только для listed полей)
+	 * @param PXTypeDescription $format
+	 * @param array|null $objects
+	 */
+	public function loadDropdownValuesForListedFields(PXTypeDescription $format, ?array $objects = null): void {
+		if (!$objects) {
+			return;
+		}
+		foreach ($format->fields as $k => $v) {
+			if (
+				$v->listed &&
+				is_object($v->values) &&
+				$v->values instanceof PXDirectoryDescription &&
+				!$v->values->loaded
+			) {
+				$this->LoadDirectory($format->fields[$k]->values, null, true, $format);
 			}
 		}
 	}
@@ -146,44 +166,6 @@ class PXDatabase extends DatabaseAdapter implements DatabaseInterface {
 				break;
 		}
 	}
-
-
-	function loadDropdownValuesForListedFields($format, $objects) {
-		foreach($format->fields as $k => $field) {
-			if($field->listed && strlen($field->source)) {
-				$directory = $this->app->directory[$field->source];
-
-				$idsArray = getColFromTable($objects, $field->name);
-				if (empty($idsArray)) {
-					// nothing to update
-					continue;
-				}
-
-				$flattenArray = array();
-				foreach ($idsArray as $value) {
-					// $idsArray is rarely not flattened, so cast to array is slower than check
-					if (is_array($value)) {
-						foreach ($value as $v) {
-							$flattenArray[$v] = null;
-						}
-					} else {
-						$flattenArray[$value] = null;
-					}
-				}
-				$flattenArray = array_keys($flattenArray);
-
-				$needUpdate = (count($directory->filter) != count($flattenArray));
-				if (!$needUpdate) {
-					$needUpdate = count(array_diff($flattenArray, $directory->filter));
-				}
-				if ($needUpdate) {
-					$directory->filter = $flattenArray;
-					$this->LoadDirectory($directory, array(),true, $format);
-				}
-			}
-		}
-	}
-
 
 	/**
 	 * Парсит WHERE в справочниках
