@@ -19,10 +19,16 @@ class Session extends AuthAbstract {
 		$userIp = (string)$this->session->get(static::AUTHORIZED_USER_IP);
 		if ($userId > 0) {
 			if ($userIp !== $this->request->GetRemoteAddr()) {
+				$this->session->invalidate();
 				return false;
 			}
 
 			$uArray = $this->db->getObjectById($this->app->types[DT_USER], $userId);
+			if (empty($uArray['status'])) {
+				$this->session->invalidate();
+				return false;
+			}
+
 			$this->fillUserFields($uArray);
 
 			return true;
@@ -33,7 +39,7 @@ class Session extends AuthAbstract {
 		$this->passwd = $this->request->getPostVar('passwd');
 
 		$uArray = $this->findUser();
-		if ((strlen($this->passwd) > 0) && (static::passwdToDB($this->passwd) == $uArray['passwd'])) {
+		if ((strlen($this->passwd) > 0) && (static::passwdToDB($this->passwd) === $uArray['passwd'])) {
 			$this->fillUserFields($uArray);
 		}
 
@@ -48,8 +54,7 @@ class Session extends AuthAbstract {
 	}
 
 	function unAuth() {
-		$this->session->set(static::AUTHORIZED_USER_ID, 0);
-		$this->session->set(static::AUTHORIZED_USER_IP, '');
+		$this->session->invalidate();
 		return true;
 	}
 
