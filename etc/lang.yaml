@@ -96,6 +96,9 @@ module_properties:
     add:
       rus: Параметр
       eng: Property
+    save_all:
+      rus: Сохранить все параметры
+      eng: Save all
   action:
     add:
       rus: Добавление нового параметра

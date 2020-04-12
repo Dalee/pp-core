@@ -132,8 +132,16 @@ class PXAdminTableSimple extends PXAdminWidget {
 	function htmlBody() {
 		$_ = '';
 		foreach ($this->data as $row) {
-			$id = isset($row['id']) ? $row['id'] : 0;
-			$_ .= '<tr'.($this->tableId && $id ? ' id="'.$this->tableId.'-'.$id.'"' : '').'>';
+			$id = $row['id'] ?? 0;
+
+			$attrs = $row['__row_meta']['attrs'] ?? [];
+			$attrsString = '';
+			foreach ($attrs as $k => $v) {
+				$v = quot($v);
+				$attrsString .= " {$k}=\"$v\"";
+			}
+
+			$_ .= '<tr' . ($this->tableId && $id ? ' id="'.$this->tableId.'-'.$id.'"' : '') . $attrsString . '>';
 
 			if ($id) {
 				$_ .= $this->cellCTRL($id);
@@ -236,19 +244,28 @@ class PXAdminTableSimple extends PXAdminWidget {
 			$class[] = 'null';
 		}
 
-		if (isset($this->dict[$col]) && !isset($this->dict[$col][$val])) {
+		if (isset($this->dict[$col]) && !(is_callable($this->dict[$col]) || isset($this->dict[$col][$val]))) {
 			$class[] = 'not-in-dict';
 		}
 
-		$_ = '<td'.(sizeof($class) ? ' class="'.implode(' ', $class).'"' : '').'>';
+		$attrs = [];
+
+		if (isset($this->dict[$col]) && is_callable($this->dict[$col])) {
+			$val = $this->dict[$col]($row, $val, $attrs, $class);
+		} elseif (isset($this->dict[$col][$val])) {
+			$val = $this->dict[$col][$val];
+		}
 
 		if (is_null($val)) {
 			$val = $this->nullText;
 		}
 
-		if (isset($this->dict[$col][$val])) {
-			$val = $this->dict[$col][$val];
+		$attrsString = '';
+		foreach ($attrs as $k => $v) {
+			$v = quot($v);
+			$attrsString .= " {$k}=\"$v\"";
 		}
+		$_ = '<td' . (sizeof($class) ? ' class="'.implode(' ', $class).'"' : '') . $attrsString . '>';
 
 		$_ .= $val;
 

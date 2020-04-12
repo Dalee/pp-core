@@ -14,7 +14,8 @@ use PP\Lib\Xml\SimpleXmlNode;
  * @see libpp/docs/properties.module.md
  * @package PP\Module
  */
-class PropertiesModule extends AbstractModule {
+class PropertiesModule extends AbstractModule
+{
 
 	/** @var array */
 	protected $predefinedPropertyDefList = [];
@@ -22,7 +23,8 @@ class PropertiesModule extends AbstractModule {
 	/**
 	 * {@inheritdoc}
 	 */
-	public function __construct($area, $settings, $selfDescription) {
+	public function __construct($area, $settings, $selfDescription)
+	{
 		parent::__construct($area, $settings, $selfDescription);
 
 		if (!empty($this->settings['attribute'])) {
@@ -33,7 +35,8 @@ class PropertiesModule extends AbstractModule {
 	/**
 	 * {@inheritdoc}
 	 */
-	public static function getAclModuleActions() {
+	public static function getAclModuleActions()
+	{
 		$defaults = parent::getAclModuleActions();
 		$defaults['sys_properties_edit'] = \PXRegistry::getApp()
 			->langTree
@@ -45,7 +48,8 @@ class PropertiesModule extends AbstractModule {
 	/**
 	 * {@inheritdoc}
 	 */
-	public function adminIndex() {
+	public function adminIndex()
+	{
 		// get sid
 		$sid = $this->request->getSid();
 		$sid = (empty($sid)) ? 'pub' : $sid;
@@ -105,12 +109,38 @@ class PropertiesModule extends AbstractModule {
 				true,
 				false
 			);
+			$table->setDict('value', function ($row, $val) {
+				if (!is_numeric($row['id'])) {
+					return $val;
+				}
+				$typedef = $this->getTypeDescription($row);
+				if (isset($typedef->fields['value']->displayType)) {
+					$typedef->fields[$pseudoName = "properties[{$row['id']}]"] = $typedef->fields['value'];
+					$row[$pseudoName] = $val ?? '';
+					$typedef->fields[$pseudoName]->name = $pseudoName;
+					return $typedef->fields[$pseudoName]->displayType->buildInput(
+						$typedef->fields[$pseudoName], $row);
+				}
+				return $val;
+			});
+			$this->layout->append('INNER.1.0',
+				sprintf('<form class="simpleform" method="POST" action="%s">', $adminGenerator->actionUrl()));
+
+			$this->layout->assignInlineCSS('.simpleform td input, .simpleform td textarea { width: 100% }');
 		}
 
 		$table->addToParent('INNER.1.0');
 
 		// build additional controls
 		if ($this->isPowerUser()) {
+			$saveAllButtonName = $this->app->langTree->getByPath('module_properties.table_ctrl.save_all.rus');
+			$this->layout->append('INNER.1.0', <<<MASS_ACTIONS
+				<p class="field">
+					<button class="add" name="action" value="save_all">{$saveAllButtonName}</button>
+				</p>
+MASS_ACTIONS
+			);
+
 			$link = sprintf("Popup('%s');", $adminGenerator->popupUrl(['action' => 'main']));
 			$label = $this->app->langTree->getByPath('module_properties.table_ctrl.add.rus');
 
@@ -125,7 +155,8 @@ class PropertiesModule extends AbstractModule {
 	/**
 	 * {@inheritdoc}
 	 */
-	public function adminPopup() {
+	public function adminPopup()
+	{
 		$id = $this->request->getId();
 
 		$propertyDef = $this->getPropertyDefById($id);
@@ -144,38 +175,57 @@ class PropertiesModule extends AbstractModule {
 		$form->setArea($this->area);
 		$form->setTitle($this->app->langTree->getByPath('module_properties.action.add.rus'));
 		$form->getForm();
+
+		$this->layout->assign('OUTER.MENU', '');
 	}
 
 	/**
 	 * {@inheritdoc}
 	 */
-	public function adminAction() {
-		$id = $this->request->getId();
-		$sid = $this->request->getSid();
+	public function adminAction()
+	{
+		$redirect = null;
 
-		$propertyDef = $this->getPropertyDefById($id);
-		$typeDef = $this->getTypeDescription($propertyDef);
-		$object = $this->request->getContentObject($typeDef);
-
-		$redirect = '/admin/?area=' . $this->area . '&sid=' . $sid;
 		switch ($this->request->getAction()) {
 			case 'main':
-				$redirect = $this->saveAction($id, $object);
+				$id = $this->request->getId();
+				$redirect = $this->saveAction($id, $this->getPropertyFromRequest($id));
 				break;
 
 			case 'delete':
-				$this->deleteAction($id, $object);
+				$id = $this->request->getId();
+				$this->deleteAction($id, $this->getPropertyFromRequest($id));
+				break;
+			case 'save_all':
+				$props = $this->request->getVar('properties');
+				if (!is_array($props)) {
+					return null;
+				}
+
+				foreach ($props as $id => $value) {
+					$this->request->setVar('value', $value);
+					$prop = $this->getPropertyFromRequest($id);
+					$this->saveAction($id, ['value' => $prop['value']]);
+				}
+
 				break;
 		}
 
 		return $redirect;
 	}
 
+	protected function getPropertyFromRequest($id)
+	{
+		$propertyDef = $this->getPropertyDefById($id);
+		$typeDef = $this->getTypeDescription($propertyDef);
+		return $this->request->getContentObject($typeDef);
+	}
 	/**
 	 * @param $id
 	 * @return array|null
 	 */
-	protected function getPropertyDefById($id) {
+	protected function getPropertyDefById($id)
+	{
 		if (isset($this->predefinedPropertyDefList[$id])) {
 			$propertyDef = $this->predefinedPropertyDefList[$id];
 			$propertyDef['id'] = $propertyDef['name'];
@@ -210,7 +260,8 @@ class PropertiesModule extends AbstractModule {
 	 * @param mixed $id
 	 * @param array $object
 	 */
-	protected function deleteAction($id, $object) {
+	protected function deleteAction($id, $object)
+	{
 		$id = is_numeric($id) ? $id : null;
 		if (empty($id)) {
 			return;
@@ -228,7 +279,8 @@ class PropertiesModule extends AbstractModule {
 	 * @param array $object
 	 * @return string
 	 */
-	protected function saveAction($id, $object) {
+	protected function saveAction($id, $object)
+	{
 		unset($object['id']);
 		if (empty($object['sys_uuid'])) {
 			$object['sys_uuid'] = Uuid::uuid4()->toString();
@@ -261,7 +313,8 @@ class PropertiesModule extends AbstractModule {
 	/**
 	 * @param array $publicProperties
 	 */
-	protected function parsePredefinedProperties(array $publicProperties) {
+	protected function parsePredefinedProperties(array $publicProperties)
+	{
 		foreach ($publicProperties as $propertyStrDef) {
 			$propertyDef = [];
 			$formatString = str_replace('|', '&', $propertyStrDef);
@@ -289,7 +342,8 @@ class PropertiesModule extends AbstractModule {
 	 *
 	 * @return bool
 	 */
-	protected function isPowerUser() {
+	protected function isPowerUser()
+	{
 		return $this->user->can('sys_properties_edit', $this->app->modules[$this->area]);
 	}
 
@@ -297,7 +351,8 @@ class PropertiesModule extends AbstractModule {
 	 * @param array $propertyRaw
 	 * @return bool
 	 */
-	protected function isPropertySystem(array $propertyRaw) {
+	protected function isPropertySystem(array $propertyRaw)
+	{
 		// public property - property listed in module settings and don't have SYS_/sys_ prefix
 		$key = $propertyRaw['name'];
 		$prefix = mb_strtolower(mb_substr($key, 0, mb_strlen('sys_')));
@@ -311,7 +366,8 @@ class PropertiesModule extends AbstractModule {
 	 * @param string $sid
 	 * @return array
 	 */
-	protected function getPropertyList($sid) {
+	protected function getPropertyList($sid)
+	{
 		$propertyList = PropertyLoader::getRawPropertyList($this->db);
 
 		// filtering callable
@@ -375,7 +431,8 @@ class PropertiesModule extends AbstractModule {
 	 * @param \PXTypeDescription $format
 	 * @return array
 	 */
-	protected function normalizeType($propertyRaw, $format) {
+	protected function normalizeType($propertyRaw, $format)
+	{
 		$table = [
 			[
 				'id' => isset($propertyRaw['id']) ? $propertyRaw['id'] : $propertyRaw['name'],
@@ -395,13 +452,14 @@ class PropertiesModule extends AbstractModule {
 	 * @param array $object
 	 * @return \PXTypeDescription
 	 */
-	protected function getTypeDescription($object) {
+	protected function getTypeDescription($object)
+	{
 		$name = isset($object['name']) ? $object['name'] : null;
-		$storageTypeDef = [];
+		$displayTypeDef = [];
 
 		// build predefined datatype?
 		if ($name !== null && isset($this->predefinedPropertyDefList[$name])) {
-			$storageTypeDef = $this->predefinedPropertyDefList[$name];
+			$displayTypeDef = $this->predefinedPropertyDefList[$name];
 		}
 
 		$objectDef = [
@@ -426,7 +484,7 @@ class PropertiesModule extends AbstractModule {
 			'value' => [
 				'name' => 'value',
 				'description' => $this->app->langTree->getByPath('module_properties.table.value.rus'),
-				'displaytype' => isset($storageTypeDef['displaytype']) ? $storageTypeDef['displaytype'] : 'TEXT',
+				'displaytype' => isset($displayTypeDef['displaytype']) ? $displayTypeDef['displaytype'] : 'TEXT',
 				'storagetype' => 'string',
 			],
 			'description' => [
@@ -442,9 +500,10 @@ class PropertiesModule extends AbstractModule {
 
 	/**
 	 * @param $objectDef
-	 * @return PXTypeDescription
+	 * @return \PXTypeDescription
 	 */
-	protected function buildTypeFromArray($objectDef) {
+	protected function buildTypeFromArray($objectDef)
+	{
 		$typeDescription = new \PXTypeDescription();
 		$typeDescription->id = 'sys_property';
 		$typeDescription->title = $this->app->langTree->getByPath('module_properties.table.name.rus');
@@ -479,7 +538,8 @@ class PropertiesModule extends AbstractModule {
 	 * @param array $data
 	 * @return SimpleXmlNode
 	 */
-	protected function createAttributeNode($data) {
+	protected function createAttributeNode($data)
+	{
 		$attr = new \SimpleXMLElement("<attribute/>");
 		foreach ($data as $k => $v) {
 			$attr->addAttribute($k, $v);
