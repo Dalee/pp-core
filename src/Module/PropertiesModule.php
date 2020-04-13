@@ -118,8 +118,14 @@ class PropertiesModule extends AbstractModule
 					$typedef->fields[$pseudoName = "properties[{$row['id']}]"] = $typedef->fields['value'];
 					$row[$pseudoName] = $val ?? '';
 					$typedef->fields[$pseudoName]->name = $pseudoName;
-					return $typedef->fields[$pseudoName]->displayType->buildInput(
+					$control = '';
+					if ($typedef->fields['value']->displayType instanceof \PXDisplayTypeCheckbox) {
+						$control .= sprintf(
+							'<input type="hidden" name="properties_unchecked[%s]" value="1">', $row['id']);
+					}
+					$control .= $typedef->fields[$pseudoName]->displayType->buildInput(
 						$typedef->fields[$pseudoName], $row);
+					return $control;
 				}
 				return $val;
 			});
@@ -197,8 +203,16 @@ MASS_ACTIONS
 				$this->deleteAction($id, $this->getPropertyFromRequest($id));
 				break;
 			case 'save_all':
-				$props = $this->request->getVar('properties');
-				if (!is_array($props)) {
+				$props = (array)$this->request->getVar('properties');
+				$props_unchecked = (array)$this->request->getVar('properties_unchecked');
+
+				foreach ($props_unchecked as $id => $v) {
+					if (!array_key_exists($id, $props)) {
+						$props[$id] = null;
+					}
+				}
+
+				if (!count($props)) {
 					return null;
 				}
 
@@ -220,6 +234,7 @@ MASS_ACTIONS
 		$typeDef = $this->getTypeDescription($propertyDef);
 		return $this->request->getContentObject($typeDef);
 	}
+
 	/**
 	 * @param $id
 	 * @return array|null
