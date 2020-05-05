@@ -347,7 +347,7 @@ class PXDatabase extends DatabaseAdapter implements DatabaseInterface {
 	}
 
 	protected function _getCacheIden($query, $mode, $limit) {
-		return sprintf('%s;mode:%s;limit:%s;groups:%s;acl:',
+		return sprintf('%s;mode:%s;limit:%s;groups:%s;acl:%s',
 			$query,
 			$mode,
 			is_array($limit) ? join('.', $limit) : '',
