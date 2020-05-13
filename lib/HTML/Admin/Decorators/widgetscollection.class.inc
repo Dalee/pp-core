@@ -1,40 +1,48 @@
 <?php
 
-final class PXDecorativeWidgetsCollection {
+final class PXDecorativeWidgetsCollection
+{
 
-	private static $namedData       = array();
-	private static $objectsNameHash = array();
-	private static $objectsTypeHash = array();
+	private static $namedData = [];
+	private static $objectsNameHash = [];
+	private static $objectsTypeHash = [];
 
-	private function __construct(){}
+	private function __construct()
+	{
+	}
 
-	private static function hash_key($object){
+	private static function hash_key($object)
+	{
 		return strtolower(is_object($object) ? get_class($object) : $object);
 	}
 
-	private static function removeFromCollection($hash, $key){
+	private static function removeFromCollection($hash, $key)
+	{
 		$count = 0;
-		if(!empty(self::${$hash}[$key])){
-			foreach(self::${$hash}[$key] as &$itemToDestroy){
+		if (!empty(self::${$hash}[$key])) {
+			foreach (self::${$hash}[$key] as &$itemToDestroy) {
 				$itemToDestroy = null;
 				$count++;
 			}
 			unset(self::${$hash}[$key]);
 		}
+
 		return $count;
 	}
 
-	public static function fill(PXAdminComplexWidget $decorableWidget){
-		$key    = self::hash_key($decorableWidget);
-		if(!empty(self::$namedData[$key])){
-			foreach(self::$namedData[$key] as $decorableAreal => $_){
+	public static function fill(PXAdminComplexWidget $decorableWidget)
+	{
+		$key = self::hash_key($decorableWidget);
+		if (!empty(self::$namedData[$key])) {
+			foreach (self::$namedData[$key] as $decorableAreal => $_) {
 				self::fillByType($decorableWidget, $decorableAreal);
 			}
 		}
 	}
 
-	public static function fillByType(PXAdminComplexWidget $decorableWidget, $decorableAreal){
-		$key    = self::hash_key($decorableWidget);
+	public static function fillByType(PXAdminComplexWidget $decorableWidget, $decorableAreal)
+	{
+		$key = self::hash_key($decorableWidget);
 		$subkey = self::hash_key($decorableAreal);
 		if (empty(self::$namedData[$key][$subkey])) {
 			return;
@@ -58,48 +66,54 @@ final class PXDecorativeWidgetsCollection {
 		}
 	}
 
-	private static function initVars($widget, $classToDecorate, $decorableAreal, $decorablePart, $alias = 'default') {
-		return array(
-			"wname"  => self::hash_key($widget),
-			"key"    => self::hash_key($classToDecorate),
+	private static function initVars($widget, $classToDecorate, $decorableAreal, $decorablePart, $alias = 'default')
+	{
+		return [
+			"wname" => self::hash_key($widget),
+			"key" => self::hash_key($classToDecorate),
 			"subkey" => self::hash_key($decorableAreal),
-			"alias"  => self::hash_key($alias));
+			"alias" => self::hash_key($alias)];
 	}
 
-	private static function putInLists($widget, $key, $wname, $subkey, $alias) {
-		self::$objectsNameHash[$key . $wname][]           = $widget;
-		self::$objectsTypeHash[$subkey . $alias][]        = $widget;
+	private static function putInLists(&$widget, $key, $wname, $subkey, $alias)
+	{
+		self::$objectsNameHash[$key . $wname][] = &$widget;
+		self::$objectsTypeHash[$subkey . $alias][] = &$widget;
 	}
 
-	public static function addToCollection($widget, $classToDecorate, $decorableAreal, $decorablePart, $alias = 'default'){
+	public static function addToCollection($widget, $classToDecorate, $decorableAreal, $decorablePart, $alias = 'default')
+	{
 		extract(self::initVars($widget, $classToDecorate, $decorableAreal, $decorablePart, $alias));
 
-		self::$namedData[$key][$subkey][$decorablePart][] = $widget;
+		self::$namedData[$key][$subkey][$decorablePart][] = &$widget;
 		self::putInLists($widget, $key, $wname, $subkey, $alias);
 	}
 
-	public static function addToCollectionBefore($beforeAreal, $widget, $classToDecorate, $decorableAreal, $decorablePart, $alias = 'default') {
+	public static function addToCollectionBefore($beforeAreal, $widget, $classToDecorate, $decorableAreal, $decorablePart, $alias = 'default')
+	{
 		extract(self::initVars($widget, $classToDecorate, $decorableAreal, $decorablePart, $alias));
 
 		self::addToPosition(0, $beforeAreal, $widget, $classToDecorate, $decorableAreal, $decorablePart, $alias);
 		self::putInLists($widget, $key, $wname, $subkey, $alias);
 	}
 
-	public static function addToCollectionAfter($afterAreal, $widget, $classToDecorate, $decorableAreal, $decorablePart, $alias = 'default') {
+	public static function addToCollectionAfter($afterAreal, $widget, $classToDecorate, $decorableAreal, $decorablePart, $alias = 'default')
+	{
 		extract(self::initVars($widget, $classToDecorate, $decorableAreal, $decorablePart, $alias));
 
 		self::addToPosition(1, $afterAreal, $widget, $classToDecorate, $decorableAreal, $decorablePart, $alias);
 		self::putInLists($widget, $key, $wname, $subkey, $alias);
 	}
 
-	private static function addToPosition($shift, $desiredAreal, $widget, $classToDecorate, $decorableAreal, $decorablePart, $alias = 'default') {
+	private static function addToPosition($shift, $desiredAreal, &$widget, $classToDecorate, $decorableAreal, $decorablePart, $alias = 'default')
+	{
 		extract(self::initVars($widget, $classToDecorate, $decorableAreal, $decorablePart, $alias));
 
 		$desiredAreal = strtolower($desiredAreal);
-		$merged = array($subkey => array($decorablePart => array($widget)));
+		$merged = [$subkey => [$decorablePart => [&$widget]]];
 
 		if (!isset(self::$namedData[$key])) {
-			self::$namedData[$key] =  $merged;
+			self::$namedData[$key] = $merged;
 			return;
 		}
 
@@ -109,23 +123,26 @@ final class PXDecorativeWidgetsCollection {
 		if ($position < 0) {
 			if ($shift == 1) {
 				self::$namedData[$key] = array_merge(self::$namedData[$key], $merged);
-			} elseif($shift == 0) {
+			} elseif ($shift == 0) {
 				self::$namedData[$key] = array_merge($merged, self::$namedData[$key]);
 			}
 		} else {
-			$before = array_slice(self::$namedData[$key], 0, $position  + $shift);
-			$after  = array_slice(self::$namedData[$key], $position);
+			$before = array_slice(self::$namedData[$key], 0, $position + $shift);
+			$after = array_slice(self::$namedData[$key], $position);
 
 			self::$namedData[$key] = array_merge($before, $merged, $after);
 		}
 	}
 
-	public static function removeFromCollectionByName($classToDecorate, $className){
+	public static function removeFromCollectionByName($classToDecorate, $className)
+	{
 		return self::removeFromCollection('objectsNameHash', self::hash_key($classToDecorate) . self::hash_key($className));
 	}
 
-	public static function removeFromCollectionByType($decorableAreal, $alias = 'default'){
+	public static function removeFromCollectionByType($decorableAreal, $alias = 'default')
+	{
 		return self::removeFromCollection('objectsTypeHash', self::hash_key($decorableAreal) . self::hash_key($alias));
 	}
 }
+
 ?>
