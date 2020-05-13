@@ -1,5 +1,8 @@
 # Change log
 
+## [2.3.22] 2020-05-13
+- Исправлено удаление виджетов из контейнера PXDecorativeWidgetsCollection
+
 ## [2.3.21] 2020-04-13
 - Исправлено массовое сохранение параметров типа checkbox для модуля `PP\Module\PropertiesModule`
 
