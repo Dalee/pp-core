@@ -40,7 +40,7 @@ class PXAuditLogger {
 
 		$this->logger = NLLogger::getLogger('audit');
 
-		$loggerSqlFormatFields = array(
+		$loggerSqlFormatFields = [
 			'ts' => '%t',
 			'level' => '%l',
 			'type' => '%1',
@@ -49,7 +49,7 @@ class PXAuditLogger {
 			'ip' => '%4',
 			'description' => '%5',
 			'diff' => '%6'
-		);
+		];
 		$loggerSqlFormat = $db->loggerSqlFormat('log_audit', $loggerSqlFormatFields);
 		if (!$loggerSqlFormat || $this->app->getProperty('DISABLE_LOGGER', 0) == '1') {
 			$this->logger->addAppender('sql', 'BlackHoleAppender');
@@ -133,9 +133,9 @@ class PXAuditLogger {
 	 */
 	function _createMsg($description, $source, $type, $diff) {
 		$user = $this->db->user->isAuthed() ? $this->db->user->login : 'UNKNOWN';
-		$ip   = (PXRequest::GetRemoteAddr() !== null) ? PXRequest::GetRemoteAddr() : 'UNKNOWN';
+		$ip   = PXRequest::GetRemoteAddr() ?: '127.0.0.1'; // for console scripts logging
 
-		return array($type, $source, $user, $ip, $description, $diff);
+		return [$type, $source, $user, $ip, $description, $diff];
 	}
 
 	/**

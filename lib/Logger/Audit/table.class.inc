@@ -38,12 +38,12 @@ class PXAdminAuditTable extends PXAdminTableSimple {
 
 			$source = explode('/', $row['source'])[0];
 
-			$typeFields = $this->app->types[$source]->fields;
+			$typeFields = $this->app->types[$source]->fields ?? [];
 			$changedOutput = 'Ничего не изменилось';
 			$humanTitles = [];
 
 			foreach ($diff as $code) {
-				$humanTitles[] = $typeFields[$code]->description;
+				isset($typeFields[$code]->description) && $humanTitles[] = $typeFields[$code]->description;
 			}
 
 			if (!empty($humanTitles)) {

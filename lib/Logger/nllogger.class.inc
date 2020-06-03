@@ -173,8 +173,8 @@ class Appender {
 	}
 
 	function _compileMessage ($level, $message) {
-		$pattern = array('%n', '%t', '%l', '%r' );
-		$replace = array($this->name, date('Y-m-d H:i:s'), $level, rand(1, 10000));
+		$pattern = ['%n', '%t', '%l', '%r'];
+		$replace = [$this->name, date('Y-m-d H:i:s'), $level, rand(1, 10000)];
 		if (is_array($message)) {
 			$i = 1;
 			foreach ($message as $part) {
@@ -265,7 +265,7 @@ class SQLAppender extends Appender {
 			// Escape text message
 			$msg = $this->_compileMessage(
 				$level,
-				array_map(array($this->db, 'EscapeString'), (array)$message)
+				array_map([$this->db, 'EscapeString'], (array)$message)
 			);
 
 			//4th argument is false -- do not flush cache !
