@@ -573,35 +573,7 @@ class PXDatabase extends DatabaseAdapter implements DatabaseInterface {
 			$field = array($field => $value);
 		}
 
-		$whereClause = array();
-		foreach ($field as $k => $v) {
-			$not = false;
-			if (strpos($k, '!') === 0) {
-				$not = true;
-				$k = str_replace('!', '', $k);
-			}
-			//заменяет спец.значения на соотв. sql-выражения
-			switch (true) {
-				case is_null($v):
-					$val = sprintf(' IS %sNULL', $not ? "NOT " : "");
-					break;
-
-				case is_array($v):
-					empty($v) && $this->FatalError("Array value for db#getObjectsByField* can't be empty!");
-					$db = $this;
-					$val = ($not ? " NOT" : "") . " IN ('" . join("','", array_map(function($item) use ($db) { return $db->EscapeString($item); }, $v)) . "')";
-					break;
-
-				case is_bool($v):
-					$val = ($not ? ' <> ' : ' = ') . $this->trueStatusString($v);
-					break;
-
-				default:
-					$val = ($not ? ' <> ' : ' = ') . "'".$this->EscapeString($v)."'";
-			}
-			$whereClause[] = $format->id.'.'.$k.$val;
-		}
-		$whereClause = implode($whereClause, ' AND ');
+		$whereClause = join(' AND ', $this->buildWhereFromArray($field, $format->id));
 
 		return $this->_GetData($format, $status, $mode, $whereClause, array($limit, $offset), $order);
 	}
@@ -2068,4 +2040,50 @@ SQL;
 	protected function clearLinksCache($reference) {
 		$this->cache->deleteGroup($reference);
 	}
+
+	/**
+	 * Метод генерирует массив строк sql where conditions из ассоциативного массива field => value
+	 * @example ['f1' => 'test', 'f2' => true, 'f3' => null] вернет ["f1 = 'test'", 'f2 = TRUE', 'f3 IS NULL']
+	 * Если в ключ добавить `!` первым символом - условие будет выстроено от обратного
+	 * @example  ['!f1' => 'test', '!f2' => true, '!f3' => null] вернет ["f1 <> 'test'", 'f2 <> TRUE', 'f3 IS NOT NULL']
+	 *
+	 * @param array $fields
+	 * @param string $formatId
+	 * @return array
+	 */
+	public function buildWhereFromArray(array $fields, string $formatId = ''): array
+	{
+		$whereClause = [];
+
+		foreach ($fields as $k => $v) {
+			$not = false;
+			if (strpos($k, '!') === 0) {
+				$not = true;
+				$k = str_replace('!', '', $k);
+			}
+			//заменяет спец.значения на соотв. sql-выражения
+			switch (true) {
+				case is_null($v):
+					$val = sprintf(' IS %sNULL', $not ? "NOT " : "");
+					break;
+
+				case is_array($v):
+					empty($v) && $this->FatalError("Array value for db#getObjectsByField* can't be empty!");
+					$val = sprintf("%s IN('%s')", $not ? ' NOT' : '', join("','", array_map([$this, 'EscapeString'], $v)));
+					break;
+
+				case is_bool($v):
+					$val = sprintf(' %s %s', $not ? '<>' : '=', $this->trueStatusString($v));
+					break;
+
+				default:
+					$val = sprintf(" %s '%s'", $not ? '<>' : '=', $this->EscapeString($v));
+			}
+			$prefix = $formatId ? "{$formatId}." : '';
+			$whereClause[] = $prefix . $k . $val;
+		}
+
+		return $whereClause;
+	}
+
 }
