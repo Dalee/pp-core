@@ -1,7 +1,7 @@
 # Change log
 
 ## [2.3.24] 2020-06-10
-- `PXDatabase`, парсер филдов из `getObjectsByFields` вынесен в отдельный публичный метод parseFieldsToWhere
+- `PXDatabase`, парсер филдов из `getObjectsByFields` вынесен в отдельный публичный метод `buildWhereFromArray`
 
 ## [2.3.23] 2020-06-03
 - Исправления ошибок логгера
