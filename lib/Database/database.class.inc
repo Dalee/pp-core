@@ -573,7 +573,7 @@ class PXDatabase extends DatabaseAdapter implements DatabaseInterface {
 			$field = array($field => $value);
 		}
 
-		$whereClause = join(' AND ', $this->parseFieldsToWhere($field, $format->id));
+		$whereClause = join(' AND ', $this->buildWhereFromArray($field, $format->id));
 
 		return $this->_GetData($format, $status, $mode, $whereClause, array($limit, $offset), $order);
 	}
@@ -2046,7 +2046,8 @@ SQL;
 	 * @param string $formatId
 	 * @return array
 	 */
-	public function parseFieldsToWhere($fields, $formatId = '') {
+	public function buildWhereFromArray(array $fields, string $formatId = ''): array
+	{
 		$whereClause = [];
 
 		foreach ($fields as $k => $v) {
@@ -2063,16 +2064,15 @@ SQL;
 
 				case is_array($v):
 					empty($v) && $this->FatalError("Array value for db#getObjectsByField* can't be empty!");
-					$db = $this;
-					$val = ($not ? " NOT" : "") . " IN ('" . join("','", array_map(function($item) use ($db) { return $db->EscapeString($item); }, $v)) . "')";
+					$val = sprintf("%s IN('%s')", $not ? ' NOT' : '', join("','", array_map([$this, 'EscapeString'], $v)));
 					break;
 
 				case is_bool($v):
-					$val = ($not ? ' <> ' : ' = ') . $this->trueStatusString($v);
+					$val = sprintf(' %s %s', $not ? '<>' : '=', $this->trueStatusString($v));
 					break;
 
 				default:
-					$val = ($not ? ' <> ' : ' = ') . "'".$this->EscapeString($v)."'";
+					$val = sprintf(" %s '%s'", $not ? '<>' : '=', $this->EscapeString($v));
 			}
 			$prefix = $formatId ? "{$formatId}." : '';
 			$whereClause[] = $prefix . $k . $val;
