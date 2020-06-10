@@ -1,5 +1,8 @@
 # Change log
 
+## [2.3.24] 2020-06-10
+- `PXDatabase`, парсер филдов из `getObjectsByFields` вынесен в отдельный публичный метод parseFieldsToWhere
+
 ## [2.3.23] 2020-06-03
 - Исправления ошибок логгера
 
@@ -57,7 +60,7 @@
 - Фикс использования non-static calls в DisplayType FilesArray.
 
 ## [2.3.7] 2018-06-05
-- Фикс `PP\Lib\Cache\Driver\Predis::deleteGroup` чтобы вырезал префиксы перед удалением. 
+- Фикс `PP\Lib\Cache\Driver\Predis::deleteGroup` чтобы вырезал префиксы перед удалением.
 
 ## [2.3.6] 2018-06-04
 - `PXTreeObjects::__isset` теперь проверяет ключ не только во внутреннем дереве, но и в самом себе.

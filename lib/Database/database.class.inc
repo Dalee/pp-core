@@ -573,35 +573,7 @@ class PXDatabase extends DatabaseAdapter implements DatabaseInterface {
 			$field = array($field => $value);
 		}
 
-		$whereClause = array();
-		foreach ($field as $k => $v) {
-			$not = false;
-			if (strpos($k, '!') === 0) {
-				$not = true;
-				$k = str_replace('!', '', $k);
-			}
-			//заменяет спец.значения на соотв. sql-выражения
-			switch (true) {
-				case is_null($v):
-					$val = sprintf(' IS %sNULL', $not ? "NOT " : "");
-					break;
-
-				case is_array($v):
-					empty($v) && $this->FatalError("Array value for db#getObjectsByField* can't be empty!");
-					$db = $this;
-					$val = ($not ? " NOT" : "") . " IN ('" . join("','", array_map(function($item) use ($db) { return $db->EscapeString($item); }, $v)) . "')";
-					break;
-
-				case is_bool($v):
-					$val = ($not ? ' <> ' : ' = ') . $this->trueStatusString($v);
-					break;
-
-				default:
-					$val = ($not ? ' <> ' : ' = ') . "'".$this->EscapeString($v)."'";
-			}
-			$whereClause[] = $format->id.'.'.$k.$val;
-		}
-		$whereClause = implode($whereClause, ' AND ');
+		$whereClause = join(' AND ', $this->parseFieldsToWhere($field, $format->id));
 
 		return $this->_GetData($format, $status, $mode, $whereClause, array($limit, $offset), $order);
 	}
@@ -2068,4 +2040,45 @@ SQL;
 	protected function clearLinksCache($reference) {
 		$this->cache->deleteGroup($reference);
 	}
+
+	/**
+	 * @param array $fields
+	 * @param string $formatId
+	 * @return array
+	 */
+	public function parseFieldsToWhere($fields, $formatId = '') {
+		$whereClause = [];
+
+		foreach ($fields as $k => $v) {
+			$not = false;
+			if (strpos($k, '!') === 0) {
+				$not = true;
+				$k = str_replace('!', '', $k);
+			}
+			//заменяет спец.значения на соотв. sql-выражения
+			switch (true) {
+				case is_null($v):
+					$val = sprintf(' IS %sNULL', $not ? "NOT " : "");
+					break;
+
+				case is_array($v):
+					empty($v) && $this->FatalError("Array value for db#getObjectsByField* can't be empty!");
+					$db = $this;
+					$val = ($not ? " NOT" : "") . " IN ('" . join("','", array_map(function($item) use ($db) { return $db->EscapeString($item); }, $v)) . "')";
+					break;
+
+				case is_bool($v):
+					$val = ($not ? ' <> ' : ' = ') . $this->trueStatusString($v);
+					break;
+
+				default:
+					$val = ($not ? ' <> ' : ' = ') . "'".$this->EscapeString($v)."'";
+			}
+			$prefix = $formatId ? "{$formatId}." : '';
+			$whereClause[] = $prefix . $k . $val;
+		}
+
+		return $whereClause;
+	}
+
 }
