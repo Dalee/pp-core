@@ -2042,6 +2042,11 @@ SQL;
 	}
 
 	/**
+	 * Метод генерирует массив строк sql where conditions из ассоциативного массива field => value
+	 * @example ['f1' => 'test', 'f2' => true, 'f3' => null] вернет ["f1 = 'test'", 'f2 = TRUE', 'f3 IS NULL']
+	 * Если в ключ добавить `!` первым символом - условие будет выстроено от обратного
+	 * @example  ['!f1' => 'test', '!f2' => true, '!f3' => null] вернет ["f1 <> 'test'", 'f2 <> TRUE', 'f3 IS NOT NULL']
+	 *
 	 * @param array $fields
 	 * @param string $formatId
 	 * @return array
