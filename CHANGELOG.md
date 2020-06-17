@@ -1,5 +1,8 @@
 # Change log
 
+## [2.3.25] 2020-06-17
+- Испаравлены ошибки invalid argument supplied for foreach в `PXDisplayTypeFilesArray`
+
 ## [2.3.24] 2020-06-10
 - `PXDatabase`, парсер филдов из `getObjectsByFields` вынесен в отдельный публичный метод `buildWhereFromArray`
 

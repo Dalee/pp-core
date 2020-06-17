@@ -21,6 +21,10 @@ class PXDisplayTypeFilesarray extends PXDisplayTypeImagesarray {
 	}
 
 	function buildCell($field, $object, $param=NULL) {
+		if (empty($object[$field->name]) || !is_array($object[$field->name])) {
+			return '';
+		}
+
 		$html = '';
 
 		$dtFile = new PXDisplayTypeFile($this->display, $this->name);

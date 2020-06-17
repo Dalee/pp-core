@@ -41,9 +41,13 @@ class PXDisplayTypeImagesarray extends PXDisplayTypeImage {
 	}
 
 	function buildCell($field, $object, $param=NULL) {
+		if (empty($object[$field->name]) || !is_array($object[$field->name])) {
+			return '';
+		}
+
 		$html = '';
 
-		foreach((array)$object[$field->name] as $value) {
+		foreach($object[$field->name] as $value) {
 			$html .= parent::buildCell($field, [$field->name => $value], $param);
 		}
 
