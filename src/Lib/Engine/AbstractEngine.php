@@ -129,14 +129,18 @@ abstract class AbstractEngine implements EngineInterface {
 			$initHelper = (!empty($this->{$var}['helper']) && method_exists($this, 'init' . ucfirst($var)) ? 'init' . ucfirst($var) : false);
 			$factory = $this->{$var}['factory'];
 
-			if (!class_exists($factory) && !(interface_exists($factory) && $initHelper)) {
-				\FatalError("Factory class '{$this->{$var}['factory']}' for '{$var}' is not exists !");
-			}
+			switch (true) {
+				case class_exists($factory):
+				case interface_exists($factory) && $initHelper:
+					if ($initHelper) {
+						$this->$initHelper($this->{$var}['factory']);
+					} else {
+						$this->$var = new $this->{$var}['factory'];
+					}
+					break;
 
-			if ($initHelper) {
-				$this->$initHelper($this->{$var}['factory']);
-			} else {
-				$this->$var = new $this->{$var}['factory'];
+				default:
+					\FatalError("Factory class '{$this->{$var}['factory']}' for '{$var}' is not exists !");
 			}
 		}
 	}

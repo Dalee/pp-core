@@ -35,11 +35,6 @@ class PXStructLeaf implements Iterator {
 		}
 		return $this->data->content[$key];
 	}
-
-	function __isset($key) {
-		return isset($this->$key) || isset($this->data->$key) || isset($this->data->content[$key]);
-	}
-
 	function path() {
 		return $this->data->tree->getFullPathString($this->data->id);
 	}
@@ -184,7 +179,7 @@ class PXTreeObjects implements ContentObjectsInterface, ArrayAccess, Iterator {
 	}
 
 	function __isset($key) {
-		return isset($this->$key) || isset($this->tree->$key) || $key === 'root';
+		return isset($this->$key) || isset($this->tree->$key);
 	}
 
 	function getLeaf($leafArray) {
