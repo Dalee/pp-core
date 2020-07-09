@@ -58,49 +58,32 @@ abstract class LayoutAbstract implements LayoutInterface {
 	/**
 	 * {@inheritdoc}
 	 */
-	public function setApp(\PXApplication $app) {
+	public function setLang(\PXUserHTMLLang $lang): LayoutInterface
+	{
 		return $this;
 	}
 
 	/**
 	 * {@inheritdoc}
 	 */
-	public function setLang($lang = 'rus') {
+	public function getLang(): ?\PXUserHTMLLang
+	{
+		return null;
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function setLangCode(string $langCode): LayoutInterface
+	{
 		return $this;
 	}
 
 	/**
 	 * {@inheritdoc}
 	 */
-	function getLang() {
-		return null;
-	}
-
-	/**
-	 * {@inheritdoc}
-	 */
-	function getSmarty() {
-		return null;
-	}
-
-	/**
-	 * {@inheritdoc}
-	 */
-	function getIndexTemplate() {
-		return null;
-	}
-
-	/**
-	 * {@inheritdoc}
-	 */
-	public function setContent($content) {
-		return $this;
-	}
-
-	/**
-	 * {@inheritdoc}
-	 */
-	public function getContent() {
+	public function display(): ?string
+	{
 		return null;
 	}
 
@@ -320,7 +303,8 @@ abstract class LayoutAbstract implements LayoutInterface {
 	/**
 	 * {@inheritdoc}
 	 */
-	public function assign($label, $value) {
+	public function assign(string $label, $value): LayoutInterface
+	{
 		$refValue = $value;
 		$this->set($label, $refValue);
 
