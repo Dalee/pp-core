@@ -1,5 +1,11 @@
 # Change log
 
+
+## [2.4.0] 2020-06-17
+- Smarty удален из репозитория
+- Унифицирован интерфейс `LayoutInterface`
+- Добавлена возможность использования своего пользовательского лэйаута, для этого в контейнере должен быть определен сервис `LayoutInterface::class`
+
 ## [2.3.25] 2020-06-17
 - Испаравлены ошибки invalid argument supplied for foreach в `PXDisplayTypeFilesArray`
 

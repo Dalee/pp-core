@@ -2,6 +2,8 @@
 
 namespace PP\Lib\Html\Layout;
 
+use PXUserHTMLLang;
+
 /**
  * Base layout interface for Admin and Client-side layouts
  * action/json handlers always uses Null layout.
@@ -13,53 +15,30 @@ interface LayoutInterface {
 
 	/**
 	 * @param string $name
-	 * @param string $value
+	 * @param mixed $value
 	 * @return $this
 	 */
-	function assign($name, $value);
+	function assign(string $name, $value): LayoutInterface;
 
 	/**
-	 * @param \PXApplication $app
+	 * @param PXUserHTMLLang $lang
 	 * @return $this
 	 */
-	function setApp(\PXApplication $app);
+	function setLang(PXUserHTMLLang $lang): LayoutInterface;
 
 	/**
-	 * TODO: should be refactored to setLangCode
-	 *
-	 * @param string $lang
+	 * @param string $langCode
 	 * @return $this
 	 */
-	function setLang($lang = 'rus');
+	function setLangCode(string $langCode): LayoutInterface;
 
 	/**
-	 *
-	 * @return \PXUserHTMLLang
+	 * @return PXUserHTMLLang|null
 	 */
-	function getLang();
+	function getLang(): ?PXUserHTMLLang;
 
 	/**
-	 * @return \Smarty
+	 * @return string|null
 	 */
-	function getSmarty();
-
-	/**
-	 * @return string
-	 */
-	function getIndexTemplate();
-
-	/**
-	 * Null layout in action/json handler Null layout is used, so it should be in interface
-	 *
-	 * @param object
-	 * @return $this
-	 */
-	function setContent($content);
-
-	/**
-	 * Null layout in action/json handler Null layout is used, so it should be in interface
-	 *
-	 * @return null|\PPBEMJSONContent
-	 */
-	function getContent();
+	function display(): ?string;
 }

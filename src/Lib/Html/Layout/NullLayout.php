@@ -11,56 +11,40 @@ class NullLayout implements LayoutInterface {
 	/**
 	 * {@inheritdoc}
 	 */
-	public function assign($name, $value) {
+	public function assign(string $name, $value): LayoutInterface
+	{
 		return $this;
 	}
 
 	/**
 	 * {@inheritdoc}
 	 */
-	public function setApp(\PXApplication $app) {
+	public function setLang(\PXUserHTMLLang $lang): LayoutInterface
+	{
 		return $this;
 	}
 
 	/**
 	 * {@inheritdoc}
 	 */
-	public function setLang($lang = 'rus') {
-		return $this;
-	}
-
-	/**
-	 * {@inheritdoc}
-	 */
-	function getLang() {
+	public function getLang(): ?\PXUserHTMLLang
+	{
 		return null;
 	}
 
 	/**
 	 * {@inheritdoc}
 	 */
-	function getSmarty() {
-		return null;
-	}
-
-	/**
-	 * {@inheritdoc}
-	 */
-	function getIndexTemplate() {
-		return null;
-	}
-
-	/**
-	 * {@inheritdoc}
-	 */
-	public function setContent($content) {
+	public function setLangCode(string $langCode): LayoutInterface
+	{
 		return $this;
 	}
 
 	/**
 	 * {@inheritdoc}
 	 */
-	public function getContent() {
+	public function display(): ?string
+	{
 		return null;
 	}
 
