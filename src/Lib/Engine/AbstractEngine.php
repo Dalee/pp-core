@@ -130,13 +130,13 @@ abstract class AbstractEngine implements EngineInterface {
 			$factory = $this->{$var}['factory'];
 
 			switch (true) {
-				case class_exists($factory):
+				case class_exists($factory) && $initHelper:
 				case interface_exists($factory) && $initHelper:
-					if ($initHelper) {
-						$this->$initHelper($this->{$var}['factory']);
-					} else {
-						$this->$var = new $this->{$var}['factory'];
-					}
+					$this->$initHelper($this->{$var}['factory']);
+					break;
+
+				case class_exists($factory):
+					$this->$var = new $this->{$var}['factory'];
 					break;
 
 				default:

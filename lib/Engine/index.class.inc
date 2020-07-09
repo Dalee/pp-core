@@ -47,6 +47,8 @@ class PXEngineIndex extends AbstractEngine {
 		$this->layout->assign('request', PXRegistry::getRequest());
 		$this->layout->assign('response', PXResponse::getInstance());
 		$this->layout->assign('tree', $this->content->tree);
+		$this->layout->assign('rootContent', $this->content->tree->root->content);
+		$this->layout->assign('currentStructContent', $this->content->tree->current->content);
 		$this->layout->assign('objects', $this->content->objects);
 		$this->layout->assign('subObjects', $this->content->subObjects);
 	}
