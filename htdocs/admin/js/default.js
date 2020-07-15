@@ -127,7 +127,7 @@ function hideShowLeaf(id, format) {
 		expandLink.removeAttr('href');
 		expandImg.attr('src', src.replace('.gif', '-anim.gif'));
 		$.ajax({
-			url : '/admin/json.phtml?area=main',
+			url : '/admin/json.phtml?area=' + GetQueryVariable('area', 'main'),
 			data: data,
 			dataType: 'json',
 			type: 'POST',
