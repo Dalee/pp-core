@@ -1,5 +1,8 @@
 # Change log
 
+## [2.3.26] 2020-07-15
+- При подгрузке `leaf`ов в админке в `area` передается текущий модуль.
+
 ## [2.3.25] 2020-06-17
 - Испаравлены ошибки invalid argument supplied for foreach в `PXDisplayTypeFilesArray`
 
