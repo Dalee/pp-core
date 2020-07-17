@@ -41,4 +41,10 @@ interface LayoutInterface {
 	 * @return string|null
 	 */
 	function display(): ?string;
+
+	/**
+	 * @param bool $value
+	 * @return LayoutInterface
+	 */
+	function setDebug(bool $value): LayoutInterface;
 }

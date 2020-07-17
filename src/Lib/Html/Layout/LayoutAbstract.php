@@ -440,4 +440,12 @@ abstract class LayoutAbstract implements LayoutInterface {
 		return @"?{$href['query']}";
 	}
 
+	/**
+	 * @inheritDoc
+	 */
+	public function setDebug(bool $value): LayoutInterface
+	{
+		return $this;
+	}
+
 }

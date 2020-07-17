@@ -33,10 +33,14 @@ class PXEngineIndex extends AbstractEngine {
 
 		// TODO: Suppose init lang must be optional and must be done using container.
 		// TODO: Binding lang to layout is rather questionable too, because it's often needed in userAction/userJson.
+		/** @var LayoutInterface $layout */
 		$layout = $this->container->get($layoutClass);
+		require_once PPLIBPATH . 'HTML/lang.class.inc';
 		$lang = new PXUserHTMLLang();
 		$lang->setTree($this->app->langTree);
-		$layout->setLang($lang);
+		$layout
+			->setDebug($this->app->isDevelopmentMode())
+			->setLang($lang);
 
 		$this->layout = $layout;
 	}

@@ -48,4 +48,12 @@ class NullLayout implements LayoutInterface {
 		return null;
 	}
 
+	/**
+	 * @inheritDoc
+	 */
+	public function setDebug(bool $value): LayoutInterface
+	{
+		return $this;
+	}
+
 }
