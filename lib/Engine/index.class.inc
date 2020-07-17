@@ -38,9 +38,7 @@ class PXEngineIndex extends AbstractEngine {
 		require_once PPLIBPATH . 'HTML/lang.class.inc';
 		$lang = new PXUserHTMLLang();
 		$lang->setTree($this->app->langTree);
-		$layout
-			->setDebug($this->app->isDevelopmentMode())
-			->setLang($lang);
+		$layout->setLang($lang);
 
 		$this->layout = $layout;
 	}

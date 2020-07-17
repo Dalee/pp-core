@@ -77,6 +77,7 @@ abstract class AbstractEngine implements EngineInterface {
 		}
 
 		$this->app->loadProperties($this->db);
+		$this->layout->setDebug($this->app->isDevelopmentMode());
 		$this->db->loadDirectoriesAutomatic($this->app->directory);
 
 		$this->initModules();
