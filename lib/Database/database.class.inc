@@ -309,13 +309,13 @@ class PXDatabase extends DatabaseAdapter implements DatabaseInterface {
 			$t->getTrigger()->OnGetDataBuildQuery($this, $format, $mode, $query, $selector, $where, $order_by, $limit);
 		}
 
-		$queryIden = $this->_getCacheIden($query, $mode, $limit);
-		$data = $this->cache->load(array($queryIden, $format->id));
+		$queryIden = $dontUseCache ? null : $this->_getCacheIden($query, $mode, $limit);
+		$data = $dontUseCache ? null : $this->cache->load(array($queryIden, $format->id));
 
-		if ($data === null || $dontUseCache) {
+		if ($data === null) {
 			$sqlRes = $this->Query($query, true, $limit);
 			$data = $this->_PrepareResult($sqlRes, $format, $mode);
-			$this->cache->save(array($queryIden, $format->id), $data);
+			$dontUseCache || $this->cache->save(array($queryIden, $format->id), $data);
 		}
 
 		return $data;
