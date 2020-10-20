@@ -1,5 +1,9 @@
 # Change log
 
+## [2.3.28] 2020-10-20
+- Добавлен функционал модуля `PP\Module\FileModule` protected directories - реализует защищенные от скачивания по прямой ссылке файлы, 
+  скачивание файлов из таких папок доступно только через модуль (nginx internal location + X-Accel-Redirect header).
+
 ## [2.3.27] 2020-10-05
 - Убрано обращение к кешу и сохранение в кеш при запросе `PXDatabase::_GetData()` с флагом `dontUseCache` 
 
@@ -7,7 +11,7 @@
 - При подгрузке `leaf`ов в админке в `area` передается текущий модуль.
 
 ## [2.3.25] 2020-06-17
-- Испаравлены ошибки invalid argument supplied for foreach в `PXDisplayTypeFilesArray`
+- Исправлены ошибки invalid argument supplied for foreach в `PXDisplayTypeFilesArray`
 
 ## [2.3.24] 2020-06-10
 - `PXDatabase`, парсер филдов из `getObjectsByFields` вынесен в отдельный публичный метод `buildWhereFromArray`

@@ -9,8 +9,12 @@ function LinkFile(name, dir, file, size) {
 }
 
 function InMemory(url) {
-	window.clipboardData.setData('Text', url);
-	alert('Готово');
+	try {
+		window.clipboardData.setData('Text', url);
+		alert('Готово');
+	} catch (e) {
+		//noop
+	}
 	return false;
 }
 

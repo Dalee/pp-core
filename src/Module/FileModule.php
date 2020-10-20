@@ -14,6 +14,7 @@ class FileModule extends AbstractModule {
 
 	var $settings;
 	var $area;
+	protected $protected;
 
 	function __construct($area, $settings) {
 		parent::__construct($area, $settings);
@@ -30,6 +31,7 @@ class FileModule extends AbstractModule {
 		}
 
 		$openDirs = $settings['dir'];
+		$this->protected = $settings['protected'] ?? [];
 
 		if(is_string($openDirs)) {
 			$openDirs = array($openDirs);
@@ -91,7 +93,20 @@ class FileModule extends AbstractModule {
 
 			$listing->setDestination($othDir);
 			$listing->getList($curDir);
-			$listing->setDecorator(new \PXHTMLFileListing($href, $tab['side']));
+			$listing->setDecorator(new \PXHTMLFileListing($href, $tab['side'], function ($alias, $f) {
+				$url = $alias;
+
+				$catalog = rtrim($f->catalog, '/');
+				foreach ($this->protected as $protected) {
+					if (strncmp($catalog, $protected, mb_strlen($protected)) === 0) {
+						$mimeType = mime_content_type($f->path);
+						$url = 'action.phtml?area=file&url=' . $alias . '&type=' . $mimeType . '&action=protected';
+						break;
+					}
+				}
+
+				return $url;
+			}));
 
 			$this->layout->assign('INNER.'.$tab['cell'].'.0', $listing->html());
 
@@ -199,7 +214,8 @@ HTML;
 				$html = '<div class="edit-file-form">'.$this->editFileForm().'</div>';
 				break;
 
-			case 'link':
+			//FIXME: UNUSED?
+			/*case 'link':
 				$rName = $this->request->GetVar('name');
 
 				$curDir = $this->request->GetVar('ldir');
@@ -217,7 +233,7 @@ HTML;
 				$this->layout->assign('OUTER.LEFTCONTROLS', '<button class="unlink" onclick="return UnLinkFile(\''.$rName.'\');">Отвязать</button>');
 
 				$html = '<table class="filemanager"><tbody><tr><td><div class="content">'.$listing->html().'</div></td></tr></tbody></table>';
-				break;
+				break;*/
 
 			default:
 				$html = '<div class="error">Действие не определено</div>';
@@ -278,6 +294,7 @@ HTML;
 			case 'edit':      $this->withArgs(array($this->mFile),                                     '_aEdit');    break;
 			case 'unzip':     $this->withArgs(array($this->catalog, $this->mFile),                     '_aUnZip');   break;
 			case 'upload':    $this->withArgs(array($this->catalog),                                   '_aUpload');  break;
+			case 'protected': $this->_aProtectedAccess();                                                            break;
 		}
 
 		return $this->redir;
@@ -295,8 +312,21 @@ HTML;
 		return $name = _TranslitFilename(_stripBadFileChars($name));
 	}
 
-
 	# Actions
+
+	/**
+	 * Для того, чтобы работали защищенные ссылки на файлы, нужно добавить соответствующие internal location в nginx
+	 */
+	function _aProtectedAccess() {
+		$url = $this->request->getVar('url');
+		$type = $this->request->getVar('type');
+
+		$this->response->addHeader('X-Accel-Redirect', $url);
+		$this->response->addHeader('Content-Type', $type);
+		$this->response->downloadFile(basename($url));
+		$this->response->send();
+	}
+
 	function _aEdit() {
 		$this->redir = NULL;
 

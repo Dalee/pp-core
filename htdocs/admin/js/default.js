@@ -379,6 +379,8 @@ function renderContextMenu (title, items) {
 		if (el.url) {
 			node.href = el.url;
 			if (el.blank) node.target = '_blank';
+
+			if (el.download) node.download = '';
 		}
 		else if (el.action) {
 			node.href = 'javascript: ' + el.action;
@@ -520,7 +522,7 @@ function ContextFile (title, isDir, urlAlias, isWrite, isDelete, isBinary, dir, 
 		{ group: 'standard', block: 'rename', content: 'Переименовать', action: 'RenameFile' + jsP2, disabled: !isDelete },
 		{ group: 'standard', block: 'del', content: 'Удалить', action: 'RemoveFile' + jsP2, disabled: !isDelete },
 
-		{ group: 'alias', block: 'alias', content: 'Скачать/Показать', url: urlAlias || '#', blank: true, disabled: !urlAlias },
+		{ group: 'alias', block: 'alias', content: 'Скачать', download: true, url: urlAlias || '#', blank: true, disabled: !urlAlias },
 		{ group: 'alias', block: 'memory', content: 'В буфер обмена', action: 'return InMemory(\'' + urlAlias + '\');', disabled: !urlAlias }
 	];
 }

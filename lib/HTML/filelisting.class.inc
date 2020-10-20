@@ -1,11 +1,14 @@
 <?php
+/*
+FIXME: UNUSED?
 class PXHTMLFileListingLink extends PXHTMLFileListing {
-	function PXHTMLFileListingLink($href, $side, $name) {
-		$this->PXHTMLFileListing($href, $side);
+
+	function __construct($href, $side, $name) {
+		parent::__construct($href, $side);
 		$this->name = htmlspecialchars($name, ENT_COMPAT|ENT_HTML401, DEFAULT_CHARSET);
 	}
 
-	function htmlHeader() {
+	public function htmlHeader() {
 		$_html =   // FIXME !!!
 <<<HTML
 <table>
@@ -28,7 +31,7 @@ HTML;
 		return $this->_breadCrumbs().$_html;
 	}
 
-	function htmlList($files) {
+	public function htmlList($files) {
 		$_ = '';
 
 		foreach($files as $f) {
@@ -59,16 +62,22 @@ HTML;
 		return '<span>'.$f->name.'</span>';
 	}
 }
-
+*/
 class PXHTMLFileListing {
-	function PXHTMLFileListing($href, $side) {
+
+	protected $urlBuilder;
+
+	function __construct($href, $side, ?callable $urlBuilder = null) {
 		$this->base = $href.'&'.$side.'dir=';
-		$this->href = $href;
 		$this->side = $side;
 		$this->files = array();
+		$this->href = $href;
+		$this->urlBuilder = $urlBuilder ?: function ($alias) {
+			return $alias;
+		};
 	}
 
-	function htmlHeader() {
+	public function htmlHeader() {
 		$_html =   // FIXME !!!
 <<<HTML
 <table>
@@ -89,7 +98,7 @@ HTML;
 		return $this->_breadCrumbs().$_html;
 	}
 
-	function htmlUp($canUp, $up) {
+	public function htmlUp($canUp, $up) {
 		$_html = // FIX ME !!!
 <<<HTML
 <tr>
@@ -138,7 +147,7 @@ HTML;
 		return '<div class="breadcrumds">'.$_.'</div>';
 	}
 
-	function htmlList($files) {
+	public function htmlList($files) {
 		$_ = '';
 
 		foreach($files as $f) {
@@ -163,7 +172,6 @@ HTML;
 				$_ .= '<a href="'. $this->base . rawurlencode($this->catalog . $f->name) .'" title="'. $this->escapeHTML($f->name) .'">';
 				$_ .= $this->_listContext($f);
 				$_ .= '</a>';
-
 			} else {
 				$_ .= '<del>'. $this->escapeHTML($f->name) .'</del>';
 			}
@@ -184,18 +192,24 @@ HTML;
 	private function escapeJS($str) {
 		return "'" . $this->escapeHTML(addslashes($str)) . "'";
 	}
+
 	private function escapeHTML($str) {
 		return htmlspecialchars($str, ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE | ENT_DISALLOWED, DEFAULT_CHARSET) ;
 	}
 
 	function _listContext($f) {
 
+		$name = $this->escapeHTML($f->name);
+		$alias = $this->escapeHTML($f->alias);
+
+		$url = ($this->urlBuilder)($alias, $f);
+
 		$tmp = array(
 			"Context(event",
 			"'file'",
 			$this->escapeJS($f->name),                                     // title
 			$f->isDir,                                                     // isDir
-			$this->escapeJS(str_replace('\\', '/', $f->alias)),            // isRead / alias
+			$this->escapeJS(str_replace('\\', '/', $url)),            // isRead / alias
 			$f->writable,                                                  // isWrite
 			$f->deletable,                                                 // isDelete
 			$f->binary,                                                    // isBinary
@@ -209,14 +223,11 @@ HTML;
 
 		$context = ' onContextMenu="'. implode(', ', $tmp) .'"';
 
-		$name = $this->escapeHTML($f->name);
-		$alias = $this->escapeHTML($f->alias);
-
 		if ($f->isDir) {
 			$click = $name;
 		} elseif ($f->alias) {
-			$click = '<a style="margin-left:-21px" href="'. $alias .'"><img src="/admin/i/files/'. $f->type .'.gif" /></a>';
-			$click .= '<a class="memory" href="'. $alias . '" onClick="return InMemory(\''.$f->alias.'\');">'. $name .'</a>';
+			$click = '<a style="margin-left:-21px" href="'. $url .'"><img src="/admin/i/files/'. $f->type .'.gif" /></a>';
+			$click .= '<a class="memory" href="'. $url . '" onClick="return InMemory(\''.$f->alias.'\');">'. $name .'</a>';
 		} else {
 			$click = $name;
 		}
@@ -265,11 +276,11 @@ HTML;
 		return '<td>'.$this->_filePermissions($f->path).'</td>';
 	}
 
-	function htmlFooter() {
+	public function htmlFooter() {
 		return '</table>';
 	}
 
-	function error() {
+	public function error() {
 		return '<div class="error">Этот каталог <strong>не доступен</strong> для просмотра<br/> Вернитесь к <a href="'.$this->href.'">списку каталогов</a></div>';
 	}
 }
