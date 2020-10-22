@@ -44,7 +44,7 @@ class AuthModule extends AbstractModule {
 			]
 		);
 
-		if ($this->user->IsAuthed()) {
+		if ($this->user->isAuthed()) {
 			$this->user->unAuth();
 			$this->layout->assign(
 				'LOGIN.ERROR',
@@ -52,7 +52,7 @@ class AuthModule extends AbstractModule {
 			);
 
 
-		} else if ($this->request->GetAction() == 'error') {
+		} else if ($this->request->getAction() == 'error') {
 			$this->layout->assign(
 				'LOGIN.ERROR',
 				'<strong class="login-error">Ошибка авторизации</strong>'
@@ -66,8 +66,8 @@ class AuthModule extends AbstractModule {
 		// TODO: remove this shitty magic with nextLocation guessing
 
 		$captcha = new \NLBlockingNumbers();
-		$captchaKey = $this->request->getPostVar('captchaKey');
-		$captchaVal = $this->request->getPostVar('captchaVal');
+		$captchaKey = $this->request->GetPostVar('captchaKey');
+		$captchaVal = $this->request->GetPostVar('captchaVal');
 
 		$captchaSolved = $this->app->isDevelopmentMode();
 		if ($captcha->CheckValueByKey($captchaKey, $captchaVal, true)) {
@@ -99,14 +99,14 @@ class AuthModule extends AbstractModule {
 		if ($this->_auth() == 0) {
 			$nextLocation = ($this->request->GetVar('onsuccess'))
 				? $this->request->GetVar('onsuccess')
-				: $this->request->GetReferer();
+				: $this->request->getReferer();
 
 			$nextLocation = removeParamFromUrl($nextLocation, 'login');
 
 		} else {
 			$nextLocation = ($this->request->GetVar('onerror'))
 				? $this->request->GetVar('onerror')
-				: $this->request->GetReferer();
+				: $this->request->getReferer();
 
 			$nextLocation = appendParamToUrl($nextLocation, 'login', 'bad');
 		}
@@ -114,18 +114,22 @@ class AuthModule extends AbstractModule {
 	}
 
 
-	function _auth() {
+	protected function _auth() {
 		$audit = \PXAuditLogger::getLogger();
 
-		switch ($this->request->getVar('action')) {
+		switch ($this->request->GetVar('action')) {
 			case 'exit':
 				$audit->info('Выход из системы', 'suser' . '/' . $this->user->id);
-				$this->user->UnAuth();
+				$this->user->unAuth();
 				return 0;
-				break;
 
 			default:
-				if ($this->user->IsAuthed()) {
+				$login = $this->request->GetPostVar('login');
+				$password = $this->request->GetPostVar('passwd');
+
+				$this->user->checkAuth(compact('login', 'password'));
+
+				if ($this->user->isAuthed()) {
 					$this->user->auth();
 					$audit->info('Вход в систему', 'suser' . '/' . $this->user->id);
 					return 0;
@@ -134,7 +138,6 @@ class AuthModule extends AbstractModule {
 					$audit->error('Неудачный вход в систему', 'suser' . '/', 'ERROR');
 					return 1;
 				}
-				break;
 		}
 	}
 }

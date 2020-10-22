@@ -1,6 +1,9 @@
 <?php
-class PXUserNull extends PXUser {
-	function can($what, $format = NULL, $object = NULL) {
+
+class PXUserNull extends PXUser
+{
+	public function can($what, $format = NULL, $object = NULL)
+	{
 		FatalError('Хм... А почему реальный юзер все еще не создан?');
 	}
 }

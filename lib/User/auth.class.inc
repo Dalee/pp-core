@@ -3,10 +3,10 @@
 use PP\Lib\Auth\AuthInterface;
 use PP\Lib\Auth\AuthException;
 
-class PXUserAuthorized extends PXUser {
+class PXUserAuthorized extends PXUser
+{
 	protected $authDriverRemap = [
-		'session' => 'PP\Lib\Auth\Session',
-		'secure' => 'PP\Lib\Auth\Secure',
+		'session' => PP\Lib\Auth\Session::class,
 	];
 
 	/**
@@ -16,11 +16,12 @@ class PXUserAuthorized extends PXUser {
 	 * @param $object array
 	 * @return bool
 	 */
-	function can($what, $format = NULL, $object = NULL) {
+	public function can($what, $format = NULL, $object = NULL)
+	{
 		$can = false; //ACL system is restrictive by default
 
 		if ($object === NULL) {
-			$object = array('id' => NULL, 'parent' => NULL);
+			$object = ['id' => NULL, 'parent' => NULL];
 		}
 
 		foreach ((array)$what as $rule) {
@@ -32,13 +33,17 @@ class PXUserAuthorized extends PXUser {
 		return $can;
 	}
 
-	function checkAuth() {
+	/**
+	 * @inheritdoc
+	 */
+	public function checkAuth(?array $withCredentials = null): bool
+	{
 		foreach ($this->app->authrules as $rule => $params) {
 			if (!$params['enabled']) {
 				continue;
 			}
 
-			$isAuth = $this->proceedAuth($rule, $params);
+			$isAuth = $this->proceedAuth($rule, $params, $withCredentials);
 			if (!$isAuth) {
 				continue;
 			}
@@ -51,10 +56,23 @@ class PXUserAuthorized extends PXUser {
 		return $this->auth->onAuth();
 	}
 
-	private function proceedAuth($authDriverClass, $params) {
-		$authDriverClass = (isset($this->authDriverRemap[$authDriverClass]))
-			? $this->authDriverRemap[$authDriverClass]
-			: $authDriverClass;
+	public function authorizeAs(array $userData, ?string $authMethod = null): bool
+	{
+		if (empty($userData['id'])) {
+			return false;
+		}
+
+		$authDriverClass = $this->getPrimaryAuthMethod($authMethod);
+		$authDriver = $this->makeAuthDriver($authDriverClass, []); //FIXME: auth $params unused for now
+
+		$authDriver->fillUserFields($userData);
+
+		return $this->auth();
+	}
+
+	private function makeAuthDriver(string $authDriverClass, array $params = []): AuthInterface
+	{
+		$authDriverClass = $this->authDriverRemap[$authDriverClass] ?? $authDriverClass;
 
 		if (!class_exists($authDriverClass)) {
 			throw new AuthException('Unknown auth driver: ' . $authDriverClass);
@@ -62,14 +80,19 @@ class PXUserAuthorized extends PXUser {
 
 		/** @var AuthInterface $authDriver */
 		$authDriver = new $authDriverClass($params);
-		$authDriver
+		return $authDriver
 			->setApp($this->app)
 			->setDb($this->db)
 			->setRequest($this->request)
 			->setUser($this)
 			->setSession(PXRegistry::getSession());
+	}
 
-		if (!$authDriver->isCredentialsValid()) {
+	private function proceedAuth(string $authDriverClass, array $params, ?array $withCredentials): bool
+	{
+		$authDriver = $this->makeAuthDriver($authDriverClass, $params);
+
+		if (!($withCredentials ? $authDriver->isCredentialsValid($withCredentials) : $authDriver->isAuthorized())) {
 			return false;
 		}
 
@@ -77,13 +100,13 @@ class PXUserAuthorized extends PXUser {
 		return true;
 	}
 
-
-	private function setGroups() {
+	private function setGroups()
+	{
 		if (!isset($this->app->types[DT_GROUP])) {
 			return;
 		}
 
-		$groups = $this->db->getLinks(
+		$groups = $this->db->GetLinks(
 			$this->app->references[LINK_GROUP2USER],
 			DT_USER,
 			$this->id
@@ -97,7 +120,8 @@ class PXUserAuthorized extends PXUser {
 		);
 	}
 
-	function aclType() {
+	public function aclType()
+	{
 		return (count($this->groups) > 1) ? 'bygroup' : 'basic';
 	}
 }

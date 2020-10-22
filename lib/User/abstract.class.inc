@@ -12,18 +12,20 @@ require_once PPLIBPATH . 'Acl/classes.inc';
 
 use PP\Lib\Auth\NullAuth;
 
-abstract class PXUser {
-	var $id;
-	var $login;
-	var $groups;
-	var $data;
-	var $auth;
+abstract class PXUser
+{
+	public $id;
+	public $login;
+	public $passwd;
+	public $groups;
+	public $data;
+	public $auth;
 
 	/** @var PXApplication */
-	var $app;
+	public $app;
 
 	/**
-	 * @var \PXDatabase
+	 * @var PXDatabase
 	 */
 	protected $db;
 
@@ -31,11 +33,12 @@ abstract class PXUser {
 	protected $acl;
 
 	/**
-	 * @var \PXRequest
+	 * @var PXRequest
 	 */
 	protected $request;
 
-	function __construct() {
+	public function __construct()
+	{
 		$this->id = null;
 		$this->login = null;
 		$this->groups = [0];
@@ -47,7 +50,8 @@ abstract class PXUser {
 	 * @param PXDatabase $db
 	 * @return $this
 	 */
-	function setDb(PXDatabase $db) {
+	public function setDb(PXDatabase $db)
+	{
 		$this->db = $db;
 
 		$this->db->setUser($this);
@@ -60,7 +64,8 @@ abstract class PXUser {
 	 * @param PXApplication $app
 	 * @return $this
 	 */
-	function setApp(PXApplication $app) {
+	public function setApp(PXApplication $app)
+	{
 		$this->app = $app;
 
 		return $this;
@@ -70,15 +75,16 @@ abstract class PXUser {
 	 * @param PXRequest $request
 	 * @return $this
 	 */
-	function setRequest(PXRequest $request) {
+	public function setRequest(PXRequest $request)
+	{
 		$this->request = $request;
 
 		return $this;
 	}
 
-
-	function auth() {
-		if ($this->checkAuth()) {
+	public function auth()
+	{
+		if ($this->isAuthed()) {
 			foreach ($this->app->triggers->system as $t) {
 				$t->getTrigger()->onAfterUserAuth($this);
 			}
@@ -88,11 +94,13 @@ abstract class PXUser {
 		return false;
 	}
 
-	function unAuth() {
+	public function unAuth()
+	{
 		return $this->auth->unAuth();
 	}
 
-	function isAdmin() {
+	public function isAdmin()
+	{
 		foreach ($this->app->modules as $module) {
 			if ($module->getName() != 'auth' && $this->can('admin', $module)) {
 				return true;
@@ -105,28 +113,46 @@ abstract class PXUser {
 	/**
 	 * @return bool
 	 */
-	function isAuthed() {
+	public function isAuthed()
+	{
 		return $this->id !== null;
 	}
 
-	function checkAuth() {
+	/**
+	 * @return bool
+	 */
+	public function checkAuth(?array $withCredentials = null): bool
+	{
 		return false;
 	}
 
-	function getTitle() {
+	/**
+	 * Authorize current user from external user data, without credentials (ex. after confirm email routine)
+	 * @param array $userData
+	 * @param string|null $authMethod
+	 * @return bool
+	 */
+	public function authorizeAs(array $userData, ?string $authMethod = null): bool
+	{
+		return false;
+	}
+
+	public function getTitle()
+	{
 		return $this->auth->getTitle();
 	}
 
 	/**
-	 * @param null $req_auth_method
+	 * @param string|null $req_auth_method
 	 * @return array of fully qualified class names
 	 */
-	function getAuthMethods($req_auth_method = null) {
+	public function getAuthMethods($req_auth_method = null)
+	{
 		$authDriverList = null;
 
 		foreach ($this->app->authrules as $rule => $param) {
-			if (!is_null($req_auth_method) && $rule == $req_auth_method) { //use required auth method
-				$authDriverList[0] = $rule; //single element
+			if (!is_null($req_auth_method) && $rule == $req_auth_method && $param['enabled']) { //use required auth method
+				$authDriverList = [$rule]; //single element
 				break;
 			}
 
@@ -136,17 +162,18 @@ abstract class PXUser {
 		}
 
 		if (is_null($authDriverList)) {
-			$authDriverList[] = 'PP\Lib\Auth\NullAuth';
+			$authDriverList[] = NullAuth::class;
 		}
 
 		return $authDriverList;
 	}
 
 	/**
-	 * @param null $type
+	 * @param string|null $type
 	 * @return string fully qualified class name
 	 */
-	function getPrimaryAuthMethod($type = null) {
+	public function getPrimaryAuthMethod($type = null): string
+	{
 		$authMethods = $this->getAuthMethods($type);
 		return reset($authMethods);
 	}

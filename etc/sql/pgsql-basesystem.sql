@@ -37,7 +37,8 @@ INSERT INTO suser (title, email, passwd, realname, status, sys_uuid)
 VALUES (
 	'admin',
 	'admin@localhost.local',
-	md5('1010'),
+	-- bcrypt hash '1010'
+	'$2y$10$0x7cRFlHmuDin.rjiMropue1CGmKxO4q4.i7eX/nlWlKZbehoEa/O',
 	'Администратор',
 	true,
 	'0466909f-2e37-4f01-969a-7ef68ec23976'

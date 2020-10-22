@@ -2,36 +2,47 @@
 
 namespace PP\Lib\Auth;
 
-use Symfony\Component\HttpFoundation\Session\Session;
+use PXApplication;
+use PXDatabase;
+use PXRegistry;
+use PXRequest;
+use PXUser;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
 
-abstract class AuthAbstract implements AuthInterface {
+abstract class AuthAbstract implements AuthInterface
+{
 
-	/** @var \PXRequest */
+	/** @var PXRequest */
 	protected $request;
 
-	/** @var \PXDatabase */
+	/** @var PXDatabase */
 	protected $db;
 
-	/** @var \PXApplication */
+	/** @var PXApplication */
 	protected $app;
 
-	/** @var \PXUser */
+	/** @var PXUser */
 	protected $user;
 
-	/** @var null|Session */
+	/** @var null|SessionInterface */
 	protected $session;
 
+	/** @var @var string|null */
 	protected $login;
+
+	/** @var @var string|null */
 	protected $passwd;
 
-	public function __construct($params = []) {
+	public function __construct(?array $params = [])
+	{
 		// params is not used right now..
 	}
 
 	/**
 	 * {@inheritdoc}
 	 */
-	public function setRequest(\PXRequest $request) {
+	public function setRequest(PXRequest $request): AuthInterface
+	{
 		$this->request = $request;
 
 		return $this;
@@ -40,7 +51,8 @@ abstract class AuthAbstract implements AuthInterface {
 	/**
 	 * {@inheritdoc}
 	 */
-	public function setDb(\PXDatabase $db) {
+	public function setDb(PXDatabase $db): AuthInterface
+	{
 		$this->db = $db;
 
 		return $this;
@@ -49,7 +61,8 @@ abstract class AuthAbstract implements AuthInterface {
 	/**
 	 * {@inheritdoc}
 	 */
-	public function setApp(\PXApplication $app) {
+	public function setApp(PXApplication $app): AuthInterface
+	{
 		$this->app = $app;
 
 		return $this;
@@ -58,48 +71,56 @@ abstract class AuthAbstract implements AuthInterface {
 	/**
 	 * {@inheritdoc}
 	 */
-	public function setUser(\PXUser $user) {
+	public function setUser(PXUser $user): AuthInterface
+	{
 		$this->user = $user;
 
 		return $this;
 	}
 
 	/**
-	 * @param null|Session $session
+	 * @param null|SessionInterface $session
 	 * @return $this
 	 */
-	public function setSession(Session $session = null) {
+	public function setSession(?SessionInterface $session = null): AuthInterface
+	{
 		$this->session = $session;
 
 		return $this;
 	}
 
+	/**
+	 * {@inheritdoc}
+	 */
+	abstract public function isCredentialsValid(array $credentials): bool;
 
 	/**
 	 * {@inheritdoc}
 	 */
-	abstract public function isCredentialsValid();
+	abstract public function isAuthorized(): bool;
 
+	public function fillUserFields(array $uArray): void
+	{
+		$user = $this->user ?: PXRegistry::getUser();
 
-	protected function fillUserFields($uArray) {
-		$user = \PXRegistry::getUser();
-
-		$user->id = $uArray['id'];
-		$user->login = $uArray['title'];
+		$user->id = $uArray['id'] ?? null;
+		$user->login = $uArray['title'] ?? null;
 		$user->data = $uArray;
-		$this->passwd = $user->passwd = $uArray['passwd'];
+		$this->passwd = $user->passwd = $uArray['passwd'] ?? null;
 	}
 
-	function getTitle() {
+	public function getTitle(): ?string
+	{
 		return $this->user->login;
 	}
 
-	protected function findUser() {
+	protected function findUser(): ?array
+	{
 		if (!mb_strlen($this->login)) {
 			return null;
 		}
 
-		$tmp = $this->db->GetObjectsByFieldLimited(
+		$tmp = $this->db->getObjectsByFieldLimited(
 			$this->app->types[DT_USER],
 			true,
 			'title',
@@ -111,11 +132,13 @@ abstract class AuthAbstract implements AuthInterface {
 		return count($tmp) ? current($tmp) : null;
 	}
 
-	function auth() {
+	public function auth(): bool
+	{
 		return true;
 	}
 
-	function unAuth() {
+	public function unAuth(): bool
+	{
 		return true;
 	}
 
@@ -125,66 +148,18 @@ abstract class AuthAbstract implements AuthInterface {
 	 *
 	 * @return bool
 	 */
-	function onAuth() {
+	public function onAuth(): bool
+	{
 		return true;
 	}
 
-	protected function encodePasswd($passwd, $toMd5 = true) {
+	public static function passwdToDB(string $passwd): string
+	{
 		return $passwd;
 	}
 
-	public static function passwdToDB($passwd) {
-		return $passwd;
-	}
-
-	/**
-	 * @param string $login
-	 * @return null|string
-	 */
-	function parseLogin($login) {
-		$result = is_string($login)
-			? preg_replace('/[^\w\.\@\-]/' . REGEX_MOD, '', mb_substr($login, 0, 255))
-			: null;
-
-		return $result;
-	}
-
-	/**
-	 * @param string $password
-	 * @return null|string
-	 */
-	function parsePasswd($password) {
-		$result = is_string($password)
-			? $password
-			: null;
-
-		return $result;
-	}
-
-
-	protected function _lazySetAuthField($field) {
-		$request = \PXRegistry::getRequest();
-
-		$f = $request->getVar($field);
-
-		$parseMethod = sprintf("parse%s", ucfirst($field));
-		$f = call_user_func_array([$this, $parseMethod], [$f]);
-
-		if ((!is_string($f)) || (!mb_strlen($f))) {
-			$f = (string)$request->getCookieVar($field);
-		}
-
-		\PXRegistry::getUser()->$field = $f;
-		return $this->$field = $f;
-	}
-
-
-	protected function login() {
-		$this->_lazySetAuthField("login");
-	}
-
-
-	protected function passwd() {
-		$this->_lazySetAuthField("passwd");
+	public static function verifyPassword(string $plainPassword, string $hash): bool
+	{
+		return static::passwdToDB($plainPassword) === $hash;
 	}
 }
