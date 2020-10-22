@@ -67,7 +67,15 @@ class PXUserAuthorized extends PXUser
 
 		$authDriver->fillUserFields($userData);
 
-		return $this->auth();
+		$this->auth = $authDriver;
+
+		if ($this->auth()) {
+			$this->setGroups();
+			$this->acl->reload();
+			return $this->auth->onAuth();
+		}
+
+		return false;
 	}
 
 	private function makeAuthDriver(string $authDriverClass, array $params = []): AuthInterface
