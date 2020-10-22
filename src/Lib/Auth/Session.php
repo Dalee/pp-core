@@ -68,6 +68,11 @@ class Session extends AuthAbstract
 
 	public static function passwdToDB(string $passwd): string
 	{
-		return md5($passwd);
+		return password_hash($passwd, PASSWORD_BCRYPT);
+	}
+
+	public static function verifyPassword(string $plainPassword, string $hash): bool
+	{
+		return password_verify($plainPassword, $hash);
 	}
 }
