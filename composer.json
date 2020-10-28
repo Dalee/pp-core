@@ -19,7 +19,7 @@
 		"bin/pp"
 	],
 	"require": {
-		"dalee/pp-installers": "~1.0.4",
+		"dalee/pp-installers": "~1.0.5",
 		"monolog/monolog": "^1.19",
 		"symfony/http-foundation": "~3.4",
 		"ramsey/uuid": "^3.5",
