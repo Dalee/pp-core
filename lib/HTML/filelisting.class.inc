@@ -227,7 +227,7 @@ HTML;
 			$click = $name;
 		} elseif ($f->alias) {
 			$click = '<a style="margin-left:-21px" href="'. $url .'"><img src="/admin/i/files/'. $f->type .'.gif" /></a>';
-			$click .= '<a class="memory" href="'. $url . '" onClick="return InMemory(\''.$f->alias.'\');">'. $name .'</a>';
+			$click .= '<a class="memory" href="'. $url . '">'. $name .'</a>';
 		} else {
 			$click = $name;
 		}

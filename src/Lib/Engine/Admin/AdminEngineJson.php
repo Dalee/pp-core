@@ -49,12 +49,8 @@ class AdminEngineJson extends AbstractAdminEngine {
 	}
 
 	function sendJson() {
-		$body = json_encode($this->result);
-
 		$response = PXResponse::getInstance();
-		$response->setContentType('text/javascript');
-		$response->setLength(strlen($body));
-		$response->send($body);
+		$response->sendJson($this->result);
 		exit;
 	}
 

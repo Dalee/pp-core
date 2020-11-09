@@ -1,30 +1,34 @@
 <?php
 
-class PXResponse {
-	var $STATUS_OK                      = '200 OK';
-	var $STATUS_MOVED                   = '301 Moved Permanently';
-	var $STATUS_FOUND                   = '302 Found';
-	var $STATUS_NOT_MODIFIED            = '304 Not Modified';
-	var $STATUS_NOT_FOUND               = '404 Not Found';
-	var $STATUS_FORBIDDEN               = '403 Forbidden';
-	var $STATUS_INTERNAL_ERROR          = '500 Internal Server Error';
-	var $STATUS_NOT_IMPLEMENTED         = '501 Not Implemented';
-	var $STATUS_TEMPORARILY_UNAVAILABLE = '503 Service Temporarily Unavailable';
+use Symfony\Component\HttpFoundation\Cookie;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\ResponseHeaderBag;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
-	var $headers = array();
-	var $status;
-	var $contentType = array();
+final class PXResponse
+{
+	/** @var self */
+	private static $instance;
 
-	public function __construct() {
-		$this->status = $this->STATUS_OK;
+	/** @var Response */
+	private $httpResponse;
+
+	/**
+	 * PXResponse constructor.
+	 */
+	public function __construct()
+	{
+		$this->httpResponse = new Response();
 
 		try {
-			$app       = PXRegistry::getApp(); // APP may not be initialized yet and throws exception
-			$charset   = $app->GetProperty('OUTPUT_CHARSET', DEFAULT_CHARSET);
-			$cacheTime = $app->GetProperty('PP_RESPONSE_CACHE_EXPIRATION', 3600);
+			$app = PXRegistry::getApp(); // APP may not be initialized yet and throws exception
+			$charset = $app->getProperty('OUTPUT_CHARSET', DEFAULT_CHARSET);
+			$cacheTime = $app->getProperty('PP_RESPONSE_CACHE_EXPIRATION', 3600);
 
 		} catch (Exception $e) {
-			$charset   = DEFAULT_CHARSET;
+			$charset = DEFAULT_CHARSET;
 			$cacheTime = 3600;
 		}
 
@@ -32,40 +36,71 @@ class PXResponse {
 		$this->setContentType('text/html', $charset);
 	}
 
-	static function &getInstance() {
-		static $instance;
+	/**
+	 * @param int $timeOut
+	 * @param null $xae
+	 * @return $this
+	 */
+	public function cache($timeOut = 3600, $xae = null): self
+	{
+		$this->httpResponse
+			->setPrivate()
+			->setMaxAge((int)$timeOut);
 
-		if (is_null($instance)) {
-			$instance = new PXResponse();
-		}
+		$this->addHeader('X-Accel-Expires', intval($xae ?? $timeOut));
 
-		return $instance;
+		return $this;
 	}
 
-	function redirect($url, $cacheTimeOut = null) {
-		if (ini_get('display_errors') && PXErrorReporter::hasErrors(true)) {
-			exit();
+	/**
+	 * @param string $name
+	 * @param string $value
+	 * @return $this
+	 */
+	public function addHeader(string $name, string $value): self
+	{
+		$this->httpResponse->headers->set($name, $value);
+		return $this;
+	}
+
+	/**
+	 * @param string $contentType
+	 * @param string|null $charset
+	 * @return $this
+	 */
+	public function setContentType(string $contentType, ?string $charset = null): self
+	{
+		$this->httpResponse->headers->set('Content-Type', $contentType);
+
+		if (mb_strlen($charset)) {
+			$this->httpResponse->setCharset($charset);
 		}
 
-		// sanitize url
-		$url = strtr($url, array(
-				' '   => '%20',
-				"\r"  => '',
-				"\n"  => '',
-				"\t"  => '%20',
-				'%0D' => '',
-				'%0A' => '',
-				'%09' => '%20',
-				'%00' => ''
-			)
-		);
+		return $this;
+	}
 
-		// this is non-RFC compliant mode
-		// @see: https://github.com/guzzle/guzzle3/blob/b3f5050cb6270c7a728a0b74ac2de50a262b3e02/src/Guzzle/Http/RedirectPlugin.php#L128
-		// for explanations
-		$this->status = $this->STATUS_MOVED;
+	/**
+	 * @return static
+	 */
+	public static function getInstance(): self
+	{
+		if (is_null(static::$instance)) {
+			static::$instance = new PXResponse();
+		}
 
-		$this->addHeader('Location', $url);
+		return static::$instance;
+	}
+
+	/**
+	 * @param string $url
+	 * @param string|int|null $cacheTimeOut
+	 * @param int $statusCode
+	 */
+	public function redirect(string $url, $cacheTimeOut = null, int $statusCode = Response::HTTP_MOVED_PERMANENTLY): void
+	{
+		if (ini_get('display_errors') && PXErrorReporter::hasErrors()) {
+			exit();
+		}
 
 		if (!is_null($cacheTimeOut)) {
 			$this->cache($cacheTimeOut);
@@ -73,142 +108,185 @@ class PXResponse {
 			$this->dontCache();
 		}
 
-		$this->send();
+		$redirectResponse = new RedirectResponse($url, $statusCode, $this->httpResponse->headers->all());
+
+		$redirectResponse->send();
 
 		exit();
 	}
 
-	function addHeader($name, $value) {
-		$this->headers[$name] = $value;
+	/**
+	 * @return $this
+	 */
+	public function dontCache(): self
+	{
+		$this->httpResponse->setPublic();
+		$this->addHeader('X-Accel-Expires', 0)
+			->addHeader('Cache-Control', 'no-cache, no-store, must-revalidate')
+			->addHeader('Expires', DateUnixToGMT());
+
+		return $this;
 	}
 
-	function removeHeader($name) {
-		unset($this->headers[$name]);
+	/**
+	 * @param string|null $content
+	 */
+	public function send(?string $content = null): void
+	{
+		if (mb_strlen($content)) {
+			// NOTICE: no mb_ here
+			$this->setLength(strlen($content));
+		}
+		$this->httpResponse->setContent($content);
+		$this->httpResponse->send();
 	}
 
-	function setOk() {
-		$this->status = $this->STATUS_OK;
+	/**
+	 * @param int $length
+	 * @return $this
+	 */
+	public function setLength(int $length): self {
+		$this->addHeader('Content-Length', $length);
+		return $this;
 	}
 
-	function notFound() {
-		$this->status = $this->STATUS_NOT_FOUND;
+	/**
+	 * @return $this
+	 */
+	public function setOk(): self
+	{
+		$this->httpResponse->setStatusCode(Response::HTTP_OK);
+		return $this;
 	}
 
-	function notModified() {
-		$this->status = $this->STATUS_NOT_MODIFIED;
-	}
-
-	function forbidden() {
-		$this->status = $this->STATUS_FORBIDDEN;
-	}
-
-	// Do nothing with cache for 500s answers at Proxima side
-	function internalError() {
-		$this->status = $this->STATUS_INTERNAL_ERROR;
-		$this->noCache();
-	}
-
-	function notImplemented() {
-		$this->status = $this->STATUS_NOT_IMPLEMENTED;
-		$this->noCache();
-	}
-
-	function unavailable() {
-		$this->status = $this->STATUS_TEMPORARILY_UNAVAILABLE;
-		$this->noCache();
-	}
-
-	function isError() {
-		return intval($this->status) >= 400;
+	/**
+	 * @return $this
+	 */
+	public function notFound(): self
+	{
+		$this->httpResponse->setStatusCode(Response::HTTP_NOT_FOUND);
+		return $this;
 	}
 
 	// Cache management
-	function dontCache() {
-		$this->addHeader('X-Accel-Expires',  0);
-		$this->addHeader('Cache-Control', 'no-store, no-cache, must-revalidate, post-check=0, pre-check=0');
-		$this->addHeader('Expires', DateUnixToGMT());
+
+	/**
+	 * @return $this
+	 */
+	public function forbidden(): self
+	{
+		$this->httpResponse->setStatusCode(Response::HTTP_FORBIDDEN);
+		return $this;
 	}
 
-	function noCache() { // not sure about caching behaviour, make upstream server responsible for this
-		$this->removeHeader('X-Accel-Expires');
-		$this->removeHeader('Cache-Control');
-		$this->removeHeader('Expires');
+	/**
+	 * @return $this
+	 */
+	public function unavailable(): self
+	{
+		$this->httpResponse->setStatusCode(Response::HTTP_SERVICE_UNAVAILABLE);
+		$this->noCache();
+		return $this;
 	}
 
-	function cache($timeOut = 3600, $xae = null) {
-		$this->addHeader('X-Accel-Expires', isset($xae) ? (int)$xae : (int)$timeOut);
-		$this->addHeader('Cache-Control', sprintf('private, max-age=%d', (int)$timeOut));
-		$this->addHeader('Expires', DateUnixToGMT(time()+(int)$timeOut));
+	/**
+	 * @return $this
+	 */
+	public function noCache(): self
+	{ // not sure about caching behaviour, make upstream server responsible for this
+		$this->removeHeader('X-Accel-Expires')
+			->removeHeader('Cache-Control')
+			->removeHeader('Expires');
+
+		return $this;
 	}
 
-	function setLength($length) {
-		$this->addHeader('Content-Length', $length);
+	/**
+	 * @param string $name
+	 * @return $this
+	 */
+	public function removeHeader(string $name): self
+	{
+		$this->httpResponse->headers->remove($name);
+		return $this;
 	}
 
-	function setCharset($charset) {
-		$this->setContentType($this->contentType['type'], $charset);
+	/**
+	 * @return bool
+	 */
+	public function isError(): bool
+	{
+		return $this->httpResponse->isClientError() || $this->httpResponse->isServerError();
 	}
 
-	function setLastModified($timestamp){
-		$this->addHeader('Last-Modified', DateUnixToGMT($timestamp));
+	/**
+	 * @param int $code
+	 * @return $this
+	 */
+	public function setStatus(int $code): self
+	{
+		$this->httpResponse->setStatusCode($code);
+		return $this;
 	}
 
-	function setContentType($contentType, $charset=null) {
-		$this->contentType = array(
-			'type'    => $contentType,
-			'charset' => NULL
-		);
-
-		if (mb_strlen($charset)) {
-			$this->contentType['charset'] = $charset;
-			$contentType .= ';charset='.$charset;
-		}
-
-		$this->addHeader('Content-Type', $contentType);
+	/**
+	 * @param string $charset
+	 * @return $this
+	 */
+	public function setCharset(string $charset): self
+	{
+		$this->httpResponse->setCharset($charset);
+		return $this;
 	}
 
-	function downloadFile($filename, $contentType = null, $dispositionType = 'attachment', $charset=null) {
+	/**
+	 * @param string $filename
+	 * @param string|null $contentType
+	 * @param string $dispositionType
+	 * @param string|null $charset
+	 * @return $this
+	 */
+	public function downloadFile(string $filename, ?string $contentType = null,
+								 string $dispositionType = ResponseHeaderBag::DISPOSITION_ATTACHMENT,
+								 ?string $charset = null): self
+	{
 		if (mb_strlen($contentType)) {
 			$this->setContentType($contentType, $charset);
 		}
-		$this->addHeader('Content-Disposition', $dispositionType . '; filename="'. $filename .'"');
+
+		$disposition = $this->httpResponse->headers->makeDisposition($dispositionType, $filename);
+
+		$this->httpResponse->headers->set('Content-Disposition', $disposition);
+
+		return $this;
 	}
 
-	function send($content = null, $http_version_1_1 = true) {
-		if (!headers_sent()) {
-			// FIXME: we really need HTTP/1.1 ?
-			// to fix troubles with Transfer-Encoding: chunked
-			// (Apache uses it when Content-Length header missed for 1.1)
-			// you may use Nginx directive "chunked_transfer_encoding off;"
-			// in the http{} or location{} config scopes
-			header(sprintf('HTTP/1.%d %s', (int)$http_version_1_1, $this->status));
-
-			if (mb_strlen($content)) {
-				// NOTICE: no mb_ here
-				$this->setLength(strlen($content));
-			}
-
-			$this->_sendHeaders();
+	/**
+	 * @param null $jsonData
+	 * @param string|null $contentType
+	 * @param string|null $charset
+	 */
+	public function sendJson($jsonData = null, ?string $contentType = null, ?string $charset = null): void
+	{
+		if (mb_strlen($contentType)) {
+			$this->setContentType($contentType, $charset);
+		} else {
+			$this->httpResponse->headers->remove('Content-Type'); // JsonResponse class automatic set proper content type
 		}
 
-		if (mb_strlen($content)) {
-			echo $content;
-		}
+		// TODO: add JsonResponse callback support?
+		$jsonResponse = new JsonResponse($jsonData, $this->httpResponse->getStatusCode(), $this->httpResponse->headers->all());
+		$jsonResponse->headers->set('Content-Length', strlen($jsonResponse->getContent()));
+		$jsonResponse->send();
 	}
 
-	function _sendHeaders() {
-		$sentHeaders = function_exists('apache_response_headers') ? apache_response_headers() : array();
-		$notSent = !is_array($sentHeaders);
-
-		foreach($this->headers  as $header => $value) {
-			if($notSent || !isset($sentHeaders[$header])) {
-				header($header.': '.$value);
-			}
-		}
-
-		if (function_exists('sendheaders')) {
-			sendheaders(); // TODO: remove
-		}
+	/**
+	 * @param callable $callback
+	 */
+	public function sendStream(callable $callback): void
+	{
+		$streamedResponse = new StreamedResponse($callback, $this->httpResponse->getStatusCode(), $this->httpResponse->headers->all());
+		$streamedResponse->send();
 	}
 
 	/**
@@ -218,17 +296,19 @@ class PXResponse {
 	 *
 	 * @param string $name
 	 * @param mixed $value
-	 * @param integer $expire
-	 * @param string $domain
+	 * @param int|null $expire
+	 * @param string|null $domain
 	 * @param string $path
-	 * @param boolean $secure
-	 * @param boolean $httponly
-	 * @return boolean
+	 * @param bool $secure
+	 * @param bool $httpOnly
+	 * @param bool $raw
+	 * @param string|null $sameSite
+	 * @return bool
+	 * @noinspection PhpTooManyParametersInspection
 	 */
-	function SetCookie($name, $value, $expire = NULL, $domain = NULL, $path = '/', $secure = false, $httponly = false) {
-		if (headers_sent()) {
-			return false;
-		}
+	public function setCookie(string $name, $value, ?int $expire = null, ?string $domain = null, string $path = '/',
+							  bool $secure = false, bool $httpOnly = false, bool $raw = false, ?string $sameSite = null)
+	{
 		if (is_array($value) || is_object($value)) {
 			$value = serialize($value);
 		}
@@ -237,8 +317,18 @@ class PXResponse {
 			$expire = 0;
 		}
 
-		return setcookie($name, $value, $expire, $path, $domain, $secure, $httponly);
+		$this->httpResponse->headers->setCookie(new Cookie($name, $value, $expire, $path, $domain, $secure,
+			$httpOnly, $raw, $sameSite));
+
+		return true;
+	}
+
+	/**
+	 * Get access to Symfony Response instance for edge cases
+	 * @return Response
+	 */
+	public function getBaseResponse(): Response
+	{
+		return $this->httpResponse;
 	}
 }
-
-?>

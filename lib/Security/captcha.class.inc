@@ -187,9 +187,10 @@ class NLCaptcha {
 		$response->dontCache();
 		$response->setContentType('image/jpeg');
 
-		$response->send();
-		ImageJpeg($this->im, null, mt_rand(60,90));
-		ImageDestroy($this->im);
+		$response->sendStream(function() {
+			ImageJpeg($this->im, null, mt_rand(60,90));
+			ImageDestroy($this->im);
+		});
 	}
 
 	/*

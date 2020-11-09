@@ -321,10 +321,10 @@ HTML;
 		$url = $this->request->getVar('url');
 		$type = $this->request->getVar('type');
 
-		$this->response->addHeader('X-Accel-Redirect', $url);
-		$this->response->addHeader('Content-Type', $type);
-		$this->response->downloadFile(basename($url));
-		$this->response->send();
+		$this->response->addHeader('X-Accel-Redirect', $url)
+			->setContentType($type)
+			->downloadFile(basename($url))
+			->send();
 	}
 
 	function _aEdit() {

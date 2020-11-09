@@ -523,7 +523,7 @@ function ContextFile (title, isDir, urlAlias, isWrite, isDelete, isBinary, dir, 
 		{ group: 'standard', block: 'del', content: 'Удалить', action: 'RemoveFile' + jsP2, disabled: !isDelete },
 
 		{ group: 'alias', block: 'alias', content: 'Скачать', download: true, url: urlAlias || '#', blank: true, disabled: !urlAlias },
-		{ group: 'alias', block: 'memory', content: 'В буфер обмена', action: 'return InMemory(\'' + urlAlias + '\');', disabled: !urlAlias }
+		//{ group: 'alias', block: 'memory', content: 'В буфер обмена', action: 'return InMemory(\'' + urlAlias + '\');', disabled: !urlAlias }
 	];
 }
 
