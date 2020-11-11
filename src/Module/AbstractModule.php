@@ -2,7 +2,6 @@
 
 namespace PP\Module;
 
-use PP\Lib\Database\Driver\PostgreSqlDriver;
 use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 
 /**
@@ -24,7 +23,7 @@ abstract class AbstractModule implements ModuleInterface {
 	var $app;
 
 	/**
-	 * @var \PXDatabase|PostgreSqlDriver
+	 * @var \PXDatabase|\PP\Lib\Database\Driver\PostgreSqlDriver
 	 */
 	var $db;
 
@@ -44,7 +43,7 @@ abstract class AbstractModule implements ModuleInterface {
 	var $layout;
 
 	/**
-	 * @var \PXResponse
+	 * @var \PP\Lib\Http\Response
 	 */
 	var $response;
 

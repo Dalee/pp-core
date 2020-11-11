@@ -2,6 +2,7 @@
 
 namespace PP\Module;
 
+use PP\Lib\Http\Response;
 use PP\Lib\Rss\RssChannel;
 
 /**
@@ -74,7 +75,7 @@ class RssEngineModule extends AbstractModule {
 
 		$xml = $this->unhtmlentities($xml);
 
-		$response = \PXResponse::getInstance();
+		$response = Response::getInstance();
 		$response->setOk();
 		$response->setContentType('text/xml', $this->encoding);
 		$response->send($xml);

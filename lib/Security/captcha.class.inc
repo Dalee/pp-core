@@ -1,4 +1,7 @@
 <?php
+
+use PP\Lib\Http\Response;
+
 /**
  * Project:     Dalee PHP-classes library
  * File:        captcha.class.inc
@@ -182,8 +185,7 @@ class NLCaptcha {
 	}
 
 	function showImage() {
-		require_once PPLIBPATH . 'response.class.inc';
-		$response = PXResponse::getInstance();
+		$response = Response::getInstance();
 		$response->dontCache();
 		$response->setContentType('image/jpeg');
 

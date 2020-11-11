@@ -1,6 +1,7 @@
 <?php
 
 use PP\Lib\Cache\ObjectCache;
+use PP\Lib\Http\Response;
 
 class PXErrorReporterHTML extends PXErrorReporter {
 
@@ -16,7 +17,7 @@ class PXErrorReporterHTML extends PXErrorReporter {
 	}
 
 	function fatalWarning($error) {
-		$response = PXResponse::getInstance();
+		$response = Response::getInstance();
 		$host = quot(PXRequest::GetHttpHost());
 		$uri = quot(urldecode(PXRequest::GetRequestUri()));
 		$response->unavailable();
@@ -110,7 +111,7 @@ HTML
 	}
 
 	function sendReport() {
-		list($cyclesCount, $inLoop) = $this->_throttling();
+		[$cyclesCount, $inLoop] = $this->_throttling();
 
 		if ($inLoop) {
 			return;

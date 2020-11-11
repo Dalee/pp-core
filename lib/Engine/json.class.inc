@@ -1,5 +1,6 @@
 <?php
 
+use PP\Lib\Http\Response;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use PP\Lib\Engine\AbstractEngine;
 use PP\Module\AbstractModule;
@@ -11,7 +12,7 @@ class PXEngineJSON extends AbstractEngine {
 		$moduleDescription = $this->modules[$this->area];
 		$instance = $moduleDescription->getModule();
 
-		$response = PXResponse::getInstance();
+		$response = Response::getInstance();
 		$response->dontCache();
 
 		if ($instance instanceof ContainerAwareInterface) {
@@ -34,7 +35,7 @@ class PXEngineJSON extends AbstractEngine {
 	}
 
 	function sendJson() {
-		$response = PXResponse::getInstance();
+		$response = Response::getInstance();
 		$response->sendJson($this->result);
 		exit;
 	}
@@ -58,7 +59,7 @@ class PXEngineJSON extends AbstractEngine {
 	}
 
 	protected static function toObject($key, $value, $encode) {
-		return (object)array($key => (object)array('notice' => $value));
+		return (object)[$key => (object)['notice' => $value]];
 	}
 
 	/** {@inheritdoc} */

@@ -12,7 +12,6 @@ require_once PPLIBPATH . 'Debug/functions.inc';
 require_once PPLIBPATH . 'loader.class.inc';
 
 require_once PPLIBPATH . 'Filesys/dir.class.inc';
-require_once PPLIBPATH . 'response.class.inc';
 require_once PPLIBPATH . 'Request/classes.inc';
 require_once PPLIBPATH . 'Mail/message.class.inc';
 require_once PPLIBPATH . 'Mail/EventCalendar/classes.inc';

@@ -2,8 +2,8 @@
 
 namespace PP\Lib\Engine\Admin;
 
+use PP\Lib\Http\Response;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
-use PXResponse;
 
 /**
  * Class AdminEngineAction.
@@ -48,7 +48,7 @@ class AdminEngineAction extends AbstractAdminEngine {
 	}
 
 	function redirect() {
-		$response = PXResponse::getInstance();
+		$response = Response::getInstance();
 		$response->dontCache();
 
 		switch ($this->request->getAfterActionDeal()) {

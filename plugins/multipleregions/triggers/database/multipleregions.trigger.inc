@@ -1,4 +1,7 @@
 <?php
+
+use PP\Lib\Http\Response;
+
 class PXTriggerDatabaseMultipleregions extends PXAbstractDatabaseTrigger {
 	private $isRegionalCloning  = false;
 	private $parentObject = null;
@@ -93,7 +96,7 @@ class PXTriggerDatabaseMultipleregions extends PXAbstractDatabaseTrigger {
 			$request = PXRegistry::getRequest();
 
 			if ($this->isObjectForm()) {
-				PXResponse::getInstance()->redirect("popup.phtml?area={$request->getArea()}&format={$format->id}&id={$nid}&action=main");
+				Response::getInstance()->redirect("popup.phtml?area={$request->getArea()}&format={$format->id}&id={$nid}&action=main");
 			} else {
 				$hasBeenCloned = true; //if not redirected to popup after clone, do not fire error !
 			}
@@ -188,7 +191,7 @@ class PXTriggerDatabaseMultipleregions extends PXAbstractDatabaseTrigger {
 			$db->modifyLinks($reference, $format->id, $nid, $links);
 
 			$request = PXRegistry::getRequest();
-			PXResponse::getInstance()->redirect("popup.phtml?area={$request->getArea()}&format={$format->id}&id={$nid}&action=links");
+			Response::getInstance()->redirect("popup.phtml?area={$request->getArea()}&format={$format->id}&id={$nid}&action=links");
 		}
 
 		return $permit;
@@ -316,7 +319,7 @@ class PXTriggerDatabaseMultipleregions extends PXAbstractDatabaseTrigger {
 		}
 
 		$request  = PXRegistry::getRequest();
-		$response = PXResponse::getInstance();
+		$response = Response::getInstance();
 		$returnTo = $request->GetHttpReferer();
 
 		if(empty($returnTo)){

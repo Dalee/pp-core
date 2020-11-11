@@ -2,8 +2,8 @@
 
 namespace PP\Lib\Engine\Admin;
 
+use PP\Lib\Http\Response;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
-use PXResponse;
 
 /**
  * Class AdminEngineJson.
@@ -49,7 +49,7 @@ class AdminEngineJson extends AbstractAdminEngine {
 	}
 
 	function sendJson() {
-		$response = PXResponse::getInstance();
+		$response = Response::getInstance();
 		$response->sendJson($this->result);
 		exit;
 	}

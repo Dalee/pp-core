@@ -2,6 +2,8 @@
 
 namespace PP\Lib\Html\Layout;
 
+use PP\Lib\Http\Response;
+
 define('TABLECOLOR1', '#E7E9ED');
 define('TABLECOLOR2', '#C9CED6');
 define('TABLECOLOR3', '#385A94');
@@ -424,7 +426,7 @@ abstract class LayoutAbstract implements LayoutInterface {
 
 	function flush($charset = null) {
 		$result = $this->html();
-		$response = \PXResponse::getInstance();
+		$response = Response::getInstance();
 		$response->send($result);
 	}
 

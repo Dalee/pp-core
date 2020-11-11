@@ -2,9 +2,9 @@
 
 namespace PP\Lib\Engine\Admin;
 
+use PP\Lib\Http\Response;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use PXModuleDescription;
-use PXResponse;
 use PP\Lib\Html\Layout\AdminHtmlLayout;
 
 /**
@@ -103,7 +103,7 @@ class AdminEngineIndex extends AbstractAdminEngine {
 		if ($this->area == 'exit') {
 			$this->session->invalidate(1);
 
-			$response = PXResponse::getInstance();
+			$response = Response::getInstance();
 			$response->redirect(sprintf('action.phtml?area=%s&action=exit', $this->authArea));
 		}
 
@@ -133,7 +133,7 @@ class AdminEngineIndex extends AbstractAdminEngine {
 	}
 
 	public function html() {
-		$response = PXResponse::getInstance();
+		$response = Response::getInstance();
 		$response->dontCache();
 
 		$charset = $this->app->getProperty('OUTPUT_CHARSET', DEFAULT_CHARSET);

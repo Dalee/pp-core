@@ -1,26 +1,31 @@
 <?php
 
+namespace PP\Lib\Http;
+
+use Exception;
+use PXErrorReporter;
+use PXRegistry;
 use Symfony\Component\HttpFoundation\Cookie;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
-use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Response as HttpResponse;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
-final class PXResponse
+final class Response
 {
 	/** @var self */
 	private static $instance;
 
-	/** @var Response */
+	/** @var HttpResponse */
 	private $httpResponse;
 
 	/**
-	 * PXResponse constructor.
+	 * Response constructor.
 	 */
 	public function __construct()
 	{
-		$this->httpResponse = new Response();
+		$this->httpResponse = new HttpResponse();
 
 		try {
 			$app = PXRegistry::getApp(); // APP may not be initialized yet and throws exception
@@ -85,7 +90,7 @@ final class PXResponse
 	public static function getInstance(): self
 	{
 		if (is_null(static::$instance)) {
-			static::$instance = new PXResponse();
+			static::$instance = new self();
 		}
 
 		return static::$instance;
@@ -96,7 +101,7 @@ final class PXResponse
 	 * @param string|int|null $cacheTimeOut
 	 * @param int $statusCode
 	 */
-	public function redirect(string $url, $cacheTimeOut = null, int $statusCode = Response::HTTP_MOVED_PERMANENTLY): void
+	public function redirect(string $url, $cacheTimeOut = null, int $statusCode = HttpResponse::HTTP_MOVED_PERMANENTLY): void
 	{
 		if (ini_get('display_errors') && PXErrorReporter::hasErrors()) {
 			exit();
@@ -155,7 +160,7 @@ final class PXResponse
 	 */
 	public function setOk(): self
 	{
-		$this->httpResponse->setStatusCode(Response::HTTP_OK);
+		$this->httpResponse->setStatusCode(HttpResponse::HTTP_OK);
 		return $this;
 	}
 
@@ -164,7 +169,7 @@ final class PXResponse
 	 */
 	public function notFound(): self
 	{
-		$this->httpResponse->setStatusCode(Response::HTTP_NOT_FOUND);
+		$this->httpResponse->setStatusCode(HttpResponse::HTTP_NOT_FOUND);
 		return $this;
 	}
 
@@ -175,7 +180,7 @@ final class PXResponse
 	 */
 	public function forbidden(): self
 	{
-		$this->httpResponse->setStatusCode(Response::HTTP_FORBIDDEN);
+		$this->httpResponse->setStatusCode(HttpResponse::HTTP_FORBIDDEN);
 		return $this;
 	}
 
@@ -184,7 +189,7 @@ final class PXResponse
 	 */
 	public function unavailable(): self
 	{
-		$this->httpResponse->setStatusCode(Response::HTTP_SERVICE_UNAVAILABLE);
+		$this->httpResponse->setStatusCode(HttpResponse::HTTP_SERVICE_UNAVAILABLE);
 		$this->noCache();
 		return $this;
 	}
@@ -325,9 +330,9 @@ final class PXResponse
 
 	/**
 	 * Get access to Symfony Response instance for edge cases
-	 * @return Response
+	 * @return HttpResponse
 	 */
-	public function getBaseResponse(): Response
+	public function getBaseResponse(): HttpResponse
 	{
 		return $this->httpResponse;
 	}

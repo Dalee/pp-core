@@ -1,7 +1,9 @@
 # Change log
 
-## [2.4.1] 2020-11-10
-- Класс `PXResponse` переписан с использованием `Symfony\Component\HttpFoundation\Response`
+## [2.4.1] 2020-11-11
+### Изменения
+- Класс `PXResponse` переписан с использованием `Symfony\Component\HttpFoundation\Response` и переименован в `PP\Lib\Http\Response` с переносом
+### Исправления
 - Исправлена ошибка генерации ссылки на файл в списке файлов модуля `PP\Module\FileModule`
 
 ## [2.4.0] 2020-10-22

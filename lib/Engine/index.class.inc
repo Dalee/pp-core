@@ -1,5 +1,6 @@
 <?php
 
+use PP\Lib\Http\Response;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use PP\Lib\Engine\AbstractEngine;
 
@@ -13,7 +14,7 @@ class PXEngineIndex extends AbstractEngine {
 	public function __construct() {
 		parent::__construct();
 
-		$this->content             = new StdClass; // FIXME
+		$this->content             = new stdClass(); // FIXME
 		$this->content->tree       = new PXTreeObjects();
 		$this->content->objects    = new PXObjects();
 		$this->content->subObjects = new PXSubObjects();
@@ -31,7 +32,7 @@ class PXEngineIndex extends AbstractEngine {
 		$this->layout->assign('app',            PXRegistry::getApp(),      true);
 		$this->layout->assign('user',           PXRegistry::getUser(),     true);
 		$this->layout->assign('request',        PXRegistry::getRequest(),  true);
-		$this->layout->assign('response',       PXResponse::getInstance(), true);
+		$this->layout->assign('response',       Response::getInstance(), true);
 
 		$this->layout->assignRequest(PXRegistry::getRequest());
 
@@ -78,7 +79,7 @@ class PXEngineIndex extends AbstractEngine {
 	function html() {
 		$html = PXRegistry::getLayout()->display();
 
-		$response = PXResponse::getInstance();
+		$response = Response::getInstance();
 		$response->send($html);
 	}
 

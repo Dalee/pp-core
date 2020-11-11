@@ -4,6 +4,8 @@
  * TODO: refactor this to use PXEngine
  */
 
+use PP\Lib\Http\Response;
+
 require_once '../lib/mainuser.inc';
 require_once PPLIBPATH . '/Security/blockingnumbers.class.inc';
 require_once PPLIBPATH . '/Security/captcha.class.inc';
@@ -16,7 +18,7 @@ switch ($request->GetVar('action')) {
 	case 'get_image':
 		$k = (int)$request->GetVar('k');
 		if (($str = $blockingNumbers->GetValueByKey($k)) == '') {
-			$response = PXResponse::getInstance();
+			$response = Response::getInstance();
 			$response->notFound();
 			$response->send();
 			exit;

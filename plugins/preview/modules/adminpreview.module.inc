@@ -4,10 +4,9 @@ use PP\Module\AbstractModule;
 
 class PXModuleAdminPreview extends AbstractModule {
 	function adminIndex() {
-		$response = PXResponse::getInstance();
-		$response->dontCache();
+		$this->response->dontCache();
 
-		$response->setContentType('text/html', CHARSET_UTF8);
+		$this->response->setContentType('text/html', CHARSET_UTF8);
 
 		$format = $this->request->getVar('format');
 		$id     = intval($this->request->getVar('id'));
@@ -66,7 +65,7 @@ class PXModuleAdminPreview extends AbstractModule {
 			$path = sprintf("%s%s", $path, $object['pathname']);
 		}
 
-		$response->redirect($path = appendParamToUrl($path, PXPluginPreview::ENABLE_PREVIEW_FLAG, '1'));
+		$this->response->redirect($path = appendParamToUrl($path, PXPluginPreview::ENABLE_PREVIEW_FLAG, '1'));
 		exit;
 	}
 }

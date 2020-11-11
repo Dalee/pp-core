@@ -1,4 +1,7 @@
 <?php
+
+use PP\Lib\Http\Response;
+
 function Close() {
 	if (PXErrorReporter::hasErrors()) {
 		exit();
@@ -49,9 +52,7 @@ HTML;
 }
 
 function Finalize($url) {
-	require_once PPLIBPATH . 'response.class.inc';
-
-	$response = PXResponse::getInstance();
+	$response = Response::getInstance();
 	$response->redirect($url);
 }
 

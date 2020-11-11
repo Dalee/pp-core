@@ -4,6 +4,7 @@ use Monolog\Registry;
 use PP\Lib\Html\Layout;
 use PP\Lib\Database\DatabaseInterface;
 use PP\Lib\Database\Driver\PostgreSqlDriver;
+use PP\Lib\Http\Response;
 
 final class PXRegistry {
 	const unknownVarMessage = "Registry - not heap. Store your %s somewhere else!";
@@ -68,7 +69,7 @@ final class PXRegistry {
 					break;
 
 				case 'response':
-					$registry->$varName = PXResponse::getInstance();
+					$registry->$varName = Response::getInstance();
 					break;
 
 				case 'struct':
@@ -139,7 +140,7 @@ final class PXRegistry {
 
 	/**
 	 * @static
-	 * @return PXResponse
+	 * @return Response
 	 */
 	public static function getResponse() {
 		return self::get('response');
