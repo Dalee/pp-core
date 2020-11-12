@@ -21,16 +21,12 @@ require_once PPLIBPATH . 'Config/application.class.inc';
 require_once PPLIBPATH . 'Database/database.class.inc';
 require_once PPLIBPATH . 'User/classes.inc';
 
-require_once PPLIBPATH . 'session.class.inc';
-
 require_once PPLIBPATH . 'DisplayType/classes.inc';
 require_once PPLIBPATH . 'StorageType/classes.inc';
 
 require_once PPLIBPATH . 'Triggers/classes.inc';
 
-require_once PPLIBPATH . 'abstractmodule.class.inc';
 require_once PPLIBPATH . 'abstractcronrun.class.inc';
-require_once PPLIBPATH . 'abstractplugin.class.inc';
 
 require_once PPLIBPATH . 'search.class.inc';
 require_once PPLIBPATH . 'logger.class.inc';

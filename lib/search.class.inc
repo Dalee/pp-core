@@ -11,25 +11,27 @@ function _yo2ye($s) {
 	return str_replace('Ё', 'Е', str_replace('ё', 'е', $s));
 }
 
-class PXSearch {
-	var $app;
-	var $db;
+class PXSearch
+{
+	public $app;
+	public $db;
 
-	var $stopwords;
-	var $config;
+	public $stopwords;
+	public $config;
 
-	var $word2stem;
-	var $stem2id;
+	public $word2stem;
+	public $stem2id;
 
-	var $dbah;
+	public $dbah;
 
-	var $withIndexField;
+	public $withIndexField;
 
-	function __construct($withIndexField = true) {
+	public function __construct($withIndexField = true)
+	{
 		$this->app = PXRegistry::getApp();
-		$this->db  = PXRegistry::getDB();
+		$this->db = PXRegistry::getDB();
 		$this->withIndexField = $withIndexField;
-		$this->searchCount    = 0;
+		$this->searchCount = 0;
 
 		$this->loadStopwords(
 			'а без более бы был была были было быть в вам вас весь во вот все всего мочь можно
@@ -41,8 +43,8 @@ class PXSearch {
 		);
 
 		$this->loadConfig();
-		$this->word2stem = array();
-		$this->stem2id = array();
+		$this->word2stem = [];
+		$this->stem2id = [];
 
 		$fname = CACHE_PATH . '/word2stem.cdb';
 		$this->dbah = null;
@@ -51,53 +53,57 @@ class PXSearch {
 		}
 	}
 
-	function doSearch($query, $parents = NULL, $allowTypes=NULL, $limit = NULL, $page = NULL) {
+	public function doSearch($query, $parents = NULL, $allowTypes = NULL, $limit = NULL, $page = NULL)
+	{
 		$this->parents = $parents;
 
 		$stemsArray = $this->_getStemsArray($query);
 		if (!count($stemsArray)) {
-			return array();
+			return [];
 		}
 
 		$sql = $this->_getStemsSQL($stemsArray, $allowTypes);
 		$this->searchCount = $this->_searchCount($sql);
 
-		if(!$this->searchCount) {
-			return array();
+		if (!$this->searchCount) {
+			return [];
 		}
 
-		list($dtypes, $tmpres) = $this->_loadStems($sql, $limit, $page);
+		[$dtypes, $tmpres] = $this->_loadStems($sql, $limit, $page);
 
 		return $this->searchObjects($dtypes, $tmpres);
 	}
 
-	function finish() {
-		if(is_resource($this->dbah)) {
+	public function finish()
+	{
+		if (is_resource($this->dbah)) {
 			dba_close($this->dbah);
 		}
 	}
 
-	function loadStopwords($s) {
-		preg_match_all("/\w+/s".REGEX_MOD, $s, $m);
-		$this->stopwords = array();
+	public function loadStopwords($s)
+	{
+		preg_match_all("/\w+/s" . REGEX_MOD, $s, $m);
+		$this->stopwords = [];
 		foreach ($m[0] as $v) {
 			$this->stopwords[$v] = true;
 		}
 	}
 
-	function loadConfig() {
-		$this->config = array();
-		foreach($this->app->types as $k => $v) {
+	public function loadConfig()
+	{
+		$this->config = [];
+		foreach ($this->app->types as $k => $v) {
 			if ($this->withIndexField && !isset($v->fields['index'])) {
 				continue;
 			}
 
-			$this->config[$k] = array();
+			$this->config[$k] = [];
 
 			foreach ($v->fields as $type) {
 				if ($type->storageType->name != 'string') continue;
-				if ($type->name == 'pathname'     ) continue;
-				if ($type->noindex                ) continue;
+				if ($type->name == 'pathname') continue;
+				if ($type->noindex) continue;
 
 				$this->config[$k][$type->name] = ($type->name == 'title' ? 5 : 1);
 			}
@@ -108,7 +114,8 @@ class PXSearch {
 		}
 	}
 
-	function getStemByWord($word) {
+	public function getStemByWord($word)
+	{
 		if (mb_strlen($word) <= 2 || mb_strlen($word) > 30) {
 			return NULL;
 		}
@@ -121,7 +128,7 @@ class PXSearch {
 			return $this->word2stem[$word];
 		}
 
-		if(!is_resource($this->dbah)) {
+		if (!is_resource($this->dbah)) {
 			return NULL;
 		}
 
@@ -137,12 +144,11 @@ class PXSearch {
 			$this->word2stem[$word] = $word;
 			return $word;
 		}
-
-		return NULL;
 	}
 
-	function getStemsByArray($a) {
-		$result = array();
+	public function getStemsByArray($a)
+	{
+		$result = [];
 		foreach ($a as $v) {
 			$s = $this->getStemByWord($v);
 
@@ -153,31 +159,34 @@ class PXSearch {
 		return $result;
 	}
 
-	public static function strip($s) {
-		$s = preg_replace("/<SCRIPT.*?\\/SCRIPT>/is".REGEX_MOD, '', $s); //
-		$s = preg_replace("/<.*?>/s".REGEX_MOD, ' ', $s);
-		$s = preg_replace("/&nbsp;/is".REGEX_MOD, ' ', $s);
+	public static function strip($s)
+	{
+		$s = preg_replace("/<SCRIPT.*?\\/SCRIPT>/is" . REGEX_MOD, '', $s); //
+		$s = preg_replace("/<.*?>/s" . REGEX_MOD, ' ', $s);
+		$s = preg_replace("/&nbsp;/is" . REGEX_MOD, ' ', $s);
 		$s = html_entity_decode($s, ENT_QUOTES, DEFAULT_CHARSET);
-		$s = preg_replace("/&.*?;/s".REGEX_MOD, ' ', $s);
+		$s = preg_replace("/&.*?;/s" . REGEX_MOD, ' ', $s);
 		return $s;
 	}
 
-	function escapeString($word) {
-		return "'".$this->db->escapeString($word)."'";
+	public function escapeString($word)
+	{
+		return "'" . $this->db->escapeString($word) . "'";
 	}
 
 	private
-	function _getStemsSQL($stemsArray, $allowTypes) {
-		$where = array(
-			"stem IN (".join(',', array_map(array($this, 'escapeString'), $stemsArray)).")"
-		);
+	function _getStemsSQL($stemsArray, $allowTypes)
+	{
+		$where = [
+			"stem IN (" . join(',', array_map([$this, 'escapeString'], $stemsArray)) . ")",
+		];
 
-		if(isset($allowTypes) && is_array($allowTypes)) {
+		if (isset($allowTypes) && is_array($allowTypes)) {
 			$allowTypes = array_flip($allowTypes);
-			$where[] = "dtype IN (".join(',', array_map(array($this, 'escapeString'), $allowTypes)).")";
+			$where[] = "dtype IN (" . join(',', array_map([$this, 'escapeString'], $allowTypes)) . ")";
 		}
 
-		foreach(PXRegistry::getApp()->triggers->search as $t) {
+		foreach (PXRegistry::getApp()->triggers->search as $t) {
 			$t->getTrigger()->onBeforeSearchStems($this->config, $where);
 		}
 
@@ -185,7 +194,7 @@ class PXSearch {
 		$totalwords = count($stemsArray);
 
 		return <<<SQL
-			SELECT 
+			SELECT
 				did,
 				dtype,
 				count(*) as words,
@@ -194,18 +203,19 @@ class PXSearch {
 				sitesearch
 			WHERE
 				{$where}
-			GROUP BY 
+			GROUP BY
 				dtype, did
 			HAVING
 				count(*) = {$totalwords}
-			ORDER BY 
+			ORDER BY
 				words DESC, sum DESC
 SQL;
 
 	}
 
 	private
-	function _searchCount($sql) {
+	function _searchCount($sql)
+	{
 		$tmp = $this->db->Query("SELECT count(*) FROM (" . $sql . ") AS tmp");
 
 		if (!isset($tmp[0]['count'])) {
@@ -216,63 +226,68 @@ SQL;
 	}
 
 	private
-	function _getLimitPair($limit, $page) {
-		if($limit && $page) {
-			return array(
+	function _getLimitPair($limit, $page)
+	{
+		if ($limit && $page) {
+			return [
 				$limit,
-				$limit * ($page - 1)
-			);
+				$limit * ($page - 1),
+			];
 		} else {
 			return null;
 		}
 	}
 
 	private
-	function _loadStems($sql, $limit, $page) {
+	function _loadStems($sql, $limit, $page)
+	{
 		$tmp = $this->db->query($sql, false, $this->_getLimitPair($limit, $page));
 
-		$tmpres = array();
-		$dtypes = array();
+		$tmpres = [];
+		$dtypes = [];
 
-		foreach($tmp as $k => $v) {
-			if(!isset($this->app->types[$v['dtype']])) {
+		foreach ($tmp as $k => $v) {
+			if (!isset($this->app->types[$v['dtype']])) {
 				continue;
 			}
 
-			$key = $v['dtype'].' '.$v['did'];
-			$tmpres[$key] = array (
-				'did'   => $v['did'],
+			$key = $v['dtype'] . ' ' . $v['did'];
+			$tmpres[$key] = [
+				'did' => $v['did'],
 				'dtype' => $v['dtype'],
-				'sum'   => $v['sum'],
-				'words' => $v['words']
-			);
+				'sum' => $v['sum'],
+				'words' => $v['words'],
+			];
 
 			$dtypes[$v['dtype']][$v['did']] = true;
 		}
 
-		return array($dtypes, $tmpres);
+		return [$dtypes, $tmpres];
 	}
 
 	private
-	function _getStemsArray($query) {
-		$query = preg_replace("/&(#\d+|[a-z]+);/s".REGEX_MOD, '', $query);
-		preg_match_all("/[а-яa-z]+/s".REGEX_MOD, _StrToLower(_yo2ye($query)), $tmp);
+	function _getStemsArray($query)
+	{
+		$query = preg_replace("/&(#\d+|[a-z]+);/s" . REGEX_MOD, '', $query);
+		preg_match_all("/[а-яa-z]+/s" . REGEX_MOD, _StrToLower(_yo2ye($query)), $tmp);
 		return array_unique($this->getStemsByArray(array_unique($tmp[0])));
 	}
 
-	function _withParents($type) {
+	public function _withParents($type)
+	{
 		return isset($this->parents) && is_array($this->parents) && sizeof($this->parents) && isset($this->app->types[$type]->fields['parent']);
 	}
 
-	function searchObjects($dtypes, $tmpres) {
-		$result = array();
+	public function searchObjects($dtypes, $tmpres)
+	{
+		$result = [];
 
 		if (!is_null($this->parents)) {
-			$tmpParents = array();
-			$tmpJoin    = array();
+			$tmpParents = [];
+			$tmpJoin = [];
 
 			foreach ($this->parents as $k => $v) {
-				foreach($v as $i) {
+				foreach ($v as $i) {
 					$tmpParents[$i] = $k;
 					$tmpJoin[] = $i;
 				}
@@ -284,10 +299,10 @@ SQL;
 				continue;
 			}
 
-			$where = array();
+			$where = [];
 			$where[] = sprintf("id IN ('%s')", join("','", array_keys($v)));
 
-			if($this->withIndexField) {
+			if ($this->withIndexField) {
 				$where[] = $this->db->__mapUpdateData('index', '1');
 			}
 
@@ -297,20 +312,20 @@ SQL;
 				$where[] = sprintf("parent IN ('%s')", join("','", array_values($tmpJoin)));
 			}
 
-			foreach(PXRegistry::getApp()->triggers->search as $t) {
+			foreach (PXRegistry::getApp()->triggers->search as $t) {
 				$t->getTrigger()->onBeforeSearchObjects($k, $where);
 			}
 
 			$tmp = $this->db->getObjectsByWhere($this->app->types[$k], true, $where);
 
-			foreach($tmp as $row) {
-				$key =  $k.' '.$row['id'];
+			foreach ($tmp as $row) {
+				$key = $k . ' ' . $row['id'];
 
-				if(!isset($tmpres[$key])) {
+				if (!isset($tmpres[$key])) {
 					continue;
 				}
 
-				foreach(PXRegistry::getApp()->triggers->search as $t) {
+				foreach (PXRegistry::getApp()->triggers->search as $t) {
 					$t->getTrigger()->onAfterSearchObjects($k, $row);
 				}
 
@@ -327,7 +342,8 @@ SQL;
 		return $result;
 	}
 
-	function getSearchCount() {
+	public function getSearchCount()
+	{
 		return $this->searchCount;
 	}
 }

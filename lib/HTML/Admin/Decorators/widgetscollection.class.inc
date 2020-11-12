@@ -83,6 +83,7 @@ final class PXDecorativeWidgetsCollection
 
 	public static function addToCollection($widget, $classToDecorate, $decorableAreal, $decorablePart, $alias = 'default')
 	{
+		$key = $subkey = $wname = null;
 		extract(self::initVars($widget, $classToDecorate, $decorableAreal, $decorablePart, $alias));
 
 		self::$namedData[$key][$subkey][$decorablePart][] = &$widget;
@@ -91,6 +92,7 @@ final class PXDecorativeWidgetsCollection
 
 	public static function addToCollectionBefore($beforeAreal, $widget, $classToDecorate, $decorableAreal, $decorablePart, $alias = 'default')
 	{
+		$key = $subkey = $wname = null;
 		extract(self::initVars($widget, $classToDecorate, $decorableAreal, $decorablePart, $alias));
 
 		self::addToPosition(0, $beforeAreal, $widget, $classToDecorate, $decorableAreal, $decorablePart, $alias);
@@ -99,6 +101,7 @@ final class PXDecorativeWidgetsCollection
 
 	public static function addToCollectionAfter($afterAreal, $widget, $classToDecorate, $decorableAreal, $decorablePart, $alias = 'default')
 	{
+		$key = $subkey = $wname = null;
 		extract(self::initVars($widget, $classToDecorate, $decorableAreal, $decorablePart, $alias));
 
 		self::addToPosition(1, $afterAreal, $widget, $classToDecorate, $decorableAreal, $decorablePart, $alias);
@@ -107,6 +110,7 @@ final class PXDecorativeWidgetsCollection
 
 	private static function addToPosition($shift, $desiredAreal, &$widget, $classToDecorate, $decorableAreal, $decorablePart, $alias = 'default')
 	{
+		$key = $subkey = $wname = null;
 		extract(self::initVars($widget, $classToDecorate, $decorableAreal, $decorablePart, $alias));
 
 		$desiredAreal = strtolower($desiredAreal);

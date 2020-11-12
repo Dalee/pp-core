@@ -6,33 +6,37 @@
  * storageType serialized
  * displayType LINKTOFILE
  */
-class PXDisplayTypeLinktofile extends PXDisplayTypeFile {
-	function buildInput($field, $object, $param=NULL) {
+class PXDisplayTypeLinktofile extends PXDisplayTypeFile
+{
+	public function buildInput($field, $object, $param = NULL)
+	{
 		$k = $field->name;
 
 		$value = (isset($object[$k]) && is_array($object[$k]) && isset($object[$k]['filename'])
-			? $object[$k]
-			: array()
-		) + array('filename'=>null, 'dir'=>null, 'size'=>null);
+				? $object[$k]
+				: []
+			) + ['filename' => null, 'dir' => null, 'size' => null];
 
 		return NLAbstractHTMLForm::BuildLinkToFile($k, $value);
 	}
 
-	function getFromRequest($field, $object, $param=NULL) {
+	public function getFromRequest($field, $object, $param = NULL)
+	{
 		return $param['request']->postData->_GetArrayVar($field->name);
 	}
 
-	function buildCell($field, $object, $param=NULL) {
+	public function buildCell($field, $object, $param = NULL)
+	{
 		$value = $object[$field->name];
-		if(!isset($value['filename'])) {
+		if (!isset($value['filename'])) {
 			return '';
 		}
 
-		$tmp = array(
+		$tmp = [
 			'filename' => $value['filename'],
-			'fullpath' => $value['dir'].$value['filename'],
-			'size'     => $value['size']
-		);
+			'fullpath' => $value['dir'] . $value['filename'],
+			'size' => $value['size'],
+		];
 
 		return $this->buildCellHtml($tmp);
 	}

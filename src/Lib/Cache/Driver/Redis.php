@@ -6,7 +6,7 @@ use PP\Lib\Cache\CacheInterface;
 use PP\Serializer\DefaultSerializer;
 use PP\Serializer\SerializerAwareInterface;
 use PP\Serializer\SerializerAwareTrait;
-use \Redis as RedisDriver;
+use Redis as RedisDriver;
 
 /**
  * Class PXCacheRedis
@@ -23,7 +23,7 @@ use \Redis as RedisDriver;
 class Redis implements CacheInterface, SerializerAwareInterface {
 	use SerializerAwareTrait;
 
-	/** @var \Redis */
+	/** @var RedisDriver */
 	protected $connection;
 
 	/** @var string */

@@ -26,10 +26,10 @@
 		}
 
 		// uniquely importing
-		protected static $imported = array();
+		protected static $imported = [];
 
 		// builder
-		private $bundles = array();
+		private $bundles = [];
 		private $root;
 		private $allowedPaths;
 
@@ -68,7 +68,7 @@
 				return;
 			}
 
-			$bundleContent = array();
+			$bundleContent = [];
 			foreach ($this->bundles[$type][$group] as $name) {
 				$bundleContent[] = sprintf("\n/* %s */\n%s", pathinfo($name, PATHINFO_FILENAME), file_get_contents($name));
 			}
@@ -89,7 +89,7 @@
 			// Clean up asset container for future
 			unset($this->bundles[$type][$group]);
 
-			return array($bundleFullPath, $bundleRelPath, filemtime($bundleFullPath));
+			return [$bundleFullPath, $bundleRelPath, filemtime($bundleFullPath)];
 		}
 
 	}

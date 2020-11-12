@@ -1,38 +1,41 @@
 <?php
+
 /**
-* Класс - хранилище.
-* Стоится по etc/datatype.xml /model/datatypes/datatype/attribute
-*
-* @see PXTypeDescription
-*
-* @subpackage Application
-*/
-class PXFieldDescription {
-	var $name            = NULL;
-	var $description     = NULL;
+ * Класс - хранилище.
+ * Стоится по etc/datatype.xml /model/datatypes/datatype/attribute
+ *
+ * @see PXTypeDescription
+ *
+ * @subpackage Application
+ */
+class PXFieldDescription
+{
+	public $name = NULL;
+	public $description = NULL;
 
 	/** @var PXStorageType|PXStorageTypeAbstractFile */
-	var $storageType     = null;
+	public $storageType = null;
 
-	var $storageTypeArgs = NULL;
-	var $displayType     = NULL;
-	var $displayTypeArgs = NULL;
-	var $values          = NULL;
-	var $source          = NULL;
-	var $defaultValue    = NULL;
-	var $listed          = NULL;
-	var $noindex         = NULL;
-	var $typeDescription;
-	var $comments        = '';
-	var $groupName       = NULL;
+	public $storageTypeArgs = NULL;
+	public $displayType = NULL;
+	public $displayTypeArgs = NULL;
+	public $values = NULL;
+	public $source = NULL;
+	public $defaultValue = NULL;
+	public $listed = NULL;
+	public $noindex = NULL;
+	public $typeDescription;
+	public $comments = '';
+	public $groupName = NULL;
 
-	public function __construct($fieldNode, $app, $type) {
+	public function __construct($fieldNode, $app, $type)
+	{
 		$this->typeDescription = $type;
 		$this->app = $app;
 
-		if(is_object($fieldNode)) {
+		if (is_object($fieldNode)) {
 			foreach ($fieldNode->attributes() as $node) {
-				$name  = $node->name;
+				$name = $node->name;
 				$value = $node->value;
 
 				switch ($name) {
@@ -64,7 +67,7 @@ class PXFieldDescription {
 					case 'source':
 						$app->directory[$value] = new PXDirectoryDescription($value);
 						$this->values =& $app->directory[$value];
-						$this->source =  $value;
+						$this->source = $value;
 						break;
 
 					case 'noindex':
@@ -79,58 +82,65 @@ class PXFieldDescription {
 		}
 	}
 
-	function getGroupName($node) {
+	public function getGroupName($node)
+	{
 		$groups = @$node->xpath('parent::group');
 
-		if(sizeof($groups) > 0) {
+		if (sizeof($groups) > 0) {
 			$groupName = $groups[0]->attributes();
 			$this->groupName = pp_simplexml_decode_string($groupName[0]->value);
 		}
 	}
 
-	function getComments($node) {
+	public function getComments($node)
+	{
 		$commentsNode = @$node->xpath("comment");
 
-		if(sizeof($commentsNode) > 0) {
-			foreach($commentsNode as $comment) {
+		if (sizeof($commentsNode) > 0) {
+			foreach ($commentsNode as $comment) {
 				$this->comments .= pp_simplexml_decode_string($comment->nodeValue());
 			}
 		}
 	}
 
-	function getDefaultValueNode($node) {
+	public function getDefaultValueNode($node)
+	{
 		$defaultValueNode = @$node->xpath("defaultvalue");
 
-		if(sizeof($defaultValueNode) > 0) {
-			foreach($defaultValueNode as $value) {
+		if (sizeof($defaultValueNode) > 0) {
+			foreach ($defaultValueNode as $value) {
 				$value = $value->nodeValue();
 				$value = pp_simplexml_decode_string($value);
 				$value = trim($value);
 
-				$this->defaultValue .= preg_replace('/^\t+/m'.REGEX_MOD, '', $value);
+				$this->defaultValue .= preg_replace('/^\t+/m' . REGEX_MOD, '', $value);
 			}
 		}
 	}
 
-	function setDisplayType($name) {
+	public function setDisplayType($name)
+	{
 		$cls = PXDisplayType::getClassByName($name, $this);
 		$this->displayType = new $cls($this, $name);
 	}
 
-	function setParsedDisplayType($attrNode, $fieldNode) {
-		list($cls, $name, $args) = PXDisplayType::parseConfig($attrNode, $fieldNode, $this);
+	public function setParsedDisplayType($attrNode, $fieldNode)
+	{
+		[$cls, $name, $args] = PXDisplayType::parseConfig($attrNode, $fieldNode, $this);
 
 		$this->displayTypeArgs = $args;
 		$this->displayType = new $cls($this, $name);
 	}
 
-	function setStorageType($name) {
-		$cls = PXStorageType::getClassByName($name, $this);
+	public function setStorageType($name)
+	{
+		$cls = PXStorageType::getClassByName($name);
 		$this->storageType = new $cls($this, $name);
 	}
 
-	function setParsedStorageType($attrNode, $fieldNode) {
-		list($cls, $name, $args) = PXStorageType::parseConfig($attrNode, $fieldNode, $this);
+	public function setParsedStorageType($attrNode, $fieldNode)
+	{
+		[$cls, $name, $args] = PXStorageType::parseConfig($attrNode, $fieldNode);
 		$this->storageTypeArgs = $args;
 		$this->storageType = new $cls($this, $name);
 	}

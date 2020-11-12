@@ -24,7 +24,6 @@ require_once PPLIBPATH . 'HTML/Admin/Widgets/Input/Datetime/timehidden.class.inc
 require_once PPLIBPATH . 'HTML/Admin/Widgets/Input/file.class.inc';
 require_once PPLIBPATH . 'HTML/Admin/Widgets/Input/image.class.inc';
 require_once PPLIBPATH . 'HTML/Admin/Widgets/Input/imageStatic.class.inc';
-require_once PPLIBPATH . 'HTML/Admin/Widgets/Input/flash.class.inc';
 require_once PPLIBPATH . 'HTML/Admin/Widgets/Input/link.class.inc';
 
 require_once PPLIBPATH . 'HTML/Admin/Widgets/Input/dropdown.class.inc';

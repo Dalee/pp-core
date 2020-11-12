@@ -1,22 +1,26 @@
 <?php
-class PXInputColor extends PXAdminWidget {
-	var $name;
-	var $value;
 
-	public function __construct($name, $value) {
-		$this->name = $name;
-		$this->value = $value;
-	}
+class PXInputColor extends PXAdminWidget
+{
+    public $name;
+    public $value;
 
-	function html() {
-		$name = $this->name;
-		$value = htmlspecialchars($this->value, ENT_COMPAT | ENT_HTML401, DEFAULT_CHARSET);
+    public function __construct($name, $value)
+    {
+        $this->name = $name;
+        $this->value = $value;
+    }
 
-		$red   = hexdec(mb_substr($this->value, 0, 2));
-		$green = hexdec(mb_substr($this->value, 2, 2));
-		$blue  = hexdec(mb_substr($this->value, 4, 2));
+    public function html()
+    {
+        $name = $this->name;
+        $value = htmlspecialchars($this->value, ENT_COMPAT | ENT_HTML401, DEFAULT_CHARSET);
 
-		return <<<HTML
+        $red = hexdec(mb_substr($this->value, 0, 2));
+        $green = hexdec(mb_substr($this->value, 2, 2));
+        $blue = hexdec(mb_substr($this->value, 4, 2));
+
+        return <<<HTML
 			<div class="colorselect">
 				<div id="colorBG{$name}" style="background-color: #{$value};"></div>
 
@@ -38,5 +42,5 @@ class PXInputColor extends PXAdminWidget {
 				<iframe width="400" height="300" src="tools/colorer/index.html" name="color{$name}" id="color{$name}" scrolling="no" frameborder="0"></iframe>
 			</div>
 HTML;
-	}
+    }
 }

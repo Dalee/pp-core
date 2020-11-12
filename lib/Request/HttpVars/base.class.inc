@@ -2,40 +2,45 @@
 
 require_once PPLIBPATH . 'Common/functions.array.inc';
 
-class NLHTTPVarsData {
-	var $raw;
-	var $clientCharset;
-	var $_needToStripTags;
+class NLHTTPVarsData
+{
+	public $raw;
+	public $clientCharset;
+	public $_needToStripTags;
 
-	function __construct($needToStripTags = false, $needToConvert=true) {
-		$this->raw              = array();
-		$this->clientCharset    = isset($_SERVER['CHARSET']) ? strtolower($_SERVER['CHARSET']{0}) : CHARSET_UTF8;
+	public function __construct($needToStripTags = false, $needToConvert = true)
+	{
+		$this->raw = [];
+		$this->clientCharset = isset($_SERVER['CHARSET']) ? strtolower($_SERVER['CHARSET']{0}) : CHARSET_UTF8;
 		$this->_needToStripTags = $needToStripTags;
 	}
 
 	// Раскодирование JavaScript escape();
 	// private
-	function _unEscape(&$data) {
+	public function _unEscape(&$data)
+	{
 		if (is_array($data)) {
-			foreach ($data as $k=>$v) {
+			foreach ($data as $k => $v) {
 				$this->_unEscape($data[$k]);
 			}
 
 		} else {
-			if(preg_match('/^(%u\d{4})+$/'.REGEX_MOD, $data)) {
+			if (preg_match('/^(%u\d{4})+$/' . REGEX_MOD, $data)) {
 				$data = utf8_urldecode($data);
 			}
 		}
 	}
 
-	function _NormalizeData() {
+	public function _NormalizeData()
+	{
 		$this->_unEscape($this->raw);
 		$this->_Normalize($this->raw);
 	}
 
-	function _Normalize(&$data) {
+	public function _Normalize(&$data)
+	{
 		if (is_array($data)) {
-			foreach ($data as $k=>$v) {
+			foreach ($data as $k => $v) {
 				$this->_Normalize($data[$k]);
 			}
 
@@ -50,19 +55,23 @@ class NLHTTPVarsData {
 		}
 	}
 
-	function _GetVar($varName) {
+	public function _GetVar($varName)
+	{
 		return isset($this->raw[$varName]) ? $this->raw[$varName] : NULL;
 	}
 
-	function _isSetVar($varName) {
+	public function _isSetVar($varName)
+	{
 		return array_key_exists($varName, $this->raw);
 	}
 
-	function _SetVar($varName, $value) {
+	public function _SetVar($varName, $value)
+	{
 		$this->raw[$varName] = $value;
 	}
 
-	function _GetNumericVar($varName) {
+	public function _GetNumericVar($varName)
+	{
 		if (!isset($this->raw[$varName])) {
 			return NULL;
 		}
@@ -72,30 +81,34 @@ class NLHTTPVarsData {
 		return $this->raw[$varName];
 	}
 
-	function _GetArrayVar($varName, $killEmptyRows = true) {
+	public function _GetArrayVar($varName, $killEmptyRows = true)
+	{
 		if (!isset($this->raw[$varName])) {
-			return array();
+			return [];
 		}
 		if (!is_array($this->raw[$varName])) {
-			return array();
+			return [];
 		}
 
 		$temp = $this->raw[$varName];
 
 		static $callback;
 
-		if(!isset($callback)) {
-			$callback = create_function('&$arrayItself, $key, $opts', <<<DO
-				if(empty(\$arrayItself[\$key]) && !in_array(\$arrayItself[\$key], array(0, "0"), true) && \$opts['killEmptyRows']) unset(\$arrayItself[\$key]);
-DO
-			);
+		if (!isset($callback)) {
+			$callback = function (&$arrayItself, $key, $opts) {
+				if (empty($arrayItself[$key]) && !in_array($arrayItself[$key], [0, "0"], true) && $opts['killEmptyRows']) {
+					unset($arrayItself[$key]);
+				}
+			};
 		}
-		NestedArrayWalk($temp, $callback, array('killEmptyRows' => $killEmptyRows));
+
+		nestedArrayWalk($temp, $callback, compact('killEmptyRows'));
 
 		return $temp;
 	}
 
-	function _GetCheckboxVar($varName) {
+	public function _GetCheckboxVar($varName)
+	{
 		if (!isset($this->raw[$varName])) {
 			return false;
 		}
@@ -103,60 +116,65 @@ DO
 		return true;
 	}
 
-	function _GetTimeStampVar($varName) {
+	public function _GetTimeStampVar($varName)
+	{
 		if (!isset($this->raw[$varName])) {
 			return date("d-n-Y G:i:s");
-		} elseif($this->raw[$varName]['year'] == '' && $this->raw[$varName]['month'] == '' && $this->raw[$varName]['day'] == '') {
+		} elseif ($this->raw[$varName]['year'] == '' && $this->raw[$varName]['month'] == '' && $this->raw[$varName]['day'] == '') {
 			return NULL;
 		} else {
 			$r = $this->raw[$varName];
 
-			$pattern = array("year", "month", "day", "hour", "minute", "second");
+			$pattern = ["year", "month", "day", "hour", "minute", "second"];
 			$diff = array_diff($pattern, array_keys($r));
 
-			if(!empty($diff))
+			if (!empty($diff))
 				return null;
 
-			return call_user_func_array("sprintf", array("pattern"=>"%02d.%02d.%04d %02d:%02d:%02d", $r['day'], $r['month'], $r['year'], $r['hour'],
-				$r['minute'], $r['second']));
+			return call_user_func_array("sprintf", ["pattern" => "%02d.%02d.%04d %02d:%02d:%02d", $r['day'], $r['month'], $r['year'], $r['hour'],
+				$r['minute'], $r['second']]);
 		}
 	}
 
-	function _GetDateVar($varName) {
+	public function _GetDateVar($varName)
+	{
 		if (!isset($this->raw[$varName])) {
 			return date('j-n-Y');
 		} else {
 			$r = $this->raw[$varName];
 
 			$reverse = array_flip($r);
-			if(isset($reverse['']))
+			if (isset($reverse['']))
 				return null;
 
-			$pattern = array("year", "month", "day");
+			$pattern = ["year", "month", "day"];
 			$diff = array_diff($pattern, array_keys($r));
 
-			if(!empty($diff))
+			if (!empty($diff))
 				return null;
 
-			return call_user_func_array("sprintf", array("pattern"=>"%02d.%02d.%04d",
-				$r['day'], $r['month'], $r['year']));
+			return call_user_func_array("sprintf", ["pattern" => "%02d.%02d.%04d",
+				$r['day'], $r['month'], $r['year']]);
 		}
 	}
 
-	function _GetIPAddrVar($varName) {
+	public function _GetIPAddrVar($varName)
+	{
 		if (isset($this->raw[$varName])) {
 			$val = implode(".", $this->raw[$varName]);
-			return filter_var($val, FILTER_VALIDATE_IP) ? ip2long($val) :  0;
+			return filter_var($val, FILTER_VALIDATE_IP) ? ip2long($val) : 0;
 		}
 	}
 
-	function _IsSet($varName) {
+	public function _IsSet($varName)
+	{
 		return isset($this->raw[$varName]);
 	}
 
-	function GetAll() {
-		$retArray = array();
-		foreach ($this->raw as $k=>$v) {
+	public function GetAll()
+	{
+		$retArray = [];
+		foreach ($this->raw as $k => $v) {
 			if (is_array($v)) {
 				$retArray[$k] = $this->_GetArrayVar($k);
 			} else {

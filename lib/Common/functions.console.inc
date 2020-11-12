@@ -37,7 +37,7 @@ define('CON_EOC',              "\033[00m", 1);
 define('CON_EOL',              CON_EOC . PHP_EOL);
 
 function con_colors_array() {
-	static $colors = array();
+	static $colors = [];
 
 	if (empty($colors)) {
 		foreach (get_defined_constants() as $k => $v) {
@@ -54,8 +54,8 @@ function con_colors_array() {
 }
 
 function con_colors_debug() {
-	$bgs = array();
-	$fgs = array();
+	$bgs = [];
+	$fgs = [];
 	foreach (get_defined_constants() as $k => $v) {
 		if (mb_strpos($k, 'CON_COLOR_') === 0) {
 			$fgs[mb_strtolower(mb_substr($k, 10))] = $v;
@@ -98,16 +98,16 @@ function con_message($message, $color = null, $wide = false) {
 	return $r;
 }
 
-function con_vsprintf($message, array $args = array()) {
+function con_vsprintf($message, array $args = []) {
 	$r = vsprintf($message, $args);
 
-	static $substs = array();
+	static $substs = [];
 	if (empty($substs)) {
-		$raw_substs = array(
+		$raw_substs = [
 			'nl' => PHP_EOL,
 			'eoc' => CON_EOC,
 			'eol' => CON_EOL,
-		);
+		];
 		foreach ((con_colors_array() + $raw_substs) as $k => $v) {
 			$substs['{'.$k.'}'] = $v;
 		}
@@ -197,7 +197,7 @@ function con_table($caption, $data, $rows = null) {
 }
 
 function con_list($list, $level = 0, $key_color = null, $value_color = null, $delim_color = null) {
-	static $colors = array(CON_COLOR_WHITE, CON_COLOR_YELLOW, CON_COLOR_LPURPLE, CON_COLOR_LGREEN, CON_COLOR_LRED);
+	static $colors = [CON_COLOR_WHITE, CON_COLOR_YELLOW, CON_COLOR_LPURPLE, CON_COLOR_LGREEN, CON_COLOR_LRED];
 	($key_color === null)   && $key_color   = $colors[$level+1];
 	($value_color === null) && $value_color = CON_EOC;
 	($delim_color === null) && $delim_color = $colors[$level];
@@ -247,18 +247,18 @@ function con_parse_args_string($s) {
  * @param array $aliases
  * @return array
  */
-function con_parse_args($argv = null, array $aliases = array()) {
+function con_parse_args($argv = null, array $aliases = []) {
 
 	// normalize params
-	$aliases = $aliases ?: array();
+	$aliases = $aliases ?: [];
 	null === $argv    && $argv = $_SERVER['argv'];
 	!is_array($argv)  && $argv = con_parse_args_string((string)$argv);
 
-	$data = array(
-		'flags'   => array(),
-		'options' => array(),
-		'params'  => array(),
-	);
+	$data = [
+		'flags'   => [],
+		'options' => [],
+		'params'  => [],
+	];
 
 	// remove script name from args
 	if (!empty($argv) && ($script = BASEPATH.$argv[0])
@@ -325,7 +325,7 @@ function con_parse_args($argv = null, array $aliases = array()) {
 				break;
 			// oneletter option with value
 			case $isshortkey && mb_strlen($arg) > 2 && $arg[2] == '=':
-				list ($k, $v) = explode('=', mb_substr($arg, 1), 2);
+				[$k, $v] = explode('=', mb_substr($arg, 1), 2);
 				$setoption($k, $v);
 				break;
 			// flags pack in one arg: -abcdef
@@ -340,7 +340,7 @@ function con_parse_args($argv = null, array $aliases = array()) {
 				break;
 			// long option with value
 			case $islongkey && mb_strlen($arg) > 3 && mb_strpos($arg, '='):
-				list ($k, $v) = explode('=', mb_substr($arg, 2), 2);
+				[$k, $v] = explode('=', mb_substr($arg, 2), 2);
 				$setoption($k, $v);
 				break;
 			// long param key

@@ -8,12 +8,14 @@
  * displayType IMAGE
  * storageType image
  */
-class PXStorageTypeImage extends PXStorageTypeFile {
+class PXStorageTypeImage extends PXStorageTypeFile
+{
 
 	/**
 	 * {@inheritdoc}
 	 */
-	function proceedFile($field, &$object, &$param, $allowed = ENUM_ALLOWED_IMAGETYPES) {
+	public function proceedFile($field, &$object, &$param, $allowed = ENUM_ALLOWED_IMAGETYPES)
+	{
 		$param['allowed'] = unserialize($allowed); //PHP54: $allowed is for arguments contract at now
 		return parent::proceedFile($field, $object, $param, $allowed);
 	}
@@ -21,14 +23,15 @@ class PXStorageTypeImage extends PXStorageTypeFile {
 	/**
 	 * {@inheritdoc}
 	 */
-	function __normalize($field, $object, &$param, $allowed = null) {
+	public function __normalize($field, $object, &$param, $allowed = null)
+	{
 		$allowedImageTypes = (isset($param['allowed']))
 			? $param['allowed']
 			: unserialize(ENUM_ALLOWED_IMAGETYPES);
 		$allowedImageTypes = array_unique($allowedImageTypes);
 
 		$relativeDir = $this->ai($field, $object, $param['format']);
-		$fullDir = path_clear(HTDOCS_PATH.DIRECTORY_SEPARATOR.$relativeDir);
+		$fullDir = path_clear(HTDOCS_PATH . DIRECTORY_SEPARATOR . $relativeDir);
 		$storageTypeDir = new NLDir($fullDir);
 		$fileName = null;
 
@@ -46,26 +49,24 @@ class PXStorageTypeImage extends PXStorageTypeFile {
 				return null;
 			}
 
-			$fullPath = path_clear($fullDir.DIRECTORY_SEPARATOR.$fileName);
-			$relativePath = path_clear($relativeDir.DIRECTORY_SEPARATOR.$fileName);
+			$fullPath = path_clear($fullDir . DIRECTORY_SEPARATOR . $fileName);
+			$relativePath = path_clear($relativeDir . DIRECTORY_SEPARATOR . $fileName);
 
 			$width = null;
 			$height = null;
 			$fileSize = 0;
 
 			if (is_file($fullPath)) {
-				list($width, $height,) = getimagesize($fullPath);
+				[$width, $height,] = getimagesize($fullPath);
 				$fileSize = filesize($fullPath);
 			}
 
-			$fileData = [
+			return [
 				'path' => $relativePath,
 				'width' => $width,
 				'height' => $height,
 				'size' => $fileSize,
 			];
-
-			return $fileData;
 		}
 
 		//

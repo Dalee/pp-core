@@ -54,7 +54,7 @@ class Tree {
 	}
 
 	/**
-	 * @param boolean $saveOrphans
+	 * @param bool $saveOrphans
 	 */
 	public function setSaveOrphans($saveOrphans) {
 		$this->saveOrphans = !!$saveOrphans;
@@ -64,7 +64,7 @@ class Tree {
 	 * Recursively collects all objects of allowed types within
 	 * children
 	 *
-	 * @param integer $structId
+	 * @param int $structId
 	 * @param array $allowedTypes
 	 * @return array
 	 */
@@ -320,9 +320,9 @@ class Tree {
 
 		if (isset($this->leafs[$id]) && $this->leafs[$id]->parent !== null) {
 			if ($andSelf) {
-				$ancestors = array($id, $this->leafs[$id]->parent);
+				$ancestors = [$id, $this->leafs[$id]->parent];
 			} else {
-				$ancestors = array($this->leafs[$id]->parent);
+				$ancestors = [$this->leafs[$id]->parent];
 			}
 
 			$ancestors = array_merge($ancestors, $this->getAncestors($this->leafs[$id]->parent));

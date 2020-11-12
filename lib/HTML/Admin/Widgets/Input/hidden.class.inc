@@ -1,18 +1,22 @@
 <?php
-class PXInputHidden extends PXAdminWidget {
-	var $value;
-	var $name;
 
-	public function __construct($name, $value) {
-		$this->value = $value;
-		$this->name  = $name;
-	}
+class PXInputHidden extends PXAdminWidget
+{
+    public $value;
+    public $name;
 
-	function html() {
-		$name = htmlspecialchars($this->name, ENT_COMPAT | ENT_HTML401, DEFAULT_CHARSET);
-		$value = htmlspecialchars($this->value, ENT_COMPAT | ENT_HTML401, DEFAULT_CHARSET);
+    public function __construct($name, $value)
+    {
+        $this->value = $value;
+        $this->name = $name;
+    }
 
-		return '<input type="hidden" name="' . $name . '" value="' . $value . '" ' . $this->disable . '>';
-	}
+    public function html()
+    {
+        $name = htmlspecialchars($this->name, ENT_COMPAT | ENT_HTML401, DEFAULT_CHARSET);
+        $value = htmlspecialchars($this->value, ENT_COMPAT | ENT_HTML401, DEFAULT_CHARSET);
+
+        return '<input type="hidden" name="' . $name . '" value="' . $value . '" ' . $this->disable . '>';
+    }
 }
 

@@ -4,26 +4,27 @@
  */
 
 // TODO: refactor to use monolog
-class PXAuditLogger {
+class PXAuditLogger
+{
 	/**
 	 * Ссылка на PXApplication
 	 * @var PXApplication
 	 */
-	var $app;
+	public $app;
 
 	/**
 	 * Ссылка на PXDatabase
 	 * @var PXDatabase
 	 */
-	var $db;
+	public $db;
 
 	/**
 	 * Ссылка на NLLogger
 	 * @var NLLogger
 	 */
-	var $logger;
+	public $logger;
 
-	var $logLevel;
+	public $logLevel;
 
 	/**
 	 * Конструктор класса.
@@ -34,9 +35,10 @@ class PXAuditLogger {
 	 * @param PXApplication $app ссылка на PXApplication {@link $app}
 	 * @param PXDatabase $db ссылка на PXDatabase {@link $db}
 	 */
-	public function __construct($app, $db) {
+	public function __construct($app, $db)
+	{
 		$this->app = $app;
-		$this->db  = $db;
+		$this->db = $db;
 
 		$this->logger = NLLogger::getLogger('audit');
 
@@ -48,7 +50,7 @@ class PXAuditLogger {
 			'user' => '%3',
 			'ip' => '%4',
 			'description' => '%5',
-			'diff' => '%6'
+			'diff' => '%6',
 		];
 		$loggerSqlFormat = $db->loggerSqlFormat('log_audit', $loggerSqlFormatFields);
 		if (!$loggerSqlFormat || $this->app->getProperty('DISABLE_LOGGER', 0) == '1') {
@@ -70,12 +72,13 @@ class PXAuditLogger {
 	 * @return PXAuditLogger - single instance of PXauditLogger.
 	 */
 
-	static function getLogger() {
+	public static function getLogger()
+	{
 		static $instance;
 
 		if ($instance === null) {
 			$app = PXRegistry::getApp();
-			$db  = PXRegistry::getDb();
+			$db = PXRegistry::getDb();
 
 			$class = $app->getProperty('LOGGER_CLASS', 'PXAuditLogger');
 			$instance = new $class($app, $db);
@@ -92,37 +95,47 @@ class PXAuditLogger {
 	 * @param String $source - источник сообщения (обычно datatype/id)
 	 * @param String $type - текстовый тип сообщения AUDIT, USER, итп.
 	 */
-	function debug($description, $source = 'UNKNOWN', $type = 'AUDIT', $diff = NULL) {
+	public function debug($description, $source = 'UNKNOWN', $type = 'AUDIT', $diff = NULL)
+	{
 		$this->logger->debug($this->_createMsg($description, $source, $type, $diff));
 	}
+
 	/**
 	 * Метод оболочка для вызова {@link NLLogger::info()}.
 	 * Параметры описаны в {@link PXAuditLogger::debug()}
 	 */
-	function info($description, $source = 'UNKNOWN', $type = 'AUDIT', $diff = NULL) {
+	public function info($description, $source = 'UNKNOWN', $type = 'AUDIT', $diff = NULL)
+	{
 		$this->logger->info($this->_createMsg($description, $source, $type, $diff));
 	}
+
 	/**
 	 * Метод оболочка для вызова {@link NLLogger::warn()}.
 	 * Параметры описаны в {@link PXAuditLogger::debug()}
 	 */
-	function warn($description, $source = 'UNKNOWN', $type = 'AUDIT', $diff = NULL) {
+	public function warn($description, $source = 'UNKNOWN', $type = 'AUDIT', $diff = NULL)
+	{
 		$this->logger->warn($this->_createMsg($description, $source, $type, $diff));
 	}
+
 	/**
 	 * Метод оболочка для вызова {@link NLLogger::error()}.
 	 * Параметры описаны в {@link PXAuditLogger::debug()}
 	 */
-	function error($description, $source = 'UNKNOWN', $type = 'AUDIT', $diff = NULL) {
+	public function error($description, $source = 'UNKNOWN', $type = 'AUDIT', $diff = NULL)
+	{
 		$this->logger->error($this->_createMsg($description, $source, $type, $diff));
 	}
+
 	/**
 	 * Метод оболочка для вызова {@link NLLogger::fatal()}.
 	 * Параметры описаны в {@link PXAuditLogger::debug()}
 	 */
-	function fatal($description, $source = 'UNKNOWN', $type = 'AUDIT', $diff = NULL) {
+	public function fatal($description, $source = 'UNKNOWN', $type = 'AUDIT', $diff = NULL)
+	{
 		$this->logger->fatal($this->_createMsg($description, $source, $type, $diff));
 	}
+
 	/**
 	 * Формирует сообщение для записи в лог.
 	 *
@@ -131,9 +144,10 @@ class PXAuditLogger {
 	 * @param String $type - текстовый тип сообщения AUDIT, USER, итп.
 	 * @return Array - массив из 5 элементов для передачи в NLLogger->debug|...|fatal()
 	 */
-	function _createMsg($description, $source, $type, $diff) {
+	public function _createMsg($description, $source, $type, $diff)
+	{
 		$user = $this->db->user->isAuthed() ? $this->db->user->login : 'UNKNOWN';
-		$ip   = PXRequest::GetRemoteAddr() ?: '127.0.0.1'; // for console scripts logging
+		$ip = PXRequest::GetRemoteAddr() ?: '127.0.0.1'; // for console scripts logging
 
 		return [$type, $source, $user, $ip, $description, $diff];
 	}
@@ -141,26 +155,29 @@ class PXAuditLogger {
 	/**
 	 * Static метод, включение логгера
 	 */
-	 function on(){
-	 	if(PXAuditLogger::disabled()){
-	 		$self = PXAuditLogger::getLogger();
-	 		$self->logger->setLevel($self->logLevel);
-	 	}
-	 }
+	public function on()
+	{
+		if (PXAuditLogger::disabled()) {
+			$self = PXAuditLogger::getLogger();
+			$self->logger->setLevel($self->logLevel);
+		}
+	}
 
 	/**
 	 * Static метод, отключение логгера
 	 */
-	 function off(){
-	 	$self = PXAuditLogger::getLogger();
-	 	$self->logger->setLevel($self->logger->NONE);
-	 }
+	public function off()
+	{
+		$self = PXAuditLogger::getLogger();
+		$self->logger->setLevel($self->logger->NONE);
+	}
 
-	 /**
+	/**
 	 * Static метод, возвращает true если лог не ведётся
 	 */
-	 function disabled(){
-	 	$self = PXAuditLogger::getLogger();
-	 	return $self->logger->NONE == $self->logger->getLevel();
-	 }
+	public function disabled()
+	{
+		$self = PXAuditLogger::getLogger();
+		return $self->logger->NONE == $self->logger->getLevel();
+	}
 }

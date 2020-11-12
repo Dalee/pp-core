@@ -16,9 +16,9 @@
  *          wordwrap (Smarty online manual)
  * @author   Monte Ohrt <monte at ohrt dot com>
  * @param string
- * @param integer
+ * @param int
  * @param string
- * @param boolean
+ * @param bool
  * @return string
  */
 function smarty_modifier_wordwrap($string,$length=80,$break="\n",$cut=false)

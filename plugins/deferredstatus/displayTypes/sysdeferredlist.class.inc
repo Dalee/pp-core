@@ -1,8 +1,10 @@
 <?php
 
-class PXDisplayTypeSysDeferredList extends PXDisplayTypeRadioList {
+class PXDisplayTypeSysDeferredList extends PXDisplayTypeRadioList
+{
 
-	function buildInput($field, $object, $param=NULL) {
+	public function buildInput($field, $object, $param = NULL)
+	{
 
 		$object[$field->name] = PXDeferredStatusHelper::normalizeState($object[$field->name], $field->defaultValue);
 
@@ -15,13 +17,13 @@ class PXDisplayTypeSysDeferredList extends PXDisplayTypeRadioList {
 		return parent::buildInput($field, $object, $param);
 	}
 
-	function buildCell($field, $object, $param=NULL) {
+	public function buildCell($field, $object, $param = NULL)
+	{
 
 		$values = PXDeferredStatusHelper::values();
 		$state = PXDeferredStatusHelper::normalizeState($object[$field->name], 'off');
 		$stateTag = PXDeferredStatusHelper::stateTag($state);
 		$human = $values[$state]['title'];
-		$info = 'wtf';
 
 		$since = strtotime($object['sys_deferred_since']);
 		$until = strtotime($object['sys_deferred_until']);
@@ -52,6 +54,8 @@ class PXDisplayTypeSysDeferredList extends PXDisplayTypeRadioList {
 				$info = $human;
 				break;
 			default:
+				$class = '';
+				$info = '';
 		}
 
 		return sprintf('<span class="%s">%s</span>', $class, $info);

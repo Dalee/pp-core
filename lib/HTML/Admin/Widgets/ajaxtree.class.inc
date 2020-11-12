@@ -71,7 +71,7 @@ class PXAdminAjaxTree extends PXAdminTree {
 			return false;
 		}
 		$leaf = $this->tree->leafs[$id];
-		$pid = $leafs->parent;
+		$pid = $leaf->parent;
 		if(!isset($this->tree->leafs[$pid])){
 			return false;
 		}

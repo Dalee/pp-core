@@ -9,11 +9,9 @@ require_once PPLIBPATH . 'DisplayType/delimiter.class.inc';
 require_once PPLIBPATH . 'DisplayType/File/image.class.inc';
 require_once PPLIBPATH . 'DisplayType/File/file.class.inc';
 require_once PPLIBPATH . 'DisplayType/File/imageStatic.class.inc';
-require_once PPLIBPATH . 'DisplayType/File/flash.class.inc';
 
 require_once PPLIBPATH . 'DisplayType/File/imagesArray.class.inc';
 require_once PPLIBPATH . 'DisplayType/File/filesArray.class.inc';
-require_once PPLIBPATH . 'DisplayType/File/flashsArray.class.inc';
 
 require_once PPLIBPATH . 'DisplayType/File/linkToFile.class.inc';
 

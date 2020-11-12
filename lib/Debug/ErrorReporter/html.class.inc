@@ -3,20 +3,24 @@
 use PP\Lib\Cache\ObjectCache;
 use PP\Lib\Http\Response;
 
-class PXErrorReporterHTML extends PXErrorReporter {
+class PXErrorReporterHTML extends PXErrorReporter
+{
 
-	public function __construct() {
+	public function __construct()
+	{
 		$this->computer = @rtrim(`hostname`);
 
 		$this->toEmail = !empty($_SERVER['SERVER_ADMIN']) ? $_SERVER['SERVER_ADMIN'] : 'support@dalee.ru';
 		$this->fromEmail = 'robot@' . $this->computer;
 	}
 
-	function warning($error) {
+	public function warning($error)
+	{
 		// pass
 	}
 
-	function fatalWarning($error) {
+	public function fatalWarning($error)
+	{
 		$response = Response::getInstance();
 		$host = quot(PXRequest::GetHttpHost());
 		$uri = quot(urldecode(PXRequest::GetRequestUri()));
@@ -48,7 +52,8 @@ HTML
 		);
 	}
 
-	function _throttling() {
+	public function _throttling()
+	{
 		try {
 			$app = PXRegistry::getApp(); // APP may not be initialized yet and throws exception
 			$errorRepDir = $app->getProperty('PP_ERROR_REPORTER_ANTIFLOOD_DIR', 'error_reporter');
@@ -68,14 +73,15 @@ HTML
 		$inLoop = !$cache->expired($errorSignature);
 		$curCount = $cache->loadStaled($errorSignature);
 		$timer = time();
-		$count = $inLoop && $curCount ? array($curCount[0], $curCount[1] + 1) : array($timer, 0);
+		$count = $inLoop && $curCount ? [$curCount[0], $curCount[1] + 1] : [$timer, 0];
 
 		$cache->save($errorSignature, $count, $cacheTime - ($timer - $count[0]));
-		return array(is_array($curCount) ? $curCount[1] : null, $inLoop);
+		return [is_array($curCount) ? $curCount[1] : null, $inLoop];
 	}
 
-	function _getMailSubject($cyclesCount) {
-		$errorTypes = array();
+	public function _getMailSubject($cyclesCount)
+	{
+		$errorTypes = [];
 		foreach ($this->errors as $e) {
 			@$errorTypes[$e['type']]++;
 		}
@@ -110,7 +116,8 @@ HTML
 		return sprintf("%s: %s%s", $this->computer, join(', ', $subject), $cyclesCount ? "; this message throttled $cyclesCount times" : '');
 	}
 
-	function sendReport() {
+	public function sendReport()
+	{
 		[$cyclesCount, $inLoop] = $this->_throttling();
 
 		if ($inLoop) {
@@ -130,7 +137,7 @@ HTML
 		$mail->setFormat('html');
 		$mail->setCharset(CHARSET_UTF8);
 
-		$errorsListHTML = array();
+		$errorsListHTML = [];
 		foreach ($this->errors as $errPos => $error) {
 			$cls = strtolower(str_replace(' ', '', $error['type']));
 			$this->attachError($error, $errPos);
@@ -172,7 +179,8 @@ HTML;
 		$mail->send();
 	}
 
-	function environmentsUris() {
+	public function environmentsUris()
+	{
 		$requestUri = PXRequest::GetHttpProto() . '://' . quot(PXRequest::GetHttpHost()) . quot(urldecode(PXRequest::GetRequestUri()));
 		$remoteAddr = PXRequest::GetRemoteAddr();
 		$httpReferer = quot(urldecode(PXRequest::GetHttpReferer()));
@@ -181,13 +189,14 @@ HTML;
 			<dt>RequestUri:</dt>
 			<dd><a target="_blank" href="{$requestUri}">{$requestUri}</a></dd>
 			<dt>RemoteAddr:</dt>
-			<dd>{$remoteAddr} <a target="_blank" href="http://www.nic.ru/whois/?ip={$remoteAddr}">whois</a></dd>
+			<dd>{$remoteAddr} <a target="_blank" href="https://whatismyipaddress.com/ip/{$remoteAddr}">whois</a></dd>
 			<dt>HttpReferer:</dt>
 			<dd><a target="_blank" href="{$httpReferer}">{$httpReferer}</a></dd>
 HTML;
 	}
 
-	function applyXSLT($xml) {
+	public function applyXSLT($xml)
+	{
 		static $xslt;
 
 		if (is_null($xslt)) {
@@ -197,8 +206,9 @@ HTML;
 		return $xslt->transform($xml, false);
 	}
 
-	function addEnvironments() {
-		$xml = array('<?xml version="1.0" encoding="UTF-8"?>');
+	public function addEnvironments()
+	{
+		$xml = ['<?xml version="1.0" encoding="UTF-8"?>'];
 		$xml[] = '<?xml-stylesheet type="text/xsl" href="error_reporter.xsl"?>';
 		$xml[] = '<environments>';
 
@@ -208,7 +218,7 @@ HTML;
 			'_COOKIE' => null,
 			'_SESSION' => null,
 			'_SERVER' => null,
-			'_FILES' => null
+			'_FILES' => null,
 		];
 
 		foreach ($attach as $k => $v) {
@@ -232,7 +242,8 @@ HTML;
 		$this->mail->addFile(null, 'environments.debug.html', 'text/html', $html);
 	}
 
-	function attachError($error, $errPos) {
+	public function attachError($error, $errPos)
+	{
 		if ($errPos < 15) {
 			$xml = $this->errorToXML($error);
 			$html = $this->applyXSLT($xml);
@@ -240,7 +251,8 @@ HTML;
 		}
 	}
 
-	function errorToXML($error) {
+	public function errorToXML($error)
+	{
 		$traceXML = $this->traceToXML($error['trace']);
 
 		$message = htmlspecialchars($error['message'], ENT_XML1 | ENT_QUOTES | ENT_DISALLOWED | ENT_SUBSTITUTE, 'UTF-8');
@@ -259,38 +271,33 @@ HTML;
 XML;
 	}
 
-	function traceToXML($trace) {
+	public function traceToXML($trace)
+	{
 		return implode(
 			"\n",
 
 			array_map(
-				create_function(
-					'$error',
+				function ($error) {
+					$arguments = implode(
+						'',
 
-					<<<TRACE_TO_XML
-						\$arguments = implode(
-							'',
+						array_map(
+							function ($a) {
+								return "\n\t\t\t\t<{$a['type']}>{$a['value']}</{$a['type']}>";
+							},
+							$error['args']
+						)
+					);
 
-							array_map(
-								create_function(
-									'\$a',
-									" return \"\n\t\t\t\t\".'<'.\\\$a['type'].'>'.\\\$a['value'].'</'.\\\$a['type'].'>';"
-								),
-
-								\$error['args']
-							)
-						);
-
-						return "
+					return "
 		<call>
-			<file>{\$error['file']}</file>
-			<line>{\$error['line']}</line>
-			<method>{\$error['function']}</method>
-			<arguments>{\$arguments}
+			<file>{$error['file']}</file>
+			<line>{$error['line']}</line>
+			<method>{$error['function']}</method>
+			<arguments>{$arguments}
 			</arguments>
 		</call>";
-TRACE_TO_XML
-				),
+				},
 
 				$trace
 			)

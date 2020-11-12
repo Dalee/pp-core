@@ -188,11 +188,9 @@ class ConsoleApplication extends Application {
 	 * @return string
 	 */
 	protected function getTo(InputInterface $input) {
-		$addresses = join(',', $input->getOption('mail'))
+		return join(',', $input->getOption('mail'))
 			?: EnvLoader::get('PP_COMMAND_REPORT_MAIL')
 			?: $this->app->getProperty('SYS_COMMAND_REPORT_MAIL', '');
-
-		return $addresses;
 	}
 
 	/**
@@ -235,7 +233,7 @@ class ConsoleApplication extends Application {
 					throw new \Exception("Command class '${className}' doesn't exist");
 				}
 
-				$this->add(new $className);
+				$this->add(new $className());
 			}
 		}
 

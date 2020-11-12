@@ -9,33 +9,33 @@ use PP\Lib\Datastruct\Tree;
  * @subpackage Application
  */
 class PXDirectoryDescription {
-	var $name;
-	var $load;
-	var $loaded;
-	var $schema;
-	var $source;
-	var $sourceDir;
-	var $displayField;
-	var $parentField;
-	var $location;
-	var $values;
-	var $filter;
+	public $name;
+	public $load;
+	public $loaded;
+	public $schema;
+	public $source;
+	public $sourceDir;
+	public $displayField;
+	public $parentField;
+	public $location;
+	public $values;
+	public $filter;
 
-	var $sourceKeyField;
-	var $sourceDisplayField;
-	var $sourceItem;
-	var $sourceDataFields;
+	public $sourceKeyField;
+	public $sourceDisplayField;
+	public $sourceItem;
+	public $sourceDataFields;
 
 	public function __construct($name) {
 		$this->name        = $name;
-		$this->values      = array();
-		$this->filter      = array();
+		$this->values      = [];
+		$this->filter      = [];
 		$this->loaded      = false;
 		$this->parentField = false;
 	}
 
 	public function getList() {
-		$retArray = array();
+		$retArray = [];
 
 		foreach ($this->values as $v) {
 			$retArray[$v['id']] = $v[$this->displayField];
@@ -45,7 +45,7 @@ class PXDirectoryDescription {
 	}
 
 	public function GetTree($saveOrphans = false) {
-		$retArray = array();
+		$retArray = [];
 
 		if (count($this->values) && $this->parentField !== false) {
 			$retArray = new Tree($this->values, 'id', $this->parentField, 'title', $saveOrphans);
@@ -56,10 +56,10 @@ class PXDirectoryDescription {
 
 	public function SetLoaded($addDefault = true) {
 		if ($addDefault && !isset($this->values[0]) && !isset($this->values[''])) {
-			$this->values[''] = array(
+			$this->values[''] = [
 				'id' => '',
 				$this->displayField => '---'
-			);
+            ];
 		}
 
 		$this->loaded = true;

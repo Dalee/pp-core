@@ -1,6 +1,6 @@
 <?php
 class PXAdminAjaxTreeBranch extends PXAdminTreeBranch {
-	
+
 	public /* override */ function html() {
 		$title = strip_tags($this->leaf->title);
 
@@ -25,11 +25,11 @@ class PXAdminAjaxTreeBranch extends PXAdminTreeBranch {
 	}
 
 	public /* override */ function divAttrs() {
-		$cssClass = array(
+		$cssClass = [
 			'tree-leaf tree__leaf',
 			$this->htmlTree->isSelected($this->leaf->id) ? 'selected ' : '',
 			$this->htmlTree->isOpenLeaf($this->leaf->parent)  || $this->leaf->level <= 2 ? 'open' : 'close'
-		);
+        ];
 		$format = $this->htmlTree->datatype->id;
 		return ' oncontextmenu="' . $this->contextMenu() . '" id="leafId' . $format . $this->leaf->id . '" class="' . implode(' ', $cssClass) . '" ';
 	}
@@ -65,15 +65,15 @@ class PXAdminAjaxTreeBranch extends PXAdminTreeBranch {
 		if(!count($children)){
 			return '';
 		}
-		
+
 		if(!$parentalBranch){
 			$ancestors = array_reverse($ajaxHtmlTree->getLeaf(reset($children))->getAncestors());
 			$siblings = null;
 			$parentalBranch = null;
-			
+
 			$isFirst = false;
 			$isLast = false;
-		
+
 			foreach($ancestors as $ancestorId){
 				$ancestor = $ajaxHtmlTree->getLeaf($ancestorId);
 
@@ -83,13 +83,13 @@ class PXAdminAjaxTreeBranch extends PXAdminTreeBranch {
 				}
 				$parentalBranch = new PXAdminAjaxTreeBranch($ancestor, $ajaxHtmlTree, $parentalBranch);
 				$parentalBranch->setPosition($isFirst, $isLast);
-				
+
 				$siblings  = $ancestor->children;
 			}
 		}
-		
+
 		$html = '';
-		
+
 		foreach($children as $k=>$chId) {
 			$isFirst = $k == 0;
 			$isLast  = $k + 1 == sizeof($children);

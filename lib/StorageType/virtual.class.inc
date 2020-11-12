@@ -6,17 +6,21 @@
  * displayType - various (ex. STATIC)
  * storageType virtual
  */
-class PXStorageTypeVirtual extends PXStorageType {
-	function normalize($field, $object, &$param) {
-		return (!is_null($field->defaultValue)) ? $field->defaultValue : NULL;
-	}
+class PXStorageTypeVirtual extends PXStorageType
+{
+    public function normalize($field, $object, &$param)
+    {
+        return (!is_null($field->defaultValue)) ? $field->defaultValue : NULL;
+    }
 
-	function storedInDb() {
-		return false;
-	}
+    public function storedInDb()
+    {
+        return false;
+    }
 
-	function storedInMeta() {
-		return false;
-	}
+    public function storedInMeta()
+    {
+        return false;
+    }
 
 }

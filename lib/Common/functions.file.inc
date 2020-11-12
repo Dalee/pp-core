@@ -134,7 +134,7 @@ function unlinkDirTreeIfEmpty($source) {
 }
 
 function smarty_file_exists($filename) {
-	foreach(array('site', 'local', 'libpp') as $level) {
+	foreach(['site', 'local', 'libpp'] as $level) {
 		if(file_exists(BASEPATH.'/'.$level.'/templates/'.$filename)) {
 			return true;
 		}
@@ -260,7 +260,7 @@ function MakeDirIfNotExists($dirName, $perm = NULL) {
 function parse_csv_string($source, $delim=';', $withColumnNames=false) {
 	$strings = explode("\n", trim($source));
 
-	$res = array();
+	$res = [];
 
 	foreach($strings as $line=>$string) {
 		$string = trim($string);
@@ -279,7 +279,7 @@ function parse_csv_string($source, $delim=';', $withColumnNames=false) {
 					if (substr_count($elements[$j], '"') > 0) {
 						// Put the quoted string's pieces back together again
 						array_splice($elements, $i, $j-$i+1,
-						implode($separator, array_slice($elements, $i, $j-$i+1)));
+						implode($delim, array_slice($elements, $i, $j-$i+1)));
 						break;
 					}
 				}
@@ -300,12 +300,14 @@ function parse_csv_string($source, $delim=';', $withColumnNames=false) {
 				continue;
 			}
 
-			$tmp = array();
-			foreach($columns as $pos=>$col) {
-				$tmp[$col] = $elements[$pos];
-			}
+			if (!empty($columns)) {
+				$tmp = [];
+				foreach ($columns as $pos => $col) {
+					$tmp[$col] = $elements[$pos];
+				}
 
-			$elements = $tmp;
+				$elements = $tmp;
+			}
 		}
 
 		$res[] = $elements;
@@ -319,7 +321,7 @@ function parse_csv_file($filename, $delim=';') {
 		FatalError('Can\'t find '.$filename);
 	}
 
-	$result = array();
+	$result = [];
 
 	$handle = fopen($filename, 'r');
 
@@ -352,7 +354,7 @@ function FindSystemFile($fileName){
  */
 function fileMimeType ($filename) {
 	if (is_callable('mime_content_type')) {
-		list ($mime) = explode(";", mime_content_type($filename));
+		[$mime] = explode(";", mime_content_type($filename));
 	}
 	elseif (is_callable('finfo_file')) {
 		$finfo = finfo_open(FILEINFO_MIME_TYPE);
@@ -375,7 +377,7 @@ function fileMimeType ($filename) {
  * @test [1555, 2] >>> {"size":1.52,"step":1,"measure":"KB","pretty":"1.52 KB"}
  */
 function parseFilesize ($filesize, $decimals = 0, $measures = null) {
-	$measures = (array)($measures ? $measures : null) + array('B', 'KB', 'MB', 'GB', 'TB', 'PB');
+	$measures = (array)($measures ? $measures : null) + ['B', 'KB', 'MB', 'GB', 'TB', 'PB'];
 
 	$size = $filesize;
 	$step = 0;

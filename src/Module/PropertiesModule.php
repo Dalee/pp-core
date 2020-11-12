@@ -320,9 +320,7 @@ MASS_ACTIONS
 			'id' => $id,
 		];
 
-		$redirect = $generator->getAdminGenerator()->popupUrl($popupParams);
-
-		return $redirect;
+		return $generator->getAdminGenerator()->popupUrl($popupParams);
 	}
 
 	/**

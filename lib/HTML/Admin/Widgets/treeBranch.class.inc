@@ -1,205 +1,223 @@
 <?php
-class PXAdminTreeBranch extends PXAdminWidget {
 
-	public function __construct($leaf, $htmlTree, $parentLeaf) {
-		$this->leaf     = $leaf;
-		$this->htmlTree = $htmlTree;
-		$this->parent   = $parentLeaf;
-	}
+class PXAdminTreeBranch extends PXAdminWidget
+{
 
-	function html() {
-		$title = strip_tags($this->leaf->title);
+    public function __construct($leaf, $htmlTree, $parentLeaf)
+    {
+        $this->leaf = $leaf;
+        $this->htmlTree = $htmlTree;
+        $this->parent = $parentLeaf;
+    }
 
-		$html = '';
-		$html .= '<div'.$this->divAttrs().'>';
-		$html .= '<span class="tree__leaf-title">';
-		$html .= $this->paddingImages();
-		$html .= $this->contextMenuLink();
-		$html .= $this->editLink().$this->toChildsLink('<span'.$this->spanAttrs().'>'.$title.'</span>');
-		$html .= $this->hintHtml();
-		$html .= '</span>';
+    public function html()
+    {
+        $title = strip_tags($this->leaf->title);
 
-		$html .= '<span class="tree__leaf-fields">'.$this->listedFields().'</span>';
+        $html = '';
+        $html .= '<div' . $this->divAttrs() . '>';
+        $html .= '<span class="tree__leaf-title">';
+        $html .= $this->paddingImages();
+        $html .= $this->contextMenuLink();
+        $html .= $this->editLink() . $this->toChildsLink('<span' . $this->spanAttrs() . '>' . $title . '</span>');
+        $html .= $this->hintHtml();
+        $html .= '</span>';
 
-		$html .= PXAdminTreeBranch::childrenHTML($this->leaf->children, $this->htmlTree, $this);
-		$html .= '</div>';
+        $html .= '<span class="tree__leaf-fields">' . $this->listedFields() . '</span>';
 
-		return $html;
-	}
+        $html .= PXAdminTreeBranch::childrenHTML($this->leaf->children, $this->htmlTree, $this);
+        $html .= '</div>';
 
-	function divAttrs() {
-		$cssClass = array(
-			'tree-leaf tree__leaf',
-			'tree__leaf_level_' . $this->leaf->level,
-			$this->htmlTree->isSelected($this->leaf->id) ? 'selected ' : '',
-			$this->htmlTree->isOpenLeaf($this->leaf->parent)  || $this->leaf->level <= 2 ? 'open' : 'close'
-		);
+        return $html;
+    }
 
-		return ' oncontextmenu="'.$this->contextMenu().'" id="leafId'.$this->leaf->id.'" class="'.implode(' ', $cssClass).'" ';
-	}
+    public function divAttrs()
+    {
+        $cssClass = [
+            'tree-leaf tree__leaf',
+            'tree__leaf_level_' . $this->leaf->level,
+            $this->htmlTree->isSelected($this->leaf->id) ? 'selected ' : '',
+            $this->htmlTree->isOpenLeaf($this->leaf->parent) || $this->leaf->level <= 2 ? 'open' : 'close',
+        ];
 
-	function hintHtml() {
-		$hint = '';
-		foreach($this->htmlTree->datatype->fields as $name=>$descr) {
-			if ($name !== 'title' && $descr->listed && is_string($this->leaf->content[$name])) {
-				$hint = '[' . $this->leaf->content[$name] . ']';
-				break;
-			}
-		}
-		$hint && ($hint = ' <span class="tree__leaf-hint">'.$hint.'</span>');
-		return $hint;
-	}
+        return ' oncontextmenu="' . $this->contextMenu() . '" id="leafId' . $this->leaf->id . '" class="' . implode(' ', $cssClass) . '" ';
+    }
 
-	function listedFields($brief = false) {
-		$fields = array();
+    public function hintHtml()
+    {
+        $hint = '';
+        foreach ($this->htmlTree->datatype->fields as $name => $descr) {
+            if ($name !== 'title' && $descr->listed && is_string($this->leaf->content[$name])) {
+                $hint = '[' . $this->leaf->content[$name] . ']';
+                break;
+            }
+        }
+        $hint && ($hint = ' <span class="tree__leaf-hint">' . $hint . '</span>');
+        return $hint;
+    }
 
-		foreach($this->htmlTree->datatype->fields as $name=>$descr) {
-			if ($name !== 'title' && $descr->listed) {
-				$param = array();
-				$fields[] = '<dt>'.$descr->description.'</dt><dd>'.$descr->displayType->buildTreeHover($descr, $this->leaf->content, $param).'</dd>';
-			}
-		}
+    public function listedFields($brief = false)
+    {
+        $fields = [];
 
-		if(sizeof($fields)) {
-			return sprintf("<dl class='tree__leaf-fields-container tree-fullBrief'>%s</dl>", implode('', $fields));
+        foreach ($this->htmlTree->datatype->fields as $name => $descr) {
+            if ($name !== 'title' && $descr->listed) {
+                $param = [];
+                $fields[] = '<dt>' . $descr->description . '</dt><dd>' . $descr->displayType->buildTreeHover($descr, $this->leaf->content, $param) . '</dd>';
+            }
+        }
 
-		} else {
-			return '';
-		}
-	}
+        if (sizeof($fields)) {
+            return sprintf("<dl class='tree__leaf-fields-container tree-fullBrief'>%s</dl>", implode('', $fields));
 
-	function spanAttrs() {
-		$_  = ' onClick="ContextHide();"';
-		$_ .= $this->leaf->content['status'] ? '' : ' class="hide"';
+        } else {
+            return '';
+        }
+    }
 
-		if (isset($this->htmlTree->datatype->fields['pathname'])) {
-			$_ .= ' title="'.$this->leaf->content['pathname'].'"';
-		}
+    public function spanAttrs()
+    {
+        $_ = ' onClick="ContextHide();"';
+        $_ .= $this->leaf->content['status'] ? '' : ' class="hide"';
 
-		return $_;
-	}
+        if (isset($this->htmlTree->datatype->fields['pathname'])) {
+            $_ .= ' title="' . $this->leaf->content['pathname'] . '"';
+        }
 
-	function contextMenuLink() {
-		$openable = sizeof($this->leaf->children);
+        return $_;
+    }
 
-		if ($this->leaf->level == 1) {
-			$type = !$openable ? '-0' : '-1';
+    public function contextMenuLink()
+    {
+        $openable = sizeof($this->leaf->children);
 
-		} else {
-			$type = !$openable ? '-l' : '';
-		}
+        if ($this->leaf->level == 1) {
+            $type = !$openable ? '-0' : '-1';
 
-		$alt = 'Изменить раздел &laquo;'.$this->escapeTitle().'&raquo;';
+        } else {
+            $type = !$openable ? '-l' : '';
+        }
 
-		return '<img onClick="'.$this->contextMenu().'" onContextMenu="'.$this->contextMenu().'" class ="cursor" src="i/tree/leaf'.$type.'.gif" alt="'.$alt.'">';
-	}
+        $alt = 'Изменить раздел &laquo;' . $this->escapeTitle() . '&raquo;';
 
-	function getPadding() {
-		$imgs = array();
+        return '<img onClick="' . $this->contextMenu() . '" onContextMenu="' . $this->contextMenu() . '" class ="cursor" src="i/tree/leaf' . $type . '.gif" alt="' . $alt . '">';
+    }
 
-		$parent = $this->parent;
-		while(!is_null($parent) && is_a($parent, 'PXAdminTreeBranch')) {
-			$type = $parent->isLast ? 'v' : 'tree';
+    public function getPadding()
+    {
+        $imgs = [];
 
-			if($parent->leaf->level > 1) {
-				array_unshift($imgs, '<img src="i/tree/'.$type.'.gif">');
-			}
+        $parent = $this->parent;
+        while (!is_null($parent) && is_a($parent, 'PXAdminTreeBranch')) {
+            $type = $parent->isLast ? 'v' : 'tree';
 
-			$parent = $parent->parent;
-		}
+            if ($parent->leaf->level > 1) {
+                array_unshift($imgs, '<img src="i/tree/' . $type . '.gif">');
+            }
 
-		return implode('', $imgs);
-	}
+            $parent = $parent->parent;
+        }
 
-	function paddingImages() {
-		if ($this->leaf->level <= 1) {
-			return '';
-		}
+        return implode('', $imgs);
+    }
 
-		$id = $this->leaf->id;
+    public function paddingImages()
+    {
+        if ($this->leaf->level <= 1) {
+            return '';
+        }
 
-		$openable = sizeof($this->leaf->children);
+        $id = $this->leaf->id;
 
-		if ($openable) {
-			$type = $this->htmlTree->isOpenLeaf($id) ? 'open' : 'close';
+        $openable = sizeof($this->leaf->children);
 
-		} else {
-			$type = 'void';
-		}
+        if ($openable) {
+            $type = $this->htmlTree->isOpenLeaf($id) ? 'open' : 'close';
 
-		if ($this->isLast) {
-			$type .= '-last';
-		}
+        } else {
+            $type = 'void';
+        }
 
-		$img = '<img src="i/tree/'.$type.'.gif" id="leafImg'.$id.'">';
+        if ($this->isLast) {
+            $type .= '-last';
+        }
 
-		if ($openable) {
-			$img = '<a href="javascript:hideShowLeaf(\''.$id.'\');">'.$img.'</a>';
-		}
+        $img = '<img src="i/tree/' . $type . '.gif" id="leafImg' . $id . '">';
 
-		return $this->getPadding().$img;
-	}
+        if ($openable) {
+            $img = '<a href="javascript:hideShowLeaf(\'' . $id . '\');">' . $img . '</a>';
+        }
 
-	static function childrenHTML($children, &$htmlTree, $parentLeaf=null) {
-		$html = '';
+        return $this->getPadding() . $img;
+    }
 
-		foreach($children as $k=>$chId) {
-			$isFirst = $k == 0;
-			$isLast  = $k + 1 == sizeof($children);
+    public static function childrenHTML($children, &$htmlTree, $parentLeaf = null)
+    {
+        $html = '';
 
-			$leaf = new PXAdminTreeBranch($htmlTree->getLeaf($chId), $htmlTree, $parentLeaf);
-			$leaf->setPosition($isFirst, $isLast);
-			$html .= $leaf->html();
-		}
+        foreach ($children as $k => $chId) {
+            $isFirst = $k == 0;
+            $isLast = $k + 1 == sizeof($children);
 
-		return $html;
-	}
+            $leaf = new PXAdminTreeBranch($htmlTree->getLeaf($chId), $htmlTree, $parentLeaf);
+            $leaf->setPosition($isFirst, $isLast);
+            $html .= $leaf->html();
+        }
 
-	function setPosition($isFirst, $isLast) {
-		$this->isFirst = $isFirst;
-		$this->isLast  = $isLast;
-	}
+        return $html;
+    }
 
-	function contextMenu() {
-		$canUp   = $this->isFirst || !$this->htmlTree->canChangeOrder() ? 0 : 1;
-		$canDown = $this->isLast  || !$this->htmlTree->canChangeOrder() ? 0 : 1;
+    public function setPosition($isFirst, $isLast)
+    {
+        $this->isFirst = $isFirst;
+        $this->isLast = $isLast;
+    }
 
-		$id       = $this->leaf->id;
-		$public   = (int)$this->leaf->content['status'];
-		$format   = $this->htmlTree->datatype->id;
-		$title    = $this->escapeTitle();
+    public function contextMenu()
+    {
+        $canUp = $this->isFirst || !$this->htmlTree->canChangeOrder() ? 0 : 1;
+        $canDown = $this->isLast || !$this->htmlTree->canChangeOrder() ? 0 : 1;
 
-		$pathname = $this->htmlTree->getPathname($id);
-		$level    = $this->leaf->level;
+        $id = $this->leaf->id;
+        $public = (int)$this->leaf->content['status'];
+        $format = $this->htmlTree->datatype->id;
+        $title = $this->escapeTitle();
 
-		return "Context(event, 'edit', {$id}, {$public}, '{$format}',  '{$title}', '{$pathname}', {$level}, {$canUp}, {$canDown}); return false;";
-	}
+        $pathname = $this->htmlTree->getPathname($id);
+        $level = $this->leaf->level;
 
-	function toChildsLink($html) {
-		$href = $this->htmlTree->childsLink($this->leaf->id);
+        return "Context(event, 'edit', {$id}, {$public}, '{$format}',  '{$title}', '{$pathname}', {$level}, {$canUp}, {$canDown}); return false;";
+    }
 
-		if(mb_strlen($href)) {
-			$_ = $this->leaf->content['status'] ? '' : ' class="hide"';
-			$html = '<a href="'.$href.'"'.$_.'>'.$html.'</a>';
-		}
+    public function toChildsLink($html)
+    {
+        $href = $this->htmlTree->childsLink($this->leaf->id);
 
-		return $html;
-	}
+        if (mb_strlen($href)) {
+            $_ = $this->leaf->content['status'] ? '' : ' class="hide"';
+            $html = '<a href="' . $href . '"' . $_ . '>' . $html . '</a>';
+        }
 
-	function escapeTitle() {
-		return str_replace(array('"', "'"), '', strip_tags($this->leaf->title));
-	}
+        return $html;
+    }
 
-	function editLink() {
-		$alt    = 'Изменить раздел &laquo;'.$this->escapeTitle().'&raquo;';
-		$format = $this->htmlTree->datatype->id;
-		$id     = $this->leaf->id;
+    public function escapeTitle()
+    {
+        return str_replace(['"', "'"], '', strip_tags($this->leaf->title));
+    }
 
-		$html = <<<HTML
+    public function editLink()
+    {
+        $alt = 'Изменить раздел &laquo;' . $this->escapeTitle() . '&raquo;';
+        $format = $this->htmlTree->datatype->id;
+        $id = $this->leaf->id;
+
+        $html = <<<HTML
 			<a href="popup.phtml?area=objects&format={$format}&id={$id}&action=main" onclick="EditContent('{$format}', '{$id}'); return false;"><img src="i/tree/edit.gif" alt="{$alt}"></a>
 HTML;
 
-		return trim($html);
-	}
+        return trim($html);
+    }
 }
+
 ?>

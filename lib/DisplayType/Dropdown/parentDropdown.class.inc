@@ -6,25 +6,27 @@
  * displayType PARENTDROPDOWN|width
  *             width не используется
  */
-class PXDisplayTypeParentdropdown extends PXDisplayTypeDropdown {
-	function buildInput($field, $object, $param=NULL) {
-		$value    = isset($object[$field->name]) ? $object[$field->name] : NULL;
-		list($format,$parentFormat) = parent::getFormats($param);
+class PXDisplayTypeParentdropdown extends PXDisplayTypeDropdown
+{
+	public function buildInput($field, $object, $param = NULL)
+	{
+		$value = isset($object[$field->name]) ? $object[$field->name] : NULL;
+		[$format, $parentFormat] = parent::getFormats($param);
 
-		$tree     = parent::getParentTree($object,$parentFormat);
+		$tree = parent::getParentTree($object, $parentFormat);
 		$restrictedId = $format == $parentFormat ? getFromArray($object, 'id') : null;
-		$parents  = $tree->getPlainTree($restrictedId);
-		if(isset($param['root_title'])){
+		$parents = $tree->getPlainTree($restrictedId);
+		if (isset($param['root_title'])) {
 			$parents[NULL] = $param['root_title'];
 		}
 
-		foreach($parents as $k => $v){
+		foreach ($parents as $k => $v) {
 			@$allowed =& $tree->leafs[$k]->content['allowed'];
 
-			if(isset($allowed[$format]) || $format == $parentFormat){
-				$parents[$k] = array('title' => $v);
+			if (isset($allowed[$format]) || $format == $parentFormat) {
+				$parents[$k] = ['title' => $v];
 			} else {
-				$parents[$k] = array('title' => $v, 'disabled' => true);
+				$parents[$k] = ['title' => $v, 'disabled' => true];
 			}
 		}
 

@@ -16,7 +16,7 @@
  *          count_paragraphs (Smarty online manual)
  * @author   Monte Ohrt <monte at ohrt dot com>
  * @param string
- * @return integer
+ * @return int
  */
 function smarty_modifier_count_paragraphs($string)
 {

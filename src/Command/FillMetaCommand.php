@@ -60,7 +60,7 @@ class FillMetaCommand extends AbstractCommand {
 					$sysMetaField = [];
 					foreach ($type->fields as $k => $v) {
 						if (!$v->storageType->storedInDb()) {
-							$p = array('id' => $object['id'], 'format' => $type->id);
+							$p = ['id' => $object['id'], 'format' => $type->id];
 							if (($proceedFileResult = $v->storageType->proceedFile($v, $object, $p))) {
 								$sysMetaField[$k] = $proceedFileResult;
 							}

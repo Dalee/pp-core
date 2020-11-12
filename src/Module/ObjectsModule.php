@@ -7,14 +7,16 @@ namespace PP\Module;
  *
  * @package PP\Module
  */
-class ObjectsModule extends AbstractModule {
-	var $formats;
-	var $object;
+class ObjectsModule extends AbstractModule
+{
+	public $formats;
+	public $object;
 
-	function __construct($area, $settings) {
+	public function __construct($area, $settings)
+	{
 		parent::__construct($area, $settings);
 
-		$this->formats = array();
+		$this->formats = [];
 
 		if (isset($settings['format'])) {
 			if (is_array($settings['format'])) {
@@ -25,7 +27,8 @@ class ObjectsModule extends AbstractModule {
 		}
 	}
 
-	function adminIndex() {
+	public function adminIndex()
+	{
 		$rSid = $this->request->getSid();
 
 		if (!$this->indexSetMenu($rSid)) {
@@ -37,42 +40,45 @@ class ObjectsModule extends AbstractModule {
 
 		$rView = $this->request->getVar($format . '_view');
 
-		if ($rView === 'plain' || $this->datatype->struct === 'plain' ) {
+		if ($rView === 'plain' || $this->datatype->struct === 'plain') {
 			$this->indexAppendTable();
 		} else {
 			$this->indexAppendTree();
 		}
 	}
 
-	function indexSetMenu($rSid) {
-		$types = array();
+	public function indexSetMenu($rSid)
+	{
+		$types = [];
 		$canProceed = false;
-		foreach ($this->app->types as $k=>$v) {
-			if ((count($this->formats) == 0 || in_array($k, $this->formats)) && $this->user->can('admin', $v) ) {
+		foreach ($this->app->types as $k => $v) {
+			if ((count($this->formats) == 0 || in_array($k, $this->formats)) && $this->user->can('admin', $v)) {
 				$types[$k] = $v->title;
 				$canProceed = $canProceed || $rSid == $k;
 			}
 		}
 
-		uasort($types, array($this, '__sortTypes'));
+		uasort($types, [$this, '__sortTypes']);
 
 		$this->layout->assignKeyValueList('INNER.0.0', $types, $rSid);
 		return $canProceed;
 	}
 
-	function indexAppendTable() {
+	public function indexAppendTable()
+	{
 		$table = new \PXAdminTableObjects($this->datatype);
 		$table->addToParent('INNER.1.0');
 
 		$cId = $this->request->getCid();
 		$table->showChildren('cid');
 
-		if($cId && $table->has($cId)) {
-			 $this->indexAppendChild($table->get($cId));
+		if ($cId && $table->has($cId)) {
+			$this->indexAppendChild($table->get($cId));
 		}
 	}
 
-	function indexAppendChild($cidObject) {
+	public function indexAppendChild($cidObject)
+	{
 		$format = $this->datatype->id;
 		$rqCid = $this->request->getCid();
 
@@ -83,7 +89,7 @@ class ObjectsModule extends AbstractModule {
 
 		if (count($allowedChilds)) {
 			foreach ($allowedChilds as $childFormat) {
-				if ($this->app->types[$childFormat]->struct == 'tree' && $this->request->GetVar($childFormat.'_view') != 'plain') {
+				if ($this->app->types[$childFormat]->struct == 'tree' && $this->request->GetVar($childFormat . '_view') != 'plain') {
 					$objects = new \PXAdminTreeObjects($childFormat, $rqCid, 'ByParent');
 
 				} else {
@@ -100,14 +106,16 @@ class ObjectsModule extends AbstractModule {
 	}
 
 
-	function indexAppendTree() {
+	public function indexAppendTree()
+	{
 		$objects = new \PXAdminAjaxTreeObjects($this->datatype);
 		$objects->addToParent('INNER.1.0');
 	}
 
-	function adminPopup() {
+	public function adminPopup()
+	{
 		$this->datatype = $this->getDatatype();
-		$object   = $this->popupGetObject();
+		$object = $this->popupGetObject();
 
 		if (!$this->user->isAdmin() || empty($object)) {
 			return $this->layout->assignError('OUTER.CONTENT', 'Нет доступа');
@@ -115,14 +123,14 @@ class ObjectsModule extends AbstractModule {
 
 		$action = $this->request->getAction();
 
-		$this->layout->setGetVarToSave('id',     $this->request->getId());
+		$this->layout->setGetVarToSave('id', $this->request->getId());
 		$this->layout->setGetVarToSave('format', $this->datatype->id);
 		$this->layout->setGetVarToSave('action', $action);
 
-		$counts = array();
+		$counts = [];
 		$possibleFormats = $this->datatype->childTypes();
 
-		foreach ($this->datatype->allowedChildTypes($object) as $allowedFormat=>$childType) {
+		foreach ($this->datatype->allowedChildTypes($object) as $allowedFormat => $childType) {
 			$counts[$allowedFormat] = $this->db->getObjectsByParent($childType, NULL, $object['id'], DB_SELECT_COUNT);
 		}
 
@@ -153,38 +161,40 @@ class ObjectsModule extends AbstractModule {
 		$form->setDisabledStatus(false); //release global NLAbstractHTMLForm lock!
 	}
 
-	function &getDatatype($varName='format') {
+	public function &getDatatype($varName = 'format')
+	{
 		$rFormat = $this->request->getVar($varName);
 		if (!isset($this->app->types[$rFormat])) {
-			FatalError('Undefined datatype '.$rFormat);
+			FatalError('Undefined datatype ' . $rFormat);
 		}
 		return $this->app->types[$rFormat];
 	}
 
-	function popupGetObject() {
-		$rId    = $this->request->getId();
-		$object = array();
+	public function popupGetObject()
+	{
+		$rId = $this->request->getId();
+		$object = [];
 
 		if ($rId == 0) {
-			$object  = $this->app->initContentObject($this->datatype->id);
+			$object = $this->app->initContentObject($this->datatype->id);
 			$rObject = $this->request->getContentObject($this->datatype);
 
-			foreach($rObject as $k=>$v) {
-				if(array_key_exists($k, $object) && is_null($object[$k])) {
+			foreach ($rObject as $k => $v) {
+				if (array_key_exists($k, $object) && is_null($object[$k])) {
 					$object[$k] = $v;
 				}
 			}
 		} else {
-			if(!sizeof($object = $this->db->getObjectById($this->datatype, $rId))){
+			if (!sizeof($object = $this->db->getObjectById($this->datatype, $rId))) {
 				FatalError('Объект не существует !');
 			}
 
-			if(!$this->user->can('admin', $this->datatype, $object)) {
-				$object = array();
+			if (!$this->user->can('admin', $this->datatype, $object)) {
+				$object = [];
 			}
 		}
 
-		if(isset($object['sys_owner'])) {
+		if (isset($object['sys_owner'])) {
 			$tmp = $this->db->getObjectById($this->app->types['suser'], $object['sys_owner']);
 			$object['ownerlogin'] = isset($tmp['title']) ? $tmp['title'] : '';
 		}
@@ -192,109 +202,114 @@ class ObjectsModule extends AbstractModule {
 		return $object;
 	}
 
-	function popupCheckAccess($object){
-		if (!$this->user->can(array('write', (($this->request->getId() > 0) ? 'modify' : 'add')) , $this->datatype, $object)) {
+	public function popupCheckAccess($object)
+	{
+		if (!$this->user->can(['write', (($this->request->getId() > 0) ? 'modify' : 'add')], $this->datatype, $object)) {
 			return true;
 		}
 	}
 
-	function popupSetTitle($object) {
+	public function popupSetTitle($object)
+	{
 		$title = '';
 		if ($this->request->getId() > 0) {
-			if(isset($object) && isset($object['title'])) {
-				$title = '&laquo;'.mb_substr(strip_tags($object['title']), 0, 32).'&raquo; &#8212; ';
+			if (isset($object) && isset($object['title'])) {
+				$title = '&laquo;' . mb_substr(strip_tags($object['title']), 0, 32) . '&raquo; &#8212; ';
 			}
 			$title .= ' Редактирование';
 		} else {
 			$title = 'Добавление';
 		}
-		$title .= ' объекта формата &laquo;'.strip_tags($this->datatype->title).'&raquo;';
+		$title .= ' объекта формата &laquo;' . strip_tags($this->datatype->title) . '&raquo;';
 		return $title;
 	}
 
-	function popupLinks($object) {
-		$db       =& $this->db;
-		$app      =& $this->app;
+	public function popupLinks($object)
+	{
+		$db =& $this->db;
+		$app =& $this->app;
 		$datatype =& $this->datatype;
-		$request  =& $this->request;
-		$layout   =& $this->layout;
+		$request =& $this->request;
+		$layout =& $this->layout;
 
-		$linksParam = array();
+		$linksParam = [];
 
-		$refFilters    = (array)$request->GetVar('filters', array());
-		foreach ($datatype->references as $k=>$reference) {
-			if($reference->hidden){
+		$refFilters = (array)$request->GetVar('filters', []);
+		foreach ($datatype->references as $k => $reference) {
+			if ($reference->hidden) {
 				continue;
 			}
-			$refDatatype   = $app->types[$k];
+			$refDatatype = $app->types[$k];
 
 			$existingLinks = $db->getLinks($reference, $datatype->id, $object['id']);
 
-			$onPage        = $app->getProperty('LINKS_ON_PAGE', 10);
-			$currentPage   = $request->getVar($k.'_page', 1);
-			$layout->setGetVarToSave($k.'_page', $currentPage);
+			$onPage = $app->getProperty('LINKS_ON_PAGE', 10);
+			$currentPage = $request->getVar($k . '_page', 1);
+			$layout->setGetVarToSave($k . '_page', $currentPage);
 
-			$onlyExistingLinks = $request->GetVar($k.'_exist', $reference->byDefault);
-			$layout->setGetVarToSave($k.'_exist', $onlyExistingLinks);
+			$onlyExistingLinks = $request->GetVar($k . '_exist', $reference->byDefault);
+			$layout->setGetVarToSave($k . '_exist', $onlyExistingLinks);
 
 			$filteredWhere = $this->applyFiltersToWhere($refFilters, $refDatatype);
-			$trueCond      = $db->TrueStatusString() . '=' . $db->TrueStatusString();
-			$falseCond     = $db->TrueStatusString() . '=' . $db->TrueStatusString(false);
+			$trueCond = $db->TrueStatusString() . '=' . $db->TrueStatusString();
+			$falseCond = $db->TrueStatusString() . '=' . $db->TrueStatusString(false);
 
-			if($onlyExistingLinks) {
-				if(count($existingLinks)){
-					$existingLinksWhere = $k . '.id IN ( ' .join(',',array_keys($existingLinks)). ' ) ' ;
+			if ($onlyExistingLinks) {
+				if (count($existingLinks)) {
+					$existingLinksWhere = $k . '.id IN ( ' . join(',', array_keys($existingLinks)) . ' ) ';
 				} else {
 					$existingLinksWhere = $falseCond;
 				}
-				list($possibleLinks, $pagerCount, $overallCount) = $this->_getLinksData($refDatatype, $existingLinksWhere . $filteredWhere, $trueCond, $onPage, $currentPage);
+				[$possibleLinks, $pagerCount, $overallCount] = $this->_getLinksData($refDatatype, $existingLinksWhere . $filteredWhere, $trueCond, $onPage, $currentPage);
 			} else {
 				$mainWhere = $trueCond; //No stupid NULL
 
-				if(!empty($reference->filterFrom) && $reference->from == $k) {
+				if (!empty($reference->filterFrom) && $reference->from == $k) {
 					$mainWhere = '(' . $db->parseWhereTemplate($reference->filterFrom, $object, $datatype) . ')';
 				}
 
-				if(!empty($reference->filterTo) && $reference->to == $k) {
+				if (!empty($reference->filterTo) && $reference->to == $k) {
 					$mainWhere = '(' . $db->parseWhereTemplate($reference->filterTo, $object, $datatype) . ')';
 				}
 
 				if (!empty($reference->restrictBy)) {
 					$mainWhere .= ' AND ';
-					$mainWhere .= $k . '.' . $reference->restrictBy." = '".$db->escapeString($object[$reference->restrictBy])."'";
-					$mainWhere  = '(' . $mainWhere . ')';
+					$mainWhere .= $k . '.' . $reference->restrictBy . " = '" . $db->escapeString($object[$reference->restrictBy]) . "'";
+					$mainWhere = '(' . $mainWhere . ')';
 				}
-				list($possibleLinks, $pagerCount, $overallCount) = $this->_getLinksData($refDatatype, $mainWhere . $filteredWhere, $mainWhere, $onPage, $currentPage);
+				[$possibleLinks, $pagerCount, $overallCount] = $this->_getLinksData($refDatatype, $mainWhere . $filteredWhere, $mainWhere, $onPage, $currentPage);
 				if ($datatype->id == $k) {
 					unset($possibleLinks[$object['id']]);
 				}
 			}
 
-			$linksParam[$k] = array(
-				"reference"         => $reference,
-				"formatTo"          => $refDatatype,
-				"links"             => $existingLinks,
-				"pLinks"            => $possibleLinks,
-				"objectsOnPage"     => $onPage,
-				"page"              => $currentPage,
-				"count"             => $pagerCount,
-				"fullCount"         => $overallCount,
+			$linksParam[$k] = [
+				"reference" => $reference,
+				"formatTo" => $refDatatype,
+				"links" => $existingLinks,
+				"pLinks" => $possibleLinks,
+				"objectsOnPage" => $onPage,
+				"page" => $currentPage,
+				"count" => $pagerCount,
+				"fullCount" => $overallCount,
 				"onlyExistingLinks" => $onlyExistingLinks,
-				"filters"           => $refFilters
-			);
+				"filters" => $refFilters,
+			];
 		}
 		return $linksParam;
 	}
 
-	function _getLinksData($dType, $where, $whereAllCount, $onPage, $cPage){
-		$pLinks = $this->db->getObjectsByWhereLimited($dType, NULL, $where, $onPage, $onPage*($cPage-1));
+	public function _getLinksData($dType, $where, $whereAllCount, $onPage, $cPage)
+	{
+		$pLinks = $this->db->getObjectsByWhereLimited($dType, NULL, $where, $onPage, $onPage * ($cPage - 1));
 		$pCount = $this->db->getObjectsByWhere($dType, NULL, $where, DB_SELECT_COUNT);
-		$oCount = $this->db->getObjectsByWhere($dType, NULL, $whereAllCount,  DB_SELECT_COUNT);
+		$oCount = $this->db->getObjectsByWhere($dType, NULL, $whereAllCount, DB_SELECT_COUNT);
 
-		return array($pLinks, $pCount, $oCount);
+		return [$pLinks, $pCount, $oCount];
 	}
 
-	function adminAction() {
+	public function adminAction()
+	{
 		$this->datatype =& $this->getDatatype();
 
 		$action = $this->_route();
@@ -347,17 +362,20 @@ class ObjectsModule extends AbstractModule {
 		return $this->nextLocation;
 	}
 
-	protected function getArea() {
+	protected function getArea()
+	{
 		return 'objects';
 	}
 
-	function _route() {
+	public function _route()
+	{
 		$rAction = $this->request->getAction();
-		$this->nextLocation = 'popup.phtml?area='.$this->getArea().'&format='.$this->datatype->id.'&action='.$rAction;
+		$this->nextLocation = 'popup.phtml?area=' . $this->getArea() . '&format=' . $this->datatype->id . '&action=' . $rAction;
 		return $rAction;
 	}
 
-	function actionMain() {
+	public function actionMain()
+	{
 		$object = $this->request->getContentObject($this->datatype);
 
 		if ($object['id']) {
@@ -370,7 +388,8 @@ class ObjectsModule extends AbstractModule {
 		}
 	}
 
-	function actionCloneContentObject() {
+	public function actionCloneContentObject()
+	{
 		$donor = $this->request->getContentObject($this->datatype);
 
 		if (!is_numeric($donor['id']) || !$donor['id']) {
@@ -381,12 +400,13 @@ class ObjectsModule extends AbstractModule {
 		$this->returnToId($cloneId, 'main');
 	}
 
-	function actionChildren() {
+	public function actionChildren()
+	{
 		if (!count($this->datatype->childs)) {
 			FatalError("В этом разделе невозможно назначать потомков");
 		}
 
-		$object = $this->request->getObjectSysVars($this->datatype, array(OBJ_FIELD_CHILDREN));
+		$object = $this->request->getObjectSysVars($this->datatype, [OBJ_FIELD_CHILDREN]);
 
 		if ($object['id']) {
 			$this->db->modifyObjectSysVars($this->datatype, $object);
@@ -397,7 +417,8 @@ class ObjectsModule extends AbstractModule {
 		}
 	}
 
-	function actionRemove() {
+	public function actionRemove()
+	{
 		if ($this->request->getAck()) {
 			$this->db->deleteContentObject($this->datatype, $this->request->getID());
 		}
@@ -405,95 +426,105 @@ class ObjectsModule extends AbstractModule {
 		closeAndRefresh();
 	}
 
-	function actionRemoveDirect() {
+	public function actionRemoveDirect()
+	{
 		$this->db->deleteContentObject($this->datatype, $this->request->getId());
 		$this->returnToReferer();
 	}
 
-	function applyFiltersToUri($filters) {
+	public function applyFiltersToUri($filters)
+	{
 		foreach ($filters as $dt => $fields) {
 			if (is_array($fields) && count($fields) > 0) {
 				foreach ($fields as $field => $filter) {
 					if (empty($filter)) continue;
-					$this->nextLocation .= '&filters['.$dt.']'.'['.$field.']='.rawurlencode($filter);
+					$this->nextLocation .= '&filters[' . $dt . ']' . '[' . $field . ']=' . rawurlencode($filter);
 				}
 			}
 		}
 	}
 
-	function applyFiltersToWhere($refFilters, $refDatatype) {
+	public function applyFiltersToWhere($refFilters, $refDatatype)
+	{
 		$filterOnWhere = NULL;
-		if (isset($refFilters[$refDatatype->id])    &&
-		   is_array($refFilters[$refDatatype->id]) &&
-		   count($refFilters[$refDatatype->id]) > 0
-		  ){
+		if (isset($refFilters[$refDatatype->id]) &&
+			is_array($refFilters[$refDatatype->id]) &&
+			count($refFilters[$refDatatype->id]) > 0
+		) {
 			$applied = 0;
 			$filterOnWhere = ' AND (';
-			foreach($refFilters[$refDatatype->id] as $field => $filter){
-				if(empty($filter)) continue;
+			foreach ($refFilters[$refDatatype->id] as $field => $filter) {
+				if (empty($filter)) continue;
 				$applied++;
-				$this->layout->setGetVarToSave('filters['.$refDatatype->id.']['.$field.']', $filter);
+				$this->layout->setGetVarToSave('filters[' . $refDatatype->id . '][' . $field . ']', $filter);
 				//apply simple filter logic, ex. : ^search string$
-				$modifiers = P_LEFT|P_RIGHT;
-				if (substr($filter, 0, 1) == '^'){
+				$modifiers = P_LEFT | P_RIGHT;
+				if (substr($filter, 0, 1) == '^') {
 					$modifiers &= P_RIGHT;
 					$filter = substr($filter, 1);
 				}
-				if (substr($filter, -1) == '$'){
+				if (substr($filter, -1) == '$') {
 					$modifiers &= P_LEFT;
-					$filter  = substr($filter, 0, -1);
+					$filter = substr($filter, 0, -1);
 				}
 
 				// build where
-				$filterOnWhere .= $refDatatype->id . '.' .$this->db->escapeString($field).$this->db->LIKE($filter, $modifiers)." AND ";
+				$filterOnWhere .= $refDatatype->id . '.' . $this->db->escapeString($field) . $this->db->LIKE($filter, $modifiers) . " AND ";
 			}
 
-			if(!$applied){
+			if (!$applied) {
 				$filterOnWhere = NULL;
 			} else {
-				$filterOnWhere  = substr($filterOnWhere, 0, -4); //remove last AND or OR
+				$filterOnWhere = substr($filterOnWhere, 0, -4); //remove last AND or OR
 				$filterOnWhere .= ')';
 			}
 		}
 		return $filterOnWhere;
 	}
 
-	function appendLinksExistFlag(){
-		foreach($this->request->GetAllPostData() as $k => $v){
-			if(is_string($k) && strstr($k, '_exist') == '_exist'){
+	public function appendLinksExistFlag()
+	{
+		foreach ($this->request->GetAllPostData() as $k => $v) {
+			if (is_string($k) && strstr($k, '_exist') == '_exist') {
 				$this->nextLocation .= "&{$k}={$v}";
 			}
 		}
 	}
 
-	function returnToId($id, $action = null) {
-		$this->nextLocation .= '&id='.$id;
+	public function returnToId($id, $action = null)
+	{
+		$this->nextLocation .= '&id=' . $id;
 
 		if (is_string($action)) {
-			$this->nextLocation .= '&action='.$action;
+			$this->nextLocation .= '&action=' . $action;
 		}
 	}
 
-	function returnToReferer() {
+	public function returnToReferer()
+	{
 		$this->nextLocation = $this->request->GetReferer();
 	}
 
-	function actionUpContentObject() {
+	public function actionUpContentObject()
+	{
 		$this->db->upContentObject($this->datatype, $this->request->getId());
 		$this->returnToReferer();
 	}
 
-	function actionDownContentObject() {
+	public function actionDownContentObject()
+	{
 		$this->db->downContentObject($this->datatype, $this->request->getId());
 		$this->returnToReferer();
 	}
 
-	function actionMoveContentObject() {
+	public function actionMoveContentObject()
+	{
 		$this->db->moveContentObject($this->datatype, $this->request->getId(), $this->request->getVar('shift'));
 		$this->returnToReferer();
 	}
 
-	function actionChangeStatus() {
+	public function actionChangeStatus()
+	{
 		$object = $this->db->getObjectById($this->datatype, $this->request->getId());
 		$object['status'] = !$object['status'];
 		$this->db->modifyContentObject($this->datatype, $object);
@@ -501,30 +532,32 @@ class ObjectsModule extends AbstractModule {
 		$this->returnToReferer();
 	}
 
-	function actionModifyLinks() {
+	public function actionModifyLinks()
+	{
 		$id = $this->request->getId();
 		foreach ($this->datatype->references as $reference) {
-			if($reference->hidden){
+			if ($reference->hidden) {
 				continue;
 			}
 			$ll = $this->_makeLinkedListFrom($reference);
 			$this->db->ModifyLinks($reference, $this->datatype->id, $id, $ll, false);
 		}
 
-		if (count($filters = (array)$this->request->GetVar('filters', array()))) {
+		if (count($filters = (array)$this->request->GetVar('filters', []))) {
 			$this->applyFiltersToUri($filters);
 		}
 		$this->appendLinksExistFlag();
 		$this->returnToId($id);
 	}
 
-	function _makeLinkedListFrom($ref){
+	public function _makeLinkedListFrom($ref)
+	{
 		$linkedList = [];
-		foreach ($this->request->getLinks($ref) as $values){
-			foreach ($values as $id => $data){
-				$node = & $linkedList[$id];
-				if (isset($linkedList[$id])){
-					while(!is_null($node = & $node['next']));
+		foreach ($this->request->getLinks($ref) as $values) {
+			foreach ($values as $id => $data) {
+				$node = &$linkedList[$id];
+				if (isset($linkedList[$id])) {
+					while (!is_null($node = &$node['next'])) ;
 				}
 				$node = $data;
 				$node['next'] = NULL;
@@ -533,7 +566,8 @@ class ObjectsModule extends AbstractModule {
 		return $linkedList;
 	}
 
-	function __sortTypes($a, $b) {
+	public function __sortTypes($a, $b)
+	{
 		return strcoll($a, $b);
 	}
 }

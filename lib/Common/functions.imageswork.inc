@@ -128,8 +128,8 @@ function GDImageResize($src, $dest, $width, $height, $rgb=0xFFFFFF, $quality=100
 
 function MagicResize($im_filename, $x, $y) {
 	$oldName = $im_filename;
-	if (ereg("\.JPG$", $im_filename)) {
-		$im_filename = str_replace(".JPG", ".jpg", $im_filename);
+	if (substr($im_filename, -4) === '.JPG') {
+		$im_filename = str_replace('.JPG', '.jpg', $im_filename);
 		rename($oldName, $im_filename);
 	}
 
@@ -146,7 +146,7 @@ function MagicResize($im_filename, $x, $y) {
 
 function NConvertSafeImageResize($im_filename, $x, $y) {
 	$oldName = $im_filename;
-	if (ereg("\.JPG$", $im_filename)) {
+	if (substr($im_filename, -4) === '.JPG') {
 		$im_filename = str_replace(".JPG", ".jpg", $im_filename);
 		rename($oldName, $im_filename);
 	}
@@ -187,7 +187,7 @@ function ReadJFIFbyPerl($filename, $section='caption') {
 }
 
 function GetImageProperty($file) {
-	$retArray = array();
+	$retArray = [];
 	$size = getimagesize($file);
 	$retArray['width'] = $size[0];
 	$retArray['height'] = $size[1];
@@ -202,9 +202,6 @@ function GetImageProperty($file) {
 		case '3':
 			$type = 'PNG';
 			break;
-		case '4':
-			$type = 'SWF';
-			break;
 		case '5':
 			$type = 'PSD';
 			break;
@@ -212,8 +209,6 @@ function GetImageProperty($file) {
 			$type = 'BMP';
 			break;
 		case '7':
-			$type = 'TIFF';
-			break;
 		case '8':
 			$type = 'TIFF';
 			break;

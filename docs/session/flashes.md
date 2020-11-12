@@ -22,18 +22,18 @@
  * Class PXTriggerParams
  */
 class PXTriggerDatabaseParams extends PXAbstractDatabaseTrigger {
-	
+
 	/**
 	 * Returns true whether given object id
 	 * is referenced and false otherwise.
 	 *
 	 * @param int $objectId
-	 * @return boolean
+	 * @return bool
 	 */
 	protected function isReferenced($objectId) {
 		return true;
 	}
-	
+
 	/**
 	 * {@inheritdoc}
 	 */
@@ -41,10 +41,10 @@ class PXTriggerDatabaseParams extends PXAbstractDatabaseTrigger {
 		if ($format->id !== 'param_group') {
 			return true;
 		}
-		
+
 		return !$this->isReferenced($objId);
 	}
-	
+
 }
 ```
 

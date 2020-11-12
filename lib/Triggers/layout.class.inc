@@ -1,10 +1,13 @@
 <?php
 
-abstract class PXAbstractLayoutTrigger extends PXAbstractTrigger {
-	function OnBeforePathCreated($tree, $id) {
-	}
+abstract class PXAbstractLayoutTrigger extends PXAbstractTrigger
+{
+    public function OnBeforePathCreated($tree, $id)
+    {
+    }
 
-	function OnAfterPathCreated($createdPath) {
-		return $createdPath;
-	}
+    public function OnAfterPathCreated($createdPath)
+    {
+        return $createdPath;
+    }
 }

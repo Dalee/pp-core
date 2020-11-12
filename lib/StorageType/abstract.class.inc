@@ -3,17 +3,19 @@
  * Базовый класс описывающий сохранение, получение из запроса
  * (и что-то еще) полей объекта с определенным storageType
  */
-class PXStorageType {
+class PXStorageType
+{
 
-	const defaultSQLType = 'VARCHAR';
+	public const defaultSQLType = 'VARCHAR';
 
-	var $field;
-	var $name;
-	var $triggers;
+	public $field;
+	public $name;
+	public $triggers;
 
-	public function __construct(&$field, $name) {
+	public function __construct(&$field, $name)
+	{
 		$this->field = &$field;
-		$this->name  = $name;
+		$this->name = $name;
 	}
 
 	/**
@@ -22,39 +24,41 @@ class PXStorageType {
 	 * сортировки объектов
 	 *
 	 * @param PXFieldDescription $field
-	 * @param Array              $object
-	 * @param Array|NULL         $param
+	 * @param array $object
+	 * @param array|NULL $param
 	 *
 	 * @return String
 	 */
-	function objectsSortOrder($field, $object, &$param) {
+	public function objectsSortOrder($field, $object, &$param)
+	{
 		return $field->description;
 	}
 
-	function objectsSortOrderString($field, $object, &$param) {
+	public function objectsSortOrderString($field, $object, &$param)
+	{
 		$html = '<a ';
 
-		switch($param['order']) {
-			case ($field->name.' DESC') :
+		switch ($param['order']) {
+			case ($field->name . ' DESC') :
 				$html .= ' class="down"';
-				$order =  $field->name;
+				$order = $field->name;
 				$title = '';
 				break;
 
 			case $field->name :
 				$html .= ' class="up"';
-				$order = $field->name.' DESC';
+				$order = $field->name . ' DESC';
 				$title = ' в обратном порядке';
 				break;
 
 			default:
-				$order =  $field->name;
+				$order = $field->name;
 				$title = '';
 				break;
 		}
 
-		$html .= ' href="'.$param['table']->_BuildHref($param['dtype'].'_order', $order).'"';
-		$html .= ' title="Сортировать по полю &bdquo;'.$field->description.'&ldquo;'.$title.'">'.$field->description.'</a>';
+		$html .= ' href="' . $param['table']->_BuildHref($param['dtype'] . '_order', $order) . '"';
+		$html .= ' title="Сортировать по полю &bdquo;' . $field->description . '&ldquo;' . $title . '">' . $field->description . '</a>';
 
 		return $html;
 	}
@@ -63,12 +67,13 @@ class PXStorageType {
 	 * Возвращает нормированное значение поля из запроса
 	 *
 	 * @param PXFieldDescription $field
-	 * @param array              $object
-	 * @param array|null         $param
+	 * @param array $object
+	 * @param array|null $param
 	 *
 	 * @return mixed
 	 */
-	function getFromRequest($field, $object, &$param) {
+	public function getFromRequest($field, $object, &$param)
+	{
 		return $object[$field->name];
 	}
 
@@ -77,28 +82,30 @@ class PXStorageType {
 	 * поля перед сохранением объекта в базу
 	 *
 	 * @param PXFieldDescription $field
-	 * @param array              $object
-	 * @param array|null         $param
+	 * @param array $object
+	 * @param array|null $param
 	 *
 	 * @return array
 	 */
-	function normalizeObjectAttribute($field, $object, &$param) {
-		return array(NULL, $param['dbFields'], $param['dbValues']);
+	public function normalizeObjectAttribute($field, $object, &$param)
+	{
+		return [NULL, $param['dbFields'], $param['dbValues']];
 	}
 
-	function normalizeObjectAttributeString($field, $object, &$param) {
+	public function normalizeObjectAttributeString($field, $object, &$param)
+	{
 		$k = $field->name;
 		$v = $object[$k];
 
-		if(is_array($param['dbFields'])) {
+		if (is_array($param['dbFields'])) {
 			$param['dbFields'][] = $k;
 		}
 
-		if(is_array($param['dbValues'])) {
+		if (is_array($param['dbValues'])) {
 			$param['dbValues'][] = $v;
 		}
 
-		return array($v, $param['dbFields'], $param['dbValues']);
+		return [$v, $param['dbFields'], $param['dbValues']];
 	}
 
 	/**
@@ -106,12 +113,13 @@ class PXStorageType {
 	 * в поле
 	 *
 	 * @param PXFieldDescription $field
-	 * @param array              $object
-	 * @param array|null         $param
+	 * @param array $object
+	 * @param array|null $param
 	 *
 	 * @return string
 	 */
-	function searchLikeQuery($field, $object, &$param) {
+	public function searchLikeQuery($field, $object, &$param)
+	{
 		return '';
 	}
 
@@ -120,12 +128,13 @@ class PXStorageType {
 	 * Подготавливает данные к сохранению в базу
 	 *
 	 * @param PXFieldDescription $field
-	 * @param array              $object
-	 * @param array|null         $param
+	 * @param array $object
+	 * @param array|null $param
 	 *
 	 * @return string
 	 */
-	function proceedFile($field, &$object, &$param, $allowed = null) {
+	public function proceedFile($field, &$object, &$param, $allowed = null)
+	{
 		return isset($object[$field->name]) ? $object[$field->name] : null;
 	}
 
@@ -135,7 +144,8 @@ class PXStorageType {
 	 * @param array $param
 	 * @return null
 	 */
-	function cloneFile($field, $object, &$param) {
+	public function cloneFile($field, $object, &$param)
+	{
 		return null;
 	}
 
@@ -144,12 +154,13 @@ class PXStorageType {
 	 * поля после выборки объекта из базы
 	 *
 	 * @param PXFieldDescription $field
-	 * @param array              $object
-	 * @param array|null         $param
+	 * @param array $object
+	 * @param array|null $param
 	 *
 	 * @return mixed|null
 	 */
-	function normalize($field, $object, &$param) {
+	public function normalize($field, $object, &$param)
+	{
 		return isset($object[$field->name]) ? $object[$field->name] : null;
 	}
 
@@ -157,12 +168,13 @@ class PXStorageType {
 	 * Генерит pathname объекта
 	 *
 	 * @param PXFieldDescription $field
-	 * @param Array              $object
-	 * @param Array|NULL         $param
+	 * @param array $object
+	 * @param array|NULL $param
 	 *
 	 * @return String
 	 */
-	function createPathname($field, $object, &$param) {
+	public function createPathname($field, $object, &$param)
+	{
 		return '';
 	}
 
@@ -173,14 +185,16 @@ class PXStorageType {
 	 *
 	 * @return bool
 	 */
-	function storedInDb() {
+	public function storedInDb()
+	{
 		return !$this->notInDb($this->field, null, null);
 	}
 
 	/**
 	 * @deprecated Use !storedInDb()
 	 */
-	function notInDb($field, $object, $param = null) {
+	public function notInDb($field, $object, $param = null)
+	{
 		return false;
 	}
 
@@ -190,42 +204,48 @@ class PXStorageType {
 	 *
 	 * @return Boolean
 	 */
-	function storedInMeta() {
+	public function storedInMeta()
+	{
 		return $this->inMeta($this->field, null, null);
 	}
 
 	/**
 	 * @deprecated Use storedInMeta()
 	 */
-	function inMeta($field, $object, $param = null) {
+	public function inMeta($field, $object, $param = null)
+	{
 		return !$this->storedInDb();
 	}
 
 	/**
 	 * Определяет возможность фильтрации вывода текущего StorageType в PXAdminObjectForm::LinksForm
 	 */
-	function filterable(){
+	public function filterable()
+	{
 		return false;
 	}
 
 	/**
 	 * @see PXDatabase::_createSelector()
 	 */
-	function createSelector($field, $object, $param = null) {
-		return $field->typeDescription->id.'.'.PXRegistry::getDB()->mapFields($field->name);
+	public function createSelector($field, $object, $param = null)
+	{
+		return $field->typeDescription->id . '.' . PXRegistry::getDB()->mapFields($field->name);
 	}
 
-	protected static function parseConfigArguments($attrNode, $fieldNode) {
+	protected static function parseConfigArguments($attrNode, $fieldNode)
+	{
 		$args = explode("|", $attrNode->value);
 		array_shift($args);
 
 		return $args;
 	}
 
-	public static function getClassByName($name) {
+	public static function getClassByName($name)
+	{
 		$baseClass = 'PXStorageType';
 
-		$inputClass = $baseClass.mb_ucfirst(mb_strtolower($name));
+		$inputClass = $baseClass . mb_ucfirst(mb_strtolower($name));
 		if (!class_exists($inputClass)) {
 			trigger_error("Class {$inputClass} not found, use {$baseClass} instead", E_USER_NOTICE);
 			return $baseClass;
@@ -233,12 +253,13 @@ class PXStorageType {
 		return $inputClass;
 	}
 
-	public static function parseConfig($attrNode, $fieldNode) {
-		$name = preg_replace('/\|.+$/'.REGEX_MOD, '', $attrNode->value);
+	public static function parseConfig($attrNode, $fieldNode)
+	{
+		$name = preg_replace('/\|.+$/' . REGEX_MOD, '', $attrNode->value);
 
 		$cls = self::getClassByName($name);
-		$args = call_user_func(array($cls, 'parseConfigArguments'), $attrNode, $fieldNode);
+		$args = call_user_func([$cls, 'parseConfigArguments'], $attrNode, $fieldNode);
 
-		return array($cls, $name, $args);
+		return [$cls, $name, $args];
 	}
 }

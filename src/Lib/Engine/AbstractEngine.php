@@ -12,7 +12,8 @@ use PP\Lib\Html\Layout\LayoutInterface;
 use PP\ApplicationFactory;
 use Symfony\Component\Config\ConfigCache;
 
-abstract class AbstractEngine implements EngineInterface {
+abstract class AbstractEngine implements EngineInterface
+{
 
 	/** @var \PXModuleDescription[] */
 	protected $modules;
@@ -51,7 +52,8 @@ abstract class AbstractEngine implements EngineInterface {
 	protected $initOrder = ['container', 'app', 'db', 'request', 'user', 'layout'];
 
 	// TODO: refactor
-	function __construct() {
+	public function __construct()
+	{
 		\PXRegistry::setEngine($this);
 
 		$this->initApplication();
@@ -62,7 +64,8 @@ abstract class AbstractEngine implements EngineInterface {
 	/**
 	 * {@inheritdoc}
 	 */
-	public function start() {
+	public function start()
+	{
 		$this->user->setDb($this->db);
 		$this->user->setApp($this->app);
 		$this->user->setRequest($this->request);
@@ -91,7 +94,8 @@ abstract class AbstractEngine implements EngineInterface {
 	 * @throws \InvalidArgumentException if services.yml is not found
 	 * @throws \Exception
 	 */
-	protected function initContainer($klass) {
+	protected function initContainer($klass)
+	{
 		$file = CACHE_PATH . DIRECTORY_SEPARATOR . 'container.php';
 		$this->containerConfigCache = new ConfigCache($file, false);
 
@@ -114,13 +118,15 @@ abstract class AbstractEngine implements EngineInterface {
 		$this->container = $container;
 	}
 
-	protected function compileContainer() {
+	protected function compileContainer()
+	{
 		if (!$this->containerConfigCache->isFresh()) {
 			$this->container->compile(true);
 		}
 	}
 
-	protected function initApplication() {
+	protected function initApplication()
+	{
 		foreach ($this->initOrder as $var) {
 			if (!is_array($this->$var) || empty($this->{$var}['factory'])) {
 				continue;
@@ -135,12 +141,13 @@ abstract class AbstractEngine implements EngineInterface {
 			if ($initHelper) {
 				$this->$initHelper($this->{$var}['factory']);
 			} else {
-				$this->$var = new $this->{$var}['factory'];
+				$this->$var = new $this->{$var}['factory']();
 			}
 		}
 	}
 
-	protected function saveToRegistry() {
+	protected function saveToRegistry()
+	{
 		foreach (array_keys(get_object_vars($this)) as $var) {
 			if (is_object($this->$var) && \PXRegistry::canSaveIt($var)) {
 				call_user_func_array(['PXRegistry', 'set' . ucfirst($var)], [&$this->$var]);
@@ -148,15 +155,18 @@ abstract class AbstractEngine implements EngineInterface {
 		}
 	}
 
-	protected function initApp($klass) {
+	protected function initApp($klass)
+	{
 		$this->app = ApplicationFactory::create($this);
 	}
 
-	protected function initDb($klass) {
+	protected function initDb($klass)
+	{
 		$this->db = new $klass($this->app);
 	}
 
-	protected function initModules() {
+	protected function initModules()
+	{
 		$rArea = $this->request->getArea();
 
 		if (!isset($this->app->modules[$rArea])) {
@@ -167,19 +177,22 @@ abstract class AbstractEngine implements EngineInterface {
 		$this->area = $rArea;
 	}
 
-	abstract function runModules();
+	public abstract function runModules();
 
-	public function engineClass() {
+	public function engineClass()
+	{
 		return static::USER_ENGINE_ID;
 	}
 
-	protected function checkArea($area) {
+	protected function checkArea($area)
+	{
 		if (!isset($this->modules[$area])) {
 			FatalError('Некорректный параметр area = <em>' . strip_tags($this->area) . '</em>');
 		}
 	}
 
-	public function getContainer() {
+	public function getContainer()
+	{
 		return $this->container;
 	}
 

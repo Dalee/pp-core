@@ -77,7 +77,7 @@ abstract class AbstractXmlNode implements XmlNodeInterface {
 			return $this->_childNodes;
 		}
 
-		$this->_childNodes = array();
+		$this->_childNodes = [];
 
 		if (is_object($this->_node)) {
 			$self = get_class($this);
@@ -97,7 +97,7 @@ abstract class AbstractXmlNode implements XmlNodeInterface {
 	 * {@inheritdoc}
 	 */
 	public function getChildObjects() {
-		return array();
+		return [];
 	}
 
 	/**
@@ -105,7 +105,7 @@ abstract class AbstractXmlNode implements XmlNodeInterface {
 	 * @return array|mixed|null
 	 */
 	public function getChildNode($nodeName) {
-		$find = array();
+		$find = [];
 
 		foreach ($this->childNodes() as $node) {
 			if ($node->nodeName() == $nodeName) {

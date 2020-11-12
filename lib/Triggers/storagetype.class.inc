@@ -1,7 +1,9 @@
 <?php
 
-abstract class PXAbstractStoragetypeTrigger extends PXAbstractTrigger {
-	function __call($m, $a) {
-		return true;
-	}
+abstract class PXAbstractStoragetypeTrigger extends PXAbstractTrigger
+{
+    public function __call($m, $a)
+    {
+        return true;
+    }
 }

@@ -6,63 +6,64 @@ namespace PP\Lib\Xml;
  * Interface XmlNodeInterface
  * @package PP\Lib\Xml
  */
-interface XmlNodeInterface {
+interface XmlNodeInterface
+{
 
 	/**
 	 * @return string
 	 */
-	function nodeName();
+	public function nodeName();
 
 	/**
 	 * @return string
 	 */
-	function nodeValue();
+	public function nodeValue();
 
 	/**
 	 * @param $xpath
 	 * @return string
 	 */
-	function nodeXValue($xpath);
+	public function nodeXValue($xpath);
 
 	/**
 	 * @return mixed
 	 */
-	function nodeType();
+	public function nodeType();
 
 	/**
 	 * @return array
 	 */
-	function attributes();
+	public function attributes();
 
 	/**
 	 * @param string $attrName
 	 * @return mixed
 	 */
-	function getAttribute($attrName);
+	public function getAttribute($attrName);
 
 	/**
 	 * @return XmlNodeInterface[]
 	 */
-	function childNodes();
+	public function childNodes();
 
 	/**
 	 * @param string $query
 	 * @return XmlNodeInterface[]
 	 */
-	function xpath($query);
+	public function xpath($query);
 
 	/**
 	 * @return XmlNodeInterface[]
 	 */
-	function getChildObjects();
+	public function getChildObjects();
 
 	/**
 	 * @return XmlNodeInterface
 	 */
-	function parent();
+	public function parent();
 
 	/**
 	 * @return bool
 	 */
-	function isXmlNode();
+	public function isXmlNode();
 }

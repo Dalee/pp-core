@@ -12,7 +12,8 @@ require_once PPLIBPATH . 'Common/functions.array.inc';
 require_once PPLIBPATH . 'Common/functions.string.inc';
 
 
-abstract class LayoutAbstract implements LayoutInterface {
+abstract class LayoutAbstract implements LayoutInterface
+{
 
 	private $html = '';
 	private $labels = [];
@@ -23,11 +24,12 @@ abstract class LayoutAbstract implements LayoutInterface {
 	public $getData;
 	public $outerLayout;
 
-	public function __construct() {
+	public function __construct()
+	{
 		$this->getData = [];
 		$this->template_dirs = [
 			LOCALPATH . '/templates/admin/',
-			PPCOREPATH . '/templates/admin/'
+			PPCOREPATH . '/templates/admin/',
 		];
 	}
 
@@ -35,13 +37,15 @@ abstract class LayoutAbstract implements LayoutInterface {
 	 * @param $template
 	 * @return $this
 	 */
-	function setOuterLayout($template) {
+	public function setOuterLayout($template)
+	{
 		$this->outerLayout = $template;
 		$this->html = $this->template($template . '.tmpl');
 		return $this;
 	}
 
-	function template($filename, $label = null) {
+	public function template($filename, $label = null)
+	{
 		foreach ($this->template_dirs as $dir) {
 			if (file_exists($dir . $filename)) {
 				$html = file_get_contents($dir . $filename);
@@ -60,58 +64,66 @@ abstract class LayoutAbstract implements LayoutInterface {
 	/**
 	 * {@inheritdoc}
 	 */
-	public function setApp(\PXApplication $app) {
+	public function setApp(\PXApplication $app)
+	{
 		return $this;
 	}
 
 	/**
 	 * {@inheritdoc}
 	 */
-	public function setLang($lang = 'rus') {
+	public function setLang($lang = 'rus')
+	{
 		return $this;
 	}
 
 	/**
 	 * {@inheritdoc}
 	 */
-	function getLang() {
+	public function getLang()
+	{
 		return null;
 	}
 
 	/**
 	 * {@inheritdoc}
 	 */
-	function getSmarty() {
+	public function getSmarty()
+	{
 		return null;
 	}
 
 	/**
 	 * {@inheritdoc}
 	 */
-	function getIndexTemplate() {
+	public function getIndexTemplate()
+	{
 		return null;
 	}
 
 	/**
 	 * {@inheritdoc}
 	 */
-	public function setContent($content) {
+	public function setContent($content)
+	{
 		return $this;
 	}
 
 	/**
 	 * {@inheritdoc}
 	 */
-	public function getContent() {
+	public function getContent()
+	{
 		return null;
 	}
 
-	function _arrayToAttrs($array) {
+	public function _arrayToAttrs($array)
+	{
 		if (!sizeof($array)) {
 			return '';
 		}
 
-		$attrs = array(' ');
+		$attrs = [' '];
 
 		foreach ($array as $k => $v) {
 			$attrs[] = $k . '="' . $v . '"';
@@ -125,14 +137,15 @@ abstract class LayoutAbstract implements LayoutInterface {
 	 * @return $this
 	 * @deprecated
 	 */
-	function setInnerLayout($table) {
+	public function setInnerLayout($table)
+	{
 		$html = '<table class="inner-layout">';
 
 		foreach ($table as $rk => $row) {
 			$html .= '<tr>';
 
 			foreach ($row as $ck => $col) {
-				$td = array();
+				$td = [];
 
 				if (!empty($col[0])) $td['width'] = $col[0];
 				if (!empty($col[1])) $td['style'] = 'height:' . $col[1];
@@ -158,25 +171,28 @@ abstract class LayoutAbstract implements LayoutInterface {
 	/**
 	 * @return $this
 	 */
-	function setOneColumn() {
-		$this->setSimpleInnerLayout(array('100%'), array('100%', ''));
+	public function setOneColumn()
+	{
+		$this->setSimpleInnerLayout(['100%'], ['100%', '']);
 		return $this;
 	}
 
 	/**
 	 * @return $this
 	 */
-	function setTwoColumns($equalWidth = false) {
-		$widths = $equalWidth ? array('50%', '50%') : array('25%', '75%');
-		$this->setSimpleInnerLayout($widths, array('100%', ''));
+	public function setTwoColumns($equalWidth = false)
+	{
+		$widths = $equalWidth ? ['50%', '50%'] : ['25%', '75%'];
+		$this->setSimpleInnerLayout($widths, ['100%', '']);
 		return $this;
 	}
 
 	/**
 	 * @return $this
 	 */
-	function setThreeColumns() {
-		$this->setSimpleInnerLayout(array('25%', '40%', '35%'), array('100%', ''));
+	public function setThreeColumns()
+	{
+		$this->setSimpleInnerLayout(['25%', '40%', '35%'], ['100%', '']);
 		return $this;
 	}
 
@@ -186,14 +202,15 @@ abstract class LayoutAbstract implements LayoutInterface {
 	 * @return $this
 	 * @deprecated
 	 */
-	function setSimpleInnerLayout($widthArray, $heightArray) {
-		$table = array();
+	public function setSimpleInnerLayout($widthArray, $heightArray)
+	{
+		$table = [];
 
 		foreach ($heightArray as $hk => $height) {
-			$table[$hk] = array();
+			$table[$hk] = [];
 
 			foreach ($widthArray as $wk => $width) {
-				$table[$hk][$wk] = array($width, $height, null, null);
+				$table[$hk][$wk] = [$width, $height, null, null];
 			}
 		}
 
@@ -208,7 +225,8 @@ abstract class LayoutAbstract implements LayoutInterface {
 	 * @param bool $autoHeight
 	 * @return $this
 	 */
-	function setOuterForm($action, $method, $enctype, $autoHeight = false) {
+	public function setOuterForm($action, $method, $enctype, $autoHeight = false)
+	{
 		$this->assign('OUTER.FORMBEGIN', '<FORM action="' . $action . '" method="' . $method . '" name="outer" enctype="' . $enctype . '" class="edit' . ($autoHeight ? ' autoheight' : '') . '">');
 		$this->assign('OUTER.FORMEND', '</FORM>');
 		return $this;
@@ -222,7 +240,8 @@ abstract class LayoutAbstract implements LayoutInterface {
 	 * @param string $href
 	 * @return $this
 	 */
-	function setOuterLogo($image, $text, $width, $height, $href = '') {
+	public function setOuterLogo($image, $text, $width, $height, $href = '')
+	{
 		if (!empty($image)) {
 			$html = '<a href="' . $href . '"><img src="' . $image . '" width="' . $width . '" height="' . $height . '" border="0" alt="' . $text . '" class="logo"></a>';
 		} else {
@@ -241,7 +260,8 @@ abstract class LayoutAbstract implements LayoutInterface {
 	 * @param bool $buildHref
 	 * @return $this
 	 */
-	function setMenu($menuItems, $current, $getParam = 'area', $buildHref = true) {
+	public function setMenu($menuItems, $current, $getParam = 'area', $buildHref = true)
+	{
 		$menu = new \PXWidgetMenuTabbed();
 
 		$menu->items = $menuItems;
@@ -257,7 +277,8 @@ abstract class LayoutAbstract implements LayoutInterface {
 	 * @param $href
 	 * @return $this
 	 */
-	function setLogoutForm($href) {
+	public function setLogoutForm($href)
+	{
 		$this->assign('OUTER.EXIT', $this->template('form-logout.tmpl'));
 		$this->assign('LOGOUT.HREF', $href);
 		$this->assign('USER.TITLE', \PXRegistry::getUser()->getTitle());
@@ -271,7 +292,8 @@ abstract class LayoutAbstract implements LayoutInterface {
 	 * @param $valuesArray
 	 * @return $this
 	 */
-	function setLoginForm($formAction, $formMethod, $namesArray, $valuesArray) {
+	public function setLoginForm($formAction, $formMethod, $namesArray, $valuesArray)
+	{
 		$this->assign('OUTER.MAINAREA', $this->template('form-login.tmpl'));
 
 		$this->assign('LOGIN.FORMACTION', $formAction);
@@ -291,17 +313,20 @@ abstract class LayoutAbstract implements LayoutInterface {
 		return $this;
 	}
 
-	function setGetVarToSave($key, $value) {
+	public function setGetVarToSave($key, $value)
+	{
 		$this->getData[$key] = $value;
 		$this->assign(strtoupper($key), $value);
 	}
 
-	function clearGetVar($key) {
+	public function clearGetVar($key)
+	{
 		unset($this->getData[$key]);
 		$this->assign(strtoupper($key), '');
 	}
 
-	function clear($label) {
+	public function clear($label)
+	{
 		$this->assign($label, null);
 	}
 
@@ -313,8 +338,9 @@ abstract class LayoutAbstract implements LayoutInterface {
 	 * @return $this
 	 * @deprecated
 	 */
-	function set($label, &$value) {
-		$this->labels[$label] = array();
+	public function set($label, &$value)
+	{
+		$this->labels[$label] = [];
 		$this->add($label, $value);
 		return $this;
 	}
@@ -322,14 +348,16 @@ abstract class LayoutAbstract implements LayoutInterface {
 	/**
 	 * {@inheritdoc}
 	 */
-	public function assign($label, $value) {
+	public function assign($label, $value)
+	{
 		$refValue = $value;
 		$this->set($label, $refValue);
 
 		return $this;
 	}
 
-	public function isWidget($value) {
+	public function isWidget($value)
+	{
 		return is_object($value) && $value instanceof \PXAdminWidgetIF;
 	}
 
@@ -341,9 +369,10 @@ abstract class LayoutAbstract implements LayoutInterface {
 	 * @return $this
 	 * @deprecated
 	 */
-	function add($label, &$value) {
+	public function add($label, &$value)
+	{
 		if (!isset($this->labels[$label]) || !is_array($this->labels[$label])) {
-			$this->labels[$label] = array();
+			$this->labels[$label] = [];
 		}
 
 		switch (true) {
@@ -376,7 +405,8 @@ abstract class LayoutAbstract implements LayoutInterface {
 	 * @param $value
 	 * @return $this
 	 */
-	function append($label, $value) {
+	public function append($label, $value)
+	{
 		$refValue = $value;
 		$this->add($label, $refValue);
 		return $this;
@@ -389,7 +419,8 @@ abstract class LayoutAbstract implements LayoutInterface {
 	 * @param $selected
 	 * @return $this
 	 */
-	function assignKeyValueList($label, $list, $varName, $selected) {
+	public function assignKeyValueList($label, $list, $varName, $selected)
+	{
 		$list = new \PXAdminList($list);
 
 		$list->setVarName($varName);
@@ -403,12 +434,15 @@ abstract class LayoutAbstract implements LayoutInterface {
 	/**
 	 * @return string
 	 */
-	function html() {
+	public function html()
+	{
 		// widgets to html
 		// replace labels to html
-		while (list($label, $widgets) = each($this->labels)) {
+		// WARNING: DO NOT use foreach() for $this->labels, because $widget->html() calls
+		// can append data to $this->labels! array_walk() acts like deprecated each() here
+		array_walk($this->labels, function ($widgets, $label) {
 			if (strpos($this->html, '{' . $label . '}') === false) {
-				continue;
+				return;
 			}
 			$html = '';
 			foreach ($widgets as $widget) {
@@ -416,7 +450,7 @@ abstract class LayoutAbstract implements LayoutInterface {
 			}
 
 			$this->html = str_replace('{' . $label . '}', $html, $this->html);
-		}
+		});
 
 		// delete labels without content
 		$this->html = preg_replace('/\{(?>\w[\w\.]*(?!\.))\}/', '', $this->html);
@@ -424,19 +458,22 @@ abstract class LayoutAbstract implements LayoutInterface {
 		return $this->html;
 	}
 
-	function flush($charset = null) {
+	public function flush($charset = null)
+	{
 		$result = $this->html();
 		$response = Response::getInstance();
 		$response->send($result);
 	}
 
 	// static
-	public static function _buildHref($key, $value) {
+	public static function _buildHref($key, $value)
+	{
 		return static::buildHref($key, $value);
 	}
 
 	// static
-	public static function buildHref($key, $value, $getData = array(), $href = "?") {
+	public static function buildHref($key, $value, $getData = [], $href = "?")
+	{
 		$layoutData = \PXRegistry::getLayout()->getData;
 		$getData = array_merge($layoutData, $getData);
 

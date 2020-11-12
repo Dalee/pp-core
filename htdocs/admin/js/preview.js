@@ -7,41 +7,7 @@ function Preview(file, type, name) {
 			img.onerror = function () { ImageError(this.getAttribute('deal')); this.clearAttributes();};
 			img.src = file;
 		}
-
-		if(type == 'flash') {
-			flash = document.getElementById(name+'src');
-			flash.LoadMovie(0, file);
-
-			flash.OnProgress = IsValidFlash(name, file);
-		}
 	}
-}
-
-function IsValidFlash(name, file) {
-	flash = document.getElementById(name+'src');
-
-	if(flash.PercentLoaded() == 100) {
-		FlashPreview(name, file);
-	} else {
-		FlashError(name);
-	}
-}
-
-function FlashError(name) {
-	flash = document.getElementById(name+'src');
-	flash.LoadMovie(0, 'i/v.swf');
-
-	document.getElementById(name+'width').value  = '';
-	document.getElementById(name+'height').value = '';
-	document.getElementById(name+'size').value   = '';
-
-	alert('Вы выбрали неправильный тип файла');
-}
-
-function FlashPreview(name, file) {
-	document.getElementById(name+'width').value  = Math.ceil(flash.GetVariable("_width"));
-	document.getElementById(name+'height').value  = Math.ceil(flash.GetVariable("_height"));
-//	document.getElementById(name+'size').value   = size;
 }
 
 function ImageError(name) {

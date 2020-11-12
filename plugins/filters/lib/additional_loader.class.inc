@@ -7,7 +7,7 @@ require_once dirname(__FILE__) . '/../additional/abstract.class.inc';
 class PXFiltersPluginAdditionalLoader {
 
 	private static $settingsCache = null;
-	private static $classCache = array();
+	private static $classCache = [];
 
 	/**
 	 * @return array of PXAdditionalFilter
@@ -22,7 +22,7 @@ class PXFiltersPluginAdditionalLoader {
 		if (!is_null(self::$settingsCache)) {
 			return;
 		}
-		self::$settingsCache = array();
+		self::$settingsCache = [];
 		$additionalFilters = AbstractPlugin::getParam('filters', 'additional_filters');
 		if ($additionalFilters) {
 			foreach (explode(',', $additionalFilters) as $f) {
@@ -34,7 +34,7 @@ class PXFiltersPluginAdditionalLoader {
 					FatalError('Incorrect param additional_filters (plugins.xml)');
 				}
 				if (!isset(self::$settingsCache[$f[0]])) {
-					self::$settingsCache[$f[0]] = array();
+					self::$settingsCache[$f[0]] = [];
 				}
 				self::$settingsCache[$f[0]][] = $f[1];
 			}
@@ -45,11 +45,11 @@ class PXFiltersPluginAdditionalLoader {
 		if (isset(self::$classCache[$formatId])) {
 			return;
 		}
-		self::$classCache[$formatId] = array();
+		self::$classCache[$formatId] = [];
 		if (isset(self::$settingsCache[$formatId])) {
 			foreach (self::$settingsCache[$formatId] as $classNamePart) {
 				$pathRight = '/plugins/' . $pluginFolder . '/additional/' . strtolower($classNamePart) . '.class.inc';
-				foreach (array('local', 'libpp') as $place) {
+				foreach (['local', 'libpp'] as $place) {
 					if(file_exists($fullPath = BASEPATH . $place . $pathRight)) {
 						require_once $fullPath;
 						$className = 'PXAdditionalFilter' . $classNamePart;

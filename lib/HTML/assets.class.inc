@@ -41,7 +41,7 @@ final class PXHTMLAssets {
 	 */
 	public function __get ($k) {
 		$k = (string)($k);
-		static $cache = array();
+		static $cache = [];
 
 		if (array_key_exists($k, $cache)) {
 			return $cache[$k];
@@ -90,7 +90,6 @@ final class PXHTMLAssets {
 
 			default:
 				trigger_error('Property '.$k.' is not defined.', E_USER_ERROR);
-				return;
 		}
 
 		return ($cache[$k] = $v);
@@ -127,14 +126,14 @@ final class PXHTMLAssets {
 
 // cdn logic below
 
-	protected $allowedPaths  = array();
-	protected $cdnDomains   = array();
+	protected $allowedPaths  = [];
+	protected $cdnDomains   = [];
 	protected $cdnEnabled   = false;
 	protected $cdnCount     = 0;
 
 	/**
 	 * CDNize url
-	 * @param string $url of some resource (img, js, css, font, swf)
+	 * @param string $url of some resource (img, js, css, font)
 	 * @param callable $filter a callback to filter
 	 * @return null or full path to image
 	 */
@@ -176,18 +175,18 @@ final class PXHTMLAssets {
 	}
 
 	public function applyDelayed ($content) {
-		$from = array();
-		$to = array();
+		$from = [];
+		$to = [];
 
 		foreach ($this->delayed_assets as $type => $list) {
 			foreach ($list as $group => $true) {
 				$from[] = $this->makePlaceholder($type, $group);
-				$to[] = $this->import(array(
+				$to[] = $this->import([
 					'tag' => $type,
 					'asset_group' => $group,
 					'asset_print' => true,
 					'asset_print_delayed' => true,
-				));
+				]);
 			}
 		}
 
@@ -200,7 +199,7 @@ final class PXHTMLAssets {
 
 	/**
 	 * cdnize uri if possible
-	 * @param string $uri of some resource (img, js, css, font, swf)
+	 * @param string $uri of some resource (img, js, css, font)
 	 * @return string cdnized or unmodified uri
 	 */
 	public function cdnize ($url) {
@@ -211,9 +210,7 @@ final class PXHTMLAssets {
 		$code = hexdec(substr(md5($url), -3)); // 1, 3, 5, 7 are the best values here relates on cdns qty
 		$domainIndex = ($code % $this->cdnCount);
 
-		$link = $this->cdnDomains[$domainIndex] . $url;
-
-		return $link;
+		return $this->cdnDomains[$domainIndex] . $url;
 	}
 
 
@@ -221,25 +218,25 @@ final class PXHTMLAssets {
 // worker here below
 
 	// import uniquely - do we need it here? or just in bundler?
-	protected static $imported = array();
-	protected static $delayed = array();
+	protected static $imported = [];
+	protected static $delayed = [];
 
-	protected static $tags = array(
-		'style' => array(
+	protected static $tags = [
+		'style' => [
 			'type'           => 'css',
 			'pattern'        => '<link rel="stylesheet" type="text/css" href="%s" %s />',
 			'pattern_inline' => "<style type=\"text/css\" %2\$s>\n%1\$s\n</style>",
 			'delimiter'      => "\n",
 			// 'default_bundle' => 'head',
-		),
-		'script' => array(
+		],
+		'script' => [
 			'type'           => 'js',
 			'pattern'        => '<script type="text/javascript" src="%s" %s></script>',
 			'pattern_inline' => "<script type=\"text/javascript\" %2\$s>\n//<![CDATA[\n%1\$s\n//]]>\n</script>",
 			'delimiter'      => ";",
 			// 'default_bundle' => 'foot',
-		),
-	);
+		],
+	];
 
 	public function import ($params) {
 
@@ -261,7 +258,7 @@ final class PXHTMLAssets {
 
 		$tag_data = self::$tags[$tag_key];
 
-		$extra_params     = array();
+		$extra_params     = [];
 		$extra_attributes = "";
 		$asset_mode       = $this->enabled && empty($params['noasset']);
 		$print_tag        = !$asset_mode;
@@ -320,7 +317,7 @@ final class PXHTMLAssets {
 				break;
 
 			case $assetH && $assets_print:
-				list($fullPath, $localPath, $mtime) = $assetH->makeAssetsBundle($tag_data['type'], $tag_data['delimiter'], $assets_group);
+				[$fullPath, $localPath, $mtime] = $assetH->makeAssetsBundle($tag_data['type'], $tag_data['delimiter'], $assets_group);
 				if (!empty($localPath)) {
 					$asset_id      = $mtime;
 					$params['src'] = $assets_dir . $localPath;

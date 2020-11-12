@@ -1,27 +1,32 @@
 <?php
 
-class PXUserHTMLLang {
+class PXUserHTMLLang
+{
 
 	protected $charset = '';
 	protected $lang = '';
 	protected $tree;
 
-	public function __construct() {
+	public function __construct()
+	{
 		$this->setLang('rus');
 	}
 
-	public function setTree($tree) {
+	public function setTree($tree)
+	{
 		$this->tree = $tree;
 	}
 
-	public function setLang($lang) {
+	public function setLang($lang)
+	{
 		$this->lang = $lang;
 	}
 
 	/**
 	 * smarty_modifier_lang
 	 */
-	public function lang_modifier($path) {
+	public function lang_modifier($path)
+	{
 		$result = $this->_get($path);
 		return false === $result ? null : $result;
 	}
@@ -30,15 +35,16 @@ class PXUserHTMLLang {
 	 * smarty_function_lang
 	 * @return string
 	 */
-	public function lang($param, &$smarty) {
+	public function lang($param, &$smarty)
+	{
 		if (empty($param)) {
 			echo $this->lang;
 			return;
 		}
 
-		$replaces = array();
+		$replaces = [];
 
-		$path   = null;
+		$path = null;
 		$action = null;
 
 		if (isset($param['get'])) {
@@ -50,6 +56,7 @@ class PXUserHTMLLang {
 			$action = 'return';
 		}
 
+		$date = null;
 		if (isset($param['date'])) {
 			$date = $param['date'];
 			$path = is_null($path) ? 'date' : $path;
@@ -57,7 +64,6 @@ class PXUserHTMLLang {
 		}
 
 		if (isset($param['assign'])) {
-			$varname = $param['assign'];
 			$action = 'assign';
 		}
 
@@ -68,10 +74,9 @@ class PXUserHTMLLang {
 		$value = $this->_get($path);
 		$value = $this->_replace($value, $param);
 
-		switch($action) {
+		switch ($action) {
 			case 'return':
 				return $value;
-				break;
 
 			case 'assign':
 				$smarty->assign($param['assign'], $value);
@@ -88,17 +93,18 @@ class PXUserHTMLLang {
 		}
 	}
 
-	function _get($path) {
+	public function _get($path)
+	{
 		$path = explode('.', $path);
 
 		$leaf = $this->tree;
 
 		foreach ($path as $p) {
-			switch (array(isset($leaf[$p]), isset($leaf[$this->lang][$p]))) {
-				case array(false, true):
+			switch ([isset($leaf[$p]), isset($leaf[$this->lang][$p])]) {
+				case [false, true]:
 					$leaf = $leaf[$this->lang][$p];
 					break;
-				case array(false, false):
+				case [false, false]:
 					return false;
 				default:
 					$leaf = $leaf[$p];
@@ -116,7 +122,8 @@ class PXUserHTMLLang {
 		return $leaf[$this->lang];
 	}
 
-	function _date($date, $format) {
+	public function _date($date, $format)
+	{
 		$time = $this->parseDateToTime($date);
 
 		$replaces = array_merge(
@@ -130,71 +137,76 @@ class PXUserHTMLLang {
 		return strftime($format, $time);
 	}
 
-	function _dateDayReplaces($time) {
+	public function _dateDayReplaces($time)
+	{
 		$day = strftime('%d', $time);
 
-		return array(
+		return [
 			'%e' => (
-				$day > 9 ? $day : $day{1}
-			)
-		);
+			$day > 9 ? $day : $day{1}
+			),
+		];
 	}
 
-	function _dateWeekdaysReplaces($time) {
+	public function _dateWeekdaysReplaces($time)
+	{
 		$weekDay = strftime('%u', $time);
-		$short   = $this->_get('weekdays.short');
-		$full    = $this->_get('weekdays');
+		$short = $this->_get('weekdays.short');
+		$full = $this->_get('weekdays');
 
-		return array(
-			'%a' => $short[$weekDay -1],
-			'%A' => $full[$weekDay -1]
-		);
+		return [
+			'%a' => $short[$weekDay - 1],
+			'%A' => $full[$weekDay - 1],
+		];
 	}
 
-	function _dateMonthsReplaces($time) {
+	public function _dateMonthsReplaces($time)
+	{
 		$monthNumber = (int)strftime('%m', $time);
 
-		$months      = $this->_get('months');
+		$months = $this->_get('months');
 		$monthsShort = $this->_get('months.short');
-		$months2     = $this->_get('months.genitive');       // Родительный падеж
-		$months3     = $this->_get('months.prepositional');  // Предложный падеж
+		$months2 = $this->_get('months.genitive');       // Родительный падеж
+		$months3 = $this->_get('months.prepositional');  // Предложный падеж
 
-		return array(
-			'%b'  => $monthsShort[$monthNumber],
+		return [
+			'%b' => $monthsShort[$monthNumber],
 			'%B3' => $months3[$monthNumber],
 			'%B2' => $months2[$monthNumber],
 			'%BE' => $months[$monthNumber],        // we have 2 places to format date: smarty.date_format and smarty.lang. both have own dictionary. :(
-			'%B'  => $months[$monthNumber],
-			'%h'  => $monthsShort[$monthNumber]
-		);
+			'%B' => $months[$monthNumber],
+			'%h' => $monthsShort[$monthNumber],
+		];
 	}
 
-	function _replace($value, $param) {
-		$replaces = array();
+	public function _replace($value, $param)
+	{
+		$replaces = [];
 
-		foreach($param as $k=>$p) {
-			if(strpos($k, '_') !== 0) {
+		foreach ($param as $k => $p) {
+			if (strpos($k, '_') !== 0) {
 				continue;
 			}
 
 			$k{0} = '%';
-			$replaces[$k.'%'] = $p;
+			$replaces[$k . '%'] = $p;
 		}
 
-		if(sizeof($replaces)) {
+		if (sizeof($replaces)) {
 			$value = str_replace(array_keys($replaces), $replaces, $value);
 		}
 
 		return $value;
 	}
 
-	function parseDateToTime($string) {
-		if(mb_strlen($string)) {
-			if(mb_strlen($string) == 10 && is_numeric($string)) {
+	public function parseDateToTime($string)
+	{
+		if (mb_strlen($string)) {
+			if (mb_strlen($string) == 10 && is_numeric($string)) {
 				return $string;
 			}
 
-			preg_match("/^(\d{2})\.(\d{2})\.(\d{4})\s+(\d{2}):(\d{2}):(\d{2})(\.\d+)?$/si".REGEX_MOD, trim($string), $date);
+			preg_match("/^(\d{2})\.(\d{2})\.(\d{4})\s+(\d{2}):(\d{2}):(\d{2})(\.\d+)?$/si" . REGEX_MOD, trim($string), $date);
 			return mktime($date[4], $date[5], $date[6], $date[2], $date[1], $date[3]);
 
 		} else {

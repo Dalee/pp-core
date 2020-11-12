@@ -6,11 +6,12 @@ namespace PP\Lib\Xml;
  * Interface XmlInterface
  * @package PP\Lib\Xml
  */
-interface XmlInterface {
+interface XmlInterface
+{
 
 	/**
 	 * @param string $query
 	 * @return XmlNodeInterface[]
 	 */
-	function xpath($query);
+	public function xpath($query);
 }

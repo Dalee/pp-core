@@ -6,13 +6,13 @@ class NLMailDeclineCounterEvent extends NLMailVEvent {
 	public function __construct() {
 		$this->_method = 'DECLINECOUNTER';
 
-		$this->_requiredProps = array(
+		$this->_requiredProps = [
 			'DTStamp',
 			'organizer',
 			'uid'
-		);
+        ];
 
-		$this->_uselessProps = array(
+		$this->_uselessProps = [
 			'attach',
 			'categories',
 			'class',
@@ -37,7 +37,7 @@ class NLMailDeclineCounterEvent extends NLMailVEvent {
 			'transp',
 			'url',
 			'alarm'
-		);
+        ];
 
 		parent::__construct();
 	}

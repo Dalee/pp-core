@@ -10,25 +10,28 @@
  *             col1header-..-colNheader заголовки колонок таблицы, например Номер-Наименование-Цена-Количество
  *             headersDelimiter опциональный разделитель заголовков колонок таблицы, отличный от "-", например, если в одном из заголовков присутствует символ "-"
  */
-class PXDisplayTypeTable extends PXDisplayType {
-	function buildInput($field, $object, $param=NULL) {
-		$value  = isset($object[$field->name]) ? $object[$field->name] : array();
-		$cols   = isset($field->displayTypeArgs[0]) ? $field->displayTypeArgs[0] : '1';
+class PXDisplayTypeTable extends PXDisplayType
+{
+	public function buildInput($field, $object, $param = NULL)
+	{
+		$value = isset($object[$field->name]) ? $object[$field->name] : [];
+		$cols = isset($field->displayTypeArgs[0]) ? $field->displayTypeArgs[0] : '1';
 		$height = isset($field->displayTypeArgs[1]) ? $field->displayTypeArgs[1] : 0;
-		$header = isset($field->displayTypeArgs[2]) ? explode(isset($field->displayTypeArgs[3]) ? $field->displayTypeArgs[3] : '-', $field->displayTypeArgs[2]) : array();
+		$header = isset($field->displayTypeArgs[2]) ? explode(isset($field->displayTypeArgs[3]) ? $field->displayTypeArgs[3] : '-', $field->displayTypeArgs[2]) : [];
 
 		return NLAbstractHTMLForm::BuildTableByCols($field->name, $value, explode("-", $cols), $height, $header);
 	}
 
-	function buildCell($field, $object, $param=NULL) {
-		$value  = isset($object[$field->name]) ? htmlspecialcharsArray($object[$field->name]) : array();
+	public function buildCell($field, $object, $param = NULL)
+	{
+		$value = isset($object[$field->name]) ? htmlspecialcharsArray($object[$field->name]) : [];
 
 		$html = '';
 		$html_len = 0;
 
 		for ($i = 0, $l = count($value); $i < $l && $html_len < 30; $i++) {
-			$html .= (! empty($html)) ? '; ' : '';
-			$html .= join(', ', (array) $value[$i]);
+			$html .= (!empty($html)) ? '; ' : '';
+			$html .= join(', ', (array)$value[$i]);
 
 			$html_len = mb_strlen($html);
 		}
@@ -37,7 +40,8 @@ class PXDisplayTypeTable extends PXDisplayType {
 		return $html;
 	}
 
-	function getFromRequest($field, $object, $param=NULL) {
+	public function getFromRequest($field, $object, $param = NULL)
+	{
 		return $param['request']->postData->_GetArrayVar($field->name);
 	}
 }

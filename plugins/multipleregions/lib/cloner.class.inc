@@ -1,19 +1,21 @@
 <?
 
-class PXPublicRegionObjectCloner {
+class PXPublicRegionObjectCloner
+{
 	public $db;
 	public $app;
 
-	const DENY_EDIT_FIELD = 'deny_region_edit';
-	private $parentFormat  = null;
+	public const DENY_EDIT_FIELD = 'deny_region_edit';
+	private $parentFormat = null;
 
-	function __construct($format, &$object = null, &$objectInDB, $trigger) {
-		$this->format      = $format;
-		$this->object      =& $object;
-		$this->objectInDB  =& $objectInDB;
-		$this->oid         = $objectInDB['id'];
-		$this->trigger     = $trigger;
-		$this->childTypes  = $format->childTypes();
+	public function __construct($format, &$object, &$objectInDB, $trigger)
+	{
+		$this->format = $format;
+		$this->object =& $object;
+		$this->objectInDB =& $objectInDB;
+		$this->oid = $objectInDB['id'];
+		$this->trigger = $trigger;
+		$this->childTypes = $format->childTypes();
 
 		PXRegistry::assignToObject($this);
 
@@ -22,24 +24,26 @@ class PXPublicRegionObjectCloner {
 		}
 	}
 
-	public function cloneObject($allowedRegionsIds) {/*{{{*/
+	public function cloneObject($allowedRegionsIds)
+	{/*{{{*/
 		$this->denyEditValidate();
 
 		$this->db->transactionBegin();
-			$this->substractRegions($allowedRegionsIds);
-			$this->copyMainObject($allowedRegionsIds);
+		$this->substractRegions($allowedRegionsIds);
+		$this->copyMainObject($allowedRegionsIds);
 		$this->db->transactionCommit();
 
 		return $this->nid;
 	}/*}}}*/
 
-	private function substractRegions($allowedRegionsIds) {
+	private function substractRegions($allowedRegionsIds)
+	{
 		$regionsIds = empty($this->objectInDB[PXMultiRegions::REGION_MARK])
-			? array()
+			? []
 			: array_flip(array_filter($this->objectInDB[PXMultiRegions::REGION_MARK]));
 
-		foreach($allowedRegionsIds as $id) {
-			if(isset($regionsIds[$id])) {
+		foreach ($allowedRegionsIds as $id) {
+			if (isset($regionsIds[$id])) {
 				unset($regionsIds[$id]);
 			}
 		}
@@ -54,26 +58,29 @@ class PXPublicRegionObjectCloner {
 		);
 	}
 
-	public function deleteObject($allowedRegionsIds) {
+	public function deleteObject($allowedRegionsIds)
+	{
 		$this->denyEditValidate();
 		$this->substractRegions($allowedRegionsIds);
 	}
 
-	public function moveObject($allowedRegionsIds) {
+	public function moveObject($allowedRegionsIds)
+	{
 		$this->cloneObject($allowedRegionsIds);
 	}
 
-	private function copyMainObject($allowedRegionsIds) {
+	private function copyMainObject($allowedRegionsIds)
+	{
 		$objectInDB = $this->objectInDB;
 
-		$reflex_field  = PXMultipleRegionsReflexer::REFLEX_FIELD;
+		$reflex_field = PXMultipleRegionsReflexer::REFLEX_FIELD;
 		$regions_field = PXMultiRegions::REGION_MARK;
 
 
 		// подготовка к клонированию
 		// объект из базы забиваем sys_reflex_id (sri) и регионы
 		// потому что нам надо склонировать всю старую информацию плюс sri и sys_regions
-		
+
 		$objectInDB[$reflex_field] = $this->oid;
 		$objectInDB[$regions_field] = $allowedRegionsIds;
 
@@ -112,7 +119,8 @@ class PXPublicRegionObjectCloner {
 		$this->cloneReferences();
 	}
 
-	private function cloneReferences() {
+	private function cloneReferences()
+	{
 		if (!$this->app->references) {
 			return;
 		}
@@ -136,8 +144,9 @@ class PXPublicRegionObjectCloner {
 		}
 	}
 
-	private function denyEditValidate() {
-		if(isset($this->objectInDB[self::DENY_EDIT_FIELD]) && !empty($this->objectInDB[self::DENY_EDIT_FIELD])) {
+	private function denyEditValidate()
+	{
+		if (isset($this->objectInDB[self::DENY_EDIT_FIELD]) && !empty($this->objectInDB[self::DENY_EDIT_FIELD])) {
 			$this->trigger->fireError('Только федеральное редактирование!');
 		}
 	}

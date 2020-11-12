@@ -1,13 +1,15 @@
 <?php
 
-class PXInputImageStatic extends PXInputImage {
-	function html() {
-		$this->setparam();
+class PXInputImageStatic extends PXInputImage
+{
+    public function html()
+    {
+        $this->setparam();
 
-		$html = '<div class="imagepreview">';
-		$html .= $this->preview();
-		$html .= '</div>';
+        $html = '<div class="imagepreview">';
+        $html .= $this->preview();
+        $html .= '</div>';
 
-		return $html;
-	}
+        return $html;
+    }
 }

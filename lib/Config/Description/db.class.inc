@@ -7,7 +7,8 @@ use PP\Lib\Database\Driver\PostgreSqlDriver;
 define('ERROR_DB_CANNOTCONNECT', -1);
 define('ERROR_DB_BADQUERY', -2);
 
-class NLDBDescription {
+class NLDBDescription
+{
 
 	private $user = '';
 	private $password = '';
@@ -21,7 +22,8 @@ class NLDBDescription {
 	public $cache;
 	public $aicache; // private or public? I don't know
 
-	public function __construct($config) {
+	public function __construct($config)
+	{
 		foreach ($config as $k => $v) {
 			$this->$k = $v;
 		}
@@ -32,7 +34,8 @@ class NLDBDescription {
 	 *
 	 * @return static
 	 */
-	public static function fromEnv() {
+	public static function fromEnv()
+	{
 		$q = [];
 		$r = parse_url(EnvLoader::get('DATABASE_DSN'));
 		parse_str(getFromArray($r, 'query', ''), $q);
@@ -47,10 +50,10 @@ class NLDBDescription {
 
 		$config = [
 			'dbtype' => getFromArray($r, 'scheme', ''),
-			'user' => getFromArray($r,'user',''),
-			'password' => getFromArray($r,'pass', ''),
-			'dbname' => ltrim(getFromArray($r,'path', ''), '/'),
-			'host' => getFromArray($r,'host', ''),
+			'user' => getFromArray($r, 'user', ''),
+			'password' => getFromArray($r, 'pass', ''),
+			'dbname' => ltrim(getFromArray($r, 'path', ''), '/'),
+			'host' => getFromArray($r, 'host', ''),
 			'port' => getFromArray($r, 'port', ''),
 			'encoding' => getFromArray($q, 'encoding', DEFAULT_CHARSET),
 			'cache' => $cache,
@@ -60,7 +63,8 @@ class NLDBDescription {
 	}
 
 	//TODO: remove magic constants
-	function __get($name) {
+	public function __get($name)
+	{
 		$val = null;
 		if (property_exists($this, $name)) {
 			$val = $this->$name;
@@ -72,16 +76,18 @@ class NLDBDescription {
 		return $val;
 	}
 
-	function __set($name, $value) {
+	public function __set($name, $value)
+	{
 		$this->$name = $value;
 	}
 
 	/**
 	 *
 	 * @return PostgreSqlDriver
-	 * @throws \PP\Lib\Database\DatabaseException
+	 * @throws DatabaseException
 	 */
-	public function getDriver() {
+	public function getDriver()
+	{
 		$db = null;
 
 		switch ($this->dbtype) {

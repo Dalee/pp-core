@@ -11,14 +11,16 @@ use PP\Serializer\DefaultSerializer;
  * Class File
  * @package PP\Lib\Cache\Driver
  */
-class File implements CacheInterface, SerializerAwareInterface {
+class File implements CacheInterface, SerializerAwareInterface
+{
 	use SerializerAwareTrait;
 
 	protected $cache_dir;
 	protected $expire;
 	protected $orderLevel = 0;
 
-	public function __construct($cacheDomain = null, $defaultExpire = 3600) {
+	public function __construct($cacheDomain = null, $defaultExpire = 3600)
+	{
 		$this->serializer = new DefaultSerializer();
 		$this->cache_dir = CACHE_PATH . '/';
 
@@ -31,36 +33,43 @@ class File implements CacheInterface, SerializerAwareInterface {
 		$this->_createCacheDir();
 	}
 
-	public function getCacheDir() {
+	public function getCacheDir()
+	{
 		return $this->cache_dir;
 	}
 
-	function setOrderLevel($level = 0) {
+	public function setOrderLevel($level = 0)
+	{
 		$this->orderLevel = $level;
 	}
 
-	/** @param integer $expire - seconds */
-	function setExpire($expire) {
+	/** @param int $expire - seconds */
+	public function setExpire($expire)
+	{
 		$this->expire = $expire;
 	}
 
-	function exists($objectId) {
+	public function exists($objectId)
+	{
 		$fileName = $this->_getFilename($objectId);
 		return file_exists($fileName);
 	}
 
-	function save($objectId, $data, $expTime = null) {
+	public function save($objectId, $data, $expTime = null)
+	{
 		$fileName = $this->_getFilename($objectId);
 		$serialized = $this->serializer->serialize($data);
 		$this->_doSave($fileName, $serialized, (int)$expTime);
 	}
 
-	function load($objectId) {
+	public function load($objectId)
+	{
 		$fileName = $this->_getFilename($objectId);
 		return $this->_doLoad($fileName);
 	}
 
-	function increment($numberKey, $offset = 1, $initial = 0, $expTime = null) {
+	public function increment($numberKey, $offset = 1, $initial = 0, $expTime = null)
+	{
 		$fileName = $this->_getFilename($numberKey);
 		$fp = @fopen($fileName, 'a+b');
 
@@ -88,17 +97,20 @@ class File implements CacheInterface, SerializerAwareInterface {
 		return isset($data) ? $data : $initial;
 	}
 
-	function loadStaled($objectId) {
+	public function loadStaled($objectId)
+	{
 		$fileName = $this->_getFilename($objectId);
 		return $this->_doLoad($fileName, 'expired');
 	}
 
-	function delete($key) {
+	public function delete($key)
+	{
 		$file = $this->_getFilename($key);
 		@unlink($file);
 	}
 
-	function expired($objectId) {
+	public function expired($objectId)
+	{
 		$fileName = $this->_getFilename($objectId);
 		$fp = @fopen($fileName, 'rb');
 
@@ -116,11 +128,13 @@ class File implements CacheInterface, SerializerAwareInterface {
 		return $expired;
 	}
 
-	function clear() {
+	public function clear()
+	{
 		$this->_cleanDir($this->cache_dir . '/');
 	}
 
-	function deleteGroup($gorup) {
+	public function deleteGroup($gorup)
+	{
 		$fileGlob = $this->_getFilename($gorup, true);
 		$files = glob($fileGlob, GLOB_MARK | GLOB_NOSORT);
 
@@ -136,7 +150,8 @@ class File implements CacheInterface, SerializerAwareInterface {
 		}
 	}
 
-	protected function _cleanDir($dirName) {
+	protected function _cleanDir($dirName)
+	{
 		if ($handle = opendir($dirName)) {
 			while (false !== ($file = readdir($handle))) {
 				if ($file == '.' || $file == '..') {
@@ -154,7 +169,8 @@ class File implements CacheInterface, SerializerAwareInterface {
 		}
 	}
 
-	protected function _getFilename($str, $glob = false) {
+	protected function _getFilename($str, $glob = false)
+	{
 		if (is_array($str)) {
 			$key = array_shift($str);
 			$group = array_shift($str);
@@ -175,7 +191,8 @@ class File implements CacheInterface, SerializerAwareInterface {
 		return $this->cache_dir . $md5;
 	}
 
-	protected function _doSave($fileName, $serialized, $expTime = null) {
+	protected function _doSave($fileName, $serialized, $expTime = null)
+	{
 		$fp = fopen($fileName, 'wb');
 
 		if ($fp !== false) {
@@ -191,7 +208,8 @@ class File implements CacheInterface, SerializerAwareInterface {
 	/**
 	 * @return string - serialized data
 	 */
-	protected function _doLoad($fileName, $expired = false) {
+	protected function _doLoad($fileName, $expired = false)
+	{
 		$unserialized = $serialized = null;
 		$fp = @fopen($fileName, 'rb');
 
@@ -220,11 +238,13 @@ class File implements CacheInterface, SerializerAwareInterface {
 		return $unserialized;
 	}
 
-	protected function _createCacheDir() {
+	protected function _createCacheDir()
+	{
 		MakeDirIfNotExists($this->cache_dir);
 	}
 
-	protected function _isExpired($fp) {
+	protected function _isExpired($fp)
+	{
 		return time() >= (int)fread($fp, 10); // note: valid until 2038 ;)
 	}
 }

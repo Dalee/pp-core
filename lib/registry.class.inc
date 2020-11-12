@@ -7,7 +7,7 @@ use PP\Lib\Database\Driver\PostgreSqlDriver;
 use PP\Lib\Http\Response;
 
 final class PXRegistry {
-	const unknownVarMessage = "Registry - not heap. Store your %s somewhere else!";
+	public const unknownVarMessage = "Registry - not heap. Store your %s somewhere else!";
 
 	private static $instance = null;
 
@@ -50,7 +50,6 @@ final class PXRegistry {
 				case 'engine':
 				case 'app':
 					throw new Exception("{$varName} wasn't set yet.");
-					break;
 
 				case 'db':
 					$registry->$varName = new PXDatabase(self::getApp());
@@ -83,7 +82,6 @@ final class PXRegistry {
 
 				default:
 					throw new Exception(sprintf(self::unknownVarMessage, $varName));
-					break;
 			}
 		}
 
@@ -166,7 +164,7 @@ final class PXRegistry {
 		return Registry::getInstance($name);
 	}
 
-	public static function getTypes($typeName=null) {
+	public static function getTypes($typeName = null) {
 		static $types;
 
 		if(!is_array($types)) {
@@ -175,13 +173,7 @@ final class PXRegistry {
 		}
 
 		if(!is_null($typeName)) {
-			if(isset($types[$typeName])) {
-				return $types[$typeName];
-
-			} else {
-				$nullType = null;
-				return $nullType;
-			}
+			return isset($types[$typeName]) ? $types[$typeName] : null;
 		}
 
 		return $types;
@@ -247,34 +239,40 @@ final class PXRegistry {
 	}
 }
 
-final class PXRegistryUSER {
+final class PXRegistryUSER
+{
 	private $__hash__;
 
 	public
-		function get($key){
-			if(isset($this->__hash__[$key])){
-				return $this->__hash__[$key];
-			}
+	function get($key)
+	{
+		if (isset($this->__hash__[$key])) {
+			return $this->__hash__[$key];
 		}
+	}
 
-		function &getByRef($key){
-			if(isset($this->__hash__[$key])){
-				return $this->__hash__[$key];
-			}
+	public function &getByRef($key)
+	{
+		if (isset($this->__hash__[$key])) {
+			return $this->__hash__[$key];
 		}
+	}
 
-		function set($key, $value, $overwrite = true){
-			if(!isset($this->__hash__[$key]) || $overwrite){
-				$this->__hash__[$key] = $value;
-			}
+	public function set($key, $value, $overwrite = true)
+	{
+		if (!isset($this->__hash__[$key]) || $overwrite) {
+			$this->__hash__[$key] = $value;
 		}
+	}
 
-		// Overloading
-		function __get($name){
-			return $this->get($name);
-		}
+	// Overloading
+	public function __get($name)
+	{
+		return $this->get($name);
+	}
 
-		function __isset($name) {
-			return isset($this->__hash__[$name]);
-		}
+	public function __isset($name)
+	{
+		return isset($this->__hash__[$name]);
+	}
 }

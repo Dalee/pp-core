@@ -10,7 +10,7 @@
  *
  * @param string $resource_type
  * @param string $resource_name
- * @return boolean
+ * @return bool
  */
 
  // $resource_type, $resource_name
@@ -36,7 +36,7 @@ function smarty_core_is_trusted($params, &$smarty)
     } else {
         // resource is not on local file system
         $_smarty_trusted = call_user_func_array($smarty->_plugins['resource'][$params['resource_type']][0][3],
-                                                array($params['resource_name'], $smarty));
+                                                [$params['resource_name'], $smarty]);
     }
 
     return $_smarty_trusted;

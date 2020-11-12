@@ -15,7 +15,7 @@ class PXStorageTypeAggr extends PXStorageTypeVirtual {
 
 		$args = $field->storageTypeArgs;
 		$res  = parent::normalize($field, $object, $param);
-		
+
 		if (empty($args)) {
 			return $res;
 		}
@@ -23,7 +23,7 @@ class PXStorageTypeAggr extends PXStorageTypeVirtual {
 		$cb = array_shift($args);
 		array_unshift($args, $object);
 
-		if (is_callable($_ = array($this, "aggr_" . $cb))) {
+		if (is_callable($_ = [$this, "aggr_" . $cb])) {
 			$res = call_user_func_array($_, $args);
 		} else if (is_callable($cb)) {
 			$res = call_user_func_array($cb, $args); // for local project custom aggregators
@@ -31,23 +31,23 @@ class PXStorageTypeAggr extends PXStorageTypeVirtual {
 
 		return $res;
 	}
-	
+
 	/**
 	 * Div aggregator
-	 * @param type $a first arg: sum
-	 * @param type $b the second arg: qty
-	 * @param type $c the third arg: precision
+	 * @param int $a first arg: sum
+	 * @param int $b the second arg: qty
+	 * @param int $c the third arg: precision
 	 * @return float
 	 */
 	protected function aggr_div($object, $a, $b, $c = 2) {
 		return (empty($object[$a]) || empty($object[$b])) ? 0.0 : round($object[$a]/$object[$b], (int)$c);
 	}
-	
+
 	/**
 	 * Div percentage aggregator
-	 * @param type $a first arg: dividend
-	 * @param type $b the second arg: divider
-	 * @param type $c the third arg: precision
+	 * @param int $a first arg: dividend
+	 * @param int $b the second arg: divider
+	 * @param int $c the third arg: precision
 	 * @return float
 	 */
 	protected function aggr_div_percent($object, $a, $b, $c = 2) {

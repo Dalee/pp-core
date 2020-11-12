@@ -8,27 +8,35 @@ use PP\Lib\Cache\CacheInterface;
  * Class Null
  * @package PP\Lib\Cache\Driver
  */
-class NullCache implements CacheInterface {
-	function exists($objectKey) {
-	}
+class NullCache implements CacheInterface
+{
+    public function exists($objectKey)
+    {
+    }
 
-	function save($objectKey, $dataForSave, $expirationTime = null) {
-	}
+    public function save($objectKey, $dataForSave, $expirationTime = null)
+    {
+    }
 
-	function load($objectKey) {
-	}
+    public function load($objectKey)
+    {
+    }
 
-	function delete($objectKey) {
-	}
+    public function delete($objectKey)
+    {
+    }
 
-	function clear() {
-	}
+    public function clear()
+    {
+    }
 
-	function increment($key, $offset = 1, $initial = 0, $expTime = null) {
-		return $initial;
-	}
+    public function increment($key, $offset = 1, $initial = 0, $expTime = null)
+    {
+        return $initial;
+    }
 
-	function deleteGroup($group) {
-		return true;
-	}
+    public function deleteGroup($group)
+    {
+        return true;
+    }
 }

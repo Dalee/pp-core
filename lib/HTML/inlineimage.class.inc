@@ -14,11 +14,11 @@
 
 	class PXHtmlImageTag {
 
-		const INLINE_MAX_TRESHOLD = 4096;
-		const GIF1PX = 'data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=='; // 1px gif
+		public const INLINE_MAX_TRESHOLD = 4096;
+		public const GIF1PX = 'data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=='; // 1px gif
 
 		// singleton
-		static private $instance = null;
+		private static $instance = null;
 
 		/**
 		 * getInstance
@@ -35,7 +35,7 @@
 		}
 
 
-		static private $assets = null;
+		private static $assets = null;
 
 		protected $enabled = false;
 
@@ -51,15 +51,15 @@
 		private function __construct() {
 			self::$assets = PXHTMLAssets::getInstance();
 
-			$this->tagCachedData = array();
-			$this->propertyCachedData = array();
+			$this->tagCachedData = [];
+			$this->propertyCachedData = [];
 
-			$this->allowedExt = array(
+			$this->allowedExt = [
 				'jpg' => 'image/jpeg',
 				'jpeg' => 'image/jpeg',
 				'png' => 'image/png',
 				'gif' => 'image/gif',
-			);
+			];
 
 			$this->enabled = self::$assets->enabled && self::$assets->inlineimages_enabled;
 
@@ -96,7 +96,7 @@
 		 *
 		 */
 		protected function _buildAttrString ($attrData) {
-			$attrStrings = array();
+			$attrStrings = [];
 
 			unset($attrData['nocdn']);
 			foreach ($attrData as $key => $value) {
@@ -130,7 +130,7 @@
 		protected function rebuildImageData (&$imageData) {
 
 			/* some logic processed */
-			$imageDestination = self::$assets->findLocalPathByURL($imageData['src'], array($this, '__checkFile'));
+			$imageDestination = self::$assets->findLocalPathByURL($imageData['src'], [$this, '__checkFile']);
 			if ($imageDestination === null) {
 				return;
 			}

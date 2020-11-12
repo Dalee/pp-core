@@ -10,7 +10,7 @@ class PXUserAuthorized extends PXUser
 	];
 
 	/**
-	 * @param $what string single rule or array of rules for special behaviour,
+	 * @param $what string|string[] single rule or array of rules for special behaviour,
 	 * which provide "ANY" logic, so we can check multiple rules until first will be allowed
 	 * @param $format array
 	 * @param $object array

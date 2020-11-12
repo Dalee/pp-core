@@ -15,22 +15,22 @@ class Job implements IArrayable {
 	/**
 	 * @var string
 	 */
-	const STATE_FRESH = 'fresh';
+	public const STATE_FRESH = 'fresh';
 
 	/**
 	 * @var string
 	 */
-	const STATE_FINISHED = 'finished';
+	public const STATE_FINISHED = 'finished';
 
 	/**
 	 * @var string
 	 */
-	const STATE_FAILED = 'failed';
+	public const STATE_FAILED = 'failed';
 
 	/**
 	 * @var string
 	 */
-	const STATE_IN_PROGRESS = 'in progress';
+	public const STATE_IN_PROGRESS = 'in progress';
 
 	/**
 	 * @var int
@@ -107,7 +107,7 @@ class Job implements IArrayable {
 	 * @return static
 	 */
 	public static function fromArray(array $object) {
-		$job = new static;
+		$job = new static();
 		$job->setId(getFromArray($object, 'id', 0));
 		$workerClass = getFromArray($object, 'title');
 		$state = getFromArray($object, 'state', static::STATE_FRESH);

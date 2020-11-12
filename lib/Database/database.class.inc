@@ -21,7 +21,8 @@ use PP\Lib\Database\DatabaseAdapter;
  * @method void transactionRollback()
  * @method mixed importDateTime($value)
  */
-class PXDatabase extends DatabaseAdapter implements DatabaseInterface {
+class PXDatabase extends DatabaseAdapter implements DatabaseInterface
+{
 
 	/** @var PXApplication */
 	public $app;
@@ -48,25 +49,28 @@ class PXDatabase extends DatabaseAdapter implements DatabaseInterface {
 	 * @param PXApplication $app {@link $app} reference to PXApplication
 	 * @param string $dbDescriptionName
 	 */
-	function __construct($app, $dbDescriptionName = 'database') {
+	public function __construct($app, $dbDescriptionName = 'database')
+	{
 		parent::__construct($app->dbDescription[$dbDescriptionName]);
 
 		$this->setUser(new PXUserNull());
 
-		$this->app      = $app;
-		$this->types    = $app->types;
+		$this->app = $app;
+		$this->types = $app->types;
 		$this->triggers = $this->app->triggers->{$dbDescriptionName};
 	}
 
-	protected function FatalError($message='') {
-		if($this->throwException){
+	protected function FatalError($message = '')
+	{
+		if ($this->throwException) {
 			throw new DatabaseException($message);
 		}
 		FatalError($message);
 	}
 
 
-	function setUser($user) {
+	public function setUser($user)
+	{
 		$this->user = $user;
 	}
 
@@ -80,7 +84,8 @@ class PXDatabase extends DatabaseAdapter implements DatabaseInterface {
 	 * @param array $limitpair
 	 * @return array
 	 */
-	function query($query, $donotusecache = false, $limitpair = NULL) {
+	public function query($query, $donotusecache = false, $limitpair = NULL)
+	{
 		$resTable = parent::query($query, $donotusecache, $limitpair);
 
 		if ($resTable == ERROR_DB_CANNOTCONNECT) {
@@ -95,14 +100,15 @@ class PXDatabase extends DatabaseAdapter implements DatabaseInterface {
 
 	/**
 	 * Загружает каталоги (directories) помеченные в datatypes.xml как schema="sql" && load="automatic"
+	 * @param array $directories reference to PXDirectoryDescription objects array
 	 * @see LoadSQLDirectory
 	 *
-	 * @param array $directories reference to PXDirectoryDescription objects array
 	 */
-	function loadDirectoriesAutomatic(&$directories) {
-		foreach ($directories as $k=>$v) {
-			if ($v->schema != 'sql')       continue;
-			if ($v->load   != 'automatic') continue;
+	public function loadDirectoriesAutomatic(&$directories)
+	{
+		foreach ($directories as $k => $v) {
+			if ($v->schema != 'sql') continue;
+			if ($v->load != 'automatic') continue;
 			$this->LoadSQLDirectory($directories[$k]);
 		}
 	}
@@ -115,8 +121,9 @@ class PXDatabase extends DatabaseAdapter implements DatabaseInterface {
 	 * @uses LoadDirectory
 	 *
 	 */
-	function LoadDirectoriesByType(PXTypeDescription $format, ?array $object = null): void {
-		foreach ($format->fields as $k=>$v) {
+	public function LoadDirectoriesByType(PXTypeDescription $format, ?array $object = null): void
+	{
+		foreach ($format->fields as $k => $v) {
 			if (
 				is_object($v->values) &&
 				$v->values instanceof PXDirectoryDescription &&
@@ -132,7 +139,8 @@ class PXDatabase extends DatabaseAdapter implements DatabaseInterface {
 	 * @param PXTypeDescription $format
 	 * @param array|null $objects
 	 */
-	public function loadDropdownValuesForListedFields(PXTypeDescription $format, ?array $objects = null): void {
+	public function loadDropdownValuesForListedFields(PXTypeDescription $format, ?array $objects = null): void
+	{
 		if (!$objects) {
 			return;
 		}
@@ -151,12 +159,13 @@ class PXDatabase extends DatabaseAdapter implements DatabaseInterface {
 	/**
 	 * Загружает справочник (directories) в зависимости от типа
 	 *
+	 * @param PXDirectoryDescription $directory
 	 * @uses LoadSQLDirectory, PXApplication::LoadXMLDirectory
 	 *
-	 * @param PXDirectoryDescription $directory
 	 */
-	function LoadDirectory(PXDirectoryDescription $directory, $object, $addDefault = true, $format = NULL){
-		switch($directory->schema) {
+	public function LoadDirectory(PXDirectoryDescription $directory, $object, $addDefault = true, $format = NULL)
+	{
+		switch ($directory->schema) {
 			case 'sql':
 				$this->LoadSQLDirectory($directory, $addDefault, $object, $format);
 				break;
@@ -170,31 +179,32 @@ class PXDatabase extends DatabaseAdapter implements DatabaseInterface {
 	/**
 	 * Парсит WHERE в справочниках
 	 *
-	 * @uses MapData
-	 * @uses _NormalizeObjectAttribute
-	 *
-	 * @todo docme подробнее
-	 *
 	 * @param mixed $where
 	 * @param mixed $object
 	 * @param mixed $format
 	 * @return string
+	 * @uses _NormalizeObjectAttribute
+	 *
+	 * @todo docme подробнее
+	 *
+	 * @uses MapData
 	 */
-	function ParseWhereTemplate($where, $object, $format) {
-		if(strpos($where, 'THIS.') !== false) {
-			if(is_array($object)) {
-				preg_match_all('/THIS\.([A-Z0-9\-_]+)/'.REGEX_MOD, $where, $backhref);
+	public function ParseWhereTemplate($where, $object, $format)
+	{
+		if (strpos($where, 'THIS.') !== false) {
+			if (is_array($object)) {
+				preg_match_all('/THIS\.([A-Z0-9\-_]+)/' . REGEX_MOD, $where, $backhref);
 
-				foreach($backhref[1] as $b) {
-					if(array_key_exists(mb_strtolower($b), $object)) {
-						if(is_null($format)) {
+				foreach ($backhref[1] as $b) {
+					if (array_key_exists(mb_strtolower($b), $object)) {
+						if (is_null($format)) {
 							$replace = $this->MapData($object[strtolower($b)]);
 						} else {
 							$nullObj = null;
 							$replace = $this->MapData($this->_NormalizeObjectAttribute(strtolower($b), $object, $format->fields[strtolower($b)], $nullObj, $nullObj));
 						}
 
-						$where = str_replace('THIS.'.$b, $replace, $where);
+						$where = str_replace('THIS.' . $b, $replace, $where);
 					} else {
 						$where = 'FALSE';
 					}
@@ -205,13 +215,13 @@ class PXDatabase extends DatabaseAdapter implements DatabaseInterface {
 			}
 		}
 
-		if(strpos($where, 'PROPERTY.') !== false) {
-			preg_match_all('/PROPERTY\.([A-Z0-9_]+)/'.REGEX_MOD, $where, $backhref);
-			foreach($backhref[1] as $b) {
+		if (strpos($where, 'PROPERTY.') !== false) {
+			preg_match_all('/PROPERTY\.([A-Z0-9_]+)/' . REGEX_MOD, $where, $backhref);
+			foreach ($backhref[1] as $b) {
 				$prop = $this->app->GetProperty($b);
 
-				if(!is_null($prop)) {
-					$where = str_replace('PROPERTY.'.$b, $this->MapData($prop), $where);
+				if (!is_null($prop)) {
+					$where = str_replace('PROPERTY.' . $b, $this->MapData($prop), $where);
 				} else {
 					$where = 'FALSE';
 				}
@@ -227,18 +237,19 @@ class PXDatabase extends DatabaseAdapter implements DatabaseInterface {
 	 *
 	 * @param PXDirectoryDescription $directory
 	 */
-	function LoadSQLDirectory(&$directory, $addDefault = true, $object=NULL, $format=NULL) {
+	public function LoadSQLDirectory(&$directory, $addDefault = true, $object = NULL, $format = NULL)
+	{
 		$location = $directory->location;
 
 		$location = $this->ParseWhereTemplate($location, $object, $format);
 
 		$directory->filter = array_filter($directory->filter);
-		if(sizeof($directory->filter)) {
-			$tmpWhere = array();
-			if(strlen($location)) {
+		if (sizeof($directory->filter)) {
+			$tmpWhere = [];
+			if (strlen($location)) {
 				$tmpWhere[] = $location;
 			}
-			$tmpWhere[] = $directory->source.'.id IN ('.implode(',', $directory->filter).')';
+			$tmpWhere[] = $directory->source . '.id IN (' . implode(',', $directory->filter) . ')';
 
 			$location = implode(' AND ', $tmpWhere);
 		}
@@ -250,12 +261,12 @@ class PXDatabase extends DatabaseAdapter implements DatabaseInterface {
 		 * looks like it's totally wrong!
 		 */
 
-		foreach($format->fields as $field) {
-			if (in_array($field->name,array('pid','parent'))) {
+		foreach ($format->fields as $field) {
+			if (in_array($field->name, ['pid', 'parent'])) {
 				$directory->parentField = !isset($format->fields['pid']) ? 'parent' : 'pid';
 			}
 
-			if(!$field->listed && !in_array($field->name,array('id', $directory->parentField))) {
+			if (!$field->listed && !in_array($field->name, ['id', $directory->parentField])) {
 				unset($format->fields[$field->name]);
 			}
 		}
@@ -274,9 +285,10 @@ class PXDatabase extends DatabaseAdapter implements DatabaseInterface {
 	 * @param array|null $limit null or array(LIMIT,OFFSET)
 	 * @return array|null results of {@link NLSQLDatabaseAdapter::Query()}
 	 */
-	protected function _GetData($format, $status, $mode, $where=NULL, $limit=NULL, $order=NULL, $dontUseCache = false) {
-		if(is_array($limit)) {
-			if(is_null($limit[0]) || is_null($limit[1])) {
+	protected function _GetData($format, $status, $mode, $where = NULL, $limit = NULL, $order = NULL, $dontUseCache = false)
+	{
+		if (is_array($limit)) {
+			if (is_null($limit[0]) || is_null($limit[1])) {
 				$limit = null;
 			} else {
 				$limit = array_map('intval', $limit);
@@ -290,10 +302,10 @@ class PXDatabase extends DatabaseAdapter implements DatabaseInterface {
 		if ($mode == DB_SELECT_COUNT) {
 			$selector = 'count(' . $format->id . '.id)';
 		} else {
-			$selector     = $this->_createSelector($format);
-			$order        = is_null($order) ? $format->order : $order;
-			$first_is_fun = preg_match('#^\s*\w+\s*\(#S'.REGEX_MOD, $order);
-			$order_by     = ($first_is_fun ? '' : $format->id . '.') . $order;
+			$selector = $this->_createSelector($format);
+			$order = is_null($order) ? $format->order : $order;
+			$first_is_fun = preg_match('#^\s*\w+\s*\(#S' . REGEX_MOD, $order);
+			$order_by = ($first_is_fun ? '' : $format->id . '.') . $order;
 		}
 
 		foreach ($this->triggers as $t) {
@@ -302,7 +314,7 @@ class PXDatabase extends DatabaseAdapter implements DatabaseInterface {
 
 		$query = 'SELECT ' . $selector . ' FROM ' . $format->id;
 
-		if (!is_null($where))    $query .= ' WHERE ' . $where;
+		if (!is_null($where)) $query .= ' WHERE ' . $where;
 		if (!is_null($order_by)) $query .= ' ORDER BY ' . $order_by;
 
 		foreach ($this->triggers as $t) {
@@ -310,25 +322,26 @@ class PXDatabase extends DatabaseAdapter implements DatabaseInterface {
 		}
 
 		$queryIden = $dontUseCache ? null : $this->_getCacheIden($query, $mode, $limit);
-		$data = $dontUseCache ? null : $this->cache->load(array($queryIden, $format->id));
+		$data = $dontUseCache ? null : $this->cache->load([$queryIden, $format->id]);
 
 		if ($data === null) {
 			$sqlRes = $this->Query($query, true, $limit);
 			$data = $this->_PrepareResult($sqlRes, $format, $mode);
-			$dontUseCache || $this->cache->save(array($queryIden, $format->id), $data);
+			$dontUseCache || $this->cache->save([$queryIden, $format->id], $data);
 		}
 
 		return $data;
 	}
 
-	private function joinWhere($format, $status, $where=null) {
-		$w = array();
-		if(!is_null($status)) {
-			$w[] = $format->id.'.status='.$this->trueStatusString($status);
+	private function joinWhere($format, $status, $where = null)
+	{
+		$w = [];
+		if (!is_null($status)) {
+			$w[] = $format->id . '.status=' . $this->trueStatusString($status);
 		}
 
-		if(!is_null($where)) {
-			switch(true) {
+		if (!is_null($where)) {
+			switch (true) {
 				case is_string($where):
 					$w[] = $where;
 					break;
@@ -339,14 +352,15 @@ class PXDatabase extends DatabaseAdapter implements DatabaseInterface {
 			}
 		}
 
-		if(!sizeof($w)) {
+		if (!sizeof($w)) {
 			return null;
 		}
 
-		return  implode(' AND ', $w);
+		return implode(' AND ', $w);
 	}
 
-	protected function _getCacheIden($query, $mode, $limit) {
+	protected function _getCacheIden($query, $mode, $limit)
+	{
 		return sprintf('%s;mode:%s;limit:%s;groups:%s;acl:%s',
 			$query,
 			$mode,
@@ -361,7 +375,8 @@ class PXDatabase extends DatabaseAdapter implements DatabaseInterface {
 	 * @param PXTypeDescription $format
 	 * @return string
 	 */
-	protected function _createSelector($format) {
+	protected function _createSelector($format)
+	{
 		$hasSysMeta = false;
 		$formatFields = [];
 
@@ -380,19 +395,19 @@ class PXDatabase extends DatabaseAdapter implements DatabaseInterface {
 		}
 
 		if (count($format->childs)) {
-			$formatFields[] = $format->id.'.'.OBJ_FIELD_CHILDREN;
+			$formatFields[] = $format->id . '.' . OBJ_FIELD_CHILDREN;
 		}
 
-		$formatFields[] = $format->id.'.'.OBJ_FIELD_CREATED;
-		$formatFields[] = $format->id.'.'.OBJ_FIELD_MODIFIED;
-		$formatFields[] = $format->id.'.'.OBJ_FIELD_ORDER;
-		$formatFields[] = $format->id.'.'.OBJ_FIELD_UUID;
+		$formatFields[] = $format->id . '.' . OBJ_FIELD_CREATED;
+		$formatFields[] = $format->id . '.' . OBJ_FIELD_MODIFIED;
+		$formatFields[] = $format->id . '.' . OBJ_FIELD_ORDER;
+		$formatFields[] = $format->id . '.' . OBJ_FIELD_UUID;
 		if ($format->id != DT_USER) {
-			$formatFields[] = $format->id.'.'.OBJ_FIELD_OWNER;
+			$formatFields[] = $format->id . '.' . OBJ_FIELD_OWNER;
 		}
 
 		if ($hasSysMeta) {
-			$formatFields[] = $format->id.'.'.OBJ_FIELD_META;
+			$formatFields[] = $format->id . '.' . OBJ_FIELD_META;
 		}
 
 		return implode(', ', $formatFields);
@@ -406,7 +421,8 @@ class PXDatabase extends DatabaseAdapter implements DatabaseInterface {
 	 * @param int $id
 	 * @return array
 	 */
-	function getObjectById($format, $id, $dontUseCache = false) {
+	public function getObjectById($format, $id, $dontUseCache = false)
+	{
 		if (empty($id)) {
 			return [];
 		}
@@ -439,14 +455,17 @@ class PXDatabase extends DatabaseAdapter implements DatabaseInterface {
 	 * @param PXTypeDescription $format
 	 * @param string $status objects status ('TRUE' | 'FALSE')
 	 * @param string $field integer field in DB for search
-	 * @param array  $intArray array of int values
+	 * @param array $intArray array of int values
 	 * @param int $mode request mode. Default = {@link DB_SELECT_TABLE}
 	 * @return array
 	 */
-	function getObjectsByIntArray($format, $status, $field, array $intArray, $mode=DB_SELECT_TABLE, $order=NULL) {
+	public function getObjectsByIntArray($format, $status, $field, array $intArray, $mode = DB_SELECT_TABLE, $order = NULL)
+	{
 		return $this->getObjectsByIntArrayLimited($format, $status, $field, $intArray, null, null, $mode, $order);
 	}
-	function getObjectsByIntArrayLimited($format, $status, $field, array $intArray, $limit, $offset, $mode=DB_SELECT_TABLE, $order=NULL) {
+
+	public function getObjectsByIntArrayLimited($format, $status, $field, array $intArray, $limit, $offset, $mode = DB_SELECT_TABLE, $order = NULL)
+	{
 		if (!isset($format->fields[$field])) {
 			$this->FatalError(sprintf('В модели "%s" отсутствует поле "%s"!', $format->id, $field));
 		}
@@ -459,7 +478,7 @@ class PXDatabase extends DatabaseAdapter implements DatabaseInterface {
 
 		if (count($intArray)) {
 			$whereClause = sprintf('%s.%s IN (%s)', $format->id, $field, implode(',', $intArray));
-			$res = $this->_GetData($format, $status, $mode, $whereClause, array($limit, $offset), $order);
+			$res = $this->_GetData($format, $status, $mode, $whereClause, [$limit, $offset], $order);
 		} else {
 			$res = $this->emptyResult($mode);
 		}
@@ -471,13 +490,14 @@ class PXDatabase extends DatabaseAdapter implements DatabaseInterface {
 	 * Возвращает объекты из БД по массиву id (Integer)
 	 * Использует {@link NLSQLDatabaseAdapter::Query()} для запросов
 	 *
-	 * @param PXTypeDescription     $format
-	 * @param String $status        objects status ('TRUE' | 'FALSE')
-	 * @param Array  $idArray       array of objects id
-	 * @param Integer $mode         request mode. Default = {@link DB_SELECT_TABLE}
-	 * @return Array
+	 * @param PXTypeDescription $format
+	 * @param String $status objects status ('TRUE' | 'FALSE')
+	 * @param array $idArray array of objects id
+	 * @param Integer $mode request mode. Default = {@link DB_SELECT_TABLE}
+	 * @return array
 	 */
-	function getObjectsByIdArray($format, $status, $idArray, $mode=DB_SELECT_TABLE, $order=NULL) {
+	public function getObjectsByIdArray($format, $status, $idArray, $mode = DB_SELECT_TABLE, $order = NULL)
+	{
 		return $this->getObjectsByIntArray($format, $status, 'id', $idArray, $mode, $order);
 	}
 
@@ -486,15 +506,18 @@ class PXDatabase extends DatabaseAdapter implements DatabaseInterface {
 	 * Использует {@link PXDatabase::_GetData()} для запросов
 	 *
 	 * @param PXTypeDescription $format
-	 * @param String $status            objects status ('TRUE' | 'FALSE')
-	 * @param Integer $mode             request mode. Default = {@link DB_SELECT_TABLE}
-	 * @return Array
+	 * @param String $status objects status ('TRUE' | 'FALSE')
+	 * @param Integer $mode request mode. Default = {@link DB_SELECT_TABLE}
+	 * @return array
 	 */
-	function getObjects($format, $status, $mode=DB_SELECT_TABLE, $order=NULL) {
+	public function getObjects($format, $status, $mode = DB_SELECT_TABLE, $order = NULL)
+	{
 		return $this->getObjectsLimited($format, $status, null, null, $mode, $order);
 	}
-	function getObjectsLimited($format, $status, $limit, $offset, $mode=DB_SELECT_TABLE, $order=NULL) {
-		return $this->_GetData($format, $status, $mode, null, array($limit, $offset), $order);
+
+	public function getObjectsLimited($format, $status, $limit, $offset, $mode = DB_SELECT_TABLE, $order = NULL)
+	{
+		return $this->_GetData($format, $status, $mode, null, [$limit, $offset], $order);
 	}
 
 	/**
@@ -502,20 +525,25 @@ class PXDatabase extends DatabaseAdapter implements DatabaseInterface {
 	 * Использует {@link PXDatabase::_GetData()} для запросов.
 	 *
 	 * @param PXTypeDescription $format
-	 * @param String $status    objects status ('TRUE' | 'FALSE')
-	 * @param Mixed $parent     parent id value (numeric, array or NULL)
-	 * @param Integer $mode     request mode, default = {@link DB_SELECT_TABLE}
-	 * @return Array
+	 * @param String $status objects status ('TRUE' | 'FALSE')
+	 * @param Mixed $parent parent id value (numeric, array or NULL)
+	 * @param Integer $mode request mode, default = {@link DB_SELECT_TABLE}
+	 * @return array
 	 */
-	function getObjectsByParent($format, $status, $parent, $mode=DB_SELECT_TABLE, $order=NULL) {
+	public function getObjectsByParent($format, $status, $parent, $mode = DB_SELECT_TABLE, $order = NULL)
+	{
 		return $this->getObjectsByParentLimited($format, $status, $parent, null, null, $mode, $order);
 	}
-	function getObjectsByParentLimited($format, $status, $parent, $limit, $offset, $mode=DB_SELECT_TABLE, $order=NULL) {
+
+	public function getObjectsByParentLimited($format, $status, $parent, $limit, $offset, $mode = DB_SELECT_TABLE, $order = NULL)
+	{
+		$whereClause = null;
+
 		if (is_numeric($parent)) {
-			$whereClause = $format->id.'.parent = '.$parent;
+			$whereClause = $format->id . '.parent = ' . $parent;
 
 		} elseif (is_null($parent)) {
-			$whereClause = $format->id.'.parent IS NULL';
+			$whereClause = $format->id . '.parent IS NULL';
 
 		} elseif (is_array($parent)) {
 			return $this->getObjectsByIntArrayLimited($format, $status, 'parent', $parent, $limit, $offset, $mode, $order);
@@ -523,7 +551,7 @@ class PXDatabase extends DatabaseAdapter implements DatabaseInterface {
 			$this->FatalError('Попытка SQL-Injection!');
 		}
 
-		return $this->_GetData($format, $status, $mode, $whereClause, array($limit, $offset), $order);
+		return $this->_GetData($format, $status, $mode, $whereClause, [$limit, $offset], $order);
 	}
 
 	/**
@@ -531,19 +559,22 @@ class PXDatabase extends DatabaseAdapter implements DatabaseInterface {
 	 * Использует {@link PXDatabase::_GetData()} для запросов.
 	 *
 	 * @param PXTypeDescription $format
-	 * @param String $status    objects status ('TRUE' | 'FALSE')
-	 * @param String $where     sql where
-	 * @param Integer $mode     request mode, default = {@link DB_SELECT_TABLE}
-	 * @return Array
+	 * @param String $status objects status ('TRUE' | 'FALSE')
+	 * @param String $where sql where
+	 * @param Integer $mode request mode, default = {@link DB_SELECT_TABLE}
+	 * @return array
 	 */
-	function getObjectsByWhere($format, $status, $whereClause, $mode=DB_SELECT_TABLE, $order=NULL) {
+	public function getObjectsByWhere($format, $status, $whereClause, $mode = DB_SELECT_TABLE, $order = NULL)
+	{
 		return $this->getObjectsByWhereLimited($format, $status, $whereClause, null, null, $mode, $order);
 	}
-	function getObjectsByWhereLimited($format, $status, $whereClause, $limit, $offset, $mode=DB_SELECT_TABLE, $order=NULL) {
-		if(is_array($whereClause)) {
+
+	public function getObjectsByWhereLimited($format, $status, $whereClause, $limit, $offset, $mode = DB_SELECT_TABLE, $order = NULL)
+	{
+		if (is_array($whereClause)) {
 			$whereClause = implode(' AND ', $whereClause);
 		}
-		return $this->_GetData($format, $status, $mode, $whereClause, array($limit, $offset), $order);
+		return $this->_GetData($format, $status, $mode, $whereClause, [$limit, $offset], $order);
 	}
 
 
@@ -552,51 +583,63 @@ class PXDatabase extends DatabaseAdapter implements DatabaseInterface {
 	 * Использует {@link PXDatabase::_GetData()} для запросов.
 	 *
 	 * @param PXTypeDescription $format
-	 * @param String $status    objects status ('TRUE' | 'FALSE')
-	 * @param String $field     field name
-	 * @param String $value     field value
-	 * @param Integer $mode     request mode, default = {@link DB_SELECT_TABLE}
-	 * @return Array
+	 * @param String $status objects status ('TRUE' | 'FALSE')
+	 * @param String $field field name
+	 * @param String $value field value
+	 * @param Integer $mode request mode, default = {@link DB_SELECT_TABLE}
+	 * @return array
 	 */
-	function getObjectsByFields($format, $status, $fields, $mode=DB_SELECT_TABLE, $order=NULL) {
+	public function getObjectsByFields($format, $status, $fields, $mode = DB_SELECT_TABLE, $order = NULL)
+	{
 		return $this->getObjectsByField($format, $status, $fields, null, $mode, $order);
 	}
 
-	function getObjectsByFieldsLimited($format, $status, $fields, $limit, $offset, $mode=DB_SELECT_TABLE, $order=NULL) {
+	public function getObjectsByFieldsLimited($format, $status, $fields, $limit, $offset, $mode = DB_SELECT_TABLE, $order = NULL)
+	{
 		return $this->getObjectsByFieldLimited($format, $status, $fields, null, $limit, $offset, $mode, $order);
 	}
-	function getObjectsByField($format, $status, $field, $value, $mode=DB_SELECT_TABLE, $order=NULL) {
+
+	public function getObjectsByField($format, $status, $field, $value, $mode = DB_SELECT_TABLE, $order = NULL)
+	{
 		return $this->getObjectsByFieldLimited($format, $status, $field, $value, null, null, $mode, $order);
 	}
-	function getObjectsByFieldLimited($format, $status, $field, $value, $limit, $offset, $mode=DB_SELECT_TABLE, $order=NULL) {
-		if (! is_array($field)) {
-			$field = array($field => $value);
+
+	public function getObjectsByFieldLimited($format, $status, $field, $value, $limit, $offset, $mode = DB_SELECT_TABLE, $order = NULL)
+	{
+		if (!is_array($field)) {
+			$field = [$field => $value];
 		}
 
 		$whereClause = join(' AND ', $this->buildWhereFromArray($field, $format->id));
 
-		return $this->_GetData($format, $status, $mode, $whereClause, array($limit, $offset), $order);
+		return $this->_GetData($format, $status, $mode, $whereClause, [$limit, $offset], $order);
 	}
 
 	/** @see getObjectsByField */
-	function getObjectsByFieldLike($format, $status, $field, $value, $mode=DB_SELECT_TABLE, $order=NULL) {
+	public function getObjectsByFieldLike($format, $status, $field, $value, $mode = DB_SELECT_TABLE, $order = NULL)
+	{
 		return $this->getObjectsByFieldLikeLimited($format, $status, $field, $value, null, null, $mode, $order);
 	}
-	function getObjectsByFieldLikeLimited($format, $status, $field, $value, $limit, $offset, $mode=DB_SELECT_TABLE, $order=NULL) {
-		$field = $this->EscapeString($field);
-		$whereClause  = $format->id.'.'.$field.$this->LIKE($value);
 
-		return $this->_GetData($format, $status, $mode, $whereClause, array($limit, $offset), $order);
+	public function getObjectsByFieldLikeLimited($format, $status, $field, $value, $limit, $offset, $mode = DB_SELECT_TABLE, $order = NULL)
+	{
+		$field = $this->EscapeString($field);
+		$whereClause = $format->id . '.' . $field . $this->LIKE($value);
+
+		return $this->_GetData($format, $status, $mode, $whereClause, [$limit, $offset], $order);
 	}
 
 	/** @see getObjectsByField */
-	function getObjectsByFieldNotEmpty($format, $status, $field, $mode=DB_SELECT_TABLE, $order=NULL) {
-		return $this->getObjectsByFieldNotEmptyLimited($format, $status, $field, null, null, $mode=DB_SELECT_TABLE, $order=NULL);
+	public function getObjectsByFieldNotEmpty($format, $status, $field, $mode = DB_SELECT_TABLE, $order = NULL)
+	{
+		return $this->getObjectsByFieldNotEmptyLimited($format, $status, $field, null, null, $mode = DB_SELECT_TABLE, $order = NULL);
 	}
-	function getObjectsByFieldNotEmptyLimited($format, $status, $field, $limit, $offset, $mode=DB_SELECT_TABLE, $order=NULL) {
+
+	public function getObjectsByFieldNotEmptyLimited($format, $status, $field, $limit, $offset, $mode = DB_SELECT_TABLE, $order = NULL)
+	{
 		$field = $this->EscapeString($field);
-		$whereClause = 'char_length('.$format->id.'.'.$field.') > 0';
-		return $this->_GetData($format, $status, $mode, $whereClause, array($limit, $offset), $order);
+		$whereClause = 'char_length(' . $format->id . '.' . $field . ') > 0';
+		return $this->_GetData($format, $status, $mode, $whereClause, [$limit, $offset], $order);
 	}
 
 	/**
@@ -605,33 +648,37 @@ class PXDatabase extends DatabaseAdapter implements DatabaseInterface {
 	 * Использует {@link PXDatabase::_GetData()} для запросов.
 	 *
 	 * @param PXTypeDescription $format
-	 * @param String $status    objects status ('TRUE' | 'FALSE')
-	 * @param String $word      search word
-	 * @param Integer $mode     request mode, default = {@link DB_SELECT_TABLE}
-	 * @return Array
+	 * @param String $status objects status ('TRUE' | 'FALSE')
+	 * @param String $word search word
+	 * @param Integer $mode request mode, default = {@link DB_SELECT_TABLE}
+	 * @return array
 	 */
-	function getObjectsBySearchWord($format, $status, $word, $mode=DB_SELECT_TABLE, $order=NULL) {
+	public function getObjectsBySearchWord($format, $status, $word, $mode = DB_SELECT_TABLE, $order = NULL)
+	{
 		return $this->getObjectsBySearchWordLimited($format, $status, $word, null, null, $mode, $order);
 	}
-	function getObjectsBySearchWordLimited($format, $status, $word, $limit, $offset, $mode=DB_SELECT_TABLE, $order=NULL) {
+
+	public function getObjectsBySearchWordLimited($format, $status, $word, $limit, $offset, $mode = DB_SELECT_TABLE, $order = NULL)
+	{
 		$word = $this->EscapeString($word);
 		$whereClause = '';
-		foreach ($format->fields as $k=>$v) {
-			$p = array('formatId'=>$format->id, 'word'=>$word);
-			$whereClause .= $v->storageType->searchLikeQuery($v, array(), $p);
+		foreach ($format->fields as $k => $v) {
+			$p = ['formatId' => $format->id, 'word' => $word];
+			$whereClause .= $v->storageType->searchLikeQuery($v, [], $p);
 		}
 		$whereClause = mb_substr($whereClause, 0, -4);
-		if(!strlen($whereClause)) {
+		if (!strlen($whereClause)) {
 			return $this->emptyResult($mode);
 		}
 
-		return $this->_GetData($format, $status, $mode, $whereClause, array($limit, $offset), $order);
+		return $this->_GetData($format, $status, $mode, $whereClause, [$limit, $offset], $order);
 	}
 
-	protected function emptyResult($mode) {
-		switch($mode) {
+	protected function emptyResult($mode)
+	{
+		switch ($mode) {
 			case DB_SELECT_TABLE:
-				$res = array();
+				$res = [];
 				break;
 			case DB_SELECT_COUNT:
 				$res = 0;
@@ -650,19 +697,20 @@ class PXDatabase extends DatabaseAdapter implements DatabaseInterface {
 	 * После успешного добавления объекта вызываются триггеры OnAddObject.
 	 * Метод использует {@link PXDatabase::InsertObject} для добавления объектов.
 	 *
-	 * @see InsertObject
-	 * @see ModifyingQuery
-	 *
 	 * @param PXTypeDescription $format
 	 * @param array $object array of assoaciative arrays 'db_field_name'=>'value'
 	 * @return int
+	 * @see ModifyingQuery
+	 *
+	 * @see InsertObject
 	 */
-	function AddContentObject($format, $object) {
+	public function AddContentObject($format, $object)
+	{
 		$audit = PXAuditLogger::getLogger();
 
-		if (!$this->user->can(array('write', 'add'), $format, $object)) {
-			$errString = 'Отказано в доступе при попытке создать объект типа <em>'.$format->id.'</em>';
-			$audit->error($errString, $format->id .'/0');
+		if (!$this->user->can(['write', 'add'], $format, $object)) {
+			$errString = 'Отказано в доступе при попытке создать объект типа <em>' . $format->id . '</em>';
+			$audit->error($errString, $format->id . '/0');
 			$this->FatalError($errString);
 		}
 
@@ -695,7 +743,7 @@ class PXDatabase extends DatabaseAdapter implements DatabaseInterface {
 
 		if (count($format->childs)) {
 			$dbFields[] = OBJ_FIELD_CHILDREN;
-			$_children = array();
+			$_children = [];
 			foreach ($format->childs as $child) {
 				if (!is_null($this->types[$child]->byDefault)) {
 					$_children[$child] = $this->types[$child]->byDefault;
@@ -708,10 +756,10 @@ class PXDatabase extends DatabaseAdapter implements DatabaseInterface {
 
 		$permitAdd = true;
 		$newId = 0;
-		foreach ($this->triggers as $t){
+		foreach ($this->triggers as $t) {
 			$permitAdd = $t->getTrigger()->OnBeforeAddObject($this, $newId, $format, $object, $dbFields, $dbValues);
 
-			if(!$permitAdd) {
+			if (!$permitAdd) {
 				break;
 			}
 		}
@@ -721,9 +769,9 @@ class PXDatabase extends DatabaseAdapter implements DatabaseInterface {
 			// ориентируемся на результат выполнения storedInMeta, для файловых
 			// и виртуальных полей метод должен возвращать true.
 			$cuttedFieldDiff = array_diff(array_keys($format->fields), $dbFields);
-			$sysMetaFieldList = array();
-			foreach($cuttedFieldDiff as $k) {
-				if($format->fields[$k]->storageType->storedInMeta()) {
+			$sysMetaFieldList = [];
+			foreach ($cuttedFieldDiff as $k) {
+				if ($format->fields[$k]->storageType->storedInMeta()) {
 					$sysMetaFieldList[] = $k;
 				}
 			}
@@ -733,7 +781,7 @@ class PXDatabase extends DatabaseAdapter implements DatabaseInterface {
 			$newId = $this->InsertObject($format->id, $dbFields, $dbValues, false);
 			if ($newId < 0) {
 				$errString = $this->GetError();
-				$audit->error($errString, $format->id .'/'.getFromArray($object, 'parent'));
+				$audit->error($errString, $format->id . '/' . getFromArray($object, 'parent'));
 				$this->transactionRollback();
 				$this->FatalError($errString);
 			}
@@ -741,8 +789,8 @@ class PXDatabase extends DatabaseAdapter implements DatabaseInterface {
 			$object[OBJ_FIELD_ID] = $newId;
 
 			// обходим все поля, в попытке найти что-то похожее на файл
-			$sysMetaField = array();
-			foreach ($format->fields as $k=>$v) {
+			$sysMetaField = [];
+			foreach ($format->fields as $k => $v) {
 				$param = [
 					OBJ_FIELD_ID => $newId,
 					'format' => $format->id,
@@ -750,17 +798,17 @@ class PXDatabase extends DatabaseAdapter implements DatabaseInterface {
 				];
 
 				$proceedFileResult = $v->storageType->proceedFile($v, $object, $param);
-				if(in_array($k, $sysMetaFieldList) && $proceedFileResult) {
+				if (in_array($k, $sysMetaFieldList) && $proceedFileResult) {
 					$sysMetaField[$k] = $proceedFileResult;
 				}
 			}
 
 			// обновляем sys_meta, если есть что туда записать.
 			$sqlUpdateRule = [];
-			$sqlUpdateRule[] = OBJ_FIELD_ORDER."=".OBJ_FIELD_ID;
+			$sqlUpdateRule[] = OBJ_FIELD_ORDER . "=" . OBJ_FIELD_ID;
 
 			if (count($sysMetaField) > 0) {
-				$sqlUpdateRule[] = OBJ_FIELD_META."=".$this->MapData(json_encode($sysMetaField));
+				$sqlUpdateRule[] = OBJ_FIELD_META . "=" . $this->MapData(json_encode($sysMetaField));
 			}
 
 			$this->ModifyingQuery(
@@ -786,7 +834,7 @@ class PXDatabase extends DatabaseAdapter implements DatabaseInterface {
 				$t->getTrigger()->OnAddObject($this, $newId, $format, $object, $dbFields, $dbValues);
 			}
 
-			$audit->info('Объект добавлен', $format->id .'/'. $newId);
+			$audit->info('Объект добавлен', $format->id . '/' . $newId);
 		}
 
 		return $newId;
@@ -799,13 +847,14 @@ class PXDatabase extends DatabaseAdapter implements DatabaseInterface {
 	 * После добавления объектов триггеры НЕ вызываются.
 	 * Использует {@link PXDatabase::InsertObject} для добавления объектов.
 	 *
+	 * @param PXTypeDescription $format
+	 * @param array $objectsArray array of assoaciative arrays 'db_field_name'=>'value'
 	 * @see InsertObject
 	 * @see ModifyingQuery
 	 *
-	 * @param PXTypeDescription $format
-	 * @param Array $objectsArray   array of assoaciative arrays 'db_field_name'=>'value'
 	 */
-	function AddContentObjects($format, $objectsArray) {
+	public function AddContentObjects($format, $objectsArray)
+	{
 		$audit = PXAuditLogger::getLogger($this->app, $this);
 
 		if (count($objectsArray) == 0) {
@@ -826,26 +875,26 @@ class PXDatabase extends DatabaseAdapter implements DatabaseInterface {
 					$this->FatalError('Объект данного типа не может быть добавлен в данный раздел');
 				}
 
-				if (!$this->user->can(array('write', 'add'), $format, array('id' => 0, 'parent' => $parentId))) {
-					$errString = 'Отказано в доступе при попытке создать объект типа <em>'.$format->id.'</em>';
-					$audit->error($errString, $format->id .'/0');
+				if (!$this->user->can(['write', 'add'], $format, ['id' => 0, 'parent' => $parentId])) {
+					$errString = 'Отказано в доступе при попытке создать объект типа <em>' . $format->id . '</em>';
+					$audit->error($errString, $format->id . '/0');
 					$this->FatalError($errString);
 				}
 			}
 		}
 
-		$copyCols  = array();
-		$copyTable = array();
-		$idx       = 0;
-		$lastOrder = current(current($this->Query('SELECT max(sys_order) FROM '.$format->id, TRUE)));
+		$copyCols = [];
+		$copyTable = [];
+		$idx = 0;
+		$lastOrder = current(current($this->Query('SELECT max(sys_order) FROM ' . $format->id, TRUE)));
 
-		$pathnames = array();
+		$pathnames = [];
 		$nullObj = null;
 
 		foreach ($objectsArray as $object) {
-			$copyTable[$idx] = array();
+			$copyTable[$idx] = [];
 
-			foreach ($format->fields as $k=>$v) {
+			foreach ($format->fields as $k => $v) {
 				if ($k === 'pathname') {
 					$object[$k] = $this->_NormalizeObjectPathName($format, $object, $pathnames);
 				}
@@ -873,7 +922,7 @@ class PXDatabase extends DatabaseAdapter implements DatabaseInterface {
 			$copyTable[$idx][] = '##now##';
 
 			if ($format->id != DT_USER) {
-				if($idx == 0) {
+				if ($idx == 0) {
 					$copyCols[] = OBJ_FIELD_OWNER;
 				}
 
@@ -885,7 +934,7 @@ class PXDatabase extends DatabaseAdapter implements DatabaseInterface {
 					$copyCols[] = OBJ_FIELD_CHILDREN;
 				}
 
-				$_children = array();
+				$_children = [];
 				foreach ($format->childs as $child) {
 					if (!is_null($this->types[$child]->byDefault)) {
 						$_children[$child] = $this->types[$child]->byDefault;
@@ -902,30 +951,31 @@ class PXDatabase extends DatabaseAdapter implements DatabaseInterface {
 		$res = $this->ModifyingCopy($format->id, $copyCols, $copyTable);
 		$this->clearObjectTypeCache($format->id);
 
-		$audit->info('Добавлено '.$idx.' объектов', $format->id);
+		$audit->info('Добавлено ' . $idx . ' объектов', $format->id);
 
 		return $res;
 		// TRIGGER ?
 	}
 
 
-	function cloneContentObject(&$format, $objectData, $status=false) {
+	public function cloneContentObject(&$format, $objectData, $status = false)
+	{
 		$audit = PXAuditLogger::getLogger($this->app, $this);
 
-		if(is_array($objectData) && isset($objectData['id']) && is_numeric($objectData['id']) && $objectData['id'] > 0) {
+		if (is_array($objectData) && isset($objectData['id']) && is_numeric($objectData['id']) && $objectData['id'] > 0) {
 			$donorObject = $objectData;
 		} else {
 			$donorObject = $this->getObjectById($format, $objectData);
 		}
 
-		$object           = $donorObject;
-		$object['id']     = null;
+		$object = $donorObject;
+		$object['id'] = null;
 		$object['status'] = $status;
 
 		$permitClone = true;
-		foreach ($this->triggers as $t){
+		foreach ($this->triggers as $t) {
 			$permitClone = $t->getTrigger()->onBeforeCloneObject($this, $format, $object, $donorObject);
-			if(!$permitClone) break;
+			if (!$permitClone) break;
 		}
 
 		if (!$permitClone) {
@@ -934,16 +984,16 @@ class PXDatabase extends DatabaseAdapter implements DatabaseInterface {
 
 		$object['id'] = $this->addContentObject($format, $object);
 
-		foreach ($format->fields as $k=>$v) {
-			$p = array('donor'=>$donorObject, 'format'=>$format->id);
+		foreach ($format->fields as $k => $v) {
+			$p = ['donor' => $donorObject, 'format' => $format->id];
 			$v->storageType->cloneFile($v, $object, $p);
 		}
 
-		foreach ($this->triggers as $t){
+		foreach ($this->triggers as $t) {
 			$t->getTrigger()->onCloneObject($this, $format, $object, $donorObject);
 		}
 
-		$audit->info('Объект клонирован', $format->id .'/'. $donorObject['id']);
+		$audit->info('Объект клонирован', $format->id . '/' . $donorObject['id']);
 
 		return $object['id'];
 	}
@@ -952,32 +1002,33 @@ class PXDatabase extends DatabaseAdapter implements DatabaseInterface {
 	 * Изменяет хранящийся в БД объект
 	 * Работает по аналогии с {@link PXDatabase::AddContentObject()}
 	 *
-	 * @see AddContentObject
-	 *
 	 * @param PXTypeDescription $format
 	 * @param array $object
 	 * @param bool $skipHidden
 	 * @return null
+	 * @see AddContentObject
+	 *
 	 */
-	function ModifyContentObject($format, $object, $skipHidden = false) {
+	public function ModifyContentObject($format, $object, $skipHidden = false)
+	{
 		$audit = PXAuditLogger::getLogger();
 
-		if (!$this->user->can(array('write', 'modify'), $format, $object)) {
-			$errString = 'Отказано в доступе при попытке модифицировать объект типа <em>'.$format->id.'</em>';
-			$audit->error($errString, $format->parent .'/'. $object['parent']);
+		if (!$this->user->can(['write', 'modify'], $format, $object)) {
+			$errString = 'Отказано в доступе при попытке модифицировать объект типа <em>' . $format->id . '</em>';
+			$audit->error($errString, $format->parent . '/' . $object['parent']);
 			$this->FatalError($errString);
 		}
 
 		$objectInDB = $this->getObjectById($format, $object['id']);
 		if (!count($objectInDB)) {
 			$errString = 'Попытка модифицировать отсутствующий объект';
-			$audit->error($errString, $format->id .'/'.$object['id']);
+			$audit->error($errString, $format->id . '/' . $object['id']);
 			$this->FatalError($errString);
 		}
 
-		if (!$this->user->can(array('write', 'modify'), $format, $objectInDB)) {
-			$errString = 'Отказано в доступе при попытке модифицировать объект типа <em>'.$format->id.'</em>';
-			$audit->error($errString, $format->parent .'/'. $object['parent']);
+		if (!$this->user->can(['write', 'modify'], $format, $objectInDB)) {
+			$errString = 'Отказано в доступе при попытке модифицировать объект типа <em>' . $format->id . '</em>';
+			$audit->error($errString, $format->parent . '/' . $object['parent']);
 			$this->FatalError($errString);
 		}
 
@@ -986,7 +1037,7 @@ class PXDatabase extends DatabaseAdapter implements DatabaseInterface {
 		$dbFields = [];
 		$dbValues = [];
 
-		foreach ($format->fields as $k=>$v) {
+		foreach ($format->fields as $k => $v) {
 			if ($k === OBJ_FIELD_PATHNAME) {
 				$nullObject = NULL;
 				$object[$k] = $this->_NormalizeObjectPathName($format, $object, $nullObject);
@@ -1019,7 +1070,7 @@ class PXDatabase extends DatabaseAdapter implements DatabaseInterface {
 				$objectInDB
 			);
 
-			if(!$permitModify) {
+			if (!$permitModify) {
 				break;
 			}
 		}
@@ -1031,8 +1082,8 @@ class PXDatabase extends DatabaseAdapter implements DatabaseInterface {
 			$cutFieldDiff = array_diff(array_keys($format->fields), $dbFields);
 			$sysMetaFieldList = [];
 
-			foreach($cutFieldDiff as $k) {
-				if($format->fields[$k]->storageType->storedInMeta()) {
+			foreach ($cutFieldDiff as $k) {
+				if ($format->fields[$k]->storageType->storedInMeta()) {
 					$sysMetaFieldList[] = $k;
 				}
 			}
@@ -1043,19 +1094,19 @@ class PXDatabase extends DatabaseAdapter implements DatabaseInterface {
 			$this->transactionBegin();
 			$result = $this->UpdateObjectById($format->id, $object['id'], $dbFields, $dbValues, false);
 
-			if ($result <  0) {
-				$audit->error($this->GetError(), $format->id .'/'. $object['id']);
+			if ($result < 0) {
+				$audit->error($this->GetError(), $format->id . '/' . $object['id']);
 				$this->transactionRollback();
 				$this->FatalError($this->GetError());
 			}
 			if ($format->struct == 'tree' && isset($objectInDB['parent']) && $objectInDB['parent'] != $object['parent']) {
-				$childs        = $this->getObjectsByParent($format, NULL, $objectInDB['parent'], DB_SELECT_TREE);
+				$childs = $this->getObjectsByParent($format, NULL, $objectInDB['parent'], DB_SELECT_TREE);
 				$objectsToMove = $childs->GetDescendants($object['id']);
-				$query = 'UPDATE '.$format->id.' SET parent='.(is_null($object['parent']) ? 'NULL' : $object['parent']).' WHERE id IN ('.implode(', ', $objectsToMove).')';
+				$query = 'UPDATE ' . $format->id . ' SET parent=' . (is_null($object['parent']) ? 'NULL' : $object['parent']) . ' WHERE id IN (' . implode(', ', $objectsToMove) . ')';
 				$this->ModifyingQuery($query, null, null, false);
 
-				if(isset($format->pid)) {
-					$query = 'UPDATE '.$format->id.' SET pid=NULL WHERE id='.$object['id'];
+				if (isset($format->pid)) {
+					$query = 'UPDATE ' . $format->id . ' SET pid=NULL WHERE id=' . $object['id'];
 					$this->ModifyingQuery($query, null, null, false);
 				}
 			}
@@ -1084,7 +1135,7 @@ class PXDatabase extends DatabaseAdapter implements DatabaseInterface {
 						'format' => $format->id,
 						OBJ_FIELD_META => (isset($objectInDB[OBJ_FIELD_META]))
 							? $objectInDB[OBJ_FIELD_META]
-							: []
+							: [],
 					];
 
 					$proceedFileResult = $v->storageType->proceedFile($v, $object, $param);
@@ -1153,12 +1204,13 @@ class PXDatabase extends DatabaseAdapter implements DatabaseInterface {
 	 * Изменяет системные параметры объекта хранящегося в БД ('sys_allowed', 'sys_accessmod', 'sys_accessput')
 	 * Использует {@link PXDatabase::UpdateObjectByID} для доступа к объектам.
 	 *
+	 * @param PXTypeDescription $format
+	 * @param array $object
 	 * @see OBJ_FIELD_CHILDREN
 	 *
-	 * @param PXTypeDescription $format
-	 * @param Array             $object
 	 */
-	function ModifyObjectSysVars($format, $object) {
+	public function ModifyObjectSysVars($format, $object)
+	{
 		$audit = PXAuditLogger::getLogger();
 		$objectInDB = $this->getObjectById($format, $object['id']);
 
@@ -1166,18 +1218,18 @@ class PXDatabase extends DatabaseAdapter implements DatabaseInterface {
 			$this->FatalError('Попытка модифицировать отсутствующий объект');
 		}
 
-		if(isset($objectInDB['parent']) && !isset($object['parent'])){
+		if (isset($objectInDB['parent']) && !isset($object['parent'])) {
 			$object['parent'] = $objectInDB['parent'];
 		}
 
-		if (!$this->user->can(array('write', 'modify'), $format, $object)) {
-			$errString = 'Отказано в доступе при попытке модифицировать объект типа <em>'.$format->id.'</em>';
-			$audit->error($errString, $format->parent .'/'. (isset($object['parent']) ? $object['parent'] : ''));
+		if (!$this->user->can(['write', 'modify'], $format, $object)) {
+			$errString = 'Отказано в доступе при попытке модифицировать объект типа <em>' . $format->id . '</em>';
+			$audit->error($errString, $format->parent . '/' . (isset($object['parent']) ? $object['parent'] : ''));
 			$this->FatalError($errString);
 		}
 
-		$dbFields = array();
-		$dbValues = array();
+		$dbFields = [];
+		$dbValues = [];
 		if (isset($object[OBJ_FIELD_CHILDREN])) {
 			$dbFields[] = OBJ_FIELD_CHILDREN;
 			// TODO: replace with json_encode
@@ -1185,7 +1237,7 @@ class PXDatabase extends DatabaseAdapter implements DatabaseInterface {
 		}
 		if (count($dbFields)) {
 			$result = $this->UpdateObjectByID($format->id, $object['id'], $dbFields, $dbValues, false);
-			if ($result <  0) {
+			if ($result < 0) {
 				$this->FatalError($this->GetError());
 			}
 			$this->clearObjectTypeCache($format->id);
@@ -1193,7 +1245,7 @@ class PXDatabase extends DatabaseAdapter implements DatabaseInterface {
 			foreach ($this->triggers as $t)
 				$t->getTrigger()->OnModifyObjectSysVars($this, $object['id'], $format, $object, $dbFields, $dbValues, $objectInDB);
 
-			$audit->info('Изменены системные параметры объекта', $format->id .'/'. $object['id']);
+			$audit->info('Изменены системные параметры объекта', $format->id . '/' . $object['id']);
 		}
 	}
 
@@ -1207,44 +1259,45 @@ class PXDatabase extends DatabaseAdapter implements DatabaseInterface {
 	 * @param PXTypeDescription $format
 	 * @param int $objectId object id
 	 */
-	function DeleteContentObject($format, $objectId) {
+	public function DeleteContentObject($format, $objectId)
+	{
 		$audit = PXAuditLogger::getLogger();
 
 		$objectInDB = $this->getObjectById($format, $objectId);
 		if (!count($objectInDB)) $this->FatalError('Попытка удалить отсутствующий объект');
-		if (!$this->user->can(array('write', 'delete'), $format, $objectInDB)) {
-			$errString = 'Отказано в доступе при попытке удалить объект типа <em>'.$format->id.'</em>';
-			$audit->error($errString, $format->parent .'/'. $objectInDB['id']);
+		if (!$this->user->can(['write', 'delete'], $format, $objectInDB)) {
+			$errString = 'Отказано в доступе при попытке удалить объект типа <em>' . $format->id . '</em>';
+			$audit->error($errString, $format->parent . '/' . $objectInDB['id']);
 			$this->FatalError($errString);
 		}
 
 		if ($format->struct == 'tree' && isset($format->fields['pid']) && isset($this->types[$format->parent])) {
-			$children        = $this->getObjectsByParent($format, NULL, $objectInDB['parent'], DB_SELECT_TREE);
+			$children = $this->getObjectsByParent($format, NULL, $objectInDB['parent'], DB_SELECT_TREE);
 			$objectsToDelete = $children->GetDescendants($objectId);
 		} else {
-			$objectsToDelete = array($objectId);
+			$objectsToDelete = [$objectId];
 		}
 
 		$permitDelete = true;
 		foreach ($this->triggers as $t) {
 			$permitDelete = $t->getTrigger()->OnBeforeDeleteObject($this, $objectId, $format, $objectInDB);
-			if(!$permitDelete) break;
+			if (!$permitDelete) break;
 		}
 
 		if ($permitDelete) {
-			$query  = 'DELETE FROM '.$format->id.' WHERE id IN ('.implode(', ', $objectsToDelete).')';
+			$query = 'DELETE FROM ' . $format->id . ' WHERE id IN (' . implode(', ', $objectsToDelete) . ')';
 			$this->ModifyingQuery($query, null, null, false);
 			$this->clearObjectTypeCache($format->id);
 
 			// @TODO: site/htdocs/ai in PXDatabase, seriously?!
-			$d = new NLDir(BASEPATH.'/site/htdocs/ai/'.$format->id.'/'.$objectId.'/');
+			$d = new NLDir(BASEPATH . '/site/htdocs/ai/' . $format->id . '/' . $objectId . '/');
 			$d->Delete();
 
 			foreach ($this->triggers as $t) {
 				$t->getTrigger()->OnDeleteObject($this, $objectId, $format, $objectInDB);
 			}
 
-			$audit->info('Объект удален', $format->id .'/'. $objectId);
+			$audit->info('Объект удален', $format->id . '/' . $objectId);
 		}
 	}
 
@@ -1252,12 +1305,13 @@ class PXDatabase extends DatabaseAdapter implements DatabaseInterface {
 	 * Поднимает объект в списке на одну позицию
 	 * Использует {@link PXDatabase::_moveContentObject}
 	 *
+	 * @param PXTypeDescription $format
+	 * @param array $objectId object id
 	 * @see sys_order
 	 *
-	 * @param PXTypeDescription $format
-	 * @param Array             $objectId   object id
 	 */
-	function UpContentObject($format, $objectId) {
+	public function UpContentObject($format, $objectId)
+	{
 		$this->_moveContentObject($format, $objectId, 'up');
 	}
 
@@ -1265,12 +1319,13 @@ class PXDatabase extends DatabaseAdapter implements DatabaseInterface {
 	 * Опускает объект в списке на одну позицию
 	 * Использует {@link PXDatabase::_moveContentObject}
 	 *
+	 * @param PXTypeDescription $format
+	 * @param array $objectId object id
 	 * @see sys_order
 	 *
-	 * @param PXTypeDescription $format
-	 * @param Array             $objectId   object id
 	 */
-	function DownContentObject($format, $objectId) {
+	public function DownContentObject($format, $objectId)
+	{
 		$this->_moveContentObject($format, $objectId, 'down');
 	}
 
@@ -1278,14 +1333,15 @@ class PXDatabase extends DatabaseAdapter implements DatabaseInterface {
 	 * Изменяет позицию объект в списке нужное количество раз
 	 * Использует {@link PXDatabase::_moveContentObject}
 	 *
+	 * @param PXTypeDescription $format
+	 * @param array $objectId object id
+	 * @param Integer $shift
 	 * @see sys_order
 	 *
-	 * @param PXTypeDescription $format
-	 * @param Array             $objectId   object id
-	 * @param Integer           $shift
 	 */
-	function MoveContentObject($format, $objectId, $shift=-1) {
-		if(!is_numeric($shift)) {
+	public function MoveContentObject($format, $objectId, $shift = -1)
+	{
+		if (!is_numeric($shift)) {
 			return;
 		}
 		$direction = $shift > 0 ? 'up' : 'down';
@@ -1296,28 +1352,29 @@ class PXDatabase extends DatabaseAdapter implements DatabaseInterface {
 	 * Изменяет позицию объект в списке
 	 * Использует {@link PXDatabase::ModifyingQuery}
 	 *
+	 * @param PXTypeDescription $format
+	 * @param array $objectId object id
+	 * @param String $direction up|down
 	 * @see sys_order
 	 *
-	 * @param PXTypeDescription $format
-	 * @param Array             $objectId   object id
-	 * @param String            $direction  up|down
 	 */
-	function _moveContentObject($format, $objectId, $direction, $steps = 1) {
+	public function _moveContentObject($format, $objectId, $direction, $steps = 1)
+	{
 		$audit = PXAuditLogger::getLogger($this->app, $this);
 
 		$objectInDB = $this->getObjectById($format, $objectId);
 		if (!count($objectInDB)) $this->FatalError('Попытка модифицировать отсутствующий объект');
 
-		if (!$this->user->can(array('write', 'modify'), $format, $objectInDB)) {
-			$errString = 'Отказано в доступе при попытке модифицировать объект типа <em>'.$format->id.'</em>';
-			$audit->error($errString, $format->id .'/'. $objectInDB['id']);
+		if (!$this->user->can(['write', 'modify'], $format, $objectInDB)) {
+			$errString = 'Отказано в доступе при попытке модифицировать объект типа <em>' . $format->id . '</em>';
+			$audit->error($errString, $format->id . '/' . $objectInDB['id']);
 			$this->FatalError($errString);
 		}
 
-		$swap = !!preg_match('#sys_order\s+DESC#i'.REGEX_MOD, $format->order);
+		$swap = !!preg_match('#sys_order\s+DESC#i' . REGEX_MOD, $format->order);
 		$down = ($swap xor ($direction == 'down'));
 
-		$where = array();
+		$where = [];
 		$where[] = sprintf('%s.sys_order %s %s', $format->id, $down ? '>' : '<', $objectInDB['sys_order']);
 
 		if (!empty($format->parent)) {
@@ -1334,33 +1391,33 @@ class PXDatabase extends DatabaseAdapter implements DatabaseInterface {
 
 		$where = join(' AND ', $where);
 		$nearCount = $this->getObjectsByWhere($format, NULL, $where, DB_SELECT_COUNT);
-		if(!$nearCount){
+		if (!$nearCount) {
 			return;
 		}
 		$offset = ($steps > $nearCount ? $nearCount : $steps) - 1;
-		$nearObject = $offset >= 0 ? $this->getObjectsByWhereLimited($format, NULL, $where, 1, $offset, DB_SELECT_TABLE, 'sys_order'.($down ? '' : ' DESC')) : array();
+		$nearObject = $offset >= 0 ? $this->getObjectsByWhereLimited($format, NULL, $where, 1, $offset, DB_SELECT_TABLE, 'sys_order' . ($down ? '' : ' DESC')) : [];
 		$permitMove = true;
-		$object_id= $objectInDB['id'];
+		$object_id = $objectInDB['id'];
 
-		foreach ($this->triggers as $t){
+		foreach ($this->triggers as $t) {
 			$permitMove = $t->getTrigger()->OnBeforeMoveObject($this, $objectId, $format, $objectInDB);
-			if(!$permitMove) break;
+			if (!$permitMove) break;
 		}
 
-		if($permitMove && sizeof($nearObject)) {
+		if ($permitMove && sizeof($nearObject)) {
 			$nearObject = current($nearObject);
 			$this->transactionBegin();
-				$qry = sprintf('UPDATE %s SET sys_order = sys_order + 1 WHERE sys_order %s %d', $format->id, $down ? '>' : '>=', $nearObject['sys_order']);
-				$this->ModifyingQuery($qry, null, null, false);
-				$qry = sprintf('UPDATE %s SET sys_order = %d WHERE %1$s.id = %d', $format->id, $nearObject['sys_order'] + ($down ? 1 : 0), $objectInDB['id']);
-				$this->ModifyingQuery($qry, null, null, false);
+			$qry = sprintf('UPDATE %s SET sys_order = sys_order + 1 WHERE sys_order %s %d', $format->id, $down ? '>' : '>=', $nearObject['sys_order']);
+			$this->ModifyingQuery($qry, null, null, false);
+			$qry = sprintf('UPDATE %s SET sys_order = %d WHERE %1$s.id = %d', $format->id, $nearObject['sys_order'] + ($down ? 1 : 0), $objectInDB['id']);
+			$this->ModifyingQuery($qry, null, null, false);
 			$this->transactionCommit();
 			$this->clearObjectTypeCache($format->id);
 
 			foreach ($this->triggers as $t) {
 				$t->getTrigger()->OnMoveObject($this, $objectId, $format, $objectInDB);
 			}
-			$audit->info('Объект перемещен в списке', $format->id .'/'. $objectId);
+			$audit->info('Объект перемещен в списке', $format->id . '/' . $objectId);
 		}
 	}
 
@@ -1368,24 +1425,25 @@ class PXDatabase extends DatabaseAdapter implements DatabaseInterface {
 	/**
 	 * Нормализует атрибут объекта
 	 *
-	 * @param String            $k
-	 * @param Array             $object
-	 * @param String            $storageType
-	 * @param Array             $dbFields
-	 * @param Array             $dbValues
+	 * @param String $k
+	 * @param array $object
+	 * @param String $storageType
+	 * @param array $dbFields
+	 * @param array $dbValues
 	 */
-	function _NormalizeObjectAttribute($k, $object, $field, &$dbFields, &$dbValues) {
-		$p = array(
-			'dbFields' =>& $dbFields,
-			'dbValues' =>& $dbValues,
-			'db'       =>& $this
-		);
+	public function _NormalizeObjectAttribute($k, $object, $field, &$dbFields, &$dbValues)
+	{
+		$p = [
+			'dbFields' => & $dbFields,
+			'dbValues' => & $dbValues,
+			'db' => & $this,
+		];
 
 		// очень странное поведение, но, normalizeObjectAttribute на самом деле пишет
 		// новые ключи в dbFields и в dbValues, базовый метод PXStorageType не осуществляет записи в эти атрибуты.
 		// у тех типов данных которые сохраняются в базе присутствует собственная имплементация метода
 		// normalizeObjectAttribute
-		list($v, $dbFields, $dbValues) = $field->storageType->normalizeObjectAttribute($field, $object, $p);
+		[$v, $dbFields, $dbValues] = $field->storageType->normalizeObjectAttribute($field, $object, $p);
 		return $v;
 	}
 
@@ -1394,31 +1452,32 @@ class PXDatabase extends DatabaseAdapter implements DatabaseInterface {
 	 * Использует {@link PXDatabase::ModifyingQuery}
 	 *
 	 * @param PXTypeDescription $format
-	 * @param Array             $object     object id
-	 * @param Array             $pathnames
+	 * @param array $object object id
+	 * @param array $pathnames
 	 * @todo MOVEITASAP!
 	 */
-	function _NormalizeObjectPathName($format, $object, &$pathnames) {
+	public function _NormalizeObjectPathName($format, $object, &$pathnames)
+	{
 		$url = mb_strtolower(_TranslitModern($object['pathname']));
 
 		// part 1: make url if doesn't set
 		if (!$url) {
 			foreach ($format->fields as $field) {
-				$p = array();
+				$p = [];
 				$url = $field->storageType->createPathname($field, $object, $p);
 
-				if($url) {
+				if ($url) {
 					break;
 				}
 			}
 		}
 
-		if (!$url) $url = mb_strtolower(_TranslitModern(mb_substr(preg_replace('/\&.+?\;/'.REGEX_MOD, '', $object['title']), 0, 32)));
+		if (!$url) $url = mb_strtolower(_TranslitModern(mb_substr(preg_replace('/\&.+?\;/' . REGEX_MOD, '', $object['title']), 0, 32)));
 		if (!$url) $url = sprintf('%08d', rand(0, 100000000));
 
 		// part 2: triming bad chars - very readable... gj.
 		$url = trim($url);
-		for($i=0;$i<strlen($url);$i++) {
+		for ($i = 0; $i < strlen($url); $i++) {
 			$o = ord($url{$i});
 
 			if ($o != 45 && $o != 46 && ($o < 48 || $o > 57) && ($o < 65 || $o > 90) && $o != 95 && ($o < 97 || $o > 122) && ($o != 58)) {
@@ -1442,15 +1501,15 @@ class PXDatabase extends DatabaseAdapter implements DatabaseInterface {
 				if (is_array($pathnames)) {
 					$reiteration = (int)isset($pathnames[$url]);
 				} else {
-					$exception  = isset($object['id']) ? array('id'=>$object['id']) : array();
-					$condCols   = array('pathname'=>$url, 'parent'=>$object['parent']);
-					$condTables = array();
+					$exception = isset($object['id']) ? ['id' => $object['id']] : [];
+					$condCols = ['pathname' => $url, 'parent' => $object['parent']];
+					$condTables = [];
 
 					foreach ($this->types[$format->parent]->childs as $child) {
 						if (isset($this->types[$child]->fields['pathname'])) {
-							$condTable = array('tableName' => $child, 'exWhere' => '');
+							$condTable = ['tableName' => $child, 'exWhere' => ''];
 
-							foreach ($this->triggers as $t){
+							foreach ($this->triggers as $t) {
 								$t->getTrigger()->OnBeforeNormalizePathBuildQuery($format, $this->types[$child], $condTable, $object);
 							}
 
@@ -1464,16 +1523,16 @@ class PXDatabase extends DatabaseAdapter implements DatabaseInterface {
 				// FIXME: very ugly code. No need mb_* functions here, working under _Translit'ed string
 				if ($reiteration > 0) {
 					if (strpos($url, '.') !== false) {
-						if (is_numeric($url{strrpos($url, '.')-1})) {
-							$url = substr($url, 0, strrpos($url, '.')-1).($url{strrpos($url, '.')-1} + 1).substr($url, strrpos($url, '.'));
+						if (is_numeric($url{strrpos($url, '.') - 1})) {
+							$url = substr($url, 0, strrpos($url, '.') - 1) . ($url{strrpos($url, '.') - 1} + 1) . substr($url, strrpos($url, '.'));
 						} else {
-							$url = substr($url, 0, strrpos($url, '.')).'1'.substr($url, strrpos($url, '.'));
+							$url = substr($url, 0, strrpos($url, '.')) . '1' . substr($url, strrpos($url, '.'));
 						}
 					} else {
-						if (is_numeric($url{strlen($url)-1})) {
-							$url = substr($url, 0, strlen($url)-1).($url{strlen($url)-1} + 1);
+						if (is_numeric($url{strlen($url) - 1})) {
+							$url = substr($url, 0, strlen($url) - 1) . ($url{strlen($url) - 1} + 1);
 						} else {
-							$url = $url.'1';
+							$url = $url . '1';
 						}
 					}
 
@@ -1487,7 +1546,8 @@ class PXDatabase extends DatabaseAdapter implements DatabaseInterface {
 		return $url;
 	}
 
-	function getAllLinks($reference) {
+	public function getAllLinks($reference)
+	{
 		$query = <<<SQL
 			SELECT
 				{$reference->name}.*
@@ -1497,11 +1557,11 @@ class PXDatabase extends DatabaseAdapter implements DatabaseInterface {
 SQL;
 
 		$queryIden = $this->_getCacheIden($query, DB_SELECT_TABLE, null);
-		$resTable = $this->cache->load(array($queryIden, $reference->name));
+		$resTable = $this->cache->load([$queryIden, $reference->name]);
 
 		if ($resTable === null) {
 			$resTable = $this->query($query, true);
-			$this->cache->save(array($queryIden, $reference->name), $resTable);
+			$this->cache->save([$queryIden, $reference->name], $resTable);
 		}
 
 		return $resTable;
@@ -1511,17 +1571,18 @@ SQL;
 	 *
 	 * Использует {@link PXDatabase::Query}
 	 *
+	 * @param Mixed $reference Unknown
+	 * @param string $format
+	 * @param Mixed $id Unknown
 	 * @todo docme (check params documentation)
 	 *
-	 * @param Mixed             $reference  Unknown
-	 * @param PXTypeDescription $format
-	 * @param Mixed             $id         Unknown
 	 */
-	 function getLinksLimited($reference, $format, $id, $limit, $offset) {
+	public function getLinksLimited($reference, $format, $id, $limit, $offset)
+	{
 		$linkedFormat = $reference->getOther($format);
 
-		$origType     = $this->app->types[$format];
-		$linkedType   = $this->app->types[$linkedFormat];
+		$origType = $this->app->types[$format];
+		$linkedType = $this->app->types[$linkedFormat];
 
 		$query = '';
 
@@ -1564,58 +1625,59 @@ SQL;
 					{$reference->name}.{$format}id in ({$id})
 SQL;
 
-		$limit = is_numeric($limit) && is_numeric($offset) ? array($limit, $offset) : NULL;
+		$limit = is_numeric($limit) && is_numeric($offset) ? [$limit, $offset] : NULL;
 		$queryIden = $this->_getCacheIden($query, DB_SELECT_TABLE, $limit);
-		$resTable = $this->cache->load(array($queryIden, $reference->name));
+		$resTable = $this->cache->load([$queryIden, $reference->name]);
 
 		if ($resTable === null) {
 			$resTable = $this->Query($query, true, $limit);
-			$this->cache->save(array($queryIden, $reference->name), $resTable);
+			$this->cache->save([$queryIden, $reference->name], $resTable);
 		}
 
-		$retTable = array();
-		$param = array('db'=>$this, 'format'=>$reference->name);
+		$retTable = [];
+		$param = ['db' => $this, 'format' => $reference->name];
 
 		foreach ($resTable as $element) {
-			$title = $element[$linkedFormat.'title'];
-			$lid   = $element[$linkedFormat.'id'];
+			$title = $element[$linkedFormat . 'title'];
+			$lid = $element[$linkedFormat . 'id'];
 			if ($id == $lid and $linkedFormat . '_' == $format) {
-				$lid = $element[$format.'id'];
+				$lid = $element[$format . 'id'];
 			}
-			unset($element[$linkedFormat.'title']);
-			unset($element[$linkedFormat.'id']);
-			unset($element[$format.'id']);
-			$table = & $retTable[$lid];
-			if(isset($retTable[$lid])){
-				while(!is_null($table = & $table['next'])){
+			unset($element[$linkedFormat . 'title']);
+			unset($element[$linkedFormat . 'id']);
+			unset($element[$format . 'id']);
+			$table = &$retTable[$lid];
+			if (isset($retTable[$lid])) {
+				while (!is_null($table = &$table['next'])) {
 					//search first empty node in our linked list
 				}
 			}
 
-			foreach($reference->fields as $fk => $fv){
+			foreach ($reference->fields as $fk => $fv) {
 				$element[$fk] = $fv->storageType->normalize($fv, $element, $param);
 			}
 
-			$table = array(
-				'title'  => $title,
+			$table = [
+				'title' => $title,
 				'fields' => $element,
-				'next'   => NULL
-			);
+				'next' => NULL,
+			];
 		}
 		return $retTable;
-	 }
+	}
 
 	/**
 	 *
 	 * Использует {@link PXDatabase::Query}
 	 *
+	 * @param Mixed $reference Unknown
+	 * @param PXTypeDescription $format
+	 * @param Mixed $id Unknown
 	 * @todo docme (check params documentation)
 	 *
-	 * @param Mixed             $reference  Unknown
-	 * @param PXTypeDescription $format
-	 * @param Mixed             $id         Unknown
 	 */
-	function GetLinks($reference, $format, $id) {
+	public function GetLinks($reference, $format, $id)
+	{
 		return $this->GetLinksLimited($reference, $format, $id, NULL, NULL);
 	}
 
@@ -1623,13 +1685,14 @@ SQL;
 	 *
 	 * Использует {@link PXDatabase::Query}
 	 *
+	 * @param Mixed $reference Unknown
+	 * @param PXTypeDescription $format
+	 * @param Mixed $id Unknown
 	 * @todo docme (check params documentation)
 	 *
-	 * @param Mixed             $reference  Unknown
-	 * @param PXTypeDescription $format
-	 * @param Mixed             $id         Unknown
 	 */
-	function GetLinksCount($reference, $format, $id) {
+	public function GetLinksCount($reference, $format, $id)
+	{
 		$linkedFormat = $reference->getOther($format);
 		$query = '';
 
@@ -1660,11 +1723,11 @@ SQL;
 SQL;
 
 		$queryIden = $this->_getCacheIden($query, DB_SELECT_TABLE, null);
-		$resTable = $this->cache->load(array($queryIden, $reference->name));
+		$resTable = $this->cache->load([$queryIden, $reference->name]);
 
 		if ($resTable === null) {
 			$resTable = $this->Query($query, true);
-			$this->cache->save(array($queryIden, $reference->name), $resTable);
+			$this->cache->save([$queryIden, $reference->name], $resTable);
 		}
 
 		return $resTable[0]['count'];
@@ -1673,41 +1736,46 @@ SQL;
 	/*
 	 * ModifyLinks wrapper
 	 * */
-	function addLink($fromId, $toId, $fromFormat, $toFormat) {
-		$links = array(
-			$toId => array(
+	public function addLink($fromId, $toId, $fromFormat, $toFormat)
+	{
+		$links = [
+			$toId => [
 				'on' => true,
-			)
-		);
+			],
+		];
 
 		$this->modifyLinks($fromFormat->references[$toFormat->id], $fromFormat->id, $fromId, $links, false);
 	}
-	function replaceLink($fromId, $toId, $fromFormat, $toFormat) {
-		$links = array(
-			$toId => array(
+
+	public function replaceLink($fromId, $toId, $fromFormat, $toFormat)
+	{
+		$links = [
+			$toId => [
 				'on' => true,
-			)
-		);
+			],
+		];
 
 		$this->modifyLinks($fromFormat->references[$toFormat->id], $fromFormat->id, $fromId, $links);
 	}
 
-	function deleteLink($fromId, $toId, $fromFormat, $toFormat) {
-		$links = array(
-			$toId => array(
+	public function deleteLink($fromId, $toId, $fromFormat, $toFormat)
+	{
+		$links = [
+			$toId => [
 				'off' => false,
-			)
-		);
+			],
+		];
 
 		$this->modifyLinks($fromFormat->references[$toFormat->id], $fromFormat->id, $fromId, $links, false);
 	}
 
-	function deleteAllLinks($fromId, $fromFormat, $toFormat) {
-		$links = array(
-			array(
+	public function deleteAllLinks($fromId, $fromFormat, $toFormat)
+	{
+		$links = [
+			[
 				'off' => false,
-			)
-		);
+			],
+		];
 
 		$this->modifyLinks($fromFormat->references[$toFormat->id], $fromFormat->id, $fromId, $links);
 	}
@@ -1717,52 +1785,53 @@ SQL;
 	 *
 	 * Использует {@link PXDatabase::Query}
 	 *
+	 * @param Mixed $reference Unknown
+	 * @param string $format
+	 * @param Mixed $id Unknown
+	 * @param Mixed $links Unknown
 	 * @todo docme (check params documentation)
 	 *
-	 * @param Mixed             $reference  Unknown
-	 * @param PXTypeDescription $format
-	 * @param Mixed             $id         Unknown
-	 * @param Mixed             $links      Unknown
 	 */
-	function ModifyLinks($reference, $format, $id, $links, $deleteAll=true) {
-		if(!is_array($links) || !sizeof($links)){
+	public function ModifyLinks($reference, $format, $id, $links, $deleteAll = true)
+	{
+		if (!is_array($links) || !sizeof($links)) {
 			return;
 		}
-		$audit = PXAuditLogger::getLogger($this->app, $this);
+		$audit = PXAuditLogger::getLogger();
 
 		$linkedFormat = $reference->getOther($format);
 
 		$objectInDB = $this->getObjectById($this->types[$format], $id);
 		if (!count($objectInDB)) $this->FatalError('Попытка модифицировать отсутствующий объект');
 
-		if (!$this->user->can(array('write', 'modify'), $this->types[$format], $objectInDB)) {
-			$errString = 'Отказано в доступе при попытке модифицировать объект типа <em>'.$format.'</em>';
-			$audit->error($errString, $format .'/'. $objectInDB['id']);
+		if (!$this->user->can(['write', 'modify'], $this->types[$format], $objectInDB)) {
+			$errString = 'Отказано в доступе при попытке модифицировать объект типа <em>' . $format . '</em>';
+			$audit->error($errString, $format . '/' . $objectInDB['id']);
 			$this->FatalError($errString);
 		}
-		$tmp = array();
-		foreach ($links as $k=>$v) {
-			if(is_string($k) && !ctype_digit($k)) {
+		$tmp = [];
+		foreach ($links as $k => $v) {
+			if (is_string($k) && !ctype_digit($k)) {
 				$this->FatalError('Попытка SQL-Injection!');
 			}
 			if (isset($v['on'])) $tmp[] = $k;
 		}
 		$objectsToLink = $this->getObjectsByIdArray($this->types[$linkedFormat], NULL, $tmp);
 		foreach ($objectsToLink as $objectToLink) {
-			if (!$this->user->can(array('write', 'modify'), $this->types[$linkedFormat], $objectToLink) && !$this->user->can('linkto', $this->types[$linkedFormat], $objectToLink)) {
-				$errString = 'Отказано в доступе при попытке привязать объект типа <em>'.$linkedFormat.'</em> к объекту типа <em>'.$format.'</em>';
-				$audit->error($errString, $linkedFormat .'/'. $objectToLink['id']);
+			if (!$this->user->can(['write', 'modify'], $this->types[$linkedFormat], $objectToLink) && !$this->user->can('linkto', $this->types[$linkedFormat], $objectToLink)) {
+				$errString = 'Отказано в доступе при попытке привязать объект типа <em>' . $linkedFormat . '</em> к объекту типа <em>' . $format . '</em>';
+				$audit->error($errString, $linkedFormat . '/' . $objectToLink['id']);
 				$this->FatalError($errString);
 			}
 		}
 
 		$permitModifyLinks = true;
-		foreach ($this->triggers as $t){
+		foreach ($this->triggers as $t) {
 			$permitModifyLinks = $t->getTrigger()->OnBeforeModifyLinks($this, $id, $format, $links, $linkedFormat, $objectInDB, $reference);
-			if(!$permitModifyLinks) break;
+			if (!$permitModifyLinks) break;
 		}
 
-		if($permitModifyLinks){
+		if ($permitModifyLinks) {
 			$this->transactionBegin();
 
 			$query = '';
@@ -1770,7 +1839,7 @@ SQL;
 			if ($linkedFormat === $format) {
 				$format .= '_';
 
-				if(!$deleteAll) {
+				if (!$deleteAll) {
 					if (sizeof($links)) {
 						$query .= <<<SQL
 DELETE FROM {$reference->name}
@@ -1785,8 +1854,8 @@ SQL;
 				}
 			}
 
-			if(!$deleteAll) {
-				if(sizeof($links)) {
+			if (!$deleteAll) {
+				if (sizeof($links)) {
 					$query .= <<<SQL
 DELETE FROM {$reference->name}
 WHERE {$format}id = {$id} AND {$linkedFormat}id IN ({$keys});
@@ -1799,34 +1868,34 @@ WHERE {$format}id = {$id};
 SQL;
 			}
 
-			if(strlen($query)) {
+			if (strlen($query)) {
 				$this->ModifyingQuery($query, null, null, false);
 			}
 
-			$data = array();
-			foreach ($links as $k=>$v) {
+			$data = [];
+			foreach ($links as $k => $v) {
 				do {
 					if (!isset($v['on'])) continue;
-					$tmp = array();
+					$tmp = [];
 					if ($linkedFormat . '_' === $format) {
 						if ($k == $id) continue;
-						$tmp[$linkedFormat.'id'] = min($id, $k);
-						$tmp[$format.'id']       = max($id, $k);
+						$tmp[$linkedFormat . 'id'] = min($id, $k);
+						$tmp[$format . 'id'] = max($id, $k);
 					} else {
-						$tmp[$linkedFormat.'id'] = $k;
-						$tmp[$format.'id']       = $id;
+						$tmp[$linkedFormat . 'id'] = $k;
+						$tmp[$format . 'id'] = $id;
 					}
 
 					foreach (array_keys($reference->fields) as $field) {
 						$nullObj = NULL;
-						if(isset($v['fields'][$field])) {
+						if (isset($v['fields'][$field])) {
 							$tmp[$field] = $this->_NormalizeObjectAttribute($field, $v['fields'], $reference->fields[$field], $nullObj, $nullObj);
 						} else {
 							$tmp[$field] = NULL;
 						}
 					}
 					$data[] = $tmp;
-				} while(!is_null($v = & $v['next']));
+				} while (!is_null($v = &$v['next']));
 			}
 			if (count($data)) {
 				$this->ModifyingCopy($reference->name, array_keys(reset($data)), $data);
@@ -1845,14 +1914,15 @@ SQL;
 	 * @todo docme (check params documentation)
 	 * @access public
 	 */
-	function _NormalizeTable(&$table, $format, $withoutMeta = false) {
-		$p = array('db' => &$this, 'format' => $format->id);
+	public function _NormalizeTable(&$table, $format, $withoutMeta = false)
+	{
+		$p = ['db' => &$this, 'format' => $format->id];
 		$inMeta = [];
-		foreach ($table as $k=>$v) {
+		foreach ($table as $k => $v) {
 
 			$isMetaPresent = !empty($v[OBJ_FIELD_META]);
 
-			foreach ($format->fields as $fk=>$fv) {
+			foreach ($format->fields as $fk => $fv) {
 				if (!isset($inMeta[$fk])) { // cache results, cuz lots of rows in table
 					$inMeta[$fk] = $fv->storageType->storedInMeta();
 				}
@@ -1881,7 +1951,7 @@ SQL;
 				// загружаем сохраненные мета-поля, в случае их
 				// отсутствия (например работаем в режиме ноды кластера)
 				// выставлям поля как если бы был доступ site/htdocs/ai
-				foreach($sysMeta as $sysMetaKey => $sysMetaValue) {
+				foreach ($sysMeta as $sysMetaKey => $sysMetaValue) {
 					if (empty($table[$k][$sysMetaKey])) {
 						$table[$k][$sysMetaKey] = $sysMetaValue;
 					}
@@ -1900,10 +1970,11 @@ SQL;
 	}
 
 	/**
-		Интерфейс к преобразованию SQL выборки к объекту datatype
-		@access public
-	*/
-	public function resultToObject($resTable, $format, $mode) {
+	 * Интерфейс к преобразованию SQL выборки к объекту datatype
+	 * @access public
+	 */
+	public function resultToObject($resTable, $format, $mode)
+	{
 		return $this->_PrepareResult($resTable, $format, $mode);
 	}
 
@@ -1912,14 +1983,15 @@ SQL;
 	 * @access protected
 	 * @todo docme (check params documentation)
 	 */
-	protected function _PrepareResult($resTable, $format, $mode) {
+	protected function _PrepareResult($resTable, $format, $mode)
+	{
 		$mode = (empty($mode)) ? DB_SELECT_TABLE : $mode; // if mode == NULL, function behavior is undefined
 		switch (true) {
 			case $mode & DB_SELECT_TABLE:
 				$this->_NormalizeTable($resTable, $format, !!($mode & DB_SELECT_WITHOUT_EXTERNALS));
 
-				$newTable = array();
-				foreach ($resTable as $k=>$v) {
+				$newTable = [];
+				foreach ($resTable as $k => $v) {
 					if ($this->user->can('read', $format, $v)) {
 						$newTable[$v['id']] = $v;
 					}
@@ -1927,14 +1999,13 @@ SQL;
 				}
 
 				return $newTable;
-				break;
 
 			case $mode & DB_SELECT_TREE:
 			case $mode & DB_SELECT_FULL_TREE:
 				$this->_NormalizeTable($resTable, $format, !!($mode & DB_SELECT_WITHOUT_EXTERNALS));
-				$newTable = array();
+				$newTable = [];
 
-				foreach ($resTable as $k=>$v) {
+				foreach ($resTable as $k => $v) {
 					if ($this->user->can('read', $format, $v)) {
 						$newTable[$v['id']] = $v;
 					}
@@ -1943,30 +2014,28 @@ SQL;
 
 				$parentRefName = !isset($format->fields['pid']) ? 'parent' : 'pid';
 
-				foreach($this->triggers as $t) {
+				foreach ($this->triggers as $t) {
 					$t->getTrigger()->OnBeforeBuildTree($this, $format, $newTable, $parentRefName);
 				}
-				$newTree = $this->buildTree($newTable, 'id', $parentRefName, 'title', !!($mode & DB_SELECT_FULL_TREE));
-
-				return $newTree;
-				break;
+			return $this->buildTree($newTable, 'id', $parentRefName, 'title', !!($mode & DB_SELECT_FULL_TREE));
 
 			case DB_SELECT_COUNT:
 				reset($resTable[0]);
 				return current($resTable[0]);
-				break;
 		}
 	}
 
-	public function buildTree() {
+	public function buildTree()
+	{
 		$args = func_get_args();
 		$treeKlass = new ReflectionClass('PP\Lib\Datastruct\Tree');
 		return $treeKlass->newInstanceArgs($args);
 	}
 
-	function filterByAccess($what, $format, &$table) {
+	public function filterByAccess($what, $format, &$table)
+	{
 		if (is_array($table)) {
-			foreach ($table as $k=>$v) {
+			foreach ($table as $k => $v) {
 				if (!$this->user->can($what, $format, $v)) {
 					unset($table[$k]);
 				}
@@ -1975,7 +2044,7 @@ SQL;
 		} else {
 			$plainTable = $table->toTable();
 
-			foreach ($plainTable as $k=>$v) {
+			foreach ($plainTable as $k => $v) {
 				if (!$this->user->can($what, $format, $v)) {
 					unset($plainTable[$k]);
 				}
@@ -1985,7 +2054,8 @@ SQL;
 		}
 	}
 
-	private function checkForParent($format, &$object) {
+	private function checkForParent($format, &$object)
+	{
 		if (!(isset($format->fields['parent']) && $object['parent'])) {
 			return;
 		}
@@ -1997,7 +2067,7 @@ SQL;
 
 		foreach ($this->triggers as $t) {
 			$permitCheck = $t->getTrigger()->OnBeforeCheckForParent($this, $format, $object, $parentObject);
-			if($permitCheck !== null) break;
+			if ($permitCheck !== null) break;
 		}
 
 		if ($permitCheck !== true) {
@@ -2007,14 +2077,14 @@ SQL;
 
 			if ($permitCheck === false || !count($parentObject)) {
 				$errString = 'Попытка переместить объект в несуществующий раздел';
-				$audit->error($errString, $format->id .'/'.$object['id']);
+				$audit->error($errString, $format->id . '/' . $object['id']);
 				$this->FatalError($errString);
 			}
 		}
 
 		if ($format->id != $format->parent && !in_array($format->id, $this->app->GetAllowedChildsKeys($format->parent, $parentObject))) {
 			$errString = 'Объект данного типа не может быть добавлен в данный раздел';
-			$audit->error($errString, $format->parent .'/'. $object['parent']);
+			$audit->error($errString, $format->parent . '/' . $object['parent']);
 			$this->FatalError($errString);
 		}
 	}
@@ -2025,10 +2095,11 @@ SQL;
 	 *
 	 * @param string $format
 	 */
-	public function clearObjectTypeCache($format) {
+	public function clearObjectTypeCache($format)
+	{
 		$this->cache->deleteGroup($format);
 
-		foreach ($this->app->references as $ref){
+		foreach ($this->app->references as $ref) {
 			if ($ref->from != $format && $ref->to != $format) {
 				continue;
 			}
@@ -2037,19 +2108,20 @@ SQL;
 		}
 	}
 
-	protected function clearLinksCache($reference) {
+	protected function clearLinksCache($reference)
+	{
 		$this->cache->deleteGroup($reference);
 	}
 
 	/**
 	 * Метод генерирует массив строк sql where conditions из ассоциативного массива field => value
-	 * @example ['f1' => 'test', 'f2' => true, 'f3' => null] вернет ["f1 = 'test'", 'f2 = TRUE', 'f3 IS NULL']
-	 * Если в ключ добавить `!` первым символом - условие будет выстроено от обратного
-	 * @example  ['!f1' => 'test', '!f2' => true, '!f3' => null] вернет ["f1 <> 'test'", 'f2 <> TRUE', 'f3 IS NOT NULL']
-	 *
 	 * @param array $fields
 	 * @param string $formatId
 	 * @return array
+	 * @example  ['!f1' => 'test', '!f2' => true, '!f3' => null] вернет ["f1 <> 'test'", 'f2 <> TRUE', 'f3 IS NOT NULL']
+	 *
+	 * @example ['f1' => 'test', 'f2' => true, 'f3' => null] вернет ["f1 = 'test'", 'f2 = TRUE', 'f3 IS NULL']
+	 * Если в ключ добавить `!` первым символом - условие будет выстроено от обратного
 	 */
 	public function buildWhereFromArray(array $fields, string $formatId = ''): array
 	{
@@ -2073,7 +2145,7 @@ SQL;
 					break;
 
 				case is_bool($v):
-					$val = sprintf(' %s %s', $not ? '<>' : '=', $this->trueStatusString($v));
+					$val = sprintf(' %s %s', $not ? '<>' : '=', $this->TrueStatusString($v));
 					break;
 
 				default:

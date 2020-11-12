@@ -4,12 +4,13 @@ use PP\Lib\Engine\AbstractEngine;
 use Symfony\Component\HttpFoundation\Session\Storage\NativeSessionStorage;
 use Symfony\Component\HttpFoundation\Session\Storage\Handler\NullSessionHandler;
 
-class PXEngineSbin extends AbstractEngine {
+class PXEngineSbin extends AbstractEngine
+{
 
-	var $result;
+	public $result;
 
-	var $request = ['factory' => 'PXNullRequest'];
-	var $user = ['factory' => 'PXUserCron'];
+	public $request = ['factory' => 'PXNullRequest'];
+	public $user = ['factory' => 'PXUserCron'];
 
 	/**
 	 * @var Symfony\Component\HttpFoundation\Session\Session
@@ -18,33 +19,40 @@ class PXEngineSbin extends AbstractEngine {
 
 	protected $initOrder = ['container', 'app', 'db', 'request', 'session', 'user', 'layout'];
 
-	protected function initSession($klass) {
+	protected function initSession($klass)
+	{
 		$storage = new NativeSessionStorage([], new NullSessionHandler());
 		$this->session = new $klass($storage);
 		$this->session->start();
 	}
 
-	function initDirectories() {
+	public function initDirectories()
+	{
 	}
 
-	function initModules() {
+	public function initModules()
+	{
 	}
 
-	function runModules() {
+	public function runModules()
+	{
 	}
 
-	public function engineClass() {
+	public function engineClass()
+	{
 		return static::SBIN_ENGINE_ID;
 	}
 
 	/** {@inheritdoc} */
-	public function engineType() {
+	public function engineType()
+	{
 		return static::SBIN_ENGINE_TAG;
 	}
 
 	/** {@inheritdoc} */
-	public function engineBehavior() {
-		return static::SBIN_BEHAVIOR;
+	public function engineBehavior()
+	{
+		return null;
 	}
 
 

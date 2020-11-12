@@ -10,11 +10,11 @@
  * - dev (boolean) - Load uncompressed version?
  */
 function smarty_function_jquery($params, &$smarty) {
-	$providers = array(
+	$providers = [
 		'microsoft' => '//ajax.aspnetcdn.com/ajax/jquery/jquery-%s.%sjs',
 		'google' => '//ajax.googleapis.com/ajax/libs/jquery/%s/jquery.%sjs',
 		'yandex' => '//yandex.st/jquery/%s/jquery.%sjs'
-	);
+    ];
 	if (empty($params['v']) || $params['v'] == '1.6') {
 	//	load latest 1.x.x
 		$params['v'] = '1.6.1';

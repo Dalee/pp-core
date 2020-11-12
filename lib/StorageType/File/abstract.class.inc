@@ -5,9 +5,11 @@ use PP\Lib\Cache\ObjectCache;
 /**
  * Базовый класс для работы с файлами
  */
-class PXStorageTypeAbstractFile extends PXStorageType {
+class PXStorageTypeAbstractFile extends PXStorageType
+{
 
-	function _getCache() { //REMOVEME: Obsoleted and unused feature.
+	public function _getCache()
+	{ //REMOVEME: Obsoleted and unused feature.
 		static $aiCache;
 
 		$pid = getmypid(); //cronjob protection
@@ -28,7 +30,8 @@ class PXStorageTypeAbstractFile extends PXStorageType {
 	/**
 	 * {@inheritdoc}
 	 */
-	function cloneFile($field, $object, &$param, $symlink = false) {
+	public function cloneFile($field, $object, &$param, $symlink = false)
+	{
 		$donor = $param['donor'];
 		$fileArray = $donor[$field->name];
 		$ai = $this->ai($field, $object, $param['format']);
@@ -50,25 +53,29 @@ class PXStorageTypeAbstractFile extends PXStorageType {
 		}
 	}
 
-	function getFromCache($key) {
+	public function getFromCache($key)
+	{
 		return self::_getCache()->load($key);
 	}
 
-	function removeFromCache($key) {
+	public function removeFromCache($key)
+	{
 		self::_getCache()->delete($key);
 	}
 
-	function saveToCache($key, $data) {
-		self::_getCache()->save($key, array($data));
+	public function saveToCache($key, $data)
+	{
+		self::_getCache()->save($key, [$data]);
 		return $data;
 	}
 
-	function ai($field, &$object, $format) {
-		$params = array(
+	public function ai($field, &$object, $format)
+	{
+		$params = [
 			'format' => $format,
 			'id' => $object['id'],
-			'name' => $field->name
-		);
+			'name' => $field->name,
+		];
 
 		foreach (PXRegistry::getApp()->triggers->{'storagetype'} as $t) {
 			$t->getTrigger()->normalizeFilePath($field, $object, $params);
@@ -77,7 +84,8 @@ class PXStorageTypeAbstractFile extends PXStorageType {
 		return '/ai/' . implode('/', $params) . '/';
 	}
 
-	function normalize($field, $object, &$param, $allowed = null) {
+	public function normalize($field, $object, &$param, $allowed = null)
+	{
 		$key = $this->ai($field, $object, $param['format']);
 		if (is_array($fileInfo = $this->getFromCache($key))) {
 			return reset($fileInfo);
@@ -100,15 +108,18 @@ class PXStorageTypeAbstractFile extends PXStorageType {
 	 * @param null|array $allowed
 	 * @return array
 	 */
-	function __normalize($field, $object, &$param, $allowed = null) {
+	public function __normalize($field, $object, &$param, $allowed = null)
+	{
 		FatalError(get_class($this) . "::__normalize() doesn't exists !");
 	}
 
-	function storedInDb() {
+	public function storedInDb()
+	{
 		return false;
 	}
 
-	function copyFile($field, $src, $dest) {
+	public function copyFile($field, $src, $dest)
+	{
 		copy($src, $dest);
 	}
 
@@ -121,7 +132,8 @@ class PXStorageTypeAbstractFile extends PXStorageType {
 	 *
 	 * @return array|null
 	 */
-	protected function getDataFromMeta($field, $object, &$param) {
+	protected function getDataFromMeta($field, $object, &$param)
+	{
 		//
 		// файл отсутствует на диске, попытаемся вытащить данные из sys_meta
 		// в случае если был запрос на удаление данных, данные о файле уже
@@ -133,11 +145,9 @@ class PXStorageTypeAbstractFile extends PXStorageType {
 			? $param[OBJ_FIELD_META]
 			: [];
 
-		$fileData = (isset($sysMeta[$field->name]))
+		return (isset($sysMeta[$field->name]))
 			? $sysMeta[$field->name]
 			: null;
-
-		return $fileData;
 	}
 
 	/**
@@ -150,7 +160,8 @@ class PXStorageTypeAbstractFile extends PXStorageType {
 	 *
 	 * @return void
 	 */
-	protected function removeDataFromMeta($field, $object, &$param, $fileName) {
+	protected function removeDataFromMeta($field, $object, &$param, $fileName)
+	{
 		$sysMeta = (isset($param[OBJ_FIELD_META]))
 			? $param[OBJ_FIELD_META]
 			: [];
@@ -183,7 +194,8 @@ class PXStorageTypeAbstractFile extends PXStorageType {
 	 * @param $fileName
 	 * @return array|null
 	 */
-	protected function recursiveMetaEntryDelete($metaPart, $fileName) {
+	protected function recursiveMetaEntryDelete($metaPart, $fileName)
+	{
 		if (!is_array($metaPart)) {
 			return $metaPart;
 		}

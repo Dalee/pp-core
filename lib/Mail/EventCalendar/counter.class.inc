@@ -6,15 +6,15 @@ class NLMailCounterEvent extends NLMailVEvent {
 	public function __construct() {
 		$this->_method = 'COUNTER';
 
-		$this->_requiredProps = array(
+		$this->_requiredProps = [
 			'DTStamp',
 			'DTStart',
 			'organizer',
 			'summary',
 			'uid'
-		);
+        ];
 
-		$this->_uselessProps = array();
+		$this->_uselessProps = [];
 		parent::__construct();
 	}
 }

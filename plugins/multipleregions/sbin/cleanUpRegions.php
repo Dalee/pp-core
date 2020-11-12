@@ -21,7 +21,7 @@ function question() {
 
 	$answer = trim(fread(STDIN, 80));
 
-	if(!in_array($answer, array("y", "n", true))) {
+	if(!in_array($answer, ["y", "n", true])) {
 		question();
 	} elseif($answer === 'n') {
 		Label("Aborted");
@@ -56,11 +56,11 @@ function is_natural($number) {
 foreach($r as $i) {
 	Label($i);
 
-	$params = array(
+	$params = [
 		"pattern"      => 'select id, %2$s from %1$s',
 		"table"        => $i,
 		"regions_mark" => $regionsField
-	);
+  ];
 
 	$temp = $db->query(call_user_func_array("sprintf", $params));
 

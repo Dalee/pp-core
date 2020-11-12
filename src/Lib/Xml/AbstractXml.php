@@ -6,7 +6,8 @@ namespace PP\Lib\Xml;
  * Class AbstractXml
  * @package PP\Lib\Xml
  */
-abstract class AbstractXml implements XmlInterface {
+abstract class AbstractXml implements XmlInterface
+{
 
 	public $xmlObject;
 	public $errors;
@@ -18,7 +19,8 @@ abstract class AbstractXml implements XmlInterface {
 	 * @param string $stringLoader
 	 * @return bool|SimpleXml
 	 */
-	function identEntity($testingObject, $nodeType, $fileLoader, $stringLoader) {
+	public function identEntity($testingObject, $nodeType, $fileLoader, $stringLoader)
+	{
 		set_error_handler(['PP\Lib\Xml\XmlErrors', 'addError'], E_ALL);
 
 		switch (true) {

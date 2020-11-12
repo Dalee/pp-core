@@ -9,10 +9,10 @@ final class PXMultipleRegionsReflexer {
 	private $formatId;
 	private $parent = null;
 
-	private static $store  = array();
-	private static $wheres = array();
+	private static $store  = [];
+	private static $wheres = [];
 
-	const REFLEX_FIELD = 'sys_reflex_id';
+    public const REFLEX_FIELD = 'sys_reflex_id';
 
 	public function __construct($regions, $where, $format) {
 		$this->regions = $regions;
@@ -33,7 +33,7 @@ final class PXMultipleRegionsReflexer {
 		if (PXMultiRegions::getInstance()->isDisabled()) {
 			return $this->where;
 		}
-	
+
 		if (isset(self::$wheres[$this->where])) {
 			return self::$wheres[$this->where];
 		}
@@ -52,10 +52,10 @@ final class PXMultipleRegionsReflexer {
 
 	private function modifyWhere() {
 		$reflexId = $this->getReflexId();
-		
+
 		$modified = preg_replace("#({$this->formatId}\.)?(parent) in \((?=\s*'?\d)#i", "$1$2 in ('{$reflexId}',",  $this->where);
  		$modified = preg_replace("#({$this->formatId}\.)?(parent) = (('?)\d+\\4)#i", "$1$2 in ('{$reflexId}',$3)", $modified);
- 		
+
  		return $modified;
 	}
 
@@ -97,9 +97,9 @@ final class PXMultipleRegionsReflexer {
 		}
 
 		if (isset($result[self::REFLEX_FIELD])) {
-			self::$store[$this->formatId] = array(
+			self::$store[$this->formatId] = [
 				"refId"  => $result[self::REFLEX_FIELD],
-				"parent" => $this->format->parent);
+				"parent" => $this->format->parent];
 		}
 	}
 }

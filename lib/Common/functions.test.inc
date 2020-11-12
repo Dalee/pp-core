@@ -158,7 +158,7 @@ function _tt_class($aim) {
 }
 
 function _parsePhpDocTest($phpdoc) {
-	$tests = array();
+	$tests = [];
 	$pos = 0;
 	while ($pos = mb_strpos($phpdoc, '@test ', $pos)) {
 		$end = mb_strpos($phpdoc, "\n", $pos + 1);
@@ -166,8 +166,8 @@ function _parsePhpDocTest($phpdoc) {
 		($end === false) && $end = mb_strlen($phpdoc);
 
 		$data = mb_substr($phpdoc, $pos + 5, $end - $pos - 5);
-		list ($expression, $title) = array_pad(explode('---', $data), 2, null);
-		list ($params, $result) = array_pad(explode('>>>', $expression), 2, 'null');
+		[$expression, $title] = array_pad(explode('---', $data), 2, null);
+		[$params, $result] = array_pad(explode('>>>', $expression), 2, 'null');
 		$test = (array)json_decode(trim($params), 1);
 		preg_match('@^/.+/[ism]?$@s', trim($result), $m);
 		$test[] = !$m?
@@ -199,7 +199,7 @@ function _test_prepare(&$out) {
 function _test_format($out) {
 	$out = json_encode($out, JSON_PRETTY_PRINT);
 	$out = preg_replace_callback('/(?:\\\\u[0-9a-fA-Z]{4})+/'.REGEX_MOD, function ($v) {
-		$v = mb_strtr($v[0], array('\\u' => ''));
+		$v = mb_strtr($v[0], ['\\u' => '']);
 		return mb_convert_encoding(pack('H*', $v), CHARSET_UTF8, CHARSET_UTF16BE);
 	}, $out);
 	return $out;

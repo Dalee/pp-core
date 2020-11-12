@@ -5,41 +5,44 @@
 *
 * @subpackage Application
 */
-class PXTypeDescription {
-	var $id            = null;
-	var $title         = null;
-	var $parent        = null;
-	var $childs        = [];
-	var $references    = [];
-	var $order         = null;
+class PXTypeDescription
+{
+	public $id = null;
+	public $title = null;
+	public $parent = null;
+	public $childs = [];
+	public $references = [];
+	public $order = null;
 
 	/** @var PXFieldDescription[] */
-	public $fields        = [];
+	public $fields = [];
 
-	var $groups        = array('' => array('name' => null, 'view' => null)); //TODO|FIXME: need standalone group description ?
-	var $fieldGroups   = [];
-	var $sTypes        = [];
-	var $dTypes        = [];
-	var $struct        = 'plain';
-	var $byDefault     = null;
+	public $groups = ['' => ['name' => null, 'view' => null]]; //TODO|FIXME: need standalone group description ?
+	public $fieldGroups = [];
+	public $sTypes = [];
+	public $dTypes = [];
+	public $struct = 'plain';
+	public $byDefault = null;
 
-	function parentType() {
+	public function parentType()
+	{
 		return PXRegistry::getTypes($this->parent);
 	}
 
 	/**
 	 * Возвращает массив типов потомков для переданного формата
 	 */
-	function childTypes() {
-		$cTypes = array();
+	public function childTypes()
+	{
+		$cTypes = [];
 
-		if(count($this->childs) > 0){
+		if (count($this->childs) > 0) {
 			foreach ($this->childs as $v) {
-				if(!$this->issetType($v)) {
+				if (!$this->issetType($v)) {
 					continue;
 				}
 
-				if ($v === $this->id){
+				if ($v === $this->id) {
 					continue;
 				}
 
@@ -50,7 +53,8 @@ class PXTypeDescription {
 		return $cTypes;
 	}
 
-	function allowedChilds($object) {
+	public function allowedChilds($object)
+	{
 		$ac = [];
 		if (is_object($object)) {
 			$ac = (isset($object->content[OBJ_FIELD_CHILDREN]))
@@ -64,7 +68,7 @@ class PXTypeDescription {
 				: [];
 		}
 
-		foreach ($ac as $k=>$v) {
+		foreach ($ac as $k => $v) {
 			if (!$this->issetType($k)) {
 				unset($ac[$k]);
 			}
@@ -73,35 +77,39 @@ class PXTypeDescription {
 		return $ac;
 	}
 
-	function allowedChildTypes(&$object) {
+	public function allowedChildTypes(&$object)
+	{
 		$allowed = $this->allowedChilds($object);
 
-		foreach($allowed as $format=>$v) {
+		foreach ($allowed as $format => $v) {
 			$allowed[$format] = $this->getType($format);
 		}
 
 		return $allowed;
 	}
 
-	function issetType($typeName) {
+	public function issetType($typeName)
+	{
 		$allTypes = PXRegistry::getTypes();
 		return isset($allTypes[$typeName]) && is_object($allTypes[$typeName]);
 	}
 
-	function &getType($typeName) {
+	public function &getType($typeName)
+	{
 		$allTypes = PXRegistry::getTypes();
 		return $allTypes[$typeName];
 	}
 
 	// static parser factory
-	static function fillAppTypes($domDatatypes, &$app) {
+	public static function fillAppTypes($domDatatypes, &$app)
+	{
 
 		if (!is_array($domDatatypes) || count($domDatatypes) == 0) {
 			FatalError("Не определена объектная модель проекта");
 		}
 
 		foreach ($domDatatypes as $domDatatype) {
-			$type  = new static();
+			$type = new static();
 
 			$type->parseTypeAttributes($domDatatype->attributes());
 
@@ -111,7 +119,7 @@ class PXTypeDescription {
 					continue;
 				}
 				$name = $view = null;
-				foreach($groupNode->attributes() as $attr){
+				foreach ($groupNode->attributes() as $attr) {
 					switch ($attr->name) {
 						case 'name':
 							$name = pp_simplexml_decode_string($attr->value);
@@ -121,7 +129,7 @@ class PXTypeDescription {
 							break;
 					}
 				}
-				$type->groups[$name] = array('name' => $name, 'view' => $view);
+				$type->groups[$name] = ['name' => $name, 'view' => $view];
 			}
 
 			$fieldsNodes = $domDatatype->xpath('descendant-or-self::attribute');
@@ -133,19 +141,19 @@ class PXTypeDescription {
 
 				$field = new PXFieldDescription($fieldNode, $app, $type);
 
-				if(is_null($field->storageType)) {
+				if (is_null($field->storageType)) {
 					$field->setStorageType('string');
 				}
 
-				if(is_null($field->displayType)) {
+				if (is_null($field->displayType)) {
 					$field->setDisplayType('TEXT');
 				}
 
-				if(is_null($field->listed)) {
-					$field->listed = (bool) ($field->name === 'title');
+				if (is_null($field->listed)) {
+					$field->listed = (bool)($field->name === 'title');
 				}
 
-				if(is_null($field->defaultValue)) {
+				if (is_null($field->defaultValue)) {
 					$field->getDefaultValueNode($fieldNode);
 				}
 
@@ -162,8 +170,9 @@ class PXTypeDescription {
 		static::findParents($app->types);
 	}
 
-	static function findParents(&$types) {
-		foreach ($types as $k=>$v) {
+	public static function findParents(&$types)
+	{
+		foreach ($types as $k => $v) {
 			if (!empty($v->parent)) {
 				if (isset($types[$v->parent])) {
 					$types[$v->parent]->childs[] = $k;
@@ -175,7 +184,8 @@ class PXTypeDescription {
 		}
 	}
 
-	function addField(&$field) {
+	public function addField(&$field)
+	{
 		$name = $field->name;
 		$this->fields[$name] = $field;
 	}
@@ -184,14 +194,16 @@ class PXTypeDescription {
 	 * @param string $name
 	 * @return bool
 	 */
-	function hasField($name) {
+	public function hasField($name)
+	{
 		return isset($this->fields[$name]);
 	}
 
-	function assignToGroup($field) {
+	public function assignToGroup($field)
+	{
 		static $groupId = 0;
 		static $fillingGroup;
-		if($fillingGroup !== $field->groupName){
+		if ($fillingGroup !== $field->groupName) {
 			$fillingGroup = $field->groupName;
 			$groupId++;
 		}
@@ -199,15 +211,28 @@ class PXTypeDescription {
 	}
 
 
-	function parseTypeAttributes($attrs) {
+	public function parseTypeAttributes($attrs)
+	{
 		foreach ($attrs as $attr) {
 			switch ($attr->name) {
-				case 'name'          : $this->id            = $attr->value; break;
-				case 'description'   : $this->title         = pp_simplexml_decode_string($attr->value); break;
-				case 'orderby'       : $this->order         = $attr->value; break;
-				case 'parent'        : $this->parent        = $attr->value; break;
-				case 'bydefault'     : $this->byDefault     = self::_mapByDefaults($attr->value); break;
-				case 'struct'        : $this->struct        = $attr->value; break;
+				case 'name'          :
+					$this->id = $attr->value;
+					break;
+				case 'description'   :
+					$this->title = pp_simplexml_decode_string($attr->value);
+					break;
+				case 'orderby'       :
+					$this->order = $attr->value;
+					break;
+				case 'parent'        :
+					$this->parent = $attr->value;
+					break;
+				case 'bydefault'     :
+					$this->byDefault = self::_mapByDefaults($attr->value);
+					break;
+				case 'struct'        :
+					$this->struct = $attr->value;
+					break;
 
 				default              :
 					throw new Exception('Unknown attr name:' . $attr->name);
@@ -220,21 +245,27 @@ class PXTypeDescription {
 	}
 
 	/**
-	* Преобразует 'all', 'selected', 'none' в числовые значения.
-	* protected -> public, because used in PXAdminForm
-	*
-	* @see PP_CHILDREN_FETCH_ALL, PP_CHILDREN_FETCH_SELECTED, PP_CHILDREN_FETCH_NONE
-	* @access public
-	* @param String $string
-	* @return Integer
-	*/
-	public static function _mapByDefaults($string) {
-		switch($string) {
-			case 'all'     : return PP_CHILDREN_FETCH_ALL;
-			case 'selected': return PP_CHILDREN_FETCH_SELECTED;
-			case 'paged'   : return PP_CHILDREN_FETCH_PAGED;
-			case 'none'    : return PP_CHILDREN_FETCH_NONE;
-			default        : return NULL;
+	 * Преобразует 'all', 'selected', 'none' в числовые значения.
+	 * protected -> public, because used in PXAdminForm
+	 *
+	 * @param String $string
+	 * @return Integer
+	 * @see PP_CHILDREN_FETCH_ALL, PP_CHILDREN_FETCH_SELECTED, PP_CHILDREN_FETCH_NONE
+	 * @access public
+	 */
+	public static function _mapByDefaults($string)
+	{
+		switch ($string) {
+			case 'all'     :
+				return PP_CHILDREN_FETCH_ALL;
+			case 'selected':
+				return PP_CHILDREN_FETCH_SELECTED;
+			case 'paged'   :
+				return PP_CHILDREN_FETCH_PAGED;
+			case 'none'    :
+				return PP_CHILDREN_FETCH_NONE;
+			default        :
+				return NULL;
 		}
 	}
 

@@ -8,7 +8,7 @@ use Symfony\Component\HttpFoundation\Session\Storage\Handler\NullSessionHandler;
 
 class DatabaseHandler extends NullSessionHandler {
 
-	const SESSION_TABLE = 'admin_session';
+	public const SESSION_TABLE = 'admin_session';
 
 	/** @var PXDatabase|PostgreSqlDriver */
 	protected $db;

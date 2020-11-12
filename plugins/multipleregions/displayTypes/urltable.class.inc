@@ -5,21 +5,24 @@
  * storageType regionurl
  * displayType URLTABLE
  */
-class PXDisplayTypeUrltable extends PXDisplayTypeTable {
-	function buildInput($field, $object, $param=NULL) {
-		$value = isset($object[$field->name]) ? explode(',', trim($object[$field->name])) : array();
+class PXDisplayTypeUrltable extends PXDisplayTypeTable
+{
+	public function buildInput($field, $object, $param = NULL)
+	{
+		$value = isset($object[$field->name]) ? explode(',', trim($object[$field->name])) : [];
 		foreach ($value as $k => $v) {
-			$value[$k] = (array) $v;
+			$value[$k] = (array)$v;
 		}
 
 		$height = 0;
 		$cols = '1';
-		$header = array();
+		$header = [];
 
 		return NLAbstractHTMLForm::BuildTableByCols($field->name, $value, $cols, $height, $header);
 	}
 
-	function buildCell($field, $object, $param=NULL) {
+	public function buildCell($field, $object, $param = NULL)
+	{
 		return str_replace(',', "<br/>", $object[$field->name]);
 	}
 }

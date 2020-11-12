@@ -1,7 +1,7 @@
 <?php
 
 PXDecorativeWidgetsCollection::addToCollection(
-	new PXTabbedMenuRegionChanger,
+	new PXTabbedMenuRegionChanger(),
 	'PXWidgetMenuTabbed',
 	'INDEX_EXTRA_CONTROLS',
 	0

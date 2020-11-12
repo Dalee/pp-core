@@ -9,7 +9,8 @@
  * @property-read array $current the current object
  * @property-read array $first the first object in selection
  */
-class PXObjects extends PXContentObjects {
+class PXObjects extends PXContentObjects
+{
 
 	/**
 	 * current (active) object id
@@ -25,34 +26,41 @@ class PXObjects extends PXContentObjects {
 	 */
 	public $currentType;
 
-	function hasCurrent() {
+	public function hasCurrent()
+	{
 		return @isset($this[$this->currentType][$this->currentId]);
 	}
 
-	function getCurrent() {
+	public function getCurrent()
+	{
 		return $this[$this->currentType][$this->currentId];
 	}
 
-	public function hasItems($type = null) {
+	public function hasItems($type = null)
+	{
 		$type = $type ? $type : $this->currentType;
 		return @isset($this[$type]) && count($this[$type]);
 	}
 
-	public function getFirst($type) {
+	public function getFirst($type)
+	{
 		return !empty($this[$type]) && is_array($this[$type]) ? reset($this[$type]) : null;
 	}
 
-	function getAllowedChilds() {
+	public function getAllowedChilds()
+	{
 		$currentObject = $this->getCurrent();
 		return PXRegistry::getApp()->getAllowedChilds($this->currentType, $currentObject);
 	}
 
-	function add($type, $objsArray) {
+	public function add($type, $objsArray)
+	{
 		$this[$type] = $objsArray;
 	}
 
-	function __get($key) {
-		switch($key) {
+	public function __get($key)
+	{
+		switch ($key) {
 			case 'current':
 				if ($this->hasCurrent()) {
 					return $this->getCurrent();
@@ -73,18 +81,20 @@ class PXObjects extends PXContentObjects {
 	}
 
 	public
-	function setCurrent($id, $type) {
-		$this->currentId   = $id;
+	function setCurrent($id, $type)
+	{
+		$this->currentId = $id;
 		$this->currentType = $type;
 	}
 
-	function findCurrent($type, $pathname) {
+	public function findCurrent($type, $pathname)
+	{
 		if (!isset(PXRegistry::getTypes($type)->fields['pathname'])) {
 			return;
 		}
 
 		foreach ($this[$type] as $o) {
-			if($o['pathname'] == $pathname) {
+			if ($o['pathname'] == $pathname) {
 				$this->setCurrent($o['id'], $type);
 				return;
 			}

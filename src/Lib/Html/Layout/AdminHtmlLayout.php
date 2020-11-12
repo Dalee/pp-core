@@ -6,33 +6,35 @@ namespace PP\Lib\Html\Layout;
  * Class AdminHtmlLayout
  * @package PP\Lib\Html\Layout
  */
-class AdminHtmlLayout extends LayoutAbstract {
+class AdminHtmlLayout extends LayoutAbstract
+{
 
-	var $types;
-	var $_scripts = [];
+	public $types;
+	public $_scripts = [];
 
 
 	//TODO: there must be right places in <HEAD> for this
-	var $_scriptsTemplates  = [
+	public $_scriptsTemplates = [
 		':css' => [
-			':area'  => 'OUTER.FORMBEGIN',
-			':proto' => '<link rel="stylesheet" href="%s" type="text/css" />'
+			':area' => 'OUTER.FORMBEGIN',
+			':proto' => '<link rel="stylesheet" href="%s" type="text/css" />',
 		],
-		':js'  => [
-			':area'  => 'OUTER.FORMEND',
-			':proto' => '<script src="%s" type="text/javascript"></script>'
+		':js' => [
+			':area' => 'OUTER.FORMEND',
+			':proto' => '<script src="%s" type="text/javascript"></script>',
 		],
-		':inline_js'  => [
-			':area'  => 'OUTER.FORMEND',
-			':proto' => "<script type=\"text/javascript\">\n%s\n</script>"
+		':inline_js' => [
+			':area' => 'OUTER.FORMEND',
+			':proto' => "<script type=\"text/javascript\">\n%s\n</script>",
 		],
-		':inline_css'  => [
-			':area'  => 'OUTER.FORMBEGIN',
-			':proto' => "<style type=\"text/css\">\n%s\n</style>"
-		]
+		':inline_css' => [
+			':area' => 'OUTER.FORMBEGIN',
+			':proto' => "<style type=\"text/css\">\n%s\n</style>",
+		],
 	];
 
-	public function __construct($outerLayout, $types) {
+	public function __construct($outerLayout, $types)
+	{
 		parent::__construct();
 
 		$this->types = $types;
@@ -44,7 +46,8 @@ class AdminHtmlLayout extends LayoutAbstract {
 		$this->assign('BODY.CLASS', quot(\PXRegistry::getRequest()->getArea()));
 	}
 
-	protected function assignVersion() {
+	protected function assignVersion()
+	{
 		$user = \PXRegistry::getUser();
 		$version = ($user->isAuthed())
 			? PP_VERSION
@@ -57,7 +60,8 @@ class AdminHtmlLayout extends LayoutAbstract {
 	 * Retrieves all flash messages from session, makes html and
 	 * assigns it to layout.
 	 */
-	public function assignFlashes() {
+	public function assignFlashes()
+	{
 		$htmlFlashes = '';
 		$session = \PXRegistry::getSession();
 
@@ -77,48 +81,54 @@ class AdminHtmlLayout extends LayoutAbstract {
 	 * @param null|string $title
 	 * @return $this
 	 */
-	function assignTitle($title = null) {
+	public function assignTitle($title = null)
+	{
 		$title = ((is_null($title) || !mb_strlen(trim($title)))
-				? ''
-				: mb_strtr($title, ['<' => '&lt;', '>' => '&gt;']));
+			? ''
+			: mb_strtr($title, ['<' => '&lt;', '>' => '&gt;']));
 
 		$this->assign("OUTER.TITLE", $title);
 
 		return $this;
 	}
 
-	function assignError($label, $errorText) {
-		$this->assign($label, '<p class="error">'.$errorText.'</p>');
+	public function assignError($label, $errorText)
+	{
+		$this->assign($label, '<p class="error">' . $errorText . '</p>');
 	}
 
-	function assignContentControls($label, $selectedSid, $allowedFormats) {
+	public function assignContentControls($label, $selectedSid, $allowedFormats)
+	{
 		throw new \Exception("please use AdminHtmlLayout::AssignControls");
 	}
 
-	function assignControls($label, $selectedSid, $allowedFormats) {
+	public function assignControls($label, $selectedSid, $allowedFormats)
+	{
 		$this->clear($label);
 		$this->appendControls($label, $selectedSid, $allowedFormats);
 	}
 
-	function appendControls($label, $selectedSid, $allowedFormats) {
+	public function appendControls($label, $selectedSid, $allowedFormats)
+	{
 		foreach ($allowedFormats as $format) {
 			$button = new \PXControlButton($this->types[$format]->title);
-			$button->setClickCode('AddContent(\''.$format.'\', '.(int)$selectedSid.')');
+			$button->setClickCode('AddContent(\'' . $format . '\', ' . (int)$selectedSid . ')');
 			$button->setClass('add');
 
 			$button->addToParent($label);
 		}
 	}
 
-	function _makeContextMenu($selectedSid, $allowedFormats) {
+	public function _makeContextMenu($selectedSid, $allowedFormats)
+	{
 		$html = '';
 
 		if (sizeof($allowedFormats)) {
-			$html .=' onContextMenu="Context(event, \'add\', \''.quot(quot($selectedSid), false).'\'';
+			$html .= ' onContextMenu="Context(event, \'add\', \'' . quot(quot($selectedSid), false) . '\'';
 
-			foreach ($this->types as $k=>$v) {
+			foreach ($this->types as $k => $v) {
 				if (in_array($k, $allowedFormats)) {
-					$html .= ' , \''.$k.'\', \''.$v->title.'\'';
+					$html .= ' , \'' . $k . '\', \'' . $v->title . '\'';
 				}
 			}
 
@@ -128,18 +138,20 @@ class AdminHtmlLayout extends LayoutAbstract {
 		return $html;
 	}
 
-	function assignContextMenu($label, $selectedSid, $allowedFormats) {
+	public function assignContextMenu($label, $selectedSid, $allowedFormats)
+	{
 		$this->assign($label, $this->_makeContextMenu($selectedSid, $allowedFormats));
 	}
 
-	function appendContextMenu($label, $selectedSid, $allowedFormats) {
+	public function appendContextMenu($label, $selectedSid, $allowedFormats)
+	{
 		// store formats and labels for each parent
 		// some times there are same parents so we can share context menus
 		static $stored = [];
 		if (!isset($stored[$selectedSid])) {
 			$stored[$selectedSid] = [
-				'labels'  => [],
-				'formats' => []
+				'labels' => [],
+				'formats' => [],
 			];
 		}
 
@@ -154,20 +166,22 @@ class AdminHtmlLayout extends LayoutAbstract {
 		}
 	}
 
-	function appendTable($label, $objectFormat, $table, $selected = null, $varToTitle = null, $page=1, $objectsOnPage=0, $count=0, $withLinks=true, $parentPathname=null) {
+	public function appendTable($label, $objectFormat, $table, $selected = null, $varToTitle = null, $page = 1, $objectsOnPage = 0, $count = 0, $withLinks = true, $parentPathname = null)
+	{
 		$htmltable = new \PXAdminTable($table, $this->types[$objectFormat], $this->getData);
 		$htmltable->setCaption($this->types[$objectFormat]->title . '(' . $count . ')');
 
 		$pager = new \PxAdminPager($page, $objectsOnPage, $count, $this->types[$objectFormat], $this->getData);
 		$htmltable->setPosition($pager->getPosition());
 
-		$this->append($label, $htmltable->html().$pager->html());
+		$this->append($label, $htmltable->html() . $pager->html());
 	}
 
-	function appendUserTable($label, $objectFormat, $title, $table, &$userClassName, $userFuncName, $page=1, $objectsOnPage=0, $count=0) {
-		$this->Append($label, '<H2>'.$title.' ('.$count.')</H2>');
-		$html  = null;
-		$page  = $page ? $page : 1; // ?
+	public function appendUserTable($label, $objectFormat, $title, $table, &$userClassName, $userFuncName, $page = 1, $objectsOnPage = 0, $count = 0)
+	{
+		$this->Append($label, '<H2>' . $title . ' (' . $count . ')</H2>');
+		$html = null;
+		$page = $page ? $page : 1; // ?
 
 		if (!count($table)) {
 			$html = '';
@@ -176,7 +190,7 @@ class AdminHtmlLayout extends LayoutAbstract {
 		}
 
 		$html .= call_user_func([$userClassName, $userFuncName], 'header');
-		foreach ($table as $rowPos=>$row) {
+		foreach ($table as $rowPos => $row) {
 			$html .= call_user_func([$userClassName, $userFuncName], 'row', $row);
 		}
 		$html .= call_user_func([$userClassName, $userFuncName], 'footer');
@@ -185,43 +199,43 @@ class AdminHtmlLayout extends LayoutAbstract {
 			$html .= '<DIV style="padding: 2px;">';
 			$html .= '<STRONG style="color: #385A94;">Страницы:</STRONG> ';
 
-			$allPages = ceil($count/$objectsOnPage)+1;
-			$start    = (ceil($page/10)-1)*10+1;
-			$max      = $start + 10;
+			$allPages = ceil($count / $objectsOnPage) + 1;
+			$start = (ceil($page / 10) - 1) * 10 + 1;
+			$max = $start + 10;
 
 			if ($max > $allPages) {
 				$max = $allPages;
 			}
 
 			if ($page > 10) {
-				$prev = (ceil($start/10)-1)*10 - 9;
+				$prev = (ceil($start / 10) - 1) * 10 - 9;
 			}
 
 			$last = $allPages - $start - 10;
 
 			if ($last > 0) {
-				$next = (ceil($start/10)-1)*10 + 11;
+				$next = (ceil($start / 10) - 1) * 10 + 11;
 			}
 
 			if (isset($prev)) {
-				$html .= '<A href="'.$this->_BuildHref($objectFormat.'_page', $prev).'">';
-				$html .= '<IMG src="i/icon/left.gif" width="4" height="7" border="0" hspace="4" alt="Страница '.$prev.'">';
+				$html .= '<A href="' . $this->_BuildHref($objectFormat . '_page', $prev) . '">';
+				$html .= '<IMG src="i/icon/left.gif" width="4" height="7" border="0" hspace="4" alt="Страница ' . $prev . '">';
 				$html .= '</A>';
 			}
 
-			for ($i=$start; $i<$max; $i++) {
+			for ($i = $start; $i < $max; $i++) {
 				$html .= '<A  style="padding: 2px 4px 2px 4px; text-decoration: none;';
 
 				if ($i == $page) {
 					$html .= 'background-color: #385A94; color: #FFFFFF; font-weight: bold;';
 				}
 
-				$html .= '" href="'.$this->_BuildHref($objectFormat.'_page', $i).'" title="Страница '.$i.'">'.$i.'</A> ';
+				$html .= '" href="' . $this->_BuildHref($objectFormat . '_page', $i) . '" title="Страница ' . $i . '">' . $i . '</A> ';
 			}
 
 			if (isset($next) && $next > 0) {
-				$html .= '<A href="'.$this->_BuildHref($objectFormat.'_page', $next).'">';
-				$html .= '<IMG src="i/icon/right.gif" width="4" height="7" border="0" hspace="4" alt="Страница '.$next.'">';
+				$html .= '<A href="' . $this->_BuildHref($objectFormat . '_page', $next) . '">';
+				$html .= '<IMG src="i/icon/right.gif" width="4" height="7" border="0" hspace="4" alt="Страница ' . $next . '">';
 				$html .= '</A>';
 			}
 
@@ -230,28 +244,35 @@ class AdminHtmlLayout extends LayoutAbstract {
 		$this->Append($label, $html);
 	}
 
-	function assignKeyValueList($label, $list, $selected, $varName = 'sid') {
+	public function assignKeyValueList($label, $list, $selected, $varName = 'sid')
+	{
 		parent::AssignKeyValueList($label, $list, $varName, $selected);
 	}
 
-	function assignJS($pathToScript) {
+	public function assignJS($pathToScript)
+	{
 		$this->_renderScript($pathToScript, ':js', true);
 	}
 
-	function assignInlineJS($scriptBody, $uniq = true) {
+	public function assignInlineJS($scriptBody, $uniq = true)
+	{
 		$this->_renderScript($scriptBody, ':inline_js', $uniq);
 	}
 
-	function assignCSS($pathToScript) {
+	public function assignCSS($pathToScript)
+	{
 		$this->_renderScript($pathToScript, ':css', true);
 	}
 
-	function assignInlineCSS($scriptBody) {
+	public function assignInlineCSS($scriptBody)
+	{
 		$this->_renderScript($scriptBody, ':inline_css', true);
 	}
 
-	function _renderScript($body, $template, $singleton) {
-		if (!mb_strlen($body) || ($singleton && isset($this->_scripts[$hash = md5($body)]))) {
+	public function _renderScript($body, $template, $singleton)
+	{
+		$hash = md5($body);
+		if (!mb_strlen($body) || ($singleton && isset($this->_scripts[$hash]))) {
 			return false;
 		}
 
@@ -260,13 +281,15 @@ class AdminHtmlLayout extends LayoutAbstract {
 		return $singleton ? ($this->_scripts[$hash] = true) : true;
 	}
 
-	function template($filename, $label = null) {
+	public function template($filename, $label = null)
+	{
 		$this->assignVersion();
 
 		return parent::template($filename, $label);
 	}
 
-	public function notSetAllowedChilds($label, $format, $id) {
+	public function notSetAllowedChilds($label, $format, $id)
+	{
 		$format = \PXRegistry::getTypes($format);
 
 		$this->assign($label, <<<HTML

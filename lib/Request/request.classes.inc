@@ -10,11 +10,11 @@ class PXNullRequest extends PXRequestAbstract {
 	public function getVar($varName, $default = NULL) {
 		return NULL;
 	}
-	
+
 	public function GetUploadFile($varName, $isArray = false){
-		return array();
+		return [];
 	}
-	
+
 }
 
 ?>

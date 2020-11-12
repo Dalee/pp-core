@@ -17,7 +17,7 @@ define('CHARSET_UTF16BE', 'utf-16be');
 
 // Default charset settings
 define('DEFAULT_CHARSET', CHARSET_UTF8);
-define('DEFAULT_LOCALE', json_encode(array('Russian_Russia.UTF-8', 'ru_RU.UTF-8', 'UTF-8')));
+define('DEFAULT_LOCALE', json_encode(['Russian_Russia.UTF-8', 'ru_RU.UTF-8', 'UTF-8']));
 define('REGEX_MOD', 'u'); // UTF-8 mod for regexp
 
 if (setlocale(LC_ALL, json_decode(DEFAULT_LOCALE)) === false) {
@@ -99,27 +99,20 @@ define('DEBUG', true);
 define('ENV_DEVELOPER', 'DEVELOPER');
 
 // разрешенные форматы изображений
-define('ENUM_ALLOWED_IMAGETYPES', serialize(array(
+define('ENUM_ALLOWED_IMAGETYPES', serialize([
 	'image/gif' => 'gif',
 	'image/jpeg' => 'jpg',
 	'image/pjpeg' => 'jpg',
 	'image/png' => 'png',
 	'image/x-png' => 'png'
-)));
-
-
-// разрешенные форматы флешей
-define('ENUM_ALLOWED_FLASHTYPES', serialize(array(
-	'application/x-shockwave-flash' => 'swf'
-)));
-
+]));
 
 // разрешенные расширения для pathname объектов контентного уровня
-define('ENUM_ALLOWED_PATHNAMES', serialize(array(
+define('ENUM_ALLOWED_PATHNAMES', serialize([
 	'html',
 	'htm',
 	'wml',
-)));
+]));
 
 /**Вернуть данные и таблицы в виде массива*/
 define('DB_SELECT_TABLE', 1);

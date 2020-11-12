@@ -7,17 +7,20 @@ namespace PP\Module;
  *
  * @package PP\Module
  */
-class AuditLogModule extends AbstractModule {
+class AuditLogModule extends AbstractModule
+{
 
-	public function __construct($area, $settings) {
+	public function __construct($area, $settings)
+	{
 		parent::__construct($area, $settings);
 
-		if (is_callable(array($this->layout, 'setOneColumn'))){
+		if (is_callable([$this->layout, 'setOneColumn'])) {
 			$this->layout->setOneColumn();
 		}
 	}
 
-	function adminIndex() {
+	public function adminIndex()
+	{
 		require_once PPCOREPATH . 'lib/Logger/Audit/wrapper.class.inc';
 
 		$auditWrapper = new \PXAdminAuditWrapper();

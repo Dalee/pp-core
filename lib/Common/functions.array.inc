@@ -22,7 +22,7 @@ function getColsFromTable($table, $rows) {
 }
 
 function getColsFromTableWithIndex($table, $rows, $index) {
-	$results = array();
+	$results = [];
 	if (!is_array($table)) {
 		return $results;
 	}
@@ -52,7 +52,7 @@ function getColFromTable($table, $rowName) {
 
 // grouping hash by key
 function groupArrayByCol($table, $rowNameOrCallBack, $allowEmptyKeys = false, $fixCallableRowName = false) {
-	$tmp = array();
+	$tmp = [];
 	$is_callable = !$fixCallableRowName && is_callable($rowNameOrCallBack);
 
 	foreach ($table as $k => $row) {
@@ -112,7 +112,7 @@ function nestedArrayWalk(&$multiArray, $mapper, $optArgs = [], $nestingLevel = 0
 function array_recursive_inheritance() {
 	$arrays = func_get_args();
 	$base = array_shift($arrays);
-	if (!is_array($base)) $base = empty($base) ? array() : array($base);
+	if (!is_array($base)) $base = empty($base) ? [] : [$base];
 	foreach ($arrays as $append) {
 		foreach ((array)$append as $key => $value) {
 			if (!array_key_exists($key, $base)) {
@@ -153,7 +153,7 @@ function array_transpose($array) {
  *
  * @param array $array existing array
  * @param mixed $map existing keys or/and their new names
- * @param boolean $strict
+ * @param bool $strict
  * @return array resulting array with selected keys
  */
 function array_remap($array, $map, $strict = false) {
@@ -164,11 +164,11 @@ function array_remap($array, $map, $strict = false) {
 	$result = [];
 
 	if (is_string($map)) {
-		$map = array($map => $map);
+		$map = [$map => $map];
 	}
 
 	if (!$strict && isset($map[0])) {
-		$rmap = array();
+		$rmap = [];
 		foreach ($map as $k=>$v) {
 			$rmap[ (is_int($k) && isset($array[$v])) ? $v : $k ] = $v;
 		}
@@ -185,7 +185,7 @@ function array_remap($array, $map, $strict = false) {
 function array_deep_diff($d1, $d2, $excludeKeys) {
 	switch (true) {
 		case is_array($d1) && is_array($d2) :
-			$diff = array();
+			$diff = [];
 			foreach (array_unique(array_merge(array_keys($d1), array_keys($d2))) as $key) {
 				if (is_array($excludeKeys) && in_array($key, $excludeKeys)) {
 					continue;
@@ -203,7 +203,7 @@ function array_deep_diff($d1, $d2, $excludeKeys) {
 			return $diff;
 		case (is_scalar($d1) || is_null($d1)) && (is_scalar($d2) || is_null($d2)) :
 			if ($d1 == $d2) {
-				return array();
+				return [];
 			}
 			$ret = "$d1 ---> $d2";
 			// just a little touch for numerics, might not be needed
@@ -215,11 +215,11 @@ function array_deep_diff($d1, $d2, $excludeKeys) {
 		case is_object($d1) && is_object($d2) :
 			/* Два объекта нельзя сравнивать через == , т.к. можно нарваться на циклические зависимости и
 			 * в результате получить FatalError. А сравнивать через === бессмысленно. */
-			return array();
+			return [];
 		default:
 			/* скаляр vs массив, массив vs объект, скаляр vs объект, ресурс vs что угодно,
 			 * колбэки vs что угодно */
-			return array('Noncomparable values');
+			return ['Noncomparable values'];
 	}
 }
 
@@ -311,7 +311,7 @@ function array_flat($array, $toKey = false, $toValue = false, $unique = false) {
  * Например, из [a=>1, b=>1, c=>2, d=>3, e=>2] функция вернет [1=>[a,b], 2=>[c,e], 3=>[d]]
  */
 function array_keys_grouped($array) {
-	$result = array();
+	$result = [];
 	foreach (array_unique($array) as $v) {
 		$result[$v] = array_keys($array, $v);
 	}
@@ -357,7 +357,7 @@ function findNeighborElements($list, $current, $circular = true, $strict = true)
 		$first && $circular	&& $prev = end($inList);
 		$last  && $circular	&& $next = reset($inList);
 	}
-	return array($prev, $next);
+	return [$prev, $next];
 }
 
 /**
@@ -372,7 +372,7 @@ function findNeighborElements($list, $current, $circular = true, $strict = true)
  * @return array	Таблица из строк, для которых в заданном столбце ячейка имеет заданное значение. Если ничего не найдено, то пустой массив.
  */
 function getRowsFromTable($array, $colName, $colValues, $strict = true, $count = INF) {
-	$found     = array();
+	$found     = [];
 	$nFound    = 0;
 	$colValues = (array)$colValues;
 	foreach ($array as $idx => $row) {

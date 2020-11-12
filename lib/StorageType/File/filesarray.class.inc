@@ -10,12 +10,14 @@
  * displayType FILESARRAY
  * storageType filesarray
  */
-class PXStorageTypeFilesarray extends PXStorageTypeAbstractFile {
+class PXStorageTypeFilesarray extends PXStorageTypeAbstractFile
+{
 
 	/**
 	 * {@inheritdoc}
 	 */
-	function cloneFile($field, $object, &$param, $symlink = false) {
+	public function cloneFile($field, $object, &$param, $symlink = false)
+	{
 
 		$donor = $param['donor'];
 		$fileArray = $donor[$field->name];
@@ -50,7 +52,8 @@ class PXStorageTypeFilesarray extends PXStorageTypeAbstractFile {
 	/**
 	 * {@inheritdoc}
 	 */
-	function proceedFile($field, &$object, &$param, $allowed = null) {
+	public function proceedFile($field, &$object, &$param, $allowed = null)
+	{
 
 		$varName = $field->name;
 		$ai = $this->ai($field, $object, $param['format']);
@@ -137,7 +140,8 @@ class PXStorageTypeFilesarray extends PXStorageTypeAbstractFile {
 	/**
 	 * {@inheritdoc}
 	 */
-	function __normalize($field, $object, &$param, $allowed = null) {
+	public function __normalize($field, $object, &$param, $allowed = null)
+	{
 		$basedir = $this->ai($field, $object, $param['format']);
 		$storageTypeDir = new NLDir(HTDOCS_PATH . $basedir);
 
@@ -153,14 +157,14 @@ class PXStorageTypeFilesarray extends PXStorageTypeAbstractFile {
 				$diskPath = HTDOCS_PATH . $basedir . $entry;
 				$httpPath = $basedir . $entry;
 
-				$filesArray[$entry] = array(
+				$filesArray[$entry] = [
 					'path' => isset($httpPath) ? $httpPath : NULL,
 					'uri' => isset($httpPath) ? $httpPath : NULL, // same as in PXStorageTypeFile, for SecureFile
 					'filename' => $entry,
 					'size' => filesize($diskPath),
 					'type' => mime_content_type($diskPath),
-					'entry' => $entry
-				);
+					'entry' => $entry,
+				];
 				$filesArray[$entry]['fullpath'] = &$filesArray[$entry]['path'];
 			}
 

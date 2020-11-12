@@ -11,10 +11,10 @@ use Symfony\Component\DependencyInjection\ContainerAwareInterface;
  */
 interface ModuleInterface extends ContainerAwareInterface {
 
-	const ACTION_INDEX = 'index';
-	const ACTION_ACTION = 'action';
-	const ACTION_JSON = 'json';
-	const ACTION_POPUP = 'popup';
+	public const ACTION_INDEX = 'index';
+	public const ACTION_ACTION = 'action';
+	public const ACTION_JSON = 'json';
+	public const ACTION_POPUP = 'popup';
 
 	/**
 	 * @return mixed

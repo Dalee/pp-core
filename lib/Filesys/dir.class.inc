@@ -14,21 +14,22 @@
  * @package ProximaPortal
  * @subpackage Filesys
  */
-class NLDir {
+class NLDir
+{
 	/**
 	 * The name of the directory
 	 *
 	 * @var string
 	 */
-	var $name;
+	public $name;
 
 	/**
 	 * The flag of error, that might happened during handling
 	 *
-	 * @var    boolean
+	 * @var    bool
 	 * @access private
 	 */
-	var $_block;
+	public $_block;
 
 	/**
 	 * Internal PHP directory object
@@ -36,33 +37,34 @@ class NLDir {
 	 * @var    object
 	 * @access private
 	 */
-	var $_dirObject;
+	public $_dirObject;
 
 	/**
 	 * The class constructor.
 	 *
 	 * @param string $catalog name of the directory - absolute (begins with '/' or not)
 	 */
-	public function __construct($catalog) {
+	public function __construct($catalog)
+	{
 		$this->_block = false;
 		$catalog = $this->_prepare($catalog);
 
-		if(DIRECTORY_SEPARATOR === '\\') {
-			if ($catalog{1} == ':' && $catalog{2} == '\\' ) {
+		if (DIRECTORY_SEPARATOR === '\\') {
+			if ($catalog{1} == ':' && $catalog{2} == '\\') {
 				$this->name = $catalog;
 
-			} elseif ($catalog{0}.$catalog{1} === '\\\\') {
+			} elseif ($catalog{0} . $catalog{1} === '\\\\') {
 				$this->name = $catalog;
 
 			} else {
-				$this->name = getcwd().'/'.$catalog;
+				$this->name = getcwd() . '/' . $catalog;
 			}
 
 		} else {
 			if ($catalog{0} !== '/') {
-				$this->name = getcwd().'/'.$catalog.'/';
+				$this->name = getcwd() . '/' . $catalog . '/';
 			} else {
-				$this->name = $catalog.'/';
+				$this->name = $catalog . '/';
 			}
 		}
 
@@ -73,15 +75,16 @@ class NLDir {
 		}
 	}
 
-	function _prepare($catalog) {
+	public function _prepare($catalog)
+	{
 		$ds = DIRECTORY_SEPARATOR;
 
-		$catalog = preg_replace('|^\\\\|'.REGEX_MOD, '||', $catalog);
+		$catalog = preg_replace('|^\\\\|' . REGEX_MOD, '||', $catalog);
 
 		$catalog = str_replace('\\', '/', $catalog);
-		$catalog = preg_replace('|\/{2,}|'.REGEX_MOD, '/', $catalog);
+		$catalog = preg_replace('|\/{2,}|' . REGEX_MOD, '/', $catalog);
 
-		$catalog = str_replace('/',  $ds, $catalog);
+		$catalog = str_replace('/', $ds, $catalog);
 		$catalog = str_replace('||', '\\\\', $catalog);
 
 		return $catalog;
@@ -91,9 +94,10 @@ class NLDir {
 	 * Create directory (even parent directory is not exists)
 	 *
 	 * @param string $permissions permissions for creation
-	 * @return integer
+	 * @return int
 	 */
-	function Create($permissions = NULL) {
+	public function Create($permissions = NULL)
+	{
 		if ($this->_block) {
 			return -1;
 		}
@@ -102,17 +106,17 @@ class NLDir {
 		$path = mb_substr($this->name, 0, 1);
 
 		foreach ($pathElements as $element) {
-			$path .= $element.DIRECTORY_SEPARATOR;
+			$path .= $element . DIRECTORY_SEPARATOR;
 
 			if (!file_exists($path)) {
 				if ($permissions != NULL) {
 					if (!@mkdir($path, $permissions)) {
-						FatalError('Can\'t make dir '.$path);
+						FatalError('Can\'t make dir ' . $path);
 					}
 
 				} else {
 					if (!@mkdir($path)) {
-						FatalError('Can\'t make dir '.$path);
+						FatalError('Can\'t make dir ' . $path);
 					}
 				}
 			} elseif (!is_dir($path)) {
@@ -128,7 +132,8 @@ class NLDir {
 	 *
 	 * @return string
 	 */
-	function Read() {
+	public function Read()
+	{
 		if ($this->_block) {
 			return -1;
 		}
@@ -157,22 +162,24 @@ class NLDir {
 	 *
 	 * @return string
 	 */
-	function ReadFull() {
+	public function ReadFull()
+	{
 		$entry = $this->Read();
 
-		if($entry === -1) {
+		if ($entry === -1) {
 			return FALSE;
 		}
 
-		return ($entry !== false) ? $this->name.DIRECTORY_SEPARATOR.$entry : NULL;
+		return ($entry !== false) ? $this->name . DIRECTORY_SEPARATOR . $entry : NULL;
 	}
 
 	/**
 	 * Checking the existence of the directory
 	 *
-	 * @return boolean
+	 * @return bool
 	 */
-	function Exist() {
+	public function Exist()
+	{
 		if ($this->_block) {
 			return -1;
 		}
@@ -185,16 +192,17 @@ class NLDir {
 	 *
 	 * @return void
 	 */
-	function delete($deleteSelf=true) {
+	public function delete($deleteSelf = true)
+	{
 		if ($this->_block) {
 			return -1;
 		}
 
-		if($this->Exist()) {
+		if ($this->Exist()) {
 			$this->Emptyfy($deleteSelf);
 			$this->getFiles(); // делается из за странного бага на windows - каталог не удалялся, без перечитывания списка его файлов
 
-			if($deleteSelf) {
+			if ($deleteSelf) {
 				rmdir($this->name);
 			}
 		}
@@ -205,7 +213,8 @@ class NLDir {
 	 *
 	 * @return void
 	 */
-	function Emptyfy($deleteSelf=true) {
+	public function Emptyfy($deleteSelf = true)
+	{
 		if ($this->_block) {
 			return -1;
 		}
@@ -215,7 +224,7 @@ class NLDir {
 		}
 
 		while ($entry = $this->readFull()) {
-			if(file_exists($entry)) {
+			if (file_exists($entry)) {
 				if (is_dir($entry)) {
 					$d = new NLDir($entry);
 					$d->delete($deleteSelf);
@@ -226,21 +235,21 @@ class NLDir {
 		}
 	}
 
-	function unlink($entry) {
+	public function unlink($entry)
+	{
 		ini_set('track_errors', 1);
 		$oldError = error_reporting(0);
 
 		$res = @unlink($entry);
 
-		if(!$res) {
-			switch($php_errormsg) {
+		if (!$res) {
+			switch ($php_errormsg) {
 				case 'No such file or directory':
 					$res = true;
 					break;
 
 				default:
 					trigger_error($php_errormsg, E_USER_ERROR);
-					break;
 			}
 		}
 
@@ -249,30 +258,31 @@ class NLDir {
 		return $res;
 	}
 
-	function getFiles($type='files', $short=false) {
-		$files = array();
+	public function getFiles($type = 'files', $short = false)
+	{
+		$files = [];
 		if ($dir = opendir($this->name)) {
 			while (false !== ($file = readdir($dir))) {
-				if($file == '.' || $file == '..') {
+				if ($file == '.' || $file == '..') {
 					continue;
 				}
 
-				switch($type) {
+				switch ($type) {
 					case 'files':
 					case 'filenames':
-						if (!is_file($this->name.$file)) {
+						if (!is_file($this->name . $file)) {
 							continue(2);
 						}
 						break;
 
 					case 'dirs':
-						if (!is_dir($this->name.$file)) {
+						if (!is_dir($this->name . $file)) {
 							continue(2);
 						}
 						break;
 				}
 
-				$files[] = $short !== false ? $file : $this->name.$file;
+				$files[] = $short !== false ? $file : $this->name . $file;
 			}
 
 			closedir($dir);
@@ -281,11 +291,13 @@ class NLDir {
 		return $files;
 	}
 
-	function getFileNames($short=true) {
+	public function getFileNames($short = true)
+	{
 		return $this->getFiles('filenames', $short);
 	}
 
-	function getDirs($short=false) {
+	public function getDirs($short = false)
+	{
 		return $this->getFiles('dirs', $short);
 	}
 

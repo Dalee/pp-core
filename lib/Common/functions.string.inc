@@ -18,7 +18,7 @@ function NumericCmp($a, $b) {
 function _StrToLower($text) {
 	$text  = mb_strtolower($text);
 	if (defined('MB_DISABLED')) {
-		$trans = array('ю' => 'Ю', 'а' => 'А', 'б' => 'Б', 'ц' => 'Ц', 'д' => 'Д', 'е' => 'Е', 'ё' => 'Ё', 'ф' => 'Ф', 'г' => 'Г', 'х' => 'Х', 'и' => 'И', 'й' => 'Й', 'к' => 'К', 'л' => 'Л', 'м' => 'М', 'н' => 'Н', 'о' => 'О', 'п' => 'П', 'я' => 'Я', 'р' => 'Р', 'с' => 'С', 'т' => 'Т', 'у' => 'У', 'ж' => 'Ж', 'в' => 'В', 'ь' => 'Ь', 'ы' => 'Ы', 'з' => 'З', 'ш' => 'Ш', 'э' => 'Э', 'щ' => 'Щ', 'ч' => 'Ч', 'ъ' => 'Ъ');
+		$trans = ['ю' => 'Ю', 'а' => 'А', 'б' => 'Б', 'ц' => 'Ц', 'д' => 'Д', 'е' => 'Е', 'ё' => 'Ё', 'ф' => 'Ф', 'г' => 'Г', 'х' => 'Х', 'и' => 'И', 'й' => 'Й', 'к' => 'К', 'л' => 'Л', 'м' => 'М', 'н' => 'Н', 'о' => 'О', 'п' => 'П', 'я' => 'Я', 'р' => 'Р', 'с' => 'С', 'т' => 'Т', 'у' => 'У', 'ж' => 'Ж', 'в' => 'В', 'ь' => 'Ь', 'ы' => 'Ы', 'з' => 'З', 'ш' => 'Ш', 'э' => 'Э', 'щ' => 'Щ', 'ч' => 'Ч', 'ъ' => 'Ъ'];
 		$trans = array_flip($trans);
 		$text  = mb_strtr($text, $trans);
 	}
@@ -28,14 +28,14 @@ function _StrToLower($text) {
 function _StrToUpper($text) {
 	$text  = mb_strtoupper($text);
 	if (defined('MB_DISABLED')) {
-		$trans = array('ю' => 'Ю', 'а' => 'А', 'б' => 'Б', 'ц' => 'Ц', 'д' => 'Д', 'е' => 'Е', 'Ё' => 'ё', 'ф' => 'Ф', 'г' => 'Г', 'х' => 'Х', 'и' => 'И', 'й' => 'Й', 'к' => 'К', 'л' => 'Л', 'м' => 'М', 'н' => 'Н', 'о' => 'О', 'п' => 'П', 'я' => 'Я', 'р' => 'Р', 'с' => 'С', 'т' => 'Т', 'у' => 'У', 'ж' => 'Ж', 'в' => 'В', 'ь' => 'Ь', 'ы' => 'Ы', 'з' => 'З', 'ш' => 'Ш', 'э' => 'Э', 'щ' => 'Щ', 'ч' => 'Ч', 'ъ' => 'Ъ');
+		$trans = ['ю' => 'Ю', 'а' => 'А', 'б' => 'Б', 'ц' => 'Ц', 'д' => 'Д', 'е' => 'Е', 'Ё' => 'ё', 'ф' => 'Ф', 'г' => 'Г', 'х' => 'Х', 'и' => 'И', 'й' => 'Й', 'к' => 'К', 'л' => 'Л', 'м' => 'М', 'н' => 'Н', 'о' => 'О', 'п' => 'П', 'я' => 'Я', 'р' => 'Р', 'с' => 'С', 'т' => 'Т', 'у' => 'У', 'ж' => 'Ж', 'в' => 'В', 'ь' => 'Ь', 'ы' => 'Ы', 'з' => 'З', 'ш' => 'Ш', 'э' => 'Э', 'щ' => 'Щ', 'ч' => 'Ч', 'ъ' => 'Ъ'];
 		$text  = mb_strtr($text, $trans);
 	}
 	return $text;
 }
 
 function _Translit($text) {
-	$trans = array(
+	$trans = [
 		'А' => 'A',  'Б' => 'B',  'В' => 'V',   'Г' => 'G', 'Д' => 'D',  'Е' => 'E',
 		'Ё' => 'E',  'Ж' => 'G',  'З' => 'ZH',  'И' => 'I', 'Й' => 'JO', 'К' => 'K',
 		'Л' => 'L',  'М' => 'M',  'Н' => 'N',   'О' => 'O', 'П' => 'P',  'Р' => 'R',
@@ -48,17 +48,17 @@ function _Translit($text) {
 		'с' => 's',  'т' => 't',  'у' => 'y',   'ф' => 'f', 'х' => 'h',  'ц' => 'ts',
 		'ч' => 'ch', 'ш' => 'sh', 'щ' => 'sch', 'ъ' => '',  'ы' => 'y',  'ь' => '',
 		'э' => 'e',  'ю' => 'yu', 'я' => 'ya'
-	);
+	];
 	$text = mb_strtr($text, $trans);
 	return $text;
 }
 
 function _TranslitFilename($text) {
-	$trans = array(
+	$trans = [
 		'А' => 'a',     'а' => 'a',     'Б' => 'b',     'б' => 'b',
 		'В' => 'v',     'в' => 'v',     'Г' => 'g',     'г' => 'g',
 		'Д' => 'd',     'д' => 'd',     'Е' => 'e',     'е' => 'e',     'Ё' => 'e',     'ё' => 'e',
-		'Ж' => 'zh',    'ж' => 'xh',    'З' => 'z',     'з' => 'z',
+		'Ж' => 'zh',    'ж' => 'zh',    'З' => 'z',     'з' => 'z',
 		'И' => 'i',     'и' => 'i',     'Й' => 'j',     'й' => 'j',
 		'К' => 'k',     'к' => 'k',     'Л' => 'l',     'л' => 'l',
 		'М' => 'm',     'м' => 'm',     'Н' => 'n',     'н' => 'n',
@@ -82,7 +82,7 @@ function _TranslitFilename($text) {
 		']' => '_',     '{' => '_',     '}' => '_',
 
 		"\n" => ''
-	);
+	];
 
 	$text = mb_strtr(trim($text), $trans);
 
@@ -99,7 +99,7 @@ function _TranslitFilename($text) {
 }
 
 function _TranslitUnique($text) {
-	$trans = array(
+	$trans = [
 		'А' => 'A',   'Б' => 'B',  'В' => 'V',   'Г' => 'G', 'Д' => 'D',  'Е' => 'E',
 		'Ё' => 'EO',  'Ж' => 'ZH', 'З' => 'Z',   'И' => 'I', 'Й' => 'JO', 'К' => 'K',
 		'Л' => 'L',   'М' => 'M',  'Н' => 'N',   'О' => 'O', 'П' => 'P',  'Р' => 'R',
@@ -112,13 +112,13 @@ function _TranslitUnique($text) {
 		'с' => 's',   'т' => 't',  'у' => 'y',   'ф' => 'f', 'х' => 'h',  'ц' => 'ts',
 		'ч' => 'ch',  'ш' => 'sh', 'щ' => 'sch', 'ъ' => '',  'ы' => 'y',  'ь' => '',
 		'э' => 'je',  'ю' => 'yu', 'я' => 'ya'
-	);
+	];
 	$text = mb_strtr($text, $trans);
 	return $text;
 }
 
 function _UnTranslitUnique($text) {
-	$trans = array_flip(array(
+	$trans = array_flip([
 		'А' => 'A',   'Б' => 'B',  'В' => 'V',   'Г' => 'G', 'Д' => 'D',  'Е' => 'E',
 		'Ё' => 'EO',  'Ж' => 'ZH',  'З' => 'Z',  'И' => 'I', 'Й' => 'JO', 'К' => 'K',
 		'Л' => 'L',   'М' => 'M',  'Н' => 'N',   'О' => 'O', 'П' => 'P',  'Р' => 'R',
@@ -131,13 +131,13 @@ function _UnTranslitUnique($text) {
 		'с' => 's',   'т' => 't',  'у' => 'y',   'ф' => 'f', 'х' => 'h',  'ц' => 'ts',
 		'ч' => 'ch',  'ш' => 'sh', 'щ' => 'sch', 'ы' => 'y',
 		'э' => 'je',  'ю' => 'yu', 'я' => 'ya'
-	));
+	]);
 	$text = mb_strtr($text, $trans);
 	return $text;
 }
 
 function _TranslitModern($text) {
-	$trans = array(
+	$trans = [
 		'А' => 'A',  'Б' => 'B',  'В' => 'V',   'Г' => 'G', 'Д' => 'D',  'Е' => 'E',
 		'Ё' => 'E',  'Ж' => 'Zh', 'З' => 'Z',   'И' => 'I', 'Й' => 'Y',  'К' => 'K',
 		'Л' => 'L',  'М' => 'M',  'Н' => 'N',   'О' => 'O', 'П' => 'P',  'Р' => 'R',
@@ -151,7 +151,7 @@ function _TranslitModern($text) {
 		'с' => 's',  'т' => 't',  'у' => 'u',   'ф' => 'f', 'х' => 'h',  'ц' => 'ts',
 		'ч' => 'ch', 'ш' => 'sh', 'щ' => 'sch', 'ъ' => '',  'ы' => 'y',  'ь' => '',
 		'э' => 'e',  'ю' => 'yu', 'я' => 'ya',  "\xbf" => 'N'
-	);
+	];
 	$text = mb_strtr($text, $trans);
 	return $text;
 }
@@ -173,7 +173,7 @@ function NumericEndingsRussian($count, $one, $two, $zero) {
 }
 
 function htmlspecialcharsArray($array) {
-	if (!is_array($array)) return array();
+	if (!is_array($array)) return [];
 	foreach($array as $k=>$v) {
 		if (is_array($v)) {
 			$array[$k] = htmlspecialcharsArray($v);
@@ -189,7 +189,7 @@ function DbQuoteString($s) {
 }
 
 function Strip1251($s) {
-	static $ent = array (
+	static $ent = [
 		'&sbquo;' => "'",
 		'&bdquo;' => '"',
 		'&hellip;' => '...',
@@ -217,7 +217,7 @@ function Strip1251($s) {
 		'&#8217;' => "'",
 		'&#8211;' => '-',
 		'&#8212;' => '-'
-	);
+	];
 	return mb_strtr($s, $ent);
 }
 
@@ -299,7 +299,7 @@ function appendParamToUrl($url, $k, $v, $fragment = false, $num_save = false) {
 	if (!empty($tmp['query'])) {
 		parseStrMagic($tmp['query'], $qs);
 	} else {
-		$qs = array();
+		$qs = [];
 	}
 	if ($fragment === false) $qs[$k] = $v;
 	$url .= '?';
@@ -339,11 +339,11 @@ function removeParamFromUrl($url, $k, $fragment = false, $removeAll = false, $nu
 	if (!empty($tmp['query'])) {
 		parseStrMagic($tmp['query'], $qs);
 	} else {
-		$qs = array();
+		$qs = [];
 	}
 
 	if($removeAll === true) {
-		$qs = array();
+		$qs = [];
 	}
 
 	if ($fragment === false and isset($qs[$k])) unset($qs[$k]);
@@ -369,7 +369,7 @@ function parseStrMagic($str, &$arr) {
 
 function stripSlashesDeep($value) {
 	return is_array($value) ? array_map("stripSlashesDeep", $value) : stripslashes($value);
-};
+}
 
 function multiLevelVarsToString($name, $arrayVars, $leaf=null, $num_save=false) {
 	foreach($arrayVars as $k=>$a) {
@@ -489,8 +489,8 @@ function wordWrapHtmlSafe($str, $width = 60, $break = "\n", $nobreak = "", $nobr
 
 	// Variable setup
 	$intag = false;
-	$innbk = array();
-	$innbr = array();
+	$innbk = [];
+	$innbr = [];
 	$drain = "";
 	$utf = ($utf) ? "u" : "";
 
@@ -502,7 +502,7 @@ function wordWrapHtmlSafe($str, $width = 60, $break = "\n", $nobreak = "", $nobr
 	// We use \r for adding <br /> in the right spots so just switch to \n
 	if ($break == "\r") $break = "\n";
 
-	while (list(, $value) = each($content)) {
+	foreach ($content as $_ => $value) {
 		switch ($value) {
 
 			// If a < is encountered, set the "in-tag" flag
@@ -639,8 +639,8 @@ function fixWordLength($string, $length = 10) {
 /**
 * Decode one %uXXXX entity (RE callback).
 */
-function utf8_urldecodeCallback($p) {
-	static $_encTables = array(
+function utf8_urldecode($p) {
+	static $encTables = [
 		0x2500, 0x2502, 0x250C, 0x2510, 0x2514, 0x2518, 0x251C, 0x2524,
 		0x252C, 0x2534, 0x253C, 0x2580, 0x2584, 0x2588, 0x258C, 0x2590,
 		0x2591, 0x2592, 0x2593, 0x2320, 0x25A0, 0x2219, 0x221A, 0x2248,
@@ -657,7 +657,7 @@ function utf8_urldecodeCallback($p) {
 		0x0425, 0x0418, 0x0419, 0x041A, 0x041B, 0x041C, 0x041d, 0x041E,
 		0x041F, 0x042F, 0x0420, 0x0421, 0x0422, 0x0423, 0x0416, 0x0412,
 		0x042C, 0x042B, 0x0417, 0x0428, 0x042d, 0x0429, 0x0427, 0x042A
-	);
+	];
 
 	$hex = $p[1];
 	$dec = hexdec($hex);
@@ -695,7 +695,7 @@ if (!function_exists("lcfirst")) {
 }
 
 function quot($string, $double = true) {
-	return mb_strtr($string, $double ? array('"' => '&quot;') : array("'" => "&#039;"));
+	return mb_strtr($string, $double ? ['"' => '&quot;'] : ["'" => "&#039;"]);
 }
 
 /**
@@ -704,22 +704,23 @@ function quot($string, $double = true) {
  */
 function money2str($money, $stripkop=false) {
 	$nol = 'ноль';
-	$str[100]= array('','сто','двести','триста','четыреста','пятьсот','шестьсот', 'семьсот', 'восемьсот','девятьсот');
-	$str[11] = array('','десять','одиннадцать','двенадцать','тринадцать', 'четырнадцать','пятнадцать','шестнадцать','семнадцать', 'восемнадцать','девятнадцать','двадцать');
-	$str[10] = array('','десять','двадцать','тридцать','сорок','пятьдесят', 'шестьдесят','семьдесят','восемьдесят','девяносто');
-	$sex = array(
-		array('','один','два','три','четыре','пять','шесть','семь', 'восемь','девять'),// m
-		array('','одна','две','три','четыре','пять','шесть','семь', 'восемь','девять') // f
-	);
-	$forms = array(
-		array('копейка', 'копейки', 'копеек', 1), // 10^-2
-		array('рубль', 'рубля', 'рублей',  0), // 10^ 0
-		array('тысяча', 'тысячи', 'тысяч', 1), // 10^ 3
-		array('миллион', 'миллиона', 'миллионов',  0), // 10^ 6
-		array('миллиард', 'миллиарда', 'миллиардов',  0), // 10^ 9
-		array('триллион', 'триллиона', 'триллионов',  0), // 10^12
-	);
-	$out = $tmp = array();
+	$str[100]= ['','сто','двести','триста','четыреста','пятьсот','шестьсот', 'семьсот', 'восемьсот','девятьсот'];
+	$str[11] = ['','десять','одиннадцать','двенадцать','тринадцать', 'четырнадцать','пятнадцать','шестнадцать','семнадцать', 'восемнадцать','девятнадцать','двадцать'];
+	$str[10] = ['','десять','двадцать','тридцать','сорок','пятьдесят', 'шестьдесят','семьдесят','восемьдесят','девяносто'];
+	$sex = [
+		['','один','два','три','четыре','пять','шесть','семь', 'восемь','девять'],// m
+		['','одна','две','три','четыре','пять','шесть','семь', 'восемь','девять'] // f
+	];
+	$forms = [
+		['копейка', 'копейки', 'копеек', 1], // 10^-2
+		['рубль', 'рубля', 'рублей',  0], // 10^ 0
+		['тысяча', 'тысячи', 'тысяч', 1], // 10^ 3
+		['миллион', 'миллиона', 'миллионов',  0], // 10^ 6
+		['миллиард', 'миллиарда', 'миллиардов',  0], // 10^ 9
+		['триллион', 'триллиона', 'триллионов',  0], // 10^12
+	];
+	$out = $tmp = [];
+	$o = [];
 	// Поехали!
 	$tmp = explode('.', str_replace(',','.', $money));
 	$rub = number_format($tmp[ 0], 0,'','-');
@@ -794,7 +795,7 @@ function convertStringToDashed ($s) {
 function __convertStringToDashed_helper($a) { return '-' . mb_strtolower(substr($a[0], -1, 1)); }
 
 function _stripBadFileChars($fname) {
-	return str_replace(array('..' . DIRECTORY_SEPARATOR, DIRECTORY_SEPARATOR, chr(0)), '', $fname);
+	return str_replace(['..' . DIRECTORY_SEPARATOR, DIRECTORY_SEPARATOR, chr(0)], '', $fname);
 }
 
 function softcut ($string, $max_length, $tail = null) {
@@ -809,7 +810,7 @@ function softcut ($string, $max_length, $tail = null) {
 	$swot = mb_substr($string, 0, $max_length - $tail_length); // string that shorter than max_length without tail width
 
 	$cut_pos = 0;
-	$delimiters = array(' ', ',', '.', '"', "'", '/', ';', '-', '+', "\t");
+	$delimiters = [' ', ',', '.', '"', "'", '/', ';', '-', '+', "\t"];
 	foreach ($delimiters as $d) {
 		$cut_pos = max($cut_pos, mb_strrpos($swot,$d));
 	}

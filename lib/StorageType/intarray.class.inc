@@ -7,20 +7,23 @@
  * displayType HIDDEN, STATIC, TABLE
  * storageType intarray
  */
-class PXStorageTypeIntArray extends PXStorageTypeArray {
+class PXStorageTypeIntArray extends PXStorageTypeArray
+{
 
-	const defaultSQLType = 'INTEGER[]';
+	public const defaultSQLType = 'INTEGER[]';
 
-	protected static $brackets = array(array('{', '}'), array('[', ']'));
+	protected static $brackets = [['{', '}'], ['[', ']']];
 
-	function valueToDB($k, $v) {
+	public function valueToDB($k, $v)
+	{
 		return ($v === '' || is_null($v)) ? 'null' : (int)$v;
 	}
 
-	function normalize( $field, $object, &$param ) {
+	public function normalize($field, $object, &$param)
+	{
 		$value = $object[$field->name];
 		if (empty($value)) { // checking for empty value
-			return array();
+			return [];
 		}
 
 		$value = strtolower($value); // avoid json_decode error in case with NULL values, transform NULL -> null
@@ -30,7 +33,8 @@ class PXStorageTypeIntArray extends PXStorageTypeArray {
 		return ($array = json_decode($value)) === null ? parent::normalize($field, $object, $param) : $array;
 	}
 
-	protected function prepareValue($value) {
+	protected function prepareValue($value)
+	{
 		return str_replace(self::$brackets[0], self::$brackets[1], $value);
 	}
 

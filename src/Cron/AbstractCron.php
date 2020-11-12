@@ -31,7 +31,7 @@ abstract class AbstractCron implements ContainerAwareInterface {
 	 *
 	 * @return array
 	 */
-	public function Run(&$app, &$db, &$tree, $matchedTime, $matchedRule) {
+	public function Run($app, $db, $tree, $matchedTime, $matchedRule) {
 		return [
 			'status' => -1,
 			'note' => 'Не определен метод Run()'

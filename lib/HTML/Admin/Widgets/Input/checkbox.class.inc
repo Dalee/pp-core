@@ -1,35 +1,42 @@
 <?php
-class PXInputCheckbox extends PXAdminWidget {
-	var $name;
-	var $on;
-	var $value = NULL;
-	var $id = NULL;
 
-	public function __construct($name, $on=false, $value=NULL) {
-		$this->name = $name;
-		$this->setOn($on);
-		$this->setValue($value);
-	}
+class PXInputCheckbox extends PXAdminWidget
+{
+    public $name;
+    public $on;
+    public $value = NULL;
+    public $id = NULL;
 
-	function setOn($on) {
-		 $this->on = $on ? 'checked' : '';
-	}
+    public function __construct($name, $on = false, $value = NULL)
+    {
+        $this->name = $name;
+        $this->setOn($on);
+        $this->setValue($value);
+    }
 
-	function setId($id) {
-		$this->id = $id;
-	}
+    public function setOn($on)
+    {
+        $this->on = $on ? 'checked' : '';
+    }
 
-	function setValue($value) {
-		$this->value = $value;
-	}
+    public function setId($id)
+    {
+        $this->id = $id;
+    }
 
-	function html() {
-		$html = '<input type="checkbox" class="checkbox" name="'.$this->name.'" '.$this->on;
+    public function setValue($value)
+    {
+        $this->value = $value;
+    }
 
-		$html .= $this->id    ? ' id="'.$this->id.'"'       : '';
-		$html .= !is_null($this->value) ? ' value="'.quot($this->value).'"' : '';
-		$html .= $this->disable.' />';
+    public function html()
+    {
+        $html = '<input type="checkbox" class="checkbox" name="' . $this->name . '" ' . $this->on;
 
-		return $html;
-	}
+        $html .= $this->id ? ' id="' . $this->id . '"' : '';
+        $html .= !is_null($this->value) ? ' value="' . quot($this->value) . '"' : '';
+        $html .= $this->disable . ' />';
+
+        return $html;
+    }
 }

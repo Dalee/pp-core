@@ -1,74 +1,91 @@
 <?php
 
-interface PXAdminWidgetIF {
-	function html();
+interface PXAdminWidgetIF
+{
+    public function html();
 }
 
-abstract class PXAdminWidget implements PXAdminWidgetIF{
-	var $disable;
-	var $parentWidget = null;
+abstract class PXAdminWidget implements PXAdminWidgetIF
+{
+    public $disable;
+    public $parentWidget = null;
 
-	public function __construct() {
-	}
+    public function __construct()
+    {
+    }
 
-	function html() {
-	}
+    public function html()
+    {
+    }
 
-	function __toString() {
-		return $this->html();
-	}
+    public function __toString()
+    {
+        return $this->html();
+    }
 
-	function setParent($widget) {
-		$this->parentWidget = $widget;
-	}
+    public function setParent($widget)
+    {
+        $this->parentWidget = $widget;
+    }
 
-	function getParentWidget() {
-		if(is_null($this->parentWidget)) {
-			$layout = PXRegistry::getLayout();
-			$this->setParent($layout);
-		}
+    public function getParentWidget()
+    {
+        if (is_null($this->parentWidget)) {
+            $layout = PXRegistry::getLayout();
+            $this->setParent($layout);
+        }
 
-		return $this->parentWidget;
-	}
+        return $this->parentWidget;
+    }
 
-	function addToParent($label) {
-		$parent = $this->getParentWidget();
-		$this->addTo($label, $parent);
-	}
+    public function addToParent($label)
+    {
+        $parent = $this->getParentWidget();
+        $this->addTo($label, $parent);
+    }
 
-	function setToParent($label) {
-		$parent = $this->getParentWidget();
-		$this->setTo($label, $parent);
-	}
+    public function setToParent($label)
+    {
+        $parent = $this->getParentWidget();
+        $this->setTo($label, $parent);
+    }
 
-	function addTo($label, $widget) {
-		$widget->add($label, $this);
-	}
+    public function addTo($label, $widget)
+    {
+        $widget->add($label, $this);
+    }
 
-	function setTo($label, $widget) {
-		$widget->set($label, $this);
-	}
+    public function setTo($label, $widget)
+    {
+        $widget->set($label, $this);
+    }
 
-	function setDisabled($disable) {
-		$this->disable = $disable ? ' disabled="disabled"' : '';
-	}
+    public function setDisabled($disable)
+    {
+        $this->disable = $disable ? ' disabled="disabled"' : '';
+    }
 }
 
-abstract class PXAdminComplexWidget extends PXAdminWidget {
-	var $blocks;
-	public function __construct() {
-		parent::__construct();
-	}
+abstract class PXAdminComplexWidget extends PXAdminWidget
+{
+    public $blocks;
 
-	function append($block, $label) { // $block commonly used for instances of PXAdminWidget or PXAdminComplexWidget, but can apply string
-		$this->blocks[$label][] = $block;
-	}
+    public function __construct()
+    {
+        parent::__construct();
+    }
 
-	function decorate($type = null){
-		if($type){
-			PXDecorativeWidgetsCollection::fillByType($this, $type);
-		} else {
-			PXDecorativeWidgetsCollection::fill($this);
-		}
-	}
+    public function append($block, $label)
+    { // $block commonly used for instances of PXAdminWidget or PXAdminComplexWidget, but can apply string
+        $this->blocks[$label][] = $block;
+    }
+
+    public function decorate($type = null)
+    {
+        if ($type) {
+            PXDecorativeWidgetsCollection::fillByType($this, $type);
+        } else {
+            PXDecorativeWidgetsCollection::fill($this);
+        }
+    }
 }

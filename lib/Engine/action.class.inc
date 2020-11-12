@@ -4,12 +4,14 @@ use PP\Lib\Http\Response;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use PP\Lib\Engine\AbstractEngine;
 
-class PXEngineAction extends AbstractEngine {
+class PXEngineAction extends AbstractEngine
+{
 
 	/** @var string */
 	protected $nextLocation;
 
-	function runModules() {
+	public function runModules()
+	{
 		$moduleDescription = $this->modules[$this->area];
 		$instance = $moduleDescription->getModule();
 
@@ -22,7 +24,7 @@ class PXEngineAction extends AbstractEngine {
 
 		$eventData = [
 			'engine_type' => $this->engineType(),
-			'engine_behavior' => $this->engineBehavior()
+			'engine_behavior' => $this->engineBehavior(),
 		];
 		foreach ($this->app->triggers->system as $t) {
 			$t->getTrigger()->onBeforeModuleRun($this, $moduleDescription, $eventData);
@@ -35,7 +37,8 @@ class PXEngineAction extends AbstractEngine {
 		}
 	}
 
-	function redirect() {
+	public function redirect()
+	{
 		$nextLocation = $this->nextLocation;
 
 		if (empty($nextLocation)) {
@@ -51,12 +54,14 @@ class PXEngineAction extends AbstractEngine {
 	}
 
 	/** {@inheritdoc} */
-	public function engineType() {
+	public function engineType()
+	{
 		return static::USER_ENGINE_TAG;
 	}
 
 	/** {@inheritdoc} */
-	public function engineBehavior() {
+	public function engineBehavior()
+	{
 		return static::ACTION_BEHAVIOR;
 	}
 

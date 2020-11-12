@@ -8,28 +8,33 @@ namespace PP\Lib\Database;
  *
  * @method void close()
  */
-class DatabaseAdapter {
+class DatabaseAdapter
+{
 	protected $dbDriver;
 	protected $selfDescription; // ?
 
-	public function __construct(&$dbDescription) {
+	public function __construct(&$dbDescription)
+	{
 		$this->init($dbDescription);
 	}
 
 	/**
 	 * @param \NLDBDescription $dbDescription
 	 */
-	function init($dbDescription) {
+	public function init($dbDescription)
+	{
 		$this->dbDriver = $dbDescription->getDriver();
 		$this->selfDescription = $dbDescription;
 	}
 
-	function switchDatabase($dbDescription) {
+	public function switchDatabase($dbDescription)
+	{
 		$this->close();
 		$this->init($dbDescription);
 	}
 
-	function __get($property) {
+	public function __get($property)
+	{
 		switch ($property) {
 			case 'db':
 			case 'connection':
@@ -38,11 +43,11 @@ class DatabaseAdapter {
 
 			case 'cache':
 				return $this->dbDriver->cache;
-				break;
 		}
 	}
 
-	function __call($method, $args) {
+	public function __call($method, $args)
+	{
 		if (!method_exists($this->dbDriver, $method)) {
 			FatalError('Undefined method ' . $method . ' in ' . get_class($this->dbDriver));
 		}
@@ -50,35 +55,43 @@ class DatabaseAdapter {
 		return call_user_func_array([$this->dbDriver, $method], $args);
 	}
 
-	function query($query, $donotusecache = false, $limitpair = null) {
+	public function query($query, $donotusecache = false, $limitpair = null)
+	{
 		return $this->dbDriver->query($query, $donotusecache, $limitpair);
 	}
 
-	function TrueStatusString($status = 'TRUE') {
+	public function TrueStatusString($status = 'TRUE')
+	{
 		return ($status == 'TRUE' || $status == 1) ? "'1'" : "'0'";
 	}
 
-	function ClearCache($force = false) {
+	public function ClearCache($force = false)
+	{
 		return $this->dbDriver->cache->clear();
 	}
 
-	function setCache($on) {
+	public function setCache($on)
+	{
 		return $on ? $this->cacheOn() : $this->cacheOff();
 	}
 
-	function cacheOn() {
+	public function cacheOn()
+	{
 		$this->dbDriver->setCache($this->selfDescription->cache);
 	}
 
-	function cacheOff() {
+	public function cacheOff()
+	{
 		$this->dbDriver->setCache(false);
 	}
 
-	function getSelfDescription() {
+	public function getSelfDescription()
+	{
 		return $this->selfDescription;
 	}
 
-	function LIKE($condition, $percs = null) {
+	public function LIKE($condition, $percs = null)
+	{
 		return $this->dbDriver->LIKE($condition, is_null($percs) ? P_LEFT | P_RIGHT : $percs);
 	}
 }

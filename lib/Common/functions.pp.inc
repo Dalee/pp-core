@@ -18,12 +18,12 @@ function pp_base_paths($sub = null, $withPlugins = false) {
 	$sub && $sub = ltrim(trim($sub, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR, DIRECTORY_SEPARATOR);
 	$ck = $sub . intval($withPlugins);
 
-	static $cache = array();
+	static $cache = [];
 	if (!empty($cache[$ck])) {
 		return $cache[$ck];
 	}
 
-	$r = array();
+	$r = [];
 
 	$r[] = SHAREDPATH . $sub;
 	$r[] = LOCALPATH . $sub;
@@ -58,7 +58,7 @@ function pp_fetch_file($where, $what, $postfix = '', $ext = '.inc') {
 	$postfix = (array)($postfix);
 
 	// normalize paths
-	$fullwhere = array();
+	$fullwhere = [];
 	foreach ($where as $k => $wherev) {
 		if (empty($wherev[0]) || $wherev[0] != DIRECTORY_SEPARATOR) {
 			$fullwhere = array_merge($fullwhere, pp_base_paths($wherev));
@@ -75,12 +75,12 @@ function pp_fetch_file($where, $what, $postfix = '', $ext = '.inc') {
 		foreach ($what as $file) {
 			foreach ($postfix as $p) {
 				if (mb_substr($file, -4) != $p . $ext) {
-					$filenames = array(
+					$filenames = [
 						$path . $file . $p . $ext,
 						$path . $file
-					);
+					];
 				} else {
-					$filenames = array( $path . $file );
+					$filenames = [$path . $file];
 				}
 				foreach ($filenames as $filename) {
 					if (is_readable($filename) && is_file($filename)) {
@@ -99,16 +99,16 @@ function pp_fetch_file($where, $what, $postfix = '', $ext = '.inc') {
  */
 function pp_plugins() {
 	if (!pp_loaded()) {
-		return array();
+		return [];
 	}
 
-	$result = array();
+	$result = [];
 	foreach (PXRegistry::getApp()->plugins as $tag => $plugin) {
-		$result[] = array(
+		$result[] = [
 			'tag' => $tag,
 			'name' => $plugin->getName(),
 			'path' => pathinfo($plugin->getPathToPlugin(), PATHINFO_DIRNAME) . DIRECTORY_SEPARATOR,
-		);
+		];
 	}
 	return $result;
 }

@@ -7,17 +7,20 @@
  * storageType json
  */
 
-class PXStorageTypeJson extends PXStorageType {
+class PXStorageTypeJson extends PXStorageType
+{
 
-	function getFromRequest($field, $object, &$param) {
+	public function getFromRequest($field, $object, &$param)
+	{
 		$k = $field->name;
-		return (is_array($object[$k])) ? $object[$k] : array();
+		return (is_array($object[$k])) ? $object[$k] : [];
 	}
 
-	function normalizeObjectAttribute($field, $object, &$param) {
+	public function normalizeObjectAttribute($field, $object, &$param)
+	{
 		$k = $field->name;
 
-		$v = json_encode((is_array($object[$k]) ? $object[$k] : array()));
+		$v = json_encode((is_array($object[$k]) ? $object[$k] : []));
 
 		if (is_array($param['dbFields'])) {
 			$param['dbFields'][] = $k;
@@ -26,10 +29,11 @@ class PXStorageTypeJson extends PXStorageType {
 			$param['dbValues'][] = $v;
 		}
 
-		return array($v, $param['dbFields'], $param['dbValues']);
+		return [$v, $param['dbFields'], $param['dbValues']];
 	}
 
-	function normalize($field, $object, &$param) {
-		return ($object[$field->name])? json_decode($object[$field->name], 1) : $object[$field->name];
+	public function normalize($field, $object, &$param)
+	{
+		return ($object[$field->name]) ? json_decode($object[$field->name], 1) : $object[$field->name];
 	}
 }

@@ -24,11 +24,11 @@ switch ($request->GetVar('action')) {
 			exit;
 		}
 
-		$fonts = array(
+		$fonts = [
 			BASEPATH . '/libpp/share/fonts/tahoma.ttf'
-		);
+        ];
 
-		$colors = array('lite' => 'FBFEFF', 'dark' => '545B5D');
+		$colors = ['lite' => 'FBFEFF', 'dark' => '545B5D'];
 		$width = mb_strlen($str) * 25;
 
 		$captcha = new NLCaptcha($str, $width, 40, $fonts, $colors, false, 23);

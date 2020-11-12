@@ -6,15 +6,17 @@ use PP\Lib\Cache\ObjectCache;
  * Генератор пар ключ/значение, использующихся в CAPTCHA
  * Для работы модуля должен существовать каталог, который передаётся конструктору.
  */
-class NLBlockingNumbers {
-	var $path;
-	var $key;
-	var $value;
-	var $storage;
+class NLBlockingNumbers
+{
+	public $path;
+	public $key;
+	public $value;
+	public $storage;
 
 	protected static $_storage = null;
 
-	protected static function getStorage() {
+	protected static function getStorage()
+	{
 		if (self::$_storage) {
 			return self::$_storage;
 		}
@@ -23,7 +25,8 @@ class NLBlockingNumbers {
 		return self::$_storage;
 	}
 
-	public function __construct() {
+	public function __construct()
+	{
 		$this->storage = self::getStorage();
 		$this->path = 'captcha';
 		$this->key = -1;
@@ -33,11 +36,13 @@ class NLBlockingNumbers {
 	/**
 	 * @return int
 	 */
-	public function getKey() {
+	public function getKey()
+	{
 		return $this->key;
 	}
 
-	function CreateNew($chars = 4, $alphabet = '0123456789') {
+	public function CreateNew($chars = 4, $alphabet = '0123456789')
+	{
 		if (!$this->storage) {
 			return false;
 		}
@@ -55,7 +60,8 @@ class NLBlockingNumbers {
 		return true;
 	}
 
-	function CheckValueByKey($key, $checkValue, $removeKey = true) {
+	public function CheckValueByKey($key, $checkValue, $removeKey = true)
+	{
 		$key = (int)$key;
 		$val = $this->storage->load($this->key($key));
 
@@ -66,16 +72,19 @@ class NLBlockingNumbers {
 		return $val === $checkValue;
 	}
 
-	function GetValueByKey($key) {
+	public function GetValueByKey($key)
+	{
 		$key = (int)$key;
 		return $this->storage->load($this->key($key));
 	}
 
-	function RemoveKey($key) {
+	public function RemoveKey($key)
+	{
 		$this->storage->delete($this->key($key));
 	}
 
-	protected function key($key) {
+	protected function key($key)
+	{
 		return $this->path . '.' . $key;
 	}
 }

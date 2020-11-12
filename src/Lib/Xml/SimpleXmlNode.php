@@ -54,10 +54,10 @@ class SimpleXmlNode extends AbstractXmlNode {
 
 		$n = $this->_node;
 		switch (true) {
-			case $n->xpath('/*') == array($n);
+			case $n->xpath('/*') == [$n];
 				$this->_nodeType = Xml::DOC;
 				break;
-			case ($n->xpath('.') == array($n)):
+			case ($n->xpath('.') == [$n]):
 				$this->_nodeType = Xml::ELEMENT;
 				break;
 			case $n->attributes() === null:
@@ -75,8 +75,8 @@ class SimpleXmlNode extends AbstractXmlNode {
 	 * {@inheritdoc}
 	 */
 	public function nodeXValue($xpath) {
-		list ($node) = (array)($this->_node->xpath($xpath)) + array(0 => '');
-		return (string)$node;
+		[$node] = (array)($this->_node->xpath($xpath)) + [0 => ''];
+        return (string)$node;
 	}
 
 	/**
@@ -87,9 +87,9 @@ class SimpleXmlNode extends AbstractXmlNode {
 			return array_values($this->_attributes);
 		}
 
-		$this->_attributes = array();
+		$this->_attributes = [];
 
-		if (is_object($this->_node)) {
+        if (is_object($this->_node)) {
 			$attrs = $this->_node->attributes();
 
 			if ($attrs) {
@@ -106,7 +106,6 @@ class SimpleXmlNode extends AbstractXmlNode {
 	 * {@inheritdoc}
 	 */
 	public function getChildObjects() {
-		$xmlChilds = $this->_node->children();
-		return $xmlChilds;
+		return $this->_node->children();
 	}
 }

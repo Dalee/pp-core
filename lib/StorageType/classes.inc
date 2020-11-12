@@ -20,15 +20,12 @@ require_once PPLIBPATH . 'StorageType/flatintarray.class.inc';
 
 require_once PPLIBPATH . 'StorageType/File/abstract.class.inc';
 require_once PPLIBPATH . 'StorageType/File/file.class.inc';
-require_once PPLIBPATH . 'StorageType/File/image.class.inc';
-require_once PPLIBPATH . 'StorageType/File/flash.class.inc';
 require_once PPLIBPATH . 'StorageType/File/filesarray.class.inc';
+require_once PPLIBPATH . 'StorageType/File/image.class.inc';
 require_once PPLIBPATH . 'StorageType/File/imagesarray.class.inc';
-require_once PPLIBPATH . 'StorageType/File/flashsarray.class.inc';
 
 require_once PPLIBPATH . 'StorageType/virtual.class.inc';
 require_once PPLIBPATH . 'StorageType/aggr.class.inc';
-require_once PPLIBPATH . 'StorageType/session_st.class.inc';
 
 require_once PPLIBPATH . 'StorageType/sql.class.inc';
 

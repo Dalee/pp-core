@@ -8,7 +8,7 @@
  */
 class PXStorageTypeFlatIntArray extends PXStorageTypeIntArray {
 
-	const defaultSQLType = 'INTEGER[]';
+    public const defaultSQLType = 'INTEGER[]';
 
 	protected function prepareValue($value) {
 		$value[0] = '[';

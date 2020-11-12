@@ -19,7 +19,7 @@ class PXCronRunNull extends AbstractCron {
 		$this->name = 'Пустая задача';
 	}
 
-	public function Run(&$app, &$db, &$tree, $matchedTime, $matchedRule) {
+	public function Run($app, $db, $tree, $matchedTime, $matchedRule) {
 		return ['status' => 0, 'note' => 'Успешно!'];
 	}
 

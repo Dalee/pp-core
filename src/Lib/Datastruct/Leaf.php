@@ -7,21 +7,21 @@ namespace PP\Lib\Datastruct;
  * @package PP\Lib\Datastruct
  */
 class Leaf {
-	var $id;
-	var $title;
-	var $children;
-	var $parent;
-	var $content;
+	public $id;
+	public $title;
+	public $children;
+	public $parent;
+	public $content;
 
 	/**
 	 * @var int
 	 */
-	var $level;
+	public $level;
 
 	/**
 	 * @var Tree
 	 */
-	var $tree;
+	public $tree;
 
 	/**
 	 * Leaf constructor.

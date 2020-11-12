@@ -7,15 +7,18 @@
  * storageType serialized
  */
 
-class PXStorageTypeSerialized extends PXStorageType {
-	function getFromRequest($field, $object, &$param) {
+class PXStorageTypeSerialized extends PXStorageType
+{
+	public function getFromRequest($field, $object, &$param)
+	{
 		$k = $field->name;
-		return (is_array($object[$k])) ? $object[$k] : array();
+		return (is_array($object[$k])) ? $object[$k] : [];
 	}
 
-	function normalizeObjectAttribute($field, $object, &$param) {
+	public function normalizeObjectAttribute($field, $object, &$param)
+	{
 		$k = $field->name;
-		$v = json_encode((is_array($object[$k])) ? $object[$k] : array());
+		$v = json_encode((is_array($object[$k])) ? $object[$k] : []);
 
 		if (is_array($param['dbFields'])) {
 			$param['dbFields'][] = $k;
@@ -25,10 +28,11 @@ class PXStorageTypeSerialized extends PXStorageType {
 			$param['dbValues'][] = $v;
 		}
 
-		return array($v, $param['dbFields'], $param['dbValues']);
+		return [$v, $param['dbFields'], $param['dbValues']];
 	}
 
-	function normalize($field, $object, &$param) {
+	public function normalize($field, $object, &$param)
+	{
 		$k = $field->name;
 		$w = $object[$k];
 		$v = null;
@@ -40,9 +44,9 @@ class PXStorageTypeSerialized extends PXStorageType {
 			// the second byte can be one of [:, ;].
 			// see http://www.phpinternalsbook.com/classes_objects/serialization.html
 			// but json more simpler to check so we will do it.
-			$fb   = $w[0];
-			$sb   = $w[1];
-			$lb   = substr($w, -1); // last byte
+			$fb = $w[0];
+			$sb = $w[1];
+			$lb = substr($w, -1); // last byte
 
 			// json_encoded data. not hardened check
 			$json = ctype_digit($fb) || (!ctype_alpha($fb) && !ctype_alpha($fb));
@@ -51,8 +55,7 @@ class PXStorageTypeSerialized extends PXStorageType {
 
 			if ($srlz) {
 				$v = @unserialize($w);
-			}
-			elseif ($json) {
+			} elseif ($json) {
 				$v = json_decode($w, true);
 			}
 

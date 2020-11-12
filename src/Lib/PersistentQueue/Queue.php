@@ -2,8 +2,9 @@
 
 namespace PP\Lib\PersistentQueue;
 
-use \PXApplication;
-use \PXDatabase;
+use Exception;
+use PXApplication;
+use PXDatabase;
 
 /**
  * Class Queue.
@@ -15,12 +16,12 @@ class Queue {
 	/**
 	 * @var string
 	 */
-	const JOB_DB_TYPE = 'queue_job';
+	public const JOB_DB_TYPE = 'queue_job';
 
 	/**
 	 * @var string
 	 */
-	const JOB_FETCH_LIMIT = 1;
+	public const JOB_FETCH_LIMIT = 1;
 
 	/**
 	 * @var PXApplication
@@ -37,10 +38,15 @@ class Queue {
 	 *
 	 * @param PXApplication $app
 	 * @param PXDatabase $db
+	 * @throws Exception
 	 */
 	public function __construct(PXApplication $app, PXDatabase $db) {
 		$this->app = $app;
 		$this->db = $db;
+		if (!isset($this->app->types[static::JOB_DB_TYPE])) {
+			throw new Exception(
+				sprintf("Queue job fatal error: datatype `%s` missed in datatypes.xml", static::JOB_DB_TYPE));
+		}
 	}
 
 	/**

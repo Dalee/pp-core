@@ -16,7 +16,7 @@ endif;
 if (!is_callable('http_parse_params')) :
 
 function http_parse_params_split ($string, $delim, $quote = '"') {
-	$r = array();
+	$r = [];
 	$i = 0;
 
 	$prevpart = '';
@@ -49,8 +49,8 @@ function http_parse_params_dequote ($string, $quote = '"') {
 }
 
 function http_parse_params ($params) {
-	$result = array();
-	$preresult = array();
+	$result = [];
+	$preresult = [];
 
 	$params = str_replace("\\\"", "\0\0", $params);
 
@@ -143,16 +143,16 @@ if (!function_exists('http_build_url')) :
  * @test ["http://example.org/orig?q=1#f","https://www.example.com:9999/replaced#n",0] >>> "https://www.example.com:9999/replaced?q=1#n"
  * @test ["http://user@www.example.com/pub/index.php?a=b#files",{"scheme":"ftp","host":"ftp.example.com","path":"files/current/","query":"a=c"},271] >>> "ftp://ftp.example.com/pub/files/current/?a=c" --- replace scheme, host, path, query == HTTP_URL_STRIP_FRAGMENT|HTTP_URL_STRIP_AUTH|HTTP_URL_JOIN_QUERY|HTTP_URL_JOIN_PATH
  */
-function http_build_url($url, $parts = array(), $flags = HTTP_URL_FROM_ENV, &$new_url = array()) {
+function http_build_url($url, $parts = [], $flags = HTTP_URL_FROM_ENV, &$new_url = []) {
 	is_array($url) || $url = parse_url($url);
 	is_array($parts) || $parts = parse_url($parts);
 
 	isset($url['query'])   && is_string($url['query'])   || $url['query']   = null;
 	isset($parts['query']) && is_string($parts['query']) || $parts['query'] = null;
 
-	$keys = array('user', 'pass', 'port', 'path', 'query', 'fragment');
+	$keys = ['user', 'pass', 'port', 'path', 'query', 'fragment'];
 
-	$new_url = array();
+	$new_url = [];
 
 	$new_url['port'] = 0;
 
@@ -202,6 +202,7 @@ function http_build_url($url, $parts = array(), $flags = HTTP_URL_FROM_ENV, &$ne
 	if (!isset($new_url['scheme'])) {
 		if ($flags & HTTP_URL_FROM_ENV) {
 			switch(true) {
+				case $new_url['port'] == 443:
 				case !!$_SERVER['HTTPS'] && !strcasecmp($_SERVER['HTTPS'], 'ON'):
 					$new_url['scheme'] = 'https';
 					break;
@@ -210,9 +211,6 @@ function http_build_url($url, $parts = array(), $flags = HTTP_URL_FROM_ENV, &$ne
 				case $new_url['port'] == 0:
 				default:
 					$new_url['scheme'] = 'http';
-					break;
-				case $new_url['port'] == 443:
-					$new_url['scheme'] = 'https';
 					break;
 				case !!($scheme = getservbyport($new_url['port'], "tcp")):
 					$new_url['scheme'] = $scheme;

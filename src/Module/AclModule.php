@@ -9,34 +9,39 @@ use Ramsey\Uuid\Uuid;
  *
  * @package PP\Module
  */
-class AclModule extends AbstractModule {
-	var $what;
-	var $access;
-	var $objectRule = 'user';
-	var $aclObjectTitle = 'Тип объекта';
+class AclModule extends AbstractModule
+{
+	public $what;
+	public $access;
+	public $objectRule = 'user';
+	public $aclObjectTitle = 'Тип объекта';
 
 	protected $ruleTypeField;
 	protected $orderingField;
 
-	function __construct($area, $settings) {
+	public function __construct($area, $settings)
+	{
 		parent::__construct($area, $settings);
 
-		$this->what     = $this->getAvailableActions();
-		$this->access   = $this->getAvailableAccess();
+		$this->what = $this->getAvailableActions();
+		$this->access = $this->getAvailableAccess();
 		$this->sqlTable = 'acl_objects';
 		$this->orderingField = 'sys_order';
 		$this->ruleTypeField = 'objectrule';
 	}
 
-	function getAvailableActions() {
+	public function getAvailableActions()
+	{
 		return $this->getAclDefinitionsFor('actions');
 	}
 
-	function getAvailableAccess() {
+	public function getAvailableAccess()
+	{
 		return $this->getAclDefinitionsFor('access');
 	}
 
-	function getAclDefinitionsFor($what) {
+	public function getAclDefinitionsFor($what)
+	{
 		if (empty($this->app->langTree['module_acl_rules'][$what])) {
 			FatalError("Не описаны правила module_acl_rules[{$what}] в lang.yaml");
 		}
@@ -45,15 +50,17 @@ class AclModule extends AbstractModule {
 		return array_combine(array_keys($_), getColFromTable($_, 'rus')); //TODO: make lang choose optional
 	}
 
-	function getWhatDict() {
+	public function getWhatDict()
+	{
 		return $this->what;
 	}
 
-	function adminIndex() {
+	public function adminIndex()
+	{
 		$sid = $this->_getSid();
-		$rules  = $this->_getRules($sid);
+		$rules = $this->_getRules($sid);
 		$fields = $this->_getFields();
-		$dicts  = $this->_getDicts();
+		$dicts = $this->_getDicts();
 
 		$this->indexSetMenu($sid);
 
@@ -62,17 +69,17 @@ class AclModule extends AbstractModule {
 		$table->setData($rules);
 
 		$table->setNullText('Все');
-		$table->setDict('sgroupid',   $dicts['sgroup']);
+		$table->setDict('sgroupid', $dicts['sgroup']);
 		$table->setDict('objecttype', $dicts['types']);
-		$table->setDict('what',       $this->getWhatDict());
-		$table->setDict('access',     $this->access);
+		$table->setDict('what', $this->getWhatDict());
+		$table->setDict('access', $this->access);
 
-		$queryParams = 'area='  . $this->area . '&sid=' . urlencode($sid);
-		$table->setControls('/admin/popup.phtml?'  . $queryParams . '&id=',               'изменить это правило', 'edit', false, true);
-		$table->setControls('/admin/action.phtml?' . $queryParams . '&action=delete&id=', 'удалить  это правило', 'del',  true,  false);
+		$queryParams = 'area=' . $this->area . '&sid=' . urlencode($sid);
+		$table->setControls('/admin/popup.phtml?' . $queryParams . '&id=', 'изменить это правило', 'edit', false, true);
+		$table->setControls('/admin/action.phtml?' . $queryParams . '&action=delete&id=', 'удалить  это правило', 'del', true, false);
 
-		$table->setControls('/admin/action.phtml?' . $queryParams . '&action=up&id=',     'поднять  это правило', 'up' ,  false, false);
-		$table->setControls('/admin/action.phtml?' . $queryParams . '&action=down&id=',   'опустить это правило', 'down', false, false);
+		$table->setControls('/admin/action.phtml?' . $queryParams . '&action=up&id=', 'поднять  это правило', 'up', false, false);
+		$table->setControls('/admin/action.phtml?' . $queryParams . '&action=down&id=', 'опустить это правило', 'down', false, false);
 		$table->showEven();
 
 		$table->setTableId('acl');
@@ -83,8 +90,9 @@ class AclModule extends AbstractModule {
 		$this->layout->assign('INNER.1.1', $this->addNewRuleButton());
 	}
 
-	function indexSetMenu($rSid) {
-		$types = array();
+	public function indexSetMenu($rSid)
+	{
+		$types = [];
 
 		$countsQueryResult = $this->db->query(sprintf('SELECT "objecttype" as "id", count(*) as "count" FROM "%s" WHERE "objectrule" = \'%s\' GROUP BY 1;', $this->sqlTable, $this->objectRule));
 		$counts = array_flat($countsQueryResult, 'id', 'count');
@@ -124,33 +132,35 @@ class AclModule extends AbstractModule {
 		$this->layout->assignKeyValueList('INNER.0.0', $types, $rSid);
 	}
 
-	function addNewRuleButton() {
+	public function addNewRuleButton()
+	{
 		$button = new \PXControlButton('Правило доступа');
 		$button->setClickCode('Popup(\'' . '/admin/popup.phtml?area=' . $this->area . '\')');
 		$button->setClass('add');
 		return $button->html();
 	}
 
-	function adminPopup() {
-		$layout  = $this->layout;
+	public function adminPopup()
+	{
+		$layout = $this->layout;
 		$request = $this->request;
-		$app     = $this->app;
+		$app = $this->app;
 
-		$rules  = $this->_getRules();
+		$rules = $this->_getRules();
 		$fields = $this->_getFields();
-		$dicts  = $this->_getDicts();
+		$dicts = $this->_getDicts();
 
 		$rId = $request->getId();
 
-		$layout->SetGetVarToSave('id',     $rId);
+		$layout->SetGetVarToSave('id', $rId);
 		$layout->SetOuterForm('action.phtml', 'POST', 'multipart/form-data');
 
-		$object = array();
+		$object = [];
 
 		if ($rId && isset($rules[$rId])) {
 			$object = $rules[$rId];
 		} else {
-			foreach($fields as $name=>$title) {
+			foreach ($fields as $name => $title) {
 				$object[$name] = null;
 			}
 		}
@@ -167,30 +177,30 @@ class AclModule extends AbstractModule {
 		$_ .= \NLAbstractHTMLForm::BuildHidden('action', ($rId ? 'edit' : 'add'));
 
 		$_ .= '<table class="mainform">';
-		foreach($fields as $col=>$title) {
-			$p = array();
-			$fieldType = new \PXFieldDescription(array(), $app, $p);
+		foreach ($fields as $col => $title) {
+			$p = [];
+			$fieldType = new \PXFieldDescription([], $app, $p);
 			$fieldType->name = $col;
 			$fieldType->description = $title;
-			$param = array(
-				'parents'     => NULL,
+			$param = [
+				'parents' => NULL,
 				'selfParents' => NULL,
-				'even'        => false
-			);
+				'even' => false,
+			];
 
-			if(isset($dicts[$col])) {
+			if (isset($dicts[$col])) {
 				$dType = 'DROPDOWN';
-				if($col == 'sgroupid' && $app->types['sgroup']->struct == 'tree') {
-					$param['datatype']   = & $app->types['sgroup'];
+				if ($col == 'sgroupid' && $app->types['sgroup']->struct == 'tree') {
+					$param['datatype'] = &$app->types['sgroup'];
 					$param['root_title'] = '-- любая --';
 					$dType = 'PARENTDROPDOWN';
 				}
 
 				$fieldType->setDisplayType($dType);
 
-				$tmpVals = array();
-				foreach($dicts[$col] as $id=>$val) {
-					$tmpVals[] = array('id' => $id, 'title' => $val);
+				$tmpVals = [];
+				foreach ($dicts[$col] as $id => $val) {
+					$tmpVals[] = ['id' => $id, 'title' => $val];
 				}
 
 				$directory = new \PXDirectoryDescription($col);
@@ -209,27 +219,30 @@ class AclModule extends AbstractModule {
 
 		$layout->append('OUTER.CONTENT', $_);
 
-		$title = ($rId == 0) ? 'Добавление нового правила' : 'Редактирование правила &#8470;'.$rId;
+		$title = ($rId == 0) ? 'Добавление нового правила' : 'Редактирование правила &#8470;' . $rId;
 		$layout->assignTitle($title);
 	}
 
-	function _getFields() {
-		return array(
-			'sgroupid'     => 'Группа',
-			'objectid'     => 'Объект',
+	public function _getFields()
+	{
+		return [
+			'sgroupid' => 'Группа',
+			'objectid' => 'Объект',
 			'objectparent' => 'Родитель объекта',
-			'objecttype'   => $this->aclObjectTitle,
-			'what'         => 'Действие',
-			'access'       => 'Доступ'
-		);
+			'objecttype' => $this->aclObjectTitle,
+			'what' => 'Действие',
+			'access' => 'Доступ',
+		];
 	}
 
-	function _getSid() {
+	public function _getSid()
+	{
 		return isset($_GET['sid']) ? $_GET['sid'] : '*';
 	}
 
-	function _getSidCriteria($sid) {
-		$andwhat = array('blank' => '1 = 1');
+	public function _getSidCriteria($sid)
+	{
+		$andwhat = ['blank' => '1 = 1'];
 
 		if ($sid === null || $sid === '*') {
 			return $andwhat;
@@ -241,18 +254,20 @@ class AclModule extends AbstractModule {
 		return $andwhat;
 	}
 
-	function _getRules($sid = null, $limit = null) {
+	public function _getRules($sid = null, $limit = null)
+	{
 		$criterias = $this->_getSidCriteria($sid);
 		$criterias[] = sprintf('"objectrule" = \'%s\'', $this->objectRule);
 		$where = join(' AND ', $criterias);
-		$limit = ($limit) ? array((int)$limit, 0) : null;
+		$limit = ($limit) ? [(int)$limit, 0] : null;
 
 		$tmp = $this->db->query(sprintf('SELECT * FROM "%s" WHERE %s ORDER BY "%s" ASC;', $this->sqlTable, $where, $this->orderingField), false, $limit);
 
 		return $limit == 1 ? reset($tmp) : array_flat($tmp, 'id');
 	}
 
-	function _getTypes() {
+	public function _getTypes()
+	{
 		$types = [];
 
 		foreach ($this->db->types as $typeName => $type) {
@@ -264,32 +279,35 @@ class AclModule extends AbstractModule {
 		return $types;
 	}
 
-	function _getDicts() {
+	public function _getDicts()
+	{
 		$dicts = [];
 
 		// sgroup
 		$this->db->LoadDirectoriesByType($this->db->types['sgroup']);
-		$dicts['sgroup']     = GetColFromTableWithIndexs($this->db->app->directory['sgroup']->values, 'title');
-		$dicts['types']      = $this->_getTypes();
-		$dicts['what']       = $this->getWhatDict();
+		$dicts['sgroup'] = GetColFromTableWithIndexs($this->db->app->directory['sgroup']->values, 'title');
+		$dicts['types'] = $this->_getTypes();
+		$dicts['what'] = $this->getWhatDict();
 
-		$dicts['sgroupid']   =& $dicts['sgroup'];
-		$dicts['access']     =& $this->access;
+		$dicts['sgroupid'] =& $dicts['sgroup'];
+		$dicts['access'] =& $this->access;
 		$dicts['objecttype'] =& $dicts['types'];
 
 		return $dicts;
 	}
 
 	protected
-	function getRuleById($rId, $sid = false) {
+	function getRuleById($rId, $sid = false)
+	{
 		return current($this->getRulesByIds($rId, $sid));
 	}
 
 	protected
-	function getRulesByIds($ids, $sid = false) {
+	function getRulesByIds($ids, $sid = false)
+	{
 		$ids = array_filter(array_map('intval', (array)$ids));
 		if (empty($ids)) {
-			return array();
+			return [];
 		}
 
 		$criteria = $this->_getSidCriteria($sid);
@@ -303,7 +321,8 @@ class AclModule extends AbstractModule {
 
 
 	protected
-	function getRulesByRuleAndDirection($rule, $direction, $sid = false, $limit = 1) {
+	function getRulesByRuleAndDirection($rule, $direction, $sid = false, $limit = 1)
+	{
 		if ($limit <= 0) {
 			return null;
 		}
@@ -331,7 +350,7 @@ class AclModule extends AbstractModule {
 		$order = sprintf($order, $this->orderingField);
 		$query = sprintf('SELECT "%s", "id" FROM %s WHERE %s ORDER BY %s ', $this->orderingField, $this->sqlTable, $where, $order);
 
-		$objectsInDb = $db->query($query, false, array($limit, 0));
+		$objectsInDb = $db->query($query, false, [$limit, 0]);
 		if (!sizeof($objectsInDb)) {
 			return null;
 		}
@@ -340,12 +359,14 @@ class AclModule extends AbstractModule {
 	}
 
 	protected
-	function getFirstRule($sid = false) {
+	function getFirstRule($sid = false)
+	{
 		return $this->_getRules($sid, 1);
 	}
 
 	protected
-	function getRulesBetweenOrders($from, $to, $sid = false) {
+	function getRulesBetweenOrders($from, $to, $sid = false)
+	{
 		echo ($from . ' ' . $to) . PHP_EOL;
 		if ($from > $to) {
 			$from ^= $to ^= $from ^= $to;
@@ -356,13 +377,14 @@ class AclModule extends AbstractModule {
 		$criteria['between'] = sprintf('"%s" BETWEEN %d AND %d', $this->orderingField, $from, $to);
 		$where = join(' AND ', $criteria);
 
-		$query  = sprintf('SELECT "%1$s", "id" FROM "%2$s" WHERE %3$s ORDER BY "%1$s" ASC;', $this->orderingField, $this->sqlTable, $where);
+		$query = sprintf('SELECT "%1$s", "id" FROM "%2$s" WHERE %3$s ORDER BY "%1$s" ASC;', $this->orderingField, $this->sqlTable, $where);
 
 		return $this->db->query($query);
 	}
 
 	protected
-	function swapOrders($a, $b) {
+	function swapOrders($a, $b)
+	{
 		$this->db->transactionBegin();
 		$this->setOrder($a[$this->orderingField], $b['id']);
 		$this->setOrder($b[$this->orderingField], $a['id']);
@@ -372,7 +394,8 @@ class AclModule extends AbstractModule {
 	}
 
 	protected
-	function _moveRule($rId, $direction, $sid = false) {
+	function _moveRule($rId, $direction, $sid = false)
+	{
 
 		$moving = $this->getRuleById($rId, $sid);
 		$passive = $this->getRulesByRuleAndDirection($moving, $direction, $sid);
@@ -385,7 +408,8 @@ class AclModule extends AbstractModule {
 	}
 
 	protected
-	function setOrder($order, $criteria) {
+	function setOrder($order, $criteria)
+	{
 		if (($order[0] == '-' || $order[0] == '+') && ctype_digit(substr($order, 1))) {
 			// makes -1, +1 sql-readable
 			$order = sprintf('COALESCE("%s",0) %s', $this->orderingField, $order);
@@ -406,7 +430,7 @@ class AclModule extends AbstractModule {
 				$where = $criteria;
 		}
 
-		$set = array("{$this->orderingField} = {$order}"/*, "sys_modified = now()"*/);
+		$set = ["{$this->orderingField} = {$order}"/*, "sys_modified = now()"*/];
 		$set = join(",", $set);
 
 		$query = "UPDATE {$this->sqlTable} SET {$set} WHERE {$where};";
@@ -416,7 +440,8 @@ class AclModule extends AbstractModule {
 	}
 
 	protected
-	function getMaxOrder($sid) {
+	function getMaxOrder($sid)
+	{
 		static $maxOrder;
 		if ($maxOrder) {
 			return $maxOrder;
@@ -428,10 +453,11 @@ class AclModule extends AbstractModule {
 	}
 
 	protected
-	function putRuleAfterRule($movingId, $afterId, $sid = false) {
+	function putRuleAfterRule($movingId, $afterId, $sid = false)
+	{
 		$db = $this->db;
 
-		$rules = array_flat($this->getRulesByIds(array($movingId, $afterId), $sid), 'id', $this->orderingField);
+		$rules = array_flat($this->getRulesByIds([$movingId, $afterId], $sid), 'id', $this->orderingField);
 		if (!array_key_exists($movingId, $rules)) {
 			return false;
 		}
@@ -446,7 +472,6 @@ class AclModule extends AbstractModule {
 				$this->setOrder('+1', "<" . $movingOrder);
 				$this->setOrder(0, $movingId);
 				return true;
-				break;
 			case is_int($afterId) || ctype_digit($afterId):
 				$afterOrder = $rules[$afterId];
 				break;
@@ -460,7 +485,7 @@ class AclModule extends AbstractModule {
 		}
 
 		// fyi: all nulled at the end. _not at start_
-		$oField      = $this->orderingField;
+		$oField = $this->orderingField;
 
 		switch (true) {
 			case $movingOrder - 1 == $afterOrder:
@@ -494,18 +519,19 @@ class AclModule extends AbstractModule {
 				$criteria = sprintf('%2$d < %1$s AND %1$s <= %3$d', $oField, $afterOrder, $movingOrder);
 
 				$this->setOrder('+1', $criteria);
-				$this->setOrder($afterOrder+1, $movingId);
+				$this->setOrder($afterOrder + 1, $movingId);
 				break;
 		}
 
 		return compact('moving', 'after', 'changing', 'where');
 	}
 
-	function adminAction() {
+	public function adminAction()
+	{
 		$rId = (int)$this->request->getVar('id');
 		$afterId = (int)$this->request->getVar('after');
 		$sid = $this->_getSid();
-		$redir = '/admin/?area='.$this->area.'&sid='.urlencode($sid);
+		$redir = '/admin/?area=' . $this->area . '&sid=' . urlencode($sid);
 		$ajax = $this->request->getVar('ajax');
 		$result = null;
 
@@ -523,9 +549,9 @@ class AclModule extends AbstractModule {
 
 			case 'add':
 				$fields = array_keys($this->_getFields());
-				$values = array();
+				$values = [];
 
-				foreach($fields as $field) {
+				foreach ($fields as $field) {
 					$values[$field] = $this->request->getVar($field);
 				}
 
@@ -538,34 +564,34 @@ class AclModule extends AbstractModule {
 				$rId = $this->db->InsertObject($this->sqlTable, $fields, $values);
 				$this->setOrder($rId, $rId);
 
-				$redir = '/admin/popup.phtml?area='.$this->area.'&id='.$rId;
+				$redir = '/admin/popup.phtml?area=' . $this->area . '&id=' . $rId;
 				break;
 
 			case 'edit':
 				$fields = array_keys($this->_getFields());
 				$values = [];
 
-				foreach($fields as $field) {
+				foreach ($fields as $field) {
 					$values[$field] = $this->request->getVar($field);
 				}
 
 				$this->db->UpdateObjectById($this->sqlTable, $rId, $fields, $values);
 
-				$redir = '/admin/popup.phtml?area='.$this->area.'&sid='.urlencode($sid).'&id='.$rId;
+				$redir = '/admin/popup.phtml?area=' . $this->area . '&sid=' . urlencode($sid) . '&id=' . $rId;
 				break;
 
 			case 'delete':
-				$rule = $this->db->query('SELECT count(id) as count FROM '.$this->sqlTable.' WHERE id = '.$rId);
+				$rule = $this->db->query('SELECT count(id) as count FROM ' . $this->sqlTable . ' WHERE id = ' . $rId);
 
-				if(!isset($rule[0]['count'])) {
-					FatalError('Ошибка в таблице: '.$this->sqlTable);
+				if (!isset($rule[0]['count'])) {
+					FatalError('Ошибка в таблице: ' . $this->sqlTable);
 				}
 
-				if((int)$rule[0]['count'] !== 1) {
-					FatalError('Правило с id = '.$rId.' в таблице '.$this->sqlTable.' не найдено');
+				if ((int)$rule[0]['count'] !== 1) {
+					FatalError('Правило с id = ' . $rId . ' в таблице ' . $this->sqlTable . ' не найдено');
 				}
 
-				$this->db->modifyingQuery('DELETE FROM '.$this->sqlTable.' WHERE id = '.$rId);
+				$this->db->modifyingQuery('DELETE FROM ' . $this->sqlTable . ' WHERE id = ' . $rId);
 				break;
 		}
 

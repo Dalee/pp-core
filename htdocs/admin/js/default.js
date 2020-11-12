@@ -307,22 +307,6 @@ function ToClipboardMulti(src, width, height, type) {
 		text = '<img src="'+src+'" width="'+width+'" height="'+height+'" alt="" />';
 	}
 
-	if(type == 'flash') {
-		text += '<object classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000"';
-		text += ' codebase="http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=4,0,2,0"';
-		text += ' width="'+width+'" height="'+height+'">';
-		text += '<param name="movie" value="'+src+'">';
-		text += '<param name="menu" value="false">';
-		text += '<param name="quality" value="high">';
-		text += '<param name="wmode" value="transparent">';
-		text += '<embed src="'+src+'" menu="false" quality="high" wmode="transparent"';
-		text += ' swliveconnect="false" width="'+width+'" height="'+height+'"';
-		text += ' type="application/x-shockwave-flash"';
-		text += ' pluginspage="http://www.macromedia.com/shockwave/download/index.cgi?P1_Prod_Version=ShockwaveFlash">';
-		text += '</embed>';
-		text += '</object>';
-	}
-
 	try {
 		window.clipboardData.setData("Text", text);
 		alert('Done');
@@ -728,34 +712,6 @@ if (document.getElementById && navigator.appName=="Netscape") {
 		_mousey=event.clientY + document.body.scrollTop
 		return true
 	}
-}
-
-// Flash detection
-var plugin = (navigator.mimeTypes && navigator.mimeTypes["application/x-shockwave-flash"]) ? navigator.mimeTypes["application/x-shockwave-flash"].enabledPlugin : 0;
-
-if (plugin) {
-	plugin = parseInt(plugin.description.substring(plugin.description.indexOf(".")-1)) >= 6;
-} else if (navigator.userAgent && navigator.userAgent.indexOf("MSIE")>=0 && (navigator.userAgent.indexOf("Windows 95")>=0 || navigator.userAgent.indexOf("Windows 98")>=0 || navigator.userAgent.indexOf("Windows NT")>=0)) {
-	document.write('<script language="VBScript"\> \n');
-	document.write('on error resume next \n');
-	document.write('plugin = ( IsObject(CreateObject("ShockwaveFlash.ShockwaveFlash.6")))\n');
-	document.write('</script\> \n');
-}
-
-function ShowFlash(url, w, h, id) {
-	document.write(
-		'<object type="application/x-shockwave-flash" ' +
-		'data="'+url+'" ' +
-		'width="'+w+'" height="'+h+'" id="'+id+'">' +
-
-		'<param name="movie"   value="'+url+'">'    +
-		'<param name="menu"    value="false">'      +
-		'<param name="quality" value="high">'       +
-		'<param name="wmode"   value="transparent">'+
-		'<param name="volume"  value="mute">'       +
-
-		'</object>'
-	);
 }
 
 $(function() {

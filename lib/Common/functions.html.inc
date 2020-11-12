@@ -15,11 +15,11 @@
  * @test ["html4-strict"] >>> "<!DOCTYPE html \"-//W3C//DTD HTML 4.01//EN\" \"http://www.w3.org/TR/html4/strict.dtd\">"
  */
 function html_doctype ($type = 'html5') {
-	$aliases = array(
+	$aliases = [
 		'html4' => 'html4-strict',
 		'xhtml' => 'xhtml1-strict'
-	);
-	$doctypes = array(
+	];
+	$doctypes = [
 		'html4-strict'  => 'html "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd"',
 		'html4-trans'   => 'html "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd"',
 		'html4-frame'   => 'html "-//W3C//DTD HTML 4.01 Frameset//EN" "http://www.w3.org/TR/html4/frameset.dtd"',
@@ -28,7 +28,7 @@ function html_doctype ($type = 'html5') {
 		'xhtml1-frame'  => 'html "-//W3C//DTD XHTML 1.0 Frameset//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-frameset.dtd"',
 		'xhtml11'       => 'html "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd"',
 		'html5'         => 'html',
-	);
+	];
 
 	if (isset($aliases[$type])) {
 		$type = $aliases[$type];
@@ -75,7 +75,7 @@ function html_attributes ($atts) {
  * @param array $atts
  * @return string
  */
-function html_open_element ($tag, $atts = array()) {
+function html_open_element ($tag, $atts = []) {
 	$tag = (string)($tag);
 	$atts = html_attributes($atts);
 	if ($atts) $atts = ' ' . $atts;
@@ -101,7 +101,7 @@ function html_close_element ($tag) {
  * @test ["div", "vobla", {"class":"maharaja"}] >>> "<div class=\"maharaja\">vobla</div>"
  * @test ["div", {"class":"maharaja"}] >>> "<div class=\"maharaja\" />"
  */
-function html_element ($el, $html, $atts = array()) {
+function html_element ($el, $html, $atts = []) {
 	if (is_string($html)) {
 		$atts['html'] = $html;
 	}
@@ -136,7 +136,7 @@ function html_element ($el, $html, $atts = array()) {
  * @test ["br"] >>> "<br />"
  * @test ["br", true] >>> "<br>"
  */
-function html_empty_element ($el, $atts = array(), $skipCloser = false) {
+function html_empty_element ($el, $atts = [], $skipCloser = false) {
 	$el = (string)($el);
 	if (is_bool($atts)) {
 		$skipCloser = $atts;
@@ -165,7 +165,7 @@ function _html_duck_params ($args, $names, $empties = false) {
 		$args[key($args)] = null;
 	}
 	else {
-		$atts = array();
+		$atts = [];
 	}
 
 	// drop invalid values
@@ -198,8 +198,8 @@ function _html_duck_params ($args, $names, $empties = false) {
  * @test ["#1", "2", ["a", "b"]] >>> "<a href=\"#1\" class=\"a b\">2</a>"
  * @test [{"text":"2","class":"b","href":"#1"}] >>> "<a class=\"b\" href=\"#1\">2</a>"
  */
-function html_a ($href, $text = '', $class = '', $title = '', $atts = array()) {
-	$atts = $atts + _html_duck_params(func_get_args(), array('href', 'text', 'class', 'title'));
+function html_a ($href, $text = '', $class = '', $title = '', $atts = []) {
+	$atts = $atts + _html_duck_params(func_get_args(), ['href', 'text', 'class', 'title']);
 
 	return html_element('a', $atts);
 }
@@ -211,14 +211,14 @@ function html_a ($href, $text = '', $class = '', $title = '', $atts = array()) {
  * @test ["div", {"class":"blabla"}, "<br>"] >>> "<div class=\"blabla\"><br></div>"
  * @test ["div"] >>> "<div />"
  */
-function html_el ($tag, $atts = array(), $html = '') {
+function html_el ($tag, $atts = [], $html = '') {
 	if (is_string($atts)) {
 		$html = $atts;
-		$atts = array();
+		$atts = [];
 	}
 
 	if (empty($atts) || !is_array($atts)) {
-		$atts = array();
+		$atts = [];
 	}
 
 	if (!empty($html)) {
@@ -234,14 +234,14 @@ function html_el ($tag, $atts = array(), $html = '') {
  * @test ["b2", {"html":"<br/>","class":"blabla"}] >>> "<div class=\"b2 blabla\"><br/></div>"
  * @test ["b3"] >>> "<div class=\"b3\" />"
  */
-function html_block ($name, $atts = array(), $html = '') {
+function html_block ($name, $atts = [], $html = '') {
 	if (is_string($atts)) {
 		$html = $atts;
-		$atts = array();
+		$atts = [];
 	}
 
 	if (empty($atts) || !is_array($atts)) {
-		$atts = array();
+		$atts = [];
 	}
 
 	if (!empty($html)) {
@@ -254,7 +254,7 @@ function html_block ($name, $atts = array(), $html = '') {
 
 	// prepend block class
 	$atts['class'] = !isset($atts['class'])? $name :
-		(is_array($atts['class'])? array($name) + $atts['class'] : $name . ' ' . $atts['class']);
+		(is_array($atts['class'])? [$name] + $atts['class'] : $name . ' ' . $atts['class']);
 
 	return html_element($tag, $atts);
 }
@@ -271,7 +271,7 @@ function html_block ($name, $atts = array(), $html = '') {
  * @test ["a",{"class":["b"]}] >>> "<br class=\"a\">"
  * @test [["a","c"],{"class":["b"]}] >>> "<br class=\"a c\">"
  */
-function html_br ($class = null, $atts = array()) {
+function html_br ($class = null, $atts = []) {
 	$atts = (array)$atts;
 
 	// skip class if none passed
@@ -296,8 +296,8 @@ function html_br ($class = null, $atts = array()) {
  * @test ["//dalee.ru/logo.png"] >>> "<img src=\"//dalee.ru/logo.png\" alt=\"\">"
  * @test ["/1.png",["q","w"]] >>> "<img src=\"/1.png\" class=\"q w\" alt=\"\">"
  */
-function html_img ($src, $class = null, $alt = '', array $atts = array()) {
-	$atts = $atts + _html_duck_params(func_get_args(), array('src', 'class', 'alt'), true);
+function html_img ($src, $class = null, $alt = '', array $atts = []) {
+	$atts = $atts + _html_duck_params(func_get_args(), ['src', 'class', 'alt'], true);
 
 	$atts['src'] = $atts['src'] ?: '';
 	$atts['alt'] = $atts['alt'] ?: '';

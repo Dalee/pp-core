@@ -9,20 +9,21 @@ namespace PP\Lib\Html\Layout;
  * Interface LayoutInterface
  * @package PP\Lib\Html\Layout
  */
-interface LayoutInterface {
+interface LayoutInterface
+{
 
 	/**
 	 * @param string $name
 	 * @param string $value
 	 * @return $this
 	 */
-	function assign($name, $value);
+	public function assign($name, $value);
 
 	/**
 	 * @param \PXApplication $app
 	 * @return $this
 	 */
-	function setApp(\PXApplication $app);
+	public function setApp(\PXApplication $app);
 
 	/**
 	 * TODO: should be refactored to setLangCode
@@ -30,23 +31,23 @@ interface LayoutInterface {
 	 * @param string $lang
 	 * @return $this
 	 */
-	function setLang($lang = 'rus');
+	public function setLang($lang = 'rus');
 
 	/**
 	 *
 	 * @return \PXUserHTMLLang
 	 */
-	function getLang();
+	public function getLang();
 
 	/**
 	 * @return \Smarty
 	 */
-	function getSmarty();
+	public function getSmarty();
 
 	/**
 	 * @return string
 	 */
-	function getIndexTemplate();
+	public function getIndexTemplate();
 
 	/**
 	 * Null layout in action/json handler Null layout is used, so it should be in interface
@@ -54,12 +55,12 @@ interface LayoutInterface {
 	 * @param object
 	 * @return $this
 	 */
-	function setContent($content);
+	public function setContent($content);
 
 	/**
 	 * Null layout in action/json handler Null layout is used, so it should be in interface
 	 *
 	 * @return null|\PPBEMJSONContent
 	 */
-	function getContent();
+	public function getContent();
 }

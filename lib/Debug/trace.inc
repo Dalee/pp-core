@@ -9,10 +9,10 @@ function PXTrace() {
 	$stack = debug_backtrace();
 	array_shift($stack);
 
-	$trace = array();
+	$trace = [];
 
 	foreach ($stack as $i => $call) {
-		$e = array();
+		$e = [];
 
 		$e['file'] = isset($call['file']) ? str_replace(BASEPATH, '', $call['file']) : NULL;
 		$e['line'] = isset($call['file']) ? $call['line'] : NULL;
@@ -20,7 +20,7 @@ function PXTrace() {
 		$e['function'] = isset($call['class']) ? $call['class'].$call['type'] : '';
 		$e['function'] .= $call['function'];
 
-		$e['args'] = array();
+		$e['args'] = [];
 
 		if(isset($call['args'])) {
 			foreach ($call['args'] as $k=>$v) {
@@ -56,7 +56,7 @@ function PXTrace() {
 						break;
 				}
 
-				$e['args'][$k] = array('type'=>$type, 'value'=>$value);
+				$e['args'][$k] = ['type'=>$type, 'value'=>$value];
 			}
 
 		}

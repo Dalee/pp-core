@@ -2,19 +2,20 @@
 
 use PP\Lib\Database\Driver\PostgreSqlDriver;
 
-class PXObjectsACL {
+class PXObjectsACL
+{
 
-	/** @var boolean */
-	var $ruleclEnabled;
+	/** @var bool */
+	public $ruleclEnabled;
 
 	/** @var PXDatabase|PostgreSqlDriver */
-	var $db;
+	public $db;
 
 	/** @var PXUser|PXUserAuthorized */
-	var $user;
+	public $user;
 
 	/** @var array */
-	var $rules;
+	public $rules;
 
 	/**
 	 * PXObjectsACL constructor.
@@ -22,23 +23,26 @@ class PXObjectsACL {
 	 * @param PXDatabase $db
 	 * @param PXUser $user
 	 */
-	function __construct(&$db, &$user) {
+	public function __construct(&$db, &$user)
+	{
 		$this->db =& $db;
 		$this->user =& $user;
 
 		$this->aclEnabled = (PXRequest::GetHttpMethod() != 'CLI' && $db->tableExists('acl_objects'));
 
-		$this->rules = array();
-		$this->parents = array();
+		$this->rules = [];
+		$this->parents = [];
 
 		$this->reload();
 	}
 
-	function reload() {
+	public function reload()
+	{
 		$this->_getRules();
 	}
 
-	function check($what, $format, $object) {
+	public function check($what, $format, $object)
+	{
 		if (!$this->aclEnabled) {
 			return true;
 		}
@@ -46,7 +50,8 @@ class PXObjectsACL {
 		return CheckerObject::get($format)->checkAcl($this, $what, $format, $object);
 	}
 
-	private function _getRules($loadAll = false) {
+	private function _getRules($loadAll = false)
+	{
 		if (!$this->aclEnabled) {
 			return;
 		}
@@ -54,7 +59,8 @@ class PXObjectsACL {
 		$this->rules = $this->db->query($this->_sqlLoadRulesStatement($loadAll));
 	}
 
-	private function _sqlLoadRulesStatement($loadAll) {
+	private function _sqlLoadRulesStatement($loadAll)
+	{
 		$query = 'SELECT * FROM acl_objects';
 
 		if (!$loadAll) {

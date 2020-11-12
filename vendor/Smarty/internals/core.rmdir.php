@@ -10,9 +10,9 @@
  * WARNING: no tests, it will try to remove what you tell it!
  *
  * @param string $dirname
- * @param integer $level
- * @param integer $exp_time
- * @return boolean
+ * @param int $level
+ * @param int $exp_time
+ * @return bool
  */
 
 //  $dirname, $level = 1, $exp_time = null
@@ -27,11 +27,11 @@ function smarty_core_rmdir($params, &$smarty)
         while (false !== ($_entry = readdir($_handle))) {
             if ($_entry != '.' && $_entry != '..') {
                 if (@is_dir($params['dirname'] . DIRECTORY_SEPARATOR . $_entry)) {
-                    $_params = array(
+                    $_params = [
                         'dirname' => $params['dirname'] . DIRECTORY_SEPARATOR . $_entry,
                         'level' => $params['level'] + 1,
                         'exp_time' => $params['exp_time']
-                    );
+                    ];
                     smarty_core_rmdir($_params, $smarty);
                 }
                 else {

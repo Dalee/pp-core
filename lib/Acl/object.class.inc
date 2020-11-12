@@ -1,7 +1,7 @@
 <?php
 
 class ObjectChecker {
-	var $acl;
+	public $acl;
 
 	public function checkAcl($acl, $what, $format, $object) {
 		$this->acl = $acl;
@@ -19,8 +19,8 @@ class ObjectChecker {
 	private function _checkGroup($what, $format, $object) {
 		$params = func_get_args();
 
-		foreach (array("_checkObject", "_checkParent") as $method) {
-			$r = call_user_func_array(array($this, $method), $params);
+		foreach (["_checkObject", "_checkParent"] as $method) {
+			$r = call_user_func_array([$this, $method], $params);
 
 			if (!is_null($r)) {
 				return $r;

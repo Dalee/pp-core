@@ -8,12 +8,14 @@
  * displayType FILE
  * storageType file
  */
-class PXStorageTypeFile extends PXStorageTypeAbstractFile {
+class PXStorageTypeFile extends PXStorageTypeAbstractFile
+{
 
 	/**
 	 * {@inheritdoc}
 	 */
-	function proceedFile($field, &$object, &$param, $allowed = null) {
+	public function proceedFile($field, &$object, &$param, $allowed = null)
+	{
 
 		$fileArray = &$object[$field->name];
 		$ai = $this->ai($field, $object, $param['format']);
@@ -97,7 +99,8 @@ class PXStorageTypeFile extends PXStorageTypeAbstractFile {
 	/**
 	 * {@inheritdoc}
 	 */
-	function __normalize($field, $object, &$param, $allowed = null) {
+	public function __normalize($field, $object, &$param, $allowed = null)
+	{
 
 		$fileName = null;
 		$relativeDir = $this->ai($field, $object, $param['format']);
@@ -114,8 +117,8 @@ class PXStorageTypeFile extends PXStorageTypeAbstractFile {
 		// файл присутствует на диске, обновляем данные по файлу
 		//
 		if ($fileName !== null) {
-			$fullPath = path_clear($fullDir.DIRECTORY_SEPARATOR.$fileName);
-			$relativePath = path_clear($relativeDir.DIRECTORY_SEPARATOR.$fileName);
+			$fullPath = path_clear($fullDir . DIRECTORY_SEPARATOR . $fileName);
+			$relativePath = path_clear($relativeDir . DIRECTORY_SEPARATOR . $fileName);
 			$mimeType = null;
 			$fileSize = 0;
 
@@ -124,7 +127,7 @@ class PXStorageTypeFile extends PXStorageTypeAbstractFile {
 				$fileSize = filesize($fullPath);
 			}
 
-			$fileData = [
+			return [
 				'filename' => $fileName,
 				'path' => $relativePath,
 				'fullpath' => $relativePath,
@@ -132,8 +135,6 @@ class PXStorageTypeFile extends PXStorageTypeAbstractFile {
 				'type' => $mimeType,
 				'size' => $fileSize,
 			];
-
-			return $fileData;
 		}
 
 		//

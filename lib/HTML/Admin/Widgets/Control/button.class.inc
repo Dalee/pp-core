@@ -1,12 +1,14 @@
 <?php
 
-class PXControlButton extends PXAdminWidget {
+class PXControlButton extends PXAdminWidget
+{
 
-	var $value;
-	var $onClickCode = '';
-	var $cssClass = '';
+	public $value;
+	public $onClickCode = '';
+	public $cssClass = '';
 
-	public function __construct($value) {
+	public function __construct($value)
+	{
 		$this->value = $value;
 	}
 
@@ -14,7 +16,8 @@ class PXControlButton extends PXAdminWidget {
 	 * @param string $onClickCode
 	 * @return $this
 	 */
-	function setClickCode($onClickCode) {
+	public function setClickCode($onClickCode)
+	{
 		$this->onClickCode = $onClickCode;
 
 		return $this;
@@ -24,7 +27,8 @@ class PXControlButton extends PXAdminWidget {
 	 * @param string $cssClass
 	 * @return $this
 	 */
-	function setClass($cssClass) {
+	public function setClass($cssClass)
+	{
 		$this->cssClass = $cssClass;
 
 		return $this;
@@ -33,10 +37,11 @@ class PXControlButton extends PXAdminWidget {
 	/**
 	 * @return string
 	 */
-	function html() {
-		$cssClass = mb_strlen($this->cssClass) ? ' class="'.$this->cssClass.'"' : '';
-		$onClick = mb_strlen($this->onClickCode) ? ' onclick="'.$this->onClickCode.'"' : '';
+	public function html()
+	{
+		$cssClass = mb_strlen($this->cssClass) ? ' class="' . $this->cssClass . '"' : '';
+		$onClick = mb_strlen($this->onClickCode) ? ' onclick="' . $this->onClickCode . '"' : '';
 
-		return '<button'.$cssClass.$onClick.$this->disable.'>'.$this->value.'</button>';
+		return '<button' . $cssClass . $onClick . $this->disable . '>' . $this->value . '</button>';
 	}
 }

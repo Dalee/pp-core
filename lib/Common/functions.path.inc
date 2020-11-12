@@ -51,7 +51,7 @@ function path_clear($path) {
  * @test ["/foo/bar", "./baz"] >>> "/foo/bar/baz"
  */
 function path_resolve($from, $to = null) {
-	$res = array();
+	$res = [];
 
 	$paths = func_get_args();
 	if (!path_is_absolute($paths[0])) {
@@ -61,7 +61,7 @@ function path_resolve($from, $to = null) {
 	foreach ($paths as $path) {
 		$parts = explode('/', rtrim($path, '/'));
 		if (path_is_absolute($path)) {
-			$res = array();
+			$res = [];
 		}
 		foreach ($parts as $part) {
 			if (empty($part) || $part === '.') {
@@ -111,7 +111,7 @@ function path_relative($from, $to) {
       }
     }
 
-    $outputParts = array();
+    $outputParts = [];
     for ($i = $samePartsLength; $i < sizeof($fromParts); $i++) {
       array_push($outputParts, '..');
     }

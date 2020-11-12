@@ -10,16 +10,19 @@ use Symfony\Component\DependencyInjection\ContainerAwareInterface;
  *
  * @package PP\Lib\Engine\Admin
  */
-class AdminEngineJson extends AbstractAdminEngine {
+class AdminEngineJson extends AbstractAdminEngine
+{
 
 	protected $result;
 
-	function initModules() {
+	public function initModules()
+	{
 		$this->area = $this->request->getArea();
 		$this->modules = $this->getModule($this->app, $this->area);
 	}
 
-	function runModules() {
+	public function runModules()
+	{
 		// For correct user session expiration handling and admin auth module working
 		if (!($this->hasAdminModules() || $this->area == $this->authArea)) {
 			return;
@@ -35,7 +38,7 @@ class AdminEngineJson extends AbstractAdminEngine {
 
 		$eventData = [
 			'engine_type' => $this->engineType(),
-			'engine_behavior' => $this->engineBehavior()
+			'engine_behavior' => $this->engineBehavior(),
 		];
 		foreach ($this->app->triggers->system as $t) {
 			$t->getTrigger()->onBeforeModuleRun($this, $moduleDescription, $eventData);
@@ -48,14 +51,16 @@ class AdminEngineJson extends AbstractAdminEngine {
 		}
 	}
 
-	function sendJson() {
+	public function sendJson()
+	{
 		$response = Response::getInstance();
 		$response->sendJson($this->result);
 		exit;
 	}
 
 	/** {@inheritdoc} */
-	public function engineBehavior() {
+	public function engineBehavior()
+	{
 		return static::JSON_BEHAVIOR;
 	}
 }

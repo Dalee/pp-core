@@ -12,11 +12,13 @@ use PP\Lib\Engine\EngineInterface;
  * в настоящее время она нигде не используется, сохраняется
  * совместимости для
  */
-class PXDisplayType {
-	var $display;
-	var $name;
+class PXDisplayType
+{
+	public $display;
+	public $name;
 
-	public function __construct(&$display, $name) {
+	public function __construct(&$display, $name)
+	{
 		$this->display = &$display;
 		$this->name = $name;
 	}
@@ -27,12 +29,13 @@ class PXDisplayType {
 	 * Возвращает значение поля
 	 *
 	 * @param PXFieldDescription $field
-	 * @param Array              $object
-	 * @param Array|NULL         $param
+	 * @param array $object
+	 * @param array|NULL $param
 	 *
 	 * @return Mixed
 	 */
-	function getFromRequest($field, $object, $param=NULL) {
+	public function getFromRequest($field, $object, $param = NULL)
+	{
 		return $param['request']->getVar($field->name);
 	}
 
@@ -43,12 +46,13 @@ class PXDisplayType {
 	 * Возвращает флаг, пропустить ли нормализацию поля
 	 *
 	 * @param PXFieldDescription $field
-	 * @param Array              $object
-	 * @param Array|NULL         $param
+	 * @param array $object
+	 * @param array|NULL $param
 	 *
 	 * @return Boolean
 	 */
-	function preModifyObject($field, &$object, $param=NULL) {
+	public function preModifyObject($field, &$object, $param = NULL)
+	{
 		return false;
 	}
 
@@ -57,18 +61,19 @@ class PXDisplayType {
 	 * главной форме PXAdminObjectForm
 	 *
 	 * @param PXFieldDescription $field
-	 * @param Array              $object
-	 * @param Array|NULL         $param
+	 * @param array $object
+	 * @param array|NULL $param
 	 *
 	 * @return String
 	 */
-	function buildRow($field, $object, $param=NULL) {
+	public function buildRow($field, $object, $param = NULL)
+	{
 		$even = PXDisplayType::getRow();
 
 		$html = "\n";
-		$html .= '<tr'.(!$even ? ' class="even"' : '' ).'>';
+		$html .= '<tr' . (!$even ? ' class="even"' : '') . '>';
 
-		$html .= '<th>'.$field->description.': </th>';
+		$html .= '<th>' . $field->description . ': </th>';
 		$html .= '<td>';
 
 		$html .= $this->buildInput($field, $object, $param);
@@ -80,7 +85,8 @@ class PXDisplayType {
 		return $html;
 	}
 
-	function comments($field, $object, $param=NULL) {
+	public function comments($field, $object, $param = NULL)
+	{
 		return $field->comments;
 	}
 
@@ -88,35 +94,38 @@ class PXDisplayType {
 	 * Возвращает html для форм Картинки/Файлы PXAdminObjectForm
 	 *
 	 * @param PXFieldDescription $field
-	 * @param Array              $object
-	 * @param Array|NULL         $param
+	 * @param array $object
+	 * @param array|NULL $param
 	 *
 	 * @return String
 	 */
-	function buildArray($field, $object, $param=NULL) {
+	public function buildArray($field, $object, $param = NULL)
+	{
 	}
 
 	/**
 	 * Возвращает html для строки с полем объекта в
 	 * формах Картинки/Файлы PXAdminObjectForm
 	 *
-	 * @param String             $name
-	 * @param Array              $value
+	 * @param String $name
+	 * @param array $value
 	 *
 	 * @return String
 	 */
-	function buildArrayItem($name, $value) {
+	public function buildArrayItem($name, $value)
+	{
 	}
 
 	/**
 	 * Возвращает чет/нечет строки с полем объекта в
 	 * формах PXAdminObjectForm
 	 *
-	 * @param Boolean            $even
+	 * @param Boolean $even
 	 *
 	 * @return Boolean
 	 */
-	public static function getRow() {
+	public static function getRow()
+	{
 		static $even = false;
 
 		$even = !$even;
@@ -128,17 +137,19 @@ class PXDisplayType {
 	 * формах PXAdminObjectForm
 	 *
 	 * @param PXFieldDescription $field
-	 * @param Array              $object
-	 * @param Array|NULL         $param
+	 * @param array $object
+	 * @param array|NULL $param
 	 *
 	 * @return String
 	 */
-	function buildInput($field, $object, $param=NULL) {
-		return '<span class="error">Вывод поля типа '.$field->displayType->name.' еще не описан</span>';
+	public function buildInput($field, $object, $param = NULL)
+	{
+		return '<span class="error">Вывод поля типа ' . $field->displayType->name . ' еще не описан</span>';
 	}
 
-	function buildTreeHover($field, $object, $param=NULL) {
-		return '<span class="error">Вывод поля типа '.$field->displayType->name.' еще не описан</span>';
+	public function buildTreeHover($field, $object, $param = NULL)
+	{
+		return '<span class="error">Вывод поля типа ' . $field->displayType->name . ' еще не описан</span>';
 	}
 
 	/**
@@ -146,14 +157,15 @@ class PXDisplayType {
 	 * таблицах PXAdminTable
 	 *
 	 * @param PXFieldDescription $field
-	 * @param Array              $object
-	 * @param Array|NULL         $param
+	 * @param array $object
+	 * @param array|NULL $param
 	 *
 	 * @return String
 	 */
-	public function buildCell($field, $object, $param=NULL) {
+	public function buildCell($field, $object, $param = NULL)
+	{
 		$value = is_string($object[$field->name]) ? strip_tags($object[$field->name]) : $object[$field->name];
-		return $field->displayType->name.' - '.$value;
+		return $field->displayType->name . ' - ' . $value;
 	}
 
 	/**
@@ -164,13 +176,15 @@ class PXDisplayType {
 	 * @param PXFieldDescription $field
 	 * @return Int
 	 */
-	function getCellWidth($field) {
+	public function getCellWidth($field)
+	{
 		return 0;
 	}
 
-	protected function getSubDirectoryIfExists($field, $object, $value) {
+	protected function getSubDirectoryIfExists($field, $object, $value)
+	{
 		$temp = "";
-		$app  = PXRegistry::getApp();
+		$app = PXRegistry::getApp();
 
 		if (isset($app->directory[$field->source])) {
 			$directory = $app->directory[$field->source];
@@ -182,8 +196,9 @@ class PXDisplayType {
 		return mb_strlen($temp) ? $temp : $value;
 	}
 
-	static protected
-	function parseConfigArguments($attrNode, $fieldNode) {;
+	protected static
+	function parseConfigArguments($attrNode, $fieldNode)
+	{
 		$args = explode("|", pp_simplexml_decode_string($attrNode->value));
 		$name = $args[0];
 
@@ -192,23 +207,25 @@ class PXDisplayType {
 		return $args;
 	}
 
-	static public
-	function getClassByName($name, $type) {
+	public static
+	function getClassByName($name, $type)
+	{
 		$baseClass = 'PXDisplayType';
 
 		$autoload = $type->app->engine->engineClass() != EngineInterface::USER_ENGINE_ID;
-		$inputClass  = $baseClass.mb_ucfirst(mb_strtolower($name));
+		$inputClass = $baseClass . mb_ucfirst(mb_strtolower($name));
 		return class_exists($inputClass, $autoload) ? $inputClass : $baseClass;
 	}
 
-	static public
-	function parseConfig($attrNode, $fieldNode, $type) {
-		$name = preg_replace('/\|.+$/'.REGEX_MOD, '', $attrNode->value);
+	public static
+	function parseConfig($attrNode, $fieldNode, $type)
+	{
+		$name = preg_replace('/\|.+$/' . REGEX_MOD, '', $attrNode->value);
 
 		$cls = self::getClassByName($name, $type);
-		$args = call_user_func(array($cls, 'parseConfigArguments'), $attrNode, $fieldNode);
+		$args = call_user_func([$cls, 'parseConfigArguments'], $attrNode, $fieldNode);
 
-		return array($cls, $name, $args);
+		return [$cls, $name, $args];
 	}
 
 }

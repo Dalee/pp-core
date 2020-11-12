@@ -16,8 +16,8 @@
  *          count_characters (Smarty online manual)
  * @author   Monte Ohrt <monte at ohrt dot com>
  * @param string
- * @param boolean include whitespace in the character count
- * @return integer
+ * @param bool include whitespace in the character count
+ * @return int
  */
 function smarty_modifier_count_characters($string, $include_spaces = false)
 {

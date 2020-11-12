@@ -1,44 +1,49 @@
 <?php
-class PXTabbedMenuRegionChanger extends PXAdminWidget {
-	function html() {
-		if(
-			isset(PXRegistry::getApp()->types[PXMultiRegions::REGION_MARK]) && //FIXME: in the future this behaviour will be managed via plugins abstraction
-			PXRegistry::getLayout()->outerLayout === 'index'
-		){
-			$regions     = PXMultiRegions::getInstance();
-			$regionsData = $regions->getRegionsAsDirectory();
 
-			if (empty($regionsData)) {
-				return;
-			}
+class PXTabbedMenuRegionChanger extends PXAdminWidget
+{
+    public function html()
+    {
+        if (
+            isset(PXRegistry::getApp()->types[PXMultiRegions::REGION_MARK]) && //FIXME: in the future this behaviour will be managed via plugins abstraction
+            PXRegistry::getLayout()->outerLayout === 'index'
+        ) {
+            $regions = PXMultiRegions::getInstance();
+            $regionsData = $regions->getRegionsAsDirectory();
 
-			unset($regionsData[null]);
+            if (empty($regionsData)) {
+                return;
+            }
 
-			if(count($regionsData) == 1) {
-				return $this->_static($regionsData);
-			}
+            unset($regionsData[null]);
 
-			return $this->_selector($regions->getRid(), $regionsData);
-		}
+            if (count($regionsData) == 1) {
+                return $this->_static($regionsData);
+            }
 
-		return '';
-	}
+            return $this->_selector($regions->getRid(), $regionsData);
+        }
 
-	private function _static($regionsData) {
-		return '<span class="multipleregions-current-region">Текущий регион <strong>'. reset($regionsData) .'</strong></span>';
-	}
+        return '';
+    }
 
-	private function _selector($rid, $regionsData) {
-		$uri = htmlspecialchars(PXRegistry::getRequest()->GetRequestUri(), ENT_COMPAT|ENT_HTML401, DEFAULT_CHARSET);
+    private function _static($regionsData)
+    {
+        return '<span class="multipleregions-current-region">Текущий регион <strong>' . reset($regionsData) . '</strong></span>';
+    }
 
-		$varName           = PXMultiRegions::REGION_MARK . '[rid]';
-		$regionsData[null] = '- ПОКАЗАТЬ ВСЕ РЕГИОНЫ -';
+    private function _selector($rid, $regionsData)
+    {
+        $uri = htmlspecialchars(PXRegistry::getRequest()->GetRequestUri(), ENT_COMPAT | ENT_HTML401, DEFAULT_CHARSET);
 
-		$regionSelector    = new PXInputDropDown($varName, $rid, $regionsData);
+        $varName = PXMultiRegions::REGION_MARK . '[rid]';
+        $regionsData[null] = '- ПОКАЗАТЬ ВСЕ РЕГИОНЫ -';
 
-		$selectorHtml      = $regionSelector->html();
+        $regionSelector = new PXInputDropDown($varName, $rid, $regionsData);
 
-		return <<<HTML
+        $selectorHtml = $regionSelector->html();
+
+        return <<<HTML
 			<span class="multipleregions-choose-region">Выберите регион:</span>
 
 			<div id="region_selector">
@@ -54,6 +59,6 @@ class PXTabbedMenuRegionChanger extends PXAdminWidget {
 				}
 			</script>
 HTML;
-	}
+    }
 }
 ?>

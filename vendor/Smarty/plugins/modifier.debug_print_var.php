@@ -16,17 +16,17 @@
  *          debug_print_var (Smarty online manual)
  * @author   Monte Ohrt <monte at ohrt dot com>
  * @param array|object
- * @param integer
- * @param integer
+ * @param int
+ * @param int
  * @return string
  */
 function smarty_modifier_debug_print_var($var, $depth = 0, $length = 40)
 {
-    $_replace = array(
+    $_replace = [
         "\n" => '<i>\n</i>',
         "\r" => '<i>\r</i>',
         "\t" => '<i>\t</i>'
-    );
+    ];
 
     switch (gettype($var)) {
         case 'array' :

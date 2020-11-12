@@ -10,15 +10,15 @@
  *
  * @param string $filename
  * @param string $contents
- * @param boolean $create_dirs
- * @return boolean
+ * @param bool $create_dirs
+ * @return bool
  */
 function smarty_core_write_file($params, &$smarty)
 {
     $_dirname = dirname($params['filename']);
 
     if ($params['create_dirs']) {
-        $_params = array('dir' => $_dirname);
+        $_params = ['dir' => $_dirname];
         require_once(SMARTY_CORE_DIR . 'core.create_dir_structure.php');
         smarty_core_create_dir_structure($_params, $smarty);
     }
@@ -38,7 +38,7 @@ function smarty_core_write_file($params, &$smarty)
     fclose($fd);
 
     if (DIRECTORY_SEPARATOR == '\\' || !@rename($_tmp_file, $params['filename'])) {
-        // On platforms and filesystems that cannot overwrite with rename() 
+        // On platforms and filesystems that cannot overwrite with rename()
         // delete the file before renaming it -- because windows always suffers
         // this, it is short-circuited to avoid the initial rename() attempt
         @unlink($params['filename']);

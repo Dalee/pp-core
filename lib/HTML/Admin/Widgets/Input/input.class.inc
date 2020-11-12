@@ -8,22 +8,22 @@ class PXInputInput extends PXAdminWidget {
 	/**
 	 * @var string
 	 */
-	var $value;
+	public $value;
 
 	/**
 	 * @var string
 	 */
-	var $name;
+	public $name;
 
 	/**
 	 * @var int|null
 	 */
-	var $maxlength = null;
+	public $maxlength = null;
 
 	/**
 	 * @var array
 	 */
-	var $classes = [];
+	public $classes = [];
 
 	/**
 	 * @var string
@@ -75,9 +75,6 @@ class PXInputInput extends PXAdminWidget {
 		return $this;
 	}
 
-	/**
-	 * {@inheritdoc}
-	 */
 	public function html() {
 		$value = htmlspecialchars($this->value, ENT_COMPAT | ENT_HTML401, DEFAULT_CHARSET);
 		$maxlength = '';

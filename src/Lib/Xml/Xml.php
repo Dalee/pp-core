@@ -2,12 +2,13 @@
 
 namespace PP\Lib\Xml;
 
-class Xml {
+class Xml
+{
 
-	const NONE = 0;
-	const ELEMENT = 1;
-	const ATTRIBUTE = 2;
-	const DOC = 9;
+	public const NONE = 0;
+	public const ELEMENT = 1;
+	public const ATTRIBUTE = 2;
+	public const DOC = 9;
 
 	/** @var SimpleXml */
 	public $xml;
@@ -16,7 +17,8 @@ class Xml {
 	 * Xml constructor.
 	 * @param $xmlEntity
 	 */
-	function __construct($xmlEntity) {
+	public function __construct($xmlEntity)
+	{
 
 		switch (true) {
 			case extension_loaded('simplexml'):
@@ -24,7 +26,7 @@ class Xml {
 				break;
 
 			default:
-				$this->xml = (object)array('xmlObject' => false);
+				$this->xml = (object)['xmlObject' => false];
 		}
 	}
 
@@ -32,7 +34,8 @@ class Xml {
 	 * @param $fileName
 	 * @return bool|SimpleXml
 	 */
-	public static function load($fileName) {
+	public static function load($fileName)
+	{
 		$instance = new Xml($fileName);
 		return $instance->xml->xmlObject ? $instance->xml : false;
 	}
@@ -41,7 +44,8 @@ class Xml {
 	 * @param $xmlDataInString
 	 * @return bool|object
 	 */
-	public static function loadString($xmlDataInString) {
+	public static function loadString($xmlDataInString)
+	{
 		return Xml::load($xmlDataInString);
 	}
 
@@ -50,7 +54,8 @@ class Xml {
 	 * @param $value
 	 * @return object
 	 */
-	public static function attributePrototype($name, $value) {
-		return (object)array('name' => $name, 'value' => $value);
+	public static function attributePrototype($name, $value)
+	{
+		return (object)['name' => $name, 'value' => $value];
 	}
 }

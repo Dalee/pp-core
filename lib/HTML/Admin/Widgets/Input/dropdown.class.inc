@@ -1,76 +1,83 @@
 <?php
-class PXInputDropDown extends PXAdminWidget {
-	var $name;
-	var $value;
-	var $values = array();
 
-	var $multiple = '';
-	var $size     = '';
+class PXInputDropDown extends PXAdminWidget
+{
+    public $name;
+    public $value;
+    public $values = [];
 
-	protected $empty = array(null => 0);
+    public $multiple = '';
+    public $size = '';
 
-	public function __construct($name, $value, $values) {
-		$this->name = $name;
-		$this->value = $value;
-		$this->values = $values;
-	}
+    protected $empty = [null => 0];
 
-	function setMultiple($multiple){
-		$this->multiple = $multiple ? 'multiple="multiple"' : '';
-	}
+    public function __construct($name, $value, $values)
+    {
+        $this->name = $name;
+        $this->value = $value;
+        $this->values = $values;
+    }
 
-	function setSize($size){
-		$this->size = is_numeric($size) ? 'size="'.$size.'"' : '';
-	}
+    public function setMultiple($multiple)
+    {
+        $this->multiple = $multiple ? 'multiple="multiple"' : '';
+    }
 
-	function html() {
-		$selected = max($this->empty, @array_flip((array)$this->value));
-		$html     = squeeze(sprintf('<select name="%s" %s %s %s>', $this->name, $this->disable, $this->multiple, $this->size), ' ');
-		$optgroup = false;
+    public function setSize($size)
+    {
+        $this->size = is_numeric($size) ? 'size="' . $size . '"' : '';
+    }
 
-		foreach ($this->values as $k => $title) {
-			// simple drop down selector
-			if (!is_array($title)) {
-				$html .= $this->htmlOption($k, $title, $selected);
-				continue;
-			}
+    public function html()
+    {
+        $selected = max($this->empty, @array_flip((array)$this->value));
+        $html = squeeze(sprintf('<select name="%s" %s %s %s>', $this->name, $this->disable, $this->multiple, $this->size), ' ');
+        $optgroup = false;
 
-			$optgroup = true;
+        foreach ($this->values as $k => $title) {
+            // simple drop down selector
+            if (!is_array($title)) {
+                $html .= $this->htmlOption($k, $title, $selected);
+                continue;
+            }
 
-			// grouped selector
-			$html .= sprintf('<optgroup label="%s">', quot($k));
+            $optgroup = true;
 
-			foreach ($title as $j => $jtitle) {
-				$html .= $this->htmlOption($j, $jtitle, $selected);
-			}
+            // grouped selector
+            $html .= sprintf('<optgroup label="%s">', quot($k));
 
-			$html .= '</optgroup>';
-		}
+            foreach ($title as $j => $jtitle) {
+                $html .= $this->htmlOption($j, $jtitle, $selected);
+            }
 
-		foreach ($selected as $unknown => $k) {
-			$optgroup && $html .= '<optgroup label="...">';
+            $html .= '</optgroup>';
+        }
 
-			$html .= $this->htmlOption($unknown, sprintf('[нет в списке - "%s"]', $unknown), $selected, true);
+        foreach ($selected as $unknown => $k) {
+            $optgroup && $html .= '<optgroup label="...">';
 
-			$optgroup && $html .= '</optgroup>';
-		}
+            $html .= $this->htmlOption($unknown, sprintf('[нет в списке - "%s"]', $unknown), $selected, true);
 
-		$html .= '</select>';
+            $optgroup && $html .= '</optgroup>';
+        }
 
-		return $html;
-	}
+        $html .= '</select>';
 
-	protected function htmlOption($value, $title, &$selected, $isSelected = false) {
-		$k = $value;
+        return $html;
+    }
 
-		// if there is no empty value and no "bydefault" value, try to use value == 0
-		if (!$isSelected && (isset($selected[$k]) || ($selected == $this->empty && empty($k) && (($k = null) || true)))) {
-			$isSelected = true;
-			unset($selected[$k]);
-		}
+    protected function htmlOption($value, $title, &$selected, $isSelected = false)
+    {
+        $k = $value;
 
-		return sprintf('<option value="%s"%s>%s</option>', quot($value), $isSelected ? ' selected' : '',
-			htmlspecialchars($title, ENT_COMPAT|ENT_HTML401, DEFAULT_CHARSET)
-		);
-	}
+        // if there is no empty value and no "bydefault" value, try to use value == 0
+        if (!$isSelected && (isset($selected[$k]) || ($selected == $this->empty && empty($k) && (($k = null) || true)))) {
+            $isSelected = true;
+            unset($selected[$k]);
+        }
+
+        return sprintf('<option value="%s"%s>%s</option>', quot($value), $isSelected ? ' selected' : '',
+            htmlspecialchars($title, ENT_COMPAT | ENT_HTML401, DEFAULT_CHARSET)
+        );
+    }
 }

@@ -3,14 +3,14 @@
 	##############    Decorate AdminTable Widget with MultiOperations    ##############
 	/* core components - wouldn't works without it */
 	PXDecorativeWidgetsCollection::addToCollection(
-		new PXAdminTableMultiCheckboxes,
+		new PXAdminTableMultiCheckboxes(),
 		'PXAdminTable',
 		'MULTIOPERATIONS',
 		PXAdminTable::BEFORE_CONTENT,
 		'core_component'
 	);
 	PXDecorativeWidgetsCollection::addToCollection(
-		new PXAdminTableBottomLabel,
+		new PXAdminTableBottomLabel(),
 		'PXAdminTable',
 		'MULTIOPERATIONS',
 		PXAdminTable::AFTER_CONTENT,
@@ -18,18 +18,18 @@
 	);
 	/* default multioperations widgets */
 	PXDecorativeWidgetsCollection::addToCollection(
-		new PXAdminTableCommonControls, 
+		new PXAdminTableCommonControls(),
 		'PXAdminTable',
 		'MULTIOPERATIONS',
 		PXAdminTable::AFTER_CONTENT
 	);
 	PXDecorativeWidgetsCollection::addToCollection(
-		new PXAdminTableChangeParent,
+		new PXAdminTableChangeParent(),
 		'PXAdminTable',
 		'MULTIOPERATIONS',
 		PXAdminTable::AFTER_CONTENT
 	);
-	
+
 	##############    Decorate TabbedMenu Widget with Regions Changer    ##############
 /*	PXDecorativeWidgetsCollection::addToCollection(
 		new PXTabbedMenuRegionChanger,
@@ -37,17 +37,17 @@
 		'INDEX_EXTRA_CONTROLS',
 		PXWidgetTabbedMenu::BEFORE_TABS
 	);*/
-	
+
 	##############    Decorate Richedit Widget with various richeditors    ##############
 	PXDecorativeWidgetsCollection::addToCollection(
-		new PXRichEditHTMLArea,
+		new PXRichEditHTMLArea(),
 		'PXInputRichedit',
 		'RICHEDITORS',
 		PXInputRichedit::AFTER_TEXTAREA
 	);
-	
+
 	PXDecorativeWidgetsCollection::addToCollection(
-		new PXRichEditCKEditor,
+		new PXRichEditCKEditor(),
 		'PXInputRichedit',
 		'RICHEDITORS',
 		PXInputRichedit::AFTER_TEXTAREA

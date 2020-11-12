@@ -21,7 +21,7 @@
 	$new      = (int) $_SERVER['argv'][1];
 	$existing = (int) $_SERVER['argv'][2];
 
-	if (count($db->getObjectsByIdArray($app->types['sys_regions'], true, array($new, $existing), DB_SELECT_TABLE)) < 2) {
+	if (count($db->getObjectsByIdArray($app->types['sys_regions'], true, [$new, $existing], DB_SELECT_TABLE)) < 2) {
 		FatalError("Some of given regions are not exists");
 	}
 

@@ -1,62 +1,68 @@
 <?php
-class PXAdminAuditTable extends PXAdminTableSimple {
 
-	function __construct($cols) {
-		parent::__construct($cols);
-		$this->app = PXRegistry::getApp();
-		$this->setDict('datatypes', $this->app->types);
-	}
+class PXAdminAuditTable extends PXAdminTableSimple
+{
 
-	function _getDatatypeTitle($format) {
-		return isset($this->dict['datatypes'][$format]) ? $this->dict['datatypes'][$format]->title : $format;
-	}
+    public function __construct($cols)
+    {
+        parent::__construct($cols);
+        $this->app = PXRegistry::getApp();
+        $this->setDict('datatypes', $this->app->types);
+    }
 
-	function cell($row, $col) {
-		if($col == 'source') {
-			if (mb_strpos($row[$col], '/')) {
-				preg_match('|(\w+)/?(\d+)?|'.REGEX_MOD, $row[$col], $matches);
+    public function _getDatatypeTitle($format)
+    {
+        return isset($this->dict['datatypes'][$format]) ? $this->dict['datatypes'][$format]->title : $format;
+    }
 
-				if(sizeof($matches) == 3) {
-					$row[$col] = $this->__link('popup.phtml?area=objects&format='.$matches[1].'&id='.$matches[2].'&action=main', $this->_getDatatypeTitle($matches[1]).'/'.$matches[2]);
+    public function cell($row, $col)
+    {
+        if ($col == 'source') {
+            if (mb_strpos($row[$col], '/')) {
+                preg_match('|(\w+)/?(\d+)?|' . REGEX_MOD, $row[$col], $matches);
 
-				} elseif(sizeof($matches) == 2) {
-					$row[$col] = $this->__link('?area=dicts&sid='.$matches[1], $this->_getDatatypeTitle($matches[1]));
-				}
+                if (sizeof($matches) == 3) {
+                    $row[$col] = $this->__link('popup.phtml?area=objects&format=' . $matches[1] . '&id=' . $matches[2] . '&action=main', $this->_getDatatypeTitle($matches[1]) . '/' . $matches[2]);
 
-			} elseif(mb_strlen($row[$col])) {
-				$row[$col] = $this->__link('?area=dicts&sid='.$row[$col], $this->_getDatatypeTitle($row[$col]));
-			}
-		}
+                } elseif (sizeof($matches) == 2) {
+                    $row[$col] = $this->__link('?area=dicts&sid=' . $matches[1], $this->_getDatatypeTitle($matches[1]));
+                }
 
-		if($col == 'user' && $row[$col] !== 'UNKNOWN') {
-			$row[$col] = $this->__link('./?area=auditlog&user='.$row[$col], $row[$col]);
-		}
+            } elseif (mb_strlen($row[$col])) {
+                $row[$col] = $this->__link('?area=dicts&sid=' . $row[$col], $this->_getDatatypeTitle($row[$col]));
+            }
+        }
 
-		if ($col == 'diff') {
-			$diff = (array)json_decode($row[$col], true);
-			$diff = array_filter($diff);
+        if ($col == 'user' && $row[$col] !== 'UNKNOWN') {
+            $row[$col] = $this->__link('./?area=auditlog&user=' . $row[$col], $row[$col]);
+        }
 
-			$source = explode('/', $row['source'])[0];
+        if ($col == 'diff') {
+            $diff = (array)json_decode($row[$col], true);
+            $diff = array_filter($diff);
 
-			$typeFields = $this->app->types[$source]->fields ?? [];
-			$changedOutput = 'Ничего не изменилось';
-			$humanTitles = [];
+            $source = explode('/', $row['source'])[0];
 
-			foreach ($diff as $code) {
-				isset($typeFields[$code]->description) && $humanTitles[] = $typeFields[$code]->description;
-			}
+            $typeFields = $this->app->types[$source]->fields ?? [];
+            $changedOutput = 'Ничего не изменилось';
+            $humanTitles = [];
 
-			if (!empty($humanTitles)) {
-				$changedOutput = implode(', ', $humanTitles);
-			}
+            foreach ($diff as $code) {
+                isset($typeFields[$code]->description) && $humanTitles[] = $typeFields[$code]->description;
+            }
 
-			$row[$col] = $changedOutput;
-		}
+            if (!empty($humanTitles)) {
+                $changedOutput = implode(', ', $humanTitles);
+            }
 
-		return parent::cell($row, $col);
-	}
+            $row[$col] = $changedOutput;
+        }
 
-	function __link($url, $text) {
-		return '<a href="'.$url.'" target="_blank">'.$text.'</a>';
-	}
+        return parent::cell($row, $col);
+    }
+
+    public function __link($url, $text)
+    {
+        return '<a href="' . $url . '" target="_blank">' . $text . '</a>';
+    }
 }

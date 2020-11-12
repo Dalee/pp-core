@@ -1,8 +1,10 @@
 <?php
 
-class PXTriggerDatabasePreview extends PXAbstractDatabaseTrigger {
-	function OnBeforeGetDataBuildQuery($db, $format, &$mode, &$selector, &$where, &$order, &$limit) {
-		$true_and_false = strtr($db->trueStatusString(true) . "|" . $db->trueStatusString(null), array("'" => ""));
+class PXTriggerDatabasePreview extends PXAbstractDatabaseTrigger
+{
+	public function OnBeforeGetDataBuildQuery($db, $format, &$mode, &$selector, &$where, &$order, &$limit)
+	{
+		$true_and_false = strtr($db->trueStatusString(true) . "|" . $db->trueStatusString(null), ["'" => ""]);
 
 		if (PXRegistry::getApp()->isEngineInstanceof('Sbin')) {
 			return;

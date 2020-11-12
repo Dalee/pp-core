@@ -16,7 +16,7 @@
  *          indent (Smarty online manual)
  * @author   Monte Ohrt <monte at ohrt dot com>
  * @param string
- * @param integer
+ * @param int
  * @param string
  * @return string
  */

@@ -1,10 +1,14 @@
 <?php
-interface IPXAdminObjects {
+
+interface IPXAdminObjects
+{
 //	function showCaption();
 //	function hideCaption();
-	function appendControl($name, $template);
-	function has($id);
-	function get($id);
+    public function appendControl($name, $template);
+
+    public function has($id);
+
+    public function get($id);
 //	function showChildren($requestVarName);
 }
 ?>

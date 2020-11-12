@@ -16,7 +16,8 @@ use PXAdminTableSimple;
  *
  * @package PP\Module
  */
-class CronRunModule extends AbstractModule {
+class CronRunModule extends AbstractModule
+{
 	protected $timeFormat = 'd-m-Y H:i:s';
 
 	/** @var array */
@@ -34,7 +35,8 @@ class CronRunModule extends AbstractModule {
 	/** @var string */
 	protected $tempDir;
 
-	public function __construct($area, $settings) {
+	public function __construct($area, $settings)
+	{
 		parent::__construct($area, $settings);
 
 		$this->resultsFile = RUNTIME_PATH . 'cron.results';
@@ -46,7 +48,8 @@ class CronRunModule extends AbstractModule {
 		$this->_parseRules($settings);
 	}
 
-	function _parseRules($settings) {
+	public function _parseRules($settings)
+	{
 		if (!isset($settings['rule']) || !count($settings['rule'])) {
 			return;
 		}
@@ -83,7 +86,7 @@ class CronRunModule extends AbstractModule {
 				'rule' => $rule,
 				'jobhash' => $rule->matchHash . md5($jobName),
 				'jobname' => strtolower($jobName),
-				'job' => $instance
+				'job' => $instance,
 			];
 
 			$this->rules[$count] = $rm;
@@ -93,7 +96,8 @@ class CronRunModule extends AbstractModule {
 		}
 	}
 
-	function RunJob(&$job, &$app, $matchedTime) {
+	public function runJob(&$job, &$app, $matchedTime)
+	{
 		MakeDirIfNotExists($this->tempDir);
 
 		// ******* child code ******
@@ -194,14 +198,15 @@ class CronRunModule extends AbstractModule {
 			}
 		}
 
-		$cronStat[$job['jobhash']] = array('start' => $tmStart, 'end' => $tmEnd, 'result' => $res);
+		$cronStat[$job['jobhash']] = ['start' => $tmStart, 'end' => $tmEnd, 'result' => $res];
 
 		fwrite($fp, serialize($cronStat));
 		flock($fp, LOCK_UN);
 		fclose($fp);
 	}
 
-	function RunTasks(&$app, $matchedTime) {
+	public function RunTasks(&$app, $matchedTime)
+	{
 		$t = localtime($matchedTime, true);
 		$pid = -1;
 
@@ -211,7 +216,7 @@ class CronRunModule extends AbstractModule {
 			}
 
 			if (($pid = pcntl_fork()) == 0) {
-				$this->RunJob($k, $app, $matchedTime); //child code
+				$this->runJob($k, $app, $matchedTime); //child code
 				exit(); //close child process
 			}
 		}
@@ -223,7 +228,8 @@ class CronRunModule extends AbstractModule {
 		}
 	}
 
-	function isNotMatchTime($match, $t) {
+	public function isNotMatchTime($match, $t)
+	{
 		return !(
 			isset($match['min'][$t['tm_min']]) &&
 			isset($match['hour'][$t['tm_hour']]) &&
@@ -233,7 +239,8 @@ class CronRunModule extends AbstractModule {
 		);
 	}
 
-	private function _loadStat() {
+	private function _loadStat()
+	{
 		$fp = @fopen($this->resultsFile, 'r');
 
 		if ($fp) {
@@ -248,13 +255,14 @@ class CronRunModule extends AbstractModule {
 			fclose($fp);
 
 		} else {
-			$cronStat = array();
+			$cronStat = [];
 		}
 
 		return $cronStat;
 	}
 
-	function getStat($job) {
+	public function getStat($job)
+	{
 		static $cronStat;
 
 		if (is_null($cronStat)) {
@@ -270,23 +278,24 @@ class CronRunModule extends AbstractModule {
 		return $t;
 	}
 
-	function adminIndex() {
+	public function adminIndex()
+	{
 		$layout = $this->layout;
 
 		$layout->setOneColumn();
 		$layout->assign('INNER.0.1', '<a href="?area=' . $this->area . '&t=' . time() . '" class="reload">Обновить</a>');
 
-		$fields = array(
+		$fields = [
 			'rule' => 'Правило',
 			'name' => 'Название задачи',
 			'time' => 'Начало/Окончание',
 			'comment' => 'Примечание',
-		);
+		];
 
-		$result = array();
+		$result = [];
 
 		foreach ($this->rules as $k) {
-			$_ = array();
+			$_ = [];
 
 			$_['rule'] = $k['rule']->asString;
 			$_['name'] = $k['job']->name;

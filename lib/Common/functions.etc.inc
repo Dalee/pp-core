@@ -65,9 +65,9 @@ function parseBool ($s) {
 	}
 
 	$s = strtolower($s);
-	if (in_array($s, array('1', 'on', 'y', 'yes', 'true'))) {
+	if (in_array($s, ['1', 'on', 'y', 'yes', 'true'])) {
 		return true;
-	} elseif (in_array($s, array('', '0', 'off', 'n', 'no', 'false'))) {
+	} elseif (in_array($s, ['', '0', 'off', 'n', 'no', 'false'])) {
 		return false;
 	}
 

@@ -6,14 +6,16 @@ namespace PP\Cron;
  * Class CronRule
  * @package PP\Cron
  */
-class CronRule {
+class CronRule
+{
 
-	var $valid;
-	var $asString;
-	var $match;
-	var $matchHash;
+	public $valid;
+	public $asString;
+	public $match;
+	public $matchHash;
 
-	public function __construct($ruleString) {
+	public function __construct($ruleString)
+	{
 		$this->valid = false;
 		$this->asString = $ruleString;
 
@@ -43,24 +45,25 @@ class CronRule {
 		$this->valid = true;
 	}
 
-	function _parse($s, $min, $max) {
-		$result = array();
+	public function _parse($s, $min, $max)
+	{
+		$result = [];
 		$s = strtolower($s);
 
 		$s = strtr($s,
-			array(
+			[
 				'sun' => '0',
 				'mon' => '1',
 				'tue' => '2',
 				'wed' => '3',
 				'thu' => '4',
 				'fri' => '5',
-				'sat' => '6'
-			)
+				'sat' => '6',
+			]
 		);
 
 		$s = strtr($s,
-			array(
+			[
 				'jan' => '1',
 				'feb' => '2',
 				'mar' => '3',
@@ -72,8 +75,8 @@ class CronRule {
 				'sep' => '9',
 				'oct' => '10',
 				'nov' => '11',
-				'dec' => '12'
-			)
+				'dec' => '12',
+			]
 		);
 
 		$params = explode(',', $s);

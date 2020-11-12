@@ -23,7 +23,7 @@ namespace {{namespace}};
 
 class {{class}} extends MigrationAbstract {
 
-	/** 
+	/**
 	 * {@inheritdoc}
 	 */
 	public function up() {
@@ -106,7 +106,6 @@ PHP;
 	 * @return string
 	 */
 	protected function getMigrationClassWithNamespace($fileName) {
-		$classWithNamespace = $this->namespace . '\\' . $this->getMigrationClass($fileName);
-		return $classWithNamespace;
+		return $this->namespace . '\\' . $this->getMigrationClass($fileName);
 	}
 }

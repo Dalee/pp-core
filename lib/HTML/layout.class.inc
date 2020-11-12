@@ -7,22 +7,24 @@ use PP\Lib\Html\Layout\LayoutInterface;
  *
  * Class PXUserHTMLLayout
  */
-class PXUserHTMLLayout implements LayoutInterface  {
-	var $smarty;
-	var $_filters;
+class PXUserHTMLLayout implements LayoutInterface
+{
+	public $smarty;
+	public $_filters;
 
-	/** @var string  */
+	/** @var string */
 	protected $indexTemplate;
 
 	/** @var PXUserHTMLLang */
 	protected $lang;
 
-	function __construct() {
+	public function __construct()
+	{
 		require_once PPCOREPATH . 'vendor/Smarty/Smarty.class.php';
 
 		$this->_initSmarty();
 
-		$this->_filters  = [];
+		$this->_filters = [];
 		$this->indexTemplate = 'index.tmpl';
 
 		$this->addTemplateFunction('property', [$this, 'getProperty']);
@@ -32,57 +34,61 @@ class PXUserHTMLLayout implements LayoutInterface  {
 		$this->_initLang();
 	}
 
-	private function _initSmarty() {
+	private function _initSmarty()
+	{
 		$this->smarty = new Smarty();
-		$this->smarty->template_dir  = array(
-			BASEPATH.'/local/templates/',
-			BASEPATH.'/libpp/templates/'
-		);
+		$this->smarty->template_dir = [
+			BASEPATH . '/local/templates/',
+			BASEPATH . '/libpp/templates/',
+		];
 
-		$this->smarty->plugins_dir = array(
-			BASEPATH.'/local/lib/smarty.plugins',
-			BASEPATH.'/libpp/lib/smarty.plugins',
+		$this->smarty->plugins_dir = [
+			BASEPATH . '/local/lib/smarty.plugins',
+			BASEPATH . '/libpp/lib/smarty.plugins',
 			'plugins', # Smarty default
-		);
+		];
 
-		$this->smarty->compile_dir   = CACHE_PATH.'/smarty_templates_c';
+		$this->smarty->compile_dir = CACHE_PATH . '/smarty_templates_c';
 
 		MakeDirIfNotExists($this->smarty->compile_dir);
 
-		$this->smarty->config_dir    = NULL;
-		$this->smarty->cache_dir     = NULL;
+		$this->smarty->config_dir = NULL;
+		$this->smarty->cache_dir = NULL;
 		$this->smarty->compile_check = true;
-		$this->smarty->debugging     = false; // ?
-		$this->smarty->caching       = false;
+		$this->smarty->debugging = false; // ?
+		$this->smarty->caching = false;
 	}
 
 	/**
 	 * {@inheritdoc}
 	 */
-	public function setApp(\PXApplication $app) {
+	public function setApp(PXApplication $app)
+	{
 		$this->lang->setTree($app->langTree);
 
 		return $this;
 	}
 
-	private function _initLang() {
+	private function _initLang()
+	{
 		require_once PPLIBPATH . 'HTML/lang.class.inc';
 
 		$this->lang = new PXUserHTMLLang();
-		$this->addTemplateFunction('lang', array($this->lang, 'lang'));
-		$this->addTemplateModifier('lang', array($this->lang, 'lang_modifier'));
+		$this->addTemplateFunction('lang', [$this->lang, 'lang']);
+		$this->addTemplateModifier('lang', [$this->lang, 'lang_modifier']);
 
-		$this->addTemplateFunction('pager', array($this, 'pager'));
-		$this->addTemplateFunction('autopager', array($this, 'autopager'));
+		$this->addTemplateFunction('pager', [$this, 'pager']);
+		$this->addTemplateFunction('autopager', [$this, 'autopager']);
 	}
 
-	function htmlPager($totalObjects, $objectsPerPage, &$smarty, $param) {
-		$maxPage = ceil($totalObjects/$objectsPerPage);
+	public function htmlPager($totalObjects, $objectsPerPage, &$smarty, $param)
+	{
+		$maxPage = ceil($totalObjects / $objectsPerPage);
 
-		$request     = PXRegistry::getRequest();
+		$request = PXRegistry::getRequest();
 
 		$currentPage = $request->GetVar('page', $this->getVar('FP_' . mb_strtoupper($param['format']) . '_DEFAULT_PAGE', 1));
-		$currentPage = (int)preg_replace('/[^0-9]+/'.REGEX_MOD, '', $currentPage);
+		$currentPage = (int)preg_replace('/[^0-9]+/' . REGEX_MOD, '', $currentPage);
 		$currentPage = $currentPage > 0 ? $currentPage : 1;
 
 		if ($currentPage > $maxPage) {
@@ -90,18 +96,19 @@ class PXUserHTMLLayout implements LayoutInterface  {
 		}
 
 		$smarty->assign('a_per_page', $objectsPerPage);
-		$smarty->assign('page',       $currentPage);
-		$smarty->assign('pages',      $maxPage);
-		$smarty->assign('max_page',   $maxPage);
+		$smarty->assign('page', $currentPage);
+		$smarty->assign('pages', $maxPage);
+		$smarty->assign('max_page', $maxPage);
 
-		if(isset($param['notshow'])) {
+		if (isset($param['notshow'])) {
 			return;
 		}
 		return $this->html('misc/pager/pages.tmpl');
 	}
 
-	function autopager($param, &$smarty) {
-		$total      = $this->getVar('FP_' . mb_strtoupper($param['format']) . '_TOTAL');
+	public function autopager($param, &$smarty)
+	{
+		$total = $this->getVar('FP_' . mb_strtoupper($param['format']) . '_TOTAL');
 		$a_per_page = $this->getVar('FP_' . mb_strtoupper($param['format']) . '_PER_PAGE');
 
 		if (!isset($total) || !isset($a_per_page)) {
@@ -111,11 +118,12 @@ class PXUserHTMLLayout implements LayoutInterface  {
 		return $this->htmlPager($total, $a_per_page, $smarty, $param);
 	}
 
-	function pager($param, &$smarty) {
+	public function pager($param, &$smarty)
+	{
 		$total = sizeof($param['objects']);
 
 		/* Нужна ли постраничка? */
-		$p = mb_strtoupper($param['format']).'_PER_PAGE';
+		$p = mb_strtoupper($param['format']) . '_PER_PAGE';
 
 		$a_per_page = (int)PXRegistry::getApp()->getProperty($p, $total);
 		if ($a_per_page == 0) {
@@ -132,7 +140,8 @@ class PXUserHTMLLayout implements LayoutInterface  {
 	 * @param $smarty
 	 * @return string
 	 */
-	function getProperty($param, &$smarty) {
+	public function getProperty($param, &$smarty)
+	{
 		$default = '';
 		if (isset($param['default'])) {
 			$default = $param['default'];
@@ -147,14 +156,16 @@ class PXUserHTMLLayout implements LayoutInterface  {
 	 * @param string $name
 	 * @return string
 	 */
-	function getPropertyModifier($name) {
+	public function getPropertyModifier($name)
+	{
 		return PXRegistry::getApp()->getProperty($name);
 	}
 
 	/**
 	 * {@inheritdoc}
 	 */
-	public function setLang($lang='rus') {
+	public function setLang($lang = 'rus')
+	{
 		$this->lang->setLang($lang);
 
 		return $this;
@@ -163,40 +174,46 @@ class PXUserHTMLLayout implements LayoutInterface  {
 	/**
 	 * {@inheritdoc}
 	 */
-	public function getLang() {
+	public function getLang()
+	{
 		return $this->lang;
 	}
 
 	/**
 	 * {@inheritdoc}
 	 */
-	public function getSmarty() {
+	public function getSmarty()
+	{
 		return $this->smarty;
 	}
 
 	/**
 	 * {@inheritdoc}
 	 */
-	public function getIndexTemplate() {
+	public function getIndexTemplate()
+	{
 		return $this->indexTemplate;
 	}
 
 	/**
 	 * {@inheritdoc}
 	 */
-	public function setContent($content) {
+	public function setContent($content)
+	{
 		return $this;
 	}
 
 	/**
 	 * {@inheritdoc}
 	 */
-	public function getContent(){
+	public function getContent()
+	{
 		return null;
 	}
 
-	function getLangVar($path) {
-		$param = array('get' => $path, 'return' => true);
+	public function getLangVar($path)
+	{
+		$param = ['get' => $path, 'return' => true];
 		return $this->lang->lang($param, $this->smarty);
 	}
 
@@ -204,8 +221,9 @@ class PXUserHTMLLayout implements LayoutInterface  {
 	 * TODO: remove byReference flag to conform LayoutInterface
 	 * {@inheritdoc}
 	 */
-	public function assign($varName, $variable, $byReference=false) {
-		if($byReference) {
+	public function assign($varName, $variable, $byReference = false)
+	{
+		if ($byReference) {
 			$this->smarty->assign_by_ref($varName, $variable);
 		} else {
 			$this->smarty->assign($varName, $variable);
@@ -214,41 +232,49 @@ class PXUserHTMLLayout implements LayoutInterface  {
 		return $this;
 	}
 
-	function assignByRef($varName, &$variable) {
+	public function assignByRef($varName, &$variable)
+	{
 		$this->smarty->assign_by_ref($varName, $variable);
 	}
 
-	function assignRequest($request) {
-		$this->smarty->_get     = $request->GetAllGetData();
-		$this->smarty->_post    = $request->GetAllPostData();
+	public function assignRequest($request)
+	{
+		$this->smarty->_get = $request->GetAllGetData();
+		$this->smarty->_post = $request->GetAllPostData();
 		$this->smarty->_cookies = $request->GetAllCookieData();
 	}
 
-	function assignArray($variablesArray, $byReference=false) {
-		foreach($variablesArray as $k=>$v) {
+	public function assignArray($variablesArray, $byReference = false)
+	{
+		foreach ($variablesArray as $k => $v) {
 			$this->Assign($k, $v, $byReference);
 		}
 	}
 
-	function getVar($varName, $default=NULL) {
+	public function getVar($varName, $default = NULL)
+	{
 		$var = $this->smarty->get_template_vars($varName);
 		return (isset($var) ? $var : $default);
 	}
 
-	function &getVarByRef($varName) {
+	public function &getVarByRef($varName)
+	{
 		$variable =& $this->smarty->get_template_vars($varName);
 		return $variable;
 	}
 
-	function changeIndexTemplate($filename='index.tmpl') {
+	public function changeIndexTemplate($filename = 'index.tmpl')
+	{
 		$this->indexTemplate = $filename;
 	}
 
-	function html($template) {
+	public function html($template)
+	{
 		return $this->smarty->fetch($template);
 	}
 
-	function display() {
+	public function display()
+	{
 		$html = $this->html($this->indexTemplate);
 
 		foreach ($this->_filters as $filter => $filterArgs) {
@@ -270,7 +296,8 @@ class PXUserHTMLLayout implements LayoutInterface  {
 		return $html;
 	}
 
-	function addFilter($functionName) {
+	public function addFilter($functionName)
+	{
 		$args = func_get_args();
 		array_shift($args);
 
@@ -280,23 +307,28 @@ class PXUserHTMLLayout implements LayoutInterface  {
 	}
 
 	// back-compat. deprecated
-	function addModifier($name, $callback) {
+	public function addModifier($name, $callback)
+	{
 		$this->addTemplateModifier($name, $callback);
 	}
 
-	function addTemplateModifier($name, $callback) {
+	public function addTemplateModifier($name, $callback)
+	{
 		$this->smarty->register_modifier($name, $callback);
 	}
 
-	function addTemplateFunction($name, $callback) {
+	public function addTemplateFunction($name, $callback)
+	{
 		$this->smarty->register_function($name, $callback);
 	}
 
-	function addTemplateBlock($name, $callback, $cacheable = true) {
+	public function addTemplateBlock($name, $callback, $cacheable = true)
+	{
 		$this->smarty->register_block($name, $callback, $cacheable);
 	}
 
-	function removeFilter($functionName) {
+	public function removeFilter($functionName)
+	{
 		unset($this->_filters[$functionName]);
 	}
 }

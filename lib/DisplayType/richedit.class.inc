@@ -10,14 +10,16 @@ require_once PPLIBPATH . 'DisplayType/text.class.inc';
  *             width не используется
  *             height это высота в пикселях
  */
-class PXDisplayTypeRichedit extends PXDisplayTypeText {
-	function buildInput($field, $object, $param=NULL) {
-		$value    = isset($object[$field->name]) ? $object[$field->name] : NULL;
-		$req      = PXRegistry::getRequest();
-		$layout   = PXRegistry::getLayout();
-		$redactor = $req->getCookieVar('richedit');
-		$html     = NLAbstractHTMLForm::BuildRichEdit($field->name, $value, $field->displayTypeArgs[1], $redactor);
-		$layout->assignInlineJS(<<<JS
+class PXDisplayTypeRichedit extends PXDisplayTypeText
+{
+    public function buildInput($field, $object, $param = NULL)
+    {
+        $value = isset($object[$field->name]) ? $object[$field->name] : NULL;
+        $req = PXRegistry::getRequest();
+        $layout = PXRegistry::getLayout();
+        $redactor = $req->getCookieVar('richedit');
+        $html = NLAbstractHTMLForm::BuildRichEdit($field->name, $value, $field->displayTypeArgs[1], $redactor);
+        $layout->assignInlineJS(<<<JS
 			var selects = document.getElementsByTagName('select');
 			for(var i = 0; i < selects.length; i++) {
 				if(selects[i].parentNode.className == 'redactor') {
@@ -30,7 +32,7 @@ class PXDisplayTypeRichedit extends PXDisplayTypeText {
 				}
 			}
 JS
-);
-		return $html;
-	}
+        );
+        return $html;
+    }
 }

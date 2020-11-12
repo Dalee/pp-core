@@ -15,7 +15,7 @@ class PXCronRunDeferredStatus extends AbstractCron {
 	/**
 	 * {@inheritdoc}
 	 */
-	public function Run(&$app, &$db, &$tree, $matchedTime, $matchedRule) {
+	public function Run($app, $db, $tree, $matchedTime, $matchedRule) {
 
 		$this->plugin = $app->plugins['deferredstatus'];
 
@@ -29,7 +29,7 @@ class PXCronRunDeferredStatus extends AbstractCron {
 		Label('Starting...');
 		$db->cacheOff();
 
-		$shown = $hidden = array();
+		$shown = $hidden = [];
 		$dropCache = false;
 		foreach ($deferredDatatypes as $type) {
 

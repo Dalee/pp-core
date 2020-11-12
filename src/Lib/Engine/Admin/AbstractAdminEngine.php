@@ -10,7 +10,7 @@ use Symfony\Component\HttpFoundation\Session\Session;
 
 abstract class AbstractAdminEngine extends AbstractEngine {
 
-	const SESSION_NAME = 'sid';
+	public const SESSION_NAME = 'sid';
 
 	// TODO: auth module should export authorizable behaviour, like this -> (bool)$module->thisIsAdminAuthModule()
 	protected $authArea = 'auth';
@@ -40,7 +40,7 @@ abstract class AbstractAdminEngine extends AbstractEngine {
 
 	// static because PXEngineAdminJSON inherited from PXEngineJSON (stupid, but traits available only from php 5.4)
 	protected function getModule(PXApplication $app, $area) {
-		return array_filter(array($area => $app->getAvailableModule($area)));
+		return array_filter([$area => $app->getAvailableModule($area)]);
 	}
 
 	protected function hasAdminModules() {

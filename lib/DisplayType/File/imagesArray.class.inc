@@ -5,26 +5,28 @@
  * storageType imagesarray
  * displayType IMAGESARRAY
  */
-class PXDisplayTypeImagesarray extends PXDisplayTypeImage {
-	function buildInput($field, $object, $param=NULL) {
-		$object[$field->name] = isset($object[$field->name]) ? $object[$field->name] : array();
+class PXDisplayTypeImagesarray extends PXDisplayTypeImage
+{
+	public function buildInput($field, $object, $param = NULL)
+	{
+		$object[$field->name] = isset($object[$field->name]) ? $object[$field->name] : [];
 
 		$items = array_merge(
 			$object[$field->name],
-			array(
-				'null' => array(
-					'width'  => null,
+			[
+				'null' => [
+					'width' => null,
 					'height' => null,
-					'path'   => null,
-					'entry'  => '',
-					'size'   => null,
-				)
-			)
+					'path' => null,
+					'entry' => '',
+					'size' => null,
+				],
+			]
 		);
 
 		$html = '';
 
-		foreach($items as $value) {
+		foreach ($items as $value) {
 			$html .= $this->buildArrayItem($field->name, $value);
 		}
 
@@ -32,22 +34,25 @@ class PXDisplayTypeImagesarray extends PXDisplayTypeImage {
 		return $html;
 	}
 
-	function buildArrayItem($name, $value) {
+	public function buildArrayItem($name, $value)
+	{
 		return NLAbstractHTMLForm::BuildMultimedia($name, $value, 'image', $value['entry']);
 	}
 
-	function getFromRequest($field, $object, $param=NULL) {
+	public function getFromRequest($field, $object, $param = NULL)
+	{
 		return $param['request']->postData->_GetImageVar($field->name, TRUE);
 	}
 
-	function buildCell($field, $object, $param=NULL) {
+	public function buildCell($field, $object, $param = NULL)
+	{
 		if (empty($object[$field->name]) || !is_array($object[$field->name])) {
 			return '';
 		}
 
 		$html = '';
 
-		foreach($object[$field->name] as $value) {
+		foreach ($object[$field->name] as $value) {
 			$html .= parent::buildCell($field, [$field->name => $value], $param);
 		}
 

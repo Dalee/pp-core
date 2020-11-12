@@ -8,127 +8,160 @@ use PP\Lib\Cache\ObjectCache;
  * Class AbstractSqlDatabase
  * @package PP\Lib\Database
  */
-class AbstractSqlDatabase {
+class AbstractSqlDatabase
+{
 
 	/** @var ObjectCache */
 	public $cache = null;
 
-	protected $connectArray = array(
+	protected $connectArray = [
 		'host' => 'localhost',
 		'user' => '',
 		'port' => '',
 		'password' => '',
 		'dbname' => 'test',
-		'encoding' => DEFAULT_CHARSET
-	);
+		'encoding' => DEFAULT_CHARSET,
+	];
 
-	public function __construct(\NLDBDescription $dbDescription) {
+	public function __construct(\NLDBDescription $dbDescription)
+	{
 	}
 
-	function connect() {
+	public function connect()
+	{
 	}
 
-	function close() {
+	public function close()
+	{
 	}
 
-	function setCache($cacheType) {
+	public function setCache($cacheType)
+	{
 		$this->cache = ObjectCache::get($cacheType, 'database');
 	}
 
-	function modifyingQuery($query, $table = null, $retField = null, $flushCache = true, $retCount = false) {
+	public function modifyingQuery($query, $table = null, $retField = null, $flushCache = true, $retCount = false)
+	{
 	}
 
-	function modifyingCopy($tableName, $cols, $data) {
+	public function modifyingCopy($tableName, $cols, $data)
+	{
 	}
 
-	function query($query, $donotusecache = false, $limitpair = null) {
+	public function query($query, $donotusecache = false, $limitpair = null)
+	{
 	}
 
-	function insertObject($table, $fields, $values) {
+	public function insertObject($table, $fields, $values)
+	{
 	}
 
-	function limitOffsetString($limit, $offset) {
+	public function limitOffsetString($limit, $offset)
+	{
 	}
 
-	function trueStatusString($status = 'TRUE') {
+	public function trueStatusString($status = 'TRUE')
+	{
 		return ($status == 'TRUE' || $status == 1) ? 'TRUE' : 'FALSE';
 	}
 
-	function updateObjectById($table, $objectId, $fields, $values) {
+	public function updateObjectById($table, $objectId, $fields, $values)
+	{
 	}
 
-	function dateTimeString($string) {
+	public function dateTimeString($string)
+	{
 	}
 
-	function isUniqueColsCombination($tables, $colValues, $exception) {
+	public function isUniqueColsCombination($tables, $colValues, $exception)
+	{
 	}
 
-	function getTableInfo($tableName) {
-		return array();
+	public function getTableInfo($tableName)
+	{
+		return [];
 	}
 
-	function getError() {
+	public function getError()
+	{
 		return "Error!";
 	}
 
-	function EscapeString($string) {
+	public function EscapeString($string)
+	{
 		return addslashes($string);
 	}
 
-	function mapFields($field) {
+	public function mapFields($field)
+	{
 		return $field;
 	}
 
-	function exportFloat($value) {
+	public function exportFloat($value)
+	{
 		return $value;
 	}
 
-	function exportDateTime($value) {
+	public function exportDateTime($value)
+	{
 		return $value;
 	}
 
-	function vacuumTable($tableName) {
+	public function vacuumTable($tableName)
+	{
 	}
 
-	function tableExists($tableName) {
+	public function tableExists($tableName)
+	{
 		return true;
 	}
 
-	function transactionBegin() {
+	public function transactionBegin()
+	{
 	}
 
-	function transactionCommit() {
+	public function transactionCommit()
+	{
 	}
 
-	function transactionRollback() {
+	public function transactionRollback()
+	{
 	}
 
-	function savepointCreate($name) {
+	public function savepointCreate($name)
+	{
 	}
 
-	function savepointRelease($name) {
+	public function savepointRelease($name)
+	{
 	}
 
-	function savepointRollbackTo($name) {
+	public function savepointRollbackTo($name)
+	{
 	}
 
-	function LIKE($condition, $percs) {
+	public function LIKE($condition, $percs)
+	{
 		return $this->_searchMethod("LIKE", $condition, $percs);
 	}
 
-	function inArray($arrayField, $value, $sane = false) {
+	public function inArray($arrayField, $value, $sane = false)
+	{
 	}
 
-	function intersectIntArray($arrayField, $values) {
+	public function intersectIntArray($arrayField, $values)
+	{
 	}
 
-	function _searchMethod($meth, $condition, $percs) {
+	public function _searchMethod($meth, $condition, $percs)
+	{
 		$lperc = P_LEFT & $percs ? '%' : '';
 		$rperc = P_RIGHT & $percs ? '%' : '';
 		return " " . $meth . " '" . $lperc . $this->EscapeString($condition) . $rperc . "' ";
 	}
 
-	function _loadFromCache($query, $customCacheExpiration) {
+	public function _loadFromCache($query, $customCacheExpiration)
+	{
 		if (!$customCacheExpiration || (is_int($customCacheExpiration) && $customCacheExpiration > 0)) {
 			$data = $this->cache->load($query);
 			if ($data !== null) {
@@ -137,7 +170,8 @@ class AbstractSqlDatabase {
 		}
 	}
 
-	function _saveToCache($query, $data, $customCacheExpiration) {
+	public function _saveToCache($query, $data, $customCacheExpiration)
+	{
 		if (!$customCacheExpiration) {
 			$this->cache->save($query, $data);
 		} elseif (is_int($customCacheExpiration) && $customCacheExpiration > 0) {
@@ -145,7 +179,8 @@ class AbstractSqlDatabase {
 		}
 	}
 
-	function loggerSqlFormat($table, $fields) {
+	public function loggerSqlFormat($table, $fields)
+	{
 
 	}
 }

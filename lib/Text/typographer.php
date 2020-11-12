@@ -51,7 +51,7 @@ if (DEFAULT_CHARSET === CHARSET_UTF8) {
 
 // функция-заменялка для тегов
 
-$Refs = array(); // буфер для хранения тегов
+$Refs = []; // буфер для хранения тегов
 $RefsCntr = 0;   // счётчик буфера
 
 function yyyTypo($x) {
@@ -67,7 +67,7 @@ function zzzTypo($x) {
 function TypoAll($text, $isHTML = true) {
 	global $Refs,$RefsCntr;
 	if ($isHTML) {
-		$Refs = array(); // сбрасываем буфер
+		$Refs = []; // сбрасываем буфер
 		$RefsCntr = 0;   // счётчик буфера
 		/*
 			Вырезаем элементы, содержимое которых мы не должны преобразовывать:
@@ -148,8 +148,8 @@ function TypoAll($text, $isHTML = true) {
 	// заменяем коды символов на HTML-entities.
 	if (DEFAULT_CHARSET !== CHARSET_UTF8) {
 		$text = str_replace(
-			array(LAQUO,RAQUO,LDQUO,RDQUO,RDQUO2,MDASH,NDASH,HELLIP,APOS, NUMBER, LDQUO1,RDQUO1, TM, REG, BULL),
-			array('&laquo;','&raquo;','&bdquo;','&ldquo;','&rdquo;','&#8212;','&#8211;','&hellip;','&#8217;', '&#8470;','&ldquo;','&rdquo;', '&trade;', '&reg;', '&bull;'),
+			[LAQUO,RAQUO,LDQUO,RDQUO,RDQUO2,MDASH,NDASH,HELLIP,APOS, NUMBER, LDQUO1,RDQUO1, TM, REG, BULL],
+			['&laquo;','&raquo;','&bdquo;','&ldquo;','&rdquo;','&#8212;','&#8211;','&hellip;','&#8217;', '&#8470;','&ldquo;','&rdquo;', '&trade;', '&reg;', '&bull;'],
 			$text
 		);
 	}
@@ -170,8 +170,8 @@ function TypoAllRecursive($mixed, $isHTML = true) {
 
 function UnTypoAll($text) {
 	$text = str_replace(
-		array('&laquo;','&raquo;','&bdquo;','&ldquo;','&rdquo;','&#8212;','&#8211;','&hellip;','&#8217;', '&#8470;','&ldquo;','&rdquo;'),
-		array('"', '"', '"', '"', '"', '-', '-', '...', "'", NUMBER, '"', '"'),
+		['&laquo;','&raquo;','&bdquo;','&ldquo;','&rdquo;','&#8212;','&#8211;','&hellip;','&#8217;', '&#8470;','&ldquo;','&rdquo;'],
+		['"', '"', '"', '"', '"', '-', '-', '...', "'", NUMBER, '"', '"'],
 		$text
 	);
 

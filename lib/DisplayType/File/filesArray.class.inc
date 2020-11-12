@@ -5,22 +5,25 @@
  * storageType filesarray
  * displayType FILESARRAY
  */
-class PXDisplayTypeFilesarray extends PXDisplayTypeImagesarray {
-	function buildArrayItem($name, $value) {
-		if(!mb_strlen($value['entry'])) {
-			$value = array(
+class PXDisplayTypeFilesarray extends PXDisplayTypeImagesarray
+{
+	public function buildArrayItem($name, $value)
+	{
+		if (!mb_strlen($value['entry'])) {
+			$value = [
 				'filename' => null,
-				'size'     => null,
+				'size' => null,
 				'fullpath' => null,
-				'type'     => null,
-				'entry'    => ''
-			);
+				'type' => null,
+				'entry' => '',
+			];
 		}
 
 		return NLAbstractHTMLForm::BuildMultimedia($name, $value, 'file', $value['entry']);
 	}
 
-	function buildCell($field, $object, $param=NULL) {
+	public function buildCell($field, $object, $param = NULL)
+	{
 		if (empty($object[$field->name]) || !is_array($object[$field->name])) {
 			return '';
 		}
@@ -29,7 +32,7 @@ class PXDisplayTypeFilesarray extends PXDisplayTypeImagesarray {
 
 		$dtFile = new PXDisplayTypeFile($this->display, $this->name);
 
-		foreach($object[$field->name] as $item) {
+		foreach ($object[$field->name] as $item) {
 			$html .= $dtFile->buildCellHtml($item);
 		}
 

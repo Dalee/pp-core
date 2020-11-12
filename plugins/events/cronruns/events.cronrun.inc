@@ -6,18 +6,21 @@ use PP\Cron\AbstractCron;
  * Обработка региональных объектов
  * Удаление, добавление региона.
  */
-class PXCronRunEvents extends AbstractCron {
-	var $name;
-	const SUCCESS_STATE = 'ok';
+class PXCronRunEvents extends AbstractCron
+{
+	public $name;
+	public const SUCCESS_STATE = 'ok';
 
-	public function __construct() {
+	public function __construct()
+	{
 		$this->name = 'Обработка отложенных событий';
 	}
 
 	/**
 	 * {@inheritdoc}
 	 */
-	public function Run($app, $db, $tree, $matchedTime, $matchedRule) {
+	public function Run($app, $db, $tree, $matchedTime, $matchedRule)
+	{
 		$this->app = $app;
 		$db->Close();
 
@@ -32,15 +35,17 @@ class PXCronRunEvents extends AbstractCron {
 		return 'ok';
 	}
 
-	function dispatch($event) {
+	public function dispatch($event)
+	{
 		if (empty($event['callback']) || empty($event['params'])) {
 			return;
 		}
 
+		$class = $method = null;
 		extract($event['callback']);
 		$resultState = -1;
 
-		if (is_callable(array($class, $method))) {
+		if (is_callable([$class, $method])) {
 			Label("Start event ${class}::${method}");
 
 			switch ($pid = pcntl_fork()) {
@@ -49,7 +54,7 @@ class PXCronRunEvents extends AbstractCron {
 
 				case 0:
 					PXRegistry::getDb()->Connect();
-					$resultState = call_user_func_array(array($class, $method), array($event['params']));
+					$resultState = call_user_func_array([$class, $method], [$event['params']]);
 					$this->write_audit($class, $method, $event, $resultState);
 					break;
 
@@ -66,9 +71,10 @@ class PXCronRunEvents extends AbstractCron {
 		}
 	}
 
-	function write_audit($class, $method, $event, $resultState) {
-		$logMethod = $resultState == self::SUCCESS_STATE ?  'info' : 'error';
+	public function write_audit($class, $method, $event, $resultState)
+	{
+		$logMethod = $resultState == self::SUCCESS_STATE ? 'info' : 'error';
 		$audit = PXAuditLogger::getLogger();
-		$audit->$logMethod(join('/', array($class, $method)), "events/{$event['id']}");
+		$audit->$logMethod(join('/', [$class, $method]), "events/{$event['id']}");
 	}
 }

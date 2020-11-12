@@ -1,15 +1,17 @@
 <?php
 
-class PXDisplayTypeBubbleText extends PXDisplayType {
-	static $scriptsIncluded = false;
+class PXDisplayTypeBubbleText extends PXDisplayType
+{
+	static public $scriptsIncluded = false;
 
 	public $bubbleTextShortContent = null;
-	public $bubbleTextFullContent  = null;
+	public $bubbleTextFullContent = null;
 
-	function buildCell($field, $object, $param=NULL) {
-		$html = array();
+	public function buildCell($field, $object, $param = NULL)
+	{
+		$html = [];
 
-		if(!self::$scriptsIncluded) {
+		if (!self::$scriptsIncluded) {
 			$html[] = $this->css();
 			$html[] = $this->script();
 
@@ -22,23 +24,26 @@ class PXDisplayTypeBubbleText extends PXDisplayType {
 		return join($html);
 	}
 
-	function shortContent($object, $field) {
-		if($this->bubbleTextShortContent) {
+	public function shortContent($object, $field)
+	{
+		if ($this->bubbleTextShortContent) {
 			return $this->bubbleTextShortContent;
 		}
 
 		return $object[$field->name];
 	}
 
-	function fullContent($object, $field) {
-		if($this->bubbleTextFullContent) {
+	public function fullContent($object, $field)
+	{
+		if ($this->bubbleTextFullContent) {
 			return $this->bubbleTextFullContent;
 		}
 
 		return $object[$field->name];
 	}
 
-	function script() {
+	public function script()
+	{
 		return <<<HTML
 <script>
 	$(function() {
@@ -59,7 +64,8 @@ class PXDisplayTypeBubbleText extends PXDisplayType {
 HTML;
 	}
 
-	function css() {
+	public function css()
+	{
 		return <<<HTML
 <style>
 	div.fullBrief {

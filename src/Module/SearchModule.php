@@ -7,20 +7,22 @@ namespace PP\Module;
  *
  * @package PP\Module
  */
-class SearchModule extends AbstractModule  {
+class SearchModule extends AbstractModule
+{
 
-	var $word;
+	public $word;
 
-	function adminIndex() {
+	public function adminIndex()
+	{
 		$this->word = trim($this->request->GetVar('word'));
 		$this->searchForm();
 
 		if (mb_strlen($this->word)) {
 			$allCount = 0;
 
-			$checkedTypes = $this->request->getVar('d', array());
+			$checkedTypes = $this->request->getVar('d', []);
 			foreach ($this->app->types as $datatype) {
-				if(!isset($checkedTypes[$datatype->id])) {
+				if (!isset($checkedTypes[$datatype->id])) {
 					continue;
 				}
 
@@ -33,19 +35,21 @@ class SearchModule extends AbstractModule  {
 		}
 	}
 
-	function __sortTypes($a, $b) {
+	public function __sortTypes($a, $b)
+	{
 		return strcmp($a->title, $b->title);
 	}
 
-	function searchForm() {
+	public function searchForm()
+	{
 		$datatypesHTML = '<ul>';
 
 		$types = $this->app->types;
-		uasort($types, array($this, '__sortTypes'));
+		uasort($types, [$this, '__sortTypes']);
 
-		$checkedTypes = $this->request->getVar('d', array());
+		$checkedTypes = $this->request->getVar('d', []);
 
-		foreach($types as $datatype) {
+		foreach ($types as $datatype) {
 			$checked = !sizeof($checkedTypes) || isset($checkedTypes[$datatype->id]) ? 'checked' : '';
 			$datatypesHTML .= <<<HTML
 
@@ -93,12 +97,13 @@ HTML;
 		$this->layout->setGetVarToSave('word', $this->word);
 
 		// build the string for datatypes check
-		foreach ($checkedTypes as $k => $v){
+		foreach ($checkedTypes as $k => $v) {
 			$this->layout->setGetVarToSave('d[' . $k . ']', 'on');
 		}
 	}
 
-	function find(&$datatype) {
+	public function find(&$datatype)
+	{
 		$count = $this->db->getObjectsBySearchWord($datatype, NULL, $this->word, DB_SELECT_COUNT);
 
 		if ($count) {

@@ -1,6 +1,7 @@
 <?php
 
-class PXAdminTreeObjects extends PXAdminObjects {
+class PXAdminTreeObjects extends PXAdminObjects
+{
 	protected $withoutExternals;
 	protected $loadWhere = null;
 	protected $loadMethod = null;
@@ -12,7 +13,8 @@ class PXAdminTreeObjects extends PXAdminObjects {
 	 * @param string $loadMethod
 	 * @param string $withoutExternals
 	 */
-	function __construct($format, $where = null, $loadMethod = null, $withoutExternals = false) {
+	public function __construct($format, $where = null, $loadMethod = null, $withoutExternals = false)
+	{
 		$this->loadWhere = $where;
 		$this->loadMethod = $loadMethod;
 		$this->withoutExternals = $withoutExternals;
@@ -22,7 +24,8 @@ class PXAdminTreeObjects extends PXAdminObjects {
 		$this->createSubWidget();
 	}
 
-	function loadObjects() {
+	public function loadObjects()
+	{
 		$cacheDataKey = self::makeDataKey($this->format->id);
 		if ($r = self::retrieveData($cacheDataKey)) {
 			$this->tree = $r;
@@ -32,13 +35,13 @@ class PXAdminTreeObjects extends PXAdminObjects {
 
 		switch (strtolower($this->loadMethod)) {
 			case 'byparent':
-				$this->tree = $this->db->getObjectsByParent($this->format, null, $this->loadWhere, DB_SELECT_TREE | ($this->withoutExternals ? DB_SELECT_WITHOUT_EXTERNALS : 0) );
+				$this->tree = $this->db->getObjectsByParent($this->format, null, $this->loadWhere, DB_SELECT_TREE | ($this->withoutExternals ? DB_SELECT_WITHOUT_EXTERNALS : 0));
 				break;
 			case 'byidarray':
-				$this->tree = $this->db->getObjectsByIdArray($this->format, null, $this->loadWhere, DB_SELECT_TREE | ($this->withoutExternals ? DB_SELECT_WITHOUT_EXTERNALS : 0) );
+				$this->tree = $this->db->getObjectsByIdArray($this->format, null, $this->loadWhere, DB_SELECT_TREE | ($this->withoutExternals ? DB_SELECT_WITHOUT_EXTERNALS : 0));
 				break;
 			default:
-				$this->tree = $this->db->getObjects($this->format, null, DB_SELECT_TREE | ($this->withoutExternals ? DB_SELECT_WITHOUT_EXTERNALS : 0) );
+				$this->tree = $this->db->getObjects($this->format, null, DB_SELECT_TREE | ($this->withoutExternals ? DB_SELECT_WITHOUT_EXTERNALS : 0));
 				break;
 		}
 
@@ -48,38 +51,45 @@ class PXAdminTreeObjects extends PXAdminObjects {
 		self::storeData($cacheDataKey, $this->tree);
 	}
 
-	function getControlParent() {
+	public function getControlParent()
+	{
 		return is_null($this->controlParent) ? $this->tree->getRoot()->id : $this->controlParent;
 	}
 
-	function createSubWidget() {
+	public function createSubWidget()
+	{
 		$this->loadObjects();
 		$this->widget = new PXAdminTree($this->format, $this->tree);
 		$this->widget->setOpenedLeafs($this->request->getLeafStatus());
 		$this->widget->loadDropdownValues($this->db);
 	}
 
-	function setSelected($selectedSid) {
+	public function setSelected($selectedSid)
+	{
 		$this->widget->setSelected($selectedSid);
 	}
 
-	function appendControl($name, $template) {
+	public function appendControl($name, $template)
+	{
 		// pass
 	}
 
-	function has($id) {
+	public function has($id)
+	{
 		return isset($this->tree->leafs[$id]);
 	}
 
-	function get($id) {
-		if(!$this->has($id)) {
-			FatalError('Can\'t find '.$id);
+	public function get($id)
+	{
+		if (!$this->has($id)) {
+			FatalError('Can\'t find ' . $id);
 		}
 
 		return $this->tree->leafs[$id]->content;
 	}
 
-	function getTree() {
+	public function getTree()
+	{
 		return $this->tree;
 	}
 }

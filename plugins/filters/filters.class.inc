@@ -2,10 +2,12 @@
 
 use PP\Plugin\AbstractPlugin;
 
-class PXPluginFilters extends AbstractPlugin {
+class PXPluginFilters extends AbstractPlugin
+{
 	private static $enabled = false;
 
-	function initialize($app) {
+	public function initialize($app)
+	{
 		$this->loadTrigger("database/filters");
 		$this->loadTrigger("system/filters");
 
@@ -13,11 +15,13 @@ class PXPluginFilters extends AbstractPlugin {
 		$this->loadOnlyInAdmin("decorators.php");
 	}
 
-	public static function toggle($on_off) {
+	public static function toggle($on_off)
+	{
 		self::$enabled = !!$on_off;
 	}
 
-	public static function enabled() {
+	public static function enabled()
+	{
 		return self::$enabled;
 	}
 }

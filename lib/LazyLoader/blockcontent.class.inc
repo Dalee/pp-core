@@ -13,7 +13,7 @@ class PXBlockContentLazyLoader  {
 
 	protected static $TYPE = 'block';
 
-	protected static $MEDIA_FIELDS = array('images');
+	protected static $MEDIA_FIELDS = ['images'];
 
 	public function __construct($ownerType, $ownerId, $ownerField) {
 		$this->ownerType = $ownerType;
@@ -54,11 +54,11 @@ class PXBlockContentLazyLoader  {
 		$this->tree = $db->getObjectsByFields(
 				$app->types[self::$TYPE],
 				true,
-				array(
+				[
 						'parent_type' => $this->ownerType,
 						'parent_id' => $this->ownerId,
 						'parent_field' => $this->ownerField
-				),
+                ],
 				DB_SELECT_TREE
 		);
 
@@ -68,7 +68,7 @@ class PXBlockContentLazyLoader  {
 	}
 
 	protected function __blockMap ($leaf, $content) {
-		$content = (array)(empty($content) ? array() : $content);
+		$content = (array)(empty($content) ? [] : $content);
 		if (!empty($leaf->content['data']['content'])) {
 			array_unshift($content, $leaf->content['data']['content']);
 		}
@@ -79,16 +79,16 @@ class PXBlockContentLazyLoader  {
 			$leaf->content['data']['__media'] = $media;
 		}
 
-		return array(
+		return [
 				'block' => $leaf->content['type'],
 				'mods' => $leaf->content['mods'],
-				'ibem' => array(
+				'ibem' => [
 						'id' => $leaf->content['id'],
 						'title' => $leaf->content['title']
-				),
+                ],
 				'data' => $leaf->content['data'],
 				'content' => $content
-		);
+        ];
 	}
 
 	public function __toString() {

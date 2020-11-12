@@ -7,9 +7,11 @@ namespace PP\Lib\Rss;
  *
  * @package PP\Lib\Rss
  */
-abstract class AbstractRssNode {
+abstract class AbstractRssNode
+{
 
-	function _node($nodeName, $value) {
+	public function _node($nodeName, $value)
+	{
 		if (is_array($value)) {
 			$value = implode('', $value);
 		}
@@ -20,7 +22,8 @@ abstract class AbstractRssNode {
 XML;
 	}
 
-	function nodeSet($nodes) {
+	public function nodeSet($nodes)
+	{
 		$_ = [];
 
 		foreach ($nodes as $node) {

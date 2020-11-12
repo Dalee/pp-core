@@ -3,122 +3,130 @@
 require_once PPLIBPATH . 'Logger/Audit/table.class.inc';
 require_once PPLIBPATH . 'Logger/Audit/viewer.class.inc';
 
-class PXAdminAuditWrapper {
-	var $app, $request, $db, $layout;
-	var $minChildrenOnPage = 20;
-	var $maxChildrenOnPage = 100;
+class PXAdminAuditWrapper
+{
+    public $app, $request, $db, $layout;
+    public $minChildrenOnPage = 20;
+    public $maxChildrenOnPage = 100;
 
-	var $cols2title = array(
-		"ts"          => "Дата/Время",
-		"level"       => "Уровень",
-		"type"        => "Тип сообщения",
-		"source"      => "Тип данных/объект",
-		"user"        => "Логин",
-		"ip"          => "IP адрес",
-		"description" => "Сообщение",
-		"diff"        => "Что изменилось"
-	);
+    public $cols2title = [
+        "ts" => "Дата/Время",
+        "level" => "Уровень",
+        "type" => "Тип сообщения",
+        "source" => "Тип данных/объект",
+        "user" => "Логин",
+        "ip" => "IP адрес",
+        "description" => "Сообщение",
+        "diff" => "Что изменилось",
+    ];
 
-	var $frame = "INNER.0.0";
-	var $caption = 'none';
-	var $filters = array();
+    public $frame = "INNER.0.0";
+    public $caption = 'none';
+    public $filters = [];
 
-	var $hasFilterFrom = true;
+    public $hasFilterFrom = true;
 
-	function PXAdminAuditWrapper() {
-		PXRegistry::assignToObject($this);
+    public function __construct()
+    {
+        PXRegistry::assignToObject($this);
 
-		$this->page = $this->request->getVar('_page', 1);
+        $this->page = $this->request->getVar('_page', 1);
 
-		$onPage = $this->request->getVar('_per_page', $this->minChildrenOnPage);
-		$this->onPage = $onPage > $this->maxChildrenOnPage ? $this->maxChildrenOnPage : $onPage;
-	}
+        $onPage = $this->request->getVar('_per_page', $this->minChildrenOnPage);
+        $this->onPage = $onPage > $this->maxChildrenOnPage ? $this->maxChildrenOnPage : $onPage;
+    }
 
-	function init() {
-		$this->viewer = new PXAuditViewer($this->filter(), $this->get_cols());
+    public function init()
+    {
+        $this->viewer = new PXAuditViewer($this->filter(), $this->get_cols());
 
-		$this->count = $this->viewer->getCount();
-		$this->data  = $this->viewer->getData($this->page, $this->onPage, $this->count);
+        $this->count = $this->viewer->getCount();
+        $this->data = $this->viewer->getData($this->page, $this->onPage, $this->count);
 
-		$this->caption = 'Журнал аудита, '.$this->count.' '.NumericEndingsRussian($this->count, 'запись', 'записи', 'записей');
-	}
+        $this->caption = 'Журнал аудита, ' . $this->count . ' ' . NumericEndingsRussian($this->count, 'запись', 'записи', 'записей');
+    }
 
-	function init_and_render(){
-		$this->init();
-		$this->render();
-	}
+    public function init_and_render()
+    {
+        $this->init();
+        $this->render();
+    }
 
-	function render() {
-		$this->table();
-		$this->pager();
+    public function render()
+    {
+        $this->table();
+        $this->pager();
 
-		if($this->hasFilterFrom) {
-			$this->filterForm();
-		}
-	}
+        if ($this->hasFilterFrom) {
+            $this->filterForm();
+        }
+    }
 
-	function table() {
-		$table = new PXAdminAuditTable($this->cols2title);
-		$table->setDict('level', $this->viewer->getErrorLevels());
-		$table->setData($this->data);
-		$table->setCaption($this->caption);
-		$this->html($table->html());
-	}
+    public function table()
+    {
+        $table = new PXAdminAuditTable($this->cols2title);
+        $table->setDict('level', $this->viewer->getErrorLevels());
+        $table->setData($this->data);
+        $table->setCaption($this->caption);
+        $this->html($table->html());
+    }
 
-	function pager() {
-		$param = $this->request->getAllGetData();
+    public function pager()
+    {
+        $param = $this->request->getAllGetData();
 
-		if(isset($param['date']) && isset($param['date']['year'])) {
-			$param['ts'] = getFromArray($param['date'], 'day'). '-' . getFromArray($param['date'], 'month') . '-' . getFromArray($param['date'], 'year') . ' 00:00:00';
-		}
-		unset($param['date']);
+        if (isset($param['date']) && isset($param['date']['year'])) {
+            $param['ts'] = getFromArray($param['date'], 'day') . '-' . getFromArray($param['date'], 'month') . '-' . getFromArray($param['date'], 'year') . ' 00:00:00';
+        }
+        unset($param['date']);
 
-		$pager = new PXAdminPager($this->page, $this->onPage, $this->count, '',  $param);
-		$this->html($pager->html());
-	}
+        $pager = new PXAdminPager($this->page, $this->onPage, $this->count, '', $param);
+        $this->html($pager->html());
+    }
 
-	function filterForm() {
-		$color = TABLECOLOR1;
-		$borderColor = TABLECOLOR2;
+    public function filterForm()
+    {
+        $color = TABLECOLOR1;
+        $borderColor = TABLECOLOR2;
 
-		$types = getColFromtable($this->db->query('SELECT DISTINCT type FROM (SELECT * FROM log_audit ORDER BY id DESC LIMIT 10000) as t'), 'type');
-		$levels = $this->viewer->getErrorLevels();
+        $types = getColFromtable($this->db->query('SELECT DISTINCT type FROM (SELECT * FROM log_audit ORDER BY id DESC LIMIT 10000) as t'), 'type');
+        $levels = $this->viewer->getErrorLevels();
 
-		$levelHTML  = '';
-		$typeHTML   = '';
-		$formatHTML = '';
+        $levelHTML = '';
+        $typeHTML = '';
+        $formatHTML = '';
 
-		foreach($levels as $k => $v) {
-			$selected = ($k == $this->request->getVar('level')) ? ' selected' : '';
-			$levelHTML .= '<option value="' . $k . '"'. $selected .'>'. ($v ? $v : '- Any -') . '</option>';
-		}
+        foreach ($levels as $k => $v) {
+            $selected = ($k == $this->request->getVar('level')) ? ' selected' : '';
+            $levelHTML .= '<option value="' . $k . '"' . $selected . '>' . ($v ? $v : '- Any -') . '</option>';
+        }
 
-		foreach($types as $v) {
-			$selected = ($v == $this->request->getVar('type')) ? ' selected' : '';
-			$typeHTML .= '<option value="' . $v . '"'. $selected .'>'. $v . '</option>';
-		}
+        foreach ($types as $v) {
+            $selected = ($v == $this->request->getVar('type')) ? ' selected' : '';
+            $typeHTML .= '<option value="' . $v . '"' . $selected . '>' . $v . '</option>';
+        }
 
-		foreach($this->app->types as $k=>$v) {
-			$selected = ($k == $this->request->getVar('format')) ? ' selected' : '';
-			$formatHTML .= '<option value="' . $k . '"'. $selected .'>'. $v->title . '</option>';
-		}
+        foreach ($this->app->types as $k => $v) {
+            $selected = ($k == $this->request->getVar('format')) ? ' selected' : '';
+            $formatHTML .= '<option value="' . $k . '"' . $selected . '>' . $v->title . '</option>';
+        }
 
 
-		$login       = quot($this->request->getVar("user"));
-		$description = quot($this->request->getVar("description"));
-		$ip          = quot($this->request->getVar("ip"));
-		$id          = quot($this->request->getVar("id"));
+        $login = quot($this->request->getVar("user"));
+        $description = quot($this->request->getVar("description"));
+        $ip = quot($this->request->getVar("ip"));
+        $id = quot($this->request->getVar("id"));
 
-		$ts = $this->request->getVar('ts') ? $this->request->getVar('ts') : null;
-		$ds = $this->request->getVar('date');
-		if(isset($ds) && !in_array(null, $ds)) {
-			$ts = getFromArray($ds, 'day'). '-' . getFromArray($ds, 'month') . '-' . getFromArray($ds, 'year') . ' 00:00:00';
-		}
+        $ts = $this->request->getVar('ts') ? $this->request->getVar('ts') : null;
+        $ds = $this->request->getVar('date');
+        if (isset($ds) && !in_array(null, $ds)) {
+            $ts = getFromArray($ds, 'day') . '-' . getFromArray($ds, 'month') . '-' . getFromArray($ds, 'year') . ' 00:00:00';
+        }
 
-		$dateHTML =  NLAbstractHTMLForm::BuildDateTime("date", $ts, false, true, true);
+        $dateHTML = NLAbstractHTMLForm::BuildDateTime("date", $ts, false, true, true);
 
-		$html =
-<<<HTML
+        $html =
+            <<<HTML
 	<H2>Filter</H2>
 
 	<style type="text/css">
@@ -224,7 +232,7 @@ class PXAdminAuditWrapper {
 			<legend>Объект</legend>
 
 			<label id="label_format" for="format">Тип данных</label>
-			<select name="format" id="type">
+			<select name="format" id="format">
 				<option value="">- Any -</option>
 				$formatHTML
 			</select>
@@ -246,47 +254,52 @@ class PXAdminAuditWrapper {
 		<input type="submit">
 	</form>
 HTML;
-		$this->html($html);
-	}
+        $this->html($html);
+    }
 
-	##UTILS##
+    ##UTILS##
 
-	function get_cols() {
-		return array_merge(array('id'), array_keys($this->cols2title));
-	}
+    public function get_cols()
+    {
+        return array_merge(['id'], array_keys($this->cols2title));
+    }
 
-	function html($html) {
-		$this->layout->append($this->frame, $html);
-	}
+    public function html($html)
+    {
+        $this->layout->append($this->frame, $html);
+    }
 
-	function filter() {
-		$filters = array();
+    public function filter()
+    {
+        $filters = [];
 
-		$cols = array_combine($cols = $this->get_cols(), array_pad(array(), count($cols), NULL));
-		$cols = array_merge($cols, array("date" => null, "format" => null));
-		$in   = array_merge($cols, $this->filters);
+        $cols = array_combine($cols = $this->get_cols(), array_pad([], count($cols), NULL));
+        $cols = array_merge($cols, ["date" => null, "format" => null]);
+        $in = array_merge($cols, $this->filters);
 
-		foreach($in as $field=>$value) {
-			$var = $this->request->getVar($field, $value);
+        foreach ($in as $field => $value) {
+            $var = $this->request->getVar($field, $value);
 
-			if(is_null($var)) {
-				continue;
-			}
+            if (is_null($var)) {
+                continue;
+            }
 
-			$this->layout->setGetVarToSave($field, $var);
-			$filters[$field] = $var;
-		}
+            $this->layout->setGetVarToSave($field, $var);
+            $filters[$field] = $var;
+        }
 
-		return $filters;
-	}
+        return $filters;
+    }
 
-	function source($source) {
-		if (!strpos ($source, '/')) {
-			return $source;
-		}
+    public function source($source)
+    {
+        if (!strpos($source, '/')) {
+            return $source;
+        }
 
-		list ($_type, $_id) = explode('/', $source);
-		return  '<a title="Редактировать объект" href="javascript:EditContent(\''.$_type.'\', \''.$_id.'\')">'.$source.'</a>';
-	}
+        [$_type, $_id] = explode('/', $source);
+        return '<a title="Редактировать объект" href="javascript:EditContent(\'' . $_type . '\', \'' . $_id . '\')">' . $source . '</a>';
+    }
 }
+
 ?>

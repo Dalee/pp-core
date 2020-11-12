@@ -2,322 +2,366 @@
 
 include_once PPLIBPATH . 'Filesys/dir.class.inc';
 
-class PXFileListingRoots extends PXFileListing {
-	public $_comments;
+class PXFileListingRoots extends PXFileListing
+{
+    public $_comments;
 
-	function getList($catalog) {
-		return;
+    public function getList($catalog)
+    {
 	}
 
-	function setRoots($catalogs) {
-		$this->_comments = array();
+    public function setRoots($catalogs)
+    {
+        $this->_comments = [];
 
-		foreach($catalogs as $catalog => $comment) {
-			$catalog = $this->_prepare($catalog);
+        foreach ($catalogs as $catalog => $comment) {
+            $catalog = $this->_prepare($catalog);
 
-			$_root = new PXFileListingItemRoot($catalog, $this);
-			$_root->_Comment($comment);
+            $_root = new PXFileListingItemRoot($catalog, $this);
+            $_root->_Comment($comment);
 
-			$this->_files[$catalog] = $_root;
-		}
-	}
+            $this->_files[$catalog] = $_root;
+        }
+    }
 
-	function html() {
-		$this->_decorator->setCatalog($this->_catalog);
+    public function html()
+    {
+        $this->_decorator->setCatalog($this->_catalog);
 
-		$_  = $this->_decorator->htmlHeader();
-		$_ .= $this->_decorator->htmlList($this->_files);
-		$_ .= $this->_decorator->htmlFooter();
+        $_ = $this->_decorator->htmlHeader();
+        $_ .= $this->_decorator->htmlList($this->_files);
+        $_ .= $this->_decorator->htmlFooter();
 
-		return $_;
-	}
+        return $_;
+    }
 
-	function writable() {
-		return false;
-	}
+    public function writable()
+    {
+        return false;
+    }
 }
 
-class PXFileListing {
-	public $_roots;
-	public $_files;
-	public $_catalog;
-	public $_destination;
-	public $_decorator;
+class PXFileListing
+{
+    public $_roots;
+    public $_files;
+    public $_catalog;
+    public $_destination;
+    public $_decorator;
 
-	function __construct($catalogs) {
-		$this->_roots = array();
-		$this->_files = null;
+    public function __construct($catalogs)
+    {
+        $this->_roots = [];
+        $this->_files = null;
 
-		$this->setRoots($catalogs);
-	}
+        $this->setRoots($catalogs);
+    }
 
-	function setDecorator($htmlDecorator) {
-		$this->_decorator = $htmlDecorator;
-	}
+    public function setDecorator($htmlDecorator)
+    {
+        $this->_decorator = $htmlDecorator;
+    }
 
-	function writable() {
-		return is_writable($this->_fullPath($this->_catalog));
-	}
+    public function writable()
+    {
+        return is_writable($this->_fullPath($this->_catalog));
+    }
 
-	function html() {
-		$up      = preg_replace('|[^/]+/$|'.REGEX_MOD, '', $this->_catalog);
+    public function html()
+    {
+        $up = preg_replace('|[^/]+/$|' . REGEX_MOD, '', $this->_catalog);
 
-		$canBrowse = $this->_isValid($this->_catalog);
-		$canUp     = $this->_isValid($up);
+        $canBrowse = $this->_isValid($this->_catalog);
+        $canUp = $this->_isValid($up);
 
-		$this->_decorator->setCatalog($this->_catalog);
+        $this->_decorator->setCatalog($this->_catalog);
 
-		$_  = $this->_decorator->htmlHeader();
-		$_ .= $this->_decorator->htmlUp($canUp, $up);
+        $_ = $this->_decorator->htmlHeader();
+        $_ .= $this->_decorator->htmlUp($canUp, $up);
 
-		if(is_array($this->_files)) {
-			$_ .= $this->_decorator->htmlList($this->_files);
-			$_ .= $this->_decorator->htmlFooter();
+        if (is_array($this->_files)) {
+            $_ .= $this->_decorator->htmlList($this->_files);
+            $_ .= $this->_decorator->htmlFooter();
 
-		} else {
-			$_ .= $this->_decorator->htmlFooter();
-			$_ .= $this->_decorator->error();
-		}
+        } else {
+            $_ .= $this->_decorator->htmlFooter();
+            $_ .= $this->_decorator->error();
+        }
 
-		return $_;
-	}
+        return $_;
+    }
 
-	function setDestination($destination) {
-		$destination = $this->_prepare($destination);
+    public function setDestination($destination)
+    {
+        $destination = $this->_prepare($destination);
 
-		if(!$this->_isValid($destination)) {
-			$this->_destination = null;
-			return false;
-		}
+        if (!$this->_isValid($destination)) {
+            $this->_destination = null;
+            return false;
+        }
 
-		$this->_destination = $destination;
-	}
+        $this->_destination = $destination;
+    }
 
-	function setRoots($catalogs) {
-		foreach(array_keys($catalogs) as $catalog) {
-			$catalog = $this->_prepare($catalog);
+    public function setRoots($catalogs)
+    {
+        foreach (array_keys($catalogs) as $catalog) {
+            $catalog = $this->_prepare($catalog);
 
-			if(is_dir($this->_fullPath($catalog))) {
-				$this->_roots[] = $catalog;
-			}
-		}
-	}
+            if (is_dir($this->_fullPath($catalog))) {
+                $this->_roots[] = $catalog;
+            }
+        }
+    }
 
-	function getList($catalog) {
-		$catalog = $this->_prepare($catalog);
-		$this->_catalog = $catalog;
-		if(!$this->_isValid($catalog)) {
-			return null;
-		}
-		return $this->_ls($catalog);
-	}
+    public function getList($catalog)
+    {
+        $catalog = $this->_prepare($catalog);
+        $this->_catalog = $catalog;
+        if (!$this->_isValid($catalog)) {
+            return null;
+        }
+        return $this->_ls($catalog);
+    }
 
-	# public interface
-	public function isValid($catalog) {
-		return $this->_isValid($catalog);
-	}
+    # public interface
+    public function isValid($catalog)
+    {
+        return $this->_isValid($catalog);
+    }
 
-	function _ls($catalog) {
-		$this->_files = array();
+    public function _ls($catalog)
+    {
+        $this->_files = [];
 
-		$catalog = $this->_prepare($this->_fullPath($catalog));
-		$_dir = new NLDir($catalog);
+        $catalog = $this->_prepare($this->_fullPath($catalog));
+        $_dir = new NLDir($catalog);
 
-		foreach($_dir->getDirs(true) as $path) {
-			$this->_files[$path] = new PXFileListingItemCatalog($path, $this);
-		}
+        foreach ($_dir->getDirs(true) as $path) {
+            $this->_files[$path] = new PXFileListingItemCatalog($path, $this);
+        }
 
-		foreach($_dir->getFileNames(true) as $path) {
-			$this->_files[$path] = new PXFileListingItem($path, $this);
-		}
+        foreach ($_dir->getFileNames(true) as $path) {
+            $this->_files[$path] = new PXFileListingItem($path, $this);
+        }
 
-		return $this->_files;
-	}
+        return $this->_files;
+    }
 
-	function _getRealPath($catalog) {
-		return realpath($this->_fullPath($catalog));
-	}
+    public function _getRealPath($catalog)
+    {
+        return realpath($this->_fullPath($catalog));
+    }
 
-	function _isValid($catalog) {
-		if(!is_dir($this->_fullPath($catalog))) {
-			return false;
-		}
+    public function _isValid($catalog)
+    {
+        if (!is_dir($this->_fullPath($catalog))) {
+            return false;
+        }
 
-		foreach($this->_roots as $root) {
-			if(mb_strpos($this->_getRealPath($catalog), $this->_getRealPath($root)) === 0 && mb_strlen($root) <= mb_strlen($catalog)) {
-				return true;
-			}
-		}
+        foreach ($this->_roots as $root) {
+            if (mb_strpos($this->_getRealPath($catalog), $this->_getRealPath($root)) === 0 && mb_strlen($root) <= mb_strlen($catalog)) {
+                return true;
+            }
+        }
 
-		return false;
-	}
+        return false;
+    }
 
-	function _prepare ($tmp) {
-		$tmp = str_replace('\\\\', '||', $tmp);
-		$tmp = str_replace('//', '||', $tmp);
-		$tmp = str_replace('\\', '/', $tmp);
-		$tmp .= '/';
-		$tmp = preg_replace('|/{2,}|'.REGEX_MOD, '/', $tmp);
-		$tmp = str_replace('||', '\\\\', $tmp);
+    public function _prepare($tmp)
+    {
+        $tmp = str_replace('\\\\', '||', $tmp);
+        $tmp = str_replace('//', '||', $tmp);
+        $tmp = str_replace('\\', '/', $tmp);
+        $tmp .= '/';
+        $tmp = preg_replace('|/{2,}|' . REGEX_MOD, '/', $tmp);
+        $tmp = str_replace('||', '\\\\', $tmp);
 
-		return $tmp;
-	}
+        return $tmp;
+    }
 
-	function _isSmbShare($path) {
-		return mb_strpos($path, '\\\\') === 0;
-	}
+    public function _isSmbShare($path)
+    {
+        return mb_strpos($path, '\\\\') === 0;
+    }
 
-	function _fullPath($catalog) {
-		if($this->_isSmbShare($catalog)) {
-			$catalog = str_replace('/', '\\', $catalog);
+    public function _fullPath($catalog)
+    {
+        if ($this->_isSmbShare($catalog)) {
+            $catalog = str_replace('/', '\\', $catalog);
 
-			return $catalog;
-		}
+            return $catalog;
+        }
 
-		return BASEPATH. DIRECTORY_SEPARATOR . $catalog;
-	}
+        return BASEPATH . DIRECTORY_SEPARATOR . $catalog;
+    }
 }
 
-class PXFileListingItem {
-	function __construct($filename, $parent) {
-		$this->parent      =& $parent;
+class PXFileListingItem
+{
+    public function __construct($filename, $parent)
+    {
+        $this->parent =& $parent;
 
-		$this->name        = $filename;
-		$this->catalog     = $parent->_catalog;
-		$this->destination = $parent->_destination;
-		$this->path        = $this->_fullPath($parent->_catalog).$filename;
+        $this->name = $filename;
+        $this->catalog = $parent->_catalog;
+        $this->destination = $parent->_destination;
+        $this->path = $this->_fullPath($parent->_catalog) . $filename;
 
-		$this->_isReadable();
-		$this->_isCopyable();
-		$this->_isWritable();
-		$this->_isDeletable();
-		$this->_isBinary();
-		$this->_isDir();
+        $this->_isReadable();
+        $this->_isCopyable();
+        $this->_isWritable();
+        $this->_isDeletable();
+        $this->_isBinary();
+        $this->_isDir();
 
-		$this->_Type();
-		$this->_Size();
-		$this->_Comment('');
-		$this->_Alias();
-	}
+        $this->_Type();
+        $this->_Size();
+        $this->_Comment('');
+        $this->_Alias();
+    }
 
-	function _fullPath($catalog) {
-		return $this->parent->_fullPath($catalog);
-	}
+    public function _fullPath($catalog)
+    {
+        return $this->parent->_fullPath($catalog);
+    }
 
-	function _isCopyable() {
-		if(!$this->readable || is_null($this->destination) || !is_writable($this->_fullPath($this->destination))) {
-			$this->copyable = 0;
-			return;
-		}
+    public function _isCopyable()
+    {
+        if (!$this->readable || is_null($this->destination) || !is_writable($this->_fullPath($this->destination))) {
+            $this->copyable = 0;
+            return;
+        }
 
-		$this->copyable = (int)file_exists($this->_fullPath($this->destination).$this->name) ? 2 : 1;
-	}
+        $this->copyable = (int)file_exists($this->_fullPath($this->destination) . $this->name) ? 2 : 1;
+    }
 
-	function _isBinary() {
-		$this->binary = (int)is_binary($this->path);
-	}
+    public function _isBinary()
+    {
+        $this->binary = (int)is_binary($this->path);
+    }
 
-	function _isDeletable() {
-		$this->deletable = (int)is_writable($this->_fullPath($this->catalog));
-	}
+    public function _isDeletable()
+    {
+        $this->deletable = (int)is_writable($this->_fullPath($this->catalog));
+    }
 
-	function _isReadable() {
-		$this->readable = (int)is_readable($this->path);
-	}
+    public function _isReadable()
+    {
+        $this->readable = (int)is_readable($this->path);
+    }
 
-	function _isWritable() {
-		$this->writable = (int)is_writable($this->path);
-	}
+    public function _isWritable()
+    {
+        $this->writable = (int)is_writable($this->path);
+    }
 
-	function _Type() {
-		preg_match('|[^/.\\\\]+$|'.REGEX_MOD, $this->name, $tmp);
-		$this->type = isset($tmp[0]) ? mb_strtolower($tmp[0]) : '';
-	}
+    public function _Type()
+    {
+        preg_match('|[^/.\\\\]+$|' . REGEX_MOD, $this->name, $tmp);
+        $this->type = isset($tmp[0]) ? mb_strtolower($tmp[0]) : '';
+    }
 
-	function _Size() {
-		$this->size = filesize($this->path);
-	}
+    public function _Size()
+    {
+        $this->size = filesize($this->path);
+    }
 
-	function _Comment($text) {
-		$this->comment = $text;
-	}
+    public function _Comment($text)
+    {
+        $this->comment = $text;
+    }
 
-	function _isDir() {
-		$this->isDir = 0;
-	}
+    public function _isDir()
+    {
+        $this->isDir = 0;
+    }
 
-	function _Alias() {
-		$this->alias = 0;
+    public function _Alias()
+    {
+        $this->alias = 0;
 
-		if(!$this->readable) {
-			return;
-		}
+        if (!$this->readable) {
+            return;
+        }
 
-		if($this->parent->_isSmbShare($this->catalog)) {
-			$this->alias = str_replace('\\', '\\\\', $this->catalog.$this->name);
-			return;
-		}
+        if ($this->parent->_isSmbShare($this->catalog)) {
+            $this->alias = str_replace('\\', '\\\\', $this->catalog . $this->name);
+            return;
+        }
 
-		$htdocsPrefix = null;
-		foreach(array('site', 'local', 'libpp') as $prefix) {
-			if(mb_strpos($this->catalog, $prefix.'/htdocs') === 0) {
-				$htdocsPrefix = $prefix.'/htdocs';
-				break;
-			}
-		}
+        $htdocsPrefix = null;
+        foreach (['site', 'local', 'libpp'] as $prefix) {
+            if (mb_strpos($this->catalog, $prefix . '/htdocs') === 0) {
+                $htdocsPrefix = $prefix . '/htdocs';
+                break;
+            }
+        }
 
-		if(is_null($htdocsPrefix)) {
-			return;
-		}
+        if (is_null($htdocsPrefix)) {
+            return;
+        }
 
-		$this->alias = str_replace($htdocsPrefix, '', $this->catalog.rawurlencode($this->name));
-	}
+        $this->alias = str_replace($htdocsPrefix, '', $this->catalog . rawurlencode($this->name));
+    }
 
-	function isRoot() {
-		return false;
-	}
+    public function isRoot()
+    {
+        return false;
+    }
 }
 
-class PXFileListingItemCatalog extends PXFileListingItem {
-	function _isBinary() {
-		$this->binary = 0;
-	}
+class PXFileListingItemCatalog extends PXFileListingItem
+{
+    public function _isBinary()
+    {
+        $this->binary = 0;
+    }
 
-	function _Type() {
-		$this->type = 'dir';
-	}
+    public function _Type()
+    {
+        $this->type = 'dir';
+    }
 
-	function _Size() {
-		$this->size = 'каталог';
-	}
+    public function _Size()
+    {
+        $this->size = 'каталог';
+    }
 
-	function _isDir() {
-		$this->isDir = 1;
-	}
+    public function _isDir()
+    {
+        $this->isDir = 1;
+    }
 
-	function _Alias() {
-		$this->alias = 0;
-	}
+    public function _Alias()
+    {
+        $this->alias = 0;
+    }
 }
 
-class PXFileListingItemRoot extends PXFileListingItemCatalog {
-	function _Comment($text) {
-		$this->comment = $text;
-	}
+class PXFileListingItemRoot extends PXFileListingItemCatalog
+{
+    public function _Comment($text)
+    {
+        $this->comment = $text;
+    }
 
-	function isRoot() {
-		return true;
-	}
+    public function isRoot()
+    {
+        return true;
+    }
 
-	function _isDeletable() {
-		$this->deletable = 0;
-	}
+    public function _isDeletable()
+    {
+        $this->deletable = 0;
+    }
 
-	function _fullPath($catalog) {
-		if($this->parent->_isSmbShare($this->name)) {
-			return '';
-		}
+    public function _fullPath($catalog)
+    {
+        if ($this->parent->_isSmbShare($this->name)) {
+            return '';
+        }
 
-		return $this->parent->_fullPath($catalog);
-	}
+        return $this->parent->_fullPath($catalog);
+    }
 }

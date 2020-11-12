@@ -7,25 +7,28 @@ namespace PP\Module;
  *
  * @package PP\Module
  */
-class MaclModule extends AclModule {
+class MaclModule extends AclModule
+{
 
-	var $what;
-	var $access;
-	var $objectRule     = 'module';
-	var $moduleName     = 'macl';
-	var $aclObjectTitle = 'Модуль';
+	public $what;
+	public $access;
+	public $objectRule = 'module';
+	public $moduleName = 'macl';
+	public $aclObjectTitle = 'Модуль';
 
-	function getAvailableActions() {
-		$actions = ['default' => \PXModule::getAclModuleActions()];
+	public function getAvailableActions()
+	{
+		$actions = ['default' => AbstractModule::getAclModuleActions()];
 
-		foreach($this->app->modules as $name => $module) {
+		foreach ($this->app->modules as $name => $module) {
 			$actions[$module->getName()] = call_user_func([$module->getClass(), 'getAclModuleActions']);
 		}
 
 		return $actions;
 	}
 
-	function _getTypes() {
+	public function _getTypes()
+	{
 		$types = [];
 
 		foreach ($this->app->modules as $module) {
@@ -41,7 +44,8 @@ class MaclModule extends AclModule {
 		return $types;
 	}
 
-	function getWhatDict() {
+	public function getWhatDict()
+	{
 		$defaultActionList = $this->what['default'];
 		$allActions = $this->getAvailableActions();
 
@@ -56,7 +60,8 @@ class MaclModule extends AclModule {
 		return $defaultActionList;
 	}
 
-	function adminJson() {
+	public function adminJson()
+	{
 		$current = trim($this->request->getVar('currentModule'));
 
 		if (isset($this->what[$current])) {

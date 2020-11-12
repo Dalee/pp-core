@@ -1,9 +1,11 @@
 <?php
 
-class PXAdminTableCommonControls extends PXAdminWidget {
+class PXAdminTableCommonControls extends PXAdminWidget
+{
 
-	function html() {
-		return <<<HTML
+    public function html()
+    {
+        return <<<HTML
 				<div class="multiple-bottom-controls">
 					<a href="#doCommonMultipleDelete" confirm="Вы уверены что хотите удалить отмеченные объекты?">Удалить</a>
 					<a href="#doCommonMultipleStatusChange" helper="true">Изменить статус</a>
@@ -15,5 +17,5 @@ class PXAdminTableCommonControls extends PXAdminWidget {
 					</div>
 				</div>
 HTML;
-	}
+    }
 }

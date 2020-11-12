@@ -20,11 +20,11 @@ class PXAdminBlocksTree extends PXAdminTreeObjects {
 
 		parent::__construct(
 			$app->types['block'],
-			array(
+			[
 				'parent_type' => $format->id,
 				'parent_field' => $fieldName,
 				'parent_id' => $objectId
-			),
+			],
 			null,
 			$withoutExternals
 		);
@@ -48,7 +48,7 @@ class PXAdminBlocksTree extends PXAdminTreeObjects {
 	protected /*override*/ function addControls() {
 		$parent = $this->getControlParent();
 
-		if(!PXRegistry::getUser()->can(array('write', 'add'), $this->app->types['block'], array('parent' => $parent, 'id' => null))) {
+		if(!PXRegistry::getUser()->can(['write', 'add'], $this->app->types['block'], ['parent' => $parent, 'id' => null])) {
 			return;
 		}
 

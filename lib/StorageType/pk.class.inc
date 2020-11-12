@@ -6,16 +6,19 @@
  * displayType HIDDEN, STATIC
  * storageType pk
  */
-class PXStorageTypePk extends PXStorageTypeInteger {
+class PXStorageTypePk extends PXStorageTypeInteger
+{
 
-	const defaultSQLType = 'SERIAL PRIMARY KEY';
+    public const defaultSQLType = 'SERIAL PRIMARY KEY';
 
-	function objectsSortOrder($field, $object, &$param = NULL) { /* E_STRICT */
-		return PXStorageType::objectsSortOrder($field, $object, $param);
-	}
+    public function objectsSortOrder($field, $object, &$param = NULL)
+    { /* E_STRICT */
+        return PXStorageType::objectsSortOrder($field, $object, $param);
+    }
 
-	function normalizeObjectAttribute($field, $object, &$param) {
-		return PXStorageType::normalizeObjectAttribute($field, $object, $param);
-	}
+    public function normalizeObjectAttribute($field, $object, &$param)
+    {
+        return PXStorageType::normalizeObjectAttribute($field, $object, $param);
+    }
 }
 ?>

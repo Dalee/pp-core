@@ -7,38 +7,43 @@ namespace PP\Lib\Rss;
  *
  * @package PP\Lib\Rss
  */
-class RssChannel extends AbstractRssNode {
+class RssChannel extends AbstractRssNode
+{
 
-	function __construct($channel, &$rssEngine) {
-		$this->_data     =  $channel;
-		$this->rss       =& $rssEngine;
+	public function __construct($channel, &$rssEngine)
+	{
+		$this->_data = $channel;
+		$this->rss =& $rssEngine;
 
 		$this->nodeNames = [
 			'title', 'link', 'description', 'language', 'copyright',
-			'managingEditor', 'webMaster', 'generator', 'ttl', 'image', 'lastBuildDate'
+			'managingEditor', 'webMaster', 'generator', 'ttl', 'image', 'lastBuildDate',
 		];
 	}
 
-	function link() {
-		return $this->_node('link', $this->_data['link'].'?from=rss');
+	public function link()
+	{
+		return $this->_node('link', $this->_data['link'] . '?from=rss');
 	}
 
-	function image() {
-		$_ = array(
-			$this->_node('url',   $this->_data['image']),
+	public function image()
+	{
+		$_ = [
+			$this->_node('url', $this->_data['image']),
 			$this->_node('title', $this->_data['title']),
-			$this->link()
-		);
+			$this->link(),
+		];
 
 		return $this->_node('image', $_);
 	}
 
-	function xml($items) {
-		$_ = array(
+	public function xml($items)
+	{
+		$_ = [
 			$this->nodeSet($this->nodeNames),
-		);
+		];
 
-		foreach($items as $i) {
+		foreach ($items as $i) {
 			$i['pubDate'] = $this->rss->rssDateFormat($i['pubDate']);
 
 			$itemO = new RssItem($i);

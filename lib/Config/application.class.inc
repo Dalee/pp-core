@@ -1,5 +1,7 @@
 <?php
 
+use PP\Lib\Engine\AbstractEngine;
+use PP\Lib\Xml\XmlNodeInterface;
 use Symfony\Component\Yaml\Yaml;
 use PP\Lib\Engine\EngineInterface;
 use PP\Lib\ArrayCollection;
@@ -32,43 +34,44 @@ require_once PPLIBPATH . 'Config/Description/plugin.class.inc';
  *
  * @subpackage Application
  */
-final class PXApplication {
+final class PXApplication
+{
 
 	/**
 	 * массив коннекторов к базе данных
 	 * @var NLDBDescription[]
 	 */
-	var $dbDescription;
+	public $dbDescription;
 
 	/**
 	 * массив описаний datatypes {@link PXTypeDescription}
 	 * @var PXTypeDescription[]
 	 */
-	var $types = [];
+	public $types = [];
 
 	/**
 	 * массив ссылок между datatypes {@link PXRefDescription}
 	 * @var PXRefDescription[]
 	 */
-	var $references;
+	public $references;
 
 	/**
 	 * контейнер c триггерами {@link PXTriggersList}
 	 * @var PXTriggersList[]
 	 */
-	var $triggers = null;
+	public $triggers = null;
 
 	/**
 	 * массив модулей {@link PXModuleDescription}
 	 * @var PXModuleDescription[]
 	 */
-	var $modules;
+	public $modules;
 
 	/**
 	 * массив плагинов
 	 * @var PXPluginDescription[]
 	 */
-	var $plugins = null;
+	public $plugins = null;
 
 	/**
 	 * Объект настроек
@@ -89,19 +92,19 @@ final class PXApplication {
 	 * массив правил авторизации из etc/auth.ini
 	 * @var array
 	 */
-	var $authrules = [];
+	public $authrules = [];
 
 	/**
 	 * массив описаний каталогов из etc/datatypes.xml
 	 * @var array
 	 */
-	var $directory = [];
+	public $directory = [];
 
 	/**
 	 * биндинги модулей из etc/modules.xml modules/bindings
 	 * @var PXBindingDescription[]
 	 */
-	var $bindingsQueue;
+	public $bindingsQueue;
 
 	/**
 	 * массив названий полей, чьи объекты требуют инициализации при загрузке из кэша.
@@ -128,14 +131,15 @@ final class PXApplication {
 		APPPATH . 'config/',
 		BASEPATH . '/site/etc/',
 		BASEPATH . '/local/etc/',
-		BASEPATH . '/libpp/etc/'
+		BASEPATH . '/libpp/etc/',
 	];
 
 	/**
 	 * Конструктор класса
 	 *
 	 */
-	public function __construct() {
+	public function __construct()
+	{
 		// inject variables from .env into $_ENV
 		EnvLoader::inject();
 
@@ -145,7 +149,8 @@ final class PXApplication {
 		$this->created = time();
 	}
 
-	public function init() {
+	public function init()
+	{
 		$this->fillDbDescription();
 
 		$this->fillTriggers($this->locator->locateQuiet('triggers.xml'));
@@ -163,14 +168,16 @@ final class PXApplication {
 	/**
 	 * @return int
 	 */
-	public function getCreated() {
+	public function getCreated()
+	{
 		return $this->created;
 	}
 
 	/**
 	 * @return array
 	 */
-	public function getConfigurationPaths() {
+	public function getConfigurationPaths()
+	{
 		return array_filter($this->configurationPaths, 'file_exists');
 	}
 
@@ -179,7 +186,8 @@ final class PXApplication {
 	 *
 	 * @param string[] $fileList
 	 */
-	private function fillLang($fileList) {
+	private function fillLang($fileList)
+	{
 		$fileList = array_reverse($fileList);
 		$langList = array_map(function ($file) {
 			return Yaml::parse(file_get_contents($file));
@@ -193,7 +201,8 @@ final class PXApplication {
 	/**
 	 * @param array $langArray lang data array to be merged into base one
 	 */
-	public function appendLang($langArray) {
+	public function appendLang($langArray)
+	{
 		$langArrayCurrent = $this->langTree->toArray();
 		$langArrayCurrent = array_recursive_inheritance($langArrayCurrent, $langArray);
 		$this->langTree->fromArray($langArrayCurrent);
@@ -204,16 +213,18 @@ final class PXApplication {
 	 * @see NLDBDescription, $dbDescription
 	 *
 	 */
-	private function fillDbDescription() {
+	private function fillDbDescription()
+	{
 		$this->dbDescription = [
-			'database' => NLDBDescription::fromEnv()
+			'database' => NLDBDescription::fromEnv(),
 		];
 	}
 
 	/**
 	 * @param string[] $files
 	 */
-	private function fillAuthRules($files) {
+	private function fillAuthRules($files)
+	{
 		$this->authrules = self::parseIniFiles($files);
 	}
 
@@ -224,7 +235,8 @@ final class PXApplication {
 	 * @param string $defaultValue - возвращаемое значение по умолчанию
 	 * @return mixed
 	 */
-	public function getProperty($k, $defaultValue = null) {
+	public function getProperty($k, $defaultValue = null)
+	{
 		return (isset($this->properties[$k])) ? $this->properties[$k] : $defaultValue;
 	}
 
@@ -233,7 +245,8 @@ final class PXApplication {
 	 *
 	 * @return array         массив из элементов 'module_name' => $module
 	 */
-	public function getAvailableModules() {
+	public function getAvailableModules()
+	{
 		return array_filter($this->modules, function ($module) {
 			return PXRegistry::getUser()->can('admin', $module);
 		});
@@ -242,9 +255,10 @@ final class PXApplication {
 	/**
 	 * Возвращает модуль по его имени с проверкой доступа к нему.
 	 *
-	 * @return AbstractModule модуль
+	 * @return PXModuleDescription модуль
 	 */
-	public function getAvailableModule($module_name) {
+	public function getAvailableModule($module_name)
+	{
 		return isset($this->modules[$module_name]) && PXRegistry::getUser()->can('admin', $this->modules[$module_name]) ? $this->modules[$module_name] : null;
 	}
 
@@ -254,7 +268,8 @@ final class PXApplication {
 	 * @param String $package путь пакаджа (например, "csv/import")
 	 * @return array          массив из элементов 'module_name' => $module
 	 */
-	public function getAvailableModulesWithinPackage($package) {
+	public function getAvailableModulesWithinPackage($package)
+	{
 		$availableModules = $this->getAvailableModules();
 		if (empty($package)) {
 			return $availableModules;
@@ -272,7 +287,8 @@ final class PXApplication {
 	 * @param Object|array $object объект для которого искать детей
 	 * @return array                массив разрешенных детей или пустой массив
 	 */
-	public function getAllowedChilds($formatName, &$object) {
+	public function getAllowedChilds($formatName, &$object)
+	{
 		if (!isset($this->types[$formatName])) {
 			return [];
 		}
@@ -283,13 +299,14 @@ final class PXApplication {
 	/**
 	 * Возвращает массив наименований разрешенных форматов дочерних объектов.
 	 *
-	 * @uses getAllowedChilds
-	 *
 	 * @param string $formatName не используется
 	 * @param array $object объект для которого искать детей
 	 * @return array        массив наименований разрешенных детей или пустой массив
+	 * @uses getAllowedChilds
+	 *
 	 */
-	public function getAllowedChildsKeys($formatName, &$object) {
+	public function getAllowedChildsKeys($formatName, &$object)
+	{
 		return array_keys($this->getAllowedChilds($formatName, $object));
 	}
 
@@ -297,7 +314,8 @@ final class PXApplication {
 	 * @param string $formatName
 	 * @return array
 	 */
-	public function initContentObject($formatName) {
+	public function initContentObject($formatName)
+	{
 		$object = [];
 
 		foreach ($this->types[$formatName]->fields as $k => $v) {
@@ -308,11 +326,12 @@ final class PXApplication {
 	}
 
 	/**
-	 * @deprecated will be removed
 	 * @param $formatName
 	 * @return array
+	 * @deprecated will be removed
 	 */
-	public function initObject($formatName) {
+	public function initObject($formatName)
+	{
 		return $this->initContentObject($formatName);
 	}
 
@@ -322,13 +341,14 @@ final class PXApplication {
 	 * В качестве параметра обычно используется файл etc/datatypes.xml. <br>
 	 * XPath /model/datatypes/datatype и /model/references/reference.
 	 *
-	 * @uses PXFieldDescription
+	 * @param String $fileName имя файла
 	 * @uses PXDirectoryDescription
 	 * @uses PXRefDescription
 	 * @uses PXTypeDescription
-	 * @param String $fileName имя файла
+	 * @uses PXFieldDescription
 	 */
-	private function fillDataTypes($fileName) {
+	private function fillDataTypes($fileName)
+	{
 		if (!($dom = Xml::load($fileName))) {
 			FatalError("Ошибка в файле настроек <EM>$fileName</EM>");
 		}
@@ -343,11 +363,12 @@ final class PXApplication {
 	 * В качестве параметра обычно используется файл etc/datatypes.xml. <br>
 	 * XPath /model/directories/directory.
 	 *
+	 * @param String $fileName имя файла
 	 * @uses PXDirectoryDescription
 	 *
-	 * @param String $fileName имя файла
 	 */
-	private function fillDirectories($fileName) {
+	private function fillDirectories($fileName)
+	{
 		if (!($dom = Xml::load($fileName))) {
 			FatalError("Ошибка в файле настроек <EM>$fileName</EM>");
 		}
@@ -398,7 +419,8 @@ final class PXApplication {
 	 *
 	 * @param PXDatabase $database
 	 */
-	public function loadProperties(PXDatabase $database) {
+	public function loadProperties(PXDatabase $database)
+	{
 		$propertyList = PropertyLoader::getPropertyList($database);
 		$this->properties->fromArray($propertyList);
 	}
@@ -410,7 +432,8 @@ final class PXApplication {
 	 * @param PXDirectoryDescription $directory
 	 * @param bool $addDefault
 	 */
-	public function LoadXMLDirectory(&$directory, $addDefault = true) {
+	public function LoadXMLDirectory(&$directory, $addDefault = true)
+	{
 		$file = $this->locator->locate($directory->source);
 		$xpathSelector = $directory->location;
 
@@ -427,7 +450,7 @@ final class PXApplication {
 
 		if ($results) {
 
-			/** @var \PP\Lib\Xml\XmlNodeInterface $result */
+			/** @var XmlNodeInterface $result */
 			foreach ($results as $result) {
 
 				$nodes = $result->xpath($xitem);
@@ -435,14 +458,14 @@ final class PXApplication {
 					continue;
 				}
 
-				/** @var \PP\Lib\Xml\XmlNodeInterface $node */
+				/** @var XmlNodeInterface $node */
 				foreach ($nodes as $node) {
 					$id = $node->nodeXValue($idField);
 
-					$directory->values[$id] = array(
+					$directory->values[$id] = [
 						'id' => $id,
 						'title' => pp_simplexml_decode_string($node->nodeXValue($titleField)),
-					);
+					];
 
 					$data = $node->xpath($dataFields);
 
@@ -454,7 +477,7 @@ final class PXApplication {
 							continue;
 						}
 
-						$item = array();
+						$item = [];
 						foreach ($dataNode->attributes() as $val) {
 							$item[$val->name] = pp_simplexml_decode_string($val->value);
 						}
@@ -462,7 +485,7 @@ final class PXApplication {
 							$item[$val->nodeName()] = pp_simplexml_decode_string($val->nodeValue());
 						}
 
-						empty($directory->values[$id][$key]) && ($directory->values[$id][$key] = array());
+						empty($directory->values[$id][$key]) && ($directory->values[$id][$key] = []);
 						$directory->values[$id][$key][] = $item;
 					}
 				}
@@ -475,7 +498,8 @@ final class PXApplication {
 		$directory->SetLoaded($addDefault);
 	}
 
-	private function fillModules($fileName) {
+	private function fillModules($fileName)
+	{
 		$modules = Yaml::parse(file_get_contents($fileName));
 
 		$modulesList = getFromArray($modules, 'modules', []);
@@ -508,18 +532,20 @@ final class PXApplication {
 	/**
 	 * @param PXModuleDescription $module
 	 */
-	function setModules(PXModuleDescription $module) {
+	public function setModules(PXModuleDescription $module)
+	{
 		$this->modules[$module->getName()] = $module;
 	}
 
 	/**
 	 * Пользовательская функция для регистрации модулей не через конфиг modules.yml, а при загрузке плагинов
-	 * @param  string $name - имя
-	 * @param  array $args - массив с параметрами триггера, имя => значение
+	 * @param string $name - имя
+	 * @param array $args - массив с параметрами триггера, имя => значение
 	 * @return bool
-	 * @throws \Exception
+	 * @throws Exception
 	 */
-	public function registerModule($name, array $args = []) {
+	public function registerModule($name, array $args = [])
+	{
 		if (!ctype_alnum($name)) {
 			throw new Exception('Invalid module name');
 		}
@@ -546,7 +572,8 @@ final class PXApplication {
 	 *
 	 * @param string $fileName
 	 */
-	private function fillPlugins($fileName) {
+	private function fillPlugins($fileName)
+	{
 		if (empty($fileName)) {
 			return;
 		}
@@ -590,12 +617,13 @@ final class PXApplication {
 	 * XPath /triggers//trigger
 	 * Инициализирует поле triggers объектом-коллекцией триггеров
 	 *
+	 * @param String $fileName имя файла
 	 * @uses PXTriggerDescription
 	 *
-	 * @param String $fileName имя файла
 	 */
-	private function fillTriggers($fileName) {
-		$this->triggers = new PXTriggersList;
+	private function fillTriggers($fileName)
+	{
+		$this->triggers = new PXTriggersList();
 
 		if (empty($fileName)) {
 			return;
@@ -616,13 +644,14 @@ final class PXApplication {
 		}
 	}
 
-	private function setTrigger($attributes, $type) {
+	private function setTrigger($attributes, $type)
+	{
 		$trigger = new PXTriggerDescription();
 		$trigger->setAttrs($attributes);
 		$trigger->setType($type);
 
 		if (!isset($this->triggers[$type])) {
-			$this->triggers[$type] = array();
+			$this->triggers[$type] = [];
 		}
 
 		$this->triggers[$type][$trigger->getName()] = $trigger;
@@ -631,11 +660,12 @@ final class PXApplication {
 	/**
 	 * Пользовательская функция для регистрации триггеров не через конфиг triggers.xml, а в процессе работы системы
 	 *
-	 * @param  string $type - тип триггера
-	 * @param  array $args - массив с параметрами триггера, имя => значение
+	 * @param string $type - тип триггера
+	 * @param array $args - массив с параметрами триггера, имя => значение
 	 * @return $this
 	 */
-	function registerTrigger($type, array $args) {
+	public function registerTrigger($type, array $args)
+	{
 		foreach ($args as $name => &$value) {
 			$value = Xml::attributePrototype($name, $value); //XML style attributes compatibility
 		}
@@ -644,11 +674,13 @@ final class PXApplication {
 		return $this;
 	}
 
-	private static function parseIniFile($file) {
+	private static function parseIniFile($file)
+	{
 		return (array)parse_ini_file($file, true);
 	}
 
-	private static function parseIniFiles($files) {
+	private static function parseIniFiles($files)
+	{
 		/* we must merge array in reverse order: libpp + local + site,
 		 * so local can redefine libpp settings, and site can override local */
 
@@ -673,14 +705,16 @@ final class PXApplication {
 	 * Return if application is in development mode
 	 * @return bool
 	 */
-	public function isDevelopmentMode() {
+	public function isDevelopmentMode()
+	{
 		return $this->getProperty('ENVIRONMENT') === ENV_DEVELOPER;
 	}
 
 	/**
 	 * @return bool
 	 */
-	function isAdminEngine() {
+	public function isAdminEngine()
+	{
 		return PXRegistry::getEngine()->engineClass() === EngineInterface::ADMIN_ENGINE_ID;
 	}
 
@@ -688,16 +722,18 @@ final class PXApplication {
 	 * @param string $engineName
 	 * @return bool
 	 */
-	function isEngineInstanceof($engineName) {
+	public function isEngineInstanceof($engineName)
+	{
 		$engineName = 'PxEngine' . $engineName;
 		return PXRegistry::getEngine() instanceof $engineName;
 	}
 
 	/**
 	 * @param $name
-	 * @return null|\PP\Lib\Engine\AbstractEngine
+	 * @return null|AbstractEngine
 	 */
-	public function __get($name) {
+	public function __get($name)
+	{
 		if (strtolower($name) === 'engine') {
 			return PXRegistry::getEngine();
 		}
@@ -708,13 +744,14 @@ final class PXApplication {
 	/**
 	 * @throws Exception
 	 */
-	function __wakeup() {
+	public function __wakeup()
+	{
 		EnvLoader::inject();
 
 		foreach ($this->reinitialize as $name => $bool) {
 			foreach ((array)$this->{$name} as $o) {
 				if (!$o instanceof InitializableDescriptionInterface) {
-					throw new \Exception(
+					throw new Exception(
 						sprintf(
 							"Class: %s is not instanceof InitializableDescriptionInterface",
 							get_class($o)

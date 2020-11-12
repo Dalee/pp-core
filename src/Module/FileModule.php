@@ -10,31 +10,34 @@ require_once PPLIBPATH . 'HTML/filelisting.class.inc';
  *
  * @package PP\Module
  */
-class FileModule extends AbstractModule {
+class FileModule extends AbstractModule
+{
 
-	var $settings;
-	var $area;
+	public $settings;
+	public $area;
 	protected $protected;
 
-	function __construct($area, $settings) {
+	public function __construct($area, $settings)
+	{
 		parent::__construct($area, $settings);
 
-		$this->area     = $area;
-		$this->settings = array();
+		$this->area = $area;
+		$this->settings = [];
 
 		$this->_parseSettings($settings);
 	}
 
-	function _parseSettings($settings) {
-		if(!isset($settings['dir'])) {
+	public function _parseSettings($settings)
+	{
+		if (!isset($settings['dir'])) {
 			return;
 		}
 
 		$openDirs = $settings['dir'];
 		$this->protected = $settings['protected'] ?? [];
 
-		if(is_string($openDirs)) {
-			$openDirs = array($openDirs);
+		if (is_string($openDirs)) {
+			$openDirs = [$openDirs];
 		}
 
 		foreach ($openDirs as $element) {
@@ -46,8 +49,9 @@ class FileModule extends AbstractModule {
 		}
 	}
 
-	function error() {
-		if(sizeof($this->settings)) {
+	public function error()
+	{
+		if (sizeof($this->settings)) {
 			return false;
 		}
 
@@ -56,37 +60,38 @@ class FileModule extends AbstractModule {
 		return true;
 	}
 
-	function adminIndex() {
-		if($this->error()) {
+	public function adminIndex()
+	{
+		if ($this->error()) {
 			return;
 		}
 
 		$this->_setInnerLayout();
 
-		$tabs = array(
-			array(
+		$tabs = [
+			[
 				'cur' => 'ldir',
 				'oth' => 'rdir',
 				'cell' => '0',
-				'side' => 'l'
-			),
+				'side' => 'l',
+			],
 
-			array(
+			[
 				'cur' => 'rdir',
 				'oth' => 'ldir',
 				'cell' => '1',
-				'side' => 'r'
-			)
-		);
+				'side' => 'r',
+			],
+		];
 
 		$lDir = $this->request->getVar('ldir');
 		$rDir = $this->request->getVar('rdir');
 
-		foreach($tabs as $tab) {
+		foreach ($tabs as $tab) {
 			$curDir = $tab['side'] == 'l' ? $lDir : $rDir;
 			$othDir = $tab['side'] != 'l' ? $lDir : $rDir;
 
-			$href = '?area='.$this->area.'&'.$tab['oth'].'='.rawurlencode($othDir);
+			$href = '?area=' . $this->area . '&' . $tab['oth'] . '=' . rawurlencode($othDir);
 
 			$listingClass = $curDir ? 'PXFileListing' : 'PXFileListingRoots';
 			$listing = new $listingClass($this->settings);
@@ -108,19 +113,20 @@ class FileModule extends AbstractModule {
 				return $url;
 			}));
 
-			$this->layout->assign('INNER.'.$tab['cell'].'.0', $listing->html());
+			$this->layout->assign('INNER.' . $tab['cell'] . '.0', $listing->html());
 
 			if ($listing->writable()) {
-				$this->layout->assign('INNER.'.$tab['cell'].'.1', $this->_uploadForm($this->area, $lDir, $rDir, $tab['side'], FALSE, $this->area));
+				$this->layout->assign('INNER.' . $tab['cell'] . '.1', $this->_uploadForm($this->area, $lDir, $rDir, $tab['side'], FALSE, $this->area));
 			}
 
 			unset($listing);
 		}
 	}
 
-	function _uploadForm($area, $ldir, $rdir, $side='l', $name=FALSE, $outside=NULL) {
+	public function _uploadForm($area, $ldir, $rdir, $side = 'l', $name = FALSE, $outside = NULL)
+	{
 		$_ =
-<<<HTML
+			<<<HTML
 <div class="upload-buttons">
 	<input type="button" value="Новый каталог" onclick="javascript:return CreateDir('%DIR%', '%HREF%', '%SIDE%');">
 	<input type="button" value="Новый файл" onclick="ShowUploadForm('%SIDE%UploadForm');">
@@ -142,28 +148,29 @@ class FileModule extends AbstractModule {
 </form>
 HTML;
 
-		$replaces = array(
-			'SIDE'    => $side,
-			'DIR'     => ($side == 'l' ? urlencode($ldir) : urlencode($rdir)),
-			'HREF'    => '?area='.$this->area.'&ldir='.urlencode($ldir).'&rdir='.urlencode($rdir).($name ? '&name='.$name : ''),
-			'AREA'    => $this->area,
+		$replaces = [
+			'SIDE' => $side,
+			'DIR' => ($side == 'l' ? urlencode($ldir) : urlencode($rdir)),
+			'HREF' => '?area=' . $this->area . '&ldir=' . urlencode($ldir) . '&rdir=' . urlencode($rdir) . ($name ? '&name=' . $name : ''),
+			'AREA' => $this->area,
 			'OUTSIDE' => $outside,
-			'MDIR'    => ($side == 'l' ? $ldir : $rdir),
-			'LDIR'    => $ldir,
-			'RDIR'    => $rdir,
-			'NAME'    => $name,
-		);
+			'MDIR' => ($side == 'l' ? $ldir : $rdir),
+			'LDIR' => $ldir,
+			'RDIR' => $rdir,
+			'NAME' => $name,
+		];
 
-		foreach($replaces as $label=>$value) {
-			$_ = str_replace('%'.$label.'%', $value, $_);
+		foreach ($replaces as $label => $value) {
+			$_ = str_replace('%' . $label . '%', $value, $_);
 		}
 
 		return $_;
 	}
 
-	function _setInnerLayout() { // FIXME!!!
-		$_html  =
-<<<HTML
+	public function _setInnerLayout()
+	{ // FIXME!!!
+		$_html =
+			<<<HTML
 <table class="filemanager">
 	<thead>
 		<tr>
@@ -201,17 +208,18 @@ HTML;
 		$this->layout->assign('OUTER.MAINAREA', $_html);
 	}
 
-	function adminPopup() {
-		$this->layout->setGetVarToSave('id',     $this->request->GetId());
+	public function adminPopup()
+	{
+		$this->layout->setGetVarToSave('id', $this->request->GetId());
 		$this->layout->setGetVarToSave('format', $this->request->GetFormat());
 		$this->layout->setGetVarToSave('action', $this->request->GetAction());
 
 		$this->_initRequestVars();
 
 		$this->layout->setOuterForm('action.phtml', 'POST', 'multipart/form-data');
-		switch($this->request->getVar('action')) {
+		switch ($this->request->getVar('action')) {
 			case 'edit':
-				$html = '<div class="edit-file-form">'.$this->editFileForm().'</div>';
+				$html = '<div class="edit-file-form">' . $this->editFileForm() . '</div>';
 				break;
 
 			//FIXME: UNUSED?
@@ -243,14 +251,15 @@ HTML;
 		return $html;
 	}
 
-	function editFileForm() {
-		$filePath = $this->catalog.$this->mFile;
+	public function editFileForm()
+	{
+		$filePath = $this->catalog . $this->mFile;
 
-		if(is_file($filePath) && is_writable($filePath) && !is_binary($filePath)) {
-			$object = array();
-			$form   = new \PXAdminForm($object, null);
+		if (is_file($filePath) && is_writable($filePath) && !is_binary($filePath)) {
+			$object = [];
+			$form = new \PXAdminForm($object, null);
 
-			$this->layout->assign('OUTER.TITLE', 'Редактирование файла &laquo;'.$this->mFile.'&raquo;');
+			$this->layout->assign('OUTER.TITLE', 'Редактирование файла &laquo;' . $this->mFile . '&raquo;');
 			$form->leftControls();
 			$form->rightControls();
 
@@ -260,55 +269,78 @@ HTML;
 		}
 	}
 
-	function _initRequestVars() {
-		$rSide        = $this->request->getVar('side');
-		$lDir         = $this->request->getVar('ldir');
-		$rDir         = $this->request->getVar('rdir');
+	public function _initRequestVars()
+	{
+		$rSide = $this->request->getVar('side');
+		$lDir = $this->request->getVar('ldir');
+		$rDir = $this->request->getVar('rdir');
 
-		$outSide      = $this->request->getVar('outside');
+		$outSide = $this->request->getVar('outside');
 
 		$this->catObject = new \PXFileListing($this->settings);
 
-		$this->redir  = (!empty($outSide) && $outSide !== $this->area ? 'popup.phtml?action='.$outSide.'&name='.$this->request->getVar('name').'&' : './?');
-		$this->redir .= 'area='.$this->area.'&ldir='.$lDir.'&rdir='.$rDir;
+		$this->redir = (!empty($outSide) && $outSide !== $this->area ? 'popup.phtml?action=' . $outSide . '&name=' . $this->request->getVar('name') . '&' : './?');
+		$this->redir .= 'area=' . $this->area . '&ldir=' . $lDir . '&rdir=' . $rDir;
 
-		$catalog       = ($rSide != 'r' ? $lDir : $rDir);
+		$catalog = ($rSide != 'r' ? $lDir : $rDir);
 		$this->catalog = $catalog && $this->catObject->isValid($catalog) ? $this->fullPath($catalog) . '/' : null;
 
-		$destination       = ($rSide == 'r' ? $lDir : $rDir);
+		$destination = ($rSide == 'r' ? $lDir : $rDir);
 		$this->destination = $destination && $this->catObject->isValid($destination) ? $this->fullPath($destination) . '/' : null;
 
-		$this->mFile       = _stripBadFileChars($this->request->getVar('mfile'));
-		$this->nFile       = $this->_escapeFileName($this->request->getVar('nfile'));
+		$this->mFile = _stripBadFileChars($this->request->getVar('mfile'));
+		$this->nFile = $this->_escapeFileName($this->request->getVar('nfile'));
 	}
 
-	function adminAction() {
+	public function adminAction()
+	{
 		$this->_initRequestVars();
 
-		switch($this->request->getVar('action')) {
-			case 'createdir': $this->withArgs(array($this->catalog), '_aCreateDir'); break;
-			case 'copy':      $this->withArgs(array($this->catalog, $this->destination, $this->mFile), '_aCopy');    break;
-			case 'move':      $this->withArgs(array($this->catalog, $this->destination, $this->mFile), '_aMove');    break;
-			case 'rename':    $this->withArgs(array($this->catalog, $this->mFile, $this->nFile),       '_aRename');  break;
-			case 'delete':    $this->withArgs(array($this->catalog, $this->mFile),                     '_aDelete');  break;
-			case 'edit':      $this->withArgs(array($this->mFile),                                     '_aEdit');    break;
-			case 'unzip':     $this->withArgs(array($this->catalog, $this->mFile),                     '_aUnZip');   break;
-			case 'upload':    $this->withArgs(array($this->catalog),                                   '_aUpload');  break;
-			case 'protected': $this->_aProtectedAccess();                                                            break;
+		switch ($this->request->getVar('action')) {
+			case 'createdir':
+				$this->withArgs([$this->catalog], '_aCreateDir');
+				break;
+			case 'copy':
+				$this->withArgs([$this->catalog, $this->destination, $this->mFile], '_aCopy');
+				break;
+			case 'move':
+				$this->withArgs([$this->catalog, $this->destination, $this->mFile], '_aMove');
+				break;
+			case 'rename':
+				$this->withArgs([$this->catalog, $this->mFile, $this->nFile], '_aRename');
+				break;
+			case 'delete':
+				$this->withArgs([$this->catalog, $this->mFile], '_aDelete');
+				break;
+			case 'edit':
+				$this->withArgs([$this->mFile], '_aEdit');
+				break;
+			case 'unzip':
+				$this->withArgs([$this->catalog, $this->mFile], '_aUnZip');
+				break;
+			case 'upload':
+				$this->withArgs([$this->catalog], '_aUpload');
+				break;
+			case 'protected':
+				$this->_aProtectedAccess();
+				break;
 		}
 
 		return $this->redir;
 	}
 
-	protected function fullPath($path) {
-		return BASEPATH. DIRECTORY_SEPARATOR . $path;
+	protected function fullPath($path)
+	{
+		return BASEPATH . DIRECTORY_SEPARATOR . $path;
 	}
 
-	protected function withArgs($fields, $action) {
+	protected function withArgs($fields, $action)
+	{
 		count($fields) == count(array_filter($fields)) && $this->{$action}();
 	}
 
-	function _escapeFileName($name) {
+	public function _escapeFileName($name)
+	{
 		return $name = _TranslitFilename(_stripBadFileChars($name));
 	}
 
@@ -317,7 +349,8 @@ HTML;
 	/**
 	 * Для того, чтобы работали защищенные ссылки на файлы, нужно добавить соответствующие internal location в nginx
 	 */
-	function _aProtectedAccess() {
+	public function _aProtectedAccess()
+	{
 		$url = $this->request->getVar('url');
 		$type = $this->request->getVar('type');
 
@@ -327,7 +360,8 @@ HTML;
 			->send();
 	}
 
-	function _aEdit() {
+	public function _aEdit()
+	{
 		$this->redir = NULL;
 
 		if (!$this->catObject->isValid($mdir = $this->request->getVar('mdir'))) {
@@ -345,14 +379,15 @@ HTML;
 		}
 	}
 
-	function _aDelete() {
+	public function _aDelete()
+	{
 		$filePath = $this->catalog . $this->mFile;
 
-		if(!is_writable($this->catalog)) {
+		if (!is_writable($this->catalog)) {
 			return;
 		}
 
-		switch(true) {
+		switch (true) {
 			case is_file($filePath):
 				unlink($filePath);
 				break;
@@ -364,119 +399,125 @@ HTML;
 		}
 	}
 
-	function _aCopy() {
+	public function _aCopy()
+	{
 		$entry = $this->mFile;
 
-		if(file_exists($this->catalog.$entry) && is_writable($this->destination)) {
-			copyr($this->catalog.$entry, $this->destination.$entry);
+		if (file_exists($this->catalog . $entry) && is_writable($this->destination)) {
+			copyr($this->catalog . $entry, $this->destination . $entry);
 		}
 	}
 
-	function _aMove() {
+	public function _aMove()
+	{
 		$entry = $this->mFile;
 
-		if (file_exists($this->catalog.$entry) && is_writable($this->destination) && is_writable($this->catalog)) {
-			copyr($this->catalog.$entry, $this->destination.$entry);
+		if (file_exists($this->catalog . $entry) && is_writable($this->destination) && is_writable($this->catalog)) {
+			copyr($this->catalog . $entry, $this->destination . $entry);
 
 			$this->_aDelete();
 		}
 	}
 
-	function _aCreateDir() {
+	public function _aCreateDir()
+	{
 		$ndir = $this->_escapeFileName($this->request->getVar('ndir'));
 
 		if (is_dir($this->catalog) && is_writable($this->catalog) && !is_dir($this->catalog . $ndir)) {
-			MakeDirIfNotExists($this->catalog.$ndir);
+			MakeDirIfNotExists($this->catalog . $ndir);
 		}
 	}
 
-	function _aRename() {
+	public function _aRename()
+	{
 		$oldFile = $this->mFile;
 		$newFile = $this->nFile;
 
-		if ((is_file($this->catalog.$oldFile) || is_dir($this->catalog.$oldFile)) && is_writable($this->catalog) && (!is_file($this->catalog.$newFile) && !is_dir($this->catalog.$newFile))) {
-			rename($this->catalog.$oldFile, $this->catalog.$newFile);
+		if ((is_file($this->catalog . $oldFile) || is_dir($this->catalog . $oldFile)) && is_writable($this->catalog) && (!is_file($this->catalog . $newFile) && !is_dir($this->catalog . $newFile))) {
+			rename($this->catalog . $oldFile, $this->catalog . $newFile);
 		}
 	}
 
-	function _aUnZip() {
-		if (is_file($this->catalog.$this->mFile) && is_writable($this->catalog)) {
-			system(sprintf("unzip -oq %s -d %s", escapeshellarg($this->catalog.$this->mFile), escapeshellarg($this->catalog)));
+	public function _aUnZip()
+	{
+		if (is_file($this->catalog . $this->mFile) && is_writable($this->catalog)) {
+			system(sprintf("unzip -oq %s -d %s", escapeshellarg($this->catalog . $this->mFile), escapeshellarg($this->catalog)));
 		}
 	}
 
-	function _aUpload() {
+	public function _aUpload()
+	{
 		if ($this->request->GetUploadFile('uploadfile')) {
 			$this->uploadFileFromUser($this->request->GetUploadFile('uploadfile'));
-		} elseif($this->request->GetVar('uploadfileurl')) {
+		} elseif ($this->request->GetVar('uploadfileurl')) {
 			$this->uploadFileFromWeb($this->request->GetVar('uploadfileurl'));
 		}
 	}
 
-	function uploadFileFromUser($file) {
+	public function uploadFileFromUser($file)
+	{
 		if ($file && $file != 'none' && $file['name'] && is_writable($this->catalog)) {
 			$filename = _TranslitFilename(_stripBadFileChars(stripslashes($file['name'])));
-			if (!@copy($file['tmp_name'], $this->catalog.$filename)) {
-				FatalError('Не удалось скопировать файл '.$file['tmp_name'].' в каталог '.$this->catalog);
+			if (!@copy($file['tmp_name'], $this->catalog . $filename)) {
+				FatalError('Не удалось скопировать файл ' . $file['tmp_name'] . ' в каталог ' . $this->catalog);
 			}
 
-			if (!@chmod($this->catalog.$filename, 0664)) {
-				FatalError('Не удалось изменить права доступа файлу '.$this->catalog.$filename);
+			if (!@chmod($this->catalog . $filename, 0664)) {
+				FatalError('Не удалось изменить права доступа файлу ' . $this->catalog . $filename);
 			}
 		}
 	}
 
-	function uploadFileFromWeb($url) {
+	public function uploadFileFromWeb($url)
+	{
 		if ($url && mb_strlen($url) && preg_match('#^https?://#', $url) && is_writable($this->catalog)) {
-			if($fp = @fopen($url, 'r')) {
+			if ($fp = @fopen($url, 'r')) {
 				$fileSource = '';
 
-				while($r = fread($fp, 2048)) {
+				while ($r = fread($fp, 2048)) {
 					$fileSource .= $r;
 				}
 
 				fclose($fp);
 
-				if(mb_strlen($fileSource)) {
+				if (mb_strlen($fileSource)) {
 					$filename = tempnam($this->catalog, 'file');
 
-					if($fp1 = @fopen($filename, 'w')) {
+					if ($fp1 = @fopen($filename, 'w')) {
 						@fwrite($fp1, $fileSource);
 						@fclose($fp1);
 					} else {
-						FatalError('Не удалось открыть/создать файл '.$filename);
+						FatalError('Не удалось открыть/создать файл ' . $filename);
 					}
 
 					if (!@chmod($filename, 0664)) {
-						FatalError('Не удалось изменить права доступа файлу '.$filename);
+						FatalError('Не удалось изменить права доступа файлу ' . $filename);
 					}
 
-					if(preg_match_all("#/([\w\-]+\.\w{1,5})(\?.*)?$#", $url, $matches, PREG_SET_ORDER) && isset($matches[0][0])) {
+					if (preg_match_all("#/([\w\-]+\.\w{1,5})(\?.*)?$#", $url, $matches, PREG_SET_ORDER) && isset($matches[0][0])) {
 						$matches[0][0] = _TranslitFilename($matches[0][0]);
-						rename($filename, $this->catalog.$matches[0][0]);
-						$filename = $this->catalog.$matches[0][0];
+						rename($filename, $this->catalog . $matches[0][0]);
+						$filename = $this->catalog . $matches[0][0];
 					}
 
-					$map = array(
-						'1'  => 'gif',
-						'2'  => 'jpg',
-						'3'  => 'png',
-						'4'  => 'swf',
-						'6'  => 'bmp',
-						'13' => 'swf'
-					);
+					$map = [
+						'1' => 'gif',
+						'2' => 'jpg',
+						'3' => 'png',
+						'6' => 'bmp',
+					];
 
 					$fileAttr = getimagesize($filename);
 
 					if (isset($map[$fileAttr[2]])) {
 						$subname = str_replace($this->catalog, '', $filename);
-						if(mb_strpos($subname, '.')) {
+						if (mb_strpos($subname, '.')) {
 							$subname = mb_substr($subname, 0, mb_strpos($subname, '.'));
-							rename($filename, $this->catalog.$subname.".".$map[$fileAttr[2]]);
-							$filename = $this->catalog.$subname.".".$map[$fileAttr[2]];
+							rename($filename, $this->catalog . $subname . "." . $map[$fileAttr[2]]);
+							$filename = $this->catalog . $subname . "." . $map[$fileAttr[2]];
 						} else {
-							rename($filename, $filename.".".$map[$fileAttr[2]]);
-							$filename = $filename.".".$map[$fileAttr[2]];
+							rename($filename, $filename . "." . $map[$fileAttr[2]]);
+							$filename = $filename . "." . $map[$fileAttr[2]];
 						}
 					}
 				}

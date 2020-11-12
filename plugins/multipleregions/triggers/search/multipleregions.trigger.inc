@@ -1,15 +1,18 @@
 <?php
-class PXTriggerSearchMultipleregions extends PXAbstractSearchTrigger {
+
+class PXTriggerSearchMultipleregions extends PXAbstractSearchTrigger
+{
 	private
-	function isRegionalTypeOrParentIsRegional($formatid) {
+	function isRegionalTypeOrParentIsRegional($formatid)
+	{
 		$isReg = $this->isRegionalType($formatid);
 
-		if($isReg) {
+		if ($isReg) {
 			return true;
 		}
 
 		$parent = PXRegistry::getTypes($formatid)->parent;
-		if($parent !== null && $parent !== $formatid) {
+		if ($parent !== null && $parent !== $formatid) {
 			return $this->isRegionalType($parent);
 		}
 
@@ -17,39 +20,43 @@ class PXTriggerSearchMultipleregions extends PXAbstractSearchTrigger {
 	}
 
 	private
-	function isRegionalType($formatid) {
+	function isRegionalType($formatid)
+	{
 		return $this->regions()->isRegionalType(PXRegistry::getTypes($formatid));
 	}
 
 	private
-	function regions() {
+	function regions()
+	{
 		return PXMultiRegions::getInstance();
 	}
 
-	function onBeforeSearchStems($config, &$where) {
-		$types = array();
+	public function onBeforeSearchStems($config, &$where)
+	{
+		$types = [];
 
-		foreach($config as $dType => $fields) {
+		foreach ($config as $dType => $fields) {
 			$types[$this->isRegionalTypeOrParentIsRegional($dType)][] = $dType;
 		}
 
-		$subWhere = array();
+		$subWhere = [];
 
-		if(isset($types[true]) && sizeof($types[true])) { // has multiregional types
-			$rTypes = array_map(array(PXRegistry::getDB(), 'mapData'), $types[true]);
-			$subWhere[] = "(".$this->regions()->findByRegion()." AND dtype IN (".implode(',', $rTypes)."))";
+		if (isset($types[true]) && sizeof($types[true])) { // has multiregional types
+			$rTypes = array_map([PXRegistry::getDB(), 'mapData'], $types[true]);
+			$subWhere[] = "(" . $this->regions()->findByRegion() . " AND dtype IN (" . implode(',', $rTypes) . "))";
 		}
 
-		if(isset($types[false]) && sizeof($types[false])) { // has multiregional types
-			$rTypes = array_map(array(PXRegistry::getDB(), 'mapData'), $types[false]);
-			$subWhere[] = "dtype IN (".implode(',', $rTypes).")";
+		if (isset($types[false]) && sizeof($types[false])) { // has multiregional types
+			$rTypes = array_map([PXRegistry::getDB(), 'mapData'], $types[false]);
+			$subWhere[] = "dtype IN (" . implode(',', $rTypes) . ")";
 		}
 
-		$where[] = '('.implode(' OR ', $subWhere).')';
+		$where[] = '(' . implode(' OR ', $subWhere) . ')';
 	}
 
-	function onIndexCronGetSelectCols($formatid, &$cols) {
-		if(PXRegistry::getTypes($formatid)->parent != null) {
+	public function onIndexCronGetSelectCols($formatid, &$cols)
+	{
+		if (PXRegistry::getTypes($formatid)->parent != null) {
 			$cols[] = 'parent';
 		}
 
@@ -58,7 +65,8 @@ class PXTriggerSearchMultipleregions extends PXAbstractSearchTrigger {
 		}
 	}
 
-	function onIndexCronStemWeight($formatid, &$stemW, &$row) {
+	public function onIndexCronStemWeight($formatid, &$stemW, &$row)
+	{
 		if (isset($row[PXMultiRegions::REGION_MARK])) {
 			$stemW[PXMultiRegions::REGION_MARK] = $row[PXMultiRegions::REGION_MARK];
 		} else {
@@ -67,22 +75,25 @@ class PXTriggerSearchMultipleregions extends PXAbstractSearchTrigger {
 	}
 
 	private
-	function voidRegion() {
+	function voidRegion()
+	{
 		return '{}';
 	}
 
 	private
-	function _checkObject($data) {
+	function _checkObject($data)
+	{
 		return isset($data[PXMultiRegions::REGION_MARK]) && $data[PXMultiRegions::REGION_MARK] !== $this->voidRegion();
 	}
 
-	function onIndexCronCanIndexRow($formatid, &$row, &$tree) {
+	public function onIndexCronCanIndexRow($formatid, &$row, &$tree)
+	{
 		if (!$this->isRegionalTypeOrParentIsRegional($formatid)) {
 			return true;
 		}
 
 		$checkParent = $this->checkParent($formatid, $row, $tree);
-		if(!$checkParent) {
+		if (!$checkParent) {
 			return false;
 		}
 
@@ -90,16 +101,17 @@ class PXTriggerSearchMultipleregions extends PXAbstractSearchTrigger {
 	}
 
 	private
-	function regArray($formatid, $object) {
-		if(!isset($object[PXMultiRegions::REGION_MARK])) {
-			return array();
+	function regArray($formatid, $object)
+	{
+		if (!isset($object[PXMultiRegions::REGION_MARK])) {
+			return [];
 		}
 
 		$field = $this->_getRegionalFieldFromParent($formatid);
 
-		$param = array();
+		$param = [];
 
-		if(is_array($object[$field->name])) {
+		if (is_array($object[$field->name])) {
 			return $object[$field->name];
 		}
 
@@ -107,12 +119,13 @@ class PXTriggerSearchMultipleregions extends PXAbstractSearchTrigger {
 	}
 
 	private
-	function _getRegionalFieldFromParent($formatid) {
-		if(!$this->isRegionalType($formatid)) {
+	function _getRegionalFieldFromParent($formatid)
+	{
+		if (!$this->isRegionalType($formatid)) {
 			$parent = PXRegistry::getTypes($formatid)->parent;
 
-			while($parent != null) {
-				if($this->isRegionalType($parent)) {
+			while ($parent != null) {
+				if ($this->isRegionalType($parent)) {
 					$formatid = $parent;
 					break;
 				}
@@ -125,32 +138,34 @@ class PXTriggerSearchMultipleregions extends PXAbstractSearchTrigger {
 	}
 
 	private
-	function regString($formatid, $regs) {
+	function regString($formatid, $regs)
+	{
 		$field = $this->_getRegionalFieldFromParent($formatid);
 
 		return $field->storageType->arrayToDB($regs);
 	}
 
 	private
-	function checkParent($formatid, &$row, &$tree) {
+	function checkParent($formatid, &$row, &$tree)
+	{
 		$parent = PXRegistry::getTypes($formatid)->parent;
-		$pId    = $row['parent'];
+		$pId = $row['parent'];
 
-		while($parent != null) {
+		while ($parent != null) {
 			$pType = PXRegistry::getTypes($parent);
 
-			if($pType->id == 'struct') {
+			if ($pType->id == 'struct') {
 				if ($this->isRegionalType($parent)) {
-					if(!isset($tree->leafs[$pId])) {
+					if (!isset($tree->leafs[$pId])) {
 						return false;
 					}
 
-					foreach(array_merge(array($pId), $tree->getAncestors($pId)) as $anc) {
-						if(!$anc) {
+					foreach (array_merge([$pId], $tree->getAncestors($pId)) as $anc) {
+						if (!$anc) {
 							continue;
 						}
 
-						if(!isset($tree->leafs[$anc]) || !$this->_checkObject($tree->leafs[$anc]->content)) {
+						if (!isset($tree->leafs[$anc]) || !$this->_checkObject($tree->leafs[$anc]->content)) {
 							return false;
 						}
 
@@ -162,20 +177,20 @@ class PXTriggerSearchMultipleregions extends PXAbstractSearchTrigger {
 
 			} else {
 				if ($this->isRegionalType($parent)) {
-					if(!isset($row['parent']) || !is_numeric($row['parent'])) {
+					if (!isset($row['parent']) || !is_numeric($row['parent'])) {
 						return false;
 					}
 
 					$pObj = PXRegistry::getDb()->getObjectById($pType, $pId);
 
-					if(!$this->_checkObject($pObj)) {
+					if (!$this->_checkObject($pObj)) {
 						return false;
 					}
 
 					$this->intersectParentRegions($formatid, $pObj, $row);
 				}
 
-				$pId = $pObj['parent'];
+				empty($pObj) || $pId = $pObj['parent'];
 				$parent = $pType->parent;
 			}
 		}
@@ -184,10 +199,11 @@ class PXTriggerSearchMultipleregions extends PXAbstractSearchTrigger {
 	}
 
 	private
-	function intersectParentRegions($formatid, $parent, &$row) {
-		$oRegs  = $this->regArray($formatid, $row);
+	function intersectParentRegions($formatid, $parent, &$row)
+	{
+		$oRegs = $this->regArray($formatid, $row);
 
-		if($this->isRegionalType($formatid) || sizeof($oRegs)) {
+		if ($this->isRegionalType($formatid) || sizeof($oRegs)) {
 			$oRegs = array_intersect($parent[PXMultiRegions::REGION_MARK], $oRegs);
 		} else {
 			$oRegs = $parent[PXMultiRegions::REGION_MARK];

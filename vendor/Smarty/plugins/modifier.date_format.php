@@ -25,7 +25,7 @@ function smarty_modifier_date_format($string, $format="%b %e, %Y", $default_date
 		6 => 'Воскресенье',
 	);
 */
-	$weekdays = array(
+	$weekdays = [
 		1 => 'Понедельник',
 		2 => 'Вторник',
 		3 => 'Среда',
@@ -33,9 +33,9 @@ function smarty_modifier_date_format($string, $format="%b %e, %Y", $default_date
 		5 => 'Пятница',
 		6 => 'Суббота',
 		0 => 'Воскресенье',
-	);
+    ];
 
-	$weekdaysShort = array(
+	$weekdaysShort = [
 		1 => 'Пн',
 		2 => 'Вт',
 		3 => 'Ср',
@@ -43,9 +43,9 @@ function smarty_modifier_date_format($string, $format="%b %e, %Y", $default_date
 		5 => 'Пт',
 		6 => 'Сб',
 		0 => 'Вс',
-	);
+    ];
 
-	$months = array(
+	$months = [
 		'01' => 'Январь',
 		'02' => 'Февраль',
 		'03' => 'Март',
@@ -58,9 +58,9 @@ function smarty_modifier_date_format($string, $format="%b %e, %Y", $default_date
 		'10' => 'Октябрь',
 		'11' => 'Ноябрь',
 		'12' => 'Декабрь',
-	);
+    ];
 
-	$monthsE = array(
+	$monthsE = [
 		'01' => 'January',
 		'02' => 'February',
 		'03' => 'March',
@@ -73,9 +73,9 @@ function smarty_modifier_date_format($string, $format="%b %e, %Y", $default_date
 		'10' => 'October',
 		'11' => 'November',
 		'12' => 'December',
-	);
+    ];
 
-	$months2 = array(
+	$months2 = [
 		'01' => 'января',
 		'02' => 'февраля',
 		'03' => 'марта',
@@ -88,9 +88,9 @@ function smarty_modifier_date_format($string, $format="%b %e, %Y", $default_date
 		'10' => 'октября',
 		'11' => 'ноября',
 		'12' => 'декабря',
-	);
+    ];
 
-	$months3 = array(
+	$months3 = [
 		'01' => 'январе',
 		'02' => 'феврале',
 		'03' => 'марте',
@@ -103,9 +103,9 @@ function smarty_modifier_date_format($string, $format="%b %e, %Y", $default_date
 		'10' => 'октябре',
 		'11' => 'ноябре',
 		'12' => 'декабре',
-	);
+    ];
 
-	$monthsShort = array(
+	$monthsShort = [
 		'01' => 'Янв',
 		'02' => 'Фев',
 		'03' => 'Мрт',
@@ -118,7 +118,7 @@ function smarty_modifier_date_format($string, $format="%b %e, %Y", $default_date
 		'10' => 'Окт',
 		'11' => 'Ноя',
 		'12' => 'Дек',
-	);
+    ];
 
 
 	$time = strlen(trim($string)) ? $string : (isset($default_date) ? $default_date : '');

@@ -10,12 +10,14 @@ use PP\Lib\UrlGenerator\UrlGenerator;
  *
  * @package PP\Module
  */
-class CsvImportModule extends AbstractModule {
+class CsvImportModule extends AbstractModule
+{
 
-	var $htmlEsc;
-	var $settings;
+	public $htmlEsc;
+	public $settings;
 
-	function __construct($area, $settings) {
+	public function __construct($area, $settings)
+	{
 		parent::__construct($area, $settings);
 
 		$this->settings = $settings;
@@ -36,7 +38,8 @@ class CsvImportModule extends AbstractModule {
 		];
 	}
 
-	function adminIndex() {
+	public function adminIndex()
+	{
 		$layout = $this->layout;
 		$request = $this->request;
 
@@ -49,7 +52,7 @@ class CsvImportModule extends AbstractModule {
 				$html .= '<h1 class="error">Ошибка</h1>';
 				$html .= '<p class="error">Импорт данных не состоялся.<BR>';
 
-				switch($request->GetVar('error')) {
+				switch ($request->GetVar('error')) {
 					case 'notupload':
 						$html .= 'Файл не закачан';
 						break;
@@ -75,19 +78,21 @@ class CsvImportModule extends AbstractModule {
 		$layout->Assign('INNER.0.0', $html);
 	}
 
-	function _Success() {
+	public function _Success()
+	{
 		$request = $this->request;
 		$app = $this->app;
 
-		$html  = '<h2>Импорт данных &laquo;'.$app->types[$this->settings['datatype']]->title.'&raquo; успешно произведен</h2>';
-		$html .= '<p>В базу внесено <strong>'.htmlspecialchars($request->GetVar('quantity'), ENT_COMPAT|ENT_HTML401, DEFAULT_CHARSET).'</strong> объектов.</p>';
+		$html = '<h2>Импорт данных &laquo;' . $app->types[$this->settings['datatype']]->title . '&raquo; успешно произведен</h2>';
+		$html .= '<p>В базу внесено <strong>' . htmlspecialchars($request->GetVar('quantity'), ENT_COMPAT | ENT_HTML401, DEFAULT_CHARSET) . '</strong> объектов.</p>';
 		return $html;
 	}
 
-	function adminAction() {
+	public function adminAction()
+	{
 		$request = $this->request;
-		$app     = $this->app;
-		$db      = $this->db;
+		$app = $this->app;
+		$db = $this->db;
 
 		$context = new ContextUrlGenerator();
 		$context->setCurrentModule($this->area);
@@ -98,10 +103,10 @@ class CsvImportModule extends AbstractModule {
 		if (($filename = $this->UploadFile($request->GetUploadFile('file')))) {
 			$quantity = $this->ImportToDb($this->_GetCsvSource($filename), $app, $db, $request);
 
-			if(is_numeric($quantity)) {
-				$redirTo .= '&status=success&quantity='.$quantity;
+			if (is_numeric($quantity)) {
+				$redirTo .= '&status=success&quantity=' . $quantity;
 			} else {
-				$redirTo .= '&status=error&error='.$quantity;
+				$redirTo .= '&status=error&error=' . $quantity;
 			}
 
 		} else {
@@ -111,7 +116,8 @@ class CsvImportModule extends AbstractModule {
 		return $redirTo;
 	}
 
-	function ImportToDB($csv) {
+	public function ImportToDB($csv)
+	{
 		$app = $this->app;
 		$db = $this->db;
 
@@ -122,7 +128,7 @@ class CsvImportModule extends AbstractModule {
 		$format = $app->types[$this->settings['datatype']];
 
 		foreach ($this->settings['field'] as $f) {
-			list($k, $v) = explode('|', $f);
+			[$k, $v] = explode('|', $f);
 
 			if (trim($k) == 'parent') {
 				$v = $app->GetProperty(trim($v));
@@ -132,7 +138,7 @@ class CsvImportModule extends AbstractModule {
 			$fields[trim($k)] = trim($v);
 		}
 
-		foreach ($csv as $ln=>$line) {
+		foreach ($csv as $ln => $line) {
 			if ($ln === 1 && isset($this->settings['skipfirst']) && $this->settings['skipfirst'] === 'true') {
 				continue;
 			}
@@ -165,13 +171,14 @@ class CsvImportModule extends AbstractModule {
 		return count($objects);
 	}
 
-	function constructObject(&$object, $fields, $row){
-		foreach ($fields as $fk=>$fv) {
+	public function constructObject(&$object, $fields, $row)
+	{
+		foreach ($fields as $fk => $fv) {
 			if ($fk === 'parent') {
 				$object[$fk] = $fv;
 			} elseif (is_numeric($fv)) {
 				$object[$fk] = $row[$fv];
-			} elseif (($fv === 'true' && ($fv = true)) || ($fv === 'false' && (($fv = false) || true))){
+			} elseif (($fv === 'true' && ($fv = true)) || ($fv === 'false' && (($fv = false) || true))) {
 				$object[$fk] = $fv;
 			} else {
 				$object[$fk] = $fv;
@@ -179,20 +186,22 @@ class CsvImportModule extends AbstractModule {
 		}
 	}
 
-	function deleteOldObjects(&$db, &$format, $parent = null){
+	public function deleteOldObjects(&$db, &$format, $parent = null)
+	{
 		if (!is_null($parent)) {
-			$sql = 'DELETE FROM '.$format->id.' WHERE parent = '.$parent.';';
+			$sql = 'DELETE FROM ' . $format->id . ' WHERE parent = ' . $parent . ';';
 		} else {
-			$sql = 'DELETE FROM '.$format->id;
+			$sql = 'DELETE FROM ' . $format->id;
 		}
 
 		if ($db->ModifyingQuery($sql) == ERROR_DB_BADQUERY) {
-			FatalError("Ошибка в запросе". $sql);
+			FatalError("Ошибка в запросе" . $sql);
 		}
 	}
 
-	function UploadFile($file, $uploadDir = NULL) {
-		$uploadDir = !is_null($uploadDir) ? $uploadDir : BASEPATH.'/tmp/csvimport';
+	public function UploadFile($file, $uploadDir = NULL)
+	{
+		$uploadDir = !is_null($uploadDir) ? $uploadDir : BASEPATH . '/tmp/csvimport';
 
 		if (!isset($file['name'])) {
 			return false;
@@ -205,14 +214,15 @@ class CsvImportModule extends AbstractModule {
 		return $this->UploadFileFromUser($file, $uploadDir);
 	}
 
-	function UploadFileFromUser($file, $dir) {
+	public function UploadFileFromUser($file, $dir)
+	{
 		$dirO = new \NLDir($dir);
 		$dir = $dirO->name;
 
 		MakeDirIfNotExists($dir);
 
 		if ($file && $file != 'none' && $file['name'] && is_writable($dir)) {
-			$newFileName = $dir.'/'._TranslitFilename(_stripBadFileChars($file['name']));
+			$newFileName = $dir . '/' . _TranslitFilename(_stripBadFileChars($file['name']));
 
 			if (!@copy($file['tmp_name'], $newFileName)) {
 				FatalError('ERROR_IO_BADPERMISSIONS: ' . $dir);
@@ -228,7 +238,8 @@ class CsvImportModule extends AbstractModule {
 		}
 	}
 
-	function _UploadTable() {
+	public function _UploadTable()
+	{
 		return <<<HTML
 			<h2>Импорт данных из CSV файла</h2>
 
@@ -240,7 +251,8 @@ class CsvImportModule extends AbstractModule {
 HTML;
 	}
 
-	function _GetCsvSource($filename, $length=NULL) {
+	public function _GetCsvSource($filename, $length = NULL)
+	{
 		if (!is_file($filename) || !is_readable($filename)) {
 			return FALSE;
 		}
@@ -248,11 +260,11 @@ HTML;
 		$row = 1;
 		$maxLen = 0;
 		$handle = fopen($filename, "r");
-		$result = array();
+		$result = [];
 
 		while (($data = fgetcsv($handle, 4096, ";")) !== FALSE && (!$length || $row <= $length)) {
 			$num = count($data);
-			for ($c=0; $c<$num; $c++) {
+			for ($c = 0; $c < $num; $c++) {
 				$result[$row][$c] = iconv(CHARSET_WINDOWS, CHARSET_UTF8, $data[$c]);
 			}
 			$maxLen = max($maxLen, $num);
@@ -261,7 +273,7 @@ HTML;
 
 		fclose($handle);
 
-		foreach ($result as $k=>$v) {
+		foreach ($result as $k => $v) {
 			if (count($v) < $maxLen) {
 				$result[$k] = array_pad($result[$k], $maxLen, NULL);
 			}
@@ -271,7 +283,8 @@ HTML;
 	}
 
 	// method for safe access
-	function getParsedCsv($filename, $length=null) {
+	public function getParsedCsv($filename, $length = null)
+	{
 		return $this->_GetCsvSource($filename, $length);
 	}
 

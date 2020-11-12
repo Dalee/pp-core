@@ -11,36 +11,42 @@ use Symfony\Component\Yaml\Yaml;
  * displayType HIDDEN, STATIC, TABLE, LINKTOFILE
  * storageType yaml
  */
-class PXStorageTypeYaml extends PXStorageType {
-	function getFromRequest($field, $object, &$param) {
+class PXStorageTypeYaml extends PXStorageType
+{
+	public function getFromRequest($field, $object, &$param)
+	{
 		$k = $field->name;
-		return (is_array($object[$k])) ? $object[$k] : array();
+		return (is_array($object[$k])) ? $object[$k] : [];
 	}
 
-	function normalizeObjectAttribute($field, $object, &$param) {
+	public function normalizeObjectAttribute($field, $object, &$param)
+	{
 		$k = $field->name;
-		$v = self::toYaml(is_array($object[$k]) ? $object[$k] : array());
+		$v = self::toYaml(is_array($object[$k]) ? $object[$k] : []);
 
-		if(is_array($param['dbFields'])) {
+		if (is_array($param['dbFields'])) {
 			$param['dbFields'][] = $k;
 		}
 
-		if(is_array($param['dbValues'])) {
+		if (is_array($param['dbValues'])) {
 			$param['dbValues'][] = $v;
 		}
 
-		return array($v, $param['dbFields'], $param['dbValues']);
+		return [$v, $param['dbFields'], $param['dbValues']];
 	}
 
-	static function toArray($yaml) {
+	public static function toArray($yaml)
+	{
 		return Yaml::parse($yaml);
 	}
 
-	static function toYaml($array) {
+	public static function toYaml($array)
+	{
 		return Yaml::dump($array);
 	}
 
-	function normalize($field, $object, &$param) {
+	public function normalize($field, $object, &$param)
+	{
 		return ($object[$field->name]) ? self::toArray($object[$field->name]) : $object[$field->name];
 	}
 }

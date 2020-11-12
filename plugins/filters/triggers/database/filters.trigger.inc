@@ -4,8 +4,10 @@ require_once dirname(__FILE__) . '/../../lib/additional_loader.class.inc';
 
 use PP\Lib\Html\Layout\AdminHtmlLayout;
 
-class PXTriggerDatabaseFilters extends PXAbstractDatabaseTrigger {
-	function OnBeforeGetDataBuildQuery($db, $format, &$mode, &$selector, &$where, &$order, &$limit) {
+class PXTriggerDatabaseFilters extends PXAbstractDatabaseTrigger
+{
+	public function OnBeforeGetDataBuildQuery($db, $format, &$mode, &$selector, &$where, &$order, &$limit)
+	{
 		$layout = PXRegistry::getLayout();
 
 		if (!PXRegistry::getApp()->isAdminEngine() || !($layout instanceof AdminHtmlLayout) || !PXPluginFilters::enabled()) {
@@ -27,14 +29,14 @@ class PXTriggerDatabaseFilters extends PXAbstractDatabaseTrigger {
 		}
 
 		$filters = $filters[$format->id];
-		$_where = array();
+		$_where = [];
 
 		foreach ($filters as $name => $value) {
 			if (!isset($format->fields[$name]) or !$format->fields[$name]->storageType->filterable()) {
 				continue;
 			}
 			$storageType = $format->fields[$name]->storageType;
-			switch(true){
+			switch (true) {
 				case $storageType instanceof PXStorageTypeBoolean :
 					empty($value) || $_where[] = sprintf("%s.%s = %s", $format->id, $name, $value == 't' ? 'true' : 'false');
 					break;
@@ -46,8 +48,8 @@ class PXTriggerDatabaseFilters extends PXAbstractDatabaseTrigger {
 				default:
 					$value = urldecode($value);
 
-					$left  = mb_substr($value, 0, 1) != '^' ? P_LEFT : 0;
-					$right = mb_substr($value, -1)   != '$' ? P_RIGHT : 0;
+					$left = mb_substr($value, 0, 1) != '^' ? P_LEFT : 0;
+					$right = mb_substr($value, -1) != '$' ? P_RIGHT : 0;
 
 					if (!$left) {
 						$value = mb_substr($value, 1);

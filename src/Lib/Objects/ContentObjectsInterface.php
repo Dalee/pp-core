@@ -6,21 +6,22 @@ namespace PP\Lib\Objects;
  * Interface ContentObjectsInterface
  * @package PP\Lib\Objects
  */
-interface ContentObjectsInterface {
+interface ContentObjectsInterface
+{
 
-	function hasCurrent();
+	public function hasCurrent();
 
-	function getCurrent();
+	public function getCurrent();
 
-	function getAllowedChilds();
+	public function getAllowedChilds();
 
 	/**
 	 * @param string $type
 	 * @return bool
 	 */
-	function hasType($type);
+	public function hasType($type);
 
-	function getCurrentType();
+	public function getCurrentType();
 
-	function getLinks();
+	public function getLinks();
 }

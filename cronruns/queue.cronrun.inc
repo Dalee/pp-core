@@ -17,7 +17,7 @@ class PXCronRunQueue extends AbstractCron {
 	/**
 	 * @var int
 	 */
-	const MAX_JOBS_PER_RUN = 10;
+	public const MAX_JOBS_PER_RUN = 10;
 
 	/**
 	 * @return string
@@ -42,7 +42,7 @@ class PXCronRunQueue extends AbstractCron {
 	 * @param PXCronRule $matchedRule
 	 * @return array
 	 */
-	public function run(&$app, &$db, &$tree, $matchedTime, $matchedRule) {
+	public function run($app, $db, $tree, $matchedTime, $matchedRule) {
 		$queue = new PersistentQueue\Queue($app, $db);
 		$jobs = $queue->getFreshJobs(static::MAX_JOBS_PER_RUN);
 		$processedIds = [];

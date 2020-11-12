@@ -9,26 +9,29 @@ use PP\Lib\Html\Layout\AdminHtmlLayout;
  *
  * @package PP\Module
  */
-class MainModule extends AbstractModule {
+class MainModule extends AbstractModule
+{
 
 	private $rootFormatId;
 	private $objectsLoadMode;
 	private $rootFormat;
 
-	function __construct($area, $settings) {
+	public function __construct($area, $settings)
+	{
 		parent::__construct($area, $settings);
 
 		$this->rootFormatId = $settings['rootFormat'];
 
-		$this->objectsLoadMode = array(
-			PP_CHILDREN_FETCH_NONE     => 'none',
+		$this->objectsLoadMode = [
+			PP_CHILDREN_FETCH_NONE => 'none',
 			PP_CHILDREN_FETCH_SELECTED => 'selected',
-			PP_CHILDREN_FETCH_ALL      => 'all',
-			PP_CHILDREN_FETCH_PAGED    => 'paged'
-		);
+			PP_CHILDREN_FETCH_ALL => 'all',
+			PP_CHILDREN_FETCH_PAGED => 'paged',
+		];
 	}
 
-	function userIndex() {
+	public function userIndex()
+	{
 		// Bad path
 		if ($this->request->IsBadPath()) {
 			$this->response->notFound();
@@ -58,11 +61,12 @@ class MainModule extends AbstractModule {
 		$this->check404error($urlFile, $urlPart);
 	}
 
-	function check404error($urlFile, $urlPart) {
+	public function check404error($urlFile, $urlPart)
+	{
 		// Определение кода ошибки
 		if (
 			!$this->tree->hasCurrent() ||
-			!($this->request->isIndexFile($urlFile) || $this->objects->hasCurrent())    ||
+			!($this->request->isIndexFile($urlFile) || $this->objects->hasCurrent()) ||
 			!($this->request->isIndexFile($urlPart) || $this->subObjects->hasCurrent())
 		) {
 			$this->response->notFound();
@@ -72,10 +76,11 @@ class MainModule extends AbstractModule {
 	}
 
 	protected
-	function _parseAliasesConfig() {
+	function _parseAliasesConfig()
+	{
 		if (!isset($this->settings['domainAlias'])) {
-			$this->settings['domainAlias'] = array();
-			return array();
+			$this->settings['domainAlias'] = [];
+			return [];
 		}
 
 		$config = $this->settings['domainAlias'];
@@ -83,16 +88,17 @@ class MainModule extends AbstractModule {
 			$config = explode("\n", $config);
 		}
 
-		$aliases = array();
+		$aliases = [];
 		foreach ($config as $row) {
-			list ($host, $alias) = preg_split('/\s*=\s*/', trim($row));
+			[$host, $alias] = preg_split('/\s*=\s*/', trim($row));
 			$aliases[$host] = $alias;
 		}
 
 		return $aliases;
 	}
 
-	private function loadObjects($object, $pathName, $fillObj) {
+	private function loadObjects($object, $pathName, $fillObj)
+	{
 		if (!$object->hasCurrent()) {
 			return;
 		}
@@ -110,7 +116,7 @@ class MainModule extends AbstractModule {
 				continue;
 			}
 
-			$loadingMethod = 'load' . ucfirst($this->objectsLoadMode[$behaviour]).'Objects';
+			$loadingMethod = 'load' . ucfirst($this->objectsLoadMode[$behaviour]) . 'Objects';
 			$objsArray = $this->$loadingMethod($object, $format, $pathName);
 
 			$fillObj->add($type, $objsArray);
@@ -118,66 +124,72 @@ class MainModule extends AbstractModule {
 		}
 	}
 
-	private function loadAllObjects($object, $format, $pathName) {
-		$objsArray = array();
+	private function loadAllObjects($object, $format, $pathName)
+	{
+		$objsArray = [];
 
 		$objsArray = $this->_loadContent($format, true, 'parent', $object->currentId);
 
 		return $objsArray;
 	}
 
-	private function loadNoneObjects($object, $format, $pathName) {
-		return array();
+	private function loadNoneObjects($object, $format, $pathName)
+	{
+		return [];
 	}
 
-	private function loadPagedObjects($object, $format, $pathName) {
-		$objsArray = array();
+	private function loadPagedObjects($object, $format, $pathName)
+	{
+		$objsArray = [];
 
 		if (!$this->request->isIndexFile($pathName)) {
 			$objsArray = $this->loadSelectedObjects($object, $format, $pathName);
 
 		} else {
-			$a_per_page = $this->app->getProperty(strtoupper($format->id).'_PER_PAGE', DEFAULT_CHILDREN_PER_PAGE);
+			$a_per_page = $this->app->getProperty(strtoupper($format->id) . '_PER_PAGE', DEFAULT_CHILDREN_PER_PAGE);
 			$count = $this->_loadContent($format, true, 'parent', $object->currentId, DB_SELECT_COUNT);
 			$currentPage = $this->getCurrentPage($format, $count, $a_per_page);
 
-			$this->layout->assign('FP_' . strtoupper($format->id) . '_TOTAL',        $count);
-			$this->layout->assign('FP_' . strtoupper($format->id) . '_PER_PAGE',     $a_per_page);
+			$this->layout->assign('FP_' . strtoupper($format->id) . '_TOTAL', $count);
+			$this->layout->assign('FP_' . strtoupper($format->id) . '_PER_PAGE', $a_per_page);
 			$this->layout->assign('FP_' . strtoupper($format->id) . '_DEFAULT_PAGE', $currentPage);
 
-			$objsArray = $this->_loadContentLimited($format, true, 'parent', $object->currentId, $a_per_page, $a_per_page*($currentPage-1));
+			$objsArray = $this->_loadContentLimited($format, true, 'parent', $object->currentId, $a_per_page, $a_per_page * ($currentPage - 1));
 		}
 
 		return $objsArray;
 	}
 
-	private function loadSelectedObjects($object, $format, $pathName) {
-		$objsArray = array();
+	private function loadSelectedObjects($object, $format, $pathName)
+	{
+		$objsArray = [];
 
 		if (!isset($format->fields['pathname'])) {
 			return;
 		}
 
-		$objsArray = $this->_loadContentLimited($format, true, array('pathname' => $pathName, 'parent' => $object->currentId), 'IGNORED', 1, 0);
+		$objsArray = $this->_loadContentLimited($format, true, ['pathname' => $pathName, 'parent' => $object->currentId], 'IGNORED', 1, 0);
 		return $objsArray;
 	}
 
-	private function getCurrentPage($format, $count, $a_per_page) {
+	private function getCurrentPage($format, $count, $a_per_page)
+	{
 		// default page - from properties.ini (first or last)
-		$defaultPage = $this->app->getProperty('FP_' . strtoupper($format->id).'_DEFAULT_LAST_PAGE') ? ceil($count/$a_per_page) : 1;
+		$defaultPage = $this->app->getProperty('FP_' . strtoupper($format->id) . '_DEFAULT_LAST_PAGE') ? ceil($count / $a_per_page) : 1;
 
 		$currentPage = $this->request->getVar('page', $defaultPage);
-		$currentPage = max(1, ($currentPage > ceil($count/$a_per_page) ? ceil($count/$a_per_page) : $currentPage));
+		$currentPage = max(1, ($currentPage > ceil($count / $a_per_page) ? ceil($count / $a_per_page) : $currentPage));
 
 		return $currentPage;
 	}
 
-	public function adminJson() {
+	public function adminJson()
+	{
 		$format = $this->request->getVar('f');
 		$cl = $this->request->getVar('cl');
 		$id = $this->request->getVar('id');
 		$answer = '';
-		if(!empty($id) && isset($this->app->types[$format]) && ($this->app->types[$format]->struct == 'tree' && $this->request->GetVar($format.'_view') != 'plain')){
+		if (!empty($id) && isset($this->app->types[$format]) && ($this->app->types[$format]->struct == 'tree' && $this->request->GetVar($format . '_view') != 'plain')) {
 
 			// {Нам это необходимо, чтобы работал PXAdminAjaxTreeObjects
 			$layout = new AdminHtmlLayout("index", $this->app->types);
@@ -190,17 +202,18 @@ class MainModule extends AbstractModule {
 
 			$answer = $hTree->html();
 		}
-		return array('branch' => $answer);
+		return ['branch' => $answer];
 	}
 
-	function adminIndex() {
+	public function adminIndex()
+	{
 		if (!isset($this->app->types[$this->rootFormatId])) {
 			FatalError("Некорректный тип данных");
 		}
 
-		$app     = $this->app;
+		$app = $this->app;
 		$request = $this->request;
-		$layout  = $this->layout;
+		$layout = $this->layout;
 
 		$this->rootFormat = $app->types[$this->rootFormatId];
 
@@ -222,9 +235,9 @@ class MainModule extends AbstractModule {
 
 			$parentObject = $hTree->get($rqSid);
 
-			$layout->assignTitle('раздел &laquo;'.$parentObject['title'].'&raquo;');
+			$layout->assignTitle('раздел &laquo;' . $parentObject['title'] . '&raquo;');
 
-			$cidType   = null;
+			$cidType = null;
 			$cidObject = null;
 
 			$structHasInnerBlocks = false;
@@ -242,11 +255,11 @@ class MainModule extends AbstractModule {
 			if (count($allowedChilds)) {
 				foreach ($allowedChilds as $childFormat) {
 					if (!isset($app->types[$childFormat])) {
-						$layout->append('INNER.1.0', '<h1 class="error">Формат '.$childFormat.' не описан</h1>');
+						$layout->append('INNER.1.0', '<h1 class="error">Формат ' . $childFormat . ' не описан</h1>');
 						continue;
 					}
 
-					if ($app->types[$childFormat]->struct == 'tree' && $request->GetVar($childFormat.'_view') != 'plain') {
+					if ($app->types[$childFormat]->struct == 'tree' && $request->GetVar($childFormat . '_view') != 'plain') {
 						$objects = new \PXAdminTreeObjects($childFormat, $rqSid, 'ByParent', true);
 
 					} else {
@@ -261,7 +274,7 @@ class MainModule extends AbstractModule {
 						$layout->setGetVarToSave('ctype', $request->getCtype());
 
 						if ($objects->has($rqCid)) {
-							$cidType   = $childFormat;
+							$cidType = $childFormat;
 							$cidObject = $objects->get($rqCid);
 						}
 					}
@@ -271,8 +284,8 @@ class MainModule extends AbstractModule {
 					$layout->setGetVarToSave('cid', $rqCid);
 
 					$childHasInnerBlocks = false;
-					foreach($this->app->types[$cidType]->fields as $fieldName => $field) {
-						if(!is_a($field->storageType, 'PXStorageTypeBlockcontent')) {
+					foreach ($this->app->types[$cidType]->fields as $fieldName => $field) {
+						if (!is_a($field->storageType, 'PXStorageTypeBlockcontent')) {
 							continue;
 						}
 						$blocks = new \PXAdminBlocksTree($this->app->types[$cidType], $fieldName, $rqCid);
@@ -285,11 +298,11 @@ class MainModule extends AbstractModule {
 
 					if (count($allowedChilds)) {
 						foreach ($allowedChilds as $childFormat) {
-							if ($app->types[$childFormat]->struct == 'tree' && $request->GetVar($childFormat.'_view') != 'plain') {
+							if ($app->types[$childFormat]->struct == 'tree' && $request->GetVar($childFormat . '_view') != 'plain') {
 								$subObjects = new \PXAdminTreeObjects($childFormat, $rqCid, 'ByParent');
 
 							} else {
-								$subObjects =  new \PXAdminTableObjects($childFormat, $rqCid, 'ByParent');
+								$subObjects = new \PXAdminTableObjects($childFormat, $rqCid, 'ByParent');
 							}
 
 							$subObjects->setControlParent($rqCid);
@@ -306,7 +319,7 @@ class MainModule extends AbstractModule {
 			}
 
 		} elseif ($rqSid != null) {
-			$layout->assign('INNER.1.0', '<H2 class="error">Раздел '.htmlspecialchars($rqSid, ENT_COMPAT|ENT_HTML401, DEFAULT_CHARSET).' не найден</H2>');
+			$layout->assign('INNER.1.0', '<H2 class="error">Раздел ' . htmlspecialchars($rqSid, ENT_COMPAT | ENT_HTML401, DEFAULT_CHARSET) . ' не найден</H2>');
 
 		} else {
 			$layout->assign('INNER.1.0', '<H2>Выберите раздел</H2>');
@@ -315,17 +328,20 @@ class MainModule extends AbstractModule {
 		$hTree->addToParent('INNER.0.0');
 	}
 
-	function _loadContent(&$format, $status, $param, $value, $flag = DB_SELECT_TABLE, $order = NULL){
+	public function _loadContent(&$format, $status, $param, $value, $flag = DB_SELECT_TABLE, $order = NULL)
+	{
 		return $this->db->GetObjectsByField($format, $status, $param, $value, $flag, $order);
 	}
 
-	function _loadContentLimited(&$format, $status, $param, $value, $limit, $offset, $flag = DB_SELECT_TABLE, $order = NULL){
+	public function _loadContentLimited(&$format, $status, $param, $value, $limit, $offset, $flag = DB_SELECT_TABLE, $order = NULL)
+	{
 		return $this->db->GetObjectsByFieldLimited($format, $status, $param, $value, $limit, $offset, $flag, $order);
 	}
 
 	// temporary struct root fixer. probably we must move it out to struct.class.inc (PXStructTree)
 	protected
-	function fillPathnamedAliases($tree, $host = null) {
+	function fillPathnamedAliases($tree, $host = null)
+	{
 		// "пустой" проект
 		if (empty($tree) or empty($tree->levels[1])) {
 			return;
@@ -346,7 +362,7 @@ class MainModule extends AbstractModule {
 		if ($hostAlias == 'default') {
 			foreach ($tree->levels[1] as $_rootId) {
 				if ($tree->leafs[$_rootId]->content['pathname'] === $host) {
-				$hostAlias = $host;
+					$hostAlias = $host;
 					break;
 				}
 			}

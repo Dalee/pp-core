@@ -1,17 +1,21 @@
 <?php
-class PXErrorReporterText extends PXErrorReporterHTML {
-	function fatalWarning($error) {
-		echo "\n\n\n* FATAL ERROR \n";
-		echo $error['message']."\n\n";
-	}
 
-	function environmentsUris() {
-		$script = implode(' ', $_SERVER['argv']);
-		$user   = $this->getUnixUser();
-		$root   = $_SERVER['DOCUMENT_ROOT'];
-		$path   = getcwd();
+class PXErrorReporterText extends PXErrorReporterHTML
+{
+    public function fatalWarning($error)
+    {
+        echo "\n\n\n* FATAL ERROR \n";
+        echo $error['message'] . "\n\n";
+    }
 
-		return <<<HTML
+    public function environmentsUris()
+    {
+        $script = implode(' ', $_SERVER['argv']);
+        $user = $this->getUnixUser();
+        $root = $_SERVER['DOCUMENT_ROOT'];
+        $path = getcwd();
+
+        return <<<HTML
 			<dt>Script:</dt>
 			<dd>
 				{$script}
@@ -32,35 +36,38 @@ class PXErrorReporterText extends PXErrorReporterHTML {
 				{$user}
 			</dd>
 HTML;
-	}
+    }
 
-	function getWindowsUser() {
-		$user = array();
+    public function getWindowsUser()
+    {
+        $user = [];
 
-		if(isset($_SERVER['USERNAME'])) {
-			$user[] = $_SERVER['USERNAME'];
-		}
+        if (isset($_SERVER['USERNAME'])) {
+            $user[] = $_SERVER['USERNAME'];
+        }
 
-		if(isset($_SERVER['USERDOMAIN'])) {
-			$user[] = $_SERVER['USERDOMAIN'];
-		}
+        if (isset($_SERVER['USERDOMAIN'])) {
+            $user[] = $_SERVER['USERDOMAIN'];
+        }
 
-		return implode('/', $user);
-	}
+        return implode('/', $user);
+    }
 
-	function getUnixUser() {
-		$user = array();
+    public function getUnixUser()
+    {
+        $user = [];
 
-		if(isset($_SERVER['USER'])) {
-			$user[] = $_SERVER['USER'];
-		}
+        if (isset($_SERVER['USER'])) {
+            $user[] = $_SERVER['USER'];
+        }
 
-		if(isset($_SERVER['SUDO_USER'])) {
-			$user[] = $_SERVER['SUDO_USER'];
-		}
+        if (isset($_SERVER['SUDO_USER'])) {
+            $user[] = $_SERVER['SUDO_USER'];
+        }
 
-		return implode('/', $user);
-	}
+        return implode('/', $user);
+    }
 
 }
+
 ?>

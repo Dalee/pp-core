@@ -9,18 +9,19 @@ use PP\Lib\Database\AbstractSqlDatabase;
  * Class PostgreSqlDriver
  * @package PP\Lib\Database\Driver
  */
-class PostgreSqlDriver extends AbstractSqlDatabase  {
+class PostgreSqlDriver extends AbstractSqlDatabase
+{
 
-	const TYPE = 'pgsql';
+	public const TYPE = 'pgsql';
 
-	var $connectString;
-	var $connection;
+	public $connectString;
+	public $connection;
 
 	/** @var CacheInterface */
-	var $cache;
+	public $cache;
 
 	/** @var bool */
-	var $connected;
+	public $connected;
 
 	protected $includeOptions = ['connect_timeout' => ''];
 	protected $excludeOptions = ['encoding'];
@@ -31,14 +32,16 @@ class PostgreSqlDriver extends AbstractSqlDatabase  {
 	/**
 	 * @param \NLDBDescription $dbDescription
 	 */
-	public function __construct($dbDescription) {
+	public function __construct($dbDescription)
+	{
 		$this->setCache($dbDescription->cache);
 		$this->connectArray = array_merge($this->connectArray, $this->includeOptions);
 		$this->setConnectParams($dbDescription);
 		$this->connected = false;
 	}
 
-	function setConnectParams($dbDescription) {
+	public function setConnectParams($dbDescription)
+	{
 		$keys = array_keys($this->connectArray);
 		$connectString = [];
 
@@ -54,9 +57,10 @@ class PostgreSqlDriver extends AbstractSqlDatabase  {
 		$this->connectString = trim(implode(' ', $connectString));
 	}
 
-	function Connect() {
+	public function Connect()
+	{
 		if (!$this->connected) {
-			$this->connection = pg_connect($this->connectString, PGSQL_CONNECT_FORCE_NEW) or FatalError('Can\'t connect to '.$this->connectString);
+			$this->connection = pg_connect($this->connectString, PGSQL_CONNECT_FORCE_NEW) or FatalError('Can\'t connect to ' . $this->connectString);
 
 			if ($this->connection) {
 				pg_exec($this->connection, "SET DATESTYLE='German'");
@@ -65,20 +69,22 @@ class PostgreSqlDriver extends AbstractSqlDatabase  {
 					pg_set_client_encoding($this->connection, $this->connectArray['encoding']);
 				}
 
-				$this->connected  = true;
+				$this->connected = true;
 			}
 		}
 		return $this->connected;
 	}
 
-	function Close() {
+	public function Close()
+	{
 		if ($this->connected) {
 			pg_close($this->connection);
 			$this->connected = false;
 		}
 	}
 
-	function ModifyingQuery($query, $table=null, $retField=null, $flushCache = true, $retCount = false) {
+	public function ModifyingQuery($query, $table = null, $retField = null, $flushCache = true, $retCount = false)
+	{
 		if (!$this->connected) {
 			$this->Connect();
 		}
@@ -114,7 +120,8 @@ class PostgreSqlDriver extends AbstractSqlDatabase  {
 		}
 	}
 
-	function ModifyingCopy($tableName, $cols, $data) {
+	public function ModifyingCopy($tableName, $cols, $data)
+	{
 		if (!$this->connected) {
 			$this->Connect();
 		}
@@ -126,15 +133,15 @@ class PostgreSqlDriver extends AbstractSqlDatabase  {
 
 		if ($this->connected) {
 
-			$query = "COPY {$tableName} (\"".implode('", "', $cols)."\") FROM stdin";
+			$query = "COPY {$tableName} (\"" . implode('", "', $cols) . "\") FROM stdin";
 
 			if (pg_query($this->connection, $query) == false) {
 				return ERROR_DB_BADQUERY;
 			}
 
-			$from = array( "\\", "\r", "\n", "\t", "\1" );
-			$to = array( "\\\\", "\\r", "\\n", "\\t", "\t");
-			$lines = array();
+			$from = ["\\", "\r", "\n", "\t", "\1"];
+			$to = ["\\\\", "\\r", "\\n", "\\t", "\t"];
+			$lines = [];
 
 			do {
 				$line = str_replace($from, $to, implode("\1", $row));
@@ -147,7 +154,7 @@ class PostgreSqlDriver extends AbstractSqlDatabase  {
 					$line = "\\N" . $line;
 				}
 
-				if ($line[strlen($line)-1] == "\t") {
+				if ($line[strlen($line) - 1] == "\t") {
 					$line .= "\\N";
 				}
 
@@ -155,7 +162,7 @@ class PostgreSqlDriver extends AbstractSqlDatabase  {
 
 			} while ($row = next($data));
 
-			if (pg_put_line($this->connection, join("\n", $lines)."\n") == false) {
+			if (pg_put_line($this->connection, join("\n", $lines) . "\n") == false) {
 				return ERROR_DB_BADQUERY;
 			}
 
@@ -174,7 +181,8 @@ class PostgreSqlDriver extends AbstractSqlDatabase  {
 		return true;
 	}
 
-	function Query($query, $donotusecache = false, $limitpair = null) {
+	public function Query($query, $donotusecache = false, $limitpair = null)
+	{
 		if (is_array($limitpair)) {
 			$limitstring = " LIMIT {$limitpair[0]} OFFSET {$limitpair[1]}";
 		} else {
@@ -196,10 +204,10 @@ class PostgreSqlDriver extends AbstractSqlDatabase  {
 				return ERROR_DB_BADQUERY;
 			}
 
-			$table = array();
+			$table = [];
 			$total = pg_num_rows($res);
 
-			for ($i=0; $i<$total; $i++) {
+			for ($i = 0; $i < $total; $i++) {
 				$table[] = pg_fetch_assoc($res, $i);
 			}
 
@@ -211,13 +219,14 @@ class PostgreSqlDriver extends AbstractSqlDatabase  {
 		return $table;
 	}
 
-	function InsertObject($table, $fields, $values, $flushCache = true) {
-		$query = "INSERT INTO {$table} (\"".implode('", "', $fields)."\") VALUES (".implode(', ', array_map(array($this, '__mapInsertData'), $values)).")";
-		$id    = $this->ModifyingQuery($query, $table, 'id', $flushCache);
-		return $id;
+	public function InsertObject($table, $fields, $values, $flushCache = true)
+	{
+		$query = "INSERT INTO {$table} (\"" . implode('", "', $fields) . "\") VALUES (" . implode(', ', array_map([$this, '__mapInsertData'], $values)) . ")";
+		return $this->ModifyingQuery($query, $table, 'id', $flushCache);
 	}
 
-	function MapData($value) {
+	public function MapData($value)
+	{
 		switch (true) {
 			case is_null($value) || $value === '' :
 				return "NULL";
@@ -226,28 +235,33 @@ class PostgreSqlDriver extends AbstractSqlDatabase  {
 			case is_bool($value):
 				return $value ? "'t'" : "'f'";
 			default:
-				return "'".$this->EscapeString($value)."'";
+				return "'" . $this->EscapeString($value) . "'";
 		}
 	}
 
-	function mapFields($field) {
-		return '"'.$this->EscapeString($field).'"';
+	public function mapFields($field)
+	{
+		return '"' . $this->EscapeString($field) . '"';
 	}
 
-	function __mapInsertData($value) {
+	public function __mapInsertData($value)
+	{
 		return $this->MapData($value);
 	}
 
-	function __mapUpdateData($field, $value) {
-		return "\"{$field}\" = ".$this->MapData($value);
+	public function __mapUpdateData($field, $value)
+	{
+		return "\"{$field}\" = " . $this->MapData($value);
 	}
 
-	function EscapeString($s) {
+	public function EscapeString($s)
+	{
 		return pg_escape_string($s);
 	}
 
-	function UpdateObjectById($table, $objectId, $fields, $values, $flushCache = true) {
-		$query = "UPDATE {$table} SET ".implode(', ', array_map(array($this, '__mapUpdateData'), $fields, $values))." WHERE id={$objectId}";
+	public function UpdateObjectById($table, $objectId, $fields, $values, $flushCache = true)
+	{
+		$query = "UPDATE {$table} SET " . implode(', ', array_map([$this, '__mapUpdateData'], $fields, $values)) . " WHERE id={$objectId}";
 		return $this->ModifyingQuery($query, null, null, $flushCache);
 	}
 
@@ -255,7 +269,8 @@ class PostgreSqlDriver extends AbstractSqlDatabase  {
 	/**
 	 * @return $this
 	 */
-	function transactionBegin() {
+	public function transactionBegin()
+	{
 		if (!$this->insideTransaction) {
 			$this->Query('BEGIN', true);
 			$this->insideTransaction = true;
@@ -270,7 +285,8 @@ class PostgreSqlDriver extends AbstractSqlDatabase  {
 	/**
 	 * @return $this
 	 */
-	function transactionCommit() {
+	public function transactionCommit()
+	{
 		if (empty($this->transactionsStack)) {
 			$this->Query('END', true);
 			$this->insideTransaction = false;
@@ -281,7 +297,8 @@ class PostgreSqlDriver extends AbstractSqlDatabase  {
 		return $this;
 	}
 
-	function transactionRollback() {
+	public function transactionRollback()
+	{
 		if (empty($this->transactionsStack)) {
 			$this->Query('ROLLBACK', true);
 			$this->insideTransaction = false;
@@ -294,36 +311,44 @@ class PostgreSqlDriver extends AbstractSqlDatabase  {
 	/**
 	 * Named transactions (savepoints) related functions
 	 */
-	function savepointCreate($id) {
-		$this->Query('SAVEPOINT '.$id, true);
+	public function savepointCreate($id)
+	{
+		$this->Query('SAVEPOINT ' . $id, true);
 	}
 
-	function savepointRelease($id) {
-		$this->Query('RELEASE SAVEPOINT '.$id, true);
+	public function savepointRelease($id)
+	{
+		$this->Query('RELEASE SAVEPOINT ' . $id, true);
 	}
 
-	function savepointRollbackTo($id) {
-		$this->Query('ROLLBACK TO '.$id, true);
+	public function savepointRollbackTo($id)
+	{
+		$this->Query('ROLLBACK TO ' . $id, true);
 	}
 
 
-	function importDateTime($string) {
+	public function importDateTime($string)
+	{
 		return $string;
 	}
 
-	function exportFloat($string) {
+	public function exportFloat($string)
+	{
 		return str_replace(',', '.', $string);
 	}
 
-	function exportDateTime($string) {
+	public function exportDateTime($string)
+	{
 		return $string == '00.00. 00:00:00' ? null : $string;
 	}
 
-	function importBoolean($string) {
+	public function importBoolean($string)
+	{
 		return $string == 't' || $string == '1';
 	}
 
-	function IsUniqueColsCombination($tables, $colValues, $exception) {
+	public function IsUniqueColsCombination($tables, $colValues, $exception)
+	{
 		if (!is_array($tables) || !sizeof($tables)) {
 			FatalError("Вы не указали проверяемые таблицы");
 		}
@@ -334,14 +359,14 @@ class PostgreSqlDriver extends AbstractSqlDatabase  {
 
 		$query = "SELECT (0 ";
 		foreach ($tables as $t) {
-			list($where_clauses, $tableName) = [[], $t['tableName']];
+			[$where_clauses, $tableName] = [[], $t['tableName']];
 
 			foreach ($colValues as $c => $v) {
 				$where_clauses[] = sprintf("%s = '%s'", $c, $v);
 			}
 
 			if (sizeof($exception)) {
-				foreach ($exception as $c=>$v) {
+				foreach ($exception as $c => $v) {
 					$where_clauses[] = sprintf("%s != '%s'", $c, $v);
 				}
 			}
@@ -360,39 +385,47 @@ class PostgreSqlDriver extends AbstractSqlDatabase  {
 		return (int)(current(current($this->Query($query, true)))); // TODO: refactor
 	}
 
-	function getError() {
+	public function getError()
+	{
 		return pg_last_error();
 	}
 
-	function tableExists($tableName) {
+	public function tableExists($tableName)
+	{
 		return count($this->query("SELECT relname FROM pg_class WHERE relname='{$tableName}'"));
 	}
 
-	function LIKE($condition, $percs) {
+	public function LIKE($condition, $percs)
+	{
 		return $this->_searchMethod("ILIKE", $condition, $percs);
 	}
 
-	function inArray($arrayField, $value, $sane = false) {
+	public function inArray($arrayField, $value, $sane = false)
+	{
 		return sprintf("%s @> ARRAY[%s]", $sane ? $arrayField : $this->EscapeString($arrayField), $sane ? $value : $this->EscapeString($value));
 	}
 
-	function arrayIn($arrayField, $value, $sane = false) {
+	public function arrayIn($arrayField, $value, $sane = false)
+	{
 		return sprintf("%s <@ ARRAY[%s]", $sane ? $arrayField : $this->EscapeString($arrayField), $sane ? $value : $this->EscapeString($value));
 	}
 
-	function intersectIntArray($arrayField, $values) {
+	public function intersectIntArray($arrayField, $values)
+	{
 		return sprintf("%s && '{%s}'",
 			$this->EscapeString($arrayField),
 			join(",", array_filter($values, "is_numeric")));
 	}
 
-	function ifStatement($when, $then, $else = null) {
-		$else = $else? "ELSE ({$else})" : '';
+	public function ifStatement($when, $then, $else = null)
+	{
+		$else = $else ? "ELSE ({$else})" : '';
 		return sprintf("CASE WHEN (%s) THEN (%s) %s END", $when, $then, $else);
 	}
 
-	function caseStatement($arr, $else = null) {
-		$else = $else? "ELSE ({$else})" : '';
+	public function caseStatement($arr, $else = null)
+	{
+		$else = $else ? "ELSE ({$else})" : '';
 		$whenthens = '';
 		foreach ((array)$arr as $when => $then) {
 			$whenthens .= sprintf('WHEN (%s) THEN (%s) ', $when, $then);
@@ -400,15 +433,17 @@ class PostgreSqlDriver extends AbstractSqlDatabase  {
 		return sprintf("CASE %s %s END", $whenthens, $else);
 	}
 
-	function vacuumTable($tableName) {
-		$this->Query("VACUUM ".$tableName, true);
-		$this->Query("VACUUM ANALYZE ".$tableName, true);
+	public function vacuumTable($tableName)
+	{
+		$this->Query("VACUUM " . $tableName, true);
+		$this->Query("VACUUM ANALYZE " . $tableName, true);
 	}
 
-	function loggerSqlFormat($table, $fields) {
+	public function loggerSqlFormat($table, $fields)
+	{
 		if (!count($fields)) return false;
-		$fieldNames = implode(', ', array_map(array(&$this, "mapFields"), array_keys($fields)));
-		$fieldValues = implode(', ', array_map(array(&$this, "MapData"), array_values($fields)));
+		$fieldNames = implode(', ', array_map([&$this, "mapFields"], array_keys($fields)));
+		$fieldValues = implode(', ', array_map([&$this, "MapData"], array_values($fields)));
 		return sprintf("INSERT INTO %s (%s) VALUES(%s)", $table, $fieldNames, $fieldValues);
 	}
 }

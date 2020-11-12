@@ -8,7 +8,8 @@ use PP\Lib\Cache\CacheInterface;
  * Class Memcached
  * @package PP\Lib\Cache\Driver
  */
-class Memcached implements CacheInterface {
+class Memcached implements CacheInterface
+{
 	/** @var \Memcached */
 	private $connection;
 
@@ -24,7 +25,8 @@ class Memcached implements CacheInterface {
 	/** @var int */
 	public $port = 11211;
 
-	function __construct($cacheDomain = null, $defaultExpire = 3600, $connectorArgs = null) {
+	public function __construct($cacheDomain = null, $defaultExpire = 3600, $connectorArgs = null)
+	{
 		if (!extension_loaded("memcached")) {
 			throw new \Exception("Memcached extension is not loaded");
 		}
@@ -36,12 +38,14 @@ class Memcached implements CacheInterface {
 		$this->connection = $this->connect();
 	}
 
-	public function exists($key) {
+	public function exists($key)
+	{
 		$this->connection->get($this->key($key));
 		return $this->connection->getResultCode() !== \Memcached::RES_NOTFOUND;
 	}
 
-	public function save($key, $data, $expTime = null) {
+	public function save($key, $data, $expTime = null)
+	{
 		$expTime = (int)$expTime;
 		$expTime = ($expTime > 0)
 			? $expTime
@@ -50,17 +54,20 @@ class Memcached implements CacheInterface {
 		$this->connection->set($this->key($key), $data, $expTime);
 	}
 
-	public function load($key) {
+	public function load($key)
+	{
 		// look at that: https://github.com/php-memcached-dev/php-memcached/issues/21
 		$res = $this->connection->get($this->key($key));
 		return $this->connection->getResultCode() == \Memcached::RES_NOTFOUND ? null : $res;
 	}
 
-	public function delete($key) {
+	public function delete($key)
+	{
 		$this->connection->delete($this->key($key));
 	}
 
-	public function deleteGroup($group) {
+	public function deleteGroup($group)
+	{
 		$prefix = $this->key($group, true);
 		$prefLen = mb_strlen($prefix);
 		$allKeys = $this->connection->getAllKeys();
@@ -80,7 +87,8 @@ class Memcached implements CacheInterface {
 		}
 	}
 
-	public function increment($key, $offset = 1, $initial = 0, $expTime = null) {
+	public function increment($key, $offset = 1, $initial = 0, $expTime = null)
+	{
 		$expTime = (int)$expTime;
 		$expTime = ($expTime > 0)
 			? $expTime
@@ -91,11 +99,13 @@ class Memcached implements CacheInterface {
 		return $this->connection->increment($this->key($key), $offset, $initial, $expTime);
 	}
 
-	public function clear() {
+	public function clear()
+	{
 		$this->connection->flush();
 	}
 
-	private function connect() {
+	private function connect()
+	{
 		// WARNING: Avoid persistent connections from cron tasks: task runner uses fork
 		// emulate persistent connection_id.
 		$mcObject = new \Memcached($this->cacheNamespace . getmypid());
@@ -117,7 +127,8 @@ class Memcached implements CacheInterface {
 		return $mcObject;
 	}
 
-	private function key($key, $glob = false) {
+	private function key($key, $glob = false)
+	{
 		if (is_array($key)) {
 			$keyPart = $this->key(array_shift($key));
 			$groupPart = $this->key(array_shift($key));

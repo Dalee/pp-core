@@ -63,23 +63,27 @@ HTML;
 	}
 }
 */
-class PXHTMLFileListing {
 
-	protected $urlBuilder;
+class PXHTMLFileListing
+{
 
-	function __construct($href, $side, ?callable $urlBuilder = null) {
-		$this->base = $href.'&'.$side.'dir=';
-		$this->side = $side;
-		$this->files = array();
-		$this->href = $href;
-		$this->urlBuilder = $urlBuilder ?: function ($alias) {
-			return $alias;
-		};
-	}
+    protected $urlBuilder;
 
-	public function htmlHeader() {
-		$_html =   // FIXME !!!
-<<<HTML
+    public function __construct($href, $side, ?callable $urlBuilder = null)
+    {
+        $this->base = $href . '&' . $side . 'dir=';
+        $this->side = $side;
+        $this->files = [];
+        $this->href = $href;
+        $this->urlBuilder = $urlBuilder ?: function ($alias) {
+            return $alias;
+        };
+    }
+
+    public function htmlHeader()
+    {
+        $_html =   // FIXME !!!
+            <<<HTML
 <table>
 	<colgroup>
 		<col class="name" />
@@ -95,12 +99,13 @@ class PXHTMLFileListing {
 		</tr>
 	</thead>
 HTML;
-		return $this->_breadCrumbs().$_html;
-	}
+        return $this->_breadCrumbs() . $_html;
+    }
 
-	public function htmlUp($canUp, $up) {
-		$_html = // FIX ME !!!
-<<<HTML
+    public function htmlUp($canUp, $up)
+    {
+        $_html = // FIX ME !!!
+            <<<HTML
 <tr>
 	<td class="file dir-up">
 		<a href="%HREF%" title="Наверх">
@@ -112,175 +117,204 @@ HTML;
 	<td>%PERM%</td>
 </tr>
 HTML;
-		$_replaces = array(
-			'HREF' => $this->base.($canUp ? $up : ''),
-			'TEXT' => ($canUp ? '..' : '&#8595;'),
-			'PERM' => $this->_filePermissions($this->catalog)
-		);
+        $_replaces = [
+            'HREF' => $this->base . ($canUp ? $up : ''),
+            'TEXT' => ($canUp ? '..' : '&#8595;'),
+            'PERM' => $this->_filePermissions($this->catalog),
+        ];
 
-		foreach($_replaces as $label=>$value) {
-			$_html = str_replace('%'.$label.'%', $value, $_html);
-		}
+        foreach ($_replaces as $label => $value) {
+            $_html = str_replace('%' . $label . '%', $value, $_html);
+        }
 
-		return $_html;
-	}
+        return $_html;
+    }
 
-	function _breadCrumbs() {
-		$pathA = array_map(array($this, 'escapeHTML'), explode('/', $this->catalog));
+    public function _breadCrumbs()
+    {
+        $pathA = array_map([$this, 'escapeHTML'], explode('/', $this->catalog));
 
-		array_unshift($pathA, '&darr;');
+        array_unshift($pathA, '&darr;');
 
-		$res = array();
+        $res = [];
 
-		foreach($pathA as $k=>$d) {
-			if(trim($d) == '') {
-				continue;
-			}
+        foreach ($pathA as $k => $d) {
+            if (trim($d) == '') {
+                continue;
+            }
 
-			$href = implode('/', array_slice($pathA, 1, $k));
+            $href = implode('/', array_slice($pathA, 1, $k));
 
-			$res[] = '<a href="'.$this->base.rawurlencode($href).'">' . $d . '</a>';
-		}
+            $res[] = '<a href="' . $this->base . rawurlencode($href) . '">' . $d . '</a>';
+        }
 
-		$_ = implode('/', $res);
+        $_ = implode('/', $res);
 
-		return '<div class="breadcrumds">'.$_.'</div>';
-	}
+        return '<div class="breadcrumds">' . $_ . '</div>';
+    }
 
-	public function htmlList($files) {
-		$_ = '';
+    public function htmlList($files)
+    {
+        $_ = '';
 
-		foreach($files as $f) {
-			$_ .= "\n".'<tr>';
+        foreach ($files as $f) {
+            $_ .= "\n" . '<tr>';
 
-			$_ .= $this->_listTitle($f);
-			$_ .= $this->_listSize($f);
-			$_ .= $this->_listPermissions($f);
+            $_ .= $this->_listTitle($f);
+            $_ .= $this->_listSize($f);
+            $_ .= $this->_listPermissions($f);
 
-			$_ .= '</tr>';
-		}
+            $_ .= '</tr>';
+        }
 
-		return $_;
-	}
+        return $_;
+    }
 
-	function _listTitle($f) {
-		$td_class = $f->isDir ? ' ' . $f->type : '';
-		$_ = '<td class="file'.$td_class.'">';
+    public function _listTitle($f)
+    {
+        $td_class = $f->isDir ? ' ' . $f->type : '';
+        $_ = '<td class="file' . $td_class . '">';
 
-		if ($f->isDir) {
-			if($f->readable) {
-				$_ .= '<a href="'. $this->base . rawurlencode($this->catalog . $f->name) .'" title="'. $this->escapeHTML($f->name) .'">';
-				$_ .= $this->_listContext($f);
-				$_ .= '</a>';
-			} else {
-				$_ .= '<del>'. $this->escapeHTML($f->name) .'</del>';
-			}
+        if ($f->isDir) {
+            if ($f->readable) {
+                $_ .= '<a href="' . $this->base . rawurlencode($this->catalog . $f->name) . '" title="' . $this->escapeHTML($f->name) . '">';
+                $_ .= $this->_listContext($f);
+                $_ .= '</a>';
+            } else {
+                $_ .= '<del>' . $this->escapeHTML($f->name) . '</del>';
+            }
 
-			if($f->comment) {
-				$_ .= ' <em>'. $f->comment .'</em>';
-			}
+            if ($f->comment) {
+                $_ .= ' <em>' . $f->comment . '</em>';
+            }
 
-		} else {
-			$_ .= $this->_listContext($f);
-		}
+        } else {
+            $_ .= $this->_listContext($f);
+        }
 
-		$_ .= '</td>';
+        $_ .= '</td>';
 
-		return $_;
-	}
+        return $_;
+    }
 
-	private function escapeJS($str) {
-		return "'" . $this->escapeHTML(addslashes($str)) . "'";
-	}
+    private function escapeJS($str)
+    {
+        return "'" . $this->escapeHTML(addslashes($str)) . "'";
+    }
 
-	private function escapeHTML($str) {
-		return htmlspecialchars($str, ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE | ENT_DISALLOWED, DEFAULT_CHARSET) ;
-	}
+    private function escapeHTML($str)
+    {
+        return htmlspecialchars($str, ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE | ENT_DISALLOWED, DEFAULT_CHARSET);
+    }
 
-	function _listContext($f) {
+    public function _listContext($f)
+    {
 
-		$name = $this->escapeHTML($f->name);
-		$alias = $this->escapeHTML($f->alias);
+        $name = $this->escapeHTML($f->name);
+        $alias = $this->escapeHTML($f->alias);
 
-		$url = ($this->urlBuilder)($alias, $f);
+        $url = ($this->urlBuilder)($alias, $f);
 
-		$tmp = array(
-			"Context(event",
-			"'file'",
-			$this->escapeJS($f->name),                                     // title
-			$f->isDir,                                                     // isDir
-			$this->escapeJS(str_replace('\\', '/', $url)),            // isRead / alias
-			$f->writable,                                                  // isWrite
-			$f->deletable,                                                 // isDelete
-			$f->binary,                                                    // isBinary
-			"'".rawurlencode(str_replace('\\', '/', $this->catalog))."'",  // dir
-			$this->escapeJS(str_replace('\\', '/', $this->href)),          // href
-			"'".$this->side."'",                                           // side
-			$f->copyable,                                                  // isCopy
-			"'".rawurlencode($f->name)."'",                                // fileName
-			intval(!mb_check_encoding($f->name, DEFAULT_CHARSET)) . "); return false;" // isBrokenFilename
-		);
+        $tmp = [
+            "Context(event",
+            "'file'",
+            $this->escapeJS($f->name),                                     // title
+            $f->isDir,                                                     // isDir
+            $this->escapeJS(str_replace('\\', '/', $url)),            // isRead / alias
+            $f->writable,                                                  // isWrite
+            $f->deletable,                                                 // isDelete
+            $f->binary,                                                    // isBinary
+            "'" . rawurlencode(str_replace('\\', '/', $this->catalog)) . "'",  // dir
+            $this->escapeJS(str_replace('\\', '/', $this->href)),          // href
+            "'" . $this->side . "'",                                           // side
+            $f->copyable,                                                  // isCopy
+            "'" . rawurlencode($f->name) . "'",                                // fileName
+            intval(!mb_check_encoding($f->name, DEFAULT_CHARSET)) . "); return false;" // isBrokenFilename
+        ];
 
-		$context = ' onContextMenu="'. implode(', ', $tmp) .'"';
+        $context = ' onContextMenu="' . implode(', ', $tmp) . '"';
 
-		if ($f->isDir) {
-			$click = $name;
-		} elseif ($f->alias) {
-			$click = '<a style="margin-left:-21px" href="'. $url .'"><img src="/admin/i/files/'. $f->type .'.gif" /></a>';
-			$click .= '<a class="memory" href="'. $url . '">'. $name .'</a>';
-		} else {
-			$click = $name;
-		}
+        if ($f->isDir) {
+            $click = $name;
+        } elseif ($f->alias) {
+            $click = '<a style="margin-left:-21px" href="' . $url . '"><img src="/admin/i/files/' . $f->type . '.gif" /></a>';
+            $click .= '<a class="memory" href="' . $url . '">' . $name . '</a>';
+        } else {
+            $click = $name;
+        }
 
-		return "<span".$context.">".$click."</span>";
-	}
+        return "<span" . $context . ">" . $click . "</span>";
+    }
 
-	function _listSize($f) {
-		if($f->isDir) {
-			return '<td class="size-dir">каталог</td>';
+    public function _listSize($f)
+    {
+        if ($f->isDir) {
+            return '<td class="size-dir">каталог</td>';
 
-		} else {
-			return '<td>'.$f->size.'</td>';
-		}
-	}
+        } else {
+            return '<td>' . $f->size . '</td>';
+        }
+    }
 
-	function setCatalog($catalog) {
-		$this->catalog = $catalog;
-	}
+    public function setCatalog($catalog)
+    {
+        $this->catalog = $catalog;
+    }
 
-	function _filePermissions($filepath) {
-		if(!function_exists('posix_getpwuid') || !file_exists($filepath)) {
-			return '---';
-		}
+    public function _filePermissions($filepath)
+    {
+        if (!function_exists('posix_getpwuid') || !file_exists($filepath)) {
+            return '---';
+        }
 
-		$owner = posix_getpwuid(fileowner($filepath));
-		$oct = mb_substr(decoct(fileperms($filepath)), -3);
+        $owner = posix_getpwuid(fileowner($filepath));
+        $oct = mb_substr(decoct(fileperms($filepath)), -3);
+        $str = '';
 
-		for ($i=0; $i<3; $i++) {
-			switch(mb_substr($oct, $i, 1)) {
-				case '7': $str = 'rwx'; break;
-				case '6': $str = 'rw-'; break;
-				case '5': $str = 'r-x'; break;
-				case '4': $str = 'r--'; break;
-				case '3': $str = '-wx'; break;
-				case '2': $str = '-w-'; break;
-				case '1': $str = '--x'; break;
-				case '0': $str = '---'; break;
-			}
-		}
+        for ($i = 0; $i < 3; $i++) {
+            switch (mb_substr($oct, $i, 1)) {
+                case '7':
+                    $str = 'rwx';
+                    break;
+                case '6':
+                    $str = 'rw-';
+                    break;
+                case '5':
+                    $str = 'r-x';
+                    break;
+                case '4':
+                    $str = 'r--';
+                    break;
+                case '3':
+                    $str = '-wx';
+                    break;
+                case '2':
+                    $str = '-w-';
+                    break;
+                case '1':
+                    $str = '--x';
+                    break;
+                case '0':
+                    $str = '---';
+                    break;
+            }
+        }
 
-		return $owner['name'].' '.$str;
-	}
+        return $owner['name'] . ' ' . $str;
+    }
 
-	function _listPermissions($f) {
-		return '<td>'.$this->_filePermissions($f->path).'</td>';
-	}
+    public function _listPermissions($f)
+    {
+        return '<td>' . $this->_filePermissions($f->path) . '</td>';
+    }
 
-	public function htmlFooter() {
-		return '</table>';
-	}
+    public function htmlFooter()
+    {
+        return '</table>';
+    }
 
-	public function error() {
-		return '<div class="error">Этот каталог <strong>не доступен</strong> для просмотра<br/> Вернитесь к <a href="'.$this->href.'">списку каталогов</a></div>';
-	}
+    public function error()
+    {
+        return '<div class="error">Этот каталог <strong>не доступен</strong> для просмотра<br/> Вернитесь к <a href="' . $this->href . '">списку каталогов</a></div>';
+    }
 }

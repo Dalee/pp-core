@@ -5,67 +5,77 @@
  *
  * @subpackage Application
  */
-class PXTriggerDescription {
-	private $name         = NULL;
-	private $description  = NULL;
-	private $type         = NULL;
-	private $instance     = NULL;
-	private $folder       = NULL;
+class PXTriggerDescription
+{
+	private $name = NULL;
+	private $description = NULL;
+	private $type = NULL;
+	private $instance = NULL;
+	private $folder = NULL;
 
 	/**
 	 * @return PXAbstractTrigger|PXAbstractDatabaseTrigger|PXAbstractSystemTrigger
 	 */
-	public function getTrigger() {
-		if($this->instance) {
+	public function getTrigger()
+	{
+		if ($this->instance) {
 			return $this->instance;
 		}
 		$this->load();
 		return ($this->instance = new $this->klass($this));
 	}
 
-	function setAttrs($attributes) {
-		foreach($attributes as $item) {
+	public function setAttrs($attributes)
+	{
+		foreach ($attributes as $item) {
 			$this->{$item->name} = pp_simplexml_decode_string($item->value);
 		}
 	}
 
-	function setType($type){
+	public function setType($type)
+	{
 		$this->type = $type;
 	}
 
-	function getName() {
+	public function getName()
+	{
 		return $this->name;
 	}
 
-	function getFolder() {
+	public function getFolder()
+	{
 		return $this->folder;
 	}
 
-	function getType() {
+	public function getType()
+	{
 		return $this->type;
 	}
 
 	/**
-	* Подключает файл триггера, проверяет сначала local/triggers, затем libpp/triggers
-	*/
-	function load() {
+	 * Подключает файл триггера, проверяет сначала local/triggers, затем libpp/triggers
+	 */
+	public function load()
+	{
 		$file = $this->getPathToClass();
 
-		if(is_string($file)) {
+		if (is_string($file)) {
 			include_once $file;
 		}
 
 		$this->klass = sprintf('PXTrigger%s%s', ucfirst($this->type), ucfirst($this->name));
 
-		if(!(strlen($this->name) && class_exists($this->klass) && is_subclass_of($this->klass, sprintf("PXAbstract%sTrigger", $this->type)))){
+		if (!(strlen($this->name) && class_exists($this->klass) && is_subclass_of($this->klass, sprintf("PXAbstract%sTrigger", $this->type)))) {
 			FatalError("Триггер '{$this->klass}' отсутствует или его интерфейс не совпадает с типом '{$this->type}'");
 		}
 	}
 
-	function getPathToClass() {
+	public function getPathToClass()
+	{
 		$file = strtolower("triggers/{$this->type}/{$this->name}");
 		// why we looking for a trigger in global scope first? does it wrong?
-		return pp_fetch_file(array('', 'plugins/' . $this->folder), $file, '.trigger');
+		return pp_fetch_file(['', 'plugins/' . $this->folder], $file, '.trigger');
 	}
 }
+
 ?>

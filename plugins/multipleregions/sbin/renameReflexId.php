@@ -35,12 +35,12 @@ function errorH() {
 foreach($r as $i) {
 	Label($i['table_name']);
 
-	$params = array(
+	$params = [
 		"pattern" => "alter table %s rename %s to %s",
 		"table"   => $i['table_name'],
 		"field"   => $i['column_name'],
 		PXMultipleRegionsReflexer::REFLEX_FIELD
-	);
+  ];
 
 	$db->modifyingQuery(call_user_func_array("sprintf", $params));
 }

@@ -5,18 +5,20 @@
  * storageType serialized
  * displayType TABLESTATIC
  */
-class PXDisplayTypeTableStatic extends PXDisplayTypeStatic {
-	function buildInput($field, $object, $param = null) {
+class PXDisplayTypeTableStatic extends PXDisplayTypeStatic
+{
+	public function buildInput($field, $object, $param = null)
+	{
 		$k = $field->name;
-		$value = isset($object[$k]) && is_array($object[$k]) ? $object[$k] : array();
+		$value = isset($object[$k]) && is_array($object[$k]) ? $object[$k] : [];
 		$safe = in_array('safe', $field->displayTypeArgs);
 
-		$_html   = '<table class="static">';
+		$_html = '<table class="static">';
 
-		foreach($value as $row) {
+		foreach ($value as $row) {
 			$_html .= '<tr>';
 
-			foreach($row as $cell) {
+			foreach ($row as $cell) {
 				is_array($cell) && $cell = print_r($cell, true);
 				$safe && $cell = htmlspecialchars($cell, ENT_COMPAT | ENT_HTML401, DEFAULT_CHARSET);
 				$_html .= '<td>';
