@@ -34,7 +34,6 @@
 		"predis/predis": "^1.1",
 		"ext-json": "*",
 		"ext-pcntl": "*",
-		"ext-redis": "*",
 		"ext-posix": "*",
 		"ext-simplexml": "*",
 		"ext-pgsql": "*",
