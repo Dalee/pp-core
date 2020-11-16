@@ -1,32 +1,10 @@
 <?php
 
-use PP\Lib\Cache\ObjectCache;
-
 /**
  * Базовый класс для работы с файлами
  */
 class PXStorageTypeAbstractFile extends PXStorageType
 {
-
-	public function _getCache()
-	{ //REMOVEME: Obsoleted and unused feature.
-		static $aiCache;
-
-		$pid = getmypid(); //cronjob protection
-		if (!isset($aiCache[$pid])) {
-			$db = PXRegistry::getDb(); //FIXME: possibly unsafe DB link getter
-
-			// TODO: property accessor
-			$cacheType = isset($db->getSelfDescription()->aicache)
-				? $db->getSelfDescription()->aicache
-				: 'null';
-
-			$aiCache[$pid] = ObjectCache::get($cacheType, 'ai', 24 * 60 * 60);
-		}
-
-		return $aiCache[$pid];
-	}
-
 	/**
 	 * {@inheritdoc}
 	 */
@@ -53,22 +31,6 @@ class PXStorageTypeAbstractFile extends PXStorageType
 		}
 	}
 
-	public function getFromCache($key)
-	{
-		return self::_getCache()->load($key);
-	}
-
-	public function removeFromCache($key)
-	{
-		self::_getCache()->delete($key);
-	}
-
-	public function saveToCache($key, $data)
-	{
-		self::_getCache()->save($key, [$data]);
-		return $data;
-	}
-
 	public function ai($field, &$object, $format)
 	{
 		$params = [
@@ -84,14 +46,9 @@ class PXStorageTypeAbstractFile extends PXStorageType
 		return '/ai/' . implode('/', $params) . '/';
 	}
 
-	public function normalize($field, $object, &$param, $allowed = null)
+	public function normalize($field, $object, &$param)
 	{
-		$key = $this->ai($field, $object, $param['format']);
-		if (is_array($fileInfo = $this->getFromCache($key))) {
-			return reset($fileInfo);
-		}
-
-		$normalizedObject = $this->saveToCache($key, $this->__normalize($field, $object, $param, $allowed));
+		$normalizedObject = $this->__normalize($field, $object, $param);
 
 		//For some triggers, which need original fields like tmp_name, etc ...
 		if (isset($object[$field->name]) && is_array($object[$field->name]) && is_array($normalizedObject)) {
@@ -105,10 +62,9 @@ class PXStorageTypeAbstractFile extends PXStorageType
 	 * @param PXFieldDescription $field
 	 * @param array $object
 	 * @param array $param
-	 * @param null|array $allowed
-	 * @return array
+	 * @return array|null
 	 */
-	public function __normalize($field, $object, &$param, $allowed = null)
+	public function __normalize($field, $object, &$param)
 	{
 		FatalError(get_class($this) . "::__normalize() doesn't exists !");
 	}
@@ -160,7 +116,7 @@ class PXStorageTypeAbstractFile extends PXStorageType
 	 *
 	 * @return void
 	 */
-	protected function removeDataFromMeta($field, $object, &$param, $fileName)
+	protected function removeDataFromMeta(PXFieldDescription $field, array $object, array &$param, string $fileName)
 	{
 		$sysMeta = (isset($param[OBJ_FIELD_META]))
 			? $param[OBJ_FIELD_META]
@@ -212,5 +168,23 @@ class PXStorageTypeAbstractFile extends PXStorageType
 		}
 
 		return $metaPart;
+	}
+
+	/**
+	 * @param string $fileName
+	 * @return string
+	 */
+	protected function normalizeFileName(string $fileName): string
+	{
+		switch ($this->field->storageTypeArgs[0] ?? null) {
+			case 'filter':
+				$fileName = path_filter_filename($fileName);
+				break;
+			case 'translit':
+			default:
+				$fileName = _TranslitFilename($fileName);
+		}
+
+		return $fileName;
 	}
 }

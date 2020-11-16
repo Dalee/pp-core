@@ -1487,7 +1487,7 @@ class PXDatabase extends DatabaseAdapter implements DatabaseInterface
 
 		// part 3: validating extention
 		if ($format->id !== 'struct') {
-			$allowed = array_flip(unserialize(ENUM_ALLOWED_PATHNAMES));
+			$allowed = array_flip(ENUM_ALLOWED_PATHNAMES);
 			$dotpos = strrpos($url, '.');
 
 			if (!$dotpos || !isset($allowed[mb_substr($url, ++$dotpos)])) {

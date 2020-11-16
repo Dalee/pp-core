@@ -51,49 +51,61 @@ class PXStorageTypeFilesarray extends PXStorageTypeAbstractFile
 
 	/**
 	 * {@inheritdoc}
+	 * @return array|null
 	 */
-	public function proceedFile($field, &$object, &$param, $allowed = null)
+	public function proceedFile(PXFieldDescription $field, array &$object, ?array &$param): ?array
 	{
-
 		$varName = $field->name;
 		$ai = $this->ai($field, $object, $param['format']);
 		$basedir = HTDOCS_PATH . $ai;
 		$fileArray = &$object[$varName];
-		$allowed = isset($param['allowed']) ? $param['allowed'] : NULL;
 		$invalidateCache = false;
+		$allowed = $param['allowed'] ?? null;
 
-		if (is_array($fileArray) && !empty($fileArray['name'][0])) {
-			$filename = null;
+		$copyFilesFun = function(&$fileArray, bool $replaceOldFiles = false) use ($allowed, $basedir, $field, &$invalidateCache) {
+			if (!is_array($fileArray['name'] ?? null)) {
+				return;
+			}
+			foreach ($fileArray['name'] as $oldFileNameOrIndex => $newFileName) {
+				$filename = null;
 
-			// if no filter by extension
-			if (!is_array($allowed) || empty($allowed)) {
-				$filename = $basedir . '/' . _TranslitFilename($fileArray['name'][0]);
+				// if no filter by extension
+				if (empty($allowed) || !is_array($allowed)) {
+					$filename = $basedir . DIRECTORY_SEPARATOR . $this->normalizeFileName($newFileName);
 
-				// if type in allowed list
-			} elseif (in_array($fileArray['type'][0], array_keys($allowed))) {
-				$tmp = _TranslitFilename($fileArray['name'][0]);
-				$tmp = preg_replace('/\.\w+$/' . REGEX_MOD, '', $tmp);
+					// if type in allowed list
+				} elseif (in_array($fileArray['type'][$oldFileNameOrIndex], array_keys($allowed))) {
+					$tmp = $this->normalizeFileName($newFileName);
+					$tmp = preg_replace('/\.\w+$/' . REGEX_MOD, '', $tmp);
 
-				if (in_array($fileArray['type'][0], array_keys($allowed))) {
-					$filename = $basedir . '/' . $tmp . '.' . $allowed[$fileArray['type'][0]];
+					if (in_array($fileArray['type'][$oldFileNameOrIndex], array_keys($allowed))) {
+						$filename = $basedir . DIRECTORY_SEPARATOR . $tmp . '.' . $allowed[$fileArray['type'][$oldFileNameOrIndex]];
+					}
+				}
+
+				if (!is_null($filename) &&
+					(!$replaceOldFiles || file_exists($basedir . DIRECTORY_SEPARATOR . $oldFileNameOrIndex))) {
+					MakeDirIfNotExists($basedir);
+					$replaceOldFiles && unlink($basedir . DIRECTORY_SEPARATOR . $oldFileNameOrIndex);
+
+					$this->copyFile($field, $fileArray['tmp_name'][$oldFileNameOrIndex], $filename);
+					$invalidateCache = true;
 				}
 			}
+		};
 
-			if (!is_null($filename)) {
-				MakeDirIfNotExists($basedir);
-
-				$this->copyFile($field, $fileArray['tmp_name'][0], $filename);
-				$invalidateCache = true;
-			}
-		}
-
-		if (is_array($fileArray) && isset($fileArray['remove']) && is_array($fileArray['remove'])) {
+		// add new files
+		$copyFilesFun($fileArray);
+		/** replace existing files @see PXDisplayTypeFilesarray::getFromRequest() */
+		isset($fileArray['edit']) && $copyFilesFun($fileArray['edit'], true);
+		// remove deleted files
+		if (is_array($fileArray['remove'] ?? null)) {
 			$filename = null;
 
 			foreach ($fileArray['remove'] as $filename) {
 
-				if (file_exists($basedir . '/' . $filename)) {
-					unlink($basedir . '/' . $filename);
+				if (file_exists($basedir . DIRECTORY_SEPARATOR . $filename)) {
+					unlink($basedir . DIRECTORY_SEPARATOR . $filename);
 					$invalidateCache = true;
 				}
 
@@ -107,20 +119,8 @@ class PXStorageTypeFilesarray extends PXStorageTypeAbstractFile
 			}
 		}
 
-		$edited = PXRegistry::getRequest()->GetUploadFile($varName . '_edit', true);
-		if (isset($edited['name']) && is_array($edited['name'])) {
-			foreach ($edited['name'] as $k => $v) {
-				if (file_exists($basedir . '/' . $k) && isset($v) && strlen($v)) {
-					unlink($basedir . '/' . $k);
-					$this->copyFile($field, $edited['tmp_name'][$k], $basedir . '/' . _TranslitFilename($v));
-					$invalidateCache = true;
-				}
-			}
-		}
-
 		if ($invalidateCache) {
 			unlinkDirTreeIfEmpty($basedir);
-			$this->removeFromCache($ai);
 		}
 
 		// пишем в объект общий результат нормализации
@@ -140,7 +140,7 @@ class PXStorageTypeFilesarray extends PXStorageTypeAbstractFile
 	/**
 	 * {@inheritdoc}
 	 */
-	public function __normalize($field, $object, &$param, $allowed = null)
+	public function __normalize($field, $object, &$param)
 	{
 		$basedir = $this->ai($field, $object, $param['format']);
 		$storageTypeDir = new NLDir(HTDOCS_PATH . $basedir);
@@ -158,8 +158,8 @@ class PXStorageTypeFilesarray extends PXStorageTypeAbstractFile
 				$httpPath = $basedir . $entry;
 
 				$filesArray[$entry] = [
-					'path' => isset($httpPath) ? $httpPath : NULL,
-					'uri' => isset($httpPath) ? $httpPath : NULL, // same as in PXStorageTypeFile, for SecureFile
+					'path' => $httpPath ?? null,
+					'uri' => $httpPath ?? null, // same as in PXStorageTypeFile, for SecureFile
 					'filename' => $entry,
 					'size' => filesize($diskPath),
 					'type' => mime_content_type($diskPath),

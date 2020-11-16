@@ -20,7 +20,6 @@ class NLDBDescription
 	private $encoding;
 
 	public $cache;
-	public $aicache; // private or public? I don't know
 
 	public function __construct($config)
 	{

@@ -13,10 +13,10 @@ class PXStorageTypeFile extends PXStorageTypeAbstractFile
 
 	/**
 	 * {@inheritdoc}
+	 * @return array|null
 	 */
-	public function proceedFile($field, &$object, &$param, $allowed = null)
+	public function proceedFile(PXFieldDescription $field, array &$object, ?array &$param): ?array
 	{
-
 		$fileArray = &$object[$field->name];
 		$ai = $this->ai($field, $object, $param['format']);
 		$basedir = HTDOCS_PATH . $ai;
@@ -28,10 +28,10 @@ class PXStorageTypeFile extends PXStorageTypeAbstractFile
 			if (!empty($fileArray['name'])) {
 				$filename = null;
 
-				if (isset($param['allowed']) && is_array($param['allowed'])) {
+				if (!empty($param['allowed']) && is_array($param['allowed'])) {
 					$allowed = $param['allowed'];
 
-					$tmp = _TranslitFilename($fileArray['name']);
+					$tmp = $this->normalizeFileName($fileArray['name']);
 					$tmp = preg_replace('/\.\w+$/' . REGEX_MOD, '', $tmp);
 
 					if (in_array($fileArray['type'], array_keys($allowed))) {
@@ -39,7 +39,7 @@ class PXStorageTypeFile extends PXStorageTypeAbstractFile
 					}
 
 				} else {
-					$filename = _TranslitFilename($fileArray['name']);
+					$filename = $this->normalizeFileName($fileArray['name']);
 				}
 
 				// ModifyContent: если мы загружаем новый файл, мы трем все файлы
@@ -79,7 +79,6 @@ class PXStorageTypeFile extends PXStorageTypeAbstractFile
 
 		if ($invalidateCache) {
 			unlinkDirTreeIfEmpty($basedir);
-			$this->removeFromCache($ai);
 		}
 
 		// пишем в объект общий результат нормализации
@@ -99,7 +98,7 @@ class PXStorageTypeFile extends PXStorageTypeAbstractFile
 	/**
 	 * {@inheritdoc}
 	 */
-	public function __normalize($field, $object, &$param, $allowed = null)
+	public function __normalize($field, $object, &$param)
 	{
 
 		$fileName = null;

@@ -99,20 +99,20 @@ define('DEBUG', true);
 define('ENV_DEVELOPER', 'DEVELOPER');
 
 // разрешенные форматы изображений
-define('ENUM_ALLOWED_IMAGETYPES', serialize([
+define('ENUM_ALLOWED_IMAGETYPES', [
 	'image/gif' => 'gif',
 	'image/jpeg' => 'jpg',
 	'image/pjpeg' => 'jpg',
 	'image/png' => 'png',
 	'image/x-png' => 'png'
-]));
+]);
 
 // разрешенные расширения для pathname объектов контентного уровня
-define('ENUM_ALLOWED_PATHNAMES', serialize([
+define('ENUM_ALLOWED_PATHNAMES', [
 	'html',
 	'htm',
 	'wml',
-]));
+]);
 
 /**Вернуть данные и таблицы в виде массива*/
 define('DB_SELECT_TABLE', 1);

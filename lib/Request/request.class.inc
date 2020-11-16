@@ -36,7 +36,7 @@ class PXRequest
 		$this->httpMethod = $this->GetHttpMethod();
 		$this->host = $this->GetHttpHost();
 		$this->remoteAddr = $this->GetRemoteAddr();
-		$this->path = self::GetOriginalPath(); //PHP54/52: <static> is better but for 52 using <self>
+		$this->path = static::GetOriginalPath();
 
 		foreach ($this->getHttpHeaders() as $name => $value) {
 			$this->headers[strtolower($name)] = $value;
@@ -99,7 +99,7 @@ class PXRequest
 	{
 		$path = $this->GetPathAsString();
 		// Terminal slash check
-		if (preg_match('#\.(' . join('|', array_map('preg_quote', unserialize(ENUM_ALLOWED_PATHNAMES))) . ')/+$#' . REGEX_MOD, $path)) {
+		if (preg_match('#\.(' . join('|', array_map('preg_quote', ENUM_ALLOWED_PATHNAMES)) . ')/+$#' . REGEX_MOD, $path)) {
 			return true;
 		}
 		// 'index.php' and etc. check (shouldn't occur in the middle)

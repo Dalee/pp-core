@@ -12,9 +12,14 @@ class PXStorageType
 	public $name;
 	public $triggers;
 
-	public function __construct(&$field, $name)
+	/**
+	 * PXStorageType constructor.
+	 * @param PXFieldDescription $field
+	 * @param string $name
+	 */
+	public function __construct(PXFieldDescription $field, string $name)
 	{
-		$this->field = &$field;
+		$this->field = $field;
 		$this->name = $name;
 	}
 
@@ -130,12 +135,11 @@ class PXStorageType
 	 * @param PXFieldDescription $field
 	 * @param array $object
 	 * @param array|null $param
-	 *
-	 * @return string
+	 * @return mixed
 	 */
-	public function proceedFile($field, &$object, &$param, $allowed = null)
+	public function proceedFile(PXFieldDescription $field, array &$object, ?array &$param)
 	{
-		return isset($object[$field->name]) ? $object[$field->name] : null;
+		return $object[$field->name] ?? null;
 	}
 
 	/**
@@ -161,7 +165,7 @@ class PXStorageType
 	 */
 	public function normalize($field, $object, &$param)
 	{
-		return isset($object[$field->name]) ? $object[$field->name] : null;
+		return $object[$field->name] ?? null;
 	}
 
 	/**
@@ -243,7 +247,7 @@ class PXStorageType
 
 	public static function getClassByName($name)
 	{
-		$baseClass = 'PXStorageType';
+		$baseClass = self::class;
 
 		$inputClass = $baseClass . mb_ucfirst(mb_strtolower($name));
 		if (!class_exists($inputClass)) {
@@ -257,8 +261,9 @@ class PXStorageType
 	{
 		$name = preg_replace('/\|.+$/' . REGEX_MOD, '', $attrNode->value);
 
-		$cls = self::getClassByName($name);
-		$args = call_user_func([$cls, 'parseConfigArguments'], $attrNode, $fieldNode);
+		/** @var static $cls */
+		$cls = static::getClassByName($name);
+		$args = $cls::parseConfigArguments($attrNode, $fieldNode);
 
 		return [$cls, $name, $args];
 	}

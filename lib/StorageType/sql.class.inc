@@ -13,7 +13,7 @@ class PXStorageTypeSQL extends PXStorageType
 		return '(' . $args[0] . ') as ' . PXRegistry::getDB()->mapFields($field->name);
 	}
 
-	public static function parseConfigArguments($attrNode, $fieldNode)
+	protected static function parseConfigArguments($attrNode, $fieldNode)
 	{
 		$args = [];
 		$params = $fieldNode->xpath('storageType');

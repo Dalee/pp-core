@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Список картинок
  *
@@ -41,7 +42,13 @@ class PXDisplayTypeImagesarray extends PXDisplayTypeImage
 
 	public function getFromRequest($field, $object, $param = NULL)
 	{
-		return $param['request']->postData->_GetImageVar($field->name, TRUE);
+		$request = PXRegistry::getRequest();
+		$filesFromRequest = $request->GetUploadFile($field->name, true);
+		$edited = $request->GetUploadFile($field->name . '_edit', true);
+		if (is_array($edited['name'] ?? null)) {
+			$filesFromRequest['edit'] = $edited;
+		}
+		return $filesFromRequest;
 	}
 
 	public function buildCell($field, $object, $param = NULL)
@@ -59,4 +66,5 @@ class PXDisplayTypeImagesarray extends PXDisplayTypeImage
 		return $html;
 	}
 }
+
 ?>

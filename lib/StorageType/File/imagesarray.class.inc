@@ -15,17 +15,18 @@ class PXStorageTypeImagesarray extends PXStorageTypeFilesarray
 
     /**
      * {@inheritdoc}
+     * @return array|null
      */
-    public function proceedFile($field, &$object, &$param, $allowed = ENUM_ALLOWED_IMAGETYPES)
+    public function proceedFile(PXFieldDescription $field, array &$object, ?array &$param): ?array
     {
-        $param['allowed'] = unserialize($allowed); //PHP54: $allowed is for arguments contract at now
-        return parent::proceedFile($field, $object, $param, $allowed);
+        $param['allowed'] = $param['allowed'] ?? ENUM_ALLOWED_IMAGETYPES;
+        return parent::proceedFile($field, $object, $param);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function __normalize($field, $object, &$param, $allowed = null)
+    public function __normalize($field, $object, &$param)
     {
 
         $relativeDir = $this->ai($field, $object, $param['format']);
