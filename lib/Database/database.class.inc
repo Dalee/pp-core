@@ -781,8 +781,8 @@ class PXDatabase extends DatabaseAdapter implements DatabaseInterface
 			$newId = $this->InsertObject($format->id, $dbFields, $dbValues, false);
 			if ($newId < 0) {
 				$errString = $this->GetError();
-				$audit->error($errString, $format->id . '/' . getFromArray($object, 'parent'));
 				$this->transactionRollback();
+				$audit->error($errString, $format->id . '/' . getFromArray($object, 'parent'));
 				$this->FatalError($errString);
 			}
 
@@ -1095,9 +1095,10 @@ class PXDatabase extends DatabaseAdapter implements DatabaseInterface
 			$result = $this->UpdateObjectById($format->id, $object['id'], $dbFields, $dbValues, false);
 
 			if ($result < 0) {
-				$audit->error($this->GetError(), $format->id . '/' . $object['id']);
+				$errString = $this->GetError();
 				$this->transactionRollback();
-				$this->FatalError($this->GetError());
+				$audit->error($errString, $format->id . '/' . $object['id']);
+				$this->FatalError($errString);
 			}
 			if ($format->struct == 'tree' && isset($objectInDB['parent']) && $objectInDB['parent'] != $object['parent']) {
 				$childs = $this->getObjectsByParent($format, NULL, $objectInDB['parent'], DB_SELECT_TREE);

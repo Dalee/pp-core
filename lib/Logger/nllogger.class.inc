@@ -285,6 +285,7 @@ class FileAppender extends Appender
  */
 class SQLAppender extends Appender
 {
+    /** @var PXDatabase */
     public $db;
 
     public function __construct($name)

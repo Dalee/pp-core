@@ -15,6 +15,9 @@ CREATE TABLE suser (
 	status        BOOL
 ) WITH OIDS;
 
+CREATE UNIQUE INDEX suser_title_uniq_idx ON suser(title);
+CREATE UNIQUE INDEX suser_email_uniq_idx ON suser(lower(email)) WHERE email IS NOT NULL;
+
 CREATE TABLE sgroup (
 	id            SERIAL PRIMARY KEY,
 	sys_owner     INT4 DEFAULT NULL REFERENCES suser ON DELETE SET NULL ON UPDATE CASCADE,
