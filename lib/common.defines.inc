@@ -93,9 +93,6 @@ define('ENV', $systemEnv);
 define('LOGGER_APP', 'application');
 define('LOGGER_CRON', 'cron');
 
-// Влючаем дебаг
-error_reporting(E_ALL);
-define('DEBUG', true);
 define('ENV_DEVELOPER', 'DEVELOPER');
 
 // разрешенные форматы изображений
