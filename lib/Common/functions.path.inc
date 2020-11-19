@@ -41,7 +41,7 @@ function path_filter_filename($filename) {
         [\x7F\xA0\xAD]|          # non-printing characters DEL, NO-BREAK SPACE, SOFT HYPHEN
         [#\[\]@!$&\'()+,;=]|     # URI reserved https://tools.ietf.org/html/rfc3986#section-2.2
         [{}^\~`]                 # URL unsafe characters https://www.ietf.org/rfc/rfc1738.txt
-        ~x',
+        ~xu',
 		'-', $filename);
 	// avoids ".", ".." or ".hiddenFiles"
 	$filename = ltrim($filename, '.-');
