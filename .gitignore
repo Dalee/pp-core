@@ -5,3 +5,4 @@
 /auth.json
 composer.lock
 *.iml
+.idea

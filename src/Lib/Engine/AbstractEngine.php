@@ -110,7 +110,8 @@ abstract class AbstractEngine implements EngineInterface
 		/** @var ContainerBuilder $container */
 		$container = new $klass();
 		$container->registerExtension(new CoreExtension());
-		$container->addCompilerPass(new AddLoggingHandlersPass())
+		$container
+			->addCompilerPass(new AddLoggingHandlersPass())
 			->addCompilerPass(new RegisterListenersPass());
 
 		$loader = new YamlFileLoader($container, new FileLocator($path));
