@@ -1,5 +1,8 @@
 # Change log
 
+## [2.4.5] 2020-11-19
+- Включен symfony EventDispatcher Component
+
 ## [2.4.4] 2020-11-19
 - Исправлен баг с фильтрацией unicode имен файлов
 

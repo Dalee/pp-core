@@ -30,6 +30,9 @@ class CoreExtension extends Extension {
 		$container->setParameter('core.cache_dir', CACHE_PATH);
 		$container->setParameter('core.runtime_dir', RUNTIME_PATH);
 
+		// register event dispatcher configuration
+		$loader->load('event_dispatcher.yml');
+
 		$this->registerLoggerConfiguration($config['application'], $container, $loader);
 	}
 
