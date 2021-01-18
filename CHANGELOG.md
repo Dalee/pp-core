@@ -1,5 +1,8 @@
 # Change log
 
+## [2.4.6] 2020-11-19
+- Увеличен максимальный год в datepicker'е.
+
 ## [2.4.5] 2020-11-19
 - Включен symfony EventDispatcher Component
 
