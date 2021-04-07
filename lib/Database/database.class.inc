@@ -1015,7 +1015,7 @@ class PXDatabase extends DatabaseAdapter implements DatabaseInterface
 
 		if (!$this->user->can(['write', 'modify'], $format, $object)) {
 			$errString = 'Отказано в доступе при попытке модифицировать объект типа <em>' . $format->id . '</em>';
-			$audit->error($errString, $format->parent . '/' . $object['parent']);
+			$audit->error($errString, $format->id . '/' . $object['id']);
 			$this->FatalError($errString);
 		}
 
@@ -1026,9 +1026,11 @@ class PXDatabase extends DatabaseAdapter implements DatabaseInterface
 			$this->FatalError($errString);
 		}
 
-		if (!$this->user->can(['write', 'modify'], $format, $objectInDB)) {
-			$errString = 'Отказано в доступе при попытке модифицировать объект типа <em>' . $format->id . '</em>';
-			$audit->error($errString, $format->parent . '/' . $object['parent']);
+		// check for old parent access logic if changed
+		if (($object['parent'] ?? null) != ($objectInDB['parent'] ?? null) && !$this->user->can(['write', 'modify'], $format, $objectInDB)) {
+			$errString = sprintf('Отказано в доступе при попытке модифицировать дочерний объект <em>%s/%d</em> у родителя <em>%s</em>',
+				$format->id, $objectInDB['id'], $format->parent);
+			$audit->error($errString, $format->parent . '/' . $objectInDB['parent']);
 			$this->FatalError($errString);
 		}
 
@@ -1225,7 +1227,7 @@ class PXDatabase extends DatabaseAdapter implements DatabaseInterface
 
 		if (!$this->user->can(['write', 'modify'], $format, $object)) {
 			$errString = 'Отказано в доступе при попытке модифицировать объект типа <em>' . $format->id . '</em>';
-			$audit->error($errString, $format->parent . '/' . (isset($object['parent']) ? $object['parent'] : ''));
+			$audit->error($errString, $format->id . '/' . $object['id']);
 			$this->FatalError($errString);
 		}
 
@@ -1268,7 +1270,7 @@ class PXDatabase extends DatabaseAdapter implements DatabaseInterface
 		if (!count($objectInDB)) $this->FatalError('Попытка удалить отсутствующий объект');
 		if (!$this->user->can(['write', 'delete'], $format, $objectInDB)) {
 			$errString = 'Отказано в доступе при попытке удалить объект типа <em>' . $format->id . '</em>';
-			$audit->error($errString, $format->parent . '/' . $objectInDB['id']);
+			$audit->error($errString, $format->id . '/' . $objectInDB['id']);
 			$this->FatalError($errString);
 		}
 

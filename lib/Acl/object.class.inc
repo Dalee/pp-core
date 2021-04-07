@@ -60,7 +60,6 @@ class ObjectChecker {
 			if ((bool)$parentFormat->parent) {
 				$this->_loadParent($format, $object, $pKey);
 				$object['parent'] = isset($this->acl->parents[$pKey]) ? $this->acl->parents[$pKey] : null;
-			} else {
 			}
 
 			return $this->_checkGroup($what, $parentFormat, $object);
