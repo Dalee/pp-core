@@ -5,14 +5,6 @@ class ObjectChecker {
 
 	public function checkAcl($acl, $what, $format, $object) {
 		$this->acl = $acl;
-
-		$cond[] = ($format->id == 'suser' && $object['id'] == $this->acl->user->id);
-		$cond[] = ($format->id == 'suser' || $format->id == 'sgroup') && (in_array('pxuserauth', getColFromTable(debug_backtrace(), 'function')));
-
-		if ((bool)array_sum($cond)) {
-			return true;
-		}
-
 		return $this->_checkGroup($what, $format, $object);
 	}
 
@@ -32,7 +24,7 @@ class ObjectChecker {
 
 	private function _checkObject($what, $format, $object) {
 		foreach ($this->acl->rules as $a) {
-			$notEqualWhat = !($a['what'] == $what);
+			$notEqualWhat = $a['what'] != $what;
 			$notNullGroup = !is_null($a['sgroupid']);
 			$notInUserGroups = !in_array($a['sgroupid'], $this->acl->user->groups);
 			$notUser = $a['objectrule'] != 'user';
@@ -49,7 +41,7 @@ class ObjectChecker {
 			$objectParentOrNull = ($a['objectparent'] == NULL || $a['objectparent'] == getFromArray($object, 'parent'));
 			$objectTypeOrNull = ($a['objecttype'] == NULL || $a['objecttype'] == $format->id);
 
-			$notDenyAccess = !($a['access'] === 'deny');
+			$notDenyAccess = $a['access'] !== 'deny';
 
 			if ($objectIdOrNull && $objectParentOrNull && $objectTypeOrNull) {
 				return $notDenyAccess;
