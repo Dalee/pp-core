@@ -14,7 +14,7 @@ class PXUserAuthorized extends PXUser
 	 * which provide "ANY" logic, so we can check multiple rules until first will be allowed
 	 * @param $format array
 	 * @param $object array
-	 * @return bool
+	 * @return bool|null
 	 */
 	public function can($what, $format = NULL, $object = NULL)
 	{

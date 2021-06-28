@@ -21,6 +21,6 @@ class ModuleChecker {
 			}
 		}
 
-		return false;
+		return null;
 	}
 }

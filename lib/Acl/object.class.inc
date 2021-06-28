@@ -19,7 +19,7 @@ class ObjectChecker {
 			}
 		}
 
-		return false;
+		return null;
 	}
 
 	private function _checkObject($what, $format, $object) {
