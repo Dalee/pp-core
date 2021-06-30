@@ -7,6 +7,6 @@ class PXPluginSortableAcl extends AbstractPlugin
     public function initialize($app)
     {
         $this->loadModule('sortableacl');
+        $this->loadModule('sortablemacl');
     }
 }
-
