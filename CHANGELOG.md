@@ -1,5 +1,8 @@
 # Change log
 
+## [2.3.29] 2022-02-09
+- Исправлен фильтр в админке для storage type integer и нулевых значений
+
 ## [2.3.28] 2020-10-20
 - Добавлен функционал модуля `PP\Module\FileModule` protected directories - реализует защищенные от скачивания по прямой ссылке файлы, 
   скачивание файлов из таких папок доступно только через модуль (nginx internal location + X-Accel-Redirect header).
