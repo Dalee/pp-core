@@ -9,7 +9,7 @@ namespace PP\Module;
  */
 class MassChangeModule extends AbstractModule {
 
-	private $helper;
+	protected $helper;
 
 	public function adminJson() {
 		$this->helper = new \stdClass();
@@ -35,7 +35,7 @@ class MassChangeModule extends AbstractModule {
 	/**
 	 * @return null|object
 	 */
-	private function doChangeParent() {
+	protected function doChangeParent() {
 		$dtype = $this->app->types[$this->helper->objectType];
 		$parentField = isset($dtype->fields['parent'])
 			? 'parent'
@@ -65,7 +65,7 @@ class MassChangeModule extends AbstractModule {
 	/**
 	 * @return object
 	 */
-	private function doCommonMultipleDelete() {
+	protected function doCommonMultipleDelete() {
 		foreach ($this->helper->objectIds as $objectId) {
 			$this->db->DeleteContentObject($this->app->types[$this->helper->objectType], $objectId);
 		}
@@ -84,7 +84,7 @@ class MassChangeModule extends AbstractModule {
 	/**
 	 * @return null|object
 	 */
-	private function doCommonMultipleStatusChange() {
+	protected function doCommonMultipleStatusChange() {
 		$dtype = $this->app->types[$this->helper->objectType];
 		$states = ['true' => true, 'false' => false];
 		$status = (isset($this->helper->options->status) && in_array($this->helper->options->status, ['true', 'false']))
@@ -112,7 +112,7 @@ class MassChangeModule extends AbstractModule {
 	/**
 	 * @return object
 	 */
-	private function doOperation() {
+	protected function doOperation() {
 		$operationName = strtolower($this->helper->operation);
 		$result = null;
 
