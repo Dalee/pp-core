@@ -41,7 +41,7 @@ class FileModule extends AbstractModule
 		}
 
 		foreach ($openDirs as $element) {
-			$tmp = explode('=', $element);
+			$tmp = explode('=', (string) $element);
 			$d = $tmp[0];
 			$d = str_replace('\\', '/', $d);
 
@@ -91,7 +91,7 @@ class FileModule extends AbstractModule
 			$curDir = $tab['side'] == 'l' ? $lDir : $rDir;
 			$othDir = $tab['side'] != 'l' ? $lDir : $rDir;
 
-			$href = '?area=' . $this->area . '&' . $tab['oth'] . '=' . rawurlencode($othDir);
+			$href = '?area=' . $this->area . '&' . $tab['oth'] . '=' . rawurlencode((string) $othDir);
 
 			$listingClass = $curDir ? 'PXFileListing' : 'PXFileListingRoots';
 			$listing = new $listingClass($this->settings);
@@ -101,7 +101,7 @@ class FileModule extends AbstractModule
 			$listing->setDecorator(new \PXHTMLFileListing($href, $tab['side'], function ($alias, $f) {
 				$url = $alias;
 
-				$catalog = rtrim($f->catalog, '/');
+				$catalog = rtrim((string) $f->catalog, '/');
 				foreach ($this->protected as $protected) {
 					if (strncmp($catalog, $protected, mb_strlen($protected)) === 0) {
 						$mimeType = mime_content_type($f->path);
@@ -150,8 +150,8 @@ HTML;
 
 		$replaces = [
 			'SIDE' => $side,
-			'DIR' => ($side == 'l' ? urlencode($ldir) : urlencode($rdir)),
-			'HREF' => '?area=' . $this->area . '&ldir=' . urlencode($ldir) . '&rdir=' . urlencode($rdir) . ($name ? '&name=' . $name : ''),
+			'DIR' => ($side == 'l' ? urlencode((string) $ldir) : urlencode((string) $rdir)),
+			'HREF' => '?area=' . $this->area . '&ldir=' . urlencode((string) $ldir) . '&rdir=' . urlencode((string) $rdir) . ($name ? '&name=' . $name : ''),
 			'AREA' => $this->area,
 			'OUTSIDE' => $outside,
 			'MDIR' => ($side == 'l' ? $ldir : $rdir),
@@ -217,36 +217,10 @@ HTML;
 		$this->_initRequestVars();
 
 		$this->layout->setOuterForm('action.phtml', 'POST', 'multipart/form-data');
-		switch ($this->request->getVar('action')) {
-			case 'edit':
-				$html = '<div class="edit-file-form">' . $this->editFileForm() . '</div>';
-				break;
-
-			//FIXME: UNUSED?
-			/*case 'link':
-				$rName = $this->request->GetVar('name');
-
-				$curDir = $this->request->GetVar('ldir');
-				$othDir = null;
-
-				$href = '?area='.$this->area.'&action=link&name='.$rName.'&rdir=';
-
-				$listingClass = $curDir ? 'PXFileListing' : 'PXFileListingRoots';
-				$listing = new $listingClass($this->settings);
-
-				$listing->setDestination($othDir);
-				$listing->getList($curDir);
-				$listing->setDecorator(new \PXHTMLFileListingLink($href, 'l', $rName));
-
-				$this->layout->assign('OUTER.LEFTCONTROLS', '<button class="unlink" onclick="return UnLinkFile(\''.$rName.'\');">Отвязать</button>');
-
-				$html = '<table class="filemanager"><tbody><tr><td><div class="content">'.$listing->html().'</div></td></tr></tbody></table>';
-				break;*/
-
-			default:
-				$html = '<div class="error">Действие не определено</div>';
-				break;
-		}
+		$html = match ($this->request->getVar('action')) {
+			'edit' => '<div class="edit-file-form">' . $this->editFileForm() . '</div>',
+			default => '<div class="error">Действие не определено</div>',
+		};
 
 		return $html;
 	}
@@ -296,35 +270,18 @@ HTML;
 	{
 		$this->_initRequestVars();
 
-		switch ($this->request->getVar('action')) {
-			case 'createdir':
-				$this->withArgs([$this->catalog], '_aCreateDir');
-				break;
-			case 'copy':
-				$this->withArgs([$this->catalog, $this->destination, $this->mFile], '_aCopy');
-				break;
-			case 'move':
-				$this->withArgs([$this->catalog, $this->destination, $this->mFile], '_aMove');
-				break;
-			case 'rename':
-				$this->withArgs([$this->catalog, $this->mFile, $this->nFile], '_aRename');
-				break;
-			case 'delete':
-				$this->withArgs([$this->catalog, $this->mFile], '_aDelete');
-				break;
-			case 'edit':
-				$this->withArgs([$this->mFile], '_aEdit');
-				break;
-			case 'unzip':
-				$this->withArgs([$this->catalog, $this->mFile], '_aUnZip');
-				break;
-			case 'upload':
-				$this->withArgs([$this->catalog], '_aUpload');
-				break;
-			case 'protected':
-				$this->_aProtectedAccess();
-				break;
-		}
+		match ($this->request->getVar('action')) {
+			'createdir' => $this->withArgs([$this->catalog], '_aCreateDir'),
+			'copy' => $this->withArgs([$this->catalog, $this->destination, $this->mFile], '_aCopy'),
+			'move' => $this->withArgs([$this->catalog, $this->destination, $this->mFile], '_aMove'),
+			'rename' => $this->withArgs([$this->catalog, $this->mFile, $this->nFile], '_aRename'),
+			'delete' => $this->withArgs([$this->catalog, $this->mFile], '_aDelete'),
+			'edit' => $this->withArgs([$this->mFile], '_aEdit'),
+			'unzip' => $this->withArgs([$this->catalog, $this->mFile], '_aUnZip'),
+			'upload' => $this->withArgs([$this->catalog], '_aUpload'),
+			'protected' => $this->_aProtectedAccess(),
+			default => $this->redir,
+		};
 
 		return $this->redir;
 	}
@@ -336,7 +293,7 @@ HTML;
 
 	protected function withArgs($fields, $action)
 	{
-		count($fields) == count(array_filter($fields)) && $this->{$action}();
+		(is_countable($fields) ? count($fields) : 0) == count((array) array_filter($fields)) && $this->{$action}();
 	}
 
 	public function _escapeFileName($name)
@@ -356,7 +313,7 @@ HTML;
 
 		$this->response->addHeader('X-Accel-Redirect', $url)
 			->setContentType($type)
-			->downloadFile(basename($url))
+			->downloadFile(basename((string) $url))
 			->send();
 	}
 
@@ -374,7 +331,7 @@ HTML;
 
 		if (is_file($filePath) && is_writable($filePath) && !is_binary($filePath)) {
 			$fp = fopen($filePath, 'w');
-			fwrite($fp, $source);
+			fwrite($fp, (string) $source);
 			fclose($fp);
 		}
 	}
@@ -441,7 +398,7 @@ HTML;
 	public function _aUnZip()
 	{
 		if (is_file($this->catalog . $this->mFile) && is_writable($this->catalog)) {
-			system(sprintf("unzip -oq %s -d %s", escapeshellarg($this->catalog . $this->mFile), escapeshellarg($this->catalog)));
+			system(sprintf("unzip -oq %s -d %s", escapeshellarg($this->catalog . $this->mFile), escapeshellarg((string) $this->catalog)));
 		}
 	}
 
@@ -457,7 +414,7 @@ HTML;
 	public function uploadFileFromUser($file)
 	{
 		if ($file && $file != 'none' && $file['name'] && is_writable($this->catalog)) {
-			$filename = _TranslitFilename(_stripBadFileChars(stripslashes($file['name'])));
+			$filename = _TranslitFilename(_stripBadFileChars(stripslashes((string) $file['name'])));
 			if (!@copy($file['tmp_name'], $this->catalog . $filename)) {
 				FatalError('Не удалось скопировать файл ' . $file['tmp_name'] . ' в каталог ' . $this->catalog);
 			}
@@ -470,7 +427,7 @@ HTML;
 
 	public function uploadFileFromWeb($url)
 	{
-		if ($url && mb_strlen($url) && preg_match('#^https?://#', $url) && is_writable($this->catalog)) {
+		if ($url && mb_strlen((string) $url) && preg_match('#^https?://#', (string) $url) && is_writable($this->catalog)) {
 			if ($fp = @fopen($url, 'r')) {
 				$fileSource = '';
 
@@ -494,7 +451,7 @@ HTML;
 						FatalError('Не удалось изменить права доступа файлу ' . $filename);
 					}
 
-					if (preg_match_all("#/([\w\-]+\.\w{1,5})(\?.*)?$#", $url, $matches, PREG_SET_ORDER) && isset($matches[0][0])) {
+					if (preg_match_all("#/([\w\-]+\.\w{1,5})(\?.*)?$#", (string) $url, $matches, PREG_SET_ORDER) && isset($matches[0][0])) {
 						$matches[0][0] = _TranslitFilename($matches[0][0]);
 						rename($filename, $this->catalog . $matches[0][0]);
 						$filename = $this->catalog . $matches[0][0];

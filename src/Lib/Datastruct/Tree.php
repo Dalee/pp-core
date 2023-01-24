@@ -16,33 +16,23 @@ class Tree {
 	/** @var array */
 	public $levels;
 
-	// TODO: Database access to this vars
-	public $_idField;
-
-	public $_parentField;
-
-	public $_titleField;
-
 	/**
-	 * Tree constructor.
-	 *
-	 * @param array $table
-	 * @param string $idField
-	 * @param string $parentField
-	 * @param string $titleField
-	 * @param bool $saveOrphans
-	 */
-	public function __construct(
+  * Tree constructor.
+  *
+  * @param array $table
+  * @param string $_idField
+  * @param string $_parentField
+  * @param string $_titleField
+  * @param bool $saveOrphans
+  */
+ public function __construct(
 		$table,
-		$idField = 'id',
-		$parentField = 'parent',
-		$titleField = 'title',
+		// TODO: Database access to this vars
+  		public $_idField = 'id',
+		public $_parentField = 'parent',
+		public $_titleField = 'title',
 		$saveOrphans = false
 	) {
-		$this->_idField = $idField;
-		$this->_parentField = $parentField;
-		$this->_titleField = $titleField;
-
 		$this->leafs = [];
 		$this->levels = [];
 		$this->leafs[0] = new Leaf(0, 'Root', null, [], $this);
@@ -61,14 +51,13 @@ class Tree {
 	}
 
 	/**
-	 * Recursively collects all objects of allowed types within
-	 * children
-	 *
-	 * @param int $structId
-	 * @param array $allowedTypes
-	 * @return array
-	 */
-	public function recursiveChildren($structId, array $allowedTypes = []) {
+  * Recursively collects all objects of allowed types within
+  * children
+  *
+  * @param int $structId
+  * @return array
+  */
+ public function recursiveChildren($structId, array $allowedTypes = []) {
 		$childrenIds = $this->leafs[$structId]->children;
 		if (empty($childrenIds)) {
 			return [];
@@ -99,7 +88,7 @@ class Tree {
 			$title = $v[$this->_titleField];
 
 			// For creating trees from plain
-			$parent = (isset($v[$this->_parentField])) ? $v[$this->_parentField] : 0;
+			$parent = $v[$this->_parentField] ?? 0;
 			$this->leafs[$id] = new Leaf($id, $title, $parent, $v, $this);
 		}
 
@@ -227,7 +216,7 @@ class Tree {
 		$idArray = [];
 		$id = 0;
 
-		while (count($pathArray)) {
+		while (is_countable($pathArray) ? count($pathArray) : 0) {
 			$tmpFlag = 0;
 
 			foreach ($this->leafs[$id]->children as $leafId) {
@@ -304,6 +293,7 @@ class Tree {
 	}
 
 	public function getDescendants($id, $level = null) {
+		$retArray = [];
 		$retArray[] = $id;
 
 		if (isset($this->leafs[$id]->children) && ($level === null || $this->leafs[$id]->level < $level)) {

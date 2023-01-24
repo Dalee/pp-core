@@ -49,7 +49,7 @@ class DatabaseAdapter
 	public function __call($method, $args)
 	{
 		if (!method_exists($this->dbDriver, $method)) {
-			FatalError('Undefined method ' . $method . ' in ' . get_class($this->dbDriver));
+			FatalError('Undefined method ' . $method . ' in ' . $this->dbDriver::class);
 		}
 
 		return call_user_func_array([$this->dbDriver, $method], $args);

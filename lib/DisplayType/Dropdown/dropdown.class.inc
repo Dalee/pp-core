@@ -20,7 +20,7 @@ class PXDisplayTypeDropdown extends PXDisplayType
 
 	public function buildInput($field, $object, $param = NULL)
 	{
-		$value = isset($object[$field->name]) ? $object[$field->name] : NULL;
+		$value = $object[$field->name] ?? NULL;
 		return NLAbstractHTMLForm::BuildDropDown($field->name, $value, $field->values->GetList());
 	}
 
@@ -31,7 +31,7 @@ class PXDisplayTypeDropdown extends PXDisplayType
 		}
 		$displayField = $field->values->displayField;
 		$value = $object[$field->name];
-		return isset($field->values->values[$value][$displayField]) ? $field->values->values[$value][$displayField] : '';
+		return $field->values->values[$value][$displayField] ?? '';
 	}
 
 	public function buildTreeHover($field, $object, $param = NULL)
@@ -44,7 +44,7 @@ class PXDisplayTypeDropdown extends PXDisplayType
 	{
 		$format = '';
 		$parentFormat = '';
-		if (count($param) && isset($param['datatype']) && is_object($param['datatype'])) {
+		if ((is_countable($param) ? count($param) : 0) && isset($param['datatype']) && is_object($param['datatype'])) {
 			$format = $param['datatype']->id;
 			$parentFormat = $param['datatype']->parent;
 		}

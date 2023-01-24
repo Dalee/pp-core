@@ -14,7 +14,7 @@ class SerializerFactory {
 	 * @return SerializerInterface
 	 */
 	public static function create($driver) {
-		$driver = ucfirst(strtolower($driver));
+		$driver = ucfirst(strtolower((string) $driver));
 		$class = 'PP\Serializer\\' . $driver . 'Serializer';
 
 		if (!class_exists($class)) {

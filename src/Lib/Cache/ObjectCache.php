@@ -29,23 +29,23 @@ class ObjectCache {
 			case $cache === '1':
 			case $cache === 'file':
 			case $cache === true:
-				$cacheClass = 'PP\Lib\Cache\Driver\File';
+				$cacheClass = \PP\Lib\Cache\Driver\File::class;
 				break;
 
 			case $cache === '':
 			case $cache === 'null':
 			case $cache === null:
 			case $cache === false:
-				$cacheClass = 'PP\Lib\Cache\Driver\NullCache';
+				$cacheClass = \PP\Lib\Cache\Driver\NullCache::class;
 				break;
 
-			case strpos($cache, '://') !== false:
+			case str_contains($cache, '://'):
 				$extraArgs = parse_url($cache);
 				$cacheClass = 'PP\Lib\Cache\Driver\\' . ucfirst($extraArgs['scheme']);
 				break;
 
-			case strpos($cache, '@') !== false:
-				list($cache, $extraArgs) = explode('@', $cache, 2);
+			case str_contains($cache, '@'):
+				[$cache, $extraArgs] = explode('@', $cache, 2);
 				$cacheClass = 'PP\Lib\Cache\Driver\\' . ucfirst($cache);
 				break;
 		}
@@ -58,7 +58,7 @@ class ObjectCache {
 
 		if ($instance instanceof SerializerAwareInterface) {
 			$paramsRaw = getFromArray($extraArgs, 'query', '');
-			parse_str($paramsRaw, $params);
+			parse_str((string) $paramsRaw, $params);
 
 			$serializerDriver = getFromArray($params, 'serializer', 'default');
 			$serializer = SerializerFactory::create($serializerDriver);

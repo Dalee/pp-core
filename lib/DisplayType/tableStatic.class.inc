@@ -20,7 +20,7 @@ class PXDisplayTypeTableStatic extends PXDisplayTypeStatic
 
 			foreach ($row as $cell) {
 				is_array($cell) && $cell = print_r($cell, true);
-				$safe && $cell = htmlspecialchars($cell, ENT_COMPAT | ENT_HTML401, DEFAULT_CHARSET);
+				$safe && $cell = htmlspecialchars((string) $cell, ENT_COMPAT | ENT_HTML401, DEFAULT_CHARSET);
 				$_html .= '<td>';
 				$_html .= $cell;
 				$_html .= '</td>';
@@ -34,4 +34,3 @@ class PXDisplayTypeTableStatic extends PXDisplayTypeStatic
 		return $_html;
 	}
 }
-?>

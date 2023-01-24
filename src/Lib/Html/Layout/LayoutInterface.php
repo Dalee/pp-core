@@ -20,10 +20,9 @@ interface LayoutInterface
 	public function assign($name, $value);
 
 	/**
-	 * @param \PXApplication $app
-	 * @return $this
-	 */
-	public function setApp(\PXApplication $app);
+  * @return $this
+  */
+ public function setApp(\PXApplication $app);
 
 	/**
 	 * TODO: should be refactored to setLangCode

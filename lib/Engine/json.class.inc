@@ -36,7 +36,7 @@ class PXEngineJSON extends AbstractEngine
 		}
 	}
 
-	public function sendJson()
+	public function sendJson(): void
 	{
 		$response = Response::getInstance();
 		$response->sendJson($this->result);

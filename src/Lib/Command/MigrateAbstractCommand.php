@@ -63,9 +63,7 @@ PHP;
 			throw new \Exception("migrate:up failed, invalid query");
 		}
 
-		$applied = array_map(function ($item) {
-			return $item['filename'];
-		}, $applied);
+		$applied = array_map(fn($item) => $item['filename'], $applied);
 
 		$dir = new \DirectoryIterator($this->getMigrationsDirectory());
 

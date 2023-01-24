@@ -13,8 +13,8 @@ class MainModule extends AbstractModule
 {
 
 	private $rootFormatId;
-	private $objectsLoadMode;
-	private $rootFormat;
+	private readonly array $objectsLoadMode;
+	private ?\PXTypeDescription $rootFormat = null;
 
 	public function __construct($area, $settings)
 	{
@@ -90,7 +90,7 @@ class MainModule extends AbstractModule
 
 		$aliases = [];
 		foreach ($config as $row) {
-			[$host, $alias] = preg_split('/\s*=\s*/', trim($row));
+			[$host, $alias] = preg_split('/\s*=\s*/', trim((string) $row));
 			$aliases[$host] = $alias;
 		}
 
@@ -105,7 +105,7 @@ class MainModule extends AbstractModule
 
 		$allowed = $object->getAllowedChilds();
 
-		if (!count($allowed)) {
+		if (!(is_countable($allowed) ? count($allowed) : 0)) {
 			return;
 		}
 
@@ -116,7 +116,7 @@ class MainModule extends AbstractModule
 				continue;
 			}
 
-			$loadingMethod = 'load' . ucfirst($this->objectsLoadMode[$behaviour]) . 'Objects';
+			$loadingMethod = 'load' . ucfirst((string) $this->objectsLoadMode[$behaviour]) . 'Objects';
 			$objsArray = $this->$loadingMethod($object, $format, $pathName);
 
 			$fillObj->add($type, $objsArray);
@@ -146,13 +146,13 @@ class MainModule extends AbstractModule
 			$objsArray = $this->loadSelectedObjects($object, $format, $pathName);
 
 		} else {
-			$a_per_page = $this->app->getProperty(strtoupper($format->id) . '_PER_PAGE', DEFAULT_CHILDREN_PER_PAGE);
+			$a_per_page = $this->app->getProperty(strtoupper((string) $format->id) . '_PER_PAGE', DEFAULT_CHILDREN_PER_PAGE);
 			$count = $this->_loadContent($format, true, 'parent', $object->currentId, DB_SELECT_COUNT);
 			$currentPage = $this->getCurrentPage($format, $count, $a_per_page);
 
-			$this->layout->assign('FP_' . strtoupper($format->id) . '_TOTAL', $count);
-			$this->layout->assign('FP_' . strtoupper($format->id) . '_PER_PAGE', $a_per_page);
-			$this->layout->assign('FP_' . strtoupper($format->id) . '_DEFAULT_PAGE', $currentPage);
+			$this->layout->assign('FP_' . strtoupper((string) $format->id) . '_TOTAL', $count);
+			$this->layout->assign('FP_' . strtoupper((string) $format->id) . '_PER_PAGE', $a_per_page);
+			$this->layout->assign('FP_' . strtoupper((string) $format->id) . '_DEFAULT_PAGE', $currentPage);
 
 			$objsArray = $this->_loadContentLimited($format, true, 'parent', $object->currentId, $a_per_page, $a_per_page * ($currentPage - 1));
 		}
@@ -175,7 +175,7 @@ class MainModule extends AbstractModule
 	private function getCurrentPage($format, $count, $a_per_page)
 	{
 		// default page - from properties.ini (first or last)
-		$defaultPage = $this->app->getProperty('FP_' . strtoupper($format->id) . '_DEFAULT_LAST_PAGE') ? ceil($count / $a_per_page) : 1;
+		$defaultPage = $this->app->getProperty('FP_' . strtoupper((string) $format->id) . '_DEFAULT_LAST_PAGE') ? ceil($count / $a_per_page) : 1;
 
 		$currentPage = $this->request->getVar('page', $defaultPage);
 		$currentPage = max(1, ($currentPage > ceil($count / $a_per_page) ? ceil($count / $a_per_page) : $currentPage));
@@ -319,7 +319,7 @@ class MainModule extends AbstractModule
 			}
 
 		} elseif ($rqSid != null) {
-			$layout->assign('INNER.1.0', '<H2 class="error">Раздел ' . htmlspecialchars($rqSid, ENT_COMPAT | ENT_HTML401, DEFAULT_CHARSET) . ' не найден</H2>');
+			$layout->assign('INNER.1.0', '<H2 class="error">Раздел ' . htmlspecialchars((string) $rqSid, ENT_COMPAT | ENT_HTML401, DEFAULT_CHARSET) . ' не найден</H2>');
 
 		} else {
 			$layout->assign('INNER.1.0', '<H2>Выберите раздел</H2>');

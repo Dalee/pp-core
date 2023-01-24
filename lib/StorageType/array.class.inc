@@ -13,11 +13,11 @@ class PXStorageTypeArray extends PXStorageType
 
 	public const defaultSQLType = 'VARCHAR[]';
 
-	public const STATE_BEGIN = 1;
-	public const STATE_INARRAY = 2;
-	public const STATE_OUTARRAY = 3;
-	public const STATE_INSLASH = 4;
-	public const STATE_INQUOTES = 5;
+	final public const STATE_BEGIN = 1;
+	final public const STATE_INARRAY = 2;
+	final public const STATE_OUTARRAY = 3;
+	final public const STATE_INSLASH = 4;
+	final public const STATE_INQUOTES = 5;
 
 	public function getFromRequest($field, $object, &$param)
 	{
@@ -60,7 +60,7 @@ class PXStorageTypeArray extends PXStorageType
 		$resultArray = $indexArray = [];
 		$level = $index = 0;
 		$ptr = &$resultArray;
-		for ($i = 0; $i < strlen($value); $i++) {
+		for ($i = 0; $i < strlen((string) $value); $i++) {
 			switch ($level) {
 				case 1:
 					if ($index > 0) {
@@ -72,7 +72,7 @@ class PXStorageTypeArray extends PXStorageType
 					$ptr = &$indexArray[--$index];
 					break;
 			}
-			$level = $this->processFSM($value{$i}, $ptr);
+			$level = $this->processFSM($value[$i], $ptr);
 		}
 		return $resultArray;
 	}
@@ -113,5 +113,3 @@ class PXStorageTypeArray extends PXStorageType
 	}
 
 }
-
-?>

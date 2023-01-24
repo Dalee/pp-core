@@ -3,14 +3,12 @@
 class PXControlButton extends PXAdminWidget
 {
 
-	public $value;
 	public $onClickCode = '';
 	public $cssClass = '';
 
-	public function __construct($value)
-	{
-		$this->value = $value;
-	}
+	public function __construct(public $value)
+ {
+ }
 
 	/**
 	 * @param string $onClickCode
@@ -39,8 +37,8 @@ class PXControlButton extends PXAdminWidget
 	 */
 	public function html()
 	{
-		$cssClass = mb_strlen($this->cssClass) ? ' class="' . $this->cssClass . '"' : '';
-		$onClick = mb_strlen($this->onClickCode) ? ' onclick="' . $this->onClickCode . '"' : '';
+		$cssClass = mb_strlen((string) $this->cssClass) ? ' class="' . $this->cssClass . '"' : '';
+		$onClick = mb_strlen((string) $this->onClickCode) ? ' onclick="' . $this->onClickCode . '"' : '';
 
 		return '<button' . $cssClass . $onClick . $this->disable . '>' . $this->value . '</button>';
 	}

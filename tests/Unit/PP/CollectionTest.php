@@ -23,8 +23,8 @@ class CollectionTest extends AbstractUnitTest {
 		$collection->push(1)->push(2);
 
 		$this->assertJsonStringEqualsJsonString(
-			json_encode($collection->toArray()),
-			json_encode($collection)
+			json_encode($collection->toArray(), JSON_THROW_ON_ERROR),
+			json_encode($collection, JSON_THROW_ON_ERROR)
 		);
 	}
 

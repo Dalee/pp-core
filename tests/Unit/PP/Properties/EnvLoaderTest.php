@@ -69,11 +69,10 @@ class EnvLoaderTest extends AbstractUnitTest {
 	}
 
 
-	/**
-	 * @expectedException \PP\Properties\EnvLoaderException
-	 * @expectedExceptionMessage EMPTY should not be empty
-	 */
 	public function testEmptyNonEmptyFail() {
+		$this->expectExceptionMessage("EMPTY should not be empty");
+		$this->expectException(\PP\Properties\EnvLoaderException::class);
+
 		(new EnvLoader(__DIR__, 'env.txt'))
 			->addRequired(['EMPTY', 'NOT_EMPTY'])
 			->load();

@@ -10,7 +10,7 @@ class PXDisplayTypeParentdropdown extends PXDisplayTypeDropdown
 {
 	public function buildInput($field, $object, $param = NULL)
 	{
-		$value = isset($object[$field->name]) ? $object[$field->name] : NULL;
+		$value = $object[$field->name] ?? NULL;
 		[$format, $parentFormat] = parent::getFormats($param);
 
 		$tree = parent::getParentTree($object, $parentFormat);
@@ -21,7 +21,10 @@ class PXDisplayTypeParentdropdown extends PXDisplayTypeDropdown
 		}
 
 		foreach ($parents as $k => $v) {
-			@$allowed =& $tree->leafs[$k]->content['allowed'];
+
+			if (isset($tree->leafs[$k])) {
+				@$allowed =& $tree->leafs[$k]->content['allowed'];
+			}
 
 			if (isset($allowed[$format]) || $format == $parentFormat) {
 				$parents[$k] = ['title' => $v];

@@ -6,21 +6,6 @@
 class PXInputInput extends PXAdminWidget {
 
 	/**
-	 * @var string
-	 */
-	public $value;
-
-	/**
-	 * @var string
-	 */
-	public $name;
-
-	/**
-	 * @var int|null
-	 */
-	public $maxlength = null;
-
-	/**
 	 * @var array
 	 */
 	public $classes = [];
@@ -37,11 +22,9 @@ class PXInputInput extends PXAdminWidget {
 	 * @param string $value
 	 * @param int|null $maxlength
 	 */
-	public function __construct($name, $value, $maxlength = null) {
-		$this->value = $value;
-		$this->name = $name;
-		$this->maxlength = $maxlength;
-	}
+	public function __construct(public $name, public $value, public ?int $maxlength = null)
+ {
+ }
 
 	/**
 	 * @return string
@@ -67,10 +50,9 @@ class PXInputInput extends PXAdminWidget {
 	}
 
 	/**
-	 * @param array $classes
-	 * @return PXInputInput
-	 */
-	public function setClasses(array $classes) {
+  * @return PXInputInput
+  */
+ public function setClasses(array $classes) {
 		$this->classes = $classes;
 		return $this;
 	}

@@ -10,6 +10,6 @@
  */
 function smarty_compiler_continue($level, &$smarty)
 {
-    !ctype_digit($level) && $level = '';
+    !ctype_digit((string) $level) && $level = '';
     return "\ncontinue $level;";
 }

@@ -33,9 +33,9 @@ class PXRequest
 
 	public function __construct()
 	{
-		$this->httpMethod = $this->GetHttpMethod();
-		$this->host = $this->GetHttpHost();
-		$this->remoteAddr = $this->GetRemoteAddr();
+		$this->httpMethod = static::GetHttpMethod();
+		$this->host = static::GetHttpHost();
+		$this->remoteAddr = static::GetRemoteAddr();
 		$this->path = static::GetOriginalPath();
 
 		foreach ($this->getHttpHeaders() as $name => $value) {
@@ -49,18 +49,15 @@ class PXRequest
 
 	public static function GetHttpMethod()
 	{
-		return (isset($_SERVER['REQUEST_METHOD'])) ? $_SERVER['REQUEST_METHOD'] : 'CLI';
+		return $_SERVER['REQUEST_METHOD'] ?? 'CLI';
 	}
 
 	public static function GetHttpProto()
 	{
-		switch (true) {
-			case isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on':
-			case isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] == 'https':
-				return "https";
-			default:
-				return "http";
-		}
+		return match (true) {
+			isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on', isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] == 'https' => "https",
+			default => "http",
+		};
 	}
 
 	public static function GetHttpReferer($default = NULL)
@@ -70,7 +67,7 @@ class PXRequest
 
 	public static function GetRequestUri()
 	{
-		return (isset($_SERVER['REQUEST_URI'])) ? $_SERVER['REQUEST_URI'] : NULL;
+		return $_SERVER['REQUEST_URI'] ?? NULL;
 	}
 
 	public function getReferer()
@@ -81,7 +78,7 @@ class PXRequest
 	public static function GetOriginalPath()
 	{
 		// We need to use REQUEST_URI but not SCRIPT_NAME variable because SCRIPT_NAME is not available when mod_rewrite is enabling in .htaccess
-		$parts = explode("?", $_SERVER['REQUEST_URI'], 2);
+		$parts = explode("?", (string) $_SERVER['REQUEST_URI'], 2);
 		return reset($parts);
 	}
 
@@ -99,11 +96,11 @@ class PXRequest
 	{
 		$path = $this->GetPathAsString();
 		// Terminal slash check
-		if (preg_match('#\.(' . join('|', array_map('preg_quote', ENUM_ALLOWED_PATHNAMES)) . ')/+$#' . REGEX_MOD, $path)) {
+		if (preg_match('#\.(' . join('|', array_map('preg_quote', ENUM_ALLOWED_PATHNAMES)) . ')/+$#' . REGEX_MOD, (string) $path)) {
 			return true;
 		}
 		// 'index.php' and etc. check (shouldn't occur in the middle)
-		if (preg_match('#/(' . join('|', array_map('preg_quote', $this->rootPathsList)) . ')/#' . REGEX_MOD, $path)) {
+		if (preg_match('#/(' . join('|', array_map('preg_quote', $this->rootPathsList)) . ')/#' . REGEX_MOD, (string) $path)) {
 			return true;
 		}
 		// All bytes in path should be valid utf-8 sequences
@@ -116,7 +113,7 @@ class PXRequest
 
 	public function GetPath()
 	{
-		$tmpArray = explode("/", $this->path);
+		$tmpArray = explode("/", (string) $this->path);
 		$path = [];
 		foreach ($tmpArray as $tmp) {
 			if (!mb_strlen($tmp) ||
@@ -137,8 +134,8 @@ class PXRequest
 	public static function GetHttpHost()
 	{
 		if (isset($_SERVER['HTTP_X_HOST'])) {
-			if (mb_strstr($_SERVER['HTTP_X_HOST'], ",")) {
-				$hosts = explode(",", $_SERVER['HTTP_X_HOST']);
+			if (mb_strstr((string) $_SERVER['HTTP_X_HOST'], ",")) {
+				$hosts = explode(",", (string) $_SERVER['HTTP_X_HOST']);
 				$host = trim(end($hosts));
 			} else {
 				$host = $_SERVER['HTTP_X_HOST'];
@@ -150,12 +147,12 @@ class PXRequest
 			return NULL;
 		}
 
-		return preg_replace('/:.+$/' . REGEX_MOD, '', $host);
+		return preg_replace('/:.+$/' . REGEX_MOD, '', (string) $host);
 	}
 
 	protected function cleanHeaderName($name)
 	{
-		return str_replace(' ', '-', ucwords(strtolower(str_replace('_', ' ', substr($name, 5)))));
+		return str_replace(' ', '-', ucwords(strtolower(str_replace('_', ' ', substr((string) $name, 5)))));
 	}
 
 	/**
@@ -193,8 +190,8 @@ class PXRequest
 	public static function GetRemoteAddr()
 	{
 		if (isset($_SERVER['HTTP_X_REAL_IP'])) {
-			if (mb_strstr($_SERVER['HTTP_X_REAL_IP'], ",")) {
-				[$real_ip] = explode(",", $_SERVER['HTTP_X_REAL_IP']);
+			if (mb_strstr((string) $_SERVER['HTTP_X_REAL_IP'], ",")) {
+				[$real_ip] = explode(",", (string) $_SERVER['HTTP_X_REAL_IP']);
 				$real_ip = trim($real_ip);
 			} else {
 				$real_ip = $_SERVER['HTTP_X_REAL_IP'];
@@ -215,7 +212,7 @@ class PXRequest
 
 	public function getIpAddr($varName)
 	{
-		if ($this->getHttpMethod() == 'POST') {
+		if (static::getHttpMethod() == 'POST') {
 			return $this->postData->_GetIPAddrVar($varName);
 		} else {
 			return $this->getData->_GetIPAddrVar($varName);
@@ -224,7 +221,7 @@ class PXRequest
 
 	public function GetUserAgent()
 	{
-		return isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : '';
+		return $_SERVER['HTTP_USER_AGENT'] ?? '';
 	}
 
 	public function GetGetVar($varName)
@@ -269,27 +266,23 @@ class PXRequest
 
 	public function _GetGetPostVar($varName)
 	{
-		switch ($this->httpMethod) {
-			case 'POST':
-				return $this->GetPostVar($varName);
-			default:
-				return $this->GetGetVar($varName);
-		}
+		return match ($this->httpMethod) {
+			'POST' => $this->GetPostVar($varName),
+			default => $this->GetGetVar($varName),
+		};
 	}
 
 	public function _SetGetPostVar($varName, $value)
 	{
-		switch ($this->httpMethod) {
-			case 'POST':
-				return $this->postData->_SetVar($varName, $value);
-			default:
-				return $this->getData->_SetVar($varName, $value);
-		}
+		return match ($this->httpMethod) {
+			'POST' => $this->postData->_SetVar($varName, $value),
+			default => $this->getData->_SetVar($varName, $value),
+		};
 	}
 
 	public function SetVar($varName, $value)
 	{
-		$functionName = 'Set' . mb_strtoupper($varName{0}) . mb_substr($varName, 1);
+		$functionName = 'Set' . mb_strtoupper((string) $varName[0]) . mb_substr((string) $varName, 1);
 
 		if (method_exists($this, $functionName)) {
 			$value = call_user_func([&$this, $functionName], $value);
@@ -301,7 +294,7 @@ class PXRequest
 
 	public function GetVar($varName, $default = NULL)
 	{
-		$functionName = 'Get' . ucfirst($varName);
+		$functionName = 'Get' . ucfirst((string) $varName);
 
 		if (method_exists($this, $functionName)) {
 			$value = call_user_func([&$this, $functionName]);
@@ -314,12 +307,10 @@ class PXRequest
 
 	public function isSetVar($varName)
 	{
-		switch ($this->httpMethod) {
-			case 'POST':
-				return $this->postData->_isSetVar($varName);
-			default:
-				return $this->getData->_isSetVar($varName);
-		}
+		return match ($this->httpMethod) {
+			'POST' => $this->postData->_isSetVar($varName),
+			default => $this->getData->_isSetVar($varName),
+		};
 	}
 
 	public function GetUploadFile($varName, $isArray = FALSE)
@@ -342,9 +333,9 @@ class PXRequest
 		$lip = ip2long($ip);
 		$binnet = mb_str_pad(decbin($lnet), 32, "0", STR_PAD_LEFT);
 
-		$firstpart = mb_substr($binnet, 0, $mask);
+		$firstpart = mb_substr((string) $binnet, 0, $mask);
 		$binip = mb_str_pad(decbin($lip), 32, "0", STR_PAD_LEFT);
-		$firstip = mb_substr($binip, 0, $mask);
+		$firstip = mb_substr((string) $binip, 0, $mask);
 
 		return (int)(strcmp($firstpart, $firstip) === 0);
 	}
@@ -375,7 +366,7 @@ class PXRequest
 		if ($leafStatus) {
 			foreach ($leafStatus as $l => $s) {
 				if ($s == 'open') {
-					$openLeaf[] = mb_substr($l, 6);
+					$openLeaf[] = mb_substr((string) $l, 6);
 				}
 			}
 		}
@@ -467,6 +458,7 @@ class PXRequest
 
 	public function getObjectSysVars($format, $neededVars = [])
 	{
+		$object = [];
 		$object['id'] = $this->postData->_getNumericVar('id');
 
 		if ($this->postData->_IsSet(OBJ_FIELD_CHILDREN) || in_array(OBJ_FIELD_CHILDREN, $neededVars)) {
@@ -488,12 +480,10 @@ class PXRequest
 	// GET/POST
 	public function getAck()
 	{
-		switch ($this->httpMethod) {
-			case 'POST':
-				return $this->postData->_getCheckBoxVar('ack');
-			default:
-				return $this->getData->_getCheckBoxVar('ack');
-		}
+		return match ($this->httpMethod) {
+			'POST' => $this->postData->_getCheckBoxVar('ack'),
+			default => $this->getData->_getCheckBoxVar('ack'),
+		};
 	}
 
 	// POST
@@ -511,7 +501,7 @@ class PXRequest
 	// Функция возвращает "раздел" редакторского интерфейса
 	public function getArea($default = NULL)
 	{
-		$area = $this->_getGetPostVar('area') ? $this->_getGetPostVar('area') : $this->getGetVar('area');
+		$area = $this->_getGetPostVar('area') ?: $this->getGetVar('area');
 		return ($area == NULL) ? $default : $area;
 	}
 
@@ -523,10 +513,10 @@ class PXRequest
 			return $default_sort;
 		}
 		$order = [];
-		$multipleOrders = explode(",", $currentOrder);
+		$multipleOrders = explode(",", (string) $currentOrder);
 		foreach ($multipleOrders as $currentOrder) {
 			[$field_name, $sort_dir] = array_pad(explode(" ", trim($currentOrder), 2), 2, '');
-			$sort_dir = mb_strtoupper(trim($sort_dir)) == 'DESC' ? ' DESC' : '';
+			$sort_dir = mb_strtoupper(trim((string) $sort_dir)) == 'DESC' ? ' DESC' : '';
 			if (!(isset($fields[$field_name]) && $fields[$field_name]->listed) && $field_name != 'sys_order') {
 				continue;
 			}
@@ -540,8 +530,8 @@ class PXRequest
 	public function getHostAndDir()
 	{
 		$a = $this->getPath();
-		array_unshift($a, $this->getHttpHost());
-		if (sizeof($a) > 1 && mb_strstr($a[sizeof($a) - 1], ".")) {
+		array_unshift($a, static::getHttpHost());
+		if (sizeof($a) > 1 && mb_strstr((string) $a[sizeof($a) - 1], ".")) {
 			array_pop($a);
 		}
 		return $a;
@@ -550,8 +540,8 @@ class PXRequest
 	public function getFile()
 	{
 		$a = $this->getPath();
-		if (count($a)) {
-			if (mb_strstr($a[sizeof($a) - 1], ".")) {
+		if (is_countable($a) ? count($a) : 0) {
+			if (mb_strstr((string) $a[sizeof($a) - 1], ".")) {
 				return $a[sizeof($a) - 1];
 			}
 		}
@@ -561,7 +551,7 @@ class PXRequest
 
 	public function isIndexFile($file = '')
 	{
-		return in_array(mb_strlen($file) ? $file : $this->getFile(), $this->rootPathsList, true);
+		return in_array(mb_strlen((string) $file) ? $file : $this->getFile(), $this->rootPathsList, true);
 	}
 
 	public function getPart()
@@ -572,13 +562,13 @@ class PXRequest
 
 	public function isXmlHttpRequest()
 	{
-		return (bool)mb_stristr(self::getServerVar('HTTP_X_REQUESTED_WITH'), 'XMLHttpRequest');
+		return (bool)mb_stristr((string) self::getServerVar('HTTP_X_REQUESTED_WITH'), 'XMLHttpRequest');
 	}
 
 	public
 	static function getServerVar($name, $default = null)
 	{
-		return isset($_SERVER[$name]) ? $_SERVER[$name] : $default;
+		return $_SERVER[$name] ?? $default;
 	}
 
 	/**
@@ -594,5 +584,3 @@ class PXRequest
 		return $this->uuid;
 	}
 }
-
-?>

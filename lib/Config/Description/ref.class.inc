@@ -59,7 +59,7 @@ class PXRefDescription
             $ref = new PXRefDescription();
             $nodes = $domReference->childNodes();
             foreach ($attrs as $attr) {
-                switch (trim($attr->name)) {
+                switch (trim((string) $attr->name)) {
                     case 'name':
                         $ref->name = $attr->value;
                         break;

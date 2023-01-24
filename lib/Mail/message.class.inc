@@ -13,7 +13,6 @@ class NLMailMessage
     public $format;
     public $files;
     public $boundary;
-    public $log;
     public $addHeaders;
     public $charset;
 
@@ -24,7 +23,7 @@ class NLMailMessage
     public $_listHeadersFields;
     public $listHeaders;
 
-    public function __construct($logFile = NULL)
+    public function __construct(public $log = NULL)
     {
         $this->fromName = NULL;
         $this->fromEmail = NULL;
@@ -39,7 +38,6 @@ class NLMailMessage
         $this->multipart = 'mixed';
         $this->boundary = mb_strtoupper(uniqid(time()));
         $this->_errorMessage = NULL;
-        $this->log = $logFile;
         $this->charset = DEFAULT_CHARSET;
         $this->_validateEmails = true;
         $this->_checkMailFields = ['fromEmail', 'replyEmail', 'bccEmail', 'ccEmail', 'toEmail'];
@@ -61,7 +59,7 @@ class NLMailMessage
 
     public function setTo($name, $email)
     {
-        $this->toName = mb_strlen($name) ? $name : $email;
+        $this->toName = mb_strlen((string) $name) ? $name : $email;
         $this->toEmail = $email;
     }
 
@@ -110,7 +108,7 @@ class NLMailMessage
 
     public function setBody($string)
     {
-        $string = str_replace("\xd", '', $string);
+        $string = str_replace("\xd", '', (string) $string);
         $this->body = $string;
     }
 
@@ -144,11 +142,11 @@ class NLMailMessage
 
         foreach ($variables as $k => $v) {
             if (is_scalar($v)) {
-                $text = str_replace('%' . mb_strtoupper($k) . '%', (string)$v, $text);
+                $text = str_replace('%' . mb_strtoupper($k) . '%', (string)$v, (string) $text);
             }
         }
 
-        $text = preg_replace("/(?<!\%)\%[^%]+?\%/si" . REGEX_MOD, '', $text);
+        $text = preg_replace("/(?<!\%)\%[^%]+?\%/si" . REGEX_MOD, '', (string) $text);
 
         $text = str_replace('%%', '%', $text);
 
@@ -162,7 +160,7 @@ class NLMailMessage
 
     public function addFile($file, $name, $type = 'application/octet-stream', $source = '', $inline = false)
     {
-        $id = uniqid(rand(), true);
+        $id = uniqid(random_int(0, mt_getrandmax()), true);
 
         if (isset($this->files[$name])) {
             return 'cid:' . $this->files[$name]['id'];
@@ -204,8 +202,8 @@ class NLMailMessage
 
     public function _getSubject()
     {
-        if (mb_strlen($this->subject)) {
-            $_subject = "=?" . $this->charset . "?B?" . base64_encode($this->subject) . "?=";
+        if (mb_strlen((string) $this->subject)) {
+            $_subject = "=?" . $this->charset . "?B?" . base64_encode((string) $this->subject) . "?=";
         } else {
             $_subject = NULL;
         }
@@ -237,6 +235,7 @@ class NLMailMessage
 
     public function send()
     {
+        $php_errormsg = null;
         if (!isset($this->toEmail)) {
             $this->Log(false);
             return false;
@@ -247,14 +246,14 @@ class NLMailMessage
         ini_set('track_errors', 1);
         $oldError = error_reporting(0);
 
-        if (!mb_strlen($this->getError()) && @mail($this->toEmail, $_subject, $this->body, $this->addHeaders)) {
+        if (!mb_strlen((string) $this->getError()) && @mail((string) $this->toEmail, (string) $_subject, (string) $this->body, $this->addHeaders)) {
             error_reporting($oldError);
 
             $this->log(true);
             return true;
         } else {
             error_reporting($oldError);
-            if (!mb_strlen($this->getError())) {
+            if (!mb_strlen((string) $this->getError())) {
                 $this->setError(@$php_errormsg);
             }
 
@@ -273,7 +272,7 @@ class NLMailMessage
                 $this->toEmail,
                 $this->fromEmail,
                 $this->subject,
-                mb_strlen($this->body),
+                mb_strlen((string) $this->body),
                 $this->getError(),
             ];
 
@@ -312,13 +311,13 @@ class NLMailMessage
 
     public function _attachFile($file, $name, $id, $type = 'application/octet-stream', $source = '', $inline = false)
     {
-        if (mb_strlen($source)) {
+        if (mb_strlen((string) $source)) {
             $encoded = $this->_encodeString($source);
         } else {
             $encoded = $this->_encodeFile($file);
         }
 
-        if (mb_strlen($name)) {
+        if (mb_strlen((string) $name)) {
             $file = $name;
         }
 
@@ -334,7 +333,7 @@ class NLMailMessage
         }
 
         if (isset($this->fromName)) {
-            $addHeaders .= "From: =?" . $this->charset . "?B?" . base64_encode($this->fromName) . "?= <{$this->fromEmail}>\n";
+            $addHeaders .= "From: =?" . $this->charset . "?B?" . base64_encode((string) $this->fromName) . "?= <{$this->fromEmail}>\n";
             $addHeaders .= "Reply-To: {$this->replyEmail}\n";
         } else {
             $addHeaders .= "From: {$this->fromEmail}\n";
@@ -351,11 +350,11 @@ class NLMailMessage
 
         if (!empty($this->listHeaders)) {
             foreach ($this->listHeaders as $type => $values) {
-                if (empty($values) || !in_array(mb_strtolower($type), ['help', 'subscribe', 'unsubscribe', 'owner', 'archive'])) {
+                if (empty($values) || !in_array(mb_strtolower((string) $type), ['help', 'subscribe', 'unsubscribe', 'owner', 'archive'])) {
                     continue;
                 }
                 $values = "<" . join('>, <', (array)$values) . ">";
-                $type = mb_ucfirst(mb_strtolower($type));
+                $type = mb_ucfirst(mb_strtolower((string) $type));
                 $addHeaders .= "List-{$type}: {$values}\n";
             }
         }
@@ -382,7 +381,7 @@ class NLMailMessage
 
     public function _encodeString($string)
     {
-        return chunk_split(base64_encode($string));
+        return chunk_split(base64_encode((string) $string));
     }
 
     public function _checkEmails()
@@ -416,23 +415,23 @@ class NLMailMessage
         }
 
         $text = $this->body;
-        preg_match_all('#(?:<(img|td|link)[^>]+(src|background|href))="(https?://.+?)"#' . REGEX_MOD, $text, $images);
+        preg_match_all('#(?:<(img|td|link)[^>]+(src|background|href))="(https?://.+?)"#' . REGEX_MOD, (string) $text, $images);
 
         if (!isset($images[3])) {
             return;
         }
 
         foreach ($images[3] as $i) {
-            if (mb_strpos($i, '&d=audit') !== false) {
+            if (mb_strpos((string) $i, '&d=audit') !== false) {
                 continue;
             }
 
             $tmpFile = tempnam('/tmp', 'mailImagesAttach');
             copy($i, $tmpFile);
 
-            $src = $this->addFile($tmpFile, basename($i), mime_content_type($tmpFile));
+            $src = $this->addFile($tmpFile, basename((string) $i), mime_content_type($tmpFile));
 
-            $text = str_replace($i, $src, $text);
+            $text = str_replace($i, $src, (string) $text);
         }
 
         $this->body = $text;

@@ -2,12 +2,31 @@
 
 namespace Tests\Unit\PP\Lib\UrlGenerator;
 
+use PHPUnit\Framework\MockObject\MockObject;
 use PP\Lib\UrlGenerator\AdminUrlGenerator;
 use PP\Lib\UrlGenerator\ContextUrlGenerator;
 use Tests\Base\AbstractUnitTest;
 use PP\Module\ModuleInterface;
 
 class AdminUrlGeneratorTest extends AbstractUnitTest {
+
+	protected AdminUrlGenerator|MockObject $generator;
+
+	protected MockObject|ContextUrlGenerator $content;
+
+	/**
+	 * @before
+	 */
+	public function before() {
+		$this->content = $this->getMockBuilder('PP\Lib\UrlGenerator\ContextUrlGenerator')
+			->addMethods(['_'])
+			->getMock();
+
+		$this->generator = $this->getMockBuilder('PP\Lib\UrlGenerator\AdminUrlGenerator')
+			->setConstructorArgs([$this->content])
+			->onlyMethods(['indexUrl', 'actionUrl', 'jsonUrl', 'popupUrl'])
+			->getMock();
+	}
 
 	public function testIndexUrlFromTargetModule() {
 		$testArea = 'targetArea';
@@ -17,9 +36,9 @@ class AdminUrlGeneratorTest extends AbstractUnitTest {
 		];
 		$expectedUrl = '/admin/?area=targetArea&a=1-%2B&b=2+2+%D0%B0';
 
-		/** @var \PHPUnit_Framework_MockObject_MockObject | ContextUrlGenerator $content */
+		/** @var MockObject | ContextUrlGenerator $content */
 		$content = $this->getMockBuilder('PP\Lib\UrlGenerator\ContextUrlGenerator')
-			->setMethods(['_'])
+			->addMethods(['_'])
 			->getMock();
 
 		$content->setTargetModule($testArea);
@@ -38,9 +57,9 @@ class AdminUrlGeneratorTest extends AbstractUnitTest {
 		];
 		$expectedUrl = '/admin/?area=currentArea&a=1&b=2';
 
-		/** @var \PHPUnit_Framework_MockObject_MockObject | ContextUrlGenerator $content */
+		/** @var MockObject | ContextUrlGenerator $content */
 		$content = $this->getMockBuilder('PP\Lib\UrlGenerator\ContextUrlGenerator')
-			->setMethods(['_'])
+			->addMethods(['_'])
 			->getMock();
 
 		$content->setCurrentModule($testArea);
@@ -51,14 +70,13 @@ class AdminUrlGeneratorTest extends AbstractUnitTest {
 		$this->assertEquals($expectedUrl, $actualUrl);
 	}
 
-	/**
-	 * @expectedException \Exception
-	 * @expectedExceptionMessage Don't given target module and current module.
-	 */
 	public function testIndexUrlError() {
-		/** @var \PHPUnit_Framework_MockObject_MockObject | ContextUrlGenerator $content */
+		$this->expectExceptionMessage("Don't given target module and current module.");
+		$this->expectException(\Exception::class);
+
+		/** @var MockObject | ContextUrlGenerator $content */
 		$content = $this->getMockBuilder('PP\Lib\UrlGenerator\ContextUrlGenerator')
-			->setMethods(['_'])
+			->addMethods(['_'])
 			->getMock();
 		$generator = new AdminUrlGenerator($content);
 		$actualUrl = $generator->indexUrl([]);
@@ -68,14 +86,14 @@ class AdminUrlGeneratorTest extends AbstractUnitTest {
 	 * @dataProvider actionUrlProvider
 	 */
 	public function testActionUrl($sid, $testArea, $overriderParams, $expectedActionUrl) {
-		/** @var \PHPUnit_Framework_MockObject_MockObject | ContextUrlGenerator $content */
+		/** @var MockObject | ContextUrlGenerator $content */
 		$content = $this->getMockBuilder('PP\Lib\UrlGenerator\ContextUrlGenerator')
-			->setMethods(['_'])
+			->addMethods(['_'])
 			->getMock();
-		/** @var \PHPUnit_Framework_MockObject_MockObject | \PXRequest $request */
+		/** @var MockObject | \PXRequest $request */
 		$request = $this->getMockBuilder('PXRequest')
 			->disableOriginalConstructor()
-			->setMethods(['getSid'])
+			->onlyMethods(['getSid'])
 			->getMock();
 
 		$request->expects($this->any())
@@ -116,9 +134,9 @@ class AdminUrlGeneratorTest extends AbstractUnitTest {
 		];
 		$expectedUrl = '/admin/json.phtml?area=targetArea&a=1&b=2';
 
-		/** @var \PHPUnit_Framework_MockObject_MockObject | ContextUrlGenerator $content */
+		/** @var MockObject | ContextUrlGenerator $content */
 		$content = $this->getMockBuilder('PP\Lib\UrlGenerator\ContextUrlGenerator')
-			->setMethods(['_'])
+			->addMethods(['_'])
 			->getMock();
 
 		$content->setTargetModule($testArea);
@@ -133,14 +151,14 @@ class AdminUrlGeneratorTest extends AbstractUnitTest {
 	 * @dataProvider popupUrlProvider
 	 */
 	public function testPopupUrl($sid, $testArea, $overriderParams, $expectedPopupUrl) {
-		/** @var \PHPUnit_Framework_MockObject_MockObject | ContextUrlGenerator $content */
+		/** @var MockObject | ContextUrlGenerator $content */
 		$content = $this->getMockBuilder('PP\Lib\UrlGenerator\ContextUrlGenerator')
-			->setMethods(['_'])
+			->addMethods(['_'])
 			->getMock();
-		/** @var \PHPUnit_Framework_MockObject_MockObject | \PXRequest $request */
+		/** @var MockObject | \PXRequest $request */
 		$request = $this->getMockBuilder('PXRequest')
 			->disableOriginalConstructor()
-			->setMethods(['getSid'])
+			->onlyMethods(['getSid'])
 			->getMock();
 
 		$request->expects($this->any())
@@ -173,53 +191,50 @@ class AdminUrlGeneratorTest extends AbstractUnitTest {
 		];
 	}
 
-	public function testGenerate() {
-		/** @var \PHPUnit_Framework_MockObject_MockObject | ContextUrlGenerator $content */
-		$content = $this->getMockBuilder('PP\Lib\UrlGenerator\ContextUrlGenerator')
-			->setMethods(['_'])
-			->getMock();
-
-		/** @var AdminUrlGenerator | \PHPUnit_Framework_MockObject_MockObject $generator */
-		$generator = $this->getMockBuilder('PP\Lib\UrlGenerator\AdminUrlGenerator')
-			->setConstructorArgs([$content])
-			->setMethods(['indexUrl', 'actionUrl', 'jsonUrl', 'popupUrl'])
-			->getMock();
-
-		$generator->expects($this->at(0))
+	public function testGenerateActionIndex() {
+		$this->generator->expects($this->once())
 			->method('indexUrl')
 			->with([]);
-		$generator->expects($this->at(1))
+
+		$this->content->setTargetAction(ModuleInterface::ACTION_INDEX);
+		$this->generator->generate([]);
+	}
+
+	public function testGenerateActionAction() {
+		$this->generator->expects($this->once())
 			->method('actionUrl')
 			->with([]);
-		$generator->expects($this->at(2))
+
+		$this->content->setTargetAction(ModuleInterface::ACTION_ACTION);
+		$this->generator->generate([]);
+	}
+
+	public function testGenerateActionJson() {
+		$this->generator->expects($this->once())
 			->method('jsonUrl')
 			->with([]);
-		$generator->expects($this->at(3))
+
+		$this->content->setTargetAction(ModuleInterface::ACTION_JSON);
+		$this->generator->generate([]);
+	}
+
+	public function testGenerateActionPopup() {
+		$this->generator->expects($this->once())
 			->method('popupUrl')
 			->with([]);
 
-		$content->setTargetAction(ModuleInterface::ACTION_INDEX);
-		$generator->generate([]);
-
-		$content->setTargetAction(ModuleInterface::ACTION_ACTION);
-		$generator->generate([]);
-
-		$content->setTargetAction(ModuleInterface::ACTION_JSON);
-		$generator->generate([]);
-
-		$content->setTargetAction(ModuleInterface::ACTION_POPUP);
-		$generator->generate([]);
+		$this->content->setTargetAction(ModuleInterface::ACTION_POPUP);
+		$this->generator->generate([]);
 	}
 
-	/**
-	 * @expectedException \Exception
-	 * @expectedExceptionMessage Action 'targetAction' doesn't exist.
-	 */
 	public function testGenerateError() {
+		$this->expectExceptionMessage("Action 'targetAction' doesn't exist.");
+		$this->expectException(\Exception::class);
+
 		$targetAction = 'targetAction';
-		/** @var \PHPUnit_Framework_MockObject_MockObject | ContextUrlGenerator $content */
+		/** @var MockObject | ContextUrlGenerator $content */
 		$content = $this->getMockBuilder('PP\Lib\UrlGenerator\ContextUrlGenerator')
-			->setMethods(['_'])
+			->addMethods(['_'])
 			->getMock();
 
 		$content->setTargetAction($targetAction);
@@ -227,7 +242,7 @@ class AdminUrlGeneratorTest extends AbstractUnitTest {
 		/** @var AdminUrlGenerator $generator */
 		$generator = $this->getMockBuilder('PP\Lib\UrlGenerator\AdminUrlGenerator')
 			->setConstructorArgs([$content])
-			->setMethods(['indexUrl', 'actionUrl', 'jsonUrl', 'popupUrl'])
+			->onlyMethods(['indexUrl', 'actionUrl', 'jsonUrl', 'popupUrl'])
 			->getMock();
 
 		$generator->generate([]);

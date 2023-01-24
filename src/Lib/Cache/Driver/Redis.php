@@ -55,12 +55,12 @@ class Redis implements CacheInterface, SerializerAwareInterface {
 
 		// parse additional arguments..
 		$paramsRaw = getFromArray($connectorArgs, 'query', '');
-		parse_str($paramsRaw, $params);
+		parse_str((string) $paramsRaw, $params);
 
 		// create connection..
 		$this->host = getFromArray($connectorArgs, 'host', '127.0.0.1');
 		$this->port = getFromArray($connectorArgs, 'port', 6379);
-		$this->database = empty($connectorArgs['path']) ? $this->database : intval(ltrim($connectorArgs['path'], '/'));
+		$this->database = empty($connectorArgs['path']) ? $this->database : intval(ltrim((string) $connectorArgs['path'], '/'));
 		$this->cachePrefix = ($cacheDomain === null) ? '' : $cacheDomain . ':';
 		$this->timeout = (float)getFromArray($params, 'timeout', 1.5);
 		$this->serializer = new DefaultSerializer();

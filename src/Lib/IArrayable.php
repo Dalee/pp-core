@@ -16,11 +16,10 @@ interface IArrayable {
 	public function toArray();
 
 	/**
-	 * Creates instance from array
-	 *
-	 * @param array $object
-	 * @return mixed
-	 */
-	public static function fromArray(array $object);
+  * Creates instance from array
+  *
+  * @return mixed
+  */
+ public static function fromArray(array $object);
 
 }

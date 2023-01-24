@@ -2,12 +2,10 @@
 // Abstract
 class PXInputDateTime extends PXAdminWidget
 {
-    public $name;
     public $date;   // array(year, month, day, hour, minute, second);
 
-    public function __construct($name, $value, $notNull = true)
+    public function __construct(public $name, $value, $notNull = true)
     {
-        $this->name = $name;
         $this->notNull = $notNull;
 
         $this->date = (is_array($value)) ? $value : $this->_parseDate($value, $notNull);
@@ -28,7 +26,7 @@ class PXInputDateTime extends PXAdminWidget
         if (!is_null($value)) {
             $matches = [];
 
-            $value = trim($value);
+            $value = trim((string) $value);
             $value = mb_substr($value, 0, 19);
 
             preg_match("/^((\d{1,2}).(\d{1,2}).(\d{4}))?\s?((\d{1,2})(:(\d{1,2})(:(\d{1,2}))?)?)?/" . REGEX_MOD, trim($value), $matches);

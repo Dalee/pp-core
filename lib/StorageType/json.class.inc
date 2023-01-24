@@ -20,7 +20,7 @@ class PXStorageTypeJson extends PXStorageType
 	{
 		$k = $field->name;
 
-		$v = json_encode((is_array($object[$k]) ? $object[$k] : []));
+		$v = json_encode((is_array($object[$k]) ? $object[$k] : []), JSON_THROW_ON_ERROR);
 
 		if (is_array($param['dbFields'])) {
 			$param['dbFields'][] = $k;
@@ -34,6 +34,6 @@ class PXStorageTypeJson extends PXStorageType
 
 	public function normalize($field, $object, &$param)
 	{
-		return ($object[$field->name]) ? json_decode($object[$field->name], 1) : $object[$field->name];
+		return ($object[$field->name]) ? json_decode((string) $object[$field->name], 1, 512, JSON_THROW_ON_ERROR) : $object[$field->name];
 	}
 }

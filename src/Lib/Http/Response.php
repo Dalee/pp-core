@@ -14,11 +14,10 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 
 final class Response
 {
-	/** @var self */
-	private static $instance;
+	private static ?\PP\Lib\Http\Response $instance = null;
 
 	/** @var HttpResponse */
-	private $httpResponse;
+	private readonly HttpResponse $httpResponse;
 
 	/**
 	 * Response constructor.
@@ -32,7 +31,7 @@ final class Response
 			$charset = $app->getProperty('OUTPUT_CHARSET', DEFAULT_CHARSET);
 			$cacheTime = $app->getProperty('PP_RESPONSE_CACHE_EXPIRATION', 3600);
 
-		} catch (Exception $e) {
+		} catch (Exception) {
 			$charset = DEFAULT_CHARSET;
 			$cacheTime = 3600;
 		}
@@ -58,22 +57,18 @@ final class Response
 	}
 
 	/**
-	 * @param string $name
-	 * @param string $value
-	 * @return $this
-	 */
-	public function addHeader(string $name, string $value): self
+  * @return $this
+  */
+ public function addHeader(string $name, string $value): self
 	{
 		$this->httpResponse->headers->set($name, $value);
 		return $this;
 	}
 
 	/**
-	 * @param string $contentType
-	 * @param string|null $charset
-	 * @return $this
-	 */
-	public function setContentType(string $contentType, ?string $charset = null): self
+  * @return $this
+  */
+ public function setContentType(string $contentType, ?string $charset = null): self
 	{
 		$this->httpResponse->headers->set('Content-Type', $contentType);
 
@@ -84,9 +79,6 @@ final class Response
 		return $this;
 	}
 
-	/**
-	 * @return static
-	 */
 	public static function getInstance(): self
 	{
 		if (is_null(static::$instance)) {
@@ -97,10 +89,8 @@ final class Response
 	}
 
 	/**
-	 * @param string $url
-	 * @param string|int|null $cacheTimeOut
-	 * @param int $statusCode
-	 */
+	* @param string|int|null $cacheTimeOut
+	*/
 	public function redirect(string $url, $cacheTimeOut = null, int $statusCode = HttpResponse::HTTP_MOVED_PERMANENTLY): void
 	{
 		if (ini_get('display_errors') && PXErrorReporter::hasErrors()) {
@@ -133,9 +123,6 @@ final class Response
 		return $this;
 	}
 
-	/**
-	 * @param string|null $content
-	 */
 	public function send(?string $content = null): void
 	{
 		if (mb_strlen($content)) {
@@ -147,9 +134,8 @@ final class Response
 	}
 
 	/**
-	 * @param int $length
-	 * @return $this
-	 */
+	* @return $this
+	*/
 	public function setLength(int $length): self {
 		$this->addHeader('Content-Length', $length);
 		return $this;
@@ -207,27 +193,22 @@ final class Response
 	}
 
 	/**
-	 * @param string $name
-	 * @return $this
-	 */
+	* @return $this
+	*/
 	public function removeHeader(string $name): self
 	{
 		$this->httpResponse->headers->remove($name);
 		return $this;
 	}
 
-	/**
-	 * @return bool
-	 */
 	public function isError(): bool
 	{
 		return $this->httpResponse->isClientError() || $this->httpResponse->isServerError();
 	}
 
 	/**
-	 * @param int $code
-	 * @return $this
-	 */
+	* @return $this
+	*/
 	public function setStatus(int $code): self
 	{
 		$this->httpResponse->setStatusCode($code);
@@ -235,9 +216,8 @@ final class Response
 	}
 
 	/**
-	 * @param string $charset
-	 * @return $this
-	 */
+	* @return $this
+	*/
 	public function setCharset(string $charset): self
 	{
 		$this->httpResponse->setCharset($charset);
@@ -245,12 +225,8 @@ final class Response
 	}
 
 	/**
-	 * @param string $filename
-	 * @param string|null $contentType
-	 * @param string $dispositionType
-	 * @param string|null $charset
-	 * @return $this
-	 */
+	* @return $this
+	*/
 	public function downloadFile(string $filename, ?string $contentType = null,
 								 string $dispositionType = ResponseHeaderBag::DISPOSITION_ATTACHMENT,
 								 ?string $charset = null): self
@@ -267,10 +243,8 @@ final class Response
 	}
 
 	/**
-	 * @param null $jsonData
-	 * @param string|null $contentType
-	 * @param string|null $charset
-	 */
+	* @param null $jsonData
+	*/
 	public function sendJson($jsonData = null, ?string $contentType = null, ?string $charset = null): void
 	{
 		if (mb_strlen($contentType)) {
@@ -285,9 +259,6 @@ final class Response
 		$jsonResponse->send();
 	}
 
-	/**
-	 * @param callable $callback
-	 */
 	public function sendStream(callable $callback): void
 	{
 		$streamedResponse = new StreamedResponse($callback, $this->httpResponse->getStatusCode(), $this->httpResponse->headers->all());
@@ -311,7 +282,7 @@ final class Response
 	 * @return bool
 	 * @noinspection PhpTooManyParametersInspection
 	 */
-	public function setCookie(string $name, $value, ?int $expire = null, ?string $domain = null, string $path = '/',
+	public function setCookie(string $name, mixed $value, ?int $expire = null, ?string $domain = null, string $path = '/',
 							  bool $secure = false, bool $httpOnly = false, bool $raw = false, ?string $sameSite = null)
 	{
 		if (is_array($value) || is_object($value)) {
@@ -329,9 +300,8 @@ final class Response
 	}
 
 	/**
-	 * Get access to Symfony Response instance for edge cases
-	 * @return HttpResponse
-	 */
+	* Get access to Symfony Response instance for edge cases
+	*/
 	public function getBaseResponse(): HttpResponse
 	{
 		return $this->httpResponse;

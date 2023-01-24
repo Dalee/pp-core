@@ -3,7 +3,7 @@
 namespace PP\Lib\PersistentQueue;
 
 use Exception;
-use PXApplication;
+use PP\Contracts\IApplication;
 use PXDatabase;
 
 /**
@@ -16,15 +16,15 @@ class Queue {
 	/**
 	 * @var string
 	 */
-	public const JOB_DB_TYPE = 'queue_job';
+	final public const JOB_DB_TYPE = 'queue_job';
 
 	/**
 	 * @var string
 	 */
-	public const JOB_FETCH_LIMIT = 1;
+	final public const JOB_FETCH_LIMIT = 1;
 
 	/**
-	 * @var PXApplication
+	 * @var IApplication
 	 */
 	protected $app;
 
@@ -34,13 +34,11 @@ class Queue {
 	protected $db;
 
 	/**
-	 * Queue constructor.
-	 *
-	 * @param PXApplication $app
-	 * @param PXDatabase $db
-	 * @throws Exception
-	 */
-	public function __construct(PXApplication $app, PXDatabase $db) {
+	* Queue constructor.
+	*
+	* @throws Exception
+	*/
+	public function __construct(IApplication $app, PXDatabase $db) {
 		$this->app = $app;
 		$this->db = $db;
 		if (!isset($this->app->types[static::JOB_DB_TYPE])) {
@@ -50,9 +48,8 @@ class Queue {
 	}
 
 	/**
-	 * @param Job $job
-	 * @return int
-	 */
+	* @return int
+	*/
 	public function addJob(Job $job) {
 		$contentType = $this->app->types[static::JOB_DB_TYPE];
 		$jobObject = $job->toArray();
@@ -64,36 +61,32 @@ class Queue {
 	}
 
 	/**
-	 * @param Job $job
-	 * @return null
-	 */
+	* @return null
+	*/
 	protected function updateJob(Job $job) {
 		$contentType = $this->app->types[static::JOB_DB_TYPE];
 		return $this->db->modifyContentObject($contentType, $job->toArray());
 	}
 
 	/**
-	 * @param Job $job
-	 * @return null
-	 */
-	public function finishJob(Job $job) {
+  * @return null
+  */
+ public function finishJob(Job $job) {
 		$job->setState(Job::STATE_FINISHED);
 		return $this->updateJob($job);
 	}
 
 	/**
-	 * @param Job $job
-	 * @return null
-	 */
+	* @return null
+	*/
 	public function failJob(Job $job) {
 		$job->setState(Job::STATE_FAILED);
 		return $this->updateJob($job);
 	}
 
 	/**
-	 * @param Job $job
-	 * @return null
-	 */
+	* @return null
+	*/
 	public function startJob(Job $job) {
 		$job->setState(Job::STATE_IN_PROGRESS);
 		return $this->updateJob($job);
@@ -111,9 +104,7 @@ class Queue {
 			$limit, 0
 		);
 
-		return array_map(function ($object) {
-			return Job::fromArray($object);
-		}, $objects);
+		return array_map(fn($object) => Job::fromArray($object), $objects);
 	}
 
 }

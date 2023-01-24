@@ -74,7 +74,7 @@ class AclModule extends AbstractModule
 		$table->setDict('what', $this->getWhatDict());
 		$table->setDict('access', $this->access);
 
-		$queryParams = 'area=' . $this->area . '&sid=' . urlencode($sid);
+		$queryParams = 'area=' . $this->area . '&sid=' . urlencode((string) $sid);
 		$table->setControls('/admin/popup.phtml?' . $queryParams . '&id=', 'изменить это правило', 'edit', false, true);
 		$table->setControls('/admin/action.phtml?' . $queryParams . '&action=delete&id=', 'удалить  это правило', 'del', true, false);
 
@@ -237,7 +237,7 @@ class AclModule extends AbstractModule
 
 	public function _getSid()
 	{
-		return isset($_GET['sid']) ? $_GET['sid'] : '*';
+		return $_GET['sid'] ?? '*';
 	}
 
 	public function _getSidCriteria($sid)
@@ -410,25 +410,17 @@ class AclModule extends AbstractModule
 	protected
 	function setOrder($order, $criteria)
 	{
-		if (($order[0] == '-' || $order[0] == '+') && ctype_digit(substr($order, 1))) {
+		if (($order[0] == '-' || $order[0] == '+') && ctype_digit(substr((string) $order, 1))) {
 			// makes -1, +1 sql-readable
 			$order = sprintf('COALESCE("%s",0) %s', $this->orderingField, $order);
 		}
 
-		switch (true) {
-			case (is_int($criteria) || ctype_digit($criteria)):
-				$where = '"id" = ' . $criteria;
-				break;
-			case (is_string($criteria) && ($criteria[0] == '<' || $criteria[0] == '>') && ctype_digit(substr($criteria, 1))):
-			case (is_string($criteria) && ($criteria[0] == '<' || $criteria[0] == '>') && ctype_digit(substr($criteria, 2)) && $criteria[1] == '='):
-				$where = $this->orderingField . $criteria;
-				break;
-			case is_array($criteria):
-				$where = join(' AND ', $criteria);
-				break;
-			default:
-				$where = $criteria;
-		}
+		$where = match (true) {
+			is_int($criteria) || ctype_digit((string) $criteria) => '"id" = ' . $criteria,
+			is_string($criteria) && ($criteria[0] == '<' || $criteria[0] == '>') && ctype_digit(substr($criteria, 1)), is_string($criteria) && ($criteria[0] == '<' || $criteria[0] == '>') && ctype_digit(substr($criteria, 2)) && $criteria[1] == '=' => $this->orderingField . $criteria,
+			is_array($criteria) => join(' AND ', $criteria),
+			default => $criteria,
+		};
 
 		$set = ["{$this->orderingField} = {$order}"/*, "sys_modified = now()"*/];
 		$set = join(",", $set);
@@ -448,7 +440,7 @@ class AclModule extends AbstractModule
 		}
 
 		$where = join(' AND ', $this->_getSidCriteria($sid));
-		list(list($maxOrder)) = $this->db->query("SELECT max({$this->orderingField}) as \"0\" FROM {$this->sqlTable} WHERE {$where};");
+		[[$maxOrder]] = $this->db->query("SELECT max({$this->orderingField}) as \"0\" FROM {$this->sqlTable} WHERE {$where};");
 		return $maxOrder;
 	}
 
@@ -472,7 +464,7 @@ class AclModule extends AbstractModule
 				$this->setOrder('+1', "<" . $movingOrder);
 				$this->setOrder(0, $movingId);
 				return true;
-			case is_int($afterId) || ctype_digit($afterId):
+			case is_int($afterId) || ctype_digit((string) $afterId):
 				$afterOrder = $rules[$afterId];
 				break;
 			default:
@@ -531,7 +523,7 @@ class AclModule extends AbstractModule
 		$rId = (int)$this->request->getVar('id');
 		$afterId = (int)$this->request->getVar('after');
 		$sid = $this->_getSid();
-		$redir = '/admin/?area=' . $this->area . '&sid=' . urlencode($sid);
+		$redir = '/admin/?area=' . $this->area . '&sid=' . urlencode((string) $sid);
 		$ajax = $this->request->getVar('ajax');
 		$result = null;
 
@@ -577,7 +569,7 @@ class AclModule extends AbstractModule
 
 				$this->db->UpdateObjectById($this->sqlTable, $rId, $fields, $values);
 
-				$redir = '/admin/popup.phtml?area=' . $this->area . '&sid=' . urlencode($sid) . '&id=' . $rId;
+				$redir = '/admin/popup.phtml?area=' . $this->area . '&sid=' . urlencode((string) $sid) . '&id=' . $rId;
 				break;
 
 			case 'delete':
@@ -596,7 +588,7 @@ class AclModule extends AbstractModule
 		}
 
 		if ($ajax) {
-			die(json_encode($result));
+			die(json_encode($result, JSON_THROW_ON_ERROR));
 		}
 
 		return $redir;

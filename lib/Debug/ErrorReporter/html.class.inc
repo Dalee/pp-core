@@ -8,7 +8,7 @@ class PXErrorReporterHTML extends PXErrorReporter
 
 	public function __construct()
 	{
-		$this->computer = @rtrim(`hostname`);
+		$this->computer = @rtrim((string) `hostname`);
 
 		$this->toEmail = !empty($_SERVER['SERVER_ADMIN']) ? $_SERVER['SERVER_ADMIN'] : 'support@dalee.ru';
 		$this->fromEmail = 'robot@' . $this->computer;
@@ -23,7 +23,7 @@ class PXErrorReporterHTML extends PXErrorReporter
 	{
 		$response = Response::getInstance();
 		$host = quot(PXRequest::GetHttpHost());
-		$uri = quot(urldecode(PXRequest::GetRequestUri()));
+		$uri = quot(urldecode((string) PXRequest::GetRequestUri()));
 		$response->unavailable();
 		$response->send(<<<HTML
 			<html>
@@ -58,7 +58,7 @@ HTML
 			$app = PXRegistry::getApp(); // APP may not be initialized yet and throws exception
 			$errorRepDir = $app->getProperty('PP_ERROR_REPORTER_ANTIFLOOD_DIR', 'error_reporter');
 			$cacheTime = (int)$app->getProperty('PP_ERROR_REPORTER_ANTIFLOOD_LAG', 30);
-		} catch (Exception $e) {
+		} catch (Exception) {
 			$errorRepDir = 'error_reporter';
 			$cacheTime = 30;
 		}
@@ -68,7 +68,7 @@ HTML
 		}
 
 		$cache = ObjectCache::get('file', $errorRepDir, $cacheTime);
-		$errorSignature = json_encode($this->errorsMap);
+		$errorSignature = json_encode($this->errorsMap, JSON_THROW_ON_ERROR);
 
 		$inLoop = !$cache->expired($errorSignature);
 		$curCount = $cache->loadStaled($errorSignature);
@@ -86,26 +86,13 @@ HTML
 			@$errorTypes[$e['type']]++;
 		}
 
-		uksort($errorTypes, function ($a, $b) {
-			switch (true) {
-				case ($a == $b):
-					return 0;
-
-				case ($a == 'Fatal Error'):
-					return 1;
-
-				case ($b == 'Fatal Error'):
-					return -1;
-
-				case ($a == 'Notice'):
-					return -1;
-
-				case ($b == 'Notice'):
-					return 1;
-
-				default:
-					return 1;
-			}
+		uksort($errorTypes, fn($a, $b) => match (true) {
+			$a == $b => 0,
+			$a == 'Fatal Error' => 1,
+			$b == 'Fatal Error' => -1,
+			$a == 'Notice' => -1,
+			$b == 'Notice' => 1,
+			default => 1,
 		});
 
 		$subject = [];
@@ -139,10 +126,10 @@ HTML
 
 		$errorsListHTML = [];
 		foreach ($this->errors as $errPos => $error) {
-			$cls = strtolower(str_replace(' ', '', $error['type']));
+			$cls = strtolower(str_replace(' ', '', (string) $error['type']));
 			$this->attachError($error, $errPos);
 
-			$message = htmlspecialchars($error['message'], ENT_QUOTES | ENT_DISALLOWED | ENT_SUBSTITUTE, 'UTF-8');
+			$message = htmlspecialchars((string) $error['message'], ENT_QUOTES | ENT_DISALLOWED | ENT_SUBSTITUTE, 'UTF-8');
 			$errorsListHTML[] = <<<HTML
 				<li class="{$cls}">
 					<strong>{$error['type']}</strong>:
@@ -181,9 +168,9 @@ HTML;
 
 	public function environmentsUris()
 	{
-		$requestUri = PXRequest::GetHttpProto() . '://' . quot(PXRequest::GetHttpHost()) . quot(urldecode(PXRequest::GetRequestUri()));
+		$requestUri = PXRequest::GetHttpProto() . '://' . quot(PXRequest::GetHttpHost()) . quot(urldecode((string) PXRequest::GetRequestUri()));
 		$remoteAddr = PXRequest::GetRemoteAddr();
-		$httpReferer = quot(urldecode(PXRequest::GetHttpReferer()));
+		$httpReferer = quot(urldecode((string) PXRequest::GetHttpReferer()));
 
 		return <<<HTML
 			<dt>RequestUri:</dt>
@@ -200,7 +187,7 @@ HTML;
 		static $xslt;
 
 		if (is_null($xslt)) {
-			$xslt = new PXLibXSLT(dirname(__FILE__) . '/style.xsl');
+			$xslt = new PXLibXSLT(__DIR__ . '/style.xsl');
 		}
 
 		return $xslt->transform($xml, false);
@@ -255,7 +242,7 @@ HTML;
 	{
 		$traceXML = $this->traceToXML($error['trace']);
 
-		$message = htmlspecialchars($error['message'], ENT_XML1 | ENT_QUOTES | ENT_DISALLOWED | ENT_SUBSTITUTE, 'UTF-8');
+		$message = htmlspecialchars((string) $error['message'], ENT_XML1 | ENT_QUOTES | ENT_DISALLOWED | ENT_SUBSTITUTE, 'UTF-8');
 
 		return <<<XML
 <?xml version="1.0" encoding="UTF-8"?>
@@ -282,9 +269,7 @@ XML;
 						'',
 
 						array_map(
-							function ($a) {
-								return "\n\t\t\t\t<{$a['type']}>{$a['value']}</{$a['type']}>";
-							},
+							fn($a) => "\n\t\t\t\t<{$a['type']}>{$a['value']}</{$a['type']}>",
 							$error['args']
 						)
 					);

@@ -38,8 +38,8 @@ class PXObjects extends PXContentObjects
 
 	public function hasItems($type = null)
 	{
-		$type = $type ? $type : $this->currentType;
-		return @isset($this[$type]) && count($this[$type]);
+		$type = $type ?: $this->currentType;
+		return @isset($this[$type]) && (is_countable($this[$type]) ? count($this[$type]) : 0);
 	}
 
 	public function getFirst($type)

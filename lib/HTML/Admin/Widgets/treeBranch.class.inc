@@ -12,7 +12,7 @@ class PXAdminTreeBranch extends PXAdminWidget
 
     public function html()
     {
-        $title = strip_tags($this->leaf->title);
+        $title = strip_tags((string) $this->leaf->title);
 
         $html = '';
         $html .= '<div' . $this->divAttrs() . '>';
@@ -193,7 +193,7 @@ class PXAdminTreeBranch extends PXAdminWidget
     {
         $href = $this->htmlTree->childsLink($this->leaf->id);
 
-        if (mb_strlen($href)) {
+        if (mb_strlen((string) $href)) {
             $_ = $this->leaf->content['status'] ? '' : ' class="hide"';
             $html = '<a href="' . $href . '"' . $_ . '>' . $html . '</a>';
         }
@@ -203,7 +203,7 @@ class PXAdminTreeBranch extends PXAdminWidget
 
     public function escapeTitle()
     {
-        return str_replace(['"', "'"], '', strip_tags($this->leaf->title));
+        return str_replace(['"', "'"], '', strip_tags((string) $this->leaf->title));
     }
 
     public function editLink()
@@ -219,5 +219,3 @@ HTML;
         return trim($html);
     }
 }
-
-?>

@@ -18,7 +18,7 @@ abstract class AbstractAdminEngine extends AbstractEngine {
 	/**
 	 * @var Session
 	 */
-	protected $session = ['factory' => 'Symfony\Component\HttpFoundation\Session\Session', 'helper' => true];
+	protected $session = ['factory' => \Symfony\Component\HttpFoundation\Session\Session::class, 'helper' => true];
 
 	protected $initOrder = ['container', 'app', 'db', 'request', 'session', 'user', 'layout'];
 

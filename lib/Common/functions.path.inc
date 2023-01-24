@@ -11,11 +11,9 @@
  * @test [""] >>> ""
  */
 function path_clear($path) {
-	$pathItems = explode(DIRECTORY_SEPARATOR, $path);
+	$pathItems = explode(DIRECTORY_SEPARATOR, (string) $path);
 
-	$pathItems = array_map(function ($item) {
-		return path_filter_filename((string)$item);
-	}, $pathItems);
+	$pathItems = array_map(fn($item) => path_filter_filename((string)$item), $pathItems);
 
 	$pathItems = array_filter($pathItems);
 
@@ -78,7 +76,7 @@ function path_resolve($from, $to = null) {
 	}
 
 	foreach ($paths as $path) {
-		$parts = explode('/', rtrim($path, '/'));
+		$parts = explode('/', rtrim((string) $path, '/'));
 		if (path_is_absolute($path)) {
 			$res = [];
 		}
@@ -96,7 +94,7 @@ function path_resolve($from, $to = null) {
 	}
 
 	$lastPath = end($paths);
-	$lastSlash = $lastPath[strlen($lastPath)-1] === '/';
+	$lastSlash = $lastPath[strlen((string) $lastPath)-1] === '/';
 
 	array_unshift($res, '');
 	$lastSlash && array_push($res, '');
@@ -135,7 +133,7 @@ function path_relative($from, $to) {
       array_push($outputParts, '..');
     }
 
-    $outputParts = array_merge($outputParts, array_slice($toParts, $samePartsLength));
+    $outputParts = [...$outputParts, ...array_slice($toParts, $samePartsLength)];
 
     return join('/', $outputParts);
 }

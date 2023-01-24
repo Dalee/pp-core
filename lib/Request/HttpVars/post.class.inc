@@ -15,7 +15,7 @@ class NLPostData extends NLHTTPVarsData
         $retArray['name'] = [];
 
         foreach ($tmpArray as $k => $v) {
-            $retArray['name'][$k] = stripslashes($v);
+            $retArray['name'][$k] = stripslashes((string) $v);
 
             if ($retArray['error'][$k] != 0 || $retArray['size'][$k] == 0) {
                 unset($retArray['name'][$k]);
@@ -35,7 +35,7 @@ class NLPostData extends NLHTTPVarsData
             if ($isArray) {
                 $this->setImageArray($retArray);
             } else {
-                $retArray['name'] = stripslashes($retArray['name']);
+                $retArray['name'] = stripslashes((string) $retArray['name']);
 
                 if ($retArray['error'] != 0 || $retArray['size'] == 0) {
                     $retArray = [];
@@ -55,5 +55,3 @@ class NLPostData extends NLHTTPVarsData
         return $this->_GetImageVar($varName, $isArray);
     }
 }
-
-?>

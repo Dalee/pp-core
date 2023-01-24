@@ -269,13 +269,12 @@ MASS_ACTIONS
 	}
 
 	/**
-	 * Delete property by id.
-	 * Public defined properties will be displayed anyway.
-	 *
-	 * @param mixed $id
-	 * @param array $object
-	 */
-	protected function deleteAction($id, $object)
+	* Delete property by id.
+	* Public defined properties will be displayed anyway.
+	*
+	* @param array $object
+	*/
+	protected function deleteAction(mixed $id, $object)
 	{
 		$id = is_numeric($id) ? $id : null;
 		if (empty($id)) {
@@ -287,14 +286,13 @@ MASS_ACTIONS
 	}
 
 	/**
-	 * Update/Insert new property to database.
-	 * Only power users can create new properties.
-	 *
-	 * @param mixed $id
-	 * @param array $object
-	 * @return string
-	 */
-	protected function saveAction($id, $object)
+	* Update/Insert new property to database.
+	* Only power users can create new properties.
+	*
+	* @param array $object
+	* @return string
+	*/
+	protected function saveAction(mixed $id, $object)
 	{
 		unset($object['id']);
 		if (empty($object['sys_uuid'])) {
@@ -323,14 +321,11 @@ MASS_ACTIONS
 		return $generator->getAdminGenerator()->popupUrl($popupParams);
 	}
 
-	/**
-	 * @param array $publicProperties
-	 */
 	protected function parsePredefinedProperties(array $publicProperties)
 	{
 		foreach ($publicProperties as $propertyStrDef) {
 			$propertyDef = [];
-			$formatString = str_replace('|', '&', $propertyStrDef);
+			$formatString = str_replace('|', '&', (string) $propertyStrDef);
 
 			parseStrMagic($formatString, $propertyDef);
 			if (!isset($propertyDef['name'])) {
@@ -342,7 +337,7 @@ MASS_ACTIONS
 				: $propertyDef['name'];
 
 			$propertyDef['displaytype'] = isset($propertyDef['displaytype'])
-				? str_replace(',', '|', $propertyDef['displaytype'])
+				? str_replace(',', '|', (string) $propertyDef['displaytype'])
 				: 'TEXT';
 
 			$key = $propertyDef['name'];
@@ -361,14 +356,13 @@ MASS_ACTIONS
 	}
 
 	/**
-	 * @param array $propertyRaw
-	 * @return bool
-	 */
+	* @return bool
+	*/
 	protected function isPropertySystem(array $propertyRaw)
 	{
 		// public property - property listed in module settings and don't have SYS_/sys_ prefix
 		$key = $propertyRaw['name'];
-		$prefix = mb_strtolower(mb_substr($key, 0, mb_strlen('sys_')));
+		$prefix = mb_strtolower(mb_substr((string) $key, 0, mb_strlen('sys_')));
 
 		return ($prefix === 'sys_' || !isset($this->predefinedPropertyDefList[$key]));
 	}
@@ -430,9 +424,7 @@ MASS_ACTIONS
 		);
 
 		// resort all properties
-		usort($propertyList, function ($left, $right) {
-			return mb_strcasecmp($left['name'], $right['name']);
-		});
+		usort($propertyList, fn($left, $right) => mb_strcasecmp($left['name'], $right['name']));
 
 		return $propertyList;
 	}
@@ -448,12 +440,12 @@ MASS_ACTIONS
 	{
 		$table = [
 			[
-				'id' => isset($propertyRaw['id']) ? $propertyRaw['id'] : $propertyRaw['name'],
+				'id' => $propertyRaw['id'] ?? $propertyRaw['name'],
 				'sys_created' => null,
 				'sys_modified' => null,
 				'name' => $propertyRaw['name'],
 				'description' => $propertyRaw['description'],
-				'value' => isset($propertyRaw['value']) ? $propertyRaw['value'] : null,
+				'value' => $propertyRaw['value'] ?? null,
 			],
 		];
 
@@ -467,7 +459,7 @@ MASS_ACTIONS
 	 */
 	protected function getTypeDescription($object)
 	{
-		$name = isset($object['name']) ? $object['name'] : null;
+		$name = $object['name'] ?? null;
 		$displayTypeDef = [];
 
 		// build predefined datatype?
@@ -497,7 +489,7 @@ MASS_ACTIONS
 			'value' => [
 				'name' => 'value',
 				'description' => $this->app->langTree->getByPath('module_properties.table.value.rus'),
-				'displaytype' => isset($displayTypeDef['displaytype']) ? $displayTypeDef['displaytype'] : 'TEXT',
+				'displaytype' => $displayTypeDef['displaytype'] ?? 'TEXT',
 				'storagetype' => 'string',
 			],
 			'description' => [

@@ -5,10 +5,7 @@ class PXPreviewEngine extends PXEngineIndex {
 	// @overload
 	protected $db = ['factory' => 'PXPreviewDB', 'helper' => true];
 
-	private $path;
-
-	public function __construct($path) {
-		$this->path = $path;
+	public function __construct(private $path) {
 		parent::__construct();
 	}
 

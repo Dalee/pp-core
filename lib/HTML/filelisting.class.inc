@@ -75,9 +75,7 @@ class PXHTMLFileListing
         $this->side = $side;
         $this->files = [];
         $this->href = $href;
-        $this->urlBuilder = $urlBuilder ?: function ($alias) {
-            return $alias;
-        };
+        $this->urlBuilder = $urlBuilder ?: fn($alias) => $alias;
     }
 
     public function htmlHeader()
@@ -132,14 +130,14 @@ HTML;
 
     public function _breadCrumbs()
     {
-        $pathA = array_map([$this, 'escapeHTML'], explode('/', $this->catalog));
+        $pathA = array_map($this->escapeHTML(...), explode('/', (string) $this->catalog));
 
         array_unshift($pathA, '&darr;');
 
         $res = [];
 
         foreach ($pathA as $k => $d) {
-            if (trim($d) == '') {
+            if (trim((string) $d) == '') {
                 continue;
             }
 
@@ -199,12 +197,12 @@ HTML;
 
     private function escapeJS($str)
     {
-        return "'" . $this->escapeHTML(addslashes($str)) . "'";
+        return "'" . $this->escapeHTML(addslashes((string) $str)) . "'";
     }
 
     private function escapeHTML($str)
     {
-        return htmlspecialchars($str, ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE | ENT_DISALLOWED, DEFAULT_CHARSET);
+        return htmlspecialchars((string) $str, ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE | ENT_DISALLOWED, DEFAULT_CHARSET);
     }
 
     public function _listContext($f)
@@ -220,15 +218,15 @@ HTML;
             "'file'",
             $this->escapeJS($f->name),                                     // title
             $f->isDir,                                                     // isDir
-            $this->escapeJS(str_replace('\\', '/', $url)),            // isRead / alias
+            $this->escapeJS(str_replace('\\', '/', (string) $url)),            // isRead / alias
             $f->writable,                                                  // isWrite
             $f->deletable,                                                 // isDelete
             $f->binary,                                                    // isBinary
-            "'" . rawurlencode(str_replace('\\', '/', $this->catalog)) . "'",  // dir
-            $this->escapeJS(str_replace('\\', '/', $this->href)),          // href
+            "'" . rawurlencode(str_replace('\\', '/', (string) $this->catalog)) . "'",  // dir
+            $this->escapeJS(str_replace('\\', '/', (string) $this->href)),          // href
             "'" . $this->side . "'",                                           // side
             $f->copyable,                                                  // isCopy
-            "'" . rawurlencode($f->name) . "'",                                // fileName
+            "'" . rawurlencode((string) $f->name) . "'",                                // fileName
             intval(!mb_check_encoding($f->name, DEFAULT_CHARSET)) . "); return false;" // isBrokenFilename
         ];
 

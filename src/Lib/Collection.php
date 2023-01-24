@@ -20,10 +20,9 @@ class Collection implements Countable, IteratorAggregate, JsonSerializable {
 	protected $elements = [];
 
 	/**
-	 * Collection constructor.
-	 * @param array $elements
-	 */
-	public function __construct(array $elements = []) {
+  * Collection constructor.
+  */
+ public function __construct(array $elements = []) {
 		$this->elements = $elements;
 	}
 
@@ -49,18 +48,16 @@ class Collection implements Countable, IteratorAggregate, JsonSerializable {
 	}
 
 	/**
-	 * @param Closure $func
-	 * @return array
-	 */
-	public function map(Closure $func) {
+  * @return array
+  */
+ public function map(Closure $func) {
 		return array_map($func, $this->elements);
 	}
 
 	/**
-	 * @param Closure $func
-	 * @return static
-	 */
-	public function filter(Closure $func) {
+  * @return static
+  */
+ public function filter(Closure $func) {
 		return new static(array_filter($this->elements, $func));
 	}
 
@@ -86,19 +83,16 @@ class Collection implements Countable, IteratorAggregate, JsonSerializable {
 	}
 
 	/**
-	 * @param  mixed  $key
-	 * @return bool
-	 */
-	public function containsKey($key) {
+  * @return bool
+  */
+ public function containsKey(mixed $key) {
 		return array_key_exists($key, $this->elements);
 	}
 
 	/**
-	 * @param  mixed  $key
-	 * @param  mixed  $default
-	 * @return mixed
-	 */
-	public function get($key, $default = null) {
+  * @return mixed
+  */
+ public function get(mixed $key, mixed $default = null) {
 		if ($this->containsKey($key)) {
 			return $this->elements[$key];
 		}
@@ -107,11 +101,9 @@ class Collection implements Countable, IteratorAggregate, JsonSerializable {
 	}
 
 	/**
-	 * @param  mixed  $key
-	 * @param  mixed  $value
-	 * @return Collection
-	 */
-	public function set($key, $value) {
+  * @return Collection
+  */
+ public function set(mixed $key, mixed $value) {
 		if (is_null($key)) {
 			$this->elements[] = $value;
 		} else {
@@ -122,10 +114,9 @@ class Collection implements Countable, IteratorAggregate, JsonSerializable {
 	}
 
 	/**
-	 * @param  mixed  $value
-	 * @return Collection
-	 */
-	public function push($value) {
+  * @return Collection
+  */
+ public function push(mixed $value) {
 		$this->set(null, $value);
 
 		return $this;

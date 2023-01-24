@@ -18,7 +18,7 @@ class PXStorageTypeSerialized extends PXStorageType
 	public function normalizeObjectAttribute($field, $object, &$param)
 	{
 		$k = $field->name;
-		$v = json_encode((is_array($object[$k])) ? $object[$k] : []);
+		$v = json_encode((is_array($object[$k])) ? $object[$k] : [], JSON_THROW_ON_ERROR);
 
 		if (is_array($param['dbFields'])) {
 			$param['dbFields'][] = $k;
@@ -46,17 +46,17 @@ class PXStorageTypeSerialized extends PXStorageType
 			// but json more simpler to check so we will do it.
 			$fb = $w[0];
 			$sb = $w[1];
-			$lb = substr($w, -1); // last byte
+			$lb = substr((string) $w, -1); // last byte
 
 			// json_encoded data. not hardened check
-			$json = ctype_digit($fb) || (!ctype_alpha($fb) && !ctype_alpha($fb));
+			$json = ctype_digit((string) $fb) || (!ctype_alpha((string) $fb) && !ctype_alpha((string) $fb));
 			// null equals 'N;', all other /^\w:.*;$/
-			$srlz = ctype_alpha($fb) && $sb === ':' && ($lb === ';' || $lb === '}');
+			$srlz = ctype_alpha((string) $fb) && $sb === ':' && ($lb === ';' || $lb === '}');
 
 			if ($srlz) {
 				$v = @unserialize($w);
 			} elseif ($json) {
-				$v = json_decode($w, true);
+				$v = json_decode((string) $w, true, 512, JSON_THROW_ON_ERROR);
 			}
 
 		}

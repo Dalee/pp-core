@@ -52,13 +52,13 @@ class ObjectsModule extends AbstractModule
 		$types = [];
 		$canProceed = false;
 		foreach ($this->app->types as $k => $v) {
-			if ((count($this->formats) == 0 || in_array($k, $this->formats)) && $this->user->can('admin', $v)) {
+			if (((is_countable($this->formats) ? count($this->formats) : 0) == 0 || in_array($k, $this->formats)) && $this->user->can('admin', $v)) {
 				$types[$k] = $v->title;
 				$canProceed = $canProceed || $rSid == $k;
 			}
 		}
 
-		uasort($types, [$this, '__sortTypes']);
+		uasort($types, $this->__sortTypes(...));
 
 		$this->layout->assignKeyValueList('INNER.0.0', $types, $rSid);
 		return $canProceed;
@@ -196,7 +196,7 @@ class ObjectsModule extends AbstractModule
 
 		if (isset($object['sys_owner'])) {
 			$tmp = $this->db->getObjectById($this->app->types['suser'], $object['sys_owner']);
-			$object['ownerlogin'] = isset($tmp['title']) ? $tmp['title'] : '';
+			$object['ownerlogin'] = $tmp['title'] ?? '';
 		}
 
 		return $object;
@@ -214,13 +214,13 @@ class ObjectsModule extends AbstractModule
 		$title = '';
 		if ($this->request->getId() > 0) {
 			if (isset($object) && isset($object['title'])) {
-				$title = '&laquo;' . mb_substr(strip_tags($object['title']), 0, 32) . '&raquo; &#8212; ';
+				$title = '&laquo;' . mb_substr(strip_tags((string) $object['title']), 0, 32) . '&raquo; &#8212; ';
 			}
 			$title .= ' Редактирование';
 		} else {
 			$title = 'Добавление';
 		}
-		$title .= ' объекта формата &laquo;' . strip_tags($this->datatype->title) . '&raquo;';
+		$title .= ' объекта формата &laquo;' . strip_tags((string) $this->datatype->title) . '&raquo;';
 		return $title;
 	}
 
@@ -255,7 +255,7 @@ class ObjectsModule extends AbstractModule
 			$falseCond = $db->TrueStatusString() . '=' . $db->TrueStatusString(false);
 
 			if ($onlyExistingLinks) {
-				if (count($existingLinks)) {
+				if (is_countable($existingLinks) ? count($existingLinks) : 0) {
 					$existingLinksWhere = $k . '.id IN ( ' . join(',', array_keys($existingLinks)) . ' ) ';
 				} else {
 					$existingLinksWhere = $falseCond;
@@ -402,7 +402,7 @@ class ObjectsModule extends AbstractModule
 
 	public function actionChildren()
 	{
-		if (!count($this->datatype->childs)) {
+		if (!(is_countable($this->datatype->childs) ? count($this->datatype->childs) : 0)) {
 			FatalError("В этом разделе невозможно назначать потомков");
 		}
 
@@ -438,7 +438,7 @@ class ObjectsModule extends AbstractModule
 			if (is_array($fields) && count($fields) > 0) {
 				foreach ($fields as $field => $filter) {
 					if (empty($filter)) continue;
-					$this->nextLocation .= '&filters[' . $dt . ']' . '[' . $field . ']=' . rawurlencode($filter);
+					$this->nextLocation .= '&filters[' . $dt . ']' . '[' . $field . ']=' . rawurlencode((string) $filter);
 				}
 			}
 		}
@@ -459,13 +459,13 @@ class ObjectsModule extends AbstractModule
 				$this->layout->setGetVarToSave('filters[' . $refDatatype->id . '][' . $field . ']', $filter);
 				//apply simple filter logic, ex. : ^search string$
 				$modifiers = P_LEFT | P_RIGHT;
-				if (substr($filter, 0, 1) == '^') {
+				if (str_starts_with((string) $filter, '^')) {
 					$modifiers &= P_RIGHT;
-					$filter = substr($filter, 1);
+					$filter = substr((string) $filter, 1);
 				}
-				if (substr($filter, -1) == '$') {
+				if (str_ends_with((string) $filter, '$')) {
 					$modifiers &= P_LEFT;
-					$filter = substr($filter, 0, -1);
+					$filter = substr((string) $filter, 0, -1);
 				}
 
 				// build where
@@ -568,6 +568,6 @@ class ObjectsModule extends AbstractModule
 
 	public function __sortTypes($a, $b)
 	{
-		return strcoll($a, $b);
+		return strcoll((string) $a, (string) $b);
 	}
 }

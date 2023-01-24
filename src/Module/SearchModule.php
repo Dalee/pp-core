@@ -14,7 +14,7 @@ class SearchModule extends AbstractModule
 
 	public function adminIndex()
 	{
-		$this->word = trim($this->request->GetVar('word'));
+		$this->word = trim((string) $this->request->GetVar('word'));
 		$this->searchForm();
 
 		if (mb_strlen($this->word)) {
@@ -37,7 +37,7 @@ class SearchModule extends AbstractModule
 
 	public function __sortTypes($a, $b)
 	{
-		return strcmp($a->title, $b->title);
+		return strcmp((string) $a->title, (string) $b->title);
 	}
 
 	public function searchForm()
@@ -45,7 +45,7 @@ class SearchModule extends AbstractModule
 		$datatypesHTML = '<ul>';
 
 		$types = $this->app->types;
-		uasort($types, [$this, '__sortTypes']);
+		uasort($types, $this->__sortTypes(...));
 
 		$checkedTypes = $this->request->getVar('d', []);
 

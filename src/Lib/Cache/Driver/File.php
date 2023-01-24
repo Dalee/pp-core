@@ -85,7 +85,7 @@ class File implements CacheInterface, SerializerAwareInterface
 				$data += $offset;
 				ftruncate($fp, 0);
 				fseek($fp, 0, SEEK_SET);
-				fwrite($fp, (time() + ($expTime ? $expTime : $this->expire)) . $data);
+				fwrite($fp, (time() + ($expTime ?: $this->expire)) . $data);
 				flock($fp, LOCK_UN);
 			}
 
@@ -94,7 +94,7 @@ class File implements CacheInterface, SerializerAwareInterface
 		if (!isset($data)) {
 			FatalError('Reading/writing file error "' . $fileName . '"');
 		}
-		return isset($data) ? $data : $initial;
+		return $data ?? $initial;
 	}
 
 	public function loadStaled($objectId)
@@ -139,7 +139,7 @@ class File implements CacheInterface, SerializerAwareInterface
 		$files = glob($fileGlob, GLOB_MARK | GLOB_NOSORT);
 
 		foreach ($files as $file) {
-			if (pathinfo($file, PATHINFO_BASENAME) == '.' || pathinfo($file, PATHINFO_BASENAME) == '..') {
+			if (pathinfo((string) $file, PATHINFO_BASENAME) == '.' || pathinfo((string) $file, PATHINFO_BASENAME) == '..') {
 				continue;
 			}
 			if (is_dir($file)) {
@@ -174,9 +174,9 @@ class File implements CacheInterface, SerializerAwareInterface
 		if (is_array($str)) {
 			$key = array_shift($str);
 			$group = array_shift($str);
-			$md5 = md5($group) . md5($key);
+			$md5 = md5((string) $group) . md5((string) $key);
 		} else {
-			$md5 = md5($str) . ($glob ? '*' : '');
+			$md5 = md5((string) $str) . ($glob ? '*' : '');
 		}
 
 		if ($this->orderLevel) {
@@ -197,7 +197,7 @@ class File implements CacheInterface, SerializerAwareInterface
 
 		if ($fp !== false) {
 			if (flock($fp, LOCK_EX)) {
-				fwrite($fp, (time() + ($expTime ? $expTime : $this->expire)) . $serialized);
+				fwrite($fp, (time() + ($expTime ?: $this->expire)) . $serialized);
 				flock($fp, LOCK_UN);
 			}
 

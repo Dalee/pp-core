@@ -10,12 +10,12 @@ class PXDisplayTypeStaticOrDrop extends PXDisplayType
 
 	public function buildInput($field, $object, $param = NULL)
 	{
-		$value = isset($object[$field->name]) ? $object[$field->name] : NULL;
+		$value = $object[$field->name] ?? NULL;
 		$values = isset($field->values) ? $field->values->GetList() : [];
 		$fvalues = $field->values->values;
 
 		if (!empty($fvalues[$value]['static'])) {
-			return NLAbstractHTMLForm::BuildHidden($field->name, $value) . htmlspecialchars(isset($values[$value]) ? $values[$value] : $value, ENT_COMPAT | ENT_HTML401, DEFAULT_CHARSET);
+			return NLAbstractHTMLForm::BuildHidden($field->name, $value) . htmlspecialchars($values[$value] ?? $value, ENT_COMPAT | ENT_HTML401, DEFAULT_CHARSET);
 		} else {
 			foreach ($fvalues as $k => $fval) {
 				if (isset($fval['static'])) {

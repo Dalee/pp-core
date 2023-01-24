@@ -13,14 +13,13 @@ abstract class PXAbstractDatabaseTrigger extends PXAbstractTrigger
 	}
 
 	/**
-	 * @param PXDatabase|PostgreSqlDriver $db
-	 * @param int $objId
-	 * @param PXTypeDescription $format
-	 * @param array $object
-	 * @param array $dbFields
-	 * @param array $dbValues
-	 */
-	public function OnAddObject(&$db, &$objId, &$format, &$object, &$dbFields, &$dbValues)
+  * @param int $objId
+  * @param PXTypeDescription $format
+  * @param array $object
+  * @param array $dbFields
+  * @param array $dbValues
+  */
+ public function OnAddObject(\PXDatabase|\PP\Lib\Database\Driver\PostgreSqlDriver &$db, &$objId, &$format, &$object, &$dbFields, &$dbValues)
 	{
 	}
 
@@ -30,15 +29,14 @@ abstract class PXAbstractDatabaseTrigger extends PXAbstractTrigger
 	}
 
 	/**
-	 * @param PXDatabase|PostgreSqlDriver $db
-	 * @param int $objId
-	 * @param PXTypeDescription $format
-	 * @param array $object
-	 * @param array $dbFields
-	 * @param array $dbValues
-	 * @param array $objectInDB
-	 */
-	public function OnModifyObject(&$db, &$objId, &$format, &$object, &$dbFields, &$dbValues, &$objectInDB)
+  * @param int $objId
+  * @param PXTypeDescription $format
+  * @param array $object
+  * @param array $dbFields
+  * @param array $dbValues
+  * @param array $objectInDB
+  */
+ public function OnModifyObject(\PXDatabase|\PP\Lib\Database\Driver\PostgreSqlDriver &$db, &$objId, &$format, &$object, &$dbFields, &$dbValues, &$objectInDB)
 	{
 	}
 

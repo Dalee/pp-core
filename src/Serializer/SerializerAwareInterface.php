@@ -9,9 +9,6 @@ namespace PP\Serializer;
  */
 interface SerializerAwareInterface {
 
-	/**
-	 * @param SerializerInterface $serializer
-	 */
 	public function setSerializer(SerializerInterface $serializer);
 
 }

@@ -8,9 +8,6 @@ use Symfony\Component\DependencyInjection\Reference;
 
 class AddLoggingHandlersPass implements CompilerPassInterface {
 
-	/**
-	 * @param ContainerBuilder $container
-	 */
 	public function process(ContainerBuilder $container) {
 		if (!$container->has('logger')) {
 			return;

@@ -5,10 +5,10 @@ namespace PP\Lib\Xml;
 class Xml
 {
 
-	public const NONE = 0;
-	public const ELEMENT = 1;
-	public const ATTRIBUTE = 2;
-	public const DOC = 9;
+	final public const NONE = 0;
+	final public const ELEMENT = 1;
+	final public const ATTRIBUTE = 2;
+	final public const DOC = 9;
 
 	/** @var SimpleXml */
 	public $xml;
@@ -20,31 +20,25 @@ class Xml
 	public function __construct($xmlEntity)
 	{
 
-		switch (true) {
-			case extension_loaded('simplexml'):
-				$this->xml = new SimpleXml($xmlEntity);
-				break;
-
-			default:
-				$this->xml = (object)['xmlObject' => false];
-		}
+		$this->xml = match (true) {
+			extension_loaded('simplexml') => new SimpleXml($xmlEntity),
+			default => (object)['xmlObject' => false],
+		};
 	}
 
 	/**
-	 * @param $fileName
-	 * @return bool|SimpleXml
-	 */
-	public static function load($fileName)
+	* @param $fileName
+	*/
+	public static function load($fileName): bool|\PP\Lib\Xml\SimpleXml
 	{
 		$instance = new Xml($fileName);
 		return $instance->xml->xmlObject ? $instance->xml : false;
 	}
 
 	/**
-	 * @param $xmlDataInString
-	 * @return bool|object
-	 */
-	public static function loadString($xmlDataInString)
+	* @param $xmlDataInString
+	*/
+	public static function loadString($xmlDataInString): bool|object
 	{
 		return Xml::load($xmlDataInString);
 	}

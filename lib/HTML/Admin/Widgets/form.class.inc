@@ -4,29 +4,27 @@ class PXAdminForm extends PXAdminComplexWidget
 {
 	private $action;
 	private $area;
-	private $object;
-	private $format;
 	private $layout;
 	private $childTypes;
 	private $childCount = null;
 	private $linksParam;
 	public $disable;
 
-	public const BEFORE_CONTENT = 0;
-	public const CONTENT = 1;
-	public const AFTER_CONTENT = 2;
+	final public const BEFORE_CONTENT = 0;
+	final public const CONTENT = 1;
+	final public const AFTER_CONTENT = 2;
 
-	public const PREPEND_LEFTCONTROLS = 3;
-	public const LEFTCONTROLS = 4;
-	public const APPEND_LEFTCONTROLS = 5;
+	final public const PREPEND_LEFTCONTROLS = 3;
+	final public const LEFTCONTROLS = 4;
+	final public const APPEND_LEFTCONTROLS = 5;
 
-	public const PREPEND_RIGHTCONTROLS = 6;
-	public const RIGHTCONTROLS = 7;
-	public const APPEND_RIGHTCONTROLS = 8;
+	final public const PREPEND_RIGHTCONTROLS = 6;
+	final public const RIGHTCONTROLS = 7;
+	final public const APPEND_RIGHTCONTROLS = 8;
 
-	public const TITLE = 9;
-	public const MENU = 10;
-	public const NOTICES_CONTENT = 11;
+	final public const TITLE = 9;
+	final public const MENU = 10;
+	final public const NOTICES_CONTENT = 11;
 
 	public $blocks = [ //set up available subwidgets areas
 		self::PREPEND_LEFTCONTROLS => [],
@@ -45,13 +43,10 @@ class PXAdminForm extends PXAdminComplexWidget
 		self::AFTER_CONTENT => [],
 		self::NOTICES_CONTENT => []];
 
-	public function __construct($object, $format)
+	public function __construct(private $object, private $format)
 	{
-		$this->object = $object;
 		$this->layout = PXRegistry::getlayout();
 		$this->app = PXRegistry::getApp();
-
-		$this->format = $format;
 	}
 
 	/**
@@ -121,13 +116,14 @@ class PXAdminForm extends PXAdminComplexWidget
 	{
 		return NLAbstractHTMLForm::BuildHidden('action', 'edit') .
 			NLAbstractHTMLForm::BuildHidden('area', 'file') .
-			NLAbstractHTMLForm::BuildHidden('mdir', str_replace(BASEPATH, '', $dir)) .
+			NLAbstractHTMLForm::BuildHidden('mdir', str_replace(BASEPATH, '', (string) $dir)) .
 			NLAbstractHTMLForm::BuildHidden('mfile', $file) .
 			NLAbstractHTMLForm::BuildText('filesource', ReadFileToString($dir . '/' . $file), '100%');
 	}
 
 	public function getForm()
 	{
+		$html = [];
 		$this->decorate();
 		$this->layout->setOuterForm('action.phtml', 'POST', 'multipart/form-data');
 
@@ -139,30 +135,14 @@ class PXAdminForm extends PXAdminComplexWidget
 
 		$html[] = join($this->blocks[self::BEFORE_CONTENT]);
 
-		switch ($this->action) {
-			case 'main':
-				$content = $this->mainForm();
-				break;
-
-			case 'children':
-				$content = $this->childrenForm();
-				break;
-
-			case 'remove':
-				$content = $this->removeForm();
-				break;
-
-			case 'links':
-				$content = $this->linksForm();
-				break;
-
-			case 'auditlog':
-				$content = $this->auditlogForm();
-				break;
-
-			default:
-				$content = "";
-		}
+		$content = match ($this->action) {
+			'main' => $this->mainForm(),
+			'children' => $this->childrenForm(),
+			'remove' => $this->removeForm(),
+			'links' => $this->linksForm(),
+			'auditlog' => $this->auditlogForm(),
+			default => "",
+		};
 
 		$this->setMenu();
 		$this->setControls();
@@ -212,7 +192,7 @@ class PXAdminForm extends PXAdminComplexWidget
 		$this->rightControls();
 
 		$control = join('', [
-			NLAbstractHTMLForm::BuildHidden('id', ((isset($this->object['id'])) ? $this->object['id'] : '')),
+			NLAbstractHTMLForm::BuildHidden('id', ($this->object['id'] ?? '')),
 			NLAbstractHTMLForm::BuildHidden('area', $this->area),
 			NLAbstractHTMLForm::BuildHidden('action', $this->action),
 			NLAbstractHTMLForm::BuildHidden('format', $this->format->id),
@@ -227,7 +207,7 @@ class PXAdminForm extends PXAdminComplexWidget
 		$menuItems['main'] = 'Основная информация';
 
 		if (isset($this->object['id']) && $this->object['id'] != 0) {
-			if (count($this->format->childs)) {
+			if (is_countable($this->format->childs) ? count($this->format->childs) : 0) {
 				$menuItems['children'] = 'Разрешенные дети';
 			}
 
@@ -261,7 +241,7 @@ class PXAdminForm extends PXAdminComplexWidget
 			$v = current($group);
 			unset($v['id']);
 
-			$viewKlass = sprintf('PXWidgetFieldGroups%sView', ucfirst(mb_strtolower($view = (empty($this->format->groups[$k]['view']) ? $defaultView : $this->format->groups[$k]['view']))));
+			$viewKlass = sprintf('PXWidgetFieldGroups%sView', ucfirst(mb_strtolower((string) ($view = (empty($this->format->groups[$k]['view']) ? $defaultView : $this->format->groups[$k]['view'])))));
 			if (!class_exists($viewKlass)) {
 				FatalError("Unknown group view '{$view}' (undefined widget class '{$viewKlass}') in datatype '{$this->format->id}'");
 			}
@@ -271,8 +251,8 @@ class PXAdminForm extends PXAdminComplexWidget
 
 		if (isset($this->object['sys_created']) || isset($this->object['sys_modified']) || isset($this->object['ownerlogin'])) {
 			$html[] = '<dl class="sysinfo">';
-			$html[] = isset($this->object['sys_created']) ? '<dt>Создан:  </dt><dd>' . mb_substr($this->object['sys_created'], 0, 19) . '</dd>' : '';
-			$html[] = isset($this->object['sys_modified']) ? '<dt>Изменен: </dt><dd>' . mb_substr($this->object['sys_modified'], 0, 19) . '</dd>' : '';
+			$html[] = isset($this->object['sys_created']) ? '<dt>Создан:  </dt><dd>' . mb_substr((string) $this->object['sys_created'], 0, 19) . '</dd>' : '';
+			$html[] = isset($this->object['sys_modified']) ? '<dt>Изменен: </dt><dd>' . mb_substr((string) $this->object['sys_modified'], 0, 19) . '</dd>' : '';
 			$html[] = isset($this->object['ownerlogin']) ? '<dt>Владелец:</dt><dd>' . $this->object['ownerlogin'] . '</dd>' : '';
 			$html[] = '</dl>';
 		}
@@ -282,9 +262,7 @@ class PXAdminForm extends PXAdminComplexWidget
 
 	private function removeForm()
 	{
-		$title = isset($this->object['title'])
-			? $this->object['title']
-			: ($this->format->id . '#' . $this->object['id']);
+		$title = $this->object['title'] ?? $this->format->id . '#' . $this->object['id'];
 		return <<<HTML
 			<h2>
 				Вы уверенны, что хотите удалить объект &laquo;<strong>{$title}</strong>&raquo;
@@ -394,7 +372,7 @@ HTML;
 				$html .= NLAbstractHTMLForm::BuildHidden($reference->name . '[' . $iteration . '][' . $v['id'] . '][id]', $v['id']);
 				$html .= NLAbstractHTMLForm::BuildCheckBox($reference->name . '[' . $iteration . '][' . $v['id'] . '][on]', $linksIsset, NULL, $reference->name . '-' . $iteration . '-' . $v['id']);
 
-				$menuTitle = (mb_strlen($v['title']) > 10) ? trim(mb_substr($v['title'], 0, 10)) . '&hellip;' : $v['title'];
+				$menuTitle = (mb_strlen((string) $v['title']) > 10) ? trim(mb_substr((string) $v['title'], 0, 10)) . '&hellip;' : $v['title'];
 				$context = 'Context(event, \'edit\', ' . $v['id'] . ', ' . (int)($v['status']) . ', \'' . $formatTo->id . '\',  \'' . $menuTitle . '\', \'\', 1, 0, 0); return false;';
 				$html .= '<a oncontextMenu="' . $context . '" href="javascript:EditContent(\'' . $formatTo->id . '\', \'' . $v['id'] . '\')">';
 				$html .= '<img src="i/icon/edit.gif" alt="Изменить &laquo;' . $v['id'] . '&raquo;"></a>';
@@ -509,7 +487,8 @@ HTML;
 
 	private function childrenForm()
 	{
-		$values = [
+		$html = [];
+  $values = [
 			PP_CHILDREN_FETCH_ALL => 'Все',
 			PP_CHILDREN_FETCH_SELECTED => 'Текущий',
 			PP_CHILDREN_FETCH_NONE => 'Никакие',
@@ -532,7 +511,7 @@ HTML;
 		$html[] = '<dl class="allowed">' . "\n";
 
 		foreach ($this->childTypes as $k => $v) {
-			$quantity = (isset($this->childCount[$k])) ? $this->childCount[$k] : 0;
+			$quantity = $this->childCount[$k] ?? 0;
 
 			if (!in_array($k, $this->format->childs)) {
 				continue;

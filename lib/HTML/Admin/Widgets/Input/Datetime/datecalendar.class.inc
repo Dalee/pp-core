@@ -7,7 +7,7 @@ class PXInputDateCalendar extends PXInputDateTime
     public function html()
     {
         $name = $this->name;
-        $saneName = str_replace(['[', ']'], '', $name);
+        $saneName = str_replace(['[', ']'], '', (string) $name);
 
         $day = is_null($this->date['day']) ? null : sprintf('%02d', $this->date['day']);
         $month = is_null($this->date['day']) ? null : sprintf('%02d', $this->date['month']);

@@ -63,13 +63,13 @@ class CronCommand extends AbstractCommand {
 				$stat = $cronModule->getStat($j);
 
 				$title = mb_str_pad($task, 25);
-				$title = (mb_strlen($title) > 25)
-					? mb_substr($title, 0, 22) . '...'
+				$title = (mb_strlen((string) $title) > 25)
+					? mb_substr((string) $title, 0, 22) . '...'
 					: $title;
 
 				$description = mb_str_pad($j['job']->name, 40);
-				$description = (mb_strlen($description) > 40)
-					? mb_substr($description, 0, 37).'...'
+				$description = (mb_strlen((string) $description) > 40)
+					? mb_substr((string) $description, 0, 37).'...'
 					: $description;
 
 				$row = [

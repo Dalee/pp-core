@@ -4,16 +4,10 @@ require_once PPLIBPATH . 'Common/functions.html.inc';
 
 class PXInputFile extends PXAdminWidget
 {
-    public $value = [];
-    public $name;
-    public $entry;
     public $distension;
 
-    public function __construct($name, $value, $entry = NULL)
+    public function __construct(public $name, public $value, public $entry = NULL)
     {
-        $this->value = $value;
-        $this->name = $name;
-        $this->entry = $entry;
         $this->type = 'file';
     }
 
@@ -52,7 +46,7 @@ HTML;
 
             $html .= '<br>';
 
-            $picName = mb_substr($this->value['path'], mb_strrpos($this->value['path'], '/') + 1);
+            $picName = mb_substr((string) $this->value['path'], mb_strrpos((string) $this->value['path'], '/') + 1);
             $html .= '<input class="checkbox" type="checkbox" id="' . $this->name . '_remove' . $this->distension . '" name="' . $this->name . '_remove[' . $picName . ']"' . $this->disable . '>';
             $html .= '<label for="' . $this->name . '_remove' . $this->distension . '">удалить файл</label>';
         } else {
@@ -65,7 +59,7 @@ HTML;
     {
         $this->setparam();
 
-        $name = $this->name . (!is_null($this->entry) && mb_strlen($this->entry) ? '_edit' : '') . $this->distension;
+        $name = $this->name . (!is_null($this->entry) && mb_strlen((string) $this->entry) ? '_edit' : '') . $this->distension;
 
         return html_block('imagepreview', [], [
             $this->preview(),

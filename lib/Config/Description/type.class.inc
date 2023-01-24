@@ -57,15 +57,11 @@ class PXTypeDescription
 	{
 		$ac = [];
 		if (is_object($object)) {
-			$ac = (isset($object->content[OBJ_FIELD_CHILDREN]))
-				? $object->content[OBJ_FIELD_CHILDREN]
-				: [];
+			$ac = $object->content[OBJ_FIELD_CHILDREN] ?? [];
 		}
 
 		if (is_array($object)) {
-			$ac = (isset($object[OBJ_FIELD_CHILDREN]))
-				? $object[OBJ_FIELD_CHILDREN]
-				: [];
+			$ac = $object[OBJ_FIELD_CHILDREN] ?? [];
 		}
 
 		foreach ($ac as $k => $v) {
@@ -255,18 +251,13 @@ class PXTypeDescription
 	 */
 	public static function _mapByDefaults($string)
 	{
-		switch ($string) {
-			case 'all'     :
-				return PP_CHILDREN_FETCH_ALL;
-			case 'selected':
-				return PP_CHILDREN_FETCH_SELECTED;
-			case 'paged'   :
-				return PP_CHILDREN_FETCH_PAGED;
-			case 'none'    :
-				return PP_CHILDREN_FETCH_NONE;
-			default        :
-				return NULL;
-		}
+		return match ($string) {
+			'all' => PP_CHILDREN_FETCH_ALL,
+			'selected' => PP_CHILDREN_FETCH_SELECTED,
+			'paged' => PP_CHILDREN_FETCH_PAGED,
+			'none' => PP_CHILDREN_FETCH_NONE,
+			default => NULL,
+		};
 	}
 
 }

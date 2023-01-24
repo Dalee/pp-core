@@ -6,13 +6,10 @@ use \PP\Lib\Html\Layout\LayoutAbstract;
 class PXAdminPager extends PXAdminComplexWidget
 {
 	public $_currentPage;
-	public $_rowsPerPage;
-	public $_rowsCount;
 	public $_pagerName;
-	public $_getData;
 
-	public const BEFORE_PAGE_LIST = 0;
-	public const AFTER_PAGE_LIST = 1;
+	final public const BEFORE_PAGE_LIST = 0;
+	final public const AFTER_PAGE_LIST = 1;
 
 	public $blocks = [
 		self::BEFORE_PAGE_LIST => [],
@@ -20,25 +17,22 @@ class PXAdminPager extends PXAdminComplexWidget
 	];
 
 	/**
-	 * Конструктор класса PXAdminPager.
-	 * Инициализирует поля класса. необходимые для построения постраничной навигации.
-	 * @param Integer $cur - текущая страница, нумерация начинается с 1 !
-	 * @param Integer $rows - по сколько записей выводить на страницу
-	 * @param Integer $count - общее количество записей
-	 * @param PXTypeDescription|string $pager_name - имя переменной для постраничной навигации, конкатенируется с '_page'
-	 * @param array $getData - массив с GET переменными, которые надо добавлять в ссылки постраничной навигации, обычно берётся из поля $layout->getData
-	 */
-	public function __construct($cur, $rows = 1, $count = 1, $pager_name = '', $get_data = null)
+  * Конструктор класса PXAdminPager.
+  * Инициализирует поля класса. необходимые для построения постраничной навигации.
+  * @param Integer $cur - текущая страница, нумерация начинается с 1 !
+  * @param Integer $_rowsPerPage - по сколько записей выводить на страницу
+  * @param Integer $_rowsCount - общее количество записей
+  * @param PXTypeDescription|string $pager_name - имя переменной для постраничной навигации, конкатенируется с '_page'
+  * @param array $getData - массив с GET переменными, которые надо добавлять в ссылки постраничной навигации, обычно берётся из поля $layout->getData
+  */
+ public function __construct($cur, public $_rowsPerPage = 1, public $_rowsCount = 1, $pager_name = '', public $_getData = null)
 	{
 		if ($pager_name instanceof PXTypeDescription) {
 			$pager_name = $pager_name->id;
 		}
 
 		$this->_currentPage = (int)$cur > 0 ? $cur : '1';
-		$this->_rowsPerPage = $rows;
-		$this->_rowsCount = $count;
 		$this->_pagerName = $pager_name;
-		$this->_getData = $get_data;
 	}
 
 	public function html()
@@ -143,11 +137,11 @@ class PXAdminPager extends PXAdminComplexWidget
 
 	public static function getPageByFormatId($formatId, $default = null)
 	{
-		return PXRegistry::getRequest()->getGetVar(self::getPageParamByFormatId($formatId), $default);
+		return PXRegistry::getRequest()->getGetVar(self::getPageParamByFormatId($formatId));
 	}
 
 	public static function getPerPageByFormatId($formatId, $default = null)
 	{
-		return PXRegistry::getRequest()->getGetVar(self::getPerPageParamByFormatId($formatId), $default);
+		return PXRegistry::getRequest()->getGetVar(self::getPerPageParamByFormatId($formatId));
 	}
 }

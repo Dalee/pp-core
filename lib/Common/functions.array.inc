@@ -156,7 +156,7 @@ function array_transpose($array) {
  * @param bool $strict
  * @return array resulting array with selected keys
  */
-function array_remap($array, $map, $strict = false) {
+function array_remap($array, mixed $map, $strict = false) {
 	if (!is_string($map) && !is_array($map)) {
 		return false;
 	}
@@ -176,7 +176,7 @@ function array_remap($array, $map, $strict = false) {
 	}
 
 	foreach ($map as $k => $v) {
-		$result[$k] = isset($array[$v]) ? $array[$v] : null;
+		$result[$k] = $array[$v] ?? null;
 	}
 
 	return $result;
@@ -186,7 +186,7 @@ function array_deep_diff($d1, $d2, $excludeKeys) {
 	switch (true) {
 		case is_array($d1) && is_array($d2) :
 			$diff = [];
-			foreach (array_unique(array_merge(array_keys($d1), array_keys($d2))) as $key) {
+			foreach (array_unique([...array_keys($d1), ...array_keys($d2)]) as $key) {
 				if (is_array($excludeKeys) && in_array($key, $excludeKeys)) {
 					continue;
 				}
@@ -243,7 +243,7 @@ function array_deep_diff($d1, $d2, $excludeKeys) {
  *   array_flat($arr, 'c', true); // array( 'oof' => 'x', 'zzz' => 'y', '123' => 'z', ... )
  *   array_flat($arr, false, array('a', 'c')); // array( array('a' => 'foo', 'c' => 'oof'), array('a' => 'bar', 'c' => 'zzz'), ... )
  */
-function array_flat($array, $toKey = false, $toValue = false, $unique = false) {
+function array_flat($array, $toKey = false, mixed $toValue = false, $unique = false) {
 
 	if (!is_array($array)) {
 		return false;
@@ -327,7 +327,7 @@ function array_keys_grouped($array) {
 * @param bool	$strict		Использовать строгое (true) или нестрогое (false) сравнение при поиске элемента.
 * @return array Список из двух элементов - предыдущего и последующего.
 */
-function findNeighborElements($list, $current, $circular = true, $strict = true) {
+function findNeighborElements($list, mixed $current, $circular = true, $strict = true) {
 
 	$inList = &$list; // Иначе foreach не меняет указатель массива по завершению, что ломает весь алгоритм
 
@@ -371,7 +371,7 @@ function findNeighborElements($list, $current, $circular = true, $strict = true)
  *
  * @return array	Таблица из строк, для которых в заданном столбце ячейка имеет заданное значение. Если ничего не найдено, то пустой массив.
  */
-function getRowsFromTable($array, $colName, $colValues, $strict = true, $count = INF) {
+function getRowsFromTable($array, $colName, mixed $colValues, $strict = true, $count = INF) {
 	$found     = [];
 	$nFound    = 0;
 	$colValues = (array)$colValues;
@@ -398,7 +398,7 @@ function getRowsFromTable($array, $colName, $colValues, $strict = true, $count =
 *
 * @return array	Строка, для которой в заданном столбце ячейка имеет заданное значение, либо пустой массив в случае, если ничего не найдено.
 */
-function getRowFromTable($array, $colName, $colValues, $strict = true) {
+function getRowFromTable($array, $colName, mixed $colValues, $strict = true) {
 	$found = getRowsFromTable($array, $colName, $colValues, $strict, 1);
 	count($found) && $found = reset($found);
 	return $found;

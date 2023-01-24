@@ -13,36 +13,33 @@ class JobTest extends AbstractUnitTest {
 		$this->assertEquals(Job::STATE_FRESH, $job->getState());
 	}
 
-	/**
-	 * @expectedException UnexpectedValueException
-	 * @expectedExceptionMessageRegExp /State is invalid/
-	 */
 	public function testSetInvalidState() {
+		$this->expectExceptionMessageMatches("/State is invalid/");
+		$this->expectException(UnexpectedValueException::class);
 		$job = new Job();
 		$job->setState('INVALID STATE');
 	}
 
-	/**
-	 * @expectedException UnexpectedValueException
-	 * @expectedExceptionMessageRegExp /Worker class does not exist/
-	 */
 	public function testFromArrayWorkerClassExists() {
+		$this->expectExceptionMessageMatches("/Worker class does not exist/");
+		$this->expectException(UnexpectedValueException::class);
+
 		$arrayJob = ['worker' => 'PP\\SomeInexistentClass'];
-		Job::fromArray($arrayJob);
+		$job = Job::fromArray($arrayJob);
+		$job->getWorker();
 	}
 
-	/**
-	 * @expectedException UnexpectedValueException
-	 * @expectedExceptionMessageRegExp /Worker class does not implement/
-	 */
 	public function testFromArrayWorkerInvalidInterface() {
-		$arrayJob = ['title' => 'PP\Lib\PersistentQueue\Job'];
-		Job::fromArray($arrayJob);
+		$this->expectExceptionMessageMatches("/Worker class does not implement/");
+		$this->expectException(UnexpectedValueException::class);
+		$arrayJob = ['title' => \PP\Lib\PersistentQueue\Job::class];
+		$job = Job::fromArray($arrayJob);
+		$job->getWorker();
 	}
 
 	public function testFromArrayWorker() {
-		$worker = $this->getMockForAbstractClass('PP\Lib\PersistentQueue\WorkerInterface', []);
-		$workerClass = get_class($worker);
+		$worker = $this->getMockForAbstractClass(\PP\Lib\PersistentQueue\WorkerInterface::class, []);
+		$workerClass = $worker::class;
 		$arrayJob = ['title' => $workerClass];
 		$job = Job::fromArray($arrayJob);
 
@@ -51,7 +48,7 @@ class JobTest extends AbstractUnitTest {
 
 	public function testToArray() {
 		$job = new Job();
-		$worker = $this->getMockForAbstractClass('PP\Lib\PersistentQueue\WorkerInterface', []);
+		$worker = $this->getMockForAbstractClass(\PP\Lib\PersistentQueue\WorkerInterface::class, []);
 		$job->setPayload(['test_key' => 'test_value']);
 		$job->setWorker($worker);
 		$job->setOwnerId(2);
@@ -59,7 +56,7 @@ class JobTest extends AbstractUnitTest {
 
 		$expected = [
 			'id' => 0,
-			'title' => get_class($worker),
+			'title' => $worker::class,
 			'payload' => ['test_key' => 'test_value'],
 			'state' => Job::STATE_FRESH,
 			'sys_owner' => 2,

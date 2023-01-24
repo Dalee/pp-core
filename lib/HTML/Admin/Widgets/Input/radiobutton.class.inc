@@ -2,7 +2,7 @@
 
 class PXInputRadiobutton extends PXInputCheckbox {
 
-	private $pattern = '<input type="radio" class="radio" name="%1$s" %2$s />';
+	private string $pattern = '<input type="radio" class="radio" name="%1$s" %2$s />';
 
 	public function html() {
 		$atts = $this->on;

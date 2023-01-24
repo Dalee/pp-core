@@ -13,21 +13,16 @@ class AbstractPlugin
 
 	protected $name = null;
 
-	public $description;
-
-	/** @var \PXApplication */
-	public $app;
-
-	public function __construct($app, $description)
+	/**
+  * @param \PXApplication $app
+  */
+ public function __construct(public $app, public $description)
 	{
-		$this->app = $app;
-		$this->description = $description;
-
 		$this->name = $description->getName();
-		$this->path = dirname($this->description->getPathToPlugin());
+		$this->path = dirname((string) $this->description->getPathToPlugin());
 
-		array_map([$this, "loadModule"], $this->description->modules);
-		array_map([$this, "loadTrigger"], $this->description->triggers);
+		array_map($this->loadModule(...), $this->description->modules);
+		array_map($this->loadTrigger(...), $this->description->triggers);
 
 		$this->initialize($app);
 	}
@@ -47,7 +42,7 @@ class AbstractPlugin
 
 	public function loadTrigger($relativePath)
 	{
-		[$type, $name] = explode("/", $relativePath);
+		[$type, $name] = explode("/", (string) $relativePath);
 		$this->app->registerTrigger($type, ["name" => $name] + ["folder" => $this->name]);
 	}
 
@@ -96,7 +91,7 @@ class AbstractPlugin
 	{
 		$f = \PXLoader::find($className);
 
-		if (!strstr($f, "/plugins/")) {
+		if (!strstr((string) $f, "/plugins/")) {
 			return;
 		}
 

@@ -11,7 +11,7 @@ class UserUrlGenerator extends AbstractUrlGenerator {
 	/**
 	 * {@inheritDoc}
 	 */
-	public function indexUrl($params = []) {
+	public function indexUrl($params = []): void {
 		throw new \LogicException('You cannot use the method: ' . __METHOD__);
 	}
 
@@ -34,7 +34,7 @@ class UserUrlGenerator extends AbstractUrlGenerator {
 	/**
 	 * {@inheritDoc}
 	 */
-	public function popupUrl($params = []) {
+	public function popupUrl($params = []): void {
 		throw new \LogicException('You cannot use the method: ' . __METHOD__);
 	}
 }

@@ -18,9 +18,8 @@ class UrlGenerator {
 	protected $userGeneratorInstance;
 
 	/**
-	 * UrlGenerator constructor.
-	 * @param ContextUrlGenerator $context
-	 */
+	* UrlGenerator constructor.
+	*/
 	public function __construct(ContextUrlGenerator $context) {
 		$this->context = $context;
 	}

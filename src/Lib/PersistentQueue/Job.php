@@ -15,22 +15,22 @@ class Job implements IArrayable {
 	/**
 	 * @var string
 	 */
-	public const STATE_FRESH = 'fresh';
+	final public const STATE_FRESH = 'fresh';
 
 	/**
 	 * @var string
 	 */
-	public const STATE_FINISHED = 'finished';
+	final public const STATE_FINISHED = 'finished';
 
 	/**
 	 * @var string
 	 */
-	public const STATE_FAILED = 'failed';
+	final public const STATE_FAILED = 'failed';
 
 	/**
 	 * @var string
 	 */
-	public const STATE_IN_PROGRESS = 'in progress';
+	final public const STATE_IN_PROGRESS = 'in progress';
 
 	/**
 	 * @var int
@@ -101,11 +101,10 @@ class Job implements IArrayable {
 	}
 
 	/**
-	 * Creates instance from array.
-	 *
-	 * @param array $object
-	 * @return static
-	 */
+	* Creates instance from array.
+	*
+	* @return static
+	*/
 	public static function fromArray(array $object) {
 		$job = new static();
 		$job->setId(getFromArray($object, 'id', 0));
@@ -119,9 +118,8 @@ class Job implements IArrayable {
 	}
 
 	/**
-	 * @param array $payload
-	 * @return $this
-	 */
+	* @return $this
+	*/
 	public function setPayload(array $payload) {
 		$this->payload = $payload;
 
@@ -136,11 +134,10 @@ class Job implements IArrayable {
 	}
 
 	/**
-	 * @param WorkerInterface $worker
-	 * @return $this
-	 */
+	* @return $this
+	*/
 	public function setWorker(WorkerInterface $worker) {
-		$this->setWorkerClass(get_class($worker));
+		$this->setWorkerClass($worker::class);
 
 		return $this;
 	}
@@ -225,9 +222,8 @@ class Job implements IArrayable {
 	}
 
 	/**
-	 * @param JobResult $resultBag
-	 * @return $this
-	 */
+	* @return $this
+	*/
 	public function setResultBag(JobResult $resultBag) {
 		$this->resultBag = $resultBag;
 

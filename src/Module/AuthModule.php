@@ -83,9 +83,9 @@ class AuthModule extends AbstractModule
         } else {
             $nextLocation = $this->request->getReferer();
 
-            if (strpos($nextLocation, '?') !== FALSE) {
-                if (strpos($nextLocation, '?action=') !== FALSE || strpos($nextLocation, '&action=') !== FALSE) {
-                    $nextLocation = preg_replace("/(?<=\&|\?)action=[^&]*/", "action=error", $nextLocation);
+            if (str_contains((string) $nextLocation, '?')) {
+                if (str_contains((string) $nextLocation, '?action=') || str_contains((string) $nextLocation, '&action=')) {
+                    $nextLocation = preg_replace("/(?<=\&|\?)action=[^&]*/", "action=error", (string) $nextLocation);
                 } else {
                     $nextLocation .= '&action=error';
                 }
@@ -101,16 +101,12 @@ class AuthModule extends AbstractModule
     public function userAction()
     {
         if ($this->_auth() == 0) {
-            $nextLocation = ($this->request->GetVar('onsuccess'))
-                ? $this->request->GetVar('onsuccess')
-                : $this->request->getReferer();
+            $nextLocation = $this->request->GetVar('onsuccess') ?: $this->request->getReferer();
 
             $nextLocation = removeParamFromUrl($nextLocation, 'login');
 
         } else {
-            $nextLocation = ($this->request->GetVar('onerror'))
-                ? $this->request->GetVar('onerror')
-                : $this->request->getReferer();
+            $nextLocation = $this->request->GetVar('onerror') ?: $this->request->getReferer();
 
             $nextLocation = appendParamToUrl($nextLocation, 'login', 'bad');
         }

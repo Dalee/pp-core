@@ -9,7 +9,6 @@ namespace PP\Lib\Html\Layout;
 class AdminHtmlLayout extends LayoutAbstract
 {
 
-	public $types;
 	public $_scripts = [];
 
 
@@ -33,11 +32,9 @@ class AdminHtmlLayout extends LayoutAbstract
 		],
 	];
 
-	public function __construct($outerLayout, $types)
+	public function __construct($outerLayout, public $types)
 	{
 		parent::__construct();
-
-		$this->types = $types;
 
 		$this->assignTitle("Proxima Portal");
 		$this->setOuterLogo('i/admin.gif', 'Proxima Portal', 126, 36);
@@ -97,7 +94,7 @@ class AdminHtmlLayout extends LayoutAbstract
 		$this->assign($label, '<p class="error">' . $errorText . '</p>');
 	}
 
-	public function assignContentControls($label, $selectedSid, $allowedFormats)
+	public function assignContentControls($label, $selectedSid, $allowedFormats): void
 	{
 		throw new \Exception("please use AdminHtmlLayout::AssignControls");
 	}
@@ -181,9 +178,9 @@ class AdminHtmlLayout extends LayoutAbstract
 	{
 		$this->Append($label, '<H2>' . $title . ' (' . $count . ')</H2>');
 		$html = null;
-		$page = $page ? $page : 1; // ?
+		$page = $page ?: 1; // ?
 
-		if (!count($table)) {
+		if (!(is_countable($table) ? count($table) : 0)) {
 			$html = '';
 			$this->Append($label, $html);
 			return;
@@ -218,7 +215,7 @@ class AdminHtmlLayout extends LayoutAbstract
 			}
 
 			if (isset($prev)) {
-				$html .= '<A href="' . $this->_BuildHref($objectFormat . '_page', $prev) . '">';
+				$html .= '<A href="' . static::_BuildHref($objectFormat . '_page', $prev) . '">';
 				$html .= '<IMG src="i/icon/left.gif" width="4" height="7" border="0" hspace="4" alt="Страница ' . $prev . '">';
 				$html .= '</A>';
 			}
@@ -230,11 +227,11 @@ class AdminHtmlLayout extends LayoutAbstract
 					$html .= 'background-color: #385A94; color: #FFFFFF; font-weight: bold;';
 				}
 
-				$html .= '" href="' . $this->_BuildHref($objectFormat . '_page', $i) . '" title="Страница ' . $i . '">' . $i . '</A> ';
+				$html .= '" href="' . static::_BuildHref($objectFormat . '_page', $i) . '" title="Страница ' . $i . '">' . $i . '</A> ';
 			}
 
 			if (isset($next) && $next > 0) {
-				$html .= '<A href="' . $this->_BuildHref($objectFormat . '_page', $next) . '">';
+				$html .= '<A href="' . static::_BuildHref($objectFormat . '_page', $next) . '">';
 				$html .= '<IMG src="i/icon/right.gif" width="4" height="7" border="0" hspace="4" alt="Страница ' . $next . '">';
 				$html .= '</A>';
 			}
@@ -271,8 +268,8 @@ class AdminHtmlLayout extends LayoutAbstract
 
 	public function _renderScript($body, $template, $singleton)
 	{
-		$hash = md5($body);
-		if (!mb_strlen($body) || ($singleton && isset($this->_scripts[$hash]))) {
+		$hash = md5((string) $body);
+		if (!mb_strlen((string) $body) || ($singleton && isset($this->_scripts[$hash]))) {
 			return false;
 		}
 

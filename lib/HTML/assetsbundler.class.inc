@@ -3,7 +3,7 @@
 	final class PXHtmlAssetsBundler {
 
 		// singleton
-		private static $instance;
+		private static ?\PXHtmlAssetsBundler $instance = null;
 
 		/**
 		 * getInstance
@@ -15,7 +15,7 @@
 		public static function getInstance () {
 			if (!self::$instance) {
 				$args = func_get_args();
-				$reflection = new ReflectionClass(__CLASS__);
+				$reflection = new ReflectionClass(self::class);
 				self::$instance = $reflection->newInstanceArgs($args);
 			}
 			return self::$instance;
@@ -29,18 +29,16 @@
 		protected static $imported = [];
 
 		// builder
-		private $bundles = [];
+		private array $bundles = [];
 		private $root;
-		private $allowedPaths;
 
-		public function __construct ($root, array $allowedPaths) {
+		public function __construct ($root, private readonly array $allowedPaths) {
 			$this->root = realpath($root);
-			$this->allowedPaths = $allowedPaths;
 		}
 
 		public function addFileToBundle ($name, $type, $group = null) {
 			$group || $group = 'default';
-			if (!ctype_alpha($type)) {
+			if (!ctype_alpha((string) $type)) {
 				return;
 			}
 			$isSafe = false;
@@ -49,7 +47,7 @@
 				return;
 			}
 			foreach ($this->allowedPaths as $base) {
-				if (strpos($namepath, realpath($base)) === 0) {
+				if (str_starts_with($namepath, realpath($base))) {
 					$isSafe = true;
 					break;
 				}
@@ -70,7 +68,7 @@
 
 			$bundleContent = [];
 			foreach ($this->bundles[$type][$group] as $name) {
-				$bundleContent[] = sprintf("\n/* %s */\n%s", pathinfo($name, PATHINFO_FILENAME), file_get_contents($name));
+				$bundleContent[] = sprintf("\n/* %s */\n%s", pathinfo((string) $name, PATHINFO_FILENAME), file_get_contents($name));
 			}
 			$bundleContent = join($delim, $bundleContent);
 

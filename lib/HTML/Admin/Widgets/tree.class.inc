@@ -7,10 +7,10 @@ use \PP\Lib\Html\Layout\LayoutAbstract;
 class PXAdminTree extends PXAdminComplexWidget
 {
 
-    public const BEFORE = 0;
-    public const BEFORE_CONTENT = 1;
-    public const AFTER_CONTENT = 4;
-    public const AFTER = 5;
+    final public const BEFORE = 0;
+    final public const BEFORE_CONTENT = 1;
+    final public const AFTER_CONTENT = 4;
+    final public const AFTER = 5;
 
     /**
      * Конструктор класса PXAdminTree.
@@ -49,7 +49,7 @@ class PXAdminTree extends PXAdminComplexWidget
 
     public function canChangeOrder()
     {
-        return mb_strpos($this->datatype->order, 'sys_order') !== false;
+        return mb_strpos((string) $this->datatype->order, 'sys_order') !== false;
     }
 
     public function setChildLink($chVarName)
@@ -137,7 +137,7 @@ class PXAdminTree extends PXAdminComplexWidget
 
     public function htmlCaption()
     {
-        if (!mb_strlen($this->caption)) {
+        if (!mb_strlen((string) $this->caption)) {
             return '';
         }
 
@@ -152,4 +152,3 @@ class PXAdminTree extends PXAdminComplexWidget
         return $html;
     }
 }
-

@@ -50,13 +50,13 @@ class CronRunModule extends AbstractModule
 
 	public function _parseRules($settings)
 	{
-		if (!isset($settings['rule']) || !count($settings['rule'])) {
+		if (!isset($settings['rule']) || !(is_countable($settings['rule']) ? count($settings['rule']) : 0)) {
 			return;
 		}
 
 		$count = 0;
 		foreach ($settings['rule'] as $s) {
-			if (!preg_match("/^\s*(.+?)\s+(\w+?)\s*$/", $s, $m)) {
+			if (!preg_match("/^\s*(.+?)\s+(\w+?)\s*$/", (string) $s, $m)) {
 				continue;
 			}
 
@@ -309,7 +309,7 @@ class CronRunModule extends AbstractModule
 				$dsec = $diff - $dmin * 60;
 
 				$_['time'] = date($this->timeFormat, $t['start']) . '<br>' . date($this->timeFormat, $t['end']) . ' (' . $dmin . ' min ' . $dsec . ' sec)';
-				$note = isset($t['result']['note']) ? htmlentities($t['result']['note'], ENT_COMPAT | ENT_HTML401, DEFAULT_CHARSET) : '';
+				$note = isset($t['result']['note']) ? htmlentities((string) $t['result']['note'], ENT_COMPAT | ENT_HTML401, DEFAULT_CHARSET) : '';
 				$_['comment'] = ($t['result']['status'] >= 0) ? '<b>' . $note . '</b>' : '<b class="error">' . $note . '</b>';
 
 			} else {

@@ -20,12 +20,12 @@ class PXStorageTypeAbstractFile extends PXStorageType
 			if ($symlink) {
 				symlink(
 					HTDOCS_PATH . $donor[$field->name]['path'],
-					HTDOCS_PATH . $ai . basename($fileArray['path'])
+					HTDOCS_PATH . $ai . basename((string) $fileArray['path'])
 				);
 			} else {
 				copy(
 					HTDOCS_PATH . $donor[$field->name]['path'],
-					HTDOCS_PATH . $ai . basename($fileArray['path'])
+					HTDOCS_PATH . $ai . basename((string) $fileArray['path'])
 				);
 			}
 		}
@@ -66,7 +66,7 @@ class PXStorageTypeAbstractFile extends PXStorageType
 	 */
 	public function __normalize($field, $object, &$param)
 	{
-		FatalError(get_class($this) . "::__normalize() doesn't exists !");
+		FatalError(static::class . "::__normalize() doesn't exists !");
 	}
 
 	public function storedInDb()
@@ -97,34 +97,22 @@ class PXStorageTypeAbstractFile extends PXStorageType
 		// Данное поведение обязательно при активированном плагине загрузки
 		// файлов в s3 (ceph) облако.
 		//
-		$sysMeta = (isset($param[OBJ_FIELD_META]))
-			? $param[OBJ_FIELD_META]
-			: [];
+		$sysMeta = $param[OBJ_FIELD_META] ?? [];
 
-		return (isset($sysMeta[$field->name]))
-			? $sysMeta[$field->name]
-			: null;
+		return $sysMeta[$field->name] ?? null;
 	}
 
 	/**
-	 * Удаление записи о файле из sys_meta массива
-	 *
-	 * @param PXFieldDescription $field
-	 * @param array $object
-	 * @param array $param
-	 * @param string $fileName
-	 *
-	 * @return void
-	 */
-	protected function removeDataFromMeta(PXFieldDescription $field, array $object, array &$param, string $fileName)
+  * Удаление записи о файле из sys_meta массива
+  *
+  *
+  * @return void
+  */
+ protected function removeDataFromMeta(PXFieldDescription $field, array $object, array &$param, string $fileName)
 	{
-		$sysMeta = (isset($param[OBJ_FIELD_META]))
-			? $param[OBJ_FIELD_META]
-			: [];
+		$sysMeta = $param[OBJ_FIELD_META] ?? [];
 
-		$fileData = (isset($sysMeta[$field->name]))
-			? $sysMeta[$field->name]
-			: null;
+		$fileData = $sysMeta[$field->name] ?? null;
 
 		if ($fileData === null) {
 			return;
@@ -157,7 +145,7 @@ class PXStorageTypeAbstractFile extends PXStorageType
 		}
 
 		if (isset($metaPart['path'])) {
-			$entry = basename($metaPart['path']);
+			$entry = basename((string) $metaPart['path']);
 			if ($entry === $fileName) {
 				return null;
 			}
@@ -170,21 +158,11 @@ class PXStorageTypeAbstractFile extends PXStorageType
 		return $metaPart;
 	}
 
-	/**
-	 * @param string $fileName
-	 * @return string
-	 */
 	protected function normalizeFileName(string $fileName): string
 	{
-		switch ($this->field->storageTypeArgs[0] ?? null) {
-			case 'filter':
-				$fileName = path_filter_filename($fileName);
-				break;
-			case 'translit':
-			default:
-				$fileName = _TranslitFilename($fileName);
-		}
-
-		return $fileName;
+		return match ($this->field->storageTypeArgs[0] ?? null) {
+			'filter' => path_filter_filename($fileName),
+			default => _TranslitFilename($fileName),
+		};
 	}
 }

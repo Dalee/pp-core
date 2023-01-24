@@ -11,13 +11,12 @@ use PP\Lib\Database\Driver\PostgreSqlDriver;
 class PropertyLoader {
 
 	/**
-	 * Load all properties as key => value.
-	 *
-	 * @param \PXDatabase|PostgreSqlDriver $database
-	 * @return array
-	 * @internal should be used only in PXApplication context
-	 */
-	public static function getPropertyList($database) {
+	* Load all properties as key => value.
+	*
+	* @return array
+	* @internal should be used only in PXApplication context
+	*/
+	public static function getPropertyList(\PXDatabase|\PP\Lib\Database\Driver\PostgreSqlDriver $database) {
 		$loadSql = sprintf(
 			'SELECT "name", "value" FROM %s',
 			DT_PROPERTIES
@@ -28,13 +27,12 @@ class PropertyLoader {
 	}
 
 	/**
-	 * Load raw property list.
-	 *
-	 * @param \PXDatabase|PostgreSqlDriver $database
-	 * @return array
-	 * @internal should be used only in properties.module.inc
-	 */
-	public static function getRawPropertyList($database) {
+	* Load raw property list.
+	*
+	* @return array
+	* @internal should be used only in properties.module.inc
+	*/
+	public static function getRawPropertyList(\PXDatabase|\PP\Lib\Database\Driver\PostgreSqlDriver $database) {
 		$loadSql = sprintf(
 			'SELECT id, "name", description, "value", sys_uuid FROM %s ORDER BY "name"',
 			DT_PROPERTIES
@@ -44,14 +42,13 @@ class PropertyLoader {
 	}
 
 	/**
-	 * Fetch property by id
-	 *
-	 * @param int $id
-	 * @param \PXDatabase|PostgreSqlDriver $database
-	 * @return array|null
-	 * @internal should be used only in properties.module.inc
-	 */
-	public static function getPropertyById($id, $database) {
+	* Fetch property by id
+	*
+	* @param int $id
+	* @return array|null
+	* @internal should be used only in properties.module.inc
+	*/
+	public static function getPropertyById($id, \PXDatabase|\PP\Lib\Database\Driver\PostgreSqlDriver $database) {
 		if (empty($id)) {
 			return null;
 		}

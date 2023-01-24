@@ -2,7 +2,7 @@
 class PXAdminAjaxTreeBranch extends PXAdminTreeBranch {
 
 	public /* override */ function html() {
-		$title = strip_tags($this->leaf->title);
+		$title = strip_tags((string) $this->leaf->title);
 
 		$html = '';
 		$html .= '<div' . $this->divAttrs() . '>';
@@ -62,7 +62,7 @@ class PXAdminAjaxTreeBranch extends PXAdminTreeBranch {
 	}
 
 	public static function childrenHTML($children, &$ajaxHtmlTree, $parentalBranch = null) {
-		if(!count($children)){
+		if(!(is_countable($children) ? count($children) : 0)){
 			return '';
 		}
 
@@ -102,4 +102,3 @@ class PXAdminAjaxTreeBranch extends PXAdminTreeBranch {
 	}
 
 }
-?>

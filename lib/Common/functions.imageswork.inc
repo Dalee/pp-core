@@ -15,7 +15,7 @@ function GDInDrawPicture($src_im, &$dst_im) {
 }
 
 function FindMagicTools($component){
-	($magicPath = FindSystemFile($component)) or FatalError('Cant find ImageMagick '.strtoupper($component).' tools');
+	($magicPath = FindSystemFile($component)) or FatalError('Cant find ImageMagick '.strtoupper((string) $component).' tools');
 	return $magicPath;
 }
 
@@ -88,7 +88,7 @@ function GDImageResize($src, $dest, $width, $height, $rgb=0xFFFFFF, $quality=100
 	// Определяем исходный формат по MIME-информации, предоставленной
 	// функцией getimagesize, и выбираем соответствующую формату
 	// imagecreatefrom-функцию.
-	$format = strtolower(substr($size['mime'], strpos($size['mime'], '/')+1));
+	$format = strtolower(substr((string) $size['mime'], strpos((string) $size['mime'], '/')+1));
 	$icfunc = "imagecreatefrom" . $format;
 	if (!function_exists($icfunc)) {
 		FatalError('Can\'t find function '.$icfunc);
@@ -128,8 +128,8 @@ function GDImageResize($src, $dest, $width, $height, $rgb=0xFFFFFF, $quality=100
 
 function MagicResize($im_filename, $x, $y) {
 	$oldName = $im_filename;
-	if (substr($im_filename, -4) === '.JPG') {
-		$im_filename = str_replace('.JPG', '.jpg', $im_filename);
+	if (str_ends_with((string) $im_filename, '.JPG')) {
+		$im_filename = str_replace('.JPG', '.jpg', (string) $im_filename);
 		rename($oldName, $im_filename);
 	}
 
@@ -146,8 +146,8 @@ function MagicResize($im_filename, $x, $y) {
 
 function NConvertSafeImageResize($im_filename, $x, $y) {
 	$oldName = $im_filename;
-	if (substr($im_filename, -4) === '.JPG') {
-		$im_filename = str_replace(".JPG", ".jpg", $im_filename);
+	if (str_ends_with((string) $im_filename, '.JPG')) {
+		$im_filename = str_replace(".JPG", ".jpg", (string) $im_filename);
 		rename($oldName, $im_filename);
 	}
 
@@ -192,51 +192,27 @@ function GetImageProperty($file) {
 	$retArray['width'] = $size[0];
 	$retArray['height'] = $size[1];
 
-	switch($size[2]) {
-		case '1':
-			$type = 'GIF';
-			break;
-		case '2':
-			$type = 'JPG';
-			break;
-		case '3':
-			$type = 'PNG';
-			break;
-		case '5':
-			$type = 'PSD';
-			break;
-		case '6':
-			$type = 'BMP';
-			break;
-		case '7':
-		case '8':
-			$type = 'TIFF';
-			break;
-		case '9':
-			$type = 'JPC';
-			break;
-		case '10':
-			$type = 'JP2';
-			break;
-		case '11':
-			$type = 'JPX';
-			break;
-		default:
-			$type = 'undefined';
-			break;
-	}
+	$type = match ($size[2]) {
+     '1' => 'GIF',
+     '2' => 'JPG',
+     '3' => 'PNG',
+     '5' => 'PSD',
+     '6' => 'BMP',
+     '7', '8' => 'TIFF',
+     '9' => 'JPC',
+     '10' => 'JP2',
+     '11' => 'JPX',
+     default => 'undefined',
+ };
 	$retArray['type'] = $type;
 	$byteSize = filesize($file);
 	$retArray['byteSize'] = $byteSize;
 	if ($byteSize < 1024) {
 		$retArray['xByteSize'] = $byteSize.' байт';
-	} elseif ($byteSize < 1048576) {
+	} elseif ($byteSize < 1_048_576) {
 		$retArray['xByteSize'] = sprintf("%01.2f", ($byteSize/1024)).' Кбайт';
 	} else {
-		$retArray['xByteSize'] = sprintf("%01.2f", ($byteSize/1048576)).' Кбайт';
+		$retArray['xByteSize'] = sprintf("%01.2f", ($byteSize/1_048_576)).' Кбайт';
 	}
 	return $retArray;
 }
-
-
-?>

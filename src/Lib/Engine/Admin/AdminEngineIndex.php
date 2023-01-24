@@ -16,7 +16,7 @@ class AdminEngineIndex extends AbstractAdminEngine
 {
 
 	/** @var AdminHtmlLayout */
-	protected $layout = ['factory' => 'PP\Lib\Html\Layout\AdminHtmlLayout', 'helper' => true];
+	protected $layout = ['factory' => \PP\Lib\Html\Layout\AdminHtmlLayout::class, 'helper' => true];
 	protected $menu;
 	protected $outerLayout = 'index';
 	protected $templateMainArea = 'INNER.0.0';
@@ -88,7 +88,7 @@ class AdminEngineIndex extends AbstractAdminEngine
 	{
 		if (!isset($this->modules[$area])) {
 			$this->layout->setOneColumn();
-			$this->layout->assignError($this->templateMainArea, 'Некорректный параметр <em>area</em> = <em>' . strip_tags($area) . '</em>');
+			$this->layout->assignError($this->templateMainArea, 'Некорректный параметр <em>area</em> = <em>' . strip_tags((string) $area) . '</em>');
 			$this->layout->assignTitle('Некорректный параметр area');
 			return false;
 		}

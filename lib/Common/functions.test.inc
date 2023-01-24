@@ -4,7 +4,7 @@
  * Helpers for testing
  */
 
-define('TEST_CASE_NAME_LENGTH', ((int)($w = trim(`tput cols`)) ? $w : 80) - 36);
+define('TEST_CASE_NAME_LENGTH', ((int)($w = trim((string) `tput cols`)) ? $w : 80) - 36);
 
 /**
  * unit test worker
@@ -27,10 +27,10 @@ function t($name, $callback, $expected = true) {
 
 	$test = is_callable($expected)
 		? $expected($result)
-		: json_encode($result) === json_encode($expected); // todo: make it more flexible
+		: json_encode($result, JSON_THROW_ON_ERROR) === json_encode($expected, JSON_THROW_ON_ERROR); // todo: make it more flexible
 
 	$nameLength = TEST_CASE_NAME_LENGTH;
-	$case = sprintf("%-{$nameLength}s", (mb_strlen($name) > $nameLength ? mb_substr($name, 0, $nameLength-1) . 'Б─╕' : $name));
+	$case = sprintf("%-{$nameLength}s", (mb_strlen((string) $name) > $nameLength ? mb_substr((string) $name, 0, $nameLength-1) . 'Б─╕' : $name));
 	con_printf('%3d. %s  %+16s', $counter, $case, number_format($elapsedTime * 1000, 4, ',', ' ').'ms   ');
 	con_printf(sprintf('[%s{end}]{nl}', $test ? '{fg:lgreen} OK ' : '{fg:lred}FAIL'));
 
@@ -83,7 +83,7 @@ function tt ($file) {
 		echo "Aim \"{$file}\" not found\n";
 		return;
 	}
-	$toks = token_get_all(file_get_contents($file));
+	$toks = \PhpToken::tokenize(file_get_contents($file));
 	// handle functions and classes
 	$ns = null;
 	$class = null;
@@ -130,10 +130,8 @@ function _tt_function($aim) {
 	thead($method->getName());
 	foreach ($tests as $k => $test) {
 		$res = array_pop($test);
-		$case = trim($k);
-		t($case, function () use ($methodname, $test) {
-			return call_user_func_array($methodname, $test);
-		}, $res);
+		$case = trim((string) $k);
+		t($case, fn() => call_user_func_array($methodname, $test), $res);
 	}
 }
 
@@ -149,10 +147,8 @@ function _tt_class($aim) {
 		thead($cref->getName(), $method->getName());
 		foreach ($tests as $k => $test) {
 			$res = array_pop($test);
-			$case = trim($k);
-			t($case, function () use ($methodname, $test) {
-				return call_user_func_array($methodname, $test);
-			}, $res);
+			$case = trim((string) $k);
+			t($case, fn() => call_user_func_array($methodname, $test), $res);
 		}
 	}
 }
@@ -160,21 +156,19 @@ function _tt_class($aim) {
 function _parsePhpDocTest($phpdoc) {
 	$tests = [];
 	$pos = 0;
-	while ($pos = mb_strpos($phpdoc, '@test ', $pos)) {
-		$end = mb_strpos($phpdoc, "\n", $pos + 1);
+	while ($pos = mb_strpos((string) $phpdoc, '@test ', $pos)) {
+		$end = mb_strpos((string) $phpdoc, "\n", $pos + 1);
 		//$end = strpos($phpdoc, '@test', $pos + 1) ?: strpos($phpdoc, '@', $pos + 1) ?: strpos($phpdoc, '**/', $pos + 1);
-		($end === false) && $end = mb_strlen($phpdoc);
+		($end === false) && $end = mb_strlen((string) $phpdoc);
 
-		$data = mb_substr($phpdoc, $pos + 5, $end - $pos - 5);
+		$data = mb_substr((string) $phpdoc, $pos + 5, $end - $pos - 5);
 		[$expression, $title] = array_pad(explode('---', $data), 2, null);
-		[$params, $result] = array_pad(explode('>>>', $expression), 2, 'null');
-		$test = (array)json_decode(trim($params), 1);
-		preg_match('@^/.+/[ism]?$@s', trim($result), $m);
+		[$params, $result] = array_pad(explode('>>>', (string) $expression), 2, 'null');
+		$test = (array)json_decode(trim((string) $params), 1, 512, JSON_THROW_ON_ERROR);
+		preg_match('@^/.+/[ism]?$@s', trim((string) $result), $m);
 		$test[] = !$m?
-			json_decode(trim($result))
-			: function ($expected) use ($m) {
-				return preg_match($m[0], $expected)? $expected : $m[0];
-			};
+			json_decode(trim((string) $result), null, 512, JSON_THROW_ON_ERROR)
+			: fn($expected) => preg_match($m[0], (string) $expected)? $expected : $m[0];
 		$tests[$title ?: $data] = $test;
 		$pos ++;
 	}

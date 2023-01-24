@@ -23,7 +23,7 @@ abstract class AbstractEngine implements EngineInterface
 	protected $area;
 
 	/** @var ApplicationFactory */
-	protected $app = ['factory' => 'PP\ApplicationFactory', 'helper' => true];
+	protected $app = ['factory' => \PP\ApplicationFactory::class, 'helper' => true];
 
 	/** @var \PXRequest */
 	protected $request = ['factory' => 'PXRequest'];
@@ -32,7 +32,7 @@ abstract class AbstractEngine implements EngineInterface
 	protected $db = ['factory' => 'PXDatabase', 'helper' => true];
 
 	/** @var LayoutInterface */
-	protected $layout = ['factory' => 'PP\Lib\Html\Layout\NullLayout'];
+	protected $layout = ['factory' => \PP\Lib\Html\Layout\NullLayout::class];
 
 	/** @var \PXUserAuthorized */
 	protected $user = ['factory' => 'PXUserAuthorized'];
@@ -40,7 +40,7 @@ abstract class AbstractEngine implements EngineInterface
 	/**
 	 * @var \Symfony\Component\DependencyInjection\ContainerInterface
 	 */
-	protected $container = ['factory' => 'Symfony\Component\DependencyInjection\ContainerBuilder', 'helper' => true];
+	protected $container = ['factory' => \Symfony\Component\DependencyInjection\ContainerBuilder::class, 'helper' => true];
 
 	/**
 	 * @var ConfigCache
@@ -139,7 +139,7 @@ abstract class AbstractEngine implements EngineInterface
 				\FatalError("Factory class '{$this->{$var}['factory']}' for '{$var}' is not exists !");
 			}
 
-			$initHelper = (!empty($this->{$var}['helper']) && method_exists($this, 'init' . ucfirst($var)) ? 'init' . ucfirst($var) : false);
+			$initHelper = (!empty($this->{$var}['helper']) && method_exists($this, 'init' . ucfirst((string) $var)) ? 'init' . ucfirst((string) $var) : false);
 
 			if ($initHelper) {
 				$this->$initHelper($this->{$var}['factory']);

@@ -13,11 +13,9 @@ class PXStorageType
 	public $triggers;
 
 	/**
-	 * PXStorageType constructor.
-	 * @param PXFieldDescription $field
-	 * @param string $name
-	 */
-	public function __construct(PXFieldDescription $field, string $name)
+  * PXStorageType constructor.
+  */
+ public function __construct(PXFieldDescription $field, string $name)
 	{
 		$this->field = $field;
 		$this->name = $name;
@@ -239,7 +237,7 @@ class PXStorageType
 
 	protected static function parseConfigArguments($attrNode, $fieldNode)
 	{
-		$args = explode("|", $attrNode->value);
+		$args = explode("|", (string) $attrNode->value);
 		array_shift($args);
 
 		return $args;
@@ -249,7 +247,7 @@ class PXStorageType
 	{
 		$baseClass = self::class;
 
-		$inputClass = $baseClass . mb_ucfirst(mb_strtolower($name));
+		$inputClass = $baseClass . mb_ucfirst(mb_strtolower((string) $name));
 		if (!class_exists($inputClass)) {
 			trigger_error("Class {$inputClass} not found, use {$baseClass} instead", E_USER_NOTICE);
 			return $baseClass;
@@ -259,7 +257,7 @@ class PXStorageType
 
 	public static function parseConfig($attrNode, $fieldNode)
 	{
-		$name = preg_replace('/\|.+$/' . REGEX_MOD, '', $attrNode->value);
+		$name = preg_replace('/\|.+$/' . REGEX_MOD, '', (string) $attrNode->value);
 
 		/** @var static $cls */
 		$cls = static::getClassByName($name);

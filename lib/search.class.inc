@@ -8,7 +8,7 @@ function SortByRelevant($a, $b) {
 }
 
 function _yo2ye($s) {
-	return str_replace('Ё', 'Е', str_replace('ё', 'е', $s));
+	return str_replace('Ё', 'Е', str_replace('ё', 'е', (string) $s));
 }
 
 class PXSearch
@@ -24,13 +24,10 @@ class PXSearch
 
 	public $dbah;
 
-	public $withIndexField;
-
-	public function __construct($withIndexField = true)
+	public function __construct(public $withIndexField = true)
 	{
 		$this->app = PXRegistry::getApp();
 		$this->db = PXRegistry::getDB();
-		$this->withIndexField = $withIndexField;
 		$this->searchCount = 0;
 
 		$this->loadStopwords(
@@ -58,7 +55,7 @@ class PXSearch
 		$this->parents = $parents;
 
 		$stemsArray = $this->_getStemsArray($query);
-		if (!count($stemsArray)) {
+		if (!(is_countable($stemsArray) ? count($stemsArray) : 0)) {
 			return [];
 		}
 
@@ -83,7 +80,7 @@ class PXSearch
 
 	public function loadStopwords($s)
 	{
-		preg_match_all("/\w+/s" . REGEX_MOD, $s, $m);
+		preg_match_all("/\w+/s" . REGEX_MOD, (string) $s, $m);
 		$this->stopwords = [];
 		foreach ($m[0] as $v) {
 			$this->stopwords[$v] = true;
@@ -116,7 +113,7 @@ class PXSearch
 
 	public function getStemByWord($word)
 	{
-		if (mb_strlen($word) <= 2 || mb_strlen($word) > 30) {
+		if (mb_strlen((string) $word) <= 2 || mb_strlen((string) $word) > 30) {
 			return NULL;
 		}
 
@@ -161,7 +158,7 @@ class PXSearch
 
 	public static function strip($s)
 	{
-		$s = preg_replace("/<SCRIPT.*?\\/SCRIPT>/is" . REGEX_MOD, '', $s); //
+		$s = preg_replace("/<SCRIPT.*?\\/SCRIPT>/is" . REGEX_MOD, '', (string) $s); //
 		$s = preg_replace("/<.*?>/s" . REGEX_MOD, ' ', $s);
 		$s = preg_replace("/&nbsp;/is" . REGEX_MOD, ' ', $s);
 		$s = html_entity_decode($s, ENT_QUOTES, DEFAULT_CHARSET);
@@ -178,12 +175,12 @@ class PXSearch
 	function _getStemsSQL($stemsArray, $allowTypes)
 	{
 		$where = [
-			"stem IN (" . join(',', array_map([$this, 'escapeString'], $stemsArray)) . ")",
+			"stem IN (" . join(',', array_map($this->escapeString(...), $stemsArray)) . ")",
 		];
 
 		if (isset($allowTypes) && is_array($allowTypes)) {
 			$allowTypes = array_flip($allowTypes);
-			$where[] = "dtype IN (" . join(',', array_map([$this, 'escapeString'], $allowTypes)) . ")";
+			$where[] = "dtype IN (" . join(',', array_map($this->escapeString(...), $allowTypes)) . ")";
 		}
 
 		foreach (PXRegistry::getApp()->triggers->search as $t) {
@@ -191,7 +188,7 @@ class PXSearch
 		}
 
 		$where = implode(' AND ', $where);
-		$totalwords = count($stemsArray);
+		$totalwords = is_countable($stemsArray) ? count($stemsArray) : 0;
 
 		return <<<SQL
 			SELECT
@@ -268,8 +265,8 @@ SQL;
 	private
 	function _getStemsArray($query)
 	{
-		$query = preg_replace("/&(#\d+|[a-z]+);/s" . REGEX_MOD, '', $query);
-		preg_match_all("/[а-яa-z]+/s" . REGEX_MOD, _StrToLower(_yo2ye($query)), $tmp);
+		$query = preg_replace("/&(#\d+|[a-z]+);/s" . REGEX_MOD, '', (string) $query);
+		preg_match_all("/[а-яa-z]+/s" . REGEX_MOD, (string) _StrToLower(_yo2ye($query)), $tmp);
 		return array_unique($this->getStemsByArray(array_unique($tmp[0])));
 	}
 
@@ -295,7 +292,7 @@ SQL;
 		}
 
 		foreach ($dtypes as $k => $v) {
-			if (!count($v)) {
+			if (!(is_countable($v) ? count($v) : 0)) {
 				continue;
 			}
 
@@ -347,4 +344,3 @@ SQL;
 		return $this->searchCount;
 	}
 }
-?>

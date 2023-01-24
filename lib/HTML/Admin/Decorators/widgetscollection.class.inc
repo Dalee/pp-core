@@ -3,9 +3,9 @@
 final class PXDecorativeWidgetsCollection
 {
 
-	private static $namedData = [];
-	private static $objectsNameHash = [];
-	private static $objectsTypeHash = [];
+	private static array $namedData = [];
+	private static array $objectsNameHash = [];
+	private static array $objectsTypeHash = [];
 
 	private function __construct()
 	{
@@ -13,7 +13,7 @@ final class PXDecorativeWidgetsCollection
 
 	private static function hash_key($object)
 	{
-		return strtolower(is_object($object) ? get_class($object) : $object);
+		return strtolower(is_object($object) ? $object::class : $object);
 	}
 
 	private static function removeFromCollection($hash, $key)
@@ -72,7 +72,8 @@ final class PXDecorativeWidgetsCollection
 			"wname" => self::hash_key($widget),
 			"key" => self::hash_key($classToDecorate),
 			"subkey" => self::hash_key($decorableAreal),
-			"alias" => self::hash_key($alias)];
+			"alias" => self::hash_key($alias)
+		];
 	}
 
 	private static function putInLists(&$widget, $key, $wname, $subkey, $alias)
@@ -84,7 +85,8 @@ final class PXDecorativeWidgetsCollection
 	public static function addToCollection($widget, $classToDecorate, $decorableAreal, $decorablePart, $alias = 'default')
 	{
 		$key = $subkey = $wname = null;
-		extract(self::initVars($widget, $classToDecorate, $decorableAreal, $decorablePart, $alias));
+		$initVars = self::initVars($widget, $classToDecorate, $decorableAreal, $decorablePart, $alias);
+		extract($initVars);
 
 		self::$namedData[$key][$subkey][$decorablePart][] = &$widget;
 		self::putInLists($widget, $key, $wname, $subkey, $alias);
@@ -93,7 +95,8 @@ final class PXDecorativeWidgetsCollection
 	public static function addToCollectionBefore($beforeAreal, $widget, $classToDecorate, $decorableAreal, $decorablePart, $alias = 'default')
 	{
 		$key = $subkey = $wname = null;
-		extract(self::initVars($widget, $classToDecorate, $decorableAreal, $decorablePart, $alias));
+		$initVars = self::initVars($widget, $classToDecorate, $decorableAreal, $decorablePart, $alias);
+		extract($initVars);
 
 		self::addToPosition(0, $beforeAreal, $widget, $classToDecorate, $decorableAreal, $decorablePart, $alias);
 		self::putInLists($widget, $key, $wname, $subkey, $alias);
@@ -102,7 +105,8 @@ final class PXDecorativeWidgetsCollection
 	public static function addToCollectionAfter($afterAreal, $widget, $classToDecorate, $decorableAreal, $decorablePart, $alias = 'default')
 	{
 		$key = $subkey = $wname = null;
-		extract(self::initVars($widget, $classToDecorate, $decorableAreal, $decorablePart, $alias));
+		$initVars = self::initVars($widget, $classToDecorate, $decorableAreal, $decorablePart, $alias);
+		extract($initVars);
 
 		self::addToPosition(1, $afterAreal, $widget, $classToDecorate, $decorableAreal, $decorablePart, $alias);
 		self::putInLists($widget, $key, $wname, $subkey, $alias);
@@ -111,9 +115,10 @@ final class PXDecorativeWidgetsCollection
 	private static function addToPosition($shift, $desiredAreal, &$widget, $classToDecorate, $decorableAreal, $decorablePart, $alias = 'default')
 	{
 		$key = $subkey = $wname = null;
-		extract(self::initVars($widget, $classToDecorate, $decorableAreal, $decorablePart, $alias));
+		$initVars = self::initVars($widget, $classToDecorate, $decorableAreal, $decorablePart, $alias);
+		extract($initVars);
 
-		$desiredAreal = strtolower($desiredAreal);
+		$desiredAreal = strtolower((string) $desiredAreal);
 		$merged = [$subkey => [$decorablePart => [&$widget]]];
 
 		if (!isset(self::$namedData[$key])) {
@@ -148,5 +153,3 @@ final class PXDecorativeWidgetsCollection
 		return self::removeFromCollection('objectsTypeHash', self::hash_key($decorableAreal) . self::hash_key($alias));
 	}
 }
-
-?>

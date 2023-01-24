@@ -89,7 +89,7 @@ class AbstractSqlDatabase
 
 	public function EscapeString($string)
 	{
-		return addslashes($string);
+		return addslashes((string) $string);
 	}
 
 	public function mapFields($field)

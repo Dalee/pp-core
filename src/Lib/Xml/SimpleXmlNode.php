@@ -53,21 +53,12 @@ class SimpleXmlNode extends AbstractXmlNode {
 		}
 
 		$n = $this->_node;
-		switch (true) {
-			case $n->xpath('/*') == [$n];
-				$this->_nodeType = Xml::DOC;
-				break;
-			case ($n->xpath('.') == [$n]):
-				$this->_nodeType = Xml::ELEMENT;
-				break;
-			case $n->attributes() === null:
-			case $n[0] == $n:
-				$this->_nodeType = Xml::ATTRIBUTE;
-				break;
-			default:
-				$this->_nodeType = Xml::NONE;
-				break;
-		}
+		$this->_nodeType = match (true) {
+			$n->xpath('/*') == [$n] => Xml::DOC,
+			$n->xpath('.') == [$n] => Xml::ELEMENT,
+			$n->attributes() === null, $n[0] == $n => Xml::ATTRIBUTE,
+			default => Xml::NONE,
+		};
 		return $this->_nodeType;
 	}
 
@@ -94,7 +85,7 @@ class SimpleXmlNode extends AbstractXmlNode {
 
 			if ($attrs) {
 				foreach ($attrs as $k => $v) {
-					$this->_attributes[trim($k)] = Xml::attributePrototype($k, (string)$v);
+					$this->_attributes[trim((string) $k)] = Xml::attributePrototype($k, (string)$v);
 				}
 			}
 		}

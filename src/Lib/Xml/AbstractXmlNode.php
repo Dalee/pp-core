@@ -9,7 +9,6 @@ namespace PP\Lib\Xml;
 abstract class AbstractXmlNode implements XmlNodeInterface {
 	/** @var  XmlNodeInterface */
 	protected $_xml;
-	protected $_node;
 
 	protected $_nodeName;
 	protected $_nodeValue;
@@ -21,8 +20,8 @@ abstract class AbstractXmlNode implements XmlNodeInterface {
 	 * AbstractXmlNode constructor.
 	 * @param $node
 	 */
-	public function __construct($node) {
-		$this->_node = $node;
+	public function __construct(protected $_node)
+	{
 	}
 
 	/**
@@ -80,7 +79,7 @@ abstract class AbstractXmlNode implements XmlNodeInterface {
 		$this->_childNodes = [];
 
 		if (is_object($this->_node)) {
-			$self = get_class($this);
+			$self = static::class;
 			$childs = $this->getChildObjects();
 
 			if ($childs) {
@@ -141,7 +140,7 @@ abstract class AbstractXmlNode implements XmlNodeInterface {
 	public function getAttribute($attrName) {
 		$this->attributes();
 
-		if (count($this->_attributes) > 0 && isset($this->_attributes[$attrName])) {
+		if ((is_countable($this->_attributes) ? count($this->_attributes) : 0) > 0 && isset($this->_attributes[$attrName])) {
 			return $this->_attributes[$attrName]->value;
 		}
 

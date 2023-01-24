@@ -56,7 +56,7 @@ class GetPropertyCommand extends AbstractCommand {
 		$sql = sprintf('SELECT "value" FROM %s WHERE "name"=\'%s\'', DT_PROPERTIES, $this->db->EscapeString($key));
 		$result = $this->db->query($sql);
 
-		if (count($result) === 0) {
+		if ((is_countable($result) ? count($result) : 0) === 0) {
 			if ($stderr instanceof OutputInterface) {
 				$stderr->writeln("Property: ${key} not found");
 			}

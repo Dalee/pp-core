@@ -12,12 +12,11 @@ class PXStorageTypeImage extends PXStorageTypeFile
 {
 
 	/**
-	 * {@inheritdoc}
-	 * @return array|null
-	 */
-	public function proceedFile(PXFieldDescription $field, array &$object, ?array &$param): ?array
+  * {@inheritdoc}
+  */
+ public function proceedFile(PXFieldDescription $field, array &$object, ?array &$param): ?array
 	{
-		$param['allowed'] = $param['allowed'] ?? ENUM_ALLOWED_IMAGETYPES;
+		$param['allowed'] ??= ENUM_ALLOWED_IMAGETYPES;
 		return parent::proceedFile($field, $object, $param);
 	}
 

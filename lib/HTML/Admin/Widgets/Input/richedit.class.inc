@@ -2,21 +2,15 @@
 
 class PXInputRichEdit extends PXAdminComplexWidget
 {
-    public $value;
-    public $name;
-    public $height;
     public $container;
     public $toLayout;
 
     protected $editors = [];
 
-    public const AFTER_TEXTAREA = 0;
+    final public const AFTER_TEXTAREA = 0;
 
-    public function __construct($name, $value, $height)
+    public function __construct(public $name, public $value, public $height)
     {
-        $this->value = $value;
-        $this->name = $name;
-        $this->height = $height;
         $this->container = $name . '_id';
         $this->toLayout = PXRegistry::getLayout();
         $this->favoriteEditor = null; //default value
@@ -58,7 +52,7 @@ class PXInputRichEdit extends PXAdminComplexWidget
     {
         $this->decorate('RICHEDITORS');
 
-        array_walk($this->blocks[self::AFTER_TEXTAREA], [$this, 'initiate']);
+        array_walk($this->blocks[self::AFTER_TEXTAREA], $this->initiate(...));
         $this->addEditor('Без редактора');
 
         $embedding = $this->getTypesDict();
@@ -67,7 +61,7 @@ class PXInputRichEdit extends PXAdminComplexWidget
 
         $richEditor = isset($this->blocks[self::AFTER_TEXTAREA][$embedding['current']]) ? $this->blocks[self::AFTER_TEXTAREA][$embedding['current']]->html() : '';
 
-        $escapedValue = "\n" . htmlspecialchars($this->value, ENT_COMPAT | ENT_HTML401, DEFAULT_CHARSET);
+        $escapedValue = "\n" . htmlspecialchars((string) $this->value, ENT_COMPAT | ENT_HTML401, DEFAULT_CHARSET);
 
         return <<<HTML
 			<div class="redactor">

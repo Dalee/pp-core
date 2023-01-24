@@ -5,7 +5,7 @@ interface PXAdminWidgetIF
     public function html();
 }
 
-abstract class PXAdminWidget implements PXAdminWidgetIF
+abstract class PXAdminWidget implements PXAdminWidgetIF, \Stringable
 {
     public $disable;
     public $parentWidget = null;
@@ -18,9 +18,9 @@ abstract class PXAdminWidget implements PXAdminWidgetIF
     {
     }
 
-    public function __toString()
+    public function __toString(): string
     {
-        return $this->html();
+        return (string) $this->html();
     }
 
     public function setParent($widget)

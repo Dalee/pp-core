@@ -37,12 +37,10 @@ class CoreExtension extends Extension {
 	}
 
 	/**
-	 * @param string $applicationName
-	 * @param ContainerBuilder $container
-	 * @param LoaderInterface $loader
-	 * @throws \Exception
-	 */
-	private function registerLoggerConfiguration($applicationName, ContainerBuilder $container, LoaderInterface $loader) {
+  * @param string $applicationName
+  * @throws \Exception
+  */
+ private function registerLoggerConfiguration($applicationName, ContainerBuilder $container, LoaderInterface $loader) {
 		$loader->load('logger.yml');
 		$container->getDefinition('logger')->addArgument($applicationName);
 	}

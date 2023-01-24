@@ -33,7 +33,7 @@ class MigrateCreateCommand extends MigrateAbstractCommand {
 		$migrationContent = str_replace(
 			['{{namespace}}', '{{class}}'],
 			[$this->namespace, $className],
-			$this->template
+			(string) $this->template
 		);
 
 		$directory = $this->getMigrationsDirectory();

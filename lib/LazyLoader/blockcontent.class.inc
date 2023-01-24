@@ -1,10 +1,6 @@
 <?php
 
-class PXBlockContentLazyLoader  {
-
-	protected $ownerType;
-	protected $ownerId;
-	protected $ownerField;
+class PXBlockContentLazyLoader implements \Stringable  {
 
 	protected $tree;
 	protected $blocks;
@@ -15,11 +11,7 @@ class PXBlockContentLazyLoader  {
 
 	protected static $MEDIA_FIELDS = ['images'];
 
-	public function __construct($ownerType, $ownerId, $ownerField) {
-		$this->ownerType = $ownerType;
-		$this->ownerId = $ownerId;
-		$this->ownerField = $ownerField;
-
+	public function __construct(protected $ownerType, protected $ownerId, protected $ownerField) {
 		$this->tree = null;
 		$this->blocks = null;
 
@@ -62,9 +54,7 @@ class PXBlockContentLazyLoader  {
 				DB_SELECT_TREE
 		);
 
-		$this->blocks = $this->tree->map(function($leaf, $content){
-			return $this->__blockMap($leaf, $content);
-		});
+		$this->blocks = $this->tree->map(fn($leaf, $content) => $this->__blockMap($leaf, $content));
 	}
 
 	protected function __blockMap ($leaf, $content) {
@@ -91,7 +81,7 @@ class PXBlockContentLazyLoader  {
         ];
 	}
 
-	public function __toString() {
+	public function __toString(): string {
 		return '';
 	}
 

@@ -2,23 +2,15 @@
 
 class PXAdminTreeObjects extends PXAdminObjects
 {
-	protected $withoutExternals;
-	protected $loadWhere = null;
-	protected $loadMethod = null;
-
 	/**
-	 *
-	 * @param mixed $format
-	 * @param string $where
-	 * @param string $loadMethod
-	 * @param string $withoutExternals
-	 */
-	public function __construct($format, $where = null, $loadMethod = null, $withoutExternals = false)
+  *
+  * @param mixed $format
+  * @param string $loadWhere
+  * @param string $loadMethod
+  * @param string $withoutExternals
+  */
+ public function __construct($format, protected $loadWhere = null, protected $loadMethod = null, protected $withoutExternals = false)
 	{
-		$this->loadWhere = $where;
-		$this->loadMethod = $loadMethod;
-		$this->withoutExternals = $withoutExternals;
-
 		parent::__construct($format);
 
 		$this->createSubWidget();
@@ -33,17 +25,11 @@ class PXAdminTreeObjects extends PXAdminObjects
 			return;
 		}
 
-		switch (strtolower($this->loadMethod)) {
-			case 'byparent':
-				$this->tree = $this->db->getObjectsByParent($this->format, null, $this->loadWhere, DB_SELECT_TREE | ($this->withoutExternals ? DB_SELECT_WITHOUT_EXTERNALS : 0));
-				break;
-			case 'byidarray':
-				$this->tree = $this->db->getObjectsByIdArray($this->format, null, $this->loadWhere, DB_SELECT_TREE | ($this->withoutExternals ? DB_SELECT_WITHOUT_EXTERNALS : 0));
-				break;
-			default:
-				$this->tree = $this->db->getObjects($this->format, null, DB_SELECT_TREE | ($this->withoutExternals ? DB_SELECT_WITHOUT_EXTERNALS : 0));
-				break;
-		}
+		$this->tree = match (strtolower((string) $this->loadMethod)) {
+			'byparent' => $this->db->getObjectsByParent($this->format, null, $this->loadWhere, DB_SELECT_TREE | ($this->withoutExternals ? DB_SELECT_WITHOUT_EXTERNALS : 0)),
+			'byidarray' => $this->db->getObjectsByIdArray($this->format, null, $this->loadWhere, DB_SELECT_TREE | ($this->withoutExternals ? DB_SELECT_WITHOUT_EXTERNALS : 0)),
+			default => $this->db->getObjects($this->format, null, DB_SELECT_TREE | ($this->withoutExternals ? DB_SELECT_WITHOUT_EXTERNALS : 0)),
+		};
 
 		$this->db->filterByAccess('admin', $this->format, $this->tree);
 		$this->count = sizeof($this->tree->leafs) - 1;
@@ -61,7 +47,7 @@ class PXAdminTreeObjects extends PXAdminObjects
 		$this->loadObjects();
 		$this->widget = new PXAdminTree($this->format, $this->tree);
 		$this->widget->setOpenedLeafs($this->request->getLeafStatus());
-		$this->widget->loadDropdownValues($this->db);
+		$this->widget->loadDropdownValues();
 	}
 
 	public function setSelected($selectedSid)
@@ -93,4 +79,3 @@ class PXAdminTreeObjects extends PXAdminObjects
 		return $this->tree;
 	}
 }
-?>

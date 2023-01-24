@@ -10,7 +10,7 @@ use Dotenv\Dotenv;
  */
 class EnvLoader {
 
-	public const TYPE_NOT_EMPTY = 0; // default
+	final public const TYPE_NOT_EMPTY = 0; // default
 
 	/** @var string[] */
 	protected $errors;
@@ -21,22 +21,13 @@ class EnvLoader {
 	/** @var bool */
 	protected $valid;
 
-	/** @var string */
-	protected $path;
-
-	/** @var string */
-	protected $file;
-
 	/**
 	 * EnvLoader constructor.
 	 *
 	 * @param string $path
 	 * @param string $file
 	 */
-	public function __construct($path, $file = '.env') {
-		$this->path = $path;
-		$this->file = $file;
-
+	public function __construct(protected $path, protected $file = '.env') {
 		$this->errors = [];
 		$this->required = [];
 	}
@@ -58,7 +49,7 @@ class EnvLoader {
 	 * @param string|string[] $key
 	 * @return $this
 	 */
-	public function addRequired($key) {
+	public function addRequired(string|array $key) {
 		if (!is_array($key)) {
 			$key = [$key];
 		}
@@ -152,7 +143,7 @@ class EnvLoader {
 	 * @return bool
 	 */
 	protected function isNotEmpty($key) {
-		$res = (isset($_ENV[$key])) && (strlen($_ENV[$key]) > 0);
+		$res = (isset($_ENV[$key])) && (strlen((string) $_ENV[$key]) > 0);
 
 		if (!$res) {
 			$this->errors[] = "${key} should not be empty";

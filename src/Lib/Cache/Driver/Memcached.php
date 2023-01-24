@@ -13,11 +13,9 @@ class Memcached implements CacheInterface
 	/** @var \Memcached */
 	private $connection;
 
-	/** @var int */
-	private $defaultExpireTime;
+	private readonly int $defaultExpireTime;
 
-	/** @var string */
-	private $cacheNamespace;
+	private readonly string $cacheNamespace;
 
 	/** @var string */
 	public $host = 'localhost';
@@ -69,7 +67,7 @@ class Memcached implements CacheInterface
 	public function deleteGroup($group)
 	{
 		$prefix = $this->key($group, true);
-		$prefLen = mb_strlen($prefix);
+		$prefLen = mb_strlen((string) $prefix);
 		$allKeys = $this->connection->getAllKeys();
 		if (empty($allKeys)) {
 			return;
@@ -77,7 +75,7 @@ class Memcached implements CacheInterface
 
 		$toDelete = [];
 		foreach ($allKeys as $key) {
-			if (mb_substr($key, 0, $prefLen) == $prefix) {
+			if (mb_substr((string) $key, 0, $prefLen) == $prefix) {
 				$toDelete[] = $key;
 			}
 		}
@@ -134,6 +132,6 @@ class Memcached implements CacheInterface
 			$groupPart = $this->key(array_shift($key));
 			return $groupPart . '_' . $keyPart;
 		}
-		return md5($key) . ($glob ? '_' : '');
+		return md5((string) $key) . ($glob ? '_' : '');
 	}
 }

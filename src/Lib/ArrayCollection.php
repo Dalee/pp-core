@@ -63,18 +63,15 @@ class ArrayCollection extends Collection implements \ArrayAccess  {
 	}
 
 	/**
-	 * @param string $path
-	 * @param string $delimiter
-	 * @param array|ArrayCollection $from
-	 * @return mixed
-	 */
-	protected function getByPathFromArray($path, $delimiter, &$from) {
+  * @param string $path
+  * @param string $delimiter
+  * @return mixed
+  */
+ protected function getByPathFromArray($path, $delimiter, array|\PP\Lib\ArrayCollection &$from) {
 		$keyList = explode($delimiter, $path);
 		$key = array_shift($keyList);
 
-		$result = isset($from[$key])
-			? $from[$key]
-			: null;
+		$result = $from[$key] ?? null;
 
 		if ($result === null) {
 			return $result;

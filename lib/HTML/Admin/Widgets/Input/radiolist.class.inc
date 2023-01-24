@@ -2,16 +2,12 @@
 
 class PXInputRadiolist extends PXAdminWidget {
 
-	private $name = null;
-	private $selected = null;
-	private $list = null;
+	private ?string $selected = null;
 
-	private $pattern = '<label for="%2$s">%1$s %3$s</label>';
+	private string $pattern = '<label for="%2$s">%1$s %3$s</label>';
 
-	public function __construct($name, $selected, $list) {
-		$this->name = $name;
+	public function __construct(private $name, $selected, private $list) {
 		$this->selected = (string)$selected;
-		$this->list = $list;
 	}
 
 	public function html() {
@@ -22,10 +18,10 @@ class PXInputRadiolist extends PXAdminWidget {
 		$out = '';
 		foreach ($this->list as $value => $title) {
 			// hm... I don't like it
-			$id = str_replace(['[', ']'], ['_', ''], $this->name) . '_' . preg_replace(
+			$id = str_replace(['[', ']'], ['_', ''], (string) $this->name) . '_' . preg_replace(
 					'/[^a-z0-9\-]/i' . REGEX_MOD,
 					'',
-					$value
+					(string) $value
 				);
 			$input = new PXInputRadioButton($this->name, $this->selected === (string)$value, $value);
 			$input->setId($id);

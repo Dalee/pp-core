@@ -11,7 +11,7 @@ namespace PP\Migration;
 abstract class MigrationAbstract {
 
 	/** @var string[] */
-	private $sql;
+	private array $sql;
 
 	/**
 	 * @internal

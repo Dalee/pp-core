@@ -77,7 +77,7 @@ abstract class PXAdminObjects extends PXAdminWidget implements IPXAdminObjects
 
         $this->layoutCell = $cellName;
 
-        $cell = explode('.', $cellName);
+        $cell = explode('.', (string) $cellName);
         $cell[2]++;
         $this->layoutButtonCell = implode('.', $cell);
 

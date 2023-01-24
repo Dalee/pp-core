@@ -14,10 +14,9 @@ abstract class AbstractUrlGenerator implements GeneratorInterface {
 	protected $context;
 
 	/**
-	 * AbstractUrlGenerator constructor.
-	 * @param ContextUrlGenerator $context
-	 */
-	public function __construct(ContextUrlGenerator $context) {
+  * AbstractUrlGenerator constructor.
+  */
+ public function __construct(ContextUrlGenerator $context) {
 		$this->context = $context;
 	}
 
@@ -26,23 +25,13 @@ abstract class AbstractUrlGenerator implements GeneratorInterface {
 	 */
 	public function generate($params = []) {
 		$action = $this->context->getTargetAction();
-		switch ($action) {
-			case ModuleInterface::ACTION_INDEX:
-				$url = $this->indexUrl($params);
-				break;
-			case ModuleInterface::ACTION_ACTION:
-				$url = $this->actionUrl($params);
-				break;
-			case ModuleInterface::ACTION_JSON:
-				$url = $this->jsonUrl($params);
-				break;
-			case ModuleInterface::ACTION_POPUP:
-				$url = $this->popupUrl($params);
-				break;
-			default:
-				throw new \LogicException("Action '$action' doesn't exist.");
-		}
-		return $url;
+		return match ($action) {
+			ModuleInterface::ACTION_INDEX => $this->indexUrl($params),
+			ModuleInterface::ACTION_ACTION => $this->actionUrl($params),
+			ModuleInterface::ACTION_JSON => $this->jsonUrl($params),
+			ModuleInterface::ACTION_POPUP => $this->popupUrl($params),
+			default => throw new \LogicException("Action '$action' doesn't exist."),
+		};
 	}
 
 	/**

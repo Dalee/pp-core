@@ -8,6 +8,6 @@ require_once PPLIBPATH . 'Debug/ErrorReporter/abstract.class.inc';
 require_once PPLIBPATH . 'Debug/sbin.inc';
 
 function getMicroTime() {
-	list($usec, $sec) = explode(" ", microtime());
+	[$usec, $sec] = explode(" ", microtime());
 	return ((float)$usec + (float)$sec);
 }

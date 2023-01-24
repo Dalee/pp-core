@@ -62,15 +62,9 @@ class MaclModule extends AclModule
 
 	public function adminJson()
 	{
-		$current = trim($this->request->getVar('currentModule'));
+		$current = trim((string) $this->request->getVar('currentModule'));
 
-		if (isset($this->what[$current])) {
-			$result = $this->what[$current];
-		} else {
-			$result = $this->what['default'];
-		}
-
-		return $result;
+		return $this->what[$current] ?? $this->what['default'];
 	}
 
 }

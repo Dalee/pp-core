@@ -56,7 +56,7 @@ $RefsCntr = 0;   // счётчик буфера
 
 function yyyTypo($x) {
 	global $Refs, $RefsCntr;
-	$Refs[] = StripSlashes($x[0]);
+	$Refs[] = StripSlashes((string) $x[0]);
 	return TAG1.($RefsCntr++).TAG2;
 }
 function zzzTypo($x) {
@@ -76,7 +76,7 @@ function TypoAll($text, $isHTML = true) {
 		*/
 
 		// комментарии
-		$text = preg_replace_callback('{<!--.*?-->}s'.REGEX_MOD, 'yyyTypo', $text);
+		$text = preg_replace_callback('{<!--.*?-->}s'.REGEX_MOD, 'yyyTypo', (string) $text);
 
 		$PrivateTags = "title|script|style|pre|textarea";
 		$text = preg_replace_callback('{<\s*('.$PrivateTags.')[\s>].*?<\s*/\s*\1\s*>}is'.REGEX_MOD, 'yyyTypo', $text);
@@ -99,7 +99,7 @@ function TypoAll($text, $isHTML = true) {
 			ещё одной кавычки
 	*/
 	$prequote = '\s\(\[\{";-';
-	$text = preg_replace('{^"}'.REGEX_MOD, LAQUO, $text);
+	$text = preg_replace('{^"}'.REGEX_MOD, LAQUO, (string) $text);
 	$text = preg_replace('{(?<=['.$prequote.'])"}'.REGEX_MOD, LAQUO, $text);
 
 	// а это для тех, кто нарушает ВЕЛИКОЕ ПРАВИЛО
@@ -172,7 +172,7 @@ function UnTypoAll($text) {
 	$text = str_replace(
 		['&laquo;','&raquo;','&bdquo;','&ldquo;','&rdquo;','&#8212;','&#8211;','&hellip;','&#8217;', '&#8470;','&ldquo;','&rdquo;'],
 		['"', '"', '"', '"', '"', '-', '-', '...', "'", NUMBER, '"', '"'],
-		$text
+		(string) $text
 	);
 
 	return $text;
@@ -188,4 +188,3 @@ function UnTypoAllRecursive($mixed) {
 	}
 	return $mixed;
 }
-?>

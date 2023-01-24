@@ -21,20 +21,18 @@ abstract class AbstractCommand extends AbstractBasicCommand implements Container
 	protected $db;
 
 	/**
-	 * @param \PXApplication $app
-	 * @return $this
-	 */
-	public function setApp(\PXApplication $app) {
+  * @return $this
+  */
+ public function setApp(\PXApplication $app) {
 		$this->app = $app;
 
 		return $this;
 	}
 
 	/**
-	 * @param \PXDatabase $db
-	 * @return $this
-	 */
-	public function setDb(\PXDatabase $db) {
+  * @return $this
+  */
+ public function setDb(\PXDatabase $db) {
 		$this->db = $db;
 
 		return $this;

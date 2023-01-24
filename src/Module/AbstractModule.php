@@ -14,10 +14,6 @@ abstract class AbstractModule implements ModuleInterface
 
 	use ContainerAwareTrait;
 
-	public $area;
-	public $settings;
-	protected $__selfDescription;
-
 	/**
 	 * @var \PXApplication
 	 */
@@ -48,11 +44,9 @@ abstract class AbstractModule implements ModuleInterface
 	 */
 	public $response;
 
-	public function __construct($area, $settings, $selfDescription = null)
+	public function __construct(public $area, public $settings, protected $__selfDescription = null)
 	{
-		$this->area = $area;
-		$this->settings = $settings;
-		$this->__selfDescription = $selfDescription; //for module acl checks purposes
+		//for module acl checks purposes
 
 		\PXRegistry::assignToObject($this);
 	}

@@ -10,7 +10,7 @@ class PXDisplayTypeImagesarray extends PXDisplayTypeImage
 {
 	public function buildInput($field, $object, $param = NULL)
 	{
-		$object[$field->name] = isset($object[$field->name]) ? $object[$field->name] : [];
+		$object[$field->name] ??= [];
 
 		$items = array_merge(
 			$object[$field->name],
@@ -66,5 +66,3 @@ class PXDisplayTypeImagesarray extends PXDisplayTypeImage
 		return $html;
 	}
 }
-
-?>

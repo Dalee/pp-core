@@ -114,14 +114,12 @@ class PXDatabase extends DatabaseAdapter implements DatabaseInterface
 	}
 
 	/**
-	 * Загружает справочники (directories) для одного объекта
-	 *
-	 * @param PXTypeDescription $format
-	 * @param array|null $object
-	 * @uses LoadDirectory
-	 *
-	 */
-	public function LoadDirectoriesByType(PXTypeDescription $format, ?array $object = null): void
+  * Загружает справочники (directories) для одного объекта
+  *
+  * @uses LoadDirectory
+  *
+  */
+ public function LoadDirectoriesByType(PXTypeDescription $format, ?array $object = null): void
 	{
 		foreach ($format->fields as $k => $v) {
 			if (
@@ -135,11 +133,9 @@ class PXDatabase extends DatabaseAdapter implements DatabaseInterface
 	}
 
 	/**
-	 * Загружает справочники (directories) для таблиц (только для listed полей)
-	 * @param PXTypeDescription $format
-	 * @param array|null $objects
-	 */
-	public function loadDropdownValuesForListedFields(PXTypeDescription $format, ?array $objects = null): void
+  * Загружает справочники (directories) для таблиц (только для listed полей)
+  */
+ public function loadDropdownValuesForListedFields(PXTypeDescription $format, ?array $objects = null): void
 	{
 		if (!$objects) {
 			return;
@@ -157,13 +153,12 @@ class PXDatabase extends DatabaseAdapter implements DatabaseInterface
 	}
 
 	/**
-	 * Загружает справочник (directories) в зависимости от типа
-	 *
-	 * @param PXDirectoryDescription $directory
-	 * @uses LoadSQLDirectory, PXApplication::LoadXMLDirectory
-	 *
-	 */
-	public function LoadDirectory(PXDirectoryDescription $directory, $object, $addDefault = true, $format = NULL)
+  * Загружает справочник (directories) в зависимости от типа
+  *
+  * @uses LoadSQLDirectory, PXApplication::LoadXMLDirectory
+  *
+  */
+ public function LoadDirectory(PXDirectoryDescription $directory, $object, $addDefault = true, $format = NULL)
 	{
 		switch ($directory->schema) {
 			case 'sql':
@@ -177,34 +172,30 @@ class PXDatabase extends DatabaseAdapter implements DatabaseInterface
 	}
 
 	/**
-	 * Парсит WHERE в справочниках
-	 *
-	 * @param mixed $where
-	 * @param mixed $object
-	 * @param mixed $format
-	 * @return string
-	 * @uses _NormalizeObjectAttribute
-	 *
-	 * @todo docme подробнее
-	 *
-	 * @uses MapData
-	 */
-	public function ParseWhereTemplate($where, $object, $format)
+  * Парсит WHERE в справочниках
+  *
+  * @return string
+  * @uses _NormalizeObjectAttribute
+  * @todo docme подробнее
+  *
+  * @uses MapData
+  */
+ public function ParseWhereTemplate(mixed $where, mixed $object, mixed $format)
 	{
-		if (strpos($where, 'THIS.') !== false) {
+		if (str_contains((string) $where, 'THIS.')) {
 			if (is_array($object)) {
-				preg_match_all('/THIS\.([A-Z0-9\-_]+)/' . REGEX_MOD, $where, $backhref);
+				preg_match_all('/THIS\.([A-Z0-9\-_]+)/' . REGEX_MOD, (string) $where, $backhref);
 
 				foreach ($backhref[1] as $b) {
-					if (array_key_exists(mb_strtolower($b), $object)) {
+					if (array_key_exists(mb_strtolower((string) $b), $object)) {
 						if (is_null($format)) {
-							$replace = $this->MapData($object[strtolower($b)]);
+							$replace = $this->MapData($object[strtolower((string) $b)]);
 						} else {
 							$nullObj = null;
-							$replace = $this->MapData($this->_NormalizeObjectAttribute(strtolower($b), $object, $format->fields[strtolower($b)], $nullObj, $nullObj));
+							$replace = $this->MapData($this->_NormalizeObjectAttribute(strtolower((string) $b), $object, $format->fields[strtolower((string) $b)], $nullObj, $nullObj));
 						}
 
-						$where = str_replace('THIS.' . $b, $replace, $where);
+						$where = str_replace('THIS.' . $b, $replace, (string) $where);
 					} else {
 						$where = 'FALSE';
 					}
@@ -215,13 +206,13 @@ class PXDatabase extends DatabaseAdapter implements DatabaseInterface
 			}
 		}
 
-		if (strpos($where, 'PROPERTY.') !== false) {
-			preg_match_all('/PROPERTY\.([A-Z0-9_]+)/' . REGEX_MOD, $where, $backhref);
+		if (str_contains((string) $where, 'PROPERTY.')) {
+			preg_match_all('/PROPERTY\.([A-Z0-9_]+)/' . REGEX_MOD, (string) $where, $backhref);
 			foreach ($backhref[1] as $b) {
 				$prop = $this->app->GetProperty($b);
 
 				if (!is_null($prop)) {
-					$where = str_replace('PROPERTY.' . $b, $this->MapData($prop), $where);
+					$where = str_replace('PROPERTY.' . $b, $this->MapData($prop), (string) $where);
 				} else {
 					$where = 'FALSE';
 				}
@@ -304,7 +295,7 @@ class PXDatabase extends DatabaseAdapter implements DatabaseInterface
 		} else {
 			$selector = $this->_createSelector($format);
 			$order = is_null($order) ? $format->order : $order;
-			$first_is_fun = preg_match('#^\s*\w+\s*\(#S' . REGEX_MOD, $order);
+			$first_is_fun = preg_match('#^\s*\w+\s*\(#S' . REGEX_MOD, (string) $order);
 			$order_by = ($first_is_fun ? '' : $format->id . '.') . $order;
 		}
 
@@ -441,7 +432,7 @@ class PXDatabase extends DatabaseAdapter implements DatabaseInterface
 			$dontUseCache
 		);
 
-		if (count($data)) {
+		if (count((array) $data)) {
 			return reset($data);
 		} else {
 			return [];
@@ -530,7 +521,7 @@ class PXDatabase extends DatabaseAdapter implements DatabaseInterface
 	 * @param Integer $mode request mode, default = {@link DB_SELECT_TABLE}
 	 * @return array
 	 */
-	public function getObjectsByParent($format, $status, $parent, $mode = DB_SELECT_TABLE, $order = NULL)
+	public function getObjectsByParent($format, $status, mixed $parent, $mode = DB_SELECT_TABLE, $order = NULL)
 	{
 		return $this->getObjectsByParentLimited($format, $status, $parent, null, null, $mode, $order);
 	}
@@ -676,16 +667,11 @@ class PXDatabase extends DatabaseAdapter implements DatabaseInterface
 
 	protected function emptyResult($mode)
 	{
-		switch ($mode) {
-			case DB_SELECT_TABLE:
-				$res = [];
-				break;
-			case DB_SELECT_COUNT:
-				$res = 0;
-				break;
-			default:
-				$res = null;
-		}
+		$res = match ($mode) {
+			DB_SELECT_TABLE => [],
+			DB_SELECT_COUNT => 0,
+			default => null,
+		};
 		return $res;
 	}
 
@@ -808,7 +794,7 @@ class PXDatabase extends DatabaseAdapter implements DatabaseInterface
 			$sqlUpdateRule[] = OBJ_FIELD_ORDER . "=" . OBJ_FIELD_ID;
 
 			if (count($sysMetaField) > 0) {
-				$sqlUpdateRule[] = OBJ_FIELD_META . "=" . $this->MapData(json_encode($sysMetaField));
+				$sqlUpdateRule[] = OBJ_FIELD_META . "=" . $this->MapData(json_encode($sysMetaField, JSON_THROW_ON_ERROR));
 			}
 
 			$this->ModifyingQuery(
@@ -855,7 +841,7 @@ class PXDatabase extends DatabaseAdapter implements DatabaseInterface
 	 */
 	public function AddContentObjects($format, $objectsArray)
 	{
-		$audit = PXAuditLogger::getLogger($this->app, $this);
+		$audit = PXAuditLogger::getLogger();
 
 		if (count($objectsArray) == 0) {
 			return;
@@ -960,7 +946,7 @@ class PXDatabase extends DatabaseAdapter implements DatabaseInterface
 
 	public function cloneContentObject(&$format, $objectData, $status = false)
 	{
-		$audit = PXAuditLogger::getLogger($this->app, $this);
+		$audit = PXAuditLogger::getLogger();
 
 		if (is_array($objectData) && isset($objectData['id']) && is_numeric($objectData['id']) && $objectData['id'] > 0) {
 			$donorObject = $objectData;
@@ -1136,9 +1122,7 @@ class PXDatabase extends DatabaseAdapter implements DatabaseInterface
 					$param = [
 						OBJ_FIELD_ID => $object[OBJ_FIELD_ID],
 						'format' => $format->id,
-						OBJ_FIELD_META => (isset($objectInDB[OBJ_FIELD_META]))
-							? $objectInDB[OBJ_FIELD_META]
-							: [],
+						OBJ_FIELD_META => $objectInDB[OBJ_FIELD_META] ?? [],
 					];
 
 					$proceedFileResult = $v->storageType->proceedFile($v, $object, $param);
@@ -1159,7 +1143,7 @@ class PXDatabase extends DatabaseAdapter implements DatabaseInterface
 					"%s = %s",
 					OBJ_FIELD_META,
 					(count($sysMetaField) > 0)
-						? $this->MapData(json_encode($sysMetaField))
+						? $this->MapData(json_encode($sysMetaField, JSON_THROW_ON_ERROR))
 						: 'NULL'
 				);
 
@@ -1170,7 +1154,7 @@ class PXDatabase extends DatabaseAdapter implements DatabaseInterface
 			$this->transactionCommit();
 			$this->clearObjectTypeCache($format->id);
 
-			$object[OBJ_FIELD_ORDER] = isset($objectInDB[OBJ_FIELD_ORDER]) ? $objectInDB[OBJ_FIELD_ORDER] : null;
+			$object[OBJ_FIELD_ORDER] = $objectInDB[OBJ_FIELD_ORDER] ?? null;
 			$object[OBJ_FIELD_META] = $sysMetaField;
 			$object[OBJ_FIELD_UUID] = $objectInDB[OBJ_FIELD_UUID];
 
@@ -1197,7 +1181,7 @@ class PXDatabase extends DatabaseAdapter implements DatabaseInterface
 			];
 
 			$diff = array_deep_diff($this->getObjectById($format, $object['id'], true), $objectInDB, $sysKeysToRemove);
-			$audit->info('Объект изменен', $format->id . '/' . $object['id'], 'AUDIT', json_encode(array_keys($diff)));
+			$audit->info('Объект изменен', $format->id . '/' . $object['id'], 'AUDIT', json_encode(array_keys($diff), JSON_THROW_ON_ERROR));
 		}
 
 		return null;
@@ -1363,7 +1347,7 @@ class PXDatabase extends DatabaseAdapter implements DatabaseInterface
 	 */
 	public function _moveContentObject($format, $objectId, $direction, $steps = 1)
 	{
-		$audit = PXAuditLogger::getLogger($this->app, $this);
+		$audit = PXAuditLogger::getLogger();
 
 		$objectInDB = $this->getObjectById($format, $objectId);
 		if (!count($objectInDB)) $this->FatalError('Попытка модифицировать отсутствующий объект');
@@ -1374,7 +1358,7 @@ class PXDatabase extends DatabaseAdapter implements DatabaseInterface
 			$this->FatalError($errString);
 		}
 
-		$swap = !!preg_match('#sys_order\s+DESC#i' . REGEX_MOD, $format->order);
+		$swap = !!preg_match('#sys_order\s+DESC#i' . REGEX_MOD, (string) $format->order);
 		$down = ($swap xor ($direction == 'down'));
 
 		$where = [];
@@ -1461,7 +1445,7 @@ class PXDatabase extends DatabaseAdapter implements DatabaseInterface
 	 */
 	public function _NormalizeObjectPathName($format, $object, &$pathnames)
 	{
-		$url = mb_strtolower(_TranslitModern($object['pathname']));
+		$url = mb_strtolower((string) _TranslitModern($object['pathname']));
 
 		// part 1: make url if doesn't set
 		if (!$url) {
@@ -1475,16 +1459,16 @@ class PXDatabase extends DatabaseAdapter implements DatabaseInterface
 			}
 		}
 
-		if (!$url) $url = mb_strtolower(_TranslitModern(mb_substr(preg_replace('/\&.+?\;/' . REGEX_MOD, '', $object['title']), 0, 32)));
-		if (!$url) $url = sprintf('%08d', rand(0, 100000000));
+		if (!$url) $url = mb_strtolower((string) _TranslitModern(mb_substr(preg_replace('/\&.+?\;/' . REGEX_MOD, '', (string) $object['title']), 0, 32)));
+		if (!$url) $url = sprintf('%08d', random_int(0, 100_000_000));
 
 		// part 2: triming bad chars - very readable... gj.
 		$url = trim($url);
 		for ($i = 0; $i < strlen($url); $i++) {
-			$o = ord($url{$i});
+			$o = ord($url[$i]);
 
 			if ($o != 45 && $o != 46 && ($o < 48 || $o > 57) && ($o < 65 || $o > 90) && $o != 95 && ($o < 97 || $o > 122) && ($o != 58)) {
-				$url{$i} = '_';
+				$url[$i] = '_';
 			}
 		}
 
@@ -1525,15 +1509,15 @@ class PXDatabase extends DatabaseAdapter implements DatabaseInterface
 
 				// FIXME: very ugly code. No need mb_* functions here, working under _Translit'ed string
 				if ($reiteration > 0) {
-					if (strpos($url, '.') !== false) {
-						if (is_numeric($url{strrpos($url, '.') - 1})) {
-							$url = substr($url, 0, strrpos($url, '.') - 1) . ($url{strrpos($url, '.') - 1} + 1) . substr($url, strrpos($url, '.'));
+					if (str_contains($url, '.')) {
+						if (is_numeric($url[strrpos($url, '.') - 1])) {
+							$url = substr($url, 0, strrpos($url, '.') - 1) . ($url[strrpos($url, '.') - 1] + 1) . substr($url, strrpos($url, '.'));
 						} else {
 							$url = substr($url, 0, strrpos($url, '.')) . '1' . substr($url, strrpos($url, '.'));
 						}
 					} else {
-						if (is_numeric($url{strlen($url) - 1})) {
-							$url = substr($url, 0, strlen($url) - 1) . ($url{strlen($url) - 1} + 1);
+						if (is_numeric($url[strlen($url) - 1])) {
+							$url = substr($url, 0, strlen($url) - 1) . ($url[strlen($url) - 1] + 1);
 						} else {
 							$url = $url . '1';
 						}
@@ -1580,7 +1564,7 @@ SQL;
 	 * @todo docme (check params documentation)
 	 *
 	 */
-	public function getLinksLimited($reference, $format, $id, $limit, $offset)
+	public function getLinksLimited(mixed $reference, $format, mixed $id, $limit, $offset)
 	{
 		$linkedFormat = $reference->getOther($format);
 
@@ -1679,7 +1663,7 @@ SQL;
 	 * @todo docme (check params documentation)
 	 *
 	 */
-	public function GetLinks($reference, $format, $id)
+	public function GetLinks(mixed $reference, $format, mixed $id)
 	{
 		return $this->GetLinksLimited($reference, $format, $id, NULL, NULL);
 	}
@@ -1694,7 +1678,7 @@ SQL;
 	 * @todo docme (check params documentation)
 	 *
 	 */
-	public function GetLinksCount($reference, $format, $id)
+	public function GetLinksCount(mixed $reference, $format, mixed $id)
 	{
 		$linkedFormat = $reference->getOther($format);
 		$query = '';
@@ -1795,7 +1779,7 @@ SQL;
 	 * @todo docme (check params documentation)
 	 *
 	 */
-	public function ModifyLinks($reference, $format, $id, $links, $deleteAll = true)
+	public function ModifyLinks(mixed $reference, $format, mixed $id, mixed $links, $deleteAll = true)
 	{
 		if (!is_array($links) || !sizeof($links)) {
 			return;
@@ -1942,7 +1926,7 @@ SQL;
 
 			if ($isMetaPresent) {
 				$sysMeta = ($table[$k][OBJ_FIELD_META] != null)
-					? json_decode($table[$k][OBJ_FIELD_META], true)
+					? json_decode((string) $table[$k][OBJ_FIELD_META], true, 512, JSON_THROW_ON_ERROR)
 					: [];
 
 				$sysMeta = is_array($sysMeta)
@@ -1961,7 +1945,7 @@ SQL;
 				}
 			}
 
-			if (count($format->childs)) {
+			if (is_countable($format->childs) ? count($format->childs) : 0) {
 				if (!empty($table[$k][OBJ_FIELD_CHILDREN])) {
 					// TODO: replace with json_decode and provide migration script
 					$table[$k][OBJ_FIELD_CHILDREN] = unserialize($table[$k][OBJ_FIELD_CHILDREN]);
@@ -2031,7 +2015,7 @@ SQL;
 	public function buildTree()
 	{
 		$args = func_get_args();
-		$treeKlass = new ReflectionClass('PP\Lib\Datastruct\Tree');
+		$treeKlass = new ReflectionClass(\PP\Lib\Datastruct\Tree::class);
 		return $treeKlass->newInstanceArgs($args);
 	}
 
@@ -2063,7 +2047,7 @@ SQL;
 			return;
 		}
 
-		$audit = PXAuditLogger::getLogger($this->app, $this);
+		$audit = PXAuditLogger::getLogger();
 
 		$permitCheck = null;
 		$parentObject = null;
@@ -2078,7 +2062,7 @@ SQL;
 				$parentObject = $this->getObjectById($this->types[$format->parent], $object['parent']);
 			}
 
-			if ($permitCheck === false || !count($parentObject)) {
+			if ($permitCheck === false || !count((array) $parentObject)) {
 				$errString = 'Попытка переместить объект в несуществующий раздел';
 				$audit->error($errString, $format->id . '/' . $object['id']);
 				$this->FatalError($errString);
@@ -2117,22 +2101,19 @@ SQL;
 	}
 
 	/**
-	 * Метод генерирует массив строк sql where conditions из ассоциативного массива field => value
-	 * @param array $fields
-	 * @param string $formatId
-	 * @return array
-	 * @example  ['!f1' => 'test', '!f2' => true, '!f3' => null] вернет ["f1 <> 'test'", 'f2 <> TRUE', 'f3 IS NOT NULL']
-	 *
-	 * @example ['f1' => 'test', 'f2' => true, 'f3' => null] вернет ["f1 = 'test'", 'f2 = TRUE', 'f3 IS NULL']
-	 * Если в ключ добавить `!` первым символом - условие будет выстроено от обратного
-	 */
-	public function buildWhereFromArray(array $fields, string $formatId = ''): array
+  * Метод генерирует массив строк sql where conditions из ассоциативного массива field => value
+  * @example  ['!f1' => 'test', '!f2' => true, '!f3' => null] вернет ["f1 <> 'test'", 'f2 <> TRUE', 'f3 IS NOT NULL']
+  *
+  * @example ['f1' => 'test', 'f2' => true, 'f3' => null] вернет ["f1 = 'test'", 'f2 = TRUE', 'f3 IS NULL']
+  * Если в ключ добавить `!` первым символом - условие будет выстроено от обратного
+  */
+ public function buildWhereFromArray(array $fields, string $formatId = ''): array
 	{
 		$whereClause = [];
 
 		foreach ($fields as $k => $v) {
 			$not = false;
-			if (strpos($k, '!') === 0) {
+			if (str_starts_with($k, '!')) {
 				$not = true;
 				$k = str_replace('!', '', $k);
 			}
@@ -2144,7 +2125,7 @@ SQL;
 
 				case is_array($v):
 					empty($v) && $this->FatalError("Array value for db#getObjectsByField* can't be empty!");
-					$val = sprintf("%s IN('%s')", $not ? ' NOT' : '', join("','", array_map([$this, 'EscapeString'], $v)));
+					$val = sprintf("%s IN('%s')", $not ? ' NOT' : '', join("','", array_map($this->EscapeString(...), $v)));
 					break;
 
 				case is_bool($v):

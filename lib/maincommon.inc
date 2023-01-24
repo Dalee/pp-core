@@ -1,6 +1,6 @@
 <?php
 
-require_once dirname(__FILE__) . '/common.defines.inc';
+require_once __DIR__ . '/common.defines.inc';
 
 require_once BASEPATH . 'vendor/autoload.php';
 require_once PPLIBPATH . 'common.version.inc';
@@ -39,7 +39,7 @@ require_once PPLIBPATH . 'XML/classes.inc';
 require_once PPLIBPATH . 'LazyLoader/blockcontent.class.inc';
 
 // TODO: should be ripped off after PSR-4 switch
-spl_autoload_register(['PP\Plugin\AbstractPlugin', 'autoload']);
+spl_autoload_register([\PP\Plugin\AbstractPlugin::class, 'autoload']);
 
 // TODO: syslog udp with custom source hostname
 // syslog udp packet should be in full form:

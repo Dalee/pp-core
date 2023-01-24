@@ -14,9 +14,9 @@ function createSomePathByParentId($tree, $id, $fieldname='pathname', $delim='/',
 
 	if (isset($tree->leafs[$id])) {
 		if ($inContent) {
-			$path = isset($tree->leafs[$id]->content[$fieldname]) ? $tree->leafs[$id]->content[$fieldname] : '';
+			$path = $tree->leafs[$id]->content[$fieldname] ?? '';
 		} else {
-			$path = isset($tree->leafs[$id]->{$fieldname}) ? $tree->leafs[$id]->{$fieldname} : '';
+			$path = $tree->leafs[$id]->{$fieldname} ?? '';
 		}
 	} else {
 		$path = '';
@@ -76,11 +76,11 @@ function parseBool ($s) {
 
 function __int32($numeric_value){
 	$x = (float)$numeric_value;
-	$y = pow(2,32);
+	$y = 2 ** 32;
 
 	if ($x > $y) {
-		$x = pow(2,31)-1;
-	} elseif ($x >= pow(2,31)) {
+		$x = 2 ** 31-1;
+	} elseif ($x >= 2 ** 31) {
 		$x -= $y;
 	}
 

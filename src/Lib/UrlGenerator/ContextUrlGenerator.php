@@ -51,10 +51,9 @@ class ContextUrlGenerator {
 	}
 
 	/**
-	 * @param \PXRequest $request
-	 * @return $this
-	 */
-	public function setRequest(\PXRequest $request) {
+  * @return $this
+  */
+ public function setRequest(\PXRequest $request) {
 		$this->request = $request;
 		return $this;
 	}

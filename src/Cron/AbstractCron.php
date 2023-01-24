@@ -23,15 +23,13 @@ abstract class AbstractCron implements ContainerAwareInterface {
 	public $name = 'Abstract CronRun Class';
 
 	/**
-	 * @param \PXApplication $app
-	 * @param \PXDatabase|PostgreSqlDriver $db
-	 * @param Tree $tree
-	 * @param int $matchedTime
-	 * @param CronRule $matchedRule
-	 *
-	 * @return array
-	 */
-	public function Run($app, $db, $tree, $matchedTime, $matchedRule) {
+  * @param \PXApplication $app
+  * @param Tree $tree
+  * @param int $matchedTime
+  * @param CronRule $matchedRule
+  * @return array
+  */
+ public function Run($app, \PXDatabase|\PP\Lib\Database\Driver\PostgreSqlDriver $db, $tree, $matchedTime, $matchedRule) {
 		return [
 			'status' => -1,
 			'note' => 'Не определен метод Run()'

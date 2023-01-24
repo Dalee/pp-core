@@ -56,7 +56,7 @@ class PXErrorReporter
     }
 
     public static
-    function fatalError($message)
+    function fatalError($message): void
     {
         $reporter =& PXErrorReporter::getInstance();
 
@@ -107,7 +107,7 @@ class PXErrorReporter
             NL_FATAL_ERROR => 'Fatal Error',
         ];
 
-        return isset($errorTypes[$code]) ? $errorTypes[$code] : 'Unknown error type ' . $code;
+        return $errorTypes[$code] ?? 'Unknown error type ' . $code;
     }
 
     public function _addError($code, $message, $file, $line, $traceFromLine = 2)

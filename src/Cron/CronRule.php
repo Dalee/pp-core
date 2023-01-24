@@ -10,18 +10,16 @@ class CronRule
 {
 
 	public $valid;
-	public $asString;
 	public $match;
 	public $matchHash;
 
-	public function __construct($ruleString)
+	public function __construct(public $asString)
 	{
 		$this->valid = false;
-		$this->asString = $ruleString;
 
-		$params = preg_split('/\s+/' . REGEX_MOD, $ruleString);
+		$params = preg_split('/\s+/' . REGEX_MOD, (string) $asString);
 
-		if (count($params) != 5) {
+		if ((is_countable($params) ? count($params) : 0) != 5) {
 			return;
 		}
 
@@ -48,7 +46,7 @@ class CronRule
 	public function _parse($s, $min, $max)
 	{
 		$result = [];
-		$s = strtolower($s);
+		$s = strtolower((string) $s);
 
 		$s = strtr($s,
 			[

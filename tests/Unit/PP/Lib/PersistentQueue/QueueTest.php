@@ -2,34 +2,27 @@
 
 namespace Tests\Unit\PP\Lib\PersistentQueue;
 
-use Tests\Base\AbstractUnitTest;
+use PHPUnit\Framework\MockObject\MockObject;
+use PP\Contracts\IApplication;
 use PP\Lib\PersistentQueue\Job;
 use PP\Lib\PersistentQueue\Queue;
+use Tests\Base\AbstractUnitTest;
 
 class QueueTest extends AbstractUnitTest {
 
-	/**
-	 * @var Queue
-	 */
-	protected $queue;
+	protected Queue $queue;
 
-	/**
-	 * @var \PHPUnit_Framework_MockObject_MockObject
-	 */
-	protected $db;
+	protected \PXDatabase|MockObject $db;
 
-	/**
-	 * @var \PHPUnit_Framework_MockObject_MockObject
-	 */
-	protected $app;
+	protected IApplication|MockObject $app;
 
 	/**
 	 * @before
 	 */
 	public function before() {
-		$this->app = $this->getMockBuilder('PXApplication')
+		$this->app = $this->getMockBuilder(IApplication::class)
 			->disableOriginalConstructor()
-			->setMethods(['initContentObject'])
+			->onlyMethods(['initContentObject'])
 			->getMock();
 
 		$this->app->types = [
@@ -38,7 +31,7 @@ class QueueTest extends AbstractUnitTest {
 
 		$this->db = $this->getMockBuilder('PXDatabase')
 			->disableOriginalConstructor()
-			->setMethods(['addContentObject', 'modifyContentObject', 'getObjectsByFieldLimited'])
+			->onlyMethods(['addContentObject', 'modifyContentObject', 'getObjectsByFieldLimited'])
 			->getMock();
 
 		$this->queue = new Queue($this->app, $this->db);
@@ -91,12 +84,12 @@ class QueueTest extends AbstractUnitTest {
 		$jobOne = (new Job())
 			->setPayload(['test_id' => 1])
 			->setId(1)
-			->setWorker($this->getMockForAbstractClass('PP\Lib\PersistentQueue\WorkerInterface', []));
+			->setWorker($this->getMockForAbstractClass(\PP\Lib\PersistentQueue\WorkerInterface::class, []));
 
 		$jobTwo = (new Job())
 			->setPayload(['test_id' => 2])
 			->setId(2)
-			->setWorker($this->getMockForAbstractClass('PP\Lib\PersistentQueue\WorkerInterface', []));
+			->setWorker($this->getMockForAbstractClass(\PP\Lib\PersistentQueue\WorkerInterface::class, []));
 
 		$this->db->expects($this->once())
 			->method('getObjectsByFieldLimited')
@@ -117,7 +110,7 @@ class QueueTest extends AbstractUnitTest {
 
 	public function testAddJob() {
 		$job = (new Job())
-			->setWorker($this->getMockForAbstractClass('PP\Lib\PersistentQueue\WorkerInterface', []));
+			->setWorker($this->getMockForAbstractClass(\PP\Lib\PersistentQueue\WorkerInterface::class, []));
 
 		$stub = ['stub_param' => 'stub_value'];
 

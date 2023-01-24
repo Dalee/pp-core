@@ -4,8 +4,8 @@ use PP\Lib\Html\Layout\LayoutAbstract;
 
 class PXWidgetTabs extends PXAdminComplexWidget
 {
-    public const PREPEND = 0;
-    public const APPEND = 1;
+    final public const PREPEND = 0;
+    final public const APPEND = 1;
 
     public $blocks = [
         self::PREPEND => [],
@@ -28,6 +28,7 @@ class PXWidgetTabs extends PXAdminComplexWidget
 
     public function html()
     {
+        $html = [];
         $this->decorate();
 
         $current = PXRegistry::getRequest()->getVar($this->varName, 'main');

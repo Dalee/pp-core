@@ -37,7 +37,7 @@ class NLDBDescription
 	{
 		$q = [];
 		$r = parse_url(EnvLoader::get('DATABASE_DSN'));
-		parse_str(getFromArray($r, 'query', ''), $q);
+		parse_str((string) getFromArray($r, 'query', ''), $q);
 
 		// either cache is supplied via &cache parameter of DATABASE_DSN
 		// or cache is defined as additional environment variable.
@@ -51,7 +51,7 @@ class NLDBDescription
 			'dbtype' => getFromArray($r, 'scheme', ''),
 			'user' => getFromArray($r, 'user', ''),
 			'password' => getFromArray($r, 'pass', ''),
-			'dbname' => ltrim(getFromArray($r, 'path', ''), '/'),
+			'dbname' => ltrim((string) getFromArray($r, 'path', ''), '/'),
 			'host' => getFromArray($r, 'host', ''),
 			'port' => getFromArray($r, 'port', ''),
 			'encoding' => getFromArray($q, 'encoding', DEFAULT_CHARSET),
@@ -89,14 +89,10 @@ class NLDBDescription
 	{
 		$db = null;
 
-		switch ($this->dbtype) {
-			case PostgreSqlDriver::TYPE:
-				$db = new PostgreSqlDriver($this);
-				break;
-
-			default:
-				throw new DatabaseException("Can't find class: {$this->dbtype}");
-		}
+		$db = match ($this->dbtype) {
+			PostgreSqlDriver::TYPE => new PostgreSqlDriver($this),
+			default => throw new DatabaseException("Can't find class: {$this->dbtype}"),
+		};
 
 		$db->setCache($this->cache);
 		return $db;

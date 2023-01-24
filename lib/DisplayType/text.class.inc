@@ -14,10 +14,10 @@ class PXDisplayTypeText extends PXDisplayType
 {
     public function buildInput($field, $object, $param = NULL)
     {
-        $value = isset($object[$field->name]) ? $object[$field->name] : NULL;
+        $value = $object[$field->name] ?? NULL;
         $height = isset($field->displayTypeArgs[1]) ? (int)$field->displayTypeArgs[1] : 0;
         $maxlength = !empty($field->displayTypeArgs[2]) ? (int)$field->displayTypeArgs[2] : NULL;
-        $wrap = !empty($field->displayTypeArgs[3]) ? trim($field->displayTypeArgs[3]) : "soft";
+        $wrap = !empty($field->displayTypeArgs[3]) ? trim((string) $field->displayTypeArgs[3]) : "soft";
 
         return NLAbstractHTMLForm::BuildText($field->name, $value, $height, $maxlength, $wrap);
     }
@@ -25,13 +25,13 @@ class PXDisplayTypeText extends PXDisplayType
     public function buildCell($field, $object, $param = NULL)
     {
         $trunc = isset($field->displayTypeArgs[2]) && (int)$field->displayTypeArgs[2] > 0 ? (int)$field->displayTypeArgs[2] : 50;
-        $value = isset($object[$field->name]) ? $object[$field->name] : '';
+        $value = $object[$field->name] ?? '';
         $value = $this->getSubDirectoryIfExists($field, $object, $value);
 
-        if (mb_strlen($value) > $trunc) {
-            $value = htmlspecialchars(mb_substr($value, 0, $trunc), ENT_COMPAT | ENT_HTML401, DEFAULT_CHARSET) . '&hellip;';
+        if (mb_strlen((string) $value) > $trunc) {
+            $value = htmlspecialchars(mb_substr((string) $value, 0, $trunc), ENT_COMPAT | ENT_HTML401, DEFAULT_CHARSET) . '&hellip;';
         } else {
-            $value = htmlspecialchars($value, ENT_COMPAT | ENT_HTML401, DEFAULT_CHARSET);
+            $value = htmlspecialchars((string) $value, ENT_COMPAT | ENT_HTML401, DEFAULT_CHARSET);
         }
 
         return $value;

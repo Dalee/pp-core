@@ -47,7 +47,7 @@ trait Sortable
 		];
 
 		$this->layout->assignJs("js/tools/jui.min.js");
-		$this->layout->assignInlineJs('var sortableaclOptions = ' . json_encode($options) . ';');
+		$this->layout->assignInlineJs('var sortableaclOptions = ' . json_encode($options, JSON_THROW_ON_ERROR) . ';');
 		$this->layout->assignInlineJs(
 			<<<inlinejs
 		jQuery(function($) {

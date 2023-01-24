@@ -2,27 +2,22 @@
 
 class PXAdminBlocksTree extends PXAdminTreeObjects {
 
-	protected $parentFormat;
-	protected $parentField;
-
 	/**
-	 *
-	 * @param mixed $format
-	 * @param string $fieldName
-	 * @param int $objectId
-	 * @param bool $withoutExternals
-	 */
-	public /*override*/ function __construct($format, $fieldName, $objectId, $withoutExternals = false) {
+  *
+  * @param mixed $parentFormat
+  * @param string $parentField
+  * @param int $objectId
+  * @param bool $withoutExternals
+  */
+ public /*override*/ function __construct(protected $parentFormat, protected $parentField, $objectId, $withoutExternals = false) {
 		$app = PXRegistry::getApp();
-		$this->parentFormat = $format;
-		$this->parentField = $fieldName;
 		$this->setControlParent($objectId);
 
 		parent::__construct(
 			$app->types['block'],
 			[
-				'parent_type' => $format->id,
-				'parent_field' => $fieldName,
+				'parent_type' => $parentFormat->id,
+				'parent_field' => $parentField,
 				'parent_id' => $objectId
 			],
 			null,

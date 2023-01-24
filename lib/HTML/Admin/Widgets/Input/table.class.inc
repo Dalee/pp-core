@@ -2,19 +2,11 @@
 
 class PXInputTable extends PXAdminWidget
 {
-    public $name;
-    public $value;
     public $colsWidth;
-    public $height;
-    public $header;
 
-    public function __construct($name, $value, $cols, $height, $header = [])
+    public function __construct(public $name, public $value, $cols, public $height, public $header = [])
     {
-        $this->name = $name;
-        $this->value = $value;
         $this->value[] = null;
-        $this->height = $height;
-        $this->header = $header;
 
         if (is_array($cols)) {
             $this->colsWidth = $cols;
@@ -37,7 +29,7 @@ class PXInputTable extends PXAdminWidget
     public function colgroup()
     {
         $html = '<colgroup>';
-        for ($i = 0; $i < count($this->colsWidth); $i++) {
+        for ($i = 0; $i < (is_countable($this->colsWidth) ? count($this->colsWidth) : 0); $i++) {
             $width = ceil(100 * $this->colsWidth[$i] / array_sum($this->colsWidth));
             $html .= '<col width="' . $width . '%">';
         }
@@ -63,10 +55,10 @@ class PXInputTable extends PXAdminWidget
 
             $row = (array)$row;
 
-            for ($i = 0, $cols = count($this->colsWidth); $i < $cols; $i++) {
+            for ($i = 0, $cols = is_countable($this->colsWidth) ? count($this->colsWidth) : 0; $i < $cols; $i++) {
                 $html .= '<td>';
 
-                $currentValue = (isset($row[$i])) ? $row[$i] : null;
+                $currentValue = $row[$i] ?? null;
 
                 if ($this->height == 0) {
                     $text = new PXInputInput($this->name . '[' . $idx . '][]', $currentValue);

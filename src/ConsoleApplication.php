@@ -79,11 +79,9 @@ class ConsoleApplication extends Application {
 	}
 
 	/**
-	 * Handles console command event of application.
-	 *
-	 * @param ConsoleCommandEvent $event
-	 */
-	protected function consoleCommandHandler(ConsoleCommandEvent $event) {
+  * Handles console command event of application.
+  */
+ protected function consoleCommandHandler(ConsoleCommandEvent $event) {
 		$cmd = $event->getCommand();
 
 		if ($cmd instanceof AbstractCommand) {
@@ -96,11 +94,9 @@ class ConsoleApplication extends Application {
 	}
 
 	/**
-	 * Configures common command before executing.
-	 *
-	 * @param ConsoleCommandEvent $event
-	 */
-	protected function commonCommandHandler(ConsoleCommandEvent $event) {
+  * Configures common command before executing.
+  */
+ protected function commonCommandHandler(ConsoleCommandEvent $event) {
 		$cmd = $event->getCommand();
 
 		$engine = (new \PXEngineSbin())->start();
@@ -127,11 +123,9 @@ class ConsoleApplication extends Application {
 	}
 
 	/**
-	 * Configures migration-type command before execution.
-	 *
-	 * @param ConsoleCommandEvent $event
-	 */
-	protected function migrateCommandHandler(ConsoleCommandEvent $event) {
+  * Configures migration-type command before execution.
+  */
+ protected function migrateCommandHandler(ConsoleCommandEvent $event) {
 		$cmd = $event->getCommand();
 
 		EnvLoader::inject();
@@ -140,13 +134,12 @@ class ConsoleApplication extends Application {
 	}
 
 	/**
-	 * Handles console terminate event of application.
-	 * Collects command output and sends email report.
-	 *
-	 * @param ConsoleTerminateEvent $event
-	 * @throws \Exception
-	 */
-	protected function consoleTerminateHandler(ConsoleTerminateEvent $event) {
+  * Handles console terminate event of application.
+  * Collects command output and sends email report.
+  *
+  * @throws \Exception
+  */
+ protected function consoleTerminateHandler(ConsoleTerminateEvent $event) {
 		if (!$this->isReporting($event)) {
 			return;
 		}
@@ -168,12 +161,11 @@ class ConsoleApplication extends Application {
 	}
 
 	/**
-	 * Checks if reporting is available and enabled.
-	 *
-	 * @param ConsoleEvent $event
-	 * @return bool
-	 */
-	protected function isReporting(ConsoleEvent $event) {
+  * Checks if reporting is available and enabled.
+  *
+  * @return bool
+  */
+ protected function isReporting(ConsoleEvent $event) {
 		$cmd = $event->getCommand();
 		$input = $event->getInput();
 
@@ -182,12 +174,11 @@ class ConsoleApplication extends Application {
 	}
 
 	/**
-	 * Gets mail list from options, env variable and property.
-	 *
-	 * @param InputInterface $input
-	 * @return string
-	 */
-	protected function getTo(InputInterface $input) {
+  * Gets mail list from options, env variable and property.
+  *
+  * @return string
+  */
+ protected function getTo(InputInterface $input) {
 		return join(',', $input->getOption('mail'))
 			?: EnvLoader::get('PP_COMMAND_REPORT_MAIL')
 			?: $this->app->getProperty('SYS_COMMAND_REPORT_MAIL', '');

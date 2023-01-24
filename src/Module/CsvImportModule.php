@@ -84,7 +84,7 @@ class CsvImportModule extends AbstractModule
 		$app = $this->app;
 
 		$html = '<h2>Импорт данных &laquo;' . $app->types[$this->settings['datatype']]->title . '&raquo; успешно произведен</h2>';
-		$html .= '<p>В базу внесено <strong>' . htmlspecialchars($request->GetVar('quantity'), ENT_COMPAT | ENT_HTML401, DEFAULT_CHARSET) . '</strong> объектов.</p>';
+		$html .= '<p>В базу внесено <strong>' . htmlspecialchars((string) $request->GetVar('quantity'), ENT_COMPAT | ENT_HTML401, DEFAULT_CHARSET) . '</strong> объектов.</p>';
 		return $html;
 	}
 
@@ -101,7 +101,7 @@ class CsvImportModule extends AbstractModule
 		$redirTo = $generator->getAdminGenerator()->indexUrl();
 
 		if (($filename = $this->UploadFile($request->GetUploadFile('file')))) {
-			$quantity = $this->ImportToDb($this->_GetCsvSource($filename), $app, $db, $request);
+			$quantity = $this->ImportToDb($this->_GetCsvSource($filename));
 
 			if (is_numeric($quantity)) {
 				$redirTo .= '&status=success&quantity=' . $quantity;
@@ -128,14 +128,14 @@ class CsvImportModule extends AbstractModule
 		$format = $app->types[$this->settings['datatype']];
 
 		foreach ($this->settings['field'] as $f) {
-			[$k, $v] = explode('|', $f);
+			[$k, $v] = explode('|', (string) $f);
 
 			if (trim($k) == 'parent') {
 				$v = $app->GetProperty(trim($v));
 				$parent = $v;
 			}
 
-			$fields[trim($k)] = trim($v);
+			$fields[trim($k)] = trim((string) $v);
 		}
 
 		foreach ($csv as $ln => $line) {
@@ -145,7 +145,7 @@ class CsvImportModule extends AbstractModule
 
 			$valid = 0;
 			foreach ($line as $d) {
-				if (mb_strlen($d)) {
+				if (mb_strlen((string) $d)) {
 					$valid++;
 				}
 			}
@@ -207,7 +207,7 @@ class CsvImportModule extends AbstractModule
 			return false;
 		}
 
-		if (!preg_match('/\.(csv|txt)$/i', $file['name'])) {
+		if (!preg_match('/\.(csv|txt)$/i', (string) $file['name'])) {
 			return false;
 		}
 
@@ -265,7 +265,7 @@ HTML;
 		while (($data = fgetcsv($handle, 4096, ";")) !== FALSE && (!$length || $row <= $length)) {
 			$num = count($data);
 			for ($c = 0; $c < $num; $c++) {
-				$result[$row][$c] = iconv(CHARSET_WINDOWS, CHARSET_UTF8, $data[$c]);
+				$result[$row][$c] = iconv(CHARSET_WINDOWS, CHARSET_UTF8, (string) $data[$c]);
 			}
 			$maxLen = max($maxLen, $num);
 			$row++;

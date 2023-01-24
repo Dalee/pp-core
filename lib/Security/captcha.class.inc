@@ -30,7 +30,7 @@ class NLCaptcha
 	{
 		$this->colors = [];
 		foreach ($colors as $ci => $c) {
-			$tmp = explode('|', chunk_split($c, 2, '|'));
+			$tmp = explode('|', chunk_split((string) $c, 2, '|'));
 			foreach ($tmp as $k => $v) {
 				$tmp[$k] = hexdec($v);
 			}
@@ -55,7 +55,7 @@ class NLCaptcha
 
 	public function init()
 	{
-		mt_srand((double)microtime() * 1000000000);
+		mt_srand((double)microtime() * 1_000_000_000);
 
 		// создание "хоста"
 		$im = @ImageCreate($this->width, $this->height) or FatalError('Cannot Initialize new GD image stream');
@@ -69,7 +69,7 @@ class NLCaptcha
 		$ica[127] = ImageColorAllocate($im, $this->colors['dark'][0], $this->colors['dark'][1], $this->colors['dark'][2]);
 
 		for ($i = 0; $i < 10; $i++) {
-			$t = ($this->colors['dark'][1] + mt_rand(0, 32));
+			$t = ($this->colors['dark'][1] + random_int(0, 32));
 
 			$ica[$i + 1] = ImageColorAllocate($im, $this->colors['dark'][0], $t, $this->colors['dark'][2]);
 			$rev[$ica[$i + 1]] = $i + 1;
@@ -82,7 +82,7 @@ class NLCaptcha
 		ImageFilledRectangle($im, 0, 0, $this->width, $this->height, $ica[0]);
 
 		// веса шума, линий и .т.п.
-		$noiseRatio = mt_rand(80, 150) / 100;
+		$noiseRatio = random_int(80, 150) / 100;
 		$linesRatio = 2 - $noiseRatio;
 		$fontRatio = $linesRatio > 1 ? ($linesRatio < 1.5 ? $linesRatio : 1) : 1;// max($linesRatio, 1);
 
@@ -101,8 +101,8 @@ class NLCaptcha
 	public function addNoise()
 	{
 		for ($i = 0; $i < 500 * $this->ratio['noise']; $i++) {
-			$dx = mt_rand(0, $this->width - 1);
-			$dy = mt_rand(0, $this->height - 1);
+			$dx = random_int(0, $this->width - 1);
+			$dy = random_int(0, $this->height - 1);
 
 			ImageSetPixel($this->im, $dx, $dy, $this->ica[$i % 10 + 1]);
 		}
@@ -112,15 +112,15 @@ class NLCaptcha
 	{
 		$fontRatio = $this->ratio['font'];
 
-		$text_len = mb_strlen($text);
+		$text_len = mb_strlen((string) $text);
 		for ($i = 0; $i < $text_len; $i++) {
-			$size = mt_rand($fSize, $fSize * 1.15) * $fontRatio;
-			$dx = $i * $fSize + mt_rand(4, 6);
-			$dy = ($this->height > 3 * $fSize) ? 20 + mt_rand(15, 45) / $fontRatio : mt_rand($fSize * 1.17, $fSize * 1.5);
+			$size = random_int($fSize, $fSize * 1.15) * $fontRatio;
+			$dx = $i * $fSize + random_int(4, 6);
+			$dy = ($this->height > 3 * $fSize) ? 20 + random_int(15, 45) / $fontRatio : random_int($fSize * 1.17, $fSize * 1.5);
 
-			$angle = mt_rand(-10, 10) / $fontRatio;
+			$angle = random_int(-10, 10) / $fontRatio;
 
-			ImageTTFText($this->im, $size, $angle, $dx, $dy, $this->ica[mt_rand(1, 10)], $fonts[mt_rand(0, sizeof($fonts) - 1)], mb_substr($text, $i, 1));
+			ImageTTFText($this->im, $size, $angle, $dx, $dy, $this->ica[random_int(1, 10)], $fonts[random_int(0, sizeof($fonts) - 1)], mb_substr((string) $text, $i, 1));
 		}
 
 
@@ -145,13 +145,13 @@ class NLCaptcha
 		$y = $this->height;
 
 		// square boxes
-		if (mt_rand(0, 10) > 5) {
+		if (random_int(0, 10) > 5) {
 			//vertical
-			$p1 = -10 + mt_rand(10, 20);
-			$p2 = $p1 + mt_rand(15, 20);
+			$p1 = -10 + random_int(10, 20);
+			$p2 = $p1 + random_int(15, 20);
 
-			for ($i = 0; $i < mt_rand(1, 2); $i++) {
-				$this->imageLineThick($im, 0, mt_rand(0, $y), $x, mt_rand(0, $y), $ica[mt_rand(1, 10)], mt_rand(2, 3));
+			for ($i = 0; $i < random_int(1, 2); $i++) {
+				$this->imageLineThick($im, 0, random_int(0, $y), $x, random_int(0, $y), $ica[random_int(1, 10)], random_int(2, 3));
 			}
 
 			while ($p2 <= $x) {
@@ -162,18 +162,18 @@ class NLCaptcha
 						ImageSetPixel($im, $i, $j, $ica[127 + $m]);
 					}
 				}
-				$p1 = $p2 + mt_rand(15, 20);
-				$p2 = $p1 + mt_rand(15, 20);
+				$p1 = $p2 + random_int(15, 20);
+				$p2 = $p1 + random_int(15, 20);
 			}
 
 		} else {
 
 			//horisontal
-			$p1 = -5 + mt_rand(5, 20);
-			$p2 = $p1 + mt_rand(5, 20);
+			$p1 = -5 + random_int(5, 20);
+			$p2 = $p1 + random_int(5, 20);
 
-			for ($i = 0; $i < mt_rand(1, 2); $i++) {
-				$this->ImageLineThick($im, mt_rand(0, $x), 0, mt_rand(0, $x), $y, $ica[mt_rand(1, 10)], mt_rand(2, 3));
+			for ($i = 0; $i < random_int(1, 2); $i++) {
+				$this->ImageLineThick($im, random_int(0, $x), 0, random_int(0, $x), $y, $ica[random_int(1, 10)], random_int(2, 3));
 			}
 
 			while ($p2 <= $y) {
@@ -184,8 +184,8 @@ class NLCaptcha
 						ImageSetPixel($im, $j, $i, $ica[127 + $m]);
 					}
 				}
-				$p1 = $p2 + mt_rand(5, 20);
-				$p2 = $p1 + mt_rand(5, 20);
+				$p1 = $p2 + random_int(5, 20);
+				$p2 = $p1 + random_int(5, 20);
 			}
 		}
 	}
@@ -197,7 +197,7 @@ class NLCaptcha
 		$response->setContentType('image/jpeg');
 
 		$response->sendStream(function () {
-			ImageJpeg($this->im, null, mt_rand(60, 90));
+			ImageJpeg($this->im, null, random_int(60, 90));
 			ImageDestroy($this->im);
 		});
 	}
@@ -222,7 +222,7 @@ class NLCaptcha
 		}
 
 		$k = ($y2 - $y1) / ($x2 - $x1); //y = kx + q
-		$a = $t / sqrt(1 + pow($k, 2));
+		$a = $t / sqrt(1 + $k ** 2);
 
 		$points = [
 			round($x1 - (1 + $k) * $a), round($y1 + (1 - $k) * $a),

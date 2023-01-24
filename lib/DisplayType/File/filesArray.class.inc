@@ -9,7 +9,7 @@ class PXDisplayTypeFilesarray extends PXDisplayTypeImagesarray
 {
 	public function buildArrayItem($name, $value)
 	{
-		if (!mb_strlen($value['entry'])) {
+		if (!mb_strlen((string) $value['entry'])) {
 			$value = [
 				'filename' => null,
 				'size' => null,
@@ -39,4 +39,3 @@ class PXDisplayTypeFilesarray extends PXDisplayTypeImagesarray
 		return $html;
 	}
 }
-?>

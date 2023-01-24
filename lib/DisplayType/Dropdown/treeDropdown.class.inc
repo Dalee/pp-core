@@ -11,7 +11,7 @@ class PXDisplayTypeTreedropdown extends PXDisplayTypeDropdown
 {
 	public function buildInput($field, $object, $param = NULL)
 	{
-		$value = isset($object[$field->name]) ? $object[$field->name] : NULL;
+		$value = $object[$field->name] ?? NULL;
 
 		return NLAbstractHTMLForm::BuildDropDown($field->name, $value, $this->getListFromField($field));
 	}

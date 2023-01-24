@@ -2,11 +2,8 @@
 
 class PXControlReset extends PXAdminWidget
 {
-    public $value;
-
-    public function __construct($value)
+    public function __construct(public $value)
     {
-        $this->value = $value;
     }
 
     public function html()

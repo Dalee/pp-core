@@ -21,7 +21,7 @@ class PXStructLeaf implements Iterator
 
         } else {
             $trace = PXTrace(); // TODO: refactor
-            FatalError('Call to undefined method ' . __CLASS__ . '::' . $name . '() in ' . $trace[1]['file'] . ' on line ' . $trace[1]['line']);
+            FatalError('Call to undefined method ' . self::class . '::' . $name . '() in ' . $trace[1]['file'] . ' on line ' . $trace[1]['line']);
         }
     }
 
@@ -169,8 +169,8 @@ class PXTreeObjects implements ContentObjectsInterface, ArrayAccess, Iterator
     public $rootId = -1;
     public $currentId;
 
-    private $leafsCache = [];
-    private $treeIsLoaded = false;
+    private array $leafsCache = [];
+    private bool $treeIsLoaded = false;
 
     public function __construct()
     {
@@ -183,7 +183,7 @@ class PXTreeObjects implements ContentObjectsInterface, ArrayAccess, Iterator
             return call_user_func_array([$this->tree, $name], $arguments);
         } else {
             $trace = pxtrace();
-            FatalError('Call to undefined method ' . __CLASS__ . '::' . $name . '() in ' . $trace[1]['file'] . ' on line ' . $trace[1]['line']);
+            FatalError('Call to undefined method ' . self::class . '::' . $name . '() in ' . $trace[1]['file'] . ' on line ' . $trace[1]['line']);
         }
     }
 
@@ -401,5 +401,3 @@ class PXTreeObjects implements ContentObjectsInterface, ArrayAccess, Iterator
     }
     /* /Iterator */
 }
-
-?>

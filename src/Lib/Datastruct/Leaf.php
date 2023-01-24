@@ -7,11 +7,7 @@ namespace PP\Lib\Datastruct;
  * @package PP\Lib\Datastruct
  */
 class Leaf {
-	public $id;
-	public $title;
 	public $children;
-	public $parent;
-	public $content;
 
 	/**
 	 * @var int
@@ -24,20 +20,15 @@ class Leaf {
 	public $tree;
 
 	/**
-	 * Leaf constructor.
-	 *
-	 * @param $id
-	 * @param $title
-	 * @param $parentId
-	 * @param $content
-	 * @param Tree $tree
-	 */
-	public function __construct($id, $title, $parentId, $content, Tree $tree) {
-		$this->id = $id;
-		$this->title = $title;
+	* Leaf constructor.
+	*
+	* @param $id
+	* @param $title
+	* @param $parentId
+	* @param $content
+	*/
+	public function __construct(public $id, public $title, public $parent, public $content, Tree $tree) {
 		$this->children = [];
-		$this->parent = $parentId;
-		$this->content = $content;
 		$this->level = 0;
 		$this->tree = $tree;
 	}

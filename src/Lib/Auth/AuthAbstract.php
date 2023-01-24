@@ -116,7 +116,7 @@ abstract class AuthAbstract implements AuthInterface
 
 	protected function findUser(): ?array
 	{
-		if (!mb_strlen($this->login)) {
+		if (!mb_strlen((string) $this->login)) {
 			return null;
 		}
 

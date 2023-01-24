@@ -2,12 +2,10 @@
 // abstract
 class PXXSLT
 {
-    public $xsl;
     public $parameters = [];
 
-    public function __construct($xslFile)
+    public function __construct(public $xsl)
     {
-        $this->xsl = $xslFile;
     }
 
     public function addParameter($key, $value)

@@ -16,7 +16,7 @@ abstract class LayoutAbstract implements LayoutInterface
 {
 
 	private $html = '';
-	private $labels = [];
+	private array $labels = [];
 
 	/** @var array */
 	protected $template_dirs;
@@ -316,13 +316,13 @@ abstract class LayoutAbstract implements LayoutInterface
 	public function setGetVarToSave($key, $value)
 	{
 		$this->getData[$key] = $value;
-		$this->assign(strtoupper($key), $value);
+		$this->assign(strtoupper((string) $key), $value);
 	}
 
 	public function clearGetVar($key)
 	{
 		unset($this->getData[$key]);
-		$this->assign(strtoupper($key), '');
+		$this->assign(strtoupper((string) $key), '');
 	}
 
 	public function clear($label)
@@ -441,7 +441,7 @@ abstract class LayoutAbstract implements LayoutInterface
 		// WARNING: DO NOT use foreach() for $this->labels, because $widget->html() calls
 		// can append data to $this->labels! array_walk() acts like deprecated each() here
 		array_walk($this->labels, function ($widgets, $label) {
-			if (strpos($this->html, '{' . $label . '}') === false) {
+			if (!str_contains((string) $this->html, '{' . $label . '}')) {
 				return;
 			}
 			$html = '';
@@ -449,11 +449,11 @@ abstract class LayoutAbstract implements LayoutInterface
 				$html .= $this->isWidget($widget) ? $widget->html() : $widget;
 			}
 
-			$this->html = str_replace('{' . $label . '}', $html, $this->html);
+			$this->html = str_replace('{' . $label . '}', $html, (string) $this->html);
 		});
 
 		// delete labels without content
-		$this->html = preg_replace('/\{(?>\w[\w\.]*(?!\.))\}/', '', $this->html);
+		$this->html = preg_replace('/\{(?>\w[\w\.]*(?!\.))\}/', '', (string) $this->html);
 
 		return $this->html;
 	}
@@ -477,7 +477,7 @@ abstract class LayoutAbstract implements LayoutInterface
 		$layoutData = \PXRegistry::getLayout()->getData;
 		$getData = array_merge($layoutData, $getData);
 
-		parse_str($href, $href_vars);
+		parse_str((string) $href, $href_vars);
 
 		foreach ($getData as $k => $v) {
 			$flag = false;
@@ -491,7 +491,7 @@ abstract class LayoutAbstract implements LayoutInterface
 			}
 		}
 
-		$href = parse_url(appendParamToUrl($href, $key, $value));
+		$href = parse_url((string) appendParamToUrl($href, $key, $value));
 		return @"?{$href['query']}";
 	}
 

@@ -7,18 +7,6 @@
 class PXAuditLogger
 {
 	/**
-	 * Ссылка на PXApplication
-	 * @var PXApplication
-	 */
-	public $app;
-
-	/**
-	 * Ссылка на PXDatabase
-	 * @var PXDatabase
-	 */
-	public $db;
-
-	/**
 	 * Ссылка на NLLogger
 	 * @var NLLogger
 	 */
@@ -35,11 +23,8 @@ class PXAuditLogger
 	 * @param PXApplication $app ссылка на PXApplication {@link $app}
 	 * @param PXDatabase $db ссылка на PXDatabase {@link $db}
 	 */
-	public function __construct($app, $db)
+	public function __construct(public $app, public $db)
 	{
-		$this->app = $app;
-		$this->db = $db;
-
 		$this->logger = NLLogger::getLogger('audit');
 
 		$loggerSqlFormatFields = [

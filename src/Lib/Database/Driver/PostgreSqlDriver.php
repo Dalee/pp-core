@@ -12,7 +12,7 @@ use PP\Lib\Database\AbstractSqlDatabase;
 class PostgreSqlDriver extends AbstractSqlDatabase
 {
 
-	public const TYPE = 'pgsql';
+	final public const TYPE = 'pgsql';
 
 	public $connectString;
 	public $connection;
@@ -146,7 +146,7 @@ class PostgreSqlDriver extends AbstractSqlDatabase
 			do {
 				$line = str_replace($from, $to, implode("\1", $row));
 
-				while (false !== strpos($line, "\t\t")) {
+				while (str_contains($line, "\t\t")) {
 					$line = str_replace("\t\t", "\t\\N\t", $line);
 				}
 
@@ -221,22 +221,18 @@ class PostgreSqlDriver extends AbstractSqlDatabase
 
 	public function InsertObject($table, $fields, $values, $flushCache = true)
 	{
-		$query = "INSERT INTO {$table} (\"" . implode('", "', $fields) . "\") VALUES (" . implode(', ', array_map([$this, '__mapInsertData'], $values)) . ")";
+		$query = "INSERT INTO {$table} (\"" . implode('", "', $fields) . "\") VALUES (" . implode(', ', array_map($this->__mapInsertData(...), $values)) . ")";
 		return $this->ModifyingQuery($query, $table, 'id', $flushCache);
 	}
 
 	public function MapData($value)
 	{
-		switch (true) {
-			case is_null($value) || $value === '' :
-				return "NULL";
-			case $value === "##now##" || $value === "now()":
-				return "now()";
-			case is_bool($value):
-				return $value ? "'t'" : "'f'";
-			default:
-				return "'" . $this->EscapeString($value) . "'";
-		}
+		return match (true) {
+			is_null($value) || $value === '' => "NULL",
+			$value === "##now##" || $value === "now()" => "now()",
+			is_bool($value) => $value ? "'t'" : "'f'",
+			default => "'" . $this->EscapeString($value) . "'",
+		};
 	}
 
 	public function mapFields($field)
@@ -261,7 +257,7 @@ class PostgreSqlDriver extends AbstractSqlDatabase
 
 	public function UpdateObjectById($table, $objectId, $fields, $values, $flushCache = true)
 	{
-		$query = "UPDATE {$table} SET " . implode(', ', array_map([$this, '__mapUpdateData'], $fields, $values)) . " WHERE id={$objectId}";
+		$query = "UPDATE {$table} SET " . implode(', ', array_map($this->__mapUpdateData(...), $fields, $values)) . " WHERE id={$objectId}";
 		return $this->ModifyingQuery($query, null, null, $flushCache);
 	}
 
@@ -334,7 +330,7 @@ class PostgreSqlDriver extends AbstractSqlDatabase
 
 	public function exportFloat($string)
 	{
-		return str_replace(',', '.', $string);
+		return str_replace(',', '.', (string) $string);
 	}
 
 	public function exportDateTime($string)
@@ -392,7 +388,7 @@ class PostgreSqlDriver extends AbstractSqlDatabase
 
 	public function tableExists($tableName)
 	{
-		return count($this->query("SELECT relname FROM pg_class WHERE relname='{$tableName}'"));
+		return is_countable($this->query("SELECT relname FROM pg_class WHERE relname='{$tableName}'")) ? count($this->query("SELECT relname FROM pg_class WHERE relname='{$tableName}'")) : 0;
 	}
 
 	public function LIKE($condition, $percs)
@@ -441,9 +437,9 @@ class PostgreSqlDriver extends AbstractSqlDatabase
 
 	public function loggerSqlFormat($table, $fields)
 	{
-		if (!count($fields)) return false;
-		$fieldNames = implode(', ', array_map([&$this, "mapFields"], array_keys($fields)));
-		$fieldValues = implode(', ', array_map([&$this, "MapData"], array_values($fields)));
+		if (!(is_countable($fields) ? count($fields) : 0)) return false;
+		$fieldNames = implode(', ', array_map($this->mapFields(...), array_keys($fields)));
+		$fieldValues = implode(', ', array_map($this->MapData(...), array_values($fields)));
 		return sprintf("INSERT INTO %s (%s) VALUES(%s)", $table, $fieldNames, $fieldValues);
 	}
 }

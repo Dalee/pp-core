@@ -22,7 +22,6 @@ class NLLogger
 {
 
     public $appenders = [];
-    public $name = '';
 
     public $level = 6; //Default - NONE
 
@@ -36,9 +35,8 @@ class NLLogger
 
     public $parent = null; //parent logger uplink
 
-    public function __construct($name)
+    public function __construct(public $name)
     {
-        $this->name = $name;
     }
 
     public static function getLogger($name)
@@ -54,8 +52,8 @@ class NLLogger
         }
 
         //setup parent logger uplink
-        if (strpos($name, '.') !== FALSE) {
-            $tmp = explode('.', strrev($name), 2);
+        if (str_contains((string) $name, '.')) {
+            $tmp = explode('.', strrev((string) $name), 2);
             if ($tmp[1] !== '') {
                 $tmp_name = strrev($tmp[1]);
                 $instances[$name]->parent = NLLogger::getLogger($tmp_name);
@@ -155,14 +153,12 @@ class NLLogger
  */
 class Appender
 {
-    public $name = '';
     public $enabled = true;
     public $format = '[%t] %1 ';
 
     //constructor
-    public function __construct($name)
+    public function __construct(public $name)
     {
-        $this->name = $name;
     }
 
     //must be redefined in child class
@@ -178,7 +174,7 @@ class Appender
     public function setParam($param, $value)
     {
         $ret = false;
-        $classVars = get_class_vars(get_class($this));
+        $classVars = get_class_vars(static::class);
         if (array_key_exists($param, $classVars)) {
             $this->$param = $value;
             $ret = true;
@@ -189,7 +185,7 @@ class Appender
     public function setParamByRef($param, &$value)
     {
         $ret = false;
-        $classVars = get_class_vars(get_class($this));
+        $classVars = get_class_vars(static::class);
         if (array_key_exists($param, $classVars)) {
             $this->$param = &$value;
             $ret = true;
@@ -200,7 +196,7 @@ class Appender
     public function _compileMessage($level, $message)
     {
         $pattern = ['%n', '%t', '%l', '%r'];
-        $replace = [$this->name, date('Y-m-d H:i:s'), $level, rand(1, 10000)];
+        $replace = [$this->name, date('Y-m-d H:i:s'), $level, random_int(1, 10000)];
         if (is_array($message)) {
             $i = 1;
             foreach ($message as $part) {
@@ -211,7 +207,7 @@ class Appender
             $pattern[] = '%1';
             $replace[] = $message;
         }
-        return str_replace($pattern, $replace, $this->format);
+        return str_replace($pattern, $replace, (string) $this->format);
     }
 }
 
@@ -266,7 +262,7 @@ class FileAppender extends Appender
             $rotateFileName = $fileName . '.' . time();
             //paranoid_mode = on
             if (file_exists($rotateFileName))
-                $rotateFileName .= '.' . md5(mt_rand());
+                $rotateFileName .= '.' . md5(random_int(0, mt_getrandmax()));
             rename($fileName, $rotateFileName);
             unset($openFiles[$fileName]);
         }
@@ -300,7 +296,7 @@ class SQLAppender extends Appender
             // Escape text message
             $msg = $this->_compileMessage(
                 $level,
-                array_map([$this->db, 'EscapeString'], (array)$message)
+                array_map($this->db->EscapeString(...), (array)$message)
             );
 
             //4th argument is false -- do not flush cache !

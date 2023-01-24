@@ -14,12 +14,12 @@ class PXDisplayTypeTable extends PXDisplayType
 {
 	public function buildInput($field, $object, $param = NULL)
 	{
-		$value = isset($object[$field->name]) ? $object[$field->name] : [];
-		$cols = isset($field->displayTypeArgs[0]) ? $field->displayTypeArgs[0] : '1';
-		$height = isset($field->displayTypeArgs[1]) ? $field->displayTypeArgs[1] : 0;
-		$header = isset($field->displayTypeArgs[2]) ? explode(isset($field->displayTypeArgs[3]) ? $field->displayTypeArgs[3] : '-', $field->displayTypeArgs[2]) : [];
+		$value = $object[$field->name] ?? [];
+		$cols = $field->displayTypeArgs[0] ?? '1';
+		$height = $field->displayTypeArgs[1] ?? 0;
+		$header = isset($field->displayTypeArgs[2]) ? explode($field->displayTypeArgs[3] ?? '-', (string) $field->displayTypeArgs[2]) : [];
 
-		return NLAbstractHTMLForm::BuildTableByCols($field->name, $value, explode("-", $cols), $height, $header);
+		return NLAbstractHTMLForm::BuildTableByCols($field->name, $value, explode("-", (string) $cols), $height, $header);
 	}
 
 	public function buildCell($field, $object, $param = NULL)
@@ -29,7 +29,7 @@ class PXDisplayTypeTable extends PXDisplayType
 		$html = '';
 		$html_len = 0;
 
-		for ($i = 0, $l = count($value); $i < $l && $html_len < 30; $i++) {
+		for ($i = 0, $l = is_countable($value) ? count($value) : 0; $i < $l && $html_len < 30; $i++) {
 			$html .= (!empty($html)) ? '; ' : '';
 			$html .= join(', ', (array)$value[$i]);
 

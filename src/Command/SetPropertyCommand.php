@@ -47,7 +47,7 @@ class SetPropertyCommand extends AbstractCommand {
 
 		$sql = sprintf('SELECT id FROM %s WHERE "name"=\'%s\'', DT_PROPERTIES, $this->db->EscapeString($key));
 		$result = $this->db->query($sql);
-		if (count($result) > 0) {
+		if ((is_countable($result) ? count($result) : 0) > 0) {
 			$result = array_flat($result[0], 'id');
 
 			$this->db->UpdateObjectById(DT_PROPERTIES, $result['id'], $dbFields, $dbValues);

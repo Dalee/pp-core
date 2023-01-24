@@ -6,8 +6,8 @@ use Symfony\Component\HttpFoundation\Session\SessionInterface;
 
 class Session extends AuthAbstract
 {
-	public const AUTHORIZED_USER_ID = '__auth_user_id';
-	public const AUTHORIZED_USER_IP = '__auth_user_ip';
+	final public const AUTHORIZED_USER_ID = '__auth_user_id';
+	final public const AUTHORIZED_USER_IP = '__auth_user_ip';
 
 	public function isCredentialsValid(array $credentials): bool
 	{
@@ -16,7 +16,7 @@ class Session extends AuthAbstract
 
 		$uArray = $this->findUser();
 
-		if ($uArray && strlen($this->passwd) > 0 && static::verifyPassword($this->passwd, $uArray['passwd'])) {
+		if ($uArray && strlen((string) $this->passwd) > 0 && static::verifyPassword($this->passwd, $uArray['passwd'])) {
 			$this->fillUserFields($uArray);
 		}
 

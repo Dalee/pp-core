@@ -132,7 +132,7 @@ class Predis implements CacheInterface, SerializerAwareInterface {
 		$keys = new Keyspace($this->client, $pattern, $this->scanDefault);
 
 		foreach ($keys as $key) {
-			$prefixlessKey = substr($key, $cachePrefixLen);
+			$prefixlessKey = substr((string) $key, $cachePrefixLen);
 			$this->client->del([$prefixlessKey]);
 		}
 
@@ -154,7 +154,7 @@ class Predis implements CacheInterface, SerializerAwareInterface {
 			return $groupPart . '_' . $keyPart;
 		}
 
-		return md5($key) . ($glob ? '_*' : '');
+		return md5((string) $key) . ($glob ? '_*' : '');
 	}
 
 }

@@ -4,14 +4,12 @@ use \PP\Lib\Html\Layout\LayoutAbstract;
 
 class PXAdminList extends PXAdminWidget
 {
-    public $_list;
     public $_varName;
     public $_selected;
     public $_getData;
 
-    public function __construct($list)
+    public function __construct(public $_list)
     {
-        $this->_list = $list;
         $this->_varName = '';
         $this->_selected = '';
         $this->_getData = [];

@@ -18,8 +18,8 @@ class PXAdminAuditTable extends PXAdminTableSimple
     public function cell($row, $col)
     {
         if ($col == 'source') {
-            if (mb_strpos($row[$col], '/')) {
-                preg_match('|(\w+)/?(\d+)?|' . REGEX_MOD, $row[$col], $matches);
+            if (mb_strpos((string) $row[$col], '/')) {
+                preg_match('|(\w+)/?(\d+)?|' . REGEX_MOD, (string) $row[$col], $matches);
 
                 if (sizeof($matches) == 3) {
                     $row[$col] = $this->__link('popup.phtml?area=objects&format=' . $matches[1] . '&id=' . $matches[2] . '&action=main', $this->_getDatatypeTitle($matches[1]) . '/' . $matches[2]);
@@ -28,7 +28,7 @@ class PXAdminAuditTable extends PXAdminTableSimple
                     $row[$col] = $this->__link('?area=dicts&sid=' . $matches[1], $this->_getDatatypeTitle($matches[1]));
                 }
 
-            } elseif (mb_strlen($row[$col])) {
+            } elseif (mb_strlen((string) $row[$col])) {
                 $row[$col] = $this->__link('?area=dicts&sid=' . $row[$col], $this->_getDatatypeTitle($row[$col]));
             }
         }
@@ -38,10 +38,10 @@ class PXAdminAuditTable extends PXAdminTableSimple
         }
 
         if ($col == 'diff') {
-            $diff = (array)json_decode($row[$col], true);
+            $diff = (array)json_decode((string) $row[$col], true, 512, JSON_THROW_ON_ERROR);
             $diff = array_filter($diff);
 
-            $source = explode('/', $row['source'])[0];
+            $source = explode('/', (string) $row['source'])[0];
 
             $typeFields = $this->app->types[$source]->fields ?? [];
             $changedOutput = 'Ничего не изменилось';

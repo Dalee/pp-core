@@ -28,7 +28,7 @@ abstract class PXAbstractSystemTrigger extends PXAbstractTrigger {
 	 * @param PXModuleDescription $moduleDescription the module
 	 * @param mixed $eventData Info about the engine method to be called
 	 */
-	public function onBeforeModuleRun($currentEngine, $moduleDescription, $eventData) {
+	public function onBeforeModuleRun($currentEngine, $moduleDescription, mixed $eventData) {
 	}
 
 	/**
@@ -38,7 +38,7 @@ abstract class PXAbstractSystemTrigger extends PXAbstractTrigger {
 	 * @param PXModuleDescription $moduleDescription the module
 	 * @param mixed $eventData Info about the called engine method
 	 */
-	public function onAfterModuleRun($currentEngine, $moduleDescription, $eventData) {
+	public function onAfterModuleRun($currentEngine, $moduleDescription, mixed $eventData) {
 	}
 }
 

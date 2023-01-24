@@ -59,7 +59,7 @@ class ObjectChecker {
 
 			if ((bool)$parentFormat->parent) {
 				$this->_loadParent($format, $object, $pKey);
-				$object['parent'] = isset($this->acl->parents[$pKey]) ? $this->acl->parents[$pKey] : null;
+				$object['parent'] = $this->acl->parents[$pKey] ?? null;
 			}
 
 			return $this->_checkGroup($what, $parentFormat, $object);
@@ -73,7 +73,7 @@ class ObjectChecker {
 
 		$tmpParents = $this->acl->db->query('SELECT parent FROM ' . $format->parent . ' WHERE id = ' . $object['parent']);
 
-		if (count($tmpParents)) {
+		if (is_countable($tmpParents) ? count($tmpParents) : 0) {
 			$this->acl->parents[$pKey] = current(current($tmpParents));
 		}
 	}

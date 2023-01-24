@@ -15,17 +15,17 @@ class JobResult implements IArrayable {
 	/**
 	 * @var string
 	 */
-	public const RESULT_ERRORS = 'errors';
+	final public const RESULT_ERRORS = 'errors';
 
 	/**
 	 * @var string
 	 */
-	public const RESULT_INFO = 'info';
+	final public const RESULT_INFO = 'info';
 
 	/**
 	 * @var string
 	 */
-	public const RESULT_NOTICES = 'notices';
+	final public const RESULT_NOTICES = 'notices';
 
 	/**
 	 * @var ArrayIterator
@@ -82,9 +82,8 @@ class JobResult implements IArrayable {
 	}
 
 	/**
-	 * @param array $errors
-	 * @return $this
-	 */
+	* @return $this
+	*/
 	public function setErrors(array $errors) {
 		$this->errors = new ArrayIterator($errors);
 
@@ -92,9 +91,8 @@ class JobResult implements IArrayable {
 	}
 
 	/**
-	 * @param array $info
-	 * @return $this
-	 */
+	* @return $this
+	*/
 	public function setInfo(array $info) {
 		$this->info = new ArrayIterator($info);
 
@@ -102,9 +100,8 @@ class JobResult implements IArrayable {
 	}
 
 	/**
-	 * @param array $notices
-	 * @return $this
-	 */
+	* @return $this
+	*/
 	public function setNotices(array $notices) {
 		$this->notices = new ArrayIterator($notices);
 
