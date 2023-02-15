@@ -151,7 +151,17 @@ module_acl_rules:
     admin:
       rus: Просмотр в админке
       eng: View in admin area
-    madmin:
+  access:
+    allo:
+      rus: Разрешить
+      eng: Allow
+    deny:
+      rus: Запретить
+      eng: Deny
+
+module_macl_rules:
+  actions:
+    admin:
       rus: Доступ в админке
       eng: Access in admin
     viewmenu:
@@ -160,10 +170,3 @@ module_acl_rules:
     sys_properties_edit:
       rus: Редактирование системных настроек
       eng: Edit system properties
-  access:
-    allo:
-      rus: Разрешить
-      eng: Allow
-    deny:
-      rus: Запретить
-      eng: Deny
