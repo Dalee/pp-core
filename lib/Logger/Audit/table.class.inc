@@ -15,6 +15,9 @@ class PXAdminAuditTable extends PXAdminTableSimple
         return isset($this->dict['datatypes'][$format]) ? $this->dict['datatypes'][$format]->title : $format;
     }
 
+    /**
+     * @throws JsonException
+     */
     public function cell($row, $col)
     {
         if ($col == 'source') {
@@ -38,6 +41,9 @@ class PXAdminAuditTable extends PXAdminTableSimple
         }
 
         if ($col == 'diff') {
+            if (!($row[$col] ?? false)) {
+                $row[$col] = '[]';
+            }
             $diff = (array)json_decode((string) $row[$col], true, 512, JSON_THROW_ON_ERROR);
             $diff = array_filter($diff);
 
