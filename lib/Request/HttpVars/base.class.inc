@@ -125,8 +125,8 @@ class NLHTTPVarsData
 			if (!empty($diff))
 				return null;
 
-			return call_user_func_array("sprintf", ["pattern" => "%02d.%02d.%04d %02d:%02d:%02d", $r['day'], $r['month'], $r['year'], $r['hour'],
-				$r['minute'], $r['second']]);
+			return sprintf("%02d.%02d.%04d %02d:%02d:%02d", $r['day'], $r['month'], $r['year'], $r['hour'],
+				$r['minute'], $r['second']);
 		}
 	}
 

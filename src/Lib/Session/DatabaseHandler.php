@@ -23,14 +23,16 @@ class DatabaseHandler extends NullSessionHandler {
 	 * @param string $sessionName
 	 * @return bool
 	 */
-	public function open($savePath, $sessionName) {
+	public function open($savePath, $sessionName): bool
+	{
 		return true;
 	}
 
 	/**
 	 * @return bool
 	 */
-	public function close() {
+	public function close(): bool
+	{
 		if ($this->gcCalled) {
 			$sql = sprintf(
 				"DELETE FROM %s WHERE (session_lifetime + session_time) < %d",
@@ -46,9 +48,11 @@ class DatabaseHandler extends NullSessionHandler {
 
 	/**
 	 * @param string $sessionId
-	 * @return bool
+	 * @return string
+	 * @throws \JsonException
 	 */
-	public function read($sessionId) {
+	public function read($sessionId): string
+	{
 		$sessionId = $this->db->EscapeString($sessionId);
 
 		$sql = sprintf(
@@ -73,7 +77,8 @@ class DatabaseHandler extends NullSessionHandler {
 	 * @param string $data
 	 * @return bool
 	 */
-	public function write($sessionId, $data) {
+	public function write($sessionId, $data): bool
+	{
 		$sessionId = $this->db->EscapeString($sessionId);
 		$data = $this->db->EscapeString(json_encode($data, JSON_THROW_ON_ERROR));
 		$maxlifetime = (int)ini_get('session.gc_maxlifetime');
@@ -114,7 +119,8 @@ class DatabaseHandler extends NullSessionHandler {
 	 * @param string $sessionId
 	 * @return bool
 	 */
-	public function destroy($sessionId) {
+	public function destroy($sessionId): bool
+	{
 		$sessionId = $this->db->EscapeString($sessionId);
 		$sql = sprintf(
 			"DELETE FROM %s WHERE session_id = '%s'",
@@ -129,9 +135,9 @@ class DatabaseHandler extends NullSessionHandler {
 
 	/**
 	 * @param int $maxlifetime
-	 * @return bool
+	 * @return int|bool
 	 */
-	public function gc($maxlifetime) {
+	public function gc($maxlifetime):int|false {
 		$this->gcCalled = true;
 
 		return true;

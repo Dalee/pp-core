@@ -13,8 +13,8 @@ use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 class Configuration implements ConfigurationInterface {
 
 	public function getConfigTreeBuilder() {
-		$tree = new TreeBuilder();
-		$rootNode = $tree->root('core');
+		$tree = new TreeBuilder('core');
+		$rootNode = $tree->getRootNode();
 
 		$rootNode->children()
 			->scalarNode('application')->defaultValue('app')->end()

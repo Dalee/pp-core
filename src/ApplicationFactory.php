@@ -2,10 +2,11 @@
 
 namespace PP;
 
+use PP\Lib\Cache\CacheInterface;
 use PXApplication;
-use Psr\SimpleCache\CacheInterface;
-use Symfony\Component\Cache\Simple\FilesystemCache;
+use Symfony\Component\Cache\Adapter\FilesystemAdapter;
 use Symfony\Component\Finder\Finder;
+use Symfony\Contracts\Cache\ItemInterface;
 
 /**
  * Class ApplicationFactory.
@@ -43,37 +44,33 @@ class ApplicationFactory {
 	 * The default cache type is FilesystemCache.
 	 *
 	 * @param \PP\Lib\Engine\AbstractEngine $engine
-	 * @param CacheInterface|null $cache
+	 * @param mixed $cache
 	 * @return PXApplication
-	 * @throws \Psr\SimpleCache\InvalidArgumentException
+	 * @throws
 	 */
 	public static function create($engine, CacheInterface $cache = null) {
 		$namespace = static::makeEngineCacheNamespace($engine);
 		$path = static::getDefaultEngineCachePath();
-		$cache = $cache ?: new FilesystemCache($namespace, 0, $path);
+		$cache = $cache ?: new FilesystemAdapter($namespace, 0, $path);
 
-		if ($cachedApplication = $cache->get(PXApplication::class)) {
-			$paths = $cachedApplication->getConfigurationPaths();
-			$created = $cachedApplication->getCreated();
-			$finder = new Finder();
-			$finder->files()
-				->ignoreUnreadableDirs()->ignoreDotFiles(false)
-				->name('*.{yml,yaml,xml,ini}')->name('.env')
-				->depth('== 0')
-				->date('>= @' . $created)
-				->in(BASEPATH)->in($paths);
+		$cachedApplication = $cache->get(PXApplication::class, function (ItemInterface $item) {
+			$application = new PXApplication();
+			$application->init();
 
-			if (count($finder) === 0) {
-				return $cachedApplication;
-			}
-		}
+			return $application;
+		});
 
-		$application = new PXApplication();
-		$application->init();
+		$paths = $cachedApplication->getConfigurationPaths();
+		$created = $cachedApplication->getCreated();
+		$finder = new Finder();
+		$finder->files()
+			->ignoreUnreadableDirs()->ignoreDotFiles(false)
+			->name('*.{yml,yaml,xml,ini}')->name('.env')
+			->depth('== 0')
+			->date('>= @' . $created)
+			->in(BASEPATH)->in($paths);
 
-		$cache->set(PXApplication::class, $application);
-
-		return $application;
+		return $cachedApplication;
 	}
 
 }
