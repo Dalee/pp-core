@@ -7,6 +7,7 @@ use PXRegistry;
 use PP\Properties\EnvLoader;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\ConsoleEvents;
+use Symfony\Component\Console\Input\InputDefinition;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\ArgvInput;
 use Symfony\Component\Console\Input\InputInterface;
@@ -46,7 +47,7 @@ class ConsoleApplication extends Application {
 	/**
 	 * @inheritdoc
 	 */
-	protected function getDefaultInputDefinition() {
+	protected function getDefaultInputDefinition(): InputDefinition {
 		$definition = parent::getDefaultInputDefinition();
 
 		$definition->addOptions([

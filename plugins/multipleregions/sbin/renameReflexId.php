@@ -1,5 +1,5 @@
 #!/usr/bin/php5 -q
-<?
+<?php
 
 error_reporting( E_ALL );
 

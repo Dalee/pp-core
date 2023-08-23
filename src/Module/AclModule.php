@@ -448,6 +448,10 @@ class AclModule extends AbstractModule
 	function putRuleAfterRule($movingId, $afterId, $sid = false)
 	{
 		$db = $this->db;
+		$moving = null;
+		$after = null;
+		$changing = null;
+		$where = null;
 
 		$rules = array_flat($this->getRulesByIds([$movingId, $afterId], $sid), 'id', $this->orderingField);
 		if (!array_key_exists($movingId, $rules)) {
