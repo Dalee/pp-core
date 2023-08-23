@@ -58,12 +58,8 @@ class PXFiltersAdminWidget extends PXAdminWidget
 					$filters_html .= sprintf('&ndash; <label>%s</label></div>', $field->description);
 					break;
 
-				case $field->displayType instanceof PXDisplayTypeDropdown:
-					$values = !empty($field->values->values) ? $field->values->values : [];
-
-					if (!$field->values instanceof PXDirectoryDescription || empty($values)) {
-						break;
-					}
+				case !empty($field->values->values):
+					$values = $field->values->values;
 
 					$option = array_map(function ($value) use ($filter_value) {
 						$selected = $filter_value == $value['id'] ? ' selected' : '';

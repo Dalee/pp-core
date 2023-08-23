@@ -40,7 +40,7 @@ class PropertiesModule extends AbstractModule
 		$defaults = parent::getAclModuleActions();
 		$defaults['sys_properties_edit'] = \PXRegistry::getApp()
 			->langTree
-			->getByPath('module_acl_rules.actions.sys_properties_edit.rus');
+			->getByPath('module_macl_rules.actions.sys_properties_edit.rus');
 
 		return $defaults;
 	}
