@@ -57,11 +57,11 @@ abstract class AbstractModule implements ModuleInterface
     {
         $app = \PXRegistry::getApp();
 
-		return [
-			'viewmenu' => $app->langTree->getByPath('module_macl_rules.actions.viewmenu.rus'),
-			'admin' => $app->langTree->getByPath('module_macl_rules.actions.admin.rus'),
-		];
-	}
+        return [
+            'viewmenu' => $app->langTree->getByPath('module_macl_rules.actions.viewmenu.rus'),
+            'admin' => $app->langTree->getByPath('module_macl_rules.actions.admin.rus'),
+        ];
+    }
 
     /**
      * {@inheritdoc}

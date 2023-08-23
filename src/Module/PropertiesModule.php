@@ -31,15 +31,15 @@ class PropertiesModule extends AbstractModule
         }
     }
 
-	/**
-	 * {@inheritdoc}
-	 */
-	public static function getAclModuleActions()
-	{
-		$defaults = parent::getAclModuleActions();
-		$defaults['sys_properties_edit'] = \PXRegistry::getApp()
-			->langTree
-			->getByPath('module_macl_rules.actions.sys_properties_edit.rus');
+    /**
+     * {@inheritdoc}
+     */
+    public static function getAclModuleActions()
+    {
+        $defaults = parent::getAclModuleActions();
+        $defaults['sys_properties_edit'] = \PXRegistry::getApp()
+            ->langTree
+            ->getByPath('module_macl_rules.actions.sys_properties_edit.rus');
 
         return $defaults;
     }
