@@ -68,7 +68,7 @@ HTML
 		}
 
 		$cache = ObjectCache::get('file', $errorRepDir, $cacheTime);
-		$errorSignature = json_encode($this->errorsMap, JSON_THROW_ON_ERROR);
+		$errorSignature = json_encode($this->errorsMap);
 
 		$inLoop = !$cache->expired($errorSignature);
 		$curCount = $cache->loadStaled($errorSignature);

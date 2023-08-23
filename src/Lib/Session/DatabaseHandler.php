@@ -8,7 +8,7 @@ use Symfony\Component\HttpFoundation\Session\Storage\Handler\NullSessionHandler;
 
 class DatabaseHandler extends NullSessionHandler {
 
-	final public const SESSION_TABLE = 'admin_session';
+	public const SESSION_TABLE = 'admin_session';
 
 	/** @var PXDatabase|PostgreSqlDriver */
 	protected $db;
@@ -65,7 +65,7 @@ class DatabaseHandler extends NullSessionHandler {
 		if (($row = reset($row)) !== false) {
 			$maxTime = (int)$row['session_time'] + (int)$row['session_lifetime'];
 			if ($maxTime > time()) {
-				return json_decode((string) $row['session_data'], null, 512, JSON_THROW_ON_ERROR);
+				return json_decode((string) $row['session_data']);
 			}
 		}
 
@@ -80,7 +80,7 @@ class DatabaseHandler extends NullSessionHandler {
 	public function write($sessionId, $data): bool
 	{
 		$sessionId = $this->db->EscapeString($sessionId);
-		$data = $this->db->EscapeString(json_encode($data, JSON_THROW_ON_ERROR));
+		$data = $this->db->EscapeString(json_encode($data));
 		$maxlifetime = (int)ini_get('session.gc_maxlifetime');
 		$now = time();
 

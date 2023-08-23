@@ -8,8 +8,8 @@ class PXAdminPager extends PXAdminComplexWidget
 	public $_currentPage;
 	public $_pagerName;
 
-	final public const BEFORE_PAGE_LIST = 0;
-	final public const AFTER_PAGE_LIST = 1;
+	public const BEFORE_PAGE_LIST = 0;
+	public const AFTER_PAGE_LIST = 1;
 
 	public $blocks = [
 		self::BEFORE_PAGE_LIST => [],

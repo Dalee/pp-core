@@ -18,7 +18,7 @@ class PXStorageTypeSerialized extends PXStorageType
 	public function normalizeObjectAttribute($field, $object, &$param)
 	{
 		$k = $field->name;
-		$v = json_encode((is_array($object[$k])) ? $object[$k] : [], JSON_THROW_ON_ERROR);
+		$v = json_encode((is_array($object[$k])) ? $object[$k] : []);
 
 		if (is_array($param['dbFields'])) {
 			$param['dbFields'][] = $k;

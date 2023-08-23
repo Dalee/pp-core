@@ -5,10 +5,10 @@ namespace PP\Lib\Xml;
 class Xml
 {
 
-	final public const NONE = 0;
-	final public const ELEMENT = 1;
-	final public const ATTRIBUTE = 2;
-	final public const DOC = 9;
+	public const NONE = 0;
+	public const ELEMENT = 1;
+	public const ATTRIBUTE = 2;
+	public const DOC = 9;
 
 	/** @var SimpleXml */
 	public $xml;

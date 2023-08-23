@@ -7,13 +7,14 @@ class PXInputRichEdit extends PXAdminComplexWidget
 
     protected $editors = [];
 
-    final public const AFTER_TEXTAREA = 0;
+    protected $favoriteEditor = null;
+
+    public const AFTER_TEXTAREA = 0;
 
     public function __construct(public $name, public $value, public $height)
     {
         $this->container = $name . '_id';
         $this->toLayout = PXRegistry::getLayout();
-        $this->favoriteEditor = null; //default value
         $this->blocks = [self::AFTER_TEXTAREA => []];
     }
 

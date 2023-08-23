@@ -68,7 +68,7 @@ class FillMetaCommand extends AbstractCommand {
 					}
 
 					$metaField = (count($sysMetaField) > 0)
-						? $this->db->MapData(json_encode($sysMetaField, JSON_THROW_ON_ERROR))
+						? $this->db->MapData(json_encode($sysMetaField))
 						: 'NULL';
 
 					$metaField = sprintf("%s = %s", OBJ_FIELD_META, $metaField);

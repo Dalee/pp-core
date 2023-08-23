@@ -10,21 +10,21 @@ class PXAdminForm extends PXAdminComplexWidget
 	private $linksParam;
 	public $disable;
 
-	final public const BEFORE_CONTENT = 0;
-	final public const CONTENT = 1;
-	final public const AFTER_CONTENT = 2;
+	public const BEFORE_CONTENT = 0;
+	public const CONTENT = 1;
+	public const AFTER_CONTENT = 2;
 
-	final public const PREPEND_LEFTCONTROLS = 3;
-	final public const LEFTCONTROLS = 4;
-	final public const APPEND_LEFTCONTROLS = 5;
+	public const PREPEND_LEFTCONTROLS = 3;
+	public const LEFTCONTROLS = 4;
+	public const APPEND_LEFTCONTROLS = 5;
 
-	final public const PREPEND_RIGHTCONTROLS = 6;
-	final public const RIGHTCONTROLS = 7;
-	final public const APPEND_RIGHTCONTROLS = 8;
+	public const PREPEND_RIGHTCONTROLS = 6;
+	public const RIGHTCONTROLS = 7;
+	public const APPEND_RIGHTCONTROLS = 8;
 
-	final public const TITLE = 9;
-	final public const MENU = 10;
-	final public const NOTICES_CONTENT = 11;
+	public const TITLE = 9;
+	public const MENU = 10;
+	public const NOTICES_CONTENT = 11;
 
 	public $blocks = [ //set up available subwidgets areas
 		self::PREPEND_LEFTCONTROLS => [],

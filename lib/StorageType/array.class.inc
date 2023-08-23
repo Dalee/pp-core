@@ -13,11 +13,11 @@ class PXStorageTypeArray extends PXStorageType
 
 	public const defaultSQLType = 'VARCHAR[]';
 
-	final public const STATE_BEGIN = 1;
-	final public const STATE_INARRAY = 2;
-	final public const STATE_OUTARRAY = 3;
-	final public const STATE_INSLASH = 4;
-	final public const STATE_INQUOTES = 5;
+	public const STATE_BEGIN = 1;
+	public const STATE_INARRAY = 2;
+	public const STATE_OUTARRAY = 3;
+	public const STATE_INSLASH = 4;
+	public const STATE_INQUOTES = 5;
 
 	public function getFromRequest($field, $object, &$param)
 	{

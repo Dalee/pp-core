@@ -7,10 +7,10 @@ use \PP\Lib\Html\Layout\LayoutAbstract;
 class PXAdminTree extends PXAdminComplexWidget
 {
 
-    final public const BEFORE = 0;
-    final public const BEFORE_CONTENT = 1;
-    final public const AFTER_CONTENT = 4;
-    final public const AFTER = 5;
+    public const BEFORE = 0;
+    public const BEFORE_CONTENT = 1;
+    public const AFTER_CONTENT = 4;
+    public const AFTER = 5;
 
     /**
      * Конструктор класса PXAdminTree.

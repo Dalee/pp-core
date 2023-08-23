@@ -15,22 +15,22 @@ class Job implements IArrayable {
 	/**
 	 * @var string
 	 */
-	final public const STATE_FRESH = 'fresh';
+	public const STATE_FRESH = 'fresh';
 
 	/**
 	 * @var string
 	 */
-	final public const STATE_FINISHED = 'finished';
+	public const STATE_FINISHED = 'finished';
 
 	/**
 	 * @var string
 	 */
-	final public const STATE_FAILED = 'failed';
+	public const STATE_FAILED = 'failed';
 
 	/**
 	 * @var string
 	 */
-	final public const STATE_IN_PROGRESS = 'in progress';
+	public const STATE_IN_PROGRESS = 'in progress';
 
 	/**
 	 * @var int

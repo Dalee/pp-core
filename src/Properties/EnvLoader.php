@@ -10,7 +10,7 @@ use Dotenv\Dotenv;
  */
 class EnvLoader {
 
-	final public const TYPE_NOT_EMPTY = 0; // default
+	public const TYPE_NOT_EMPTY = 0; // default
 
 	/** @var string[] */
 	protected $errors;

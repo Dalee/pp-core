@@ -16,12 +16,12 @@ class Queue {
 	/**
 	 * @var string
 	 */
-	final public const JOB_DB_TYPE = 'queue_job';
+	public const JOB_DB_TYPE = 'queue_job';
 
 	/**
 	 * @var string
 	 */
-	final public const JOB_FETCH_LIMIT = 1;
+	public const JOB_FETCH_LIMIT = 1;
 
 	/**
 	 * @var IApplication

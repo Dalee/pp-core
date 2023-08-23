@@ -290,6 +290,7 @@ function html_br ($class = null, $atts = []) {
  * @param string [$src]
  * @param string|array [$class]
  * @param string [$alt]
+ * @param array $atts
  * @return string
  * @test [[]] >>> "<img src=\"\" alt=\"\">"
  * @test ["//dalee.ru/logo.png"] >>> "<img src=\"//dalee.ru/logo.png\" alt=\"\">"

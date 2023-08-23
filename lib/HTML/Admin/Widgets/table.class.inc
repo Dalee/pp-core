@@ -34,9 +34,9 @@ class PXAdminTable extends PXAdminComplexWidget
 
 	protected $tableId;
 
-	final public const BEFORE_CONTENT_ALWAYS = 0;
-	final public const BEFORE_CONTENT = 1;
-	final public const AFTER_CONTENT = 2;
+	public const BEFORE_CONTENT_ALWAYS = 0;
+	public const BEFORE_CONTENT = 1;
+	public const AFTER_CONTENT = 2;
 
 	/**
 	 * Конструктор класса PXAdminTable.

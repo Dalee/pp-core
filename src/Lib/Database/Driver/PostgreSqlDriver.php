@@ -12,7 +12,7 @@ use PP\Lib\Database\AbstractSqlDatabase;
 class PostgreSqlDriver extends AbstractSqlDatabase
 {
 
-	final public const TYPE = 'pgsql';
+	public const TYPE = 'pgsql';
 
 	public $connectString;
 	public $connection;

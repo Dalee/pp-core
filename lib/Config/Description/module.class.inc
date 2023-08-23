@@ -12,7 +12,7 @@ class PXModuleDescription {
 	/**
 	 * @var string
 	 */
-	final public const EMPTY_DESCRIPTION = '---';
+	public const EMPTY_DESCRIPTION = '---';
 
 	/**
 	 * @var string

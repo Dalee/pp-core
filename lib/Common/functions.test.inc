@@ -27,7 +27,7 @@ function t($name, $callback, $expected = true) {
 
 	$test = is_callable($expected)
 		? $expected($result)
-		: json_encode($result, JSON_THROW_ON_ERROR) === json_encode($expected, JSON_THROW_ON_ERROR); // todo: make it more flexible
+		: json_encode($result) === json_encode($expected); // todo: make it more flexible
 
 	$nameLength = TEST_CASE_NAME_LENGTH;
 	$case = sprintf("%-{$nameLength}s", (mb_strlen((string) $name) > $nameLength ? mb_substr((string) $name, 0, $nameLength-1) . 'Б─╕' : $name));
@@ -164,10 +164,10 @@ function _parsePhpDocTest($phpdoc) {
 		$data = mb_substr((string) $phpdoc, $pos + 5, $end - $pos - 5);
 		[$expression, $title] = array_pad(explode('---', $data), 2, null);
 		[$params, $result] = array_pad(explode('>>>', (string) $expression), 2, 'null');
-		$test = (array)json_decode(trim((string) $params), 1, 512, JSON_THROW_ON_ERROR);
+		$test = (array)json_decode(trim((string) $params), 1);
 		preg_match('@^/.+/[ism]?$@s', trim((string) $result), $m);
 		$test[] = !$m?
-			json_decode(trim((string) $result), null, 512, JSON_THROW_ON_ERROR)
+			json_decode(trim((string) $result))
 			: fn($expected) => preg_match($m[0], (string) $expected)? $expected : $m[0];
 		$tests[$title ?: $data] = $test;
 		$pos ++;

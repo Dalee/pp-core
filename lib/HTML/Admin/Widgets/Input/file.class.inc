@@ -4,11 +4,12 @@ require_once PPLIBPATH . 'Common/functions.html.inc';
 
 class PXInputFile extends PXAdminWidget
 {
-    public $distension;
+    public string $distension = '';
+
+    public string $type = 'file';
 
     public function __construct(public $name, public $value, public $entry = NULL)
     {
-        $this->type = 'file';
     }
 
     public function setparam()

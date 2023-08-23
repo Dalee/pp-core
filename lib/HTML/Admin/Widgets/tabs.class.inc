@@ -4,8 +4,8 @@ use PP\Lib\Html\Layout\LayoutAbstract;
 
 class PXWidgetTabs extends PXAdminComplexWidget
 {
-    final public const PREPEND = 0;
-    final public const APPEND = 1;
+    public const PREPEND = 0;
+    public const APPEND = 1;
 
     public $blocks = [
         self::PREPEND => [],

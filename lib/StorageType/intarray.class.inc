@@ -30,7 +30,7 @@ class PXStorageTypeIntArray extends PXStorageTypeArray
 		$value = $this->prepareValue($value);
 
 		// protect from json_decode errors
-		return ($array = json_decode((string) $value, null, 512, JSON_THROW_ON_ERROR)) === null ? parent::normalize($field, $object, $param) : $array;
+		return ($array = json_decode((string) $value)) === null ? parent::normalize($field, $object, $param) : $array;
 	}
 
 	protected function prepareValue($value)

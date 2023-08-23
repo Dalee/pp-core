@@ -3,10 +3,10 @@
 class PXAdminTableSimple extends PXAdminWidget
 {
 
-	final public const DEFAULT_MODE = 0;
-	final public const HIDEHEADER_MODE = 1;
-	final public const HIDEFOOTER_MODE = 2;
-	final public const BODY_MODE = 3;
+	public const DEFAULT_MODE = 0;
+	public const HIDEHEADER_MODE = 1;
+	public const HIDEFOOTER_MODE = 2;
+	public const BODY_MODE = 3;
 
 	protected $widths;
 

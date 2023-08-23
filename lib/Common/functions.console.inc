@@ -384,7 +384,7 @@ function con_error_handler($errno, $errstr, $errfile, $errline, $errcontext) {
 
 	con_printf('%s%s: %s{eol}', $errcol, $errname, $errstr);
 	con_printf('%1$s  %2$s on line %3$d{eol}', '{fg:dgray}', $errfile, $errline);
-	con_printf('%s%s{eol}', $errcol, json_encode($errcontext, JSON_THROW_ON_ERROR));
+	con_printf('%s%s{eol}', $errcol, json_encode($errcontext));
 
 	return true;
 }

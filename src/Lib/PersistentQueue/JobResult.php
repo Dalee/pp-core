@@ -15,17 +15,17 @@ class JobResult implements IArrayable {
 	/**
 	 * @var string
 	 */
-	final public const RESULT_ERRORS = 'errors';
+	public const RESULT_ERRORS = 'errors';
 
 	/**
 	 * @var string
 	 */
-	final public const RESULT_INFO = 'info';
+	public const RESULT_INFO = 'info';
 
 	/**
 	 * @var string
 	 */
-	final public const RESULT_NOTICES = 'notices';
+	public const RESULT_NOTICES = 'notices';
 
 	/**
 	 * @var ArrayIterator

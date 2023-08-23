@@ -592,7 +592,7 @@ class AclModule extends AbstractModule
 		}
 
 		if ($ajax) {
-			die(json_encode($result, JSON_THROW_ON_ERROR));
+			die(json_encode($result));
 		}
 
 		return $redir;

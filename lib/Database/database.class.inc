@@ -794,7 +794,7 @@ class PXDatabase extends DatabaseAdapter implements DatabaseInterface
 			$sqlUpdateRule[] = OBJ_FIELD_ORDER . "=" . OBJ_FIELD_ID;
 
 			if (count($sysMetaField) > 0) {
-				$sqlUpdateRule[] = OBJ_FIELD_META . "=" . $this->MapData(json_encode($sysMetaField, JSON_THROW_ON_ERROR));
+				$sqlUpdateRule[] = OBJ_FIELD_META . "=" . $this->MapData(json_encode($sysMetaField));
 			}
 
 			$this->ModifyingQuery(
@@ -1143,7 +1143,7 @@ class PXDatabase extends DatabaseAdapter implements DatabaseInterface
 					"%s = %s",
 					OBJ_FIELD_META,
 					(count($sysMetaField) > 0)
-						? $this->MapData(json_encode($sysMetaField, JSON_THROW_ON_ERROR))
+						? $this->MapData(json_encode($sysMetaField))
 						: 'NULL'
 				);
 
@@ -1181,7 +1181,7 @@ class PXDatabase extends DatabaseAdapter implements DatabaseInterface
 			];
 
 			$diff = array_deep_diff($this->getObjectById($format, $object['id'], true), $objectInDB, $sysKeysToRemove);
-			$audit->info('Объект изменен', $format->id . '/' . $object['id'], 'AUDIT', json_encode(array_keys($diff), JSON_THROW_ON_ERROR));
+			$audit->info('Объект изменен', $format->id . '/' . $object['id'], 'AUDIT', json_encode(array_keys($diff)));
 		}
 
 		return null;
@@ -1926,7 +1926,7 @@ SQL;
 
 			if ($isMetaPresent) {
 				$sysMeta = ($table[$k][OBJ_FIELD_META] != null)
-					? json_decode((string) $table[$k][OBJ_FIELD_META], true, 512, JSON_THROW_ON_ERROR)
+					? json_decode((string) $table[$k][OBJ_FIELD_META], true)
 					: [];
 
 				$sysMeta = is_array($sysMeta)
