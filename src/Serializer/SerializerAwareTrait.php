@@ -7,14 +7,15 @@ namespace PP\Serializer;
  *
  * @package PP\Serializer
  */
-trait SerializerAwareTrait {
+trait SerializerAwareTrait
+{
+    /**
+     * @var SerializerInterface
+     */
+    protected $serializer;
 
-	/**
-	 * @var SerializerInterface
-	 */
-	protected $serializer;
-
-	public function setSerializer(SerializerInterface $serializer) {
-		$this->serializer = $serializer;
-	}
+    public function setSerializer(SerializerInterface $serializer)
+    {
+        $this->serializer = $serializer;
+    }
 }

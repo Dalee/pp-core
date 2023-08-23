@@ -164,7 +164,7 @@ function _parsePhpDocTest($phpdoc) {
 		$data = mb_substr((string) $phpdoc, $pos + 5, $end - $pos - 5);
 		[$expression, $title] = array_pad(explode('---', $data), 2, null);
 		[$params, $result] = array_pad(explode('>>>', (string) $expression), 2, 'null');
-		$test = (array)json_decode(trim((string) $params), 1);
+		$test = (array)json_decode(trim((string) $params), true);
 		preg_match('@^/.+/[ism]?$@s', trim((string) $result), $m);
 		$test[] = !$m?
 			json_decode(trim((string) $result))

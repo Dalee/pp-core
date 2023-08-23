@@ -8,20 +8,19 @@ namespace PP\Lib\Objects;
  */
 interface ContentObjectsInterface
 {
+    public function hasCurrent();
 
-	public function hasCurrent();
+    public function getCurrent();
 
-	public function getCurrent();
+    public function getAllowedChilds();
 
-	public function getAllowedChilds();
+    /**
+     * @param string $type
+     * @return bool
+     */
+    public function hasType($type);
 
-	/**
-	 * @param string $type
-	 * @return bool
-	 */
-	public function hasType($type);
+    public function getCurrentType();
 
-	public function getCurrentType();
-
-	public function getLinks();
+    public function getLinks();
 }

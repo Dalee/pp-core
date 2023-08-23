@@ -8,7 +8,6 @@ namespace PP\Lib\Html\Layout;
  */
 class NullLayout implements LayoutInterface
 {
-
     /**
      * {@inheritdoc}
      */

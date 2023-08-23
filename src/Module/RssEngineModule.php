@@ -12,7 +12,6 @@ use PP\Lib\Rss\RssChannel;
  */
 class RssEngineModule extends AbstractModule
 {
-
     public function __construct($area, $settings)
     {
         parent::__construct($area, $settings);

@@ -2,6 +2,6 @@
 
 namespace PP\Lib\Engine\Admin;
 
-interface AdminEngineInterface {
-
+interface AdminEngineInterface
+{
 }

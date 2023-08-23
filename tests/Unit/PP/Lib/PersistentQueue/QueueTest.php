@@ -3,7 +3,7 @@
 namespace Tests\Unit\PP\Lib\PersistentQueue;
 
 use PHPUnit\Framework\MockObject\MockObject;
-use PP\Contracts\IApplication;
+use PP\Lib\Config\ApplicationInterface;
 use PP\Lib\PersistentQueue\Job;
 use PP\Lib\PersistentQueue\Queue;
 use Tests\Base\AbstractUnitTest;
@@ -14,22 +14,22 @@ class QueueTest extends AbstractUnitTest {
 
 	protected \PXDatabase|MockObject $db;
 
-	protected IApplication|MockObject $app;
+	protected ApplicationInterface|MockObject $app;
 
 	/**
 	 * @before
 	 */
 	public function before() {
-		$this->app = $this->getMockBuilder(IApplication::class)
+		$this->app = $this->getMockBuilder(\PXApplication::class)
 			->disableOriginalConstructor()
 			->onlyMethods(['initContentObject'])
 			->getMock();
 
 		$this->app->types = [
-			Queue::JOB_DB_TYPE => Queue::JOB_DB_TYPE
+			Queue::JOB_DB_TYPE => new \PXTypeDescription()
 		];
 
-		$this->db = $this->getMockBuilder('PXDatabase')
+		$this->db = $this->getMockBuilder(\PXDatabase::class)
 			->disableOriginalConstructor()
 			->onlyMethods(['addContentObject', 'modifyContentObject', 'getObjectsByFieldLimited'])
 			->getMock();
@@ -44,7 +44,7 @@ class QueueTest extends AbstractUnitTest {
 		$this->db->expects($this->once())
 			->method('modifyContentObject')
 			->with(
-				$this->equalTo(Queue::JOB_DB_TYPE),
+				$this->equalTo($this->app->getDataType(Queue::JOB_DB_TYPE)),
 				$this->equalTo($expected->toArray())
 			);
 
@@ -58,7 +58,7 @@ class QueueTest extends AbstractUnitTest {
 		$this->db->expects($this->once())
 			->method('modifyContentObject')
 			->with(
-				$this->equalTo(Queue::JOB_DB_TYPE),
+				$this->equalTo($this->app->getDataType(Queue::JOB_DB_TYPE)),
 				$this->equalTo($expected->toArray())
 			);
 
@@ -72,7 +72,7 @@ class QueueTest extends AbstractUnitTest {
 		$this->db->expects($this->once())
 			->method('modifyContentObject')
 			->with(
-				$this->equalTo(Queue::JOB_DB_TYPE),
+				$this->equalTo($this->app->getDataType(Queue::JOB_DB_TYPE)),
 				$this->equalTo($expected->toArray())
 			);
 
@@ -94,7 +94,7 @@ class QueueTest extends AbstractUnitTest {
 		$this->db->expects($this->once())
 			->method('getObjectsByFieldLimited')
 			->with(
-				$this->equalTo(Queue::JOB_DB_TYPE),
+				$this->equalTo($this->app->getDataType(Queue::JOB_DB_TYPE)),
 				$this->equalTo(true),
 				$this->equalTo('state'),
 				$this->equalTo(Job::STATE_FRESH),
@@ -122,7 +122,7 @@ class QueueTest extends AbstractUnitTest {
 		$this->db->expects($this->once())
 			->method('addContentObject')
 			->with(
-				$this->equalTo(Queue::JOB_DB_TYPE),
+				$this->equalTo($this->app->getDataType(Queue::JOB_DB_TYPE)),
 				array_merge($stub, $job->toArray())
 			)
 			->willReturn(1);

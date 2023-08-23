@@ -9,7 +9,6 @@ namespace PP\Lib\Rss;
  */
 class RssItem extends AbstractRssNode
 {
-
     public function __construct($item)
     {
         $this->_data = $item;

@@ -10,17 +10,18 @@ use Symfony\Component\Config\Definition\Builder\TreeBuilder;
  *
  * @package PP\DependencyInjection
  */
-class Configuration implements ConfigurationInterface {
+class Configuration implements ConfigurationInterface
+{
+    public function getConfigTreeBuilder()
+    {
+        $tree = new TreeBuilder('core');
+        $rootNode = $tree->getRootNode();
 
-	public function getConfigTreeBuilder() {
-		$tree = new TreeBuilder('core');
-		$rootNode = $tree->getRootNode();
+        $rootNode->children()
+            ->scalarNode('application')->defaultValue('app')->end()
+        ->end();
 
-		$rootNode->children()
-			->scalarNode('application')->defaultValue('app')->end()
-		->end();
-
-		return $tree;
-	}
+        return $tree;
+    }
 
 }

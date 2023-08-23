@@ -11,7 +11,6 @@ use Symfony\Component\DependencyInjection\ContainerAwareInterface;
  */
 class AdminEnginePopup extends AdminEngineIndex
 {
-
     protected $outerLayout = 'popup';
     protected $templateMainArea = 'OUTER.CONTENT';
 

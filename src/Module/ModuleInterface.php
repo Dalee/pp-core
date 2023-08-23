@@ -9,45 +9,45 @@ use Symfony\Component\DependencyInjection\ContainerAwareInterface;
  *
  * @package PP\Module
  */
-interface ModuleInterface extends ContainerAwareInterface {
+interface ModuleInterface extends ContainerAwareInterface
+{
+    public const ACTION_INDEX = 'index';
+    public const ACTION_ACTION = 'action';
+    public const ACTION_JSON = 'json';
+    public const ACTION_POPUP = 'popup';
 
-	public const ACTION_INDEX = 'index';
-	public const ACTION_ACTION = 'action';
-	public const ACTION_JSON = 'json';
-	public const ACTION_POPUP = 'popup';
+    /**
+     * @return mixed
+     */
+    public function adminIndex();
 
-	/**
-	 * @return mixed
-	 */
-	public function adminIndex();
+    /**
+     * @return string
+     */
+    public function adminAction();
 
-	/**
-	 * @return string
-	 */
-	public function adminAction();
+    /**
+     * @return string
+     */
+    public function adminPopup();
 
-	/**
-	 * @return string
-	 */
-	public function adminPopup();
+    /**
+     * @return mixed
+     */
+    public function userIndex();
 
-	/**
-	 * @return mixed
-	 */
-	public function userIndex();
+    /**
+     * @return mixed
+     */
+    public function userAction();
 
-	/**
-	 * @return mixed
-	 */
-	public function userAction();
+    /**
+     * @return array|null
+     */
+    public function userJson();
 
-	/**
-	 * @return array|null
-	 */
-	public function userJson();
-
-	/**
-	 * @return string
-	 */
-	public function adminJson();
+    /**
+     * @return string
+     */
+    public function adminJson();
 }

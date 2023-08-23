@@ -1,9 +1,9 @@
 <?php
 
 use PP\ConfigurationLocator;
-use PP\Contracts\IApplication;
 use PP\Lib\ArrayCollection;
 use PP\Lib\Config\Description\InitializableDescriptionInterface;
+use PP\Lib\Config\ApplicationInterface;
 use PP\Lib\Engine\AbstractEngine;
 use PP\Lib\Engine\EngineInterface;
 use PP\Lib\Xml\Xml;
@@ -34,7 +34,7 @@ require_once PPLIBPATH . 'Config/Description/plugin.class.inc';
  *
  * @subpackage Application
  */
-final class PXApplication implements IApplication
+class PXApplication implements ApplicationInterface
 {
 
 	/**
@@ -305,8 +305,7 @@ final class PXApplication implements IApplication
 	}
 
 	/**
-	 * @param string $formatName
-	 * @return array
+	 * {@inheritDoc}
 	 */
 	public function initContentObject(string $formatName): array
 	{
@@ -751,5 +750,21 @@ final class PXApplication implements IApplication
 				$o->initialize($this);
 			}
 		}
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public function setDataType(string $typeId, PXTypeDescription $type): void
+	{
+		$this->types[$typeId] = $type;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public function getDataType(string $typeId): ?PXTypeDescription
+	{
+		return $this->types[$typeId] ?? null;
 	}
 }

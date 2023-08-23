@@ -11,7 +11,6 @@ require_once PPLIBPATH . '/Security/blockingnumbers.class.inc';
  */
 class AuthModule extends AbstractModule
 {
-
     public function adminIndex()
     {
 
@@ -38,7 +37,7 @@ class AuthModule extends AbstractModule
             ],
             [
                 'login' => $this->user->login,
-                'passwd' => NULL,
+                'passwd' => null,
                 'referer' => $this->request->getReferer(),
                 'area' => 'auth',
                 'captchaKey' => $captchaKey,
@@ -54,7 +53,7 @@ class AuthModule extends AbstractModule
             );
 
 
-        } else if ($this->request->getAction() == 'error') {
+        } elseif ($this->request->getAction() == 'error') {
             $this->layout->assign(
                 'LOGIN.ERROR',
                 '<strong class="login-error">Ошибка авторизации</strong>'

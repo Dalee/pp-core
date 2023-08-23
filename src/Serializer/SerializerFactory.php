@@ -7,27 +7,28 @@ namespace PP\Serializer;
  *
  * @package PP\Serializer
  */
-class SerializerFactory {
+class SerializerFactory
+{
+    /**
+     * @param $driver
+     * @return SerializerInterface
+     */
+    public static function create($driver)
+    {
+        $driver = ucfirst(strtolower((string) $driver));
+        $class = 'PP\Serializer\\' . $driver . 'Serializer';
 
-	/**
-	 * @param $driver
-	 * @return SerializerInterface
-	 */
-	public static function create($driver) {
-		$driver = ucfirst(strtolower((string) $driver));
-		$class = 'PP\Serializer\\' . $driver . 'Serializer';
+        if (!class_exists($class)) {
+            FatalError("Serializer class {$class} not found");
+        }
 
-		if (!class_exists($class)) {
-			FatalError("Serializer class {$class} not found");
-		}
+        /** @var SerializerInterface $instance */
+        $instance = new $class();
+        if (!$instance->isSupported()) {
+            FatalError("Serializer instance of {$class} is not supported");
+        }
 
-		/** @var SerializerInterface $instance */
-		$instance = new $class();
-		if (!$instance->isSupported()) {
-			FatalError("Serializer instance of {$class} is not supported");
-		}
-
-		return $instance;
-	}
+        return $instance;
+    }
 
 }

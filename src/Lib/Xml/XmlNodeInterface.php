@@ -8,62 +8,61 @@ namespace PP\Lib\Xml;
  */
 interface XmlNodeInterface
 {
+    /**
+     * @return string
+     */
+    public function nodeName();
 
-	/**
-	 * @return string
-	 */
-	public function nodeName();
+    /**
+     * @return string
+     */
+    public function nodeValue();
 
-	/**
-	 * @return string
-	 */
-	public function nodeValue();
+    /**
+     * @param $xpath
+     * @return string
+     */
+    public function nodeXValue($xpath);
 
-	/**
-	 * @param $xpath
-	 * @return string
-	 */
-	public function nodeXValue($xpath);
+    /**
+     * @return mixed
+     */
+    public function nodeType();
 
-	/**
-	 * @return mixed
-	 */
-	public function nodeType();
+    /**
+     * @return array
+     */
+    public function attributes();
 
-	/**
-	 * @return array
-	 */
-	public function attributes();
+    /**
+     * @param string $attrName
+     * @return mixed
+     */
+    public function getAttribute($attrName);
 
-	/**
-	 * @param string $attrName
-	 * @return mixed
-	 */
-	public function getAttribute($attrName);
+    /**
+     * @return XmlNodeInterface[]
+     */
+    public function childNodes();
 
-	/**
-	 * @return XmlNodeInterface[]
-	 */
-	public function childNodes();
+    /**
+     * @param string $query
+     * @return XmlNodeInterface[]
+     */
+    public function xpath($query);
 
-	/**
-	 * @param string $query
-	 * @return XmlNodeInterface[]
-	 */
-	public function xpath($query);
+    /**
+     * @return XmlNodeInterface[]
+     */
+    public function getChildObjects();
 
-	/**
-	 * @return XmlNodeInterface[]
-	 */
-	public function getChildObjects();
+    /**
+     * @return XmlNodeInterface
+     */
+    public function parent();
 
-	/**
-	 * @return XmlNodeInterface
-	 */
-	public function parent();
-
-	/**
-	 * @return bool
-	 */
-	public function isXmlNode();
+    /**
+     * @return bool
+     */
+    public function isXmlNode();
 }

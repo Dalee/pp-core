@@ -7,8 +7,8 @@ namespace PP\Serializer;
  *
  * @package PP\Serializer
  */
-interface SerializerAwareInterface {
-
-	public function setSerializer(SerializerInterface $serializer);
+interface SerializerAwareInterface
+{
+    public function setSerializer(SerializerInterface $serializer);
 
 }

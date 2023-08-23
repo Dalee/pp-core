@@ -9,33 +9,32 @@ namespace PP\Lib\Rss;
  */
 abstract class AbstractRssNode
 {
+    public function _node($nodeName, $value)
+    {
+        if (is_array($value)) {
+            $value = implode('', $value);
+        }
 
-	public function _node($nodeName, $value)
-	{
-		if (is_array($value)) {
-			$value = implode('', $value);
-		}
-
-		return
-			<<<XML
+        return
+            <<<XML
 				<$nodeName>$value</$nodeName>
 XML;
-	}
+    }
 
-	public function nodeSet($nodes)
-	{
-		$_ = [];
+    public function nodeSet($nodes)
+    {
+        $_ = [];
 
-		foreach ($nodes as $node) {
-			if (method_exists($this, $node)) {
-				$_[] = $this->$node();
+        foreach ($nodes as $node) {
+            if (method_exists($this, $node)) {
+                $_[] = $this->$node();
 
-			} elseif (isset($this->_data[$node])) {
-				$_[] = $this->_node($node, $this->_data[$node]);
-			}
-		}
+            } elseif (isset($this->_data[$node])) {
+                $_[] = $this->_node($node, $this->_data[$node]);
+            }
+        }
 
-		return implode("\n", $_);
-	}
+        return implode("\n", $_);
+    }
 
 }

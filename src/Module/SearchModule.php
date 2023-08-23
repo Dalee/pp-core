@@ -9,61 +9,60 @@ namespace PP\Module;
  */
 class SearchModule extends AbstractModule
 {
+    public $word;
 
-	public $word;
+    public function adminIndex()
+    {
+        $this->word = trim((string) $this->request->GetVar('word'));
+        $this->searchForm();
 
-	public function adminIndex()
-	{
-		$this->word = trim((string) $this->request->GetVar('word'));
-		$this->searchForm();
+        if (mb_strlen($this->word)) {
+            $allCount = 0;
 
-		if (mb_strlen($this->word)) {
-			$allCount = 0;
+            $checkedTypes = $this->request->getVar('d', []);
+            foreach ($this->app->types as $datatype) {
+                if (!isset($checkedTypes[$datatype->id])) {
+                    continue;
+                }
 
-			$checkedTypes = $this->request->getVar('d', []);
-			foreach ($this->app->types as $datatype) {
-				if (!isset($checkedTypes[$datatype->id])) {
-					continue;
-				}
+                $allCount += $this->find($datatype);
+            }
 
-				$allCount += $this->find($datatype);
-			}
+            if (!$allCount) {
+                $this->layout->append('INNER.1.0', '<h2 class="error">Ничего не найдено</h2>');
+            }
+        }
+    }
 
-			if (!$allCount) {
-				$this->layout->append('INNER.1.0', '<h2 class="error">Ничего не найдено</h2>');
-			}
-		}
-	}
+    public function __sortTypes($a, $b)
+    {
+        return strcmp((string) $a->title, (string) $b->title);
+    }
 
-	public function __sortTypes($a, $b)
-	{
-		return strcmp((string) $a->title, (string) $b->title);
-	}
+    public function searchForm()
+    {
+        $datatypesHTML = '<ul>';
 
-	public function searchForm()
-	{
-		$datatypesHTML = '<ul>';
+        $types = $this->app->types;
+        uasort($types, $this->__sortTypes(...));
 
-		$types = $this->app->types;
-		uasort($types, $this->__sortTypes(...));
+        $checkedTypes = $this->request->getVar('d', []);
 
-		$checkedTypes = $this->request->getVar('d', []);
-
-		foreach ($types as $datatype) {
-			$checked = !sizeof($checkedTypes) || isset($checkedTypes[$datatype->id]) ? 'checked' : '';
-			$datatypesHTML .= <<<HTML
+        foreach ($types as $datatype) {
+            $checked = !sizeof($checkedTypes) || isset($checkedTypes[$datatype->id]) ? 'checked' : '';
+            $datatypesHTML .= <<<HTML
 
 			<li>
 				<input type="checkbox" name="d[{$datatype->id}]" id="d_{$datatype->id}" {$checked}>
 				<label for="d_{$datatype->id}">{$datatype->title}</label>
 			</li>
 HTML;
-		}
+        }
 
-		$datatypesHTML .= '</ul>';
+        $datatypesHTML .= '</ul>';
 
-		$hword = quot($this->word);
-		$html = <<<HTML
+        $hword = quot($this->word);
+        $html = <<<HTML
 		<style type="text/css">
 			fieldset li, fieldset ul {
 				padding: 0;
@@ -93,25 +92,25 @@ HTML;
 		</form>
 HTML;
 
-		$this->layout->assign('INNER.0.0', $html);
-		$this->layout->setGetVarToSave('word', $this->word);
+        $this->layout->assign('INNER.0.0', $html);
+        $this->layout->setGetVarToSave('word', $this->word);
 
-		// build the string for datatypes check
-		foreach ($checkedTypes as $k => $v) {
-			$this->layout->setGetVarToSave('d[' . $k . ']', 'on');
-		}
-	}
+        // build the string for datatypes check
+        foreach ($checkedTypes as $k => $v) {
+            $this->layout->setGetVarToSave('d[' . $k . ']', 'on');
+        }
+    }
 
-	public function find(&$datatype)
-	{
-		$count = $this->db->getObjectsBySearchWord($datatype, NULL, $this->word, DB_SELECT_COUNT);
+    public function find(&$datatype)
+    {
+        $count = $this->db->getObjectsBySearchWord($datatype, null, $this->word, DB_SELECT_COUNT);
 
-		if ($count) {
-			$table = new \PXAdminTableObjects($datatype, $this->word, 'BySearchWord');
-			$table->addToParent('INNER.1.0');
-		}
+        if ($count) {
+            $table = new \PXAdminTableObjects($datatype, $this->word, 'BySearchWord');
+            $table->addToParent('INNER.1.0');
+        }
 
-		return $count;
-	}
+        return $count;
+    }
 
 }

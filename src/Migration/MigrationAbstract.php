@@ -8,40 +8,43 @@ namespace PP\Migration;
  * Class MigrationAbstract
  * @package PP\Migration
  */
-abstract class MigrationAbstract {
+abstract class MigrationAbstract
+{
+    /** @var string[] */
+    private array $sql;
 
-	/** @var string[] */
-	private array $sql;
+    /**
+     * @internal
+     */
+    final public function __construct()
+    {
+        $this->sql = [];
+    }
 
-	/**
-	 * @internal
-	 */
-	final public function __construct() {
-		$this->sql = [];
-	}
+    /**
+     * Use this method to write migrations
+     *
+     * @return void
+     */
+    abstract public function up();
 
-	/**
-	 * Use this method to write migrations
-	 *
-	 * @return void
-	 */
-	abstract public function up();
+    /**
+     *
+     * @param string $rawSql
+     * @return $this
+     */
+    final protected function addSql($rawSql)
+    {
+        $this->sql[] = $rawSql;
+        return $this;
+    }
 
-	/**
-	 *
-	 * @param string $rawSql
-	 * @return $this
-	 */
-	final protected function addSql($rawSql) {
-		$this->sql[] = $rawSql;
-		return $this;
-	}
-
-	/**
-	 * @return string[]
-	 * @internal
-	 */
-	final public function getSqlList() {
-		return $this->sql;
-	}
+    /**
+     * @return string[]
+     * @internal
+     */
+    final public function getSqlList()
+    {
+        return $this->sql;
+    }
 }

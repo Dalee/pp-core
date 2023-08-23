@@ -12,42 +12,46 @@ use PP\Lib\Database\Driver\PostgreSqlDriver;
  *
  * @package PP\Cron
  */
-abstract class AbstractCron implements ContainerAwareInterface {
+abstract class AbstractCron implements ContainerAwareInterface
+{
+    use ContainerAwareTrait;
 
-	use ContainerAwareTrait;
+    /**
+     * TODO: should be protected
+     * @var string
+     */
+    public $name = 'Abstract CronRun Class';
 
-	/**
-	 * TODO: should be protected
-	 * @var string
-	 */
-	public $name = 'Abstract CronRun Class';
-
-	/**
+    /**
   * @param \PXApplication $app
   * @param Tree $tree
   * @param int $matchedTime
   * @param CronRule $matchedRule
   * @return array
   */
- public function Run($app, \PXDatabase|\PP\Lib\Database\Driver\PostgreSqlDriver $db, $tree, $matchedTime, $matchedRule) {
-		return [
-			'status' => -1,
-			'note' => 'Не определен метод Run()'
-		];
-	}
+    public function Run($app, \PXDatabase|\PP\Lib\Database\Driver\PostgreSqlDriver $db, $tree, $matchedTime, $matchedRule)
+    {
+        return [
+            'status' => -1,
+            'note' => 'Не определен метод Run()'
+        ];
+    }
 
-	/**
-	 * @return string
-	 */
-	public function getName() {
-		return $this->name;
-	}
+    /**
+     * @return string
+     */
+    public function getName()
+    {
+        return $this->name;
+    }
 
-	protected function log($message) {
-		\PXRegistry::getLogger(LOGGER_CRON)->info($message);
-	}
+    protected function log($message)
+    {
+        \PXRegistry::getLogger(LOGGER_CRON)->info($message);
+    }
 
-	protected function error($message) {
-		\PXRegistry::getLogger(LOGGER_CRON)->error($message);
-	}
+    protected function error($message)
+    {
+        \PXRegistry::getLogger(LOGGER_CRON)->error($message);
+    }
 }

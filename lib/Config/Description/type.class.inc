@@ -97,7 +97,7 @@ class PXTypeDescription
 	}
 
 	// static parser factory
-	public static function fillAppTypes($domDatatypes, &$app)
+	public static function fillAppTypes($domDatatypes, PXApplication $app)
 	{
 
 		if (!is_array($domDatatypes) || count($domDatatypes) == 0) {
@@ -160,7 +160,7 @@ class PXTypeDescription
 				$type->assignToGroup($field);
 			}
 
-			$app->types[$type->id] = $type;
+			$app->setDataType($type->id, $type);
 		}
 
 		static::findParents($app->types);
