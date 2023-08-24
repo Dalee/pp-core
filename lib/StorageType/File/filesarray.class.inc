@@ -50,9 +50,8 @@ class PXStorageTypeFilesarray extends PXStorageTypeAbstractFile
 	}
 
 	/**
-	 * {@inheritdoc}
-	 * @return array|null
-	 */
+	* {@inheritdoc}
+	*/
 	public function proceedFile(PXFieldDescription $field, array &$object, ?array &$param): ?array
 	{
 		$varName = $field->name;

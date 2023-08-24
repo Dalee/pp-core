@@ -5,5 +5,6 @@ namespace PP\Lib\Database;
 /**
  * Class DatabaseException
  */
-class DatabaseException extends \Exception {
+class DatabaseException extends \Exception
+{
 }

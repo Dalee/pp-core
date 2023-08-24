@@ -1,17 +1,17 @@
 <?php
 
-use PP\Lib\Engine\AbstractEngine;
-use PP\Lib\Xml\XmlNodeInterface;
-use Symfony\Component\Yaml\Yaml;
-use PP\Lib\Engine\EngineInterface;
+use PP\ConfigurationLocator;
 use PP\Lib\ArrayCollection;
 use PP\Lib\Config\Description\InitializableDescriptionInterface;
+use PP\Lib\Config\ApplicationInterface;
+use PP\Lib\Engine\AbstractEngine;
+use PP\Lib\Engine\EngineInterface;
 use PP\Lib\Xml\Xml;
-use PP\Properties\PropertyLoader;
-use PP\Module\AbstractModule;
+use PP\Lib\Xml\XmlNodeInterface;
 use PP\Properties\EnvLoader;
-use PP\ConfigurationLocator;
+use PP\Properties\PropertyLoader;
 use Symfony\Component\Config\FileLocator;
+use Symfony\Component\Yaml\Yaml;
 
 require_once PPLIBPATH . 'Config/Description/db.class.inc';
 
@@ -34,7 +34,7 @@ require_once PPLIBPATH . 'Config/Description/plugin.class.inc';
  *
  * @subpackage Application
  */
-final class PXApplication
+class PXApplication implements ApplicationInterface
 {
 
 	/**
@@ -189,9 +189,7 @@ final class PXApplication
 	private function fillLang($fileList)
 	{
 		$fileList = array_reverse($fileList);
-		$langList = array_map(function ($file) {
-			return Yaml::parse(file_get_contents($file));
-		}, $fileList);
+		$langList = array_map(fn($file) => Yaml::parse(file_get_contents($file)), $fileList);
 
 		foreach ($langList as $data) {
 			$this->appendLang($data);
@@ -237,7 +235,7 @@ final class PXApplication
 	 */
 	public function getProperty($k, $defaultValue = null)
 	{
-		return (isset($this->properties[$k])) ? $this->properties[$k] : $defaultValue;
+		return $this->properties[$k] ?? $defaultValue;
 	}
 
 	/**
@@ -247,9 +245,7 @@ final class PXApplication
 	 */
 	public function getAvailableModules()
 	{
-		return array_filter($this->modules, function ($module) {
-			return PXRegistry::getUser()->can('admin', $module);
-		});
+		return array_filter($this->modules, fn($module) => PXRegistry::getUser()->can('admin', $module));
 	}
 
 	/**
@@ -275,9 +271,7 @@ final class PXApplication
 			return $availableModules;
 		}
 
-		return array_filter($availableModules, function ($module) use ($package) {
-			return 0 === strpos($module->package, $package);
-		});
+		return array_filter($availableModules, fn($module) => str_starts_with((string) $module->package, $package));
 	}
 
 	/**
@@ -311,10 +305,9 @@ final class PXApplication
 	}
 
 	/**
-	 * @param string $formatName
-	 * @return array
+	 * {@inheritDoc}
 	 */
-	public function initContentObject($formatName)
+	public function initContentObject(string $formatName): array
 	{
 		$object = [];
 
@@ -389,23 +382,23 @@ final class PXApplication
 			$curDir->source = $domDirectory->getAttribute('source');
 			$curDir->sourceDir = dirname($fileName) . DIRECTORY_SEPARATOR;
 
-			$displayfield = trim($domDirectory->getAttribute('displayfield'));
+			$displayfield = trim((string) $domDirectory->getAttribute('displayfield'));
 
 			$curDir->displayField = strlen($displayfield) ? $displayfield : 'title';
 
 			$location = $domDirectory->getAttribute('location');
 			$curDir->location = ($location != '') ? $location : NULL;
 
-			$sourcekeyfield = trim($domDirectory->getAttribute('source-key-field'));
+			$sourcekeyfield = trim((string) $domDirectory->getAttribute('source-key-field'));
 			$curDir->sourceKeyField = strlen($sourcekeyfield) ? $sourcekeyfield : '@id';
 
-			$sourcedisplayfield = trim($domDirectory->getAttribute('source-display-field'));
+			$sourcedisplayfield = trim((string) $domDirectory->getAttribute('source-display-field'));
 			$curDir->sourceDisplayField = strlen($sourcedisplayfield) ? $sourcedisplayfield : '.';
 
-			$sourceitem = trim($domDirectory->getAttribute('source-item'));
+			$sourceitem = trim((string) $domDirectory->getAttribute('source-item'));
 			$curDir->sourceItem = strlen($sourceitem) ? $sourceitem : './*';
 
-			$sourcedatafields = trim($domDirectory->getAttribute('source-data-fields'));
+			$sourcedatafields = trim((string) $domDirectory->getAttribute('source-data-fields'));
 			$curDir->sourceDataFields = strlen($sourcedatafields) ? $sourcedatafields : '@*[local-name() != "id"]';
 
 			if ($curDir->load == 'automatic' && $curDir->schema == 'xml') {
@@ -415,11 +408,9 @@ final class PXApplication
 	}
 
 	/**
-	 * Load properties from database.
-	 *
-	 * @param PXDatabase $database
-	 */
-	public function loadProperties(PXDatabase $database)
+  * Load properties from database.
+  */
+ public function loadProperties(PXDatabase $database)
 	{
 		$propertyList = PropertyLoader::getPropertyList($database);
 		$this->properties->fromArray($propertyList);
@@ -529,9 +520,6 @@ final class PXApplication
 		$this->bindingsQueue->sort();
 	}
 
-	/**
-	 * @param PXModuleDescription $module
-	 */
 	public function setModules(PXModuleDescription $module)
 	{
 		$this->modules[$module->getName()] = $module;
@@ -559,8 +547,8 @@ final class PXApplication
 
 		$module = (new PXModuleDescription())
 			->setName($lcname)
-			->setDescription(isset($args['description']) ? $args['description'] : $ucfname)
-			->setClass(isset($args['class']) ? $args['class'] : 'PXModule' . $ucfname);
+			->setDescription($args['description'] ?? $ucfname)
+			->setClass($args['class'] ?? 'PXModule' . $ucfname);
 
 		$this->setModules($module);
 
@@ -734,7 +722,7 @@ final class PXApplication
 	 */
 	public function __get($name)
 	{
-		if (strtolower($name) === 'engine') {
+		if (strtolower((string) $name) === 'engine') {
 			return PXRegistry::getEngine();
 		}
 
@@ -754,7 +742,7 @@ final class PXApplication
 					throw new Exception(
 						sprintf(
 							"Class: %s is not instanceof InitializableDescriptionInterface",
-							get_class($o)
+							$o::class
 						)
 					);
 				}
@@ -762,5 +750,21 @@ final class PXApplication
 				$o->initialize($this);
 			}
 		}
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public function setDataType(string $typeId, PXTypeDescription $type): void
+	{
+		$this->types[$typeId] = $type;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public function getDataType(string $typeId): ?PXTypeDescription
+	{
+		return $this->types[$typeId] ?? null;
 	}
 }

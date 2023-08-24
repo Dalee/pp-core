@@ -2,13 +2,8 @@
 
 class PXInputIPAddr extends PXAdminWidget
 {
-    public $value;
-    public $name;
-
-    public function __construct($name, $value)
+    public function __construct(public $name, public $value)
     {
-        $this->value = $value;
-        $this->name = $name;
     }
 
     public function html()

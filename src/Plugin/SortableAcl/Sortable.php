@@ -4,52 +4,58 @@ namespace PP\Plugin\SortableAcl;
 
 trait Sortable
 {
+    public function addNewRuleButton()
+    {
+        $this->js();
+        return parent::addNewRuleButton();
+    }
 
-	public function addNewRuleButton()
-	{
-		$this->js();
-		return parent::addNewRuleButton();
-	}
+    public function sort()
+    {
+        @parse_str($this->request->getVar('sorts'), $sorts);
 
-	public function sort()
-	{
-		@parse_str($this->request->getVar('sorts'), $sorts);
+        if (empty($sorts)) {
+            return;
+        }
 
-		if (empty($sorts)) return;
+        $this->db->transactionBegin();
 
-		$this->db->transactionBegin();
+        foreach ($sorts as $order => $id) {
+            $this->db->modifyingQuery(sprintf(
+                "UPDATE %s SET sys_order = '%s' WHERE id = '%s'",
+                $this->sqlTable,
+                $this->db->escapeString($order),
+                $this->db->escapeString($id)
+            ));
+        }
 
-		foreach ($sorts as $order => $id) {
-			$this->db->modifyingQuery(sprintf("UPDATE %s SET sys_order = '%s' WHERE id = '%s'",
-				$this->sqlTable, $this->db->escapeString($order),
-				$this->db->escapeString($id)));
-		}
+        $this->db->transactionCommit();
 
-		$this->db->transactionCommit();
+        if ($this->request->isXmlHttpRequest()) {
+            die('ok');
+        }
+    }
 
-		if ($this->request->isXmlHttpRequest()) die('ok');
-	}
+    public function adminAction()
+    {
+        if ($this->request->getVar('action') == 'sort') {
+            $this->sort();
+        }
 
-	public function adminAction()
-	{
-		if ($this->request->getVar('action') == 'sort') {
-			$this->sort();
-		}
+        return parent::adminAction();
+    }
 
-		return parent::adminAction();
-	}
+    public function js()
+    {
+        $options = [
+            'area' => $this->area,
+            'sid' => $this->_getSid(),
+        ];
 
-	public function js()
-	{
-		$options = [
-			'area' => $this->area,
-			'sid' => $this->_getSid(),
-		];
-
-		$this->layout->assignJs("js/tools/jui.min.js");
-		$this->layout->assignInlineJs('var sortableaclOptions = ' . json_encode($options) . ';');
-		$this->layout->assignInlineJs(
-			<<<inlinejs
+        $this->layout->assignJs("js/tools/jui.min.js");
+        $this->layout->assignInlineJs('var sortableaclOptions = ' . json_encode($options) . ';');
+        $this->layout->assignInlineJs(
+            <<<inlinejs
 		jQuery(function($) {
 			var positions = { from: -1, to: -1 };
 			var tbody = $("table.objects tbody");
@@ -177,6 +183,6 @@ trait Sortable
 			});
 		});
 inlinejs
-		);
-	}
+        );
+    }
 }

@@ -13,45 +13,46 @@ use Symfony\Component\Config\FileLocator;
  *
  * @package PP\DependencyInjection
  */
-class CoreExtension extends Extension {
+class CoreExtension extends Extension
+{
+    /**
+     * @inheritdoc
+     * @throws \Exception
+     */
+    public function load(array $configs, ContainerBuilder $container)
+    {
+        $loader = new YamlFileLoader($container, new FileLocator(PPSERVICESPATH));
 
-	/**
-	 * @inheritdoc
-	 * @throws \Exception
-	 */
-	public function load(array $configs, ContainerBuilder $container) {
-		$loader = new YamlFileLoader($container, new FileLocator(PPSERVICESPATH));
+        $configuration = $this->getConfiguration($configs, $container);
+        $config = $this->processConfiguration($configuration, $configs);
 
-		$configuration = $this->getConfiguration($configs, $container);
-		$config = $this->processConfiguration($configuration, $configs);
+        $container->setParameter('core.base_dir', BASEPATH);
+        $container->setParameter('core.app_dir', APPPATH);
+        $container->setParameter('core.cache_dir', CACHE_PATH);
+        $container->setParameter('core.runtime_dir', RUNTIME_PATH);
 
-		$container->setParameter('core.base_dir', BASEPATH);
-		$container->setParameter('core.app_dir', APPPATH);
-		$container->setParameter('core.cache_dir', CACHE_PATH);
-		$container->setParameter('core.runtime_dir', RUNTIME_PATH);
+        // register event dispatcher configuration
+        $loader->load('event_dispatcher.yml');
 
-		// register event dispatcher configuration
-		$loader->load('event_dispatcher.yml');
+        $this->registerLoggerConfiguration($config['application'], $container, $loader);
+    }
 
-		$this->registerLoggerConfiguration($config['application'], $container, $loader);
-	}
+    /**
+  * @param string $applicationName
+  * @throws \Exception
+  */
+    private function registerLoggerConfiguration($applicationName, ContainerBuilder $container, LoaderInterface $loader)
+    {
+        $loader->load('logger.yml');
+        $container->getDefinition('logger')->addArgument($applicationName);
+    }
 
-	/**
-	 * @param string $applicationName
-	 * @param ContainerBuilder $container
-	 * @param LoaderInterface $loader
-	 * @throws \Exception
-	 */
-	private function registerLoggerConfiguration($applicationName, ContainerBuilder $container, LoaderInterface $loader) {
-		$loader->load('logger.yml');
-		$container->getDefinition('logger')->addArgument($applicationName);
-	}
-
-	/**
-	 * @inheritdoc
-	 */
-	public function getAlias() {
-		return 'core';
-	}
+    /**
+     * @inheritdoc
+     */
+    public function getAlias(): string
+    {
+        return 'core';
+    }
 
 }

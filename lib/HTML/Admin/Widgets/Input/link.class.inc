@@ -2,19 +2,14 @@
 
 class PXInputLinkToFile extends PXAdminWidget
 {
-    public $name;
-    public $value;
-
-    public function __construct($name, $value)
+    public function __construct(public $name, public $value)
     {
-        $this->name = $name;
-        $this->value = $value;
     }
 
     public function html()
     {
-        $lastDir = isset($_COOKIE['fileManagerDir']) && mb_strlen(trim($_COOKIE['fileManagerDir'])) ? 'htdocs' . trim(
-                $_COOKIE['fileManagerDir']
+        $lastDir = isset($_COOKIE['fileManagerDir']) && mb_strlen(trim((string) $_COOKIE['fileManagerDir'])) ? 'htdocs' . trim(
+                (string) $_COOKIE['fileManagerDir']
             ) : '';
 
         $html = '<div class="imagepreview">';

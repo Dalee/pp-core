@@ -5,35 +5,35 @@
  * @version 0.1
  */
 
-define('CON_COLOR_BLACK',      "\033[00;30m", 1);
-define('CON_COLOR_DGRAY',      "\033[01;30m", 1);
-define('CON_COLOR_RED',        "\033[00;31m", 1);
-define('CON_COLOR_LRED',       "\033[01;31m", 1);
-define('CON_COLOR_GREEN',      "\033[00;32m", 1);
-define('CON_COLOR_LGREEN',     "\033[01;32m", 1);
-define('CON_COLOR_BROWN',      "\033[00;33m", 1);
-define('CON_COLOR_YELLOW',     "\033[01;33m", 1);
-define('CON_COLOR_BLUE',       "\033[00;34m", 1);
-define('CON_COLOR_LBLUE',      "\033[01;34m", 1);
-define('CON_COLOR_PURPLE',     "\033[00;35m", 1);
-define('CON_COLOR_LPURPLE',    "\033[01;35m", 1);
-define('CON_COLOR_CYAN',       "\033[00;36m", 1);
-define('CON_COLOR_LCYAN',      "\033[01;36m", 1);
-define('CON_COLOR_LGRAY',      "\033[00;37m", 1);
-define('CON_COLOR_WHITE',      "\033[01;37m", 1);
+define('CON_COLOR_BLACK',      "\033[00;30m");
+define('CON_COLOR_DGRAY',      "\033[01;30m");
+define('CON_COLOR_RED',        "\033[00;31m");
+define('CON_COLOR_LRED',       "\033[01;31m");
+define('CON_COLOR_GREEN',      "\033[00;32m");
+define('CON_COLOR_LGREEN',     "\033[01;32m");
+define('CON_COLOR_BROWN',      "\033[00;33m");
+define('CON_COLOR_YELLOW',     "\033[01;33m");
+define('CON_COLOR_BLUE',       "\033[00;34m");
+define('CON_COLOR_LBLUE',      "\033[01;34m");
+define('CON_COLOR_PURPLE',     "\033[00;35m");
+define('CON_COLOR_LPURPLE',    "\033[01;35m");
+define('CON_COLOR_CYAN',       "\033[00;36m");
+define('CON_COLOR_LCYAN',      "\033[01;36m");
+define('CON_COLOR_LGRAY',      "\033[00;37m");
+define('CON_COLOR_WHITE',      "\033[01;37m");
 
-define('CON_BGCOLOR_BLACK',    "\033[40m", 1);
-define('CON_BGCOLOR_RED',      "\033[41m", 1);
-define('CON_BGCOLOR_GREEN',    "\033[42m", 1);
-define('CON_BGCOLOR_YELLOW',   "\033[43m", 1);
-define('CON_BGCOLOR_BLUE',     "\033[44m", 1);
-define('CON_BGCOLOR_MAGENTA',  "\033[45m", 1);
-define('CON_BGCOLOR_CYAN',     "\033[46m", 1);
-define('CON_BGCOLOR_WHITE',    "\033[47m", 1);
+define('CON_BGCOLOR_BLACK',    "\033[40m");
+define('CON_BGCOLOR_RED',      "\033[41m");
+define('CON_BGCOLOR_GREEN',    "\033[42m");
+define('CON_BGCOLOR_YELLOW',   "\033[43m");
+define('CON_BGCOLOR_BLUE',     "\033[44m");
+define('CON_BGCOLOR_MAGENTA',  "\033[45m");
+define('CON_BGCOLOR_CYAN',     "\033[46m");
+define('CON_BGCOLOR_WHITE',    "\033[47m");
 
 define('CON_COLS',             (`tput cols` - 10));
 
-define('CON_EOC',              "\033[00m", 1);
+define('CON_EOC',              "\033[00m");
 define('CON_EOL',              CON_EOC . PHP_EOL);
 
 function con_colors_array() {
@@ -84,7 +84,7 @@ function con_colors_debug() {
 }
 
 function con_message($message, $color = null, $wide = false) {
-	$message = trim($message);
+	$message = trim((string) $message);
 	// calc string length without colors
 	$l = mb_strlen(preg_replace("@\033\\[(0[01];)?[0-9]{2}m|\\{([fb]g:[a-z]+|end)\\}@u", '', $message));
 	$r = '';
@@ -123,7 +123,7 @@ function con_printf($message) {
 }
 
 function _con_dump($args) {
-	if (count($args) < 2 || mb_strpos($args[0], '%') !== false) {
+	if ((is_countable($args) ? count($args) : 0) < 2 || mb_strpos((string) $args[0], '%') !== false) {
 		return;
 	}
 	con_printf('{fg:dgray}<<<"dump"{end}{nl}');
@@ -135,7 +135,7 @@ function _con_dump($args) {
  * @param string $message
  * @param mixed $data,...
  */
-function con_debug($message, $data = null) {
+function con_debug($message, mixed $data = null) {
 	$message = con_vsprintf($message, array_slice(func_get_args(), 1));
 	echo con_message($message, CON_COLOR_LBLUE . CON_BGCOLOR_BLUE) . PHP_EOL;
 	_con_dump(func_get_args());
@@ -145,7 +145,7 @@ function con_debug($message, $data = null) {
  * @param string $message
  * @param mixed $data,...
  */
-function con_info($message, $data = null) {
+function con_info($message, mixed $data = null) {
 	$message = con_vsprintf($message, array_slice(func_get_args(), 1));
 	echo con_message($message, CON_COLOR_WHITE . CON_BGCOLOR_BLUE, 1) . PHP_EOL;
 	func_num_args() > 1 && array_map('var_dump', array_slice(func_get_args(), 1));
@@ -155,7 +155,7 @@ function con_info($message, $data = null) {
  * @param string $message
  * @param mixed $data,...
  */
-function con_warn($message, $data = null) {
+function con_warn($message, mixed $data = null) {
 	$message = con_vsprintf($message, array_slice(func_get_args(), 1));
 	echo con_message($message, CON_COLOR_WHITE . CON_BGCOLOR_RED) . PHP_EOL;
 	func_num_args() > 1 && array_map('var_dump', array_slice(func_get_args(), 1));
@@ -165,7 +165,7 @@ function con_warn($message, $data = null) {
  * @param string $message
  * @param mixed $data,...
  */
-function con_alert($message, $data = null) {
+function con_alert($message, mixed $data = null) {
 	$message = con_vsprintf($message, array_slice(func_get_args(), 1));
 	echo con_message($message, CON_COLOR_WHITE . CON_BGCOLOR_RED, 1) . PHP_EOL;
 	func_num_args() > 1 && array_map('var_dump', array_slice(func_get_args(), 1));
@@ -204,14 +204,14 @@ function con_list($list, $level = 0, $key_color = null, $value_color = null, $de
 
 	$max_key_length = $max_item_length = 6;
 	foreach ($list as $key => $item) {
-		$max_key_length = max($max_key_length, mb_strlen($key));
-		!is_array($item) && $max_item_length = max($max_item_length, mb_strlen($item));
+		$max_key_length = max($max_key_length, mb_strlen((string) $key));
+		!is_array($item) && $max_item_length = max($max_item_length, mb_strlen((string) $item));
 	}
 	foreach ($list as $key => $item) {
 		$str = str_repeat(' ', $level*2);
 		$str .= $delim_color . '- ';
 		$str .= $key_color   . $key;
-		$str .= $delim_color . ': ' . str_repeat(' ', $max_key_length - mb_strlen($key));
+		$str .= $delim_color . ': ' . str_repeat(' ', $max_key_length - mb_strlen((string) $key));
 
 		if (is_array($item)) {
 			echo $str . CON_EOL;
@@ -232,9 +232,7 @@ function con_parse_args_string($s) {
 	$result = $m['param'];
 
 	// remove quotes in each param
-	$result = array_map(function($s) {
-		return preg_replace('@\'([^\']*)\'|"([^"]*)"@', '\1\2', $s);
-	}, $result);
+	$result = array_map(fn($s) => preg_replace('@\'([^\']*)\'|"([^"]*)"@', '\1\2', (string) $s), $result);
 
 	// done
 	return $result;
@@ -243,11 +241,9 @@ function con_parse_args_string($s) {
 /**
  * args parser
  *
- * @param string|array $argv
- * @param array $aliases
  * @return array
  */
-function con_parse_args($argv = null, array $aliases = []) {
+function con_parse_args(string|array $argv = null, array $aliases = []) {
 
 	// normalize params
 	$aliases = $aliases ?: [];
@@ -264,7 +260,7 @@ function con_parse_args($argv = null, array $aliases = []) {
 	if (!empty($argv) && ($script = BASEPATH.$argv[0])
 		&& file_exists($script)
 		&& is_executable($script)
-		&& mb_strpos(realpath($script), BASEPATH) === 0) {
+		&& mb_strpos(realpath($script), (string) BASEPATH) === 0) {
 		array_shift($argv);
 	}
 
@@ -324,13 +320,13 @@ function con_parse_args($argv = null, array $aliases = []) {
 				array_unshift($argv, $arg);
 				break;
 			// oneletter option with value
-			case $isshortkey && mb_strlen($arg) > 2 && $arg[2] == '=':
-				[$k, $v] = explode('=', mb_substr($arg, 1), 2);
+			case $isshortkey && mb_strlen((string) $arg) > 2 && $arg[2] == '=':
+				[$k, $v] = explode('=', mb_substr((string) $arg, 1), 2);
 				$setoption($k, $v);
 				break;
 			// flags pack in one arg: -abcdef
-			case $isshortkey && mb_strlen($arg) > 2:
-				for ($i=1, $l=mb_strlen($arg); $i<$l; $i++) {
+			case $isshortkey && mb_strlen((string) $arg) > 2:
+				for ($i=1, $l=mb_strlen((string) $arg); $i<$l; $i++) {
 					$setflag($arg[$i]);
 				}
 				break;
@@ -339,13 +335,13 @@ function con_parse_args($argv = null, array $aliases = []) {
 				$key = $arg[1];
 				break;
 			// long option with value
-			case $islongkey && mb_strlen($arg) > 3 && mb_strpos($arg, '='):
-				[$k, $v] = explode('=', mb_substr($arg, 2), 2);
+			case $islongkey && mb_strlen((string) $arg) > 3 && mb_strpos((string) $arg, '='):
+				[$k, $v] = explode('=', mb_substr((string) $arg, 2), 2);
 				$setoption($k, $v);
 				break;
 			// long param key
 			case $islongkey:
-				$key = mb_substr($arg, 2);
+				$key = mb_substr((string) $arg, 2);
 				break;
 		}
 	}

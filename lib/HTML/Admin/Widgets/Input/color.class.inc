@@ -2,23 +2,18 @@
 
 class PXInputColor extends PXAdminWidget
 {
-    public $name;
-    public $value;
-
-    public function __construct($name, $value)
+    public function __construct(public $name, public $value)
     {
-        $this->name = $name;
-        $this->value = $value;
     }
 
     public function html()
     {
         $name = $this->name;
-        $value = htmlspecialchars($this->value, ENT_COMPAT | ENT_HTML401, DEFAULT_CHARSET);
+        $value = htmlspecialchars((string) $this->value, ENT_COMPAT | ENT_HTML401, DEFAULT_CHARSET);
 
-        $red = hexdec(mb_substr($this->value, 0, 2));
-        $green = hexdec(mb_substr($this->value, 2, 2));
-        $blue = hexdec(mb_substr($this->value, 4, 2));
+        $red = hexdec(mb_substr((string) $this->value, 0, 2));
+        $green = hexdec(mb_substr((string) $this->value, 2, 2));
+        $blue = hexdec(mb_substr((string) $this->value, 4, 2));
 
         return <<<HTML
 			<div class="colorselect">

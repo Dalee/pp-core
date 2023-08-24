@@ -4,7 +4,7 @@ require_once PPLIBPATH . 'Config/Description/Bindings/classes.inc';
 class PXBindingsQueue implements Iterator
 {
     private $pOrder, $rules;
-    private $finalize;
+    private bool $finalize;
 
     public function __construct()
     {
@@ -17,7 +17,7 @@ class PXBindingsQueue implements Iterator
     {
         $rArea = PXRegistry::getRequest()->getArea();
 
-        if (strlen($rArea) && sizeof(PXRegistry::getRequest()->getHostAndDir()) <= 1) {
+        if (strlen((string) $rArea) && sizeof(PXRegistry::getRequest()->getHostAndDir()) <= 1) {
             // FIXME
             // array_unshift($this->rules, new PXBindingDescription($this->app, array('type' => 'request', 'module' => $rArea), $this->pOrder++));
             $this->__addRule('PXBindingDescription', ['type' => 'request', 'module' => $rArea]);
@@ -40,7 +40,7 @@ class PXBindingsQueue implements Iterator
         ];
 
         $cls = 'PXBindingDescription';
-        $type = preg_replace('/[^0-9a-z]/' . REGEX_MOD, '', $type);
+        $type = preg_replace('/[^0-9a-z]/' . REGEX_MOD, '', (string) $type);
 
         if (class_exists($cls . $type)) {
             $cls .= $type;
@@ -51,7 +51,7 @@ class PXBindingsQueue implements Iterator
 
     public function sort()
     {
-        uasort($this->rules, [$this, 'sortBindings']);
+        uasort($this->rules, $this->sortBindings(...));
     }
 
     /* Iterator methods */

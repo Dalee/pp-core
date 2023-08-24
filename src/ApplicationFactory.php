@@ -2,9 +2,9 @@
 
 namespace PP;
 
+use PP\Lib\Engine\AbstractEngine;
 use PXApplication;
-use Psr\SimpleCache\CacheInterface;
-use Symfony\Component\Cache\Simple\FilesystemCache;
+use Symfony\Component\Cache\Adapter\FilesystemAdapter;
 use Symfony\Component\Finder\Finder;
 
 /**
@@ -12,68 +12,75 @@ use Symfony\Component\Finder\Finder;
  *
  * @package PP
  */
-class ApplicationFactory {
+class ApplicationFactory
+{
+    /**
+     * Makes cache namespace out of engine instance.
+     * Use this to instanciate your own cacher.
+     *
+     * @param AbstractEngine $engine
+     * @return string
+     */
+    public static function makeEngineCacheNamespace(AbstractEngine $engine)
+    {
+        $namespace = strtolower($engine::class);
+        $namespace = str_replace('\\', '', $namespace);
 
-	/**
-	 * Makes cache namespace out of engine instance.
-	 * Use this to instanciate your own cacher.
-	 *
-	 * @param \PP\Lib\Engine\AbstractEngine $engine
-	 * @return string
-	 */
-	public static function makeEngineCacheNamespace($engine) {
-		$namespace = strtolower(get_class($engine));
-		$namespace = str_replace('\\', '', $namespace);
+        return $namespace;
+    }
 
-		return $namespace;
-	}
+    /**
+     * Returns default cache path.
+     * Use this to instanciate your own cacher.
+     *
+     * @return string
+     */
+    public static function getDefaultEngineCachePath()
+    {
+        return join(DIRECTORY_SEPARATOR, [CACHE_PATH, 'config']);
+    }
 
-	/**
-	 * Returns default cache path.
-	 * Use this to instanciate your own cacher.
-	 *
-	 * @return string
-	 */
-	public static function getDefaultEngineCachePath() {
-		return join(DIRECTORY_SEPARATOR, [CACHE_PATH, 'config']);
-	}
+    /**
+     * Creates application instance.
+     *
+     * @param AbstractEngine $engine
+     * @return PXApplication
+     * @throws
+     */
+    public static function create(AbstractEngine $engine)
+    {
+        $namespace = static::makeEngineCacheNamespace($engine);
+        $path = static::getDefaultEngineCachePath();
+        $cache = new FilesystemAdapter($namespace, 0, $path);
 
-	/**
-	 * Creates application instance.
-	 * The default cache type is FilesystemCache.
-	 *
-	 * @param \PP\Lib\Engine\AbstractEngine $engine
-	 * @param CacheInterface|null $cache
-	 * @return PXApplication
-	 * @throws \Psr\SimpleCache\InvalidArgumentException
-	 */
-	public static function create($engine, CacheInterface $cache = null) {
-		$namespace = static::makeEngineCacheNamespace($engine);
-		$path = static::getDefaultEngineCachePath();
-		$cache = $cache ?: new FilesystemCache($namespace, 0, $path);
+        $applicationCacheItem = $cache->getItem(PXApplication::class);
 
-		if ($cachedApplication = $cache->get(PXApplication::class)) {
-			$paths = $cachedApplication->getConfigurationPaths();
-			$created = $cachedApplication->getCreated();
-			$finder = new Finder();
-			$finder->files()
-				->ignoreUnreadableDirs()->ignoreDotFiles(false)
-				->name('*.{yml,yaml,xml,ini}')->name('.env')
-				->depth('== 0')
-				->date('>= @' . $created)
-				->in(BASEPATH)->in($paths);
+        if ($applicationCacheItem->isHit()) {
+            $cachedApplication = $applicationCacheItem->get();
 
-			if (count($finder) === 0) {
-				return $cachedApplication;
-			}
-		}
+            $paths = $cachedApplication->getConfigurationPaths();
+            $created = $cachedApplication->getCreated();
 
-		$application = new PXApplication();
-		$application->init();
+            $finder = new Finder();
+            $finder->files()
+                ->ignoreUnreadableDirs()->ignoreDotFiles(false)
+                ->name('*.{yml,yaml,xml,ini}')->name('.env')
+                ->depth('== 0')
+                ->date('>= @' . $created)
+                ->in(BASEPATH)->in($paths);
 
-		$cache->set(PXApplication::class, $application);
+            if (count($finder) === 0) {
+                return $cachedApplication;
+            }
+        }
 
-		return $application;
-	}
+        $application = new PXApplication();
+        $application->init();
+
+        $applicationCacheItem->set($application);
+        $cache->save($applicationCacheItem);
+
+        return $application;
+    }
 
 }

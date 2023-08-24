@@ -57,11 +57,11 @@ class PXAdminTableObjects extends PXAdminObjects
         ];
 
         $method = 'getObjects';
-        if (mb_strlen($this->loadMethod)) {
+        if (mb_strlen((string) $this->loadMethod)) {
             $method .= $this->loadMethod;
             $args[] = $where;
 
-        } elseif (mb_strlen($where)) {
+        } elseif (mb_strlen((string) $where)) {
             $method .= 'ByWhere';
             $args[] = $where;
         }
@@ -117,7 +117,7 @@ class PXAdminTableObjects extends PXAdminObjects
 
         $this->widget = new PXAdminTable($this->objects, $this->format, $this->layout->getData);
         $this->widget->setPosition($this->pager->getPosition());
-        $this->widget->loadDropdownValues($this->db);
+        $this->widget->loadDropdownValues();
 
         $this->_setParentPathname();
     }
@@ -197,5 +197,3 @@ class PXAdminTableObjects extends PXAdminObjects
         return parent::html() . $this->pager->html();
     }
 }
-
-?>

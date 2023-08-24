@@ -11,114 +11,107 @@ use Symfony\Component\DependencyInjection\ContainerAwareTrait;
  */
 abstract class AbstractModule implements ModuleInterface
 {
+    use ContainerAwareTrait;
 
-	use ContainerAwareTrait;
+    /**
+     * @var \PXApplication
+     */
+    public $app;
 
-	public $area;
-	public $settings;
-	protected $__selfDescription;
+    /**
+     * @var \PXDatabase|\PP\Lib\Database\Driver\PostgreSqlDriver
+     */
+    public $db;
 
-	/**
-	 * @var \PXApplication
-	 */
-	public $app;
+    /**
+     * @var \PXRequest
+     */
+    public $request;
 
-	/**
-	 * @var \PXDatabase|\PP\Lib\Database\Driver\PostgreSqlDriver
-	 */
-	public $db;
+    /**
+     * @var \PXUser|\PXUserAuthorized
+     */
+    public $user;
 
-	/**
-	 * @var \PXRequest
-	 */
-	public $request;
+    /**
+     * @var \PP\Lib\Html\Layout\LayoutAbstract|\PP\Lib\Html\Layout\AdminHtmlLayout
+     */
+    public $layout;
 
-	/**
-	 * @var \PXUser|\PXUserAuthorized
-	 */
-	public $user;
+    /**
+     * @var \PP\Lib\Http\Response
+     */
+    public $response;
 
-	/**
-	 * @var \PP\Lib\Html\Layout\LayoutAbstract|\PP\Lib\Html\Layout\AdminHtmlLayout
-	 */
-	public $layout;
+    public function __construct(public $area, public $settings, protected $__selfDescription = null)
+    {
+        //for module acl checks purposes
 
-	/**
-	 * @var \PP\Lib\Http\Response
-	 */
-	public $response;
+        \PXRegistry::assignToObject($this);
+    }
 
-	public function __construct($area, $settings, $selfDescription = null)
-	{
-		$this->area = $area;
-		$this->settings = $settings;
-		$this->__selfDescription = $selfDescription; //for module acl checks purposes
+    /**
+     * @return array
+     */
+    public static function getAclModuleActions()
+    {
+        $app = \PXRegistry::getApp();
 
-		\PXRegistry::assignToObject($this);
-	}
+        return [
+            'viewmenu' => $app->langTree->getByPath('module_macl_rules.actions.viewmenu.rus'),
+            'admin' => $app->langTree->getByPath('module_macl_rules.actions.admin.rus'),
+        ];
+    }
 
-	/**
-	 * @return array
-	 */
-	public static function getAclModuleActions()
-	{
-		$app = \PXRegistry::getApp();
+    /**
+     * {@inheritdoc}
+     */
+    public function adminIndex()
+    {
+        $this->layout->assignError('INNER.1.0', 'Функция <em>adminIndex</em> данного модуля не определена');
+    }
 
-		return [
-			'viewmenu' => $app->langTree->getByPath('module_macl_rules.actions.viewmenu.rus'),
-			'admin' => $app->langTree->getByPath('module_macl_rules.actions.admin.rus'),
-		];
-	}
+    /**
+     * {@inheritdoc}
+     */
+    public function adminPopup()
+    {
+        $this->layout->assignError('OUTER.CONTENT', 'Функция <em>adminPopup</em> данного модуля не определена');
+    }
 
-	/**
-	 * {@inheritdoc}
-	 */
-	public function adminIndex()
-	{
-		$this->layout->assignError('INNER.1.0', 'Функция <em>adminIndex</em> данного модуля не определена');
-	}
+    /**
+     * {@inheritdoc}
+     */
+    public function adminAction()
+    {
+        FatalError("Функция <em>adminAction</em> данного модуля не определена");
+    }
 
-	/**
-	 * {@inheritdoc}
-	 */
-	public function adminPopup()
-	{
-		$this->layout->assignError('OUTER.CONTENT', 'Функция <em>adminPopup</em> данного модуля не определена');
-	}
+    /**
+     * {@inheritdoc}
+     */
+    public function userIndex()
+    {
+    }
 
-	/**
-	 * {@inheritdoc}
-	 */
-	public function adminAction()
-	{
-		FatalError("Функция <em>adminAction</em> данного модуля не определена");
-	}
+    /**
+     * {@inheritdoc}
+     */
+    public function userAction()
+    {
+    }
 
-	/**
-	 * {@inheritdoc}
-	 */
-	public function userIndex()
-	{
-	}
+    /**
+     * {@inheritdoc}
+     */
+    public function userJson()
+    {
+    }
 
-	/**
-	 * {@inheritdoc}
-	 */
-	public function userAction()
-	{
-	}
-
-	/**
-	 * {@inheritdoc}
-	 */
-	public function userJson()
-	{
-	}
-
-	/**
-	 * {@inheritdoc}
-	 */
-	public function adminJson()
-	{
-	}
+    /**
+     * {@inheritdoc}
+     */
+    public function adminJson()
+    {
+    }
 }

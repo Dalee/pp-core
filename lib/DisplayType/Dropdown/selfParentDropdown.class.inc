@@ -10,7 +10,7 @@ class PXDisplayTypeSelfparentdropdown extends PXDisplayTypeParentdropdown
 {
     public function buildInput($field, $object, $param = NULL)
     {
-        $value = isset($object[$field->name]) ? $object[$field->name] : NULL;
+        $value = $object[$field->name] ?? NULL;
         $selfTree = parent::getSelfParentTree($object, $param);
         $selfTree = $selfTree->getPlainTree(getFromArray($object, 'id'));
         if (isset($param['root_title'])) {

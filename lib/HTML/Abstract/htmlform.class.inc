@@ -169,6 +169,7 @@ class NLAbstractHTMLForm
     public static
     function BuildMultimedia($name, $value, $type = 'image', $entry = NULL)
     {
+        $input = null;
         switch ($type) {
             case 'image':
                 $input = new PXInputImage($name, $value, $entry);

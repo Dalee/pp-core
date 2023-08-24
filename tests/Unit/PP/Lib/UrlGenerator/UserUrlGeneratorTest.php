@@ -2,6 +2,8 @@
 
 namespace Tests\Unit\PP\Lib\UrlGenerator;
 
+use PHPUnit\Framework\MockObject\MockObject;
+use PP\Lib\UrlGenerator\AdminUrlGenerator;
 use PP\Lib\UrlGenerator\UserUrlGenerator;
 use PP\Lib\UrlGenerator\ContextUrlGenerator;
 use Tests\Base\AbstractUnitTest;
@@ -9,11 +11,28 @@ use PP\Module\ModuleInterface;
 
 class UserUrlGeneratorTest extends AbstractUnitTest {
 
+	protected AdminUrlGenerator|MockObject $generator;
+
+	protected MockObject|ContextUrlGenerator $content;
+
 	/**
-	 * @expectedException \LogicException
-	 * @expectedExceptionMessage You cannot use the method:
+	 * @before
 	 */
+	public function before() {
+		$this->content = $this->getMockBuilder(\PP\Lib\UrlGenerator\ContextUrlGenerator::class)
+			->addMethods(['_'])
+			->getMock();
+
+		$this->generator = $this->getMockBuilder(\PP\Lib\UrlGenerator\UserUrlGenerator::class)
+			->setConstructorArgs([$this->content])
+			->onlyMethods(['indexUrl', 'actionUrl', 'jsonUrl', 'popupUrl'])
+			->getMock();
+	}
+
 	public function testIndexUrl() {
+		$this->expectExceptionMessage("You cannot use the method:");
+		$this->expectException(\LogicException::class);
+
 		$generator = $this->getGenerator();
 		$generator->indexUrl([]);
 	}
@@ -41,11 +60,10 @@ class UserUrlGeneratorTest extends AbstractUnitTest {
 		$this->assertEquals($expectedUrl, $actualUrl);
 	}
 
-	/**
-	 * @expectedException \LogicException
-	 * @expectedExceptionMessage You cannot use the method:
-	 */
 	public function testPopupUrl() {
+		$this->expectExceptionMessage("You cannot use the method:");
+		$this->expectException(\LogicException::class);
+
 		$generator = $this->getGenerator();
 		$generator->popupUrl([]);
 	}
@@ -54,10 +72,10 @@ class UserUrlGeneratorTest extends AbstractUnitTest {
 	 * @return UserUrlGenerator
 	 */
 	protected function getGenerator() {
-		/** @var UserUrlGenerator | \PHPUnit_Framework_MockObject_MockObject $generator */
-		$generator = $this->getMockBuilder('PP\Lib\UrlGenerator\UserUrlGenerator')
+		/** @var UserUrlGenerator|MockObject $generator */
+		$generator = $this->getMockBuilder(\PP\Lib\UrlGenerator\UserUrlGenerator::class)
 			->disableOriginalConstructor()
-			->setMethods(['getArea'])
+			->onlyMethods(['getArea'])
 			->getMock();
 
 		$generator->expects($this->any())
@@ -67,61 +85,58 @@ class UserUrlGeneratorTest extends AbstractUnitTest {
 		return $generator;
 	}
 
-	public function testGenerate() {
-		/** @var \PHPUnit_Framework_MockObject_MockObject | ContextUrlGenerator $content */
-		$content = $this->getMockBuilder('PP\Lib\UrlGenerator\ContextUrlGenerator')
-			->setMethods(['_'])
-			->getMock();
-
-		/** @var UserUrlGenerator | \PHPUnit_Framework_MockObject_MockObject $generator */
-		$generator = $this->getMockBuilder('PP\Lib\UrlGenerator\UserUrlGenerator')
-			->setConstructorArgs([$content])
-			->setMethods(['indexUrl', 'actionUrl', 'jsonUrl', 'popupUrl'])
-			->getMock();
-
-		$generator->expects($this->at(0))
+	public function testGenerateActionIndex() {
+		$this->generator->expects($this->once())
 			->method('indexUrl')
 			->with([]);
-		$generator->expects($this->at(1))
+
+		$this->content->setTargetAction(ModuleInterface::ACTION_INDEX);
+		$this->generator->generate([]);
+	}
+
+	public function testGenerateActionAction() {
+		$this->generator->expects($this->once())
 			->method('actionUrl')
 			->with([]);
-		$generator->expects($this->at(2))
+
+		$this->content->setTargetAction(ModuleInterface::ACTION_ACTION);
+		$this->generator->generate([]);
+	}
+
+	public function testGenerateActionJson() {
+		$this->generator->expects($this->once())
 			->method('jsonUrl')
 			->with([]);
-		$generator->expects($this->at(3))
+
+		$this->content->setTargetAction(ModuleInterface::ACTION_JSON);
+		$this->generator->generate([]);
+	}
+
+	public function testGenerateActionPopup() {
+		$this->generator->expects($this->once())
 			->method('popupUrl')
 			->with([]);
 
-		$content->setTargetAction(ModuleInterface::ACTION_INDEX);
-		$generator->generate([]);
-
-		$content->setTargetAction(ModuleInterface::ACTION_ACTION);
-		$generator->generate([]);
-
-		$content->setTargetAction(ModuleInterface::ACTION_JSON);
-		$generator->generate([]);
-
-		$content->setTargetAction(ModuleInterface::ACTION_POPUP);
-		$generator->generate([]);
+		$this->content->setTargetAction(ModuleInterface::ACTION_POPUP);
+		$this->generator->generate([]);
 	}
 
-	/**
-	 * @expectedException \Exception
-	 * @expectedExceptionMessage Action 'targetAction' doesn't exist.
-	 */
 	public function testGenerateError() {
+		$this->expectExceptionMessage("Action 'targetAction' doesn't exist.");
+		$this->expectException(\Exception::class);
+
 		$targetAction = 'targetAction';
-		/** @var \PHPUnit_Framework_MockObject_MockObject | ContextUrlGenerator $content */
-		$content = $this->getMockBuilder('PP\Lib\UrlGenerator\ContextUrlGenerator')
-			->setMethods(['_'])
+		/** @var MockObject | ContextUrlGenerator $content */
+		$content = $this->getMockBuilder(\PP\Lib\UrlGenerator\ContextUrlGenerator::class)
+			->addMethods(['_'])
 			->getMock();
 
 		$content->setTargetAction($targetAction);
 
 		/** @var UserUrlGenerator $generator */
-		$generator = $this->getMockBuilder('PP\Lib\UrlGenerator\UserUrlGenerator')
+		$generator = $this->getMockBuilder(\PP\Lib\UrlGenerator\UserUrlGenerator::class)
 			->setConstructorArgs([$content])
-			->setMethods(['indexUrl', 'actionUrl', 'jsonUrl', 'popupUrl'])
+			->onlyMethods(['indexUrl', 'actionUrl', 'jsonUrl', 'popupUrl'])
 			->getMock();
 
 		$generator->generate([]);

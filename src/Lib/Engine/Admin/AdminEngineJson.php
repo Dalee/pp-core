@@ -12,55 +12,54 @@ use Symfony\Component\DependencyInjection\ContainerAwareInterface;
  */
 class AdminEngineJson extends AbstractAdminEngine
 {
+    protected $result;
 
-	protected $result;
+    public function initModules()
+    {
+        $this->area = $this->request->getArea();
+        $this->modules = $this->getModule($this->app, $this->area);
+    }
 
-	public function initModules()
-	{
-		$this->area = $this->request->getArea();
-		$this->modules = $this->getModule($this->app, $this->area);
-	}
+    public function runModules()
+    {
+        // For correct user session expiration handling and admin auth module working
+        if (!($this->hasAdminModules() || $this->area == $this->authArea)) {
+            return;
+        }
 
-	public function runModules()
-	{
-		// For correct user session expiration handling and admin auth module working
-		if (!($this->hasAdminModules() || $this->area == $this->authArea)) {
-			return;
-		}
+        $this->checkArea($this->area);
 
-		$this->checkArea($this->area);
+        $moduleDescription = $this->modules[$this->area];
+        $instance = $moduleDescription->getModule();
+        if ($instance instanceof ContainerAwareInterface) {
+            $instance->setContainer($this->container);
+        }
 
-		$moduleDescription = $this->modules[$this->area];
-		$instance = $moduleDescription->getModule();
-		if ($instance instanceof ContainerAwareInterface) {
-			$instance->setContainer($this->container);
-		}
+        $eventData = [
+            'engine_type' => $this->engineType(),
+            'engine_behavior' => $this->engineBehavior(),
+        ];
+        foreach ($this->app->triggers->system as $t) {
+            $t->getTrigger()->onBeforeModuleRun($this, $moduleDescription, $eventData);
+        }
 
-		$eventData = [
-			'engine_type' => $this->engineType(),
-			'engine_behavior' => $this->engineBehavior(),
-		];
-		foreach ($this->app->triggers->system as $t) {
-			$t->getTrigger()->onBeforeModuleRun($this, $moduleDescription, $eventData);
-		}
+        $this->result = $instance->adminJson();
 
-		$this->result = $instance->adminJson();
+        foreach ($this->app->triggers->system as $t) {
+            $t->getTrigger()->onAfterModuleRun($this, $moduleDescription, $eventData);
+        }
+    }
 
-		foreach ($this->app->triggers->system as $t) {
-			$t->getTrigger()->onAfterModuleRun($this, $moduleDescription, $eventData);
-		}
-	}
+    public function sendJson(): void
+    {
+        $response = Response::getInstance();
+        $response->sendJson($this->result);
+        exit;
+    }
 
-	public function sendJson()
-	{
-		$response = Response::getInstance();
-		$response->sendJson($this->result);
-		exit;
-	}
-
-	/** {@inheritdoc} */
-	public function engineBehavior()
-	{
-		return static::JSON_BEHAVIOR;
-	}
+    /** {@inheritdoc} */
+    public function engineBehavior()
+    {
+        return static::JSON_BEHAVIOR;
+    }
 }

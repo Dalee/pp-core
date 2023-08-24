@@ -14,7 +14,7 @@ class PXDisplayTypeRichedit extends PXDisplayTypeText
 {
     public function buildInput($field, $object, $param = NULL)
     {
-        $value = isset($object[$field->name]) ? $object[$field->name] : NULL;
+        $value = $object[$field->name] ?? NULL;
         $req = PXRegistry::getRequest();
         $layout = PXRegistry::getLayout();
         $redactor = $req->getCookieVar('richedit');

@@ -2,5 +2,6 @@
 
 namespace PP\Lib\Auth;
 
-class AuthException extends \Exception {
+class AuthException extends \Exception
+{
 }

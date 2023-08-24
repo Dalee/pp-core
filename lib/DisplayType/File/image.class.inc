@@ -34,8 +34,8 @@ class PXDisplayTypeImage extends PXDisplayType
 		$html = '<div class="imagepreview image-in-cell"><div class="small" style="width: ' . $maxWidth . 'px; height: ' . $maxHeight . 'px;">';
 
 		if (isset($value['path'])) {
-			$width = isset($value['width']) ? $value['width'] : $maxWidth;
-			$height = isset($value['height']) ? $value['height'] : $maxHeight;
+			$width = $value['width'] ?? $maxWidth;
+			$height = $value['height'] ?? $maxHeight;
 			[$width, $height] = $this->getDisplaySizes($width, $height, $maxWidth, $maxHeight);
 			$html .= '<a href="' . $value['path'] . '" target="_blank"><img src="' . $value['path'] . '" width="' . $width . '" height="' . $height . '"/></a>';
 		}
@@ -100,5 +100,3 @@ class PXDisplayTypeImage extends PXDisplayType
 		return [(int)$w, (int)$h];
 	}
 }
-
-?>

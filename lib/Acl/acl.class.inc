@@ -66,7 +66,7 @@ class PXObjectsACL
 		if (!$loadAll) {
 			$query .= " WHERE (sgroupid IS NULL";
 
-			if ($this->user && count($this->user->groups)) {
+			if ($this->user && (is_countable($this->user->groups) ? count($this->user->groups) : 0)) {
 				$query .= ' or sgroupid IN (' . implode(',', $this->user->groups) . ')';
 			}
 

@@ -13,10 +13,7 @@ class PXTriggerDescription
 	private $instance = NULL;
 	private $folder = NULL;
 
-	/**
-	 * @return PXAbstractTrigger|PXAbstractDatabaseTrigger|PXAbstractSystemTrigger
-	 */
-	public function getTrigger()
+	public function getTrigger(): \PXAbstractTrigger|\PXAbstractDatabaseTrigger|\PXAbstractSystemTrigger
 	{
 		if ($this->instance) {
 			return $this->instance;
@@ -63,9 +60,9 @@ class PXTriggerDescription
 			include_once $file;
 		}
 
-		$this->klass = sprintf('PXTrigger%s%s', ucfirst($this->type), ucfirst($this->name));
+		$this->klass = sprintf('PXTrigger%s%s', ucfirst((string) $this->type), ucfirst((string) $this->name));
 
-		if (!(strlen($this->name) && class_exists($this->klass) && is_subclass_of($this->klass, sprintf("PXAbstract%sTrigger", $this->type)))) {
+		if (!(strlen((string) $this->name) && class_exists($this->klass) && is_subclass_of($this->klass, sprintf("PXAbstract%sTrigger", $this->type)))) {
 			FatalError("Триггер '{$this->klass}' отсутствует или его интерфейс не совпадает с типом '{$this->type}'");
 		}
 	}
@@ -77,5 +74,3 @@ class PXTriggerDescription
 		return pp_fetch_file(['', 'plugins/' . $this->folder], $file, '.trigger');
 	}
 }
-
-?>

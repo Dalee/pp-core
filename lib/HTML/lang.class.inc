@@ -95,7 +95,7 @@ class PXUserHTMLLang
 
 	public function _get($path)
 	{
-		$path = explode('.', $path);
+		$path = explode('.', (string) $path);
 
 		$leaf = $this->tree;
 
@@ -132,7 +132,7 @@ class PXUserHTMLLang
 			$this->_dateDayReplaces($time)
 		);
 
-		$format = str_replace(array_keys($replaces), $replaces, $format);
+		$format = str_replace(array_keys($replaces), $replaces, (string) $format);
 
 		return strftime($format, $time);
 	}
@@ -143,7 +143,7 @@ class PXUserHTMLLang
 
 		return [
 			'%e' => (
-			$day > 9 ? $day : $day{1}
+			$day > 9 ? $day : $day[1]
 			),
 		];
 	}
@@ -184,16 +184,16 @@ class PXUserHTMLLang
 		$replaces = [];
 
 		foreach ($param as $k => $p) {
-			if (strpos($k, '_') !== 0) {
+			if (!str_starts_with((string) $k, '_')) {
 				continue;
 			}
 
-			$k{0} = '%';
+			$k[0] = '%';
 			$replaces[$k . '%'] = $p;
 		}
 
 		if (sizeof($replaces)) {
-			$value = str_replace(array_keys($replaces), $replaces, $value);
+			$value = str_replace(array_keys($replaces), $replaces, (string) $value);
 		}
 
 		return $value;
@@ -201,12 +201,12 @@ class PXUserHTMLLang
 
 	public function parseDateToTime($string)
 	{
-		if (mb_strlen($string)) {
-			if (mb_strlen($string) == 10 && is_numeric($string)) {
+		if (mb_strlen((string) $string)) {
+			if (mb_strlen((string) $string) == 10 && is_numeric($string)) {
 				return $string;
 			}
 
-			preg_match("/^(\d{2})\.(\d{2})\.(\d{4})\s+(\d{2}):(\d{2}):(\d{2})(\.\d+)?$/si" . REGEX_MOD, trim($string), $date);
+			preg_match("/^(\d{2})\.(\d{2})\.(\d{4})\s+(\d{2}):(\d{2}):(\d{2})(\.\d+)?$/si" . REGEX_MOD, trim((string) $string), $date);
 			return mktime($date[4], $date[5], $date[6], $date[2], $date[1], $date[3]);
 
 		} else {

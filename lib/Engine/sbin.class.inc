@@ -15,7 +15,7 @@ class PXEngineSbin extends AbstractEngine
 	/**
 	 * @var Symfony\Component\HttpFoundation\Session\Session
 	 */
-	protected $session = ['factory' => 'Symfony\Component\HttpFoundation\Session\Session', 'helper' => true];
+	protected $session = ['factory' => \Symfony\Component\HttpFoundation\Session\Session::class, 'helper' => true];
 
 	protected $initOrder = ['container', 'app', 'db', 'request', 'session', 'user', 'layout'];
 

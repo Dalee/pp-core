@@ -27,9 +27,9 @@ class PXUserHTMLLayout implements LayoutInterface
 		$this->_filters = [];
 		$this->indexTemplate = 'index.tmpl';
 
-		$this->addTemplateFunction('property', [$this, 'getProperty']);
-		$this->addTemplateModifier('property', [$this, 'getPropertyModifier']);
-		$this->addTemplateFunction('pager', [$this, 'pager']);
+		$this->addTemplateFunction('property', $this->getProperty(...));
+		$this->addTemplateModifier('property', $this->getPropertyModifier(...));
+		$this->addTemplateFunction('pager', $this->pager(...));
 
 		$this->_initLang();
 	}
@@ -74,11 +74,11 @@ class PXUserHTMLLayout implements LayoutInterface
 		require_once PPLIBPATH . 'HTML/lang.class.inc';
 
 		$this->lang = new PXUserHTMLLang();
-		$this->addTemplateFunction('lang', [$this->lang, 'lang']);
-		$this->addTemplateModifier('lang', [$this->lang, 'lang_modifier']);
+		$this->addTemplateFunction('lang', $this->lang->lang(...));
+		$this->addTemplateModifier('lang', $this->lang->lang_modifier(...));
 
-		$this->addTemplateFunction('pager', [$this, 'pager']);
-		$this->addTemplateFunction('autopager', [$this, 'autopager']);
+		$this->addTemplateFunction('pager', $this->pager(...));
+		$this->addTemplateFunction('autopager', $this->autopager(...));
 	}
 
 	public function htmlPager($totalObjects, $objectsPerPage, &$smarty, $param)
@@ -87,8 +87,8 @@ class PXUserHTMLLayout implements LayoutInterface
 
 		$request = PXRegistry::getRequest();
 
-		$currentPage = $request->GetVar('page', $this->getVar('FP_' . mb_strtoupper($param['format']) . '_DEFAULT_PAGE', 1));
-		$currentPage = (int)preg_replace('/[^0-9]+/' . REGEX_MOD, '', $currentPage);
+		$currentPage = $request->GetVar('page', $this->getVar('FP_' . mb_strtoupper((string) $param['format']) . '_DEFAULT_PAGE', 1));
+		$currentPage = (int)preg_replace('/[^0-9]+/' . REGEX_MOD, '', (string) $currentPage);
 		$currentPage = $currentPage > 0 ? $currentPage : 1;
 
 		if ($currentPage > $maxPage) {
@@ -108,8 +108,8 @@ class PXUserHTMLLayout implements LayoutInterface
 
 	public function autopager($param, &$smarty)
 	{
-		$total = $this->getVar('FP_' . mb_strtoupper($param['format']) . '_TOTAL');
-		$a_per_page = $this->getVar('FP_' . mb_strtoupper($param['format']) . '_PER_PAGE');
+		$total = $this->getVar('FP_' . mb_strtoupper((string) $param['format']) . '_TOTAL');
+		$a_per_page = $this->getVar('FP_' . mb_strtoupper((string) $param['format']) . '_PER_PAGE');
 
 		if (!isset($total) || !isset($a_per_page)) {
 			return '';
@@ -123,7 +123,7 @@ class PXUserHTMLLayout implements LayoutInterface
 		$total = sizeof($param['objects']);
 
 		/* Нужна ли постраничка? */
-		$p = mb_strtoupper($param['format']) . '_PER_PAGE';
+		$p = mb_strtoupper((string) $param['format']) . '_PER_PAGE';
 
 		$a_per_page = (int)PXRegistry::getApp()->getProperty($p, $total);
 		if ($a_per_page == 0) {
@@ -254,7 +254,7 @@ class PXUserHTMLLayout implements LayoutInterface
 	public function getVar($varName, $default = NULL)
 	{
 		$var = $this->smarty->get_template_vars($varName);
-		return (isset($var) ? $var : $default);
+		return ($var ?? $default);
 	}
 
 	public function &getVarByRef($varName)
@@ -278,8 +278,8 @@ class PXUserHTMLLayout implements LayoutInterface
 		$html = $this->html($this->indexTemplate);
 
 		foreach ($this->_filters as $filter => $filterArgs) {
-			if (strstr($filter, '::')) {
-				$filter = explode('::', $filter);
+			if (strstr((string) $filter, '::')) {
+				$filter = explode('::', (string) $filter);
 
 				if (count($filter) > 2) {
 					trigger_error(sprintf('malformed filter %s', join('::', $filter)), E_WARNING);

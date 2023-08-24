@@ -12,7 +12,6 @@ use PP\Lib\Rss\RssChannel;
  */
 class RssEngineModule extends AbstractModule
 {
-
     public function __construct($area, $settings)
     {
         parent::__construct($area, $settings);
@@ -25,7 +24,7 @@ class RssEngineModule extends AbstractModule
         return $this->items;
     }
 
-    public function userIndex()
+    public function userIndex(): void
     {
         FatalError('It\'s interface method. ReWrite it.');
         exit;
@@ -56,7 +55,7 @@ class RssEngineModule extends AbstractModule
             $time = mktime(0, 0, 0, date('n'), 1);
 
         } elseif ($string != '') {
-            preg_match("/^(\d{2})\.(\d{2})\.(\d{4})\s+(\d{2}):(\d{2}):(\d{2})(?:\.\d+)?$/si", trim($string), $date);
+            preg_match("/^(\d{2})\.(\d{2})\.(\d{4})\s+(\d{2}):(\d{2}):(\d{2})(?:\.\d+)?$/si", trim((string) $string), $date);
             $time = mktime($date[4], $date[5], $date[6], $date[2], $date[1], $date[3]);
 
         } else {
@@ -71,14 +70,14 @@ class RssEngineModule extends AbstractModule
         return date('d M Y H:i:s O', $this->date2time($string));
     }
 
-    public function GetXML($channel, $items)
+    public function GetXML($channel, $items): void
     {
         $lastBuildDate = reset($items);
         $channel['lastBuildDate'] = $this->rssDateFormat($lastBuildDate['pubDate']);
 
         $xml = $this->xml($channel, $items);
 
-        $xml = preg_replace("/<a(.*?)href=\"\//i", '<a$1href="' . $channel['link'] . '/', $xml);
+        $xml = preg_replace("/<a(.*?)href=\"\//i", '<a$1href="' . $channel['link'] . '/', (string) $xml);
         $xml = preg_replace("/<img(.*?)src=\"\//i", '<img$1src="' . $channel['link'] . '/', $xml);
 
         $xml = $this->unhtmlentities($xml);

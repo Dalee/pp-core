@@ -10,5 +10,6 @@ use Symfony\Component\Console\Command\Command;
  *
  * @package PP\Lib\Command
  */
-abstract class AbstractBasicCommand extends Command {
+abstract class AbstractBasicCommand extends Command
+{
 }

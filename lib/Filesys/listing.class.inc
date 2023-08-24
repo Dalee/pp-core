@@ -69,7 +69,7 @@ class PXFileListing
 
     public function html()
     {
-        $up = preg_replace('|[^/]+/$|' . REGEX_MOD, '', $this->_catalog);
+        $up = preg_replace('|[^/]+/$|' . REGEX_MOD, '', (string) $this->_catalog);
 
         $canBrowse = $this->_isValid($this->_catalog);
         $canUp = $this->_isValid($up);
@@ -160,7 +160,7 @@ class PXFileListing
         }
 
         foreach ($this->_roots as $root) {
-            if (mb_strpos($this->_getRealPath($catalog), $this->_getRealPath($root)) === 0 && mb_strlen($root) <= mb_strlen($catalog)) {
+            if (mb_strpos((string) $this->_getRealPath($catalog), (string) $this->_getRealPath($root)) === 0 && mb_strlen((string) $root) <= mb_strlen((string) $catalog)) {
                 return true;
             }
         }
@@ -170,11 +170,11 @@ class PXFileListing
 
     public function _prepare($tmp)
     {
-        $tmp = str_replace('\\\\', '||', $tmp);
+        $tmp = str_replace('\\\\', '||', (string) $tmp);
         $tmp = str_replace('//', '||', $tmp);
         $tmp = str_replace('\\', '/', $tmp);
         $tmp .= '/';
-        $tmp = preg_replace('|/{2,}|' . REGEX_MOD, '/', $tmp);
+        $tmp = preg_replace('|/{2,}|' . REGEX_MOD, '/', (string) $tmp);
         $tmp = str_replace('||', '\\\\', $tmp);
 
         return $tmp;
@@ -182,13 +182,13 @@ class PXFileListing
 
     public function _isSmbShare($path)
     {
-        return mb_strpos($path, '\\\\') === 0;
+        return mb_strpos((string) $path, '\\\\') === 0;
     }
 
     public function _fullPath($catalog)
     {
         if ($this->_isSmbShare($catalog)) {
-            $catalog = str_replace('/', '\\', $catalog);
+            $catalog = str_replace('/', '\\', (string) $catalog);
 
             return $catalog;
         }
@@ -258,7 +258,7 @@ class PXFileListingItem
 
     public function _Type()
     {
-        preg_match('|[^/.\\\\]+$|' . REGEX_MOD, $this->name, $tmp);
+        preg_match('|[^/.\\\\]+$|' . REGEX_MOD, (string) $this->name, $tmp);
         $this->type = isset($tmp[0]) ? mb_strtolower($tmp[0]) : '';
     }
 
@@ -292,7 +292,7 @@ class PXFileListingItem
 
         $htdocsPrefix = null;
         foreach (['site', 'local', 'libpp'] as $prefix) {
-            if (mb_strpos($this->catalog, $prefix . '/htdocs') === 0) {
+            if (mb_strpos((string) $this->catalog, $prefix . '/htdocs') === 0) {
                 $htdocsPrefix = $prefix . '/htdocs';
                 break;
             }
@@ -302,7 +302,7 @@ class PXFileListingItem
             return;
         }
 
-        $this->alias = str_replace($htdocsPrefix, '', $this->catalog . rawurlencode($this->name));
+        $this->alias = str_replace($htdocsPrefix, '', $this->catalog . rawurlencode((string) $this->name));
     }
 
     public function isRoot()

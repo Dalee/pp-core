@@ -15,12 +15,10 @@ use PP\Lib\Engine\EngineInterface;
 class PXDisplayType
 {
 	public $display;
-	public $name;
 
-	public function __construct(&$display, $name)
+	public function __construct(&$display, public $name)
 	{
 		$this->display = &$display;
-		$this->name = $name;
 	}
 
 	/**
@@ -188,18 +186,18 @@ class PXDisplayType
 
 		if (isset($app->directory[$field->source])) {
 			$directory = $app->directory[$field->source];
-			$dirObject = isset($directory->values[$object[$field->name]]) ? $directory->values[$object[$field->name]] : null;
+			$dirObject = $directory->values[$object[$field->name]] ?? null;
 
-			$temp = isset($dirObject[$directory->displayField]) ? $dirObject[$directory->displayField] : '';
+			$temp = $dirObject[$directory->displayField] ?? '';
 		}
 
-		return mb_strlen($temp) ? $temp : $value;
+		return mb_strlen((string) $temp) ? $temp : $value;
 	}
 
 	protected static
 	function parseConfigArguments($attrNode, $fieldNode)
 	{
-		$args = explode("|", pp_simplexml_decode_string($attrNode->value));
+		$args = explode("|", (string) pp_simplexml_decode_string($attrNode->value));
 		$name = $args[0];
 
 		array_shift($args);
@@ -213,14 +211,14 @@ class PXDisplayType
 		$baseClass = 'PXDisplayType';
 
 		$autoload = $type->app->engine->engineClass() != EngineInterface::USER_ENGINE_ID;
-		$inputClass = $baseClass . mb_ucfirst(mb_strtolower($name));
+		$inputClass = $baseClass . mb_ucfirst(mb_strtolower((string) $name));
 		return class_exists($inputClass, $autoload) ? $inputClass : $baseClass;
 	}
 
 	public static
 	function parseConfig($attrNode, $fieldNode, $type)
 	{
-		$name = preg_replace('/\|.+$/' . REGEX_MOD, '', $attrNode->value);
+		$name = preg_replace('/\|.+$/' . REGEX_MOD, '', (string) $attrNode->value);
 
 		$cls = self::getClassByName($name, $type);
 		$args = call_user_func([$cls, 'parseConfigArguments'], $attrNode, $fieldNode);

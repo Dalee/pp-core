@@ -10,12 +10,12 @@ use PP\Lib\Cache\CacheInterface;
  */
 class Apc implements CacheInterface
 {
-    private $cacheDomain;
-    private $expirationTime;
+    private readonly string $cacheDomain;
+    private readonly int $expirationTime;
 
     public function __construct($cacheDomain = null, $defaultExpire = 3600)
     {
-        extension_loaded("apc") && ini_get("apc.enabled") or FatalError(get_class($this) . " error: APC extension disabled or doesn't installed");
+        extension_loaded("apc") && ini_get("apc.enabled") or FatalError(static::class . " error: APC extension disabled or doesn't installed");
         $this->expirationTime = (int)$defaultExpire;
         $this->cacheDomain = BASEPATH . $cacheDomain;
     }
@@ -38,7 +38,7 @@ class Apc implements CacheInterface
 
     public function save($key, $data, $expTime = null)
     {
-        apc_store($this->key($key), $data, ((int)$expTime ? (int)$expTime : $this->expirationTime)) or $this->clear();
+        apc_store($this->key($key), $data, ((int)$expTime ?: $this->expirationTime)) or $this->clear();
     }
 
     public function load($key)

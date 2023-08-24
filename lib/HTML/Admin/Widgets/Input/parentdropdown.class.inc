@@ -2,16 +2,8 @@
 
 class PXInputParentDropDown extends PXAdminWidget
 {
-    public $name;
-    public $value;
-    public $values = [];
-
-    public function __construct($name, $value, $values)
+    public function __construct(public $name, public $value, public $values)
     {
-        $this->name = $name;
-        $this->value = $value;
-        $this->values = $values;
-
     }
 
     public function html()
@@ -27,7 +19,7 @@ class PXInputParentDropDown extends PXAdminWidget
                 $html .= '<option value="' . quot(
                         $k
                     ) . '"' . ($k == $this->value ? ' selected' : '') . '>' . htmlspecialchars(
-                        $v['title'],
+                        (string) $v['title'],
                         ENT_COMPAT | ENT_HTML401,
                         DEFAULT_CHARSET
                     ) . '</option>';
@@ -38,7 +30,7 @@ class PXInputParentDropDown extends PXAdminWidget
             $html .= sprintf(
                 '<option value="%s" selected>[нет в списке - "%s"]</option>',
                 quot($this->value),
-                htmlspecialchars($this->value, ENT_COMPAT | ENT_HTML401, DEFAULT_CHARSET)
+                htmlspecialchars((string) $this->value, ENT_COMPAT | ENT_HTML401, DEFAULT_CHARSET)
             );
         }
 

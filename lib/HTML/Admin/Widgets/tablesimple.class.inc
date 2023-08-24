@@ -8,11 +8,6 @@ class PXAdminTableSimple extends PXAdminWidget
 	public const HIDEFOOTER_MODE = 2;
 	public const BODY_MODE = 3;
 
-	/**
-	 * @var array
-	 */
-	protected $cols;
-
 	protected $widths;
 
 	protected $dict;
@@ -48,9 +43,8 @@ class PXAdminTableSimple extends PXAdminWidget
 	 * PXAdminTableSimple constructor.
 	 * @param array $cols
 	 */
-	public function __construct($cols)
+	public function __construct(protected $cols)
 	{
-		$this->cols = $cols;
 		$this->widths = [];
 
 		$this->dict = [];
@@ -117,7 +111,7 @@ class PXAdminTableSimple extends PXAdminWidget
 	 */
 	public function setTableId($id = null)
 	{
-		$this->tableId = $id ? $id : md5(microtime(1));
+		$this->tableId = $id ?: md5(microtime(1));
 
 		return $this;
 	}
@@ -251,7 +245,7 @@ class PXAdminTableSimple extends PXAdminWidget
 
 	public function cell($row, $col)
 	{
-		$val = isset($row[$col]) ? $row[$col] : null;
+		$val = $row[$col] ?? null;
 
 		$class = [];
 

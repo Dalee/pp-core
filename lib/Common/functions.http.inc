@@ -23,7 +23,7 @@ function http_parse_params_split ($string, $delim, $quote = '"') {
 	$token = $delim;
 	$part = strtok($string, $token);
 	do {
-		if (strpos($part, $quote) !== false && strrpos($part, $quote) === strpos($part, $quote)) {
+		if (str_contains($part, (string) $quote) && strrpos($part, (string) $quote) === strpos($part, (string) $quote)) {
 			$prevpart = $part.$token;
 			$part = strtok($quote) . $quote;
 			$r[] = $prevpart . $part;
@@ -42,8 +42,8 @@ function http_parse_params_split ($string, $delim, $quote = '"') {
 }
 
 function http_parse_params_dequote ($string, $quote = '"') {
-	if (mb_substr($string, 0, 1) == $quote && mb_substr($string, -1, 1) == $quote && mb_substr($string, -2, 1) != '\\') {
-		$string = mb_substr($string, 1, -1);
+	if (mb_substr((string) $string, 0, 1) == $quote && mb_substr((string) $string, -1, 1) == $quote && mb_substr((string) $string, -2, 1) != '\\') {
+		$string = mb_substr((string) $string, 1, -1);
 	}
 	return $string;
 }
@@ -52,17 +52,17 @@ function http_parse_params ($params) {
 	$result = [];
 	$preresult = [];
 
-	$params = str_replace("\\\"", "\0\0", $params);
+	$params = str_replace("\\\"", "\0\0", (string) $params);
 
 	foreach (http_parse_params_split($params, ';') as $p0) {
 		foreach (http_parse_params_split($p0, ',') as $p1) {
 			foreach (http_parse_params_split($p1, ' ') as $param) {
-				$pos = mb_strpos($param, '=');
+				$pos = mb_strpos((string) $param, '=');
 				if ($pos === false) {
-					$result[] = str_replace("\0\0", "\"", http_parse_params_dequote(trim($param)));
+					$result[] = str_replace("\0\0", "\"", (string) http_parse_params_dequote(trim((string) $param)));
 				}
 				else {
-					$result[][trim(mb_substr($param,0,$pos))] = str_replace("\0\0", "\"", http_parse_params_dequote(trim(mb_substr($param,$pos+1))));
+					$result[][trim(mb_substr((string) $param,0,$pos))] = str_replace("\0\0", "\"", (string) http_parse_params_dequote(trim(mb_substr((string) $param,$pos+1))));
 				}
 			}
 		}
@@ -143,9 +143,9 @@ if (!function_exists('http_build_url')) :
  * @test ["http://example.org/orig?q=1#f","https://www.example.com:9999/replaced#n",0] >>> "https://www.example.com:9999/replaced?q=1#n"
  * @test ["http://user@www.example.com/pub/index.php?a=b#files",{"scheme":"ftp","host":"ftp.example.com","path":"files/current/","query":"a=c"},271] >>> "ftp://ftp.example.com/pub/files/current/?a=c" --- replace scheme, host, path, query == HTTP_URL_STRIP_FRAGMENT|HTTP_URL_STRIP_AUTH|HTTP_URL_JOIN_QUERY|HTTP_URL_JOIN_PATH
  */
-function http_build_url($url, $parts = [], $flags = HTTP_URL_FROM_ENV, &$new_url = []) {
-	is_array($url) || $url = parse_url($url);
-	is_array($parts) || $parts = parse_url($parts);
+function http_build_url(mixed $url, $parts = [], $flags = HTTP_URL_FROM_ENV, &$new_url = []) {
+	is_array($url) || $url = parse_url((string) $url);
+	is_array($parts) || $parts = parse_url((string) $parts);
 
 	isset($url['query'])   && is_string($url['query'])   || $url['query']   = null;
 	isset($parts['query']) && is_string($parts['query']) || $parts['query'] = null;
@@ -157,33 +157,33 @@ function http_build_url($url, $parts = [], $flags = HTTP_URL_FROM_ENV, &$new_url
 	$new_url['port'] = 0;
 
 	if(!($flags & HTTP_URL_STRIP_PORT)) {
-		$new_url['port'] = isset($parts['port']) ? $parts['port'] : (isset($url['port']) ? $url['port'] : 0);
+		$new_url['port'] = $parts['port'] ?? $url['port'] ?? 0;
 	}
 
 	if(!($flags & HTTP_URL_STRIP_USER)) {
-		$new_url['user'] = isset($parts['user']) ? $parts['user'] : (isset($url['user']) ? $url['user'] : null);
+		$new_url['user'] = $parts['user'] ?? $url['user'] ?? null;
 	}
 
 	if(!($flags & HTTP_URL_STRIP_PASS)) {
-		$new_url['pass'] = isset($parts['pass']) ? $parts['pass'] : (isset($url['pass']) ? $url['pass'] : null);
+		$new_url['pass'] = $parts['pass'] ?? $url['pass'] ?? null;
 	}
 
-	$new_url['scheme'] = isset($parts['scheme']) ? $parts['scheme'] : (isset($url['scheme']) ? $url['scheme'] : null);
-	$new_url['host']   = isset($parts['host'])   ? $parts['host']   : (isset($url['host'])   ? $url['host']   : null);
+	$new_url['scheme'] = $parts['scheme'] ?? $url['scheme'] ?? null;
+	$new_url['host']   = $parts['host'] ?? $url['host'] ?? null;
 
 	if(!($flags & HTTP_URL_STRIP_PATH)) {
-		if(($flags & HTTP_URL_JOIN_PATH) && isset($url['path']) && isset($parts['path']) && substr($parts['path'], 0, 1) != '/'){
-			$new_url['path'] = substr($url['path'], -1) == '/' ? $url['path'] : (dirname($url['path']) . '/');
+		if(($flags & HTTP_URL_JOIN_PATH) && isset($url['path']) && isset($parts['path']) && !str_starts_with((string) $parts['path'], '/')){
+			$new_url['path'] = str_ends_with((string) $url['path'], '/') ? $url['path'] : (dirname((string) $url['path']) . '/');
 			$new_url['path'] .= $parts['path'];
 		} else {
-			$new_url['path'] = isset($parts['path']) ? $parts['path'] : (isset($url['path']) ? $url['path'] : null);
+			$new_url['path'] = $parts['path'] ?? $url['path'] ?? null;
 		}
 	}
 
 	if (!($flags & HTTP_URL_STRIP_QUERY)) {
 		if(($flags & HTTP_URL_JOIN_QUERY) && isset($url['query']) && isset($parts['query'])) {
-			parse_str($url['query'], $url_query);
-			parse_str($parts['query'], $parts_query);
+			parse_str((string) $url['query'], $url_query);
+			parse_str((string) $parts['query'], $parts_query);
 			$new_url['query'] = http_build_query(
 				array_replace_recursive(
 					$url_query,
@@ -191,31 +191,21 @@ function http_build_url($url, $parts = [], $flags = HTTP_URL_FROM_ENV, &$new_url
 				)
 			);
 		} else {
-			$new_url['query'] = isset($parts['query']) ? $parts['query'] : (isset($url['query']) ? $url['query'] : null);
+			$new_url['query'] = $parts['query'] ?? $url['query'] ?? null;
 		}
 	}
 
 	if(!($flags & HTTP_URL_STRIP_FRAGMENT)) {
-		$new_url['fragment'] = isset($parts['fragment']) ? $parts['fragment'] : (isset($url['fragment']) ? $url['fragment'] : null);
+		$new_url['fragment'] = $parts['fragment'] ?? $url['fragment'] ?? null;
 	}
 
 	if (!isset($new_url['scheme'])) {
 		if ($flags & HTTP_URL_FROM_ENV) {
-			switch(true) {
-				case $new_url['port'] == 443:
-				case !!$_SERVER['HTTPS'] && !strcasecmp($_SERVER['HTTPS'], 'ON'):
-					$new_url['scheme'] = 'https';
-					break;
-				case !isset($new_url['port']):
-				case $new_url['port'] == 80:
-				case $new_url['port'] == 0:
-				default:
-					$new_url['scheme'] = 'http';
-					break;
-				case !!($scheme = getservbyport($new_url['port'], "tcp")):
-					$new_url['scheme'] = $scheme;
-					break;
-			}
+			$new_url['scheme'] = match (true) {
+				$new_url['port'] == 443, !!$_SERVER['HTTPS'] && !strcasecmp((string) $_SERVER['HTTPS'], 'ON') => 'https',
+				!!($scheme = getservbyport($new_url['port'], "tcp")) => $scheme,
+				default => 'http',
+			};
 		} else {
 			$new_url['scheme'] = 'http';
 		}
@@ -223,7 +213,7 @@ function http_build_url($url, $parts = [], $flags = HTTP_URL_FROM_ENV, &$new_url
 
 	if(!isset($new_url['host'])) {
 		if($flags & HTTP_URL_FROM_ENV) {
-			if(strlen($host = $_SERVER['HTTP_HOST']) || strlen($host = $_SERVER['SERVER_NAME'])) {
+			if(strlen((string) ($host = $_SERVER['HTTP_HOST'])) || strlen((string) ($host = $_SERVER['SERVER_NAME']))) {
 				$new_url['host'] = $host;
 			} else {
 				$new_url['host'] = php_uname('n');
@@ -234,21 +224,21 @@ function http_build_url($url, $parts = [], $flags = HTTP_URL_FROM_ENV, &$new_url
 	}
 
 	if(!isset($new_url['path'])) {
-		if(($flags & HTTP_URL_FROM_ENV) && strlen($_SERVER['REQUEST_URI'])) {
-			$pos = strpos($_SERVER['REQUEST_URI'], '?');
+		if(($flags & HTTP_URL_FROM_ENV) && strlen((string) $_SERVER['REQUEST_URI'])) {
+			$pos = strpos((string) $_SERVER['REQUEST_URI'], '?');
 			if($pos !== false) {
-				$new_url['path'] = substr($_SERVER['REQUEST_URI'], 0, $pos);
+				$new_url['path'] = substr((string) $_SERVER['REQUEST_URI'], 0, $pos);
 			} else {
 				$new_url['path'] = $_SERVER['REQUEST_URI'];
 			}
 		} else {
 			$new_url['path'] = '/';
 		}
-	} elseif (substr($new_url['path'], 0, 1) != '/') {
-		if(($flags & HTTP_URL_FROM_ENV) && strlen($_SERVER['REQUEST_URI'])) {
-			$pos = strrpos($_SERVER['REQUEST_URI'], '/');
+	} elseif (!str_starts_with((string) $new_url['path'], '/')) {
+		if(($flags & HTTP_URL_FROM_ENV) && strlen((string) $_SERVER['REQUEST_URI'])) {
+			$pos = strrpos((string) $_SERVER['REQUEST_URI'], '/');
 			if($pos !== false) {
-				$path = substr($_SERVER['REQUEST_URI'], 0, $pos);
+				$path = substr((string) $_SERVER['REQUEST_URI'], 0, $pos);
 			} else {
 				$path = '/';
 			}
@@ -259,11 +249,11 @@ function http_build_url($url, $parts = [], $flags = HTTP_URL_FROM_ENV, &$new_url
 	}
 
 	if($new_url['path'] != '/'){
-		while(preg_match('#/\.(/|$)#' . REGEX_MOD, $new_url['path'], $matches, PREG_OFFSET_CAPTURE)) {
-			$new_url['path'] = substr_replace($new_url['path'], "/", $matches[0][1], strlen($matches[0][0]));
+		while(preg_match('#/\.(/|$)#' . REGEX_MOD, (string) $new_url['path'], $matches, PREG_OFFSET_CAPTURE)) {
+			$new_url['path'] = substr_replace((string) $new_url['path'], "/", $matches[0][1], strlen($matches[0][0]));
 		}
-		while(preg_match('#(^|/[^/]+)/\.\.(/|$)#' . REGEX_MOD, $new_url['path'], $matches, PREG_OFFSET_CAPTURE)) {
-			$new_url['path'] = substr_replace($new_url['path'], "/", $matches[0][1], strlen($matches[0][0]));
+		while(preg_match('#(^|/[^/]+)/\.\.(/|$)#' . REGEX_MOD, (string) $new_url['path'], $matches, PREG_OFFSET_CAPTURE)) {
+			$new_url['path'] = substr_replace((string) $new_url['path'], "/", $matches[0][1], strlen($matches[0][0]));
 		}
 	}
 

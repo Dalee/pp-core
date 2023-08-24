@@ -34,7 +34,7 @@ function html_doctype ($type = 'html5') {
 		$type = $aliases[$type];
 	}
 
-	$doctype = isset($doctypes[$type])? $doctypes[$type] : $doctypes['html5'];
+	$doctype = $doctypes[$type] ?? $doctypes['html5'];
 
 	return "<!DOCTYPE {$doctype}>";
 }
@@ -110,7 +110,7 @@ function html_element ($el, $html, $atts = []) {
 	}
 
 	$text = isset($atts['text'])? html_escape($atts['text']) : '';
-	$html = isset($atts['html'])? $atts['html'] : '';
+	$html = $atts['html'] ?? '';
 	$html = is_array($html)? join($html) : $html;
 
 	$inner = trim($text . $html);
@@ -179,7 +179,7 @@ function _html_duck_params ($args, $names, $empties = false) {
 
 	// collect return
 	foreach ($args as $k => $v) {
-		$atts[$k] = !empty($v)? $v : (isset($atts[$k])? $atts[$k] : null);
+		$atts[$k] = !empty($v)? $v : ($atts[$k] ?? null);
 	}
 
 	return $empties? $atts : array_filter($atts);
@@ -249,7 +249,7 @@ function html_block ($name, $atts = [], $html = '') {
 	}
 
 	// fetch tag if exists or use div
-	$tag = isset($atts['tag'])? $atts['tag'] : 'div';
+	$tag = $atts['tag'] ?? 'div';
 	unset($atts['tag']);
 
 	// prepend block class
@@ -323,7 +323,7 @@ function html_img ($src, $class = null, $alt = '', array $atts = []) {
  * @test ["a,b"] >>> "b" --- try2
  * @test ["a,b"] >>> "b" --- try3
  */
-function html_cycle ($cycle, $name = null, $iterate = 1) {
+function html_cycle (string|array $cycle, $name = null, $iterate = 1) {
 	if (is_numeric($name) || is_bool($name)) {
 		$iterate = $name;
 		$name = null;

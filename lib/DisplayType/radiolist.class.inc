@@ -3,7 +3,7 @@ class PXDisplayTypeRadioList extends PXDisplayTypeDropDown {
 	public function buildInput($field, $object, $param = null) {
 		$value = !empty($object[$field->name]) ? $object[$field->name] : 0;
 		$values  = $field->values->getList();
-		if(!count($values)){
+		if(!(is_countable($values) ? count($values) : 0)){
 			return;
 		}
 
@@ -21,4 +21,3 @@ class PXDisplayTypeRadioList extends PXDisplayTypeDropDown {
 		return $selector->html();
 	}
 }
-?>

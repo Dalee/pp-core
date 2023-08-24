@@ -98,7 +98,7 @@ class PXAdminAuditWrapper
 
         foreach ($levels as $k => $v) {
             $selected = ($k == $this->request->getVar('level')) ? ' selected' : '';
-            $levelHTML .= '<option value="' . $k . '"' . $selected . '>' . ($v ? $v : '- Any -') . '</option>';
+            $levelHTML .= '<option value="' . $k . '"' . $selected . '>' . ($v ?: '- Any -') . '</option>';
         }
 
         foreach ($types as $v) {
@@ -117,7 +117,7 @@ class PXAdminAuditWrapper
         $ip = quot($this->request->getVar("ip"));
         $id = quot($this->request->getVar("id"));
 
-        $ts = $this->request->getVar('ts') ? $this->request->getVar('ts') : null;
+        $ts = $this->request->getVar('ts') ?: null;
         $ds = $this->request->getVar('date');
         if (isset($ds) && !in_array(null, $ds)) {
             $ts = getFromArray($ds, 'day') . '-' . getFromArray($ds, 'month') . '-' . getFromArray($ds, 'year') . ' 00:00:00';
@@ -261,7 +261,7 @@ HTML;
 
     public function get_cols()
     {
-        return array_merge(['id'], array_keys($this->cols2title));
+        return [...['id'], ...array_keys($this->cols2title)];
     }
 
     public function html($html)
@@ -273,7 +273,7 @@ HTML;
     {
         $filters = [];
 
-        $cols = array_combine($cols = $this->get_cols(), array_pad([], count($cols), NULL));
+        $cols = array_combine($cols = $this->get_cols(), array_pad([], is_countable($cols) ? count($cols) : 0, NULL));
         $cols = array_merge($cols, ["date" => null, "format" => null]);
         $in = array_merge($cols, $this->filters);
 
@@ -293,11 +293,11 @@ HTML;
 
     public function source($source)
     {
-        if (!strpos($source, '/')) {
+        if (!strpos((string) $source, '/')) {
             return $source;
         }
 
-        [$_type, $_id] = explode('/', $source);
+        [$_type, $_id] = explode('/', (string) $source);
         return '<a title="Редактировать объект" href="javascript:EditContent(\'' . $_type . '\', \'' . $_id . '\')">' . $source . '</a>';
     }
 }

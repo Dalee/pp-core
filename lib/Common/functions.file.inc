@@ -184,14 +184,14 @@ function ReadFileToString($fileName) {
 
 function ReadFileToUString($fileName) {
 	if (!file_exists($fileName)) FatalError();
-	return utf8_encode(ReadFileToString($fileName));
+	return mb_convert_encoding((string) ReadFileToString($fileName), 'UTF-8', 'ISO-8859-1');
 }
 
 function WriteStringToFile($fileName, $string) {
 	$fd = fopen($fileName, "w");
 	if ($fd) {
 		if (flock($fd, LOCK_EX) === true) {
-			fwrite($fd, $string);
+			fwrite($fd, (string) $string);
 			flock($fd, LOCK_UN);
 		} else {
 			FatalError("Ошибка при записи в файл <EM>".$fileName."</EM> - невозможно заблокировать файл.");
@@ -211,7 +211,7 @@ function AppendStringToFile($fileName, $string) {
 	$fd = fopen($fileName, "a");
 	if ($fd) {
 		if (flock($fd, LOCK_EX) === true) {
-			fwrite($fd, $string);
+			fwrite($fd, (string) $string);
 			flock($fd, LOCK_UN);
 		} else {
 			FatalError("Ошибка при записи в файл <EM>".$fileName."</EM> - невозможно заблокировать файл.");
@@ -225,7 +225,7 @@ function AppendStringToFile($fileName, $string) {
 if (!function_exists("mime_content_type")) {
 	function mime_content_type($file, $type = 'mime') { //without Fileinfo extension constants FILEINFO_* are undefined
 		if(function_exists("finfo_file") && file_exists('/etc/magic')) {
-			$tmp = finfo_file(finfo_open(constant('FILEINFO_' . mb_strtoupper($type)), '/etc/magic'), $file);
+			$tmp = finfo_file(finfo_open(constant('FILEINFO_' . mb_strtoupper((string) $type)), '/etc/magic'), $file);
 		} else {
 			$tmp = exec(sprintf("file -bi '%s'", escapeshellcmd($file)));
 		}
@@ -234,7 +234,7 @@ if (!function_exists("mime_content_type")) {
 }
 
 function MakeDirIfNotExists($dirName, $perm = NULL) {
-	$dirName = preg_replace('|[/\\\\]+|'.REGEX_MOD, DIRECTORY_SEPARATOR, $dirName);
+	$dirName = preg_replace('|[/\\\\]+|'.REGEX_MOD, DIRECTORY_SEPARATOR, (string) $dirName);
 	$fullDirName = '';
 
 	$dirPath = explode(DIRECTORY_SEPARATOR, $dirName);
@@ -258,7 +258,7 @@ function MakeDirIfNotExists($dirName, $perm = NULL) {
 }
 
 function parse_csv_string($source, $delim=';', $withColumnNames=false) {
-	$strings = explode("\n", trim($source));
+	$strings = explode("\n", trim((string) $source));
 
 	$res = [];
 
@@ -272,11 +272,11 @@ function parse_csv_string($source, $delim=';', $withColumnNames=false) {
 		$elements = explode($delim, $string);
 
 		for ($i = 0; $i < count($elements); $i++) {
-			$nquotes = substr_count($elements[$i], '"');
+			$nquotes = substr_count((string) $elements[$i], '"');
 
 			if ($nquotes %2 == 1) {
 				for ($j = $i+1; $j < count($elements); $j++) {
-					if (substr_count($elements[$j], '"') > 0) {
+					if (substr_count((string) $elements[$j], '"') > 0) {
 						// Put the quoted string's pieces back together again
 						array_splice($elements, $i, $j-$i+1,
 						implode($delim, array_slice($elements, $i, $j-$i+1)));
@@ -288,7 +288,7 @@ function parse_csv_string($source, $delim=';', $withColumnNames=false) {
 			if ($nquotes > 0) {
 				// Remove first and last quotes, then merge pairs of quotes
 				$qstr =& $elements[$i];
-				$qstr = substr_replace($qstr, '', mb_strpos($qstr, '"'), 1);
+				$qstr = substr_replace((string) $qstr, '', mb_strpos((string) $qstr, '"'), 1);
 				$qstr = substr_replace($qstr, '', mb_strrpos($qstr, '"'), 1);
 				$qstr = str_replace('""', '"', $qstr);
 			}
@@ -335,7 +335,7 @@ function parse_csv_file($filename, $delim=';') {
 }
 
 function FindSystemFile($fileName){
-	$pathArray = explode(':', $_SERVER['PATH']);
+	$pathArray = explode(':', (string) $_SERVER['PATH']);
 	if (!in_array('/usr/X11R6/bin/', $pathArray) && !in_array('/usr/X11R6/bin', $pathArray)) {
 		$pathArray[] = '/usr/X11R6/bin/';
 	}
@@ -377,7 +377,7 @@ function fileMimeType ($filename) {
  * @test [1555, 2] >>> {"size":1.52,"step":1,"measure":"KB","pretty":"1.52 KB"}
  */
 function parseFilesize ($filesize, $decimals = 0, $measures = null) {
-	$measures = (array)($measures ? $measures : null) + ['B', 'KB', 'MB', 'GB', 'TB', 'PB'];
+	$measures = (array)($measures ?: null) + ['B', 'KB', 'MB', 'GB', 'TB', 'PB'];
 
 	$size = $filesize;
 	$step = 0;

@@ -2,14 +2,12 @@
 
 class PXInputCheckbox extends PXAdminWidget
 {
-    public $name;
     public $on;
     public $value = NULL;
     public $id = NULL;
 
-    public function __construct($name, $on = false, $value = NULL)
+    public function __construct(public $name, $on = false, $value = NULL)
     {
-        $this->name = $name;
         $this->setOn($on);
         $this->setValue($value);
     }

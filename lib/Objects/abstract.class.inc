@@ -18,7 +18,7 @@ abstract class PXContentObjects extends ArrayObject implements ContentObjectsInt
 
     public function hasType($type)
     {
-        return array_key_exists($type, $this) && sizeof($this[$type]);
+        return isset($this[$type]);
     }
 
     public function getCurrentType()

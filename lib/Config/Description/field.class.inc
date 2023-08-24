@@ -24,13 +24,11 @@ class PXFieldDescription
 	public $defaultValue = NULL;
 	public $listed = NULL;
 	public $noindex = NULL;
-	public $typeDescription;
 	public $comments = '';
 	public $groupName = NULL;
 
-	public function __construct($fieldNode, $app, $type)
+	public function __construct($fieldNode, $app, public $typeDescription)
 	{
-		$this->typeDescription = $type;
 		$this->app = $app;
 
 		if (is_object($fieldNode)) {
@@ -56,7 +54,7 @@ class PXFieldDescription
 						break;
 
 					case 'listed':
-						$listed = mb_strtoupper($value);
+						$listed = mb_strtoupper((string) $value);
 						$this->listed = $listed == 'TRUE';
 						break;
 
@@ -71,7 +69,7 @@ class PXFieldDescription
 						break;
 
 					case 'noindex':
-						$noindex = mb_strtoupper($value);
+						$noindex = mb_strtoupper((string) $value);
 						$this->noindex = $noindex == 'TRUE';
 						break;
 
@@ -111,7 +109,7 @@ class PXFieldDescription
 			foreach ($defaultValueNode as $value) {
 				$value = $value->nodeValue();
 				$value = pp_simplexml_decode_string($value);
-				$value = trim($value);
+				$value = trim((string) $value);
 
 				$this->defaultValue .= preg_replace('/^\t+/m' . REGEX_MOD, '', $value);
 			}

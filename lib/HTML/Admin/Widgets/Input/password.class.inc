@@ -2,14 +2,10 @@
 
 class PXInputPassword extends PXAdminWidget
 {
-    public $value;
-    public $name;
     public $canDelete = true;
 
-    public function __construct($name, $value)
+    public function __construct(public $name, public $value)
     {
-        $this->value = $value;
-        $this->name = $name;
     }
 
     public function canDelete($canDelete)
@@ -21,7 +17,7 @@ class PXInputPassword extends PXAdminWidget
     {
         $name = $this->name;
 
-        if (mb_strlen($this->value) && $this->canDelete) {
+        if (mb_strlen((string) $this->value) && $this->canDelete) {
             $deleteHTML = <<<HTML
 				<input type="checkbox" name="{$name}[delete]" id="{$name}[delete]" class="checkbox" {$this->disable}>
 				<label for="{$name}[delete]">удалить пароль</label>

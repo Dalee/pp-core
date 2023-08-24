@@ -6,13 +6,11 @@ class NLHTTPVarsData
 {
 	public $raw;
 	public $clientCharset;
-	public $_needToStripTags;
 
-	public function __construct($needToStripTags = false, $needToConvert = true)
+	public function __construct(public $_needToStripTags = false, $needToConvert = true)
 	{
 		$this->raw = [];
-		$this->clientCharset = isset($_SERVER['CHARSET']) ? strtolower($_SERVER['CHARSET']{0}) : CHARSET_UTF8;
-		$this->_needToStripTags = $needToStripTags;
+		$this->clientCharset = isset($_SERVER['CHARSET']) ? strtolower((string) $_SERVER['CHARSET'][0]) : CHARSET_UTF8;
 	}
 
 	// Раскодирование JavaScript escape();
@@ -25,7 +23,7 @@ class NLHTTPVarsData
 			}
 
 		} else {
-			if (preg_match('/^(%u\d{4})+$/' . REGEX_MOD, $data)) {
+			if (preg_match('/^(%u\d{4})+$/' . REGEX_MOD, (string) $data)) {
 				$data = utf8_urldecode($data);
 			}
 		}
@@ -45,19 +43,15 @@ class NLHTTPVarsData
 			}
 
 		} else {
-			if (get_magic_quotes_gpc()) {
-				$data = stripslashes($data);
-			}
-
 			if ($this->_needToStripTags) {
-				$data = strip_tags($data);
+				$data = strip_tags((string) $data);
 			}
 		}
 	}
 
 	public function _GetVar($varName)
 	{
-		return isset($this->raw[$varName]) ? $this->raw[$varName] : NULL;
+		return $this->raw[$varName] ?? NULL;
 	}
 
 	public function _isSetVar($varName)
@@ -131,8 +125,8 @@ class NLHTTPVarsData
 			if (!empty($diff))
 				return null;
 
-			return call_user_func_array("sprintf", ["pattern" => "%02d.%02d.%04d %02d:%02d:%02d", $r['day'], $r['month'], $r['year'], $r['hour'],
-				$r['minute'], $r['second']]);
+			return sprintf("%02d.%02d.%04d %02d:%02d:%02d", $r['day'], $r['month'], $r['year'], $r['hour'],
+				$r['minute'], $r['second']);
 		}
 	}
 

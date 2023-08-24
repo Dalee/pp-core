@@ -9,7 +9,7 @@ use PP\Lib\Http\Response;
 final class PXRegistry {
 	public const unknownVarMessage = "Registry - not heap. Store your %s somewhere else!";
 
-	private static $instance = null;
+	private static ?\PXRegistry $instance = null;
 
 	private $app;
 	private $db;
@@ -25,7 +25,7 @@ final class PXRegistry {
 	 */
 	private $session;
 
-	private $userRegistry;
+	private readonly \PXRegistryUSER $userRegistry;
 
 	private function __construct(){
 		$this->userRegistry = new PXRegistryUSER();
@@ -105,10 +105,9 @@ final class PXRegistry {
 	}
 
 	/**
-	 * @static
-	 * @return PXDatabase|PostgreSqlDriver
-	 */
-	public static function getDb() {
+  * @static
+  */
+ public static function getDb(): \PXDatabase|\PP\Lib\Database\Driver\PostgreSqlDriver {
 		return self::get('db');
 	}
 
@@ -129,7 +128,6 @@ final class PXRegistry {
 	}
 
 	/**
-	 * @static
 	 * @return Layout\NullLayout|PXUserHTMLLayout
 	 */
 	public static function getLayout() {
@@ -173,7 +171,7 @@ final class PXRegistry {
 		}
 
 		if(!is_null($typeName)) {
-			return isset($types[$typeName]) ? $types[$typeName] : null;
+			return $types[$typeName] ?? null;
 		}
 
 		return $types;
@@ -184,7 +182,7 @@ final class PXRegistry {
 	}
 
 	private static function get_registry_fields() {
-		return array_keys(get_class_vars(__CLASS__));
+		return array_keys(get_class_vars(self::class));
 	}
 
 	public static function assignToObject($object) {
@@ -195,7 +193,7 @@ final class PXRegistry {
 		if(empty($fields)) return;
 
 		foreach($fields as $field) {
-			$registry_method = "get".ucfirst($field);
+			$registry_method = "get".ucfirst((string) $field);
 			$object->$field = self::$registry_method();
 		}
 	}
@@ -241,7 +239,7 @@ final class PXRegistry {
 
 final class PXRegistryUSER
 {
-	private $__hash__;
+	private ?array $__hash__ = null;
 
 	public
 	function get($key)

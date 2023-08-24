@@ -36,12 +36,12 @@ if (!defined('IS_CLI')) {
 
 if (IS_CLI || empty($_SERVER['DOCUMENT_ROOT'])) {
 	// TODO: this will be wrong in case of vendor/pp/core
-	$_SERVER['DOCUMENT_ROOT'] = realpath(dirname(__FILE__) . '/../../');
+	$_SERVER['DOCUMENT_ROOT'] = realpath(__DIR__ . '/../');
 }
 
 // Определение BASEPATH - это полный путь к корню сайта
 if (!defined('BASEPATH')) {
-	$basePath = str_replace("/", DIRECTORY_SEPARATOR, $_SERVER["DOCUMENT_ROOT"]);
+	$basePath = str_replace("/", DIRECTORY_SEPARATOR, (string) $_SERVER["DOCUMENT_ROOT"]);
 	$basePath = rtrim($basePath, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
 	define('BASEPATH', $basePath);
 }
@@ -84,8 +84,8 @@ if (file_exists(SHAREDPATH . '/etc/php.ini')) {
 		ini_set($key, $param);
 	}
 
-	$systemUser = (isset($params['user'])) ? $params['user'] : $systemUser;
-	$systemEnv = (isset($params['env'])) ? $params['env'] : $systemEnv;
+	$systemUser = $params['user'] ?? $systemUser;
+	$systemEnv = $params['env'] ?? $systemEnv;
 }
 
 define('SYSTEM_USER', $systemUser);

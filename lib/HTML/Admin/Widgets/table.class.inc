@@ -15,8 +15,6 @@ use PP\Lib\Html\Layout\LayoutAbstract;
 class PXAdminTable extends PXAdminComplexWidget
 {
 
-	public $data;
-	public $dtype;
 	public $getData;
 
 	public $titleKey;
@@ -48,15 +46,13 @@ class PXAdminTable extends PXAdminComplexWidget
 	 * @param Array $getData - массив с GET переменными которые надо добавлять в ссылки таблицы
 	 * @param String $titleKey - тип поля в datatype по которому будет определяться 'title' таблицы
 	 */
-	public function __construct($data, $dtype, $getData, $titleKey = NULL)
+	public function __construct(public $data, public $dtype, $getData, $titleKey = NULL)
 	{
-		$this->data = $data;
-		$this->dtype = $dtype;
 		$this->getData = !empty($getData) ? $getData : [];
 
-		$this->currentOrder = isset($getData[$this->dtype->id . '_order']) ? $getData[$this->dtype->id . '_order'] : $this->dtype->order;
+		$this->currentOrder = $getData[$this->dtype->id . '_order'] ?? $this->dtype->order;
 
-		$this->titleKey = ($titleKey) ? $titleKey : 'title';
+		$this->titleKey = $titleKey ?: 'title';
 		$this->controls = [];
 		$this->showDefaultControls = 'before';
 
@@ -135,7 +131,7 @@ class PXAdminTable extends PXAdminComplexWidget
 			}
 		}
 
-		if (count($this->data)) {
+		if (is_countable($this->data) ? count($this->data) : 0) {
 			$html .= join($this->blocks[self::BEFORE_CONTENT]);
 
 			$html .= '<table class="objects">';
@@ -143,7 +139,7 @@ class PXAdminTable extends PXAdminComplexWidget
 
 			//<!-- table header
 			$html .= '<thead><tr>';
-			$_icons = 2 + count($this->controls) + ((($hasInnerBlocks || $this->dtype->childs) && $this->showChildObjects) ? 1 : 0);
+			$_icons = 2 + (is_countable($this->controls) ? count($this->controls) : 0) + ((($hasInnerBlocks || $this->dtype->childs) && $this->showChildObjects) ? 1 : 0);
 
 			$html .= '<th class="c' . (($_icons > 2) ? $_icons : '') . '">';
 			$html .= '<a href="' . $this->_buildHref($this->dtype->id . '_order', $this->dtype->order) . '" title="Порядок сортировки по умолчанию"><img src="i/icon/order.gif" width="7" height="8" alt=""></a>';
@@ -152,7 +148,7 @@ class PXAdminTable extends PXAdminComplexWidget
 			foreach ($this->dtype->fields as $field) {
 				if ($field->listed) {
 					$cellWidth = $field->displayType->getCellWidth($field);
-					$html .= '<th' . ($field->name === $this->titleKey ? ' class="maincol"' : ' class="c-' . strtolower($field->displayType->name) . '"') . ($cellWidth ? 'style="width: ' . $cellWidth . 'px"' : '') . '>';
+					$html .= '<th' . ($field->name === $this->titleKey ? ' class="maincol"' : ' class="c-' . strtolower((string) $field->displayType->name) . '"') . ($cellWidth ? 'style="width: ' . $cellWidth . 'px"' : '') . '>';
 
 					$param = [
 						'order' => $this->currentOrder,
@@ -170,12 +166,12 @@ class PXAdminTable extends PXAdminComplexWidget
 
 			$rowPos = 0;
 			foreach ($this->data as $rowKey => $row) {
-				$up = $this->isFirstOnPage($rowPos) || !is_numeric(mb_strpos($this->dtype->order, 'sys_order')) ? 0 : 1;
-				$down = $this->isLastOnPage($rowPos) || !is_numeric(mb_strpos($this->dtype->order, 'sys_order')) ? 0 : 1;
+				$up = $this->isFirstOnPage($rowPos) || !is_numeric(mb_strpos((string) $this->dtype->order, 'sys_order')) ? 0 : 1;
+				$down = $this->isLastOnPage($rowPos) || !is_numeric(mb_strpos((string) $this->dtype->order, 'sys_order')) ? 0 : 1;
 
 				if (isset($row[$this->titleKey])) {
-					$menuTitle = (mb_strlen($row[$this->titleKey]) > 10) ? trim(mb_substr($row[$this->titleKey], 0, 10)) . '&hellip;' : $row[$this->titleKey];
-					$menuTitle = str_replace('"', '', str_replace("'", '', $menuTitle));
+					$menuTitle = (mb_strlen((string) $row[$this->titleKey]) > 10) ? trim(mb_substr((string) $row[$this->titleKey], 0, 10)) . '&hellip;' : $row[$this->titleKey];
+					$menuTitle = str_replace('"', '', str_replace("'", '', (string) $menuTitle));
 					$menuTitle = str_replace("\n", '', str_replace("\r", '', $menuTitle));
 				} else {
 					$menuTitle = '';
@@ -321,7 +317,7 @@ class PXAdminTable extends PXAdminComplexWidget
 				$vars['context'] = $this->_buildContext($control['context'], $vars);
 			}
 			foreach ($vars as $k => $v) {
-				$tmp = str_replace('{{' . $k . '}}', $v, $tmp);
+				$tmp = str_replace('{{' . $k . '}}', $v, (string) $tmp);
 			}
 			$html .= $tmp;
 		}//foreach
@@ -393,7 +389,7 @@ class PXAdminTable extends PXAdminComplexWidget
 	 * @param String|NULL $val - значение для String параметра $key
 	 * @return String - строка с html кодом ссылки
 	 */
-	public function _buildHref($key, $val = NULL)
+	public function _buildHref(string|array $key, $val = NULL)
 	{
 		$args = func_get_args();
 		$argsCount = func_num_args();
@@ -427,7 +423,7 @@ class PXAdminTable extends PXAdminComplexWidget
 
 	public function _buildShowOnSiteLink($row)
 	{
-		if (!isset($row['parent']) || !isset($row['pathname']) || !mb_strlen($row['pathname'])) {
+		if (!isset($row['parent']) || !isset($row['pathname']) || !mb_strlen((string) $row['pathname'])) {
 			return '';
 		}
 
@@ -471,7 +467,7 @@ class PXAdminTable extends PXAdminComplexWidget
 
 	public function htmlCaption()
 	{
-		if (!mb_strlen($this->caption)) {
+		if (!mb_strlen((string) $this->caption)) {
 			return '';
 		}
 
@@ -488,8 +484,7 @@ class PXAdminTable extends PXAdminComplexWidget
 
 	public function setTableId($id = null)
 	{
-		$this->tableId = $id ? $id : md5(microtime(1));
+		$this->tableId = $id ?: md5(microtime(1));
 	}
 
 }//class
-?>

@@ -10,50 +10,49 @@ use Symfony\Component\Config\Exception\FileLocatorFileNotFoundException;
  *
  * @package PP
  */
-class ConfigurationLocator {
+class ConfigurationLocator
+{
+    /**
+     * @var FileLocatorInterface
+     */
+    protected $locator;
 
-	/**
-	 * @var FileLocatorInterface
-	 */
-	protected $locator;
+    /**
+  * ConfigurationLocator constructor.
+  */
+    public function __construct(FileLocatorInterface $locator)
+    {
+        $this->locator = $locator;
+    }
 
-	/**
-	 * ConfigurationLocator constructor.
-	 *
-	 * @param FileLocatorInterface $locator
-	 */
-	public function __construct(FileLocatorInterface $locator) {
-		$this->locator = $locator;
-	}
+    /**
+  * Locates the file.
+  *
+  * @param string $name
+  * @param bool $first
+  */
+    public function locate($name, $first = true): array|string
+    {
+        return $this->locator->locate($name, null, $first);
+    }
 
-	/**
-	 * Locates the file.
-	 *
-	 * @param string $name
-	 * @param bool $first
-	 * @return array|string
-	 */
-	public function locate($name, $first = true) {
-		return $this->locator->locate($name, null, $first);
-	}
+    /**
+  * Same as locate but suppress all exceptions if file's absent.
+  *
+  * @param string $name
+  * @param bool $first
+  */
+    public function locateQuiet($name, $first = true): array|string
+    {
+        $paths = $first ? '' : [];
 
-	/**
-	 * Same as locate but suppress all exceptions if file's absent.
-	 *
-	 * @param string $name
-	 * @param bool $first
-	 * @return array|string
-	 */
-	public function locateQuiet($name, $first = true) {
-		$paths = $first ? '' : [];
+        try {
+            $paths = $this->locate($name, $first);
+        } catch (FileLocatorFileNotFoundException) {
+            //
+        }
 
-		try {
-			$paths = $this->locate($name, $first);
-		} catch (FileLocatorFileNotFoundException $ex) {
-			//
-		}
-
-		return $paths;
-	}
+        return $paths;
+    }
 
 }

@@ -219,7 +219,7 @@ class NLMailVEvent
 	 */
 	public function setExeptionDate($datesArray)
 	{
-		$array = array_map([$this, 'formatDT'], $datesArray);
+		$array = array_map($this->formatDT(...), $datesArray);
 		$this->eventProps['exeptionDate'] = 'EXDATE:' . implode(",", $array);
 	}
 

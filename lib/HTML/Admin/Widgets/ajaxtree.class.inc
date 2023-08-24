@@ -3,14 +3,12 @@
 require_once PPLIBPATH . 'HTML/Admin/Widgets/ajaxTreeBranch.class.inc';
 
 class PXAdminAjaxTree extends PXAdminTree {
-	protected $currentLeaf;
 	/**
 	 * Конструктор класса PXAdminAjaxTree.
 	 * Инициализирует поля класса. необходимые для построения дерева.
 	 */
-	public function __construct(&$datatype, &$tree, $currentLeafId = null) {
+	public function __construct(&$datatype, &$tree, protected $currentLeaf = null) {
 		parent::__construct($datatype, $tree);
-		$this->currentLeaf = $currentLeafId;
 	}
 
 	public function html() {

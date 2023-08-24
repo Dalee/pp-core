@@ -49,7 +49,7 @@ class PXAdminTree extends PXAdminComplexWidget
 
     public function canChangeOrder()
     {
-        return mb_strpos($this->datatype->order, 'sys_order') !== false;
+        return mb_strpos((string) $this->datatype->order, 'sys_order') !== false;
     }
 
     public function setChildLink($chVarName)
@@ -137,7 +137,7 @@ class PXAdminTree extends PXAdminComplexWidget
 
     public function htmlCaption()
     {
-        if (!mb_strlen($this->caption)) {
+        if (!mb_strlen((string) $this->caption)) {
             return '';
         }
 
@@ -152,4 +152,3 @@ class PXAdminTree extends PXAdminComplexWidget
         return $html;
     }
 }
-

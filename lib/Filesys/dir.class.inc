@@ -50,10 +50,10 @@ class NLDir
 		$catalog = $this->_prepare($catalog);
 
 		if (DIRECTORY_SEPARATOR === '\\') {
-			if ($catalog{1} == ':' && $catalog{2} == '\\') {
+			if ($catalog[1] == ':' && $catalog[2] == '\\') {
 				$this->name = $catalog;
 
-			} elseif ($catalog{0} . $catalog{1} === '\\\\') {
+			} elseif ($catalog[0] . $catalog[1] === '\\\\') {
 				$this->name = $catalog;
 
 			} else {
@@ -61,7 +61,7 @@ class NLDir
 			}
 
 		} else {
-			if ($catalog{0} !== '/') {
+			if ($catalog[0] !== '/') {
 				$this->name = getcwd() . '/' . $catalog . '/';
 			} else {
 				$this->name = $catalog . '/';
@@ -79,7 +79,7 @@ class NLDir
 	{
 		$ds = DIRECTORY_SEPARATOR;
 
-		$catalog = preg_replace('|^\\\\|' . REGEX_MOD, '||', $catalog);
+		$catalog = preg_replace('|^\\\\|' . REGEX_MOD, '||', (string) $catalog);
 
 		$catalog = str_replace('\\', '/', $catalog);
 		$catalog = preg_replace('|\/{2,}|' . REGEX_MOD, '/', $catalog);
@@ -149,7 +149,7 @@ class NLDir
 		while (true) {
 			$entry = $this->_dirObject->read();
 
-			if ($entry{0} != '.') {
+			if ($entry[0] != '.') {
 				break;
 			}
 		}
@@ -237,7 +237,8 @@ class NLDir
 
 	public function unlink($entry)
 	{
-		ini_set('track_errors', 1);
+		$php_errormsg = null;
+  ini_set('track_errors', 1);
 		$oldError = error_reporting(0);
 
 		$res = @unlink($entry);

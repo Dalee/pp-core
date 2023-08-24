@@ -10,102 +10,96 @@ namespace PP\Plugin;
  */
 class AbstractPlugin
 {
+    protected $name = null;
 
-	protected $name = null;
+    /**
+  * @param \PXApplication $app
+  */
+    public function __construct(public $app, public $description)
+    {
+        $this->name = $description->getName();
+        $this->path = dirname((string) $this->description->getPathToPlugin());
 
-	public $description;
+        array_map($this->loadModule(...), $this->description->modules);
+        array_map($this->loadTrigger(...), $this->description->triggers);
 
-	/** @var \PXApplication */
-	public $app;
+        $this->initialize($app);
+    }
 
-	public function __construct($app, $description)
-	{
-		$this->app = $app;
-		$this->description = $description;
+    public function initialize($app)
+    {
+    }
 
-		$this->name = $description->getName();
-		$this->path = dirname($this->description->getPathToPlugin());
+    public function initSet($params = null)
+    {
+    }
 
-		array_map([$this, "loadModule"], $this->description->modules);
-		array_map([$this, "loadTrigger"], $this->description->triggers);
+    public static function getParam($pluginName, $paramName)
+    {
+        return @\PXRegistry::getApp()->plugins[$pluginName]->params[$paramName];
+    }
 
-		$this->initialize($app);
-	}
+    public function loadTrigger($relativePath)
+    {
+        [$type, $name] = explode("/", (string) $relativePath);
+        $this->app->registerTrigger($type, ["name" => $name] + ["folder" => $this->name]);
+    }
 
-	public function initialize($app)
-	{
-	}
+    public function load($path, $pattern = "%s")
+    {
+        /** @noinspection PhpFormatFunctionParametersMismatchInspection */
+        require_once sprintf("%s/{$pattern}", $this->path, $path);
+    }
 
-	public function initSet($params = null)
-	{
-	}
-
-	public static function getParam($pluginName, $paramName)
-	{
-		return @\PXRegistry::getApp()->plugins[$pluginName]->params[$paramName];
-	}
-
-	public function loadTrigger($relativePath)
-	{
-		[$type, $name] = explode("/", $relativePath);
-		$this->app->registerTrigger($type, ["name" => $name] + ["folder" => $this->name]);
-	}
-
-	public function load($path, $pattern = "%s")
-	{
-		/** @noinspection PhpFormatFunctionParametersMismatchInspection */
-		require_once sprintf("%s/{$pattern}", $this->path, $path);
-	}
-
-	public function loadWithLoader($folder, $classPrefix, $filename_without_ext, $extension = 'class.inc')
-	{
-		\PXLoader::getInstance("{$this->path}/{$folder}/")
-			->load("{$classPrefix}{$filename_without_ext}", "{$filename_without_ext}.{$extension}");
-	}
+    public function loadWithLoader($folder, $classPrefix, $filename_without_ext, $extension = 'class.inc')
+    {
+        \PXLoader::getInstance("{$this->path}/{$folder}/")
+            ->load("{$classPrefix}{$filename_without_ext}", "{$filename_without_ext}.{$extension}");
+    }
 
 
-	public function loadModule($relativePath)
-	{
-		$this->load($relativePath, "modules/%s.module.inc");
-	}
+    public function loadModule($relativePath)
+    {
+        $this->load($relativePath, "modules/%s.module.inc");
+    }
 
-	public function loadCronrun($relativePath)
-	{
-		$this->load($relativePath, "cronruns/%s.cronrun.inc");
-	}
+    public function loadCronrun($relativePath)
+    {
+        $this->load($relativePath, "cronruns/%s.cronrun.inc");
+    }
 
-	public function loadDisplayType($filename_without_ext)
-	{
-		$this->loadWithLoader('displayTypes', 'PXDisplayType', $filename_without_ext);
-	}
+    public function loadDisplayType($filename_without_ext)
+    {
+        $this->loadWithLoader('displayTypes', 'PXDisplayType', $filename_without_ext);
+    }
 
-	public function loadStorageType($filename_without_ext)
-	{
-		$this->loadWithLoader('storageTypes', 'PXStorageType', $filename_without_ext);
-	}
+    public function loadStorageType($filename_without_ext)
+    {
+        $this->loadWithLoader('storageTypes', 'PXStorageType', $filename_without_ext);
+    }
 
-	public function loadOnlyInAdmin($path)
-	{
-		if ($this->app->isAdminEngine()) {
-			$this->load($path);
-		}
-	}
+    public function loadOnlyInAdmin($path)
+    {
+        if ($this->app->isAdminEngine()) {
+            $this->load($path);
+        }
+    }
 
-	// what the hell is that?
-	public static function autoload($className)
-	{
-		$f = \PXLoader::find($className);
+    // what the hell is that?
+    public static function autoload($className)
+    {
+        $f = \PXLoader::find($className);
 
-		if (!strstr($f, "/plugins/")) {
-			return;
-		}
+        if (!strstr((string) $f, "/plugins/")) {
+            return;
+        }
 
-		if (file_exists($f)) {
-			require_once $f;
+        if (file_exists($f)) {
+            require_once $f;
 
-		} else {
-			@unlinkDir(CACHE_PATH . "/config");
-			@unlink(CACHE_PATH . "/loader");
-		}
-	}
+        } else {
+            @unlinkDir(CACHE_PATH . "/config");
+            @unlink(CACHE_PATH . "/loader");
+        }
+    }
 }

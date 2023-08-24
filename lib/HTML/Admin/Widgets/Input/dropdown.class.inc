@@ -2,20 +2,13 @@
 
 class PXInputDropDown extends PXAdminWidget
 {
-    public $name;
-    public $value;
-    public $values = [];
-
     public $multiple = '';
     public $size = '';
 
     protected $empty = [null => 0];
 
-    public function __construct($name, $value, $values)
+    public function __construct(public $name, public $value, public $values)
     {
-        $this->name = $name;
-        $this->value = $value;
-        $this->values = $values;
     }
 
     public function setMultiple($multiple)
@@ -77,7 +70,7 @@ class PXInputDropDown extends PXAdminWidget
         }
 
         return sprintf('<option value="%s"%s>%s</option>', quot($value), $isSelected ? ' selected' : '',
-            htmlspecialchars($title, ENT_COMPAT | ENT_HTML401, DEFAULT_CHARSET)
+            htmlspecialchars((string) $title, ENT_COMPAT | ENT_HTML401, DEFAULT_CHARSET)
         );
     }
 }

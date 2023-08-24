@@ -28,6 +28,7 @@ class PXWidgetTabs extends PXAdminComplexWidget
 
     public function html()
     {
+        $html = [];
         $this->decorate();
 
         $current = PXRegistry::getRequest()->getVar($this->varName, 'main');

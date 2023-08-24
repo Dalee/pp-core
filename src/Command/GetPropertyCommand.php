@@ -21,50 +21,52 @@ use Symfony\Component\Console\Output\OutputInterface;
  * Class SetProperty
  * @package PP\Command
  */
-class GetPropertyCommand extends AbstractCommand {
+class GetPropertyCommand extends AbstractCommand
+{
+    /**
+     * {@inheritdoc}
+     */
+    protected function configure()
+    {
+        $this
+            ->setName('db:property:get')
+            ->setDescription('Get application property')
+            ->setHelp('Get property')
+            ->addArgument('key', InputArgument::REQUIRED, 'property name');
+    }
 
-	/**
-	 * {@inheritdoc}
-	 */
-	protected function configure() {
-		$this
-			->setName('db:property:get')
-			->setDescription('Get application property')
-			->setHelp('Get property')
-			->addArgument('key', InputArgument::REQUIRED, 'property name');
-	}
+    /**
+     * {@inheritdoc}
+     */
+    protected function execute(InputInterface $input, OutputInterface $output)
+    {
+        $key = $input->getArgument('key');
+        $stderr = null;
 
-	/**
-	 * {@inheritdoc}
-	 */
-	protected function execute(InputInterface $input, OutputInterface $output) {
-		$key = $input->getArgument('key');
-		$stderr = null;
+        // in case no tty present..
+        if ($output instanceof ConsoleOutputInterface) {
+            $stderr = $output->getErrorOutput();
+        }
 
-		// in case no tty present..
-		if ($output instanceof ConsoleOutputInterface) {
-			$stderr = $output->getErrorOutput();
-		}
+        if (empty($key)) {
+            if ($stderr instanceof OutputInterface) {
+                $stderr->writeln("Empty key passed");
+                return 2;
+            }
+        }
 
-		if (empty($key)) {
-			if ($stderr instanceof OutputInterface) {
-				$stderr->writeln("Empty key passed");
-				return 2;
-			}
-		}
+        $sql = sprintf('SELECT "value" FROM %s WHERE "name"=\'%s\'', DT_PROPERTIES, $this->db->EscapeString($key));
+        $result = $this->db->query($sql);
 
-		$sql = sprintf('SELECT "value" FROM %s WHERE "name"=\'%s\'', DT_PROPERTIES, $this->db->EscapeString($key));
-		$result = $this->db->query($sql);
+        if ((is_countable($result) ? count($result) : 0) === 0) {
+            if ($stderr instanceof OutputInterface) {
+                $stderr->writeln("Property: ${key} not found");
+            }
+            return 1;
+        }
 
-		if (count($result) === 0) {
-			if ($stderr instanceof OutputInterface) {
-				$stderr->writeln("Property: ${key} not found");
-			}
-			return 1;
-		}
-
-		$result = array_shift($result);
-		$output->write($result['value']);
-		return 0;
-	}
+        $result = array_shift($result);
+        $output->write($result['value']);
+        return 0;
+    }
 }

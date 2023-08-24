@@ -130,7 +130,7 @@ class PXUserAuthorized extends PXUser
 
 	public function aclType()
 	{
-		return (count($this->groups) > 1) ? 'bygroup' : 'basic';
+		return ((is_countable($this->groups) ? count($this->groups) : 0) > 1) ? 'bygroup' : 'basic';
 	}
 }
 

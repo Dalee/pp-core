@@ -9,7 +9,6 @@ use PP\Lib\Datastruct\Tree;
  * @subpackage Application
  */
 class PXDirectoryDescription {
-	public $name;
 	public $load;
 	public $loaded;
 	public $schema;
@@ -26,8 +25,7 @@ class PXDirectoryDescription {
 	public $sourceItem;
 	public $sourceDataFields;
 
-	public function __construct($name) {
-		$this->name        = $name;
+	public function __construct(public $name) {
 		$this->values      = [];
 		$this->filter      = [];
 		$this->loaded      = false;
@@ -47,7 +45,7 @@ class PXDirectoryDescription {
 	public function GetTree($saveOrphans = false) {
 		$retArray = [];
 
-		if (count($this->values) && $this->parentField !== false) {
+		if ((is_countable($this->values) ? count($this->values) : 0) && $this->parentField !== false) {
 			$retArray = new Tree($this->values, 'id', $this->parentField, 'title', $saveOrphans);
 		}
 

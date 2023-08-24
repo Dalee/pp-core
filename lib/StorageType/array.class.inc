@@ -60,7 +60,7 @@ class PXStorageTypeArray extends PXStorageType
 		$resultArray = $indexArray = [];
 		$level = $index = 0;
 		$ptr = &$resultArray;
-		for ($i = 0; $i < strlen($value); $i++) {
+		for ($i = 0; $i < strlen((string) $value); $i++) {
 			switch ($level) {
 				case 1:
 					if ($index > 0) {
@@ -72,7 +72,7 @@ class PXStorageTypeArray extends PXStorageType
 					$ptr = &$indexArray[--$index];
 					break;
 			}
-			$level = $this->processFSM($value{$i}, $ptr);
+			$level = $this->processFSM($value[$i], $ptr);
 		}
 		return $resultArray;
 	}
@@ -113,5 +113,3 @@ class PXStorageTypeArray extends PXStorageType
 	}
 
 }
-
-?>

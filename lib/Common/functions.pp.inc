@@ -50,7 +50,7 @@ function pp_base_paths($sub = null, $withPlugins = false) {
  * @return string pathname with the highest order
  * @todo optimize me. dont look file in unexistant paths at least
  */
-function pp_fetch_file($where, $what, $postfix = '', $ext = '.inc') {
+function pp_fetch_file(string|array $where, string|array $what, string|array $postfix = '', $ext = '.inc') {
 	$ext = (isset($ext[0]) && $ext[0] == '.' ? '' : '.') . $ext;
 
 	$where = (array)($where);
@@ -74,7 +74,7 @@ function pp_fetch_file($where, $what, $postfix = '', $ext = '.inc') {
 		}
 		foreach ($what as $file) {
 			foreach ($postfix as $p) {
-				if (mb_substr($file, -4) != $p . $ext) {
+				if (mb_substr((string) $file, -4) != $p . $ext) {
 					$filenames = [
 						$path . $file . $p . $ext,
 						$path . $file
@@ -107,7 +107,7 @@ function pp_plugins() {
 		$result[] = [
 			'tag' => $tag,
 			'name' => $plugin->getName(),
-			'path' => pathinfo($plugin->getPathToPlugin(), PATHINFO_DIRNAME) . DIRECTORY_SEPARATOR,
+			'path' => pathinfo((string) $plugin->getPathToPlugin(), PATHINFO_DIRNAME) . DIRECTORY_SEPARATOR,
 		];
 	}
 	return $result;

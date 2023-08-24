@@ -16,38 +16,40 @@ use PP\Lib\Command\AbstractCommand;
  *
  * @package PP\Command
  */
-class CompileContainerCommand extends AbstractCommand {
+class CompileContainerCommand extends AbstractCommand
+{
+    /**
+     * {@inheritdoc}
+     */
+    protected function configure()
+    {
+        $this
+            ->setName('pp:dump:container')
+            ->setDescription('Compiles container to static php file');
+    }
 
-	/**
-	 * {@inheritdoc}
-	 */
-	protected function configure() {
-		$this
-			->setName('pp:dump:container')
-			->setDescription('Compiles container to static php file');
-	}
+    /**
+     * {@inheritdoc}
+     *
+     * @throws \Exception
+     */
+    public function execute(InputInterface $input, OutputInterface $output)
+    {
+        $file = CACHE_PATH . DIRECTORY_SEPARATOR . 'container.php';
+        $containerConfigCache = new ConfigCache($file, false);
 
-	/**
-	 * {@inheritdoc}
-	 *
-	 * @throws \Exception
-	 */
-	public function execute(InputInterface $input, OutputInterface $output) {
-		$file = CACHE_PATH . DIRECTORY_SEPARATOR . 'container.php';
-		$containerConfigCache = new ConfigCache($file, false);
+        $path = APPPATH . 'config';
+        $container = new ContainerBuilder();
+        $loader = new YamlFileLoader($container, new FileLocator($path));
 
-		$path = APPPATH . 'config';
-		$container = new ContainerBuilder();
-		$loader = new YamlFileLoader($container, new FileLocator($path));
+        $loader->load('services.yml');
+        $container->compile(true);
 
-		$loader->load('services.yml');
-		$container->compile(true);
-
-		$dumper = new PhpDumper($container);
-		$containerConfigCache->write(
-			$dumper->dump(['class' => 'MyCachedContainer']),
-			$container->getResources()
-		);
-	}
+        $dumper = new PhpDumper($container);
+        $containerConfigCache->write(
+            $dumper->dump(['class' => 'MyCachedContainer']),
+            $container->getResources()
+        );
+    }
 
 }

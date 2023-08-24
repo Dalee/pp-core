@@ -10,7 +10,7 @@ class PXWidgetFieldGroupsTableView extends PXWidgetFieldGroups
     public function html()
     {
         $html = '<table class="mainform">';
-        if (mb_strlen($this->groupName)) {
+        if (mb_strlen((string) $this->groupName)) {
             $html .= '<caption>' . $this->groupName . '</caption>';
         }
         foreach ($this->group as $field) {

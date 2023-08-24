@@ -20,9 +20,9 @@ class PXInputImage extends PXInputFile
     {
         $this->distension = is_null($this->entry) ? '' : '[' . $this->entry . ']';
 
-        $w = isset($this->value['width']) ? $this->value['width'] : '100';
-        $h = isset($this->value['height']) ? $this->value['height'] : '100';
-        $this->p = isset($this->value['path']) ? $this->value['path'] : $this->_default;
+        $w = $this->value['width'] ?? '100';
+        $h = $this->value['height'] ?? '100';
+        $this->p = $this->value['path'] ?? $this->_default;
 
         if ($w > 100 || $h > 100) {
             $this->width = ($w - $h) > 0 ? 100 : floor(100 * $w / $h);
@@ -58,4 +58,3 @@ HTML;
 
     }
 }
-?>

@@ -26,35 +26,15 @@ function PXTrace() {
 			foreach ($call['args'] as $k=>$v) {
 				$type = gettype($v);
 
-				switch($type) {
-					case 'resource':
-						$value = get_resource_type($v);
-						break;
-
-					case 'array':
-						$value = '['.sizeof($v).']';
-						break;
-
-					case 'object':
-						$value = get_class($v);
-						break;
-
-					case 'boolean':
-						$value = $v ? 'true' : 'false';
-						break;
-
-					case 'string':
-						$value = "'$v'";
-						break;
-
-					case 'NULL':
-						$value = 'NULL';
-						break;
-
-					default:
-						$value = (string)$v;
-						break;
-				}
+				$value = match ($type) {
+					'resource' => get_resource_type($v),
+					'array' => '['.sizeof($v).']',
+					'object' => $v::class,
+					'boolean' => $v ? 'true' : 'false',
+					'string' => "'$v'",
+					'NULL' => 'NULL',
+					default => (string)$v,
+				};
 
 				$e['args'][$k] = ['type'=>$type, 'value'=>$value];
 			}
@@ -67,4 +47,3 @@ function PXTrace() {
 
 	return $trace;
 }
-?>

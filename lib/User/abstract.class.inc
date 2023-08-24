@@ -2,7 +2,7 @@
 define('USERLEVEL_UNAUTHED', 0);
 define('USERLEVEL_USER', 1024);
 define('USERLEVEL_ADMIN', 8192);
-define('USER_SESSION_INTERVAL', time() + 2592000);
+define('USER_SESSION_INTERVAL', time() + 2_592_000);
 
 define('DT_USER', 'suser');
 define('DT_GROUP', 'sgroup');
@@ -47,10 +47,9 @@ abstract class PXUser
 	}
 
 	/**
-	 * @param PXDatabase $db
-	 * @return $this
-	 */
-	public function setDb(PXDatabase $db)
+  * @return $this
+  */
+ public function setDb(PXDatabase $db)
 	{
 		$this->db = $db;
 
@@ -61,10 +60,9 @@ abstract class PXUser
 	}
 
 	/**
-	 * @param PXApplication $app
-	 * @return $this
-	 */
-	public function setApp(PXApplication $app)
+  * @return $this
+  */
+ public function setApp(PXApplication $app)
 	{
 		$this->app = $app;
 
@@ -72,10 +70,9 @@ abstract class PXUser
 	}
 
 	/**
-	 * @param PXRequest $request
-	 * @return $this
-	 */
-	public function setRequest(PXRequest $request)
+  * @return $this
+  */
+ public function setRequest(PXRequest $request)
 	{
 		$this->request = $request;
 

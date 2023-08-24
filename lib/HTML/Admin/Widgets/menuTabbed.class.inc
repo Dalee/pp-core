@@ -4,9 +4,9 @@ require_once PPLIBPATH . 'HTML/Admin/Widgets/tabs.class.inc';
 
 class PXWidgetMenuTabbed extends PXAdminComplexWidget
 {
-    public const BEFORE_TABS = 0;
-    public const TABS = 1;
-    public const AFTER_TABS = 2;
+    final public const BEFORE_TABS = 0;
+    final public const TABS = 1;
+    final public const AFTER_TABS = 2;
 
     public $items;
     public $varName = 'area';

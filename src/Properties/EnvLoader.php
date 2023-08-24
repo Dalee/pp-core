@@ -8,156 +8,155 @@ use Dotenv\Dotenv;
  * Class EnvMapper
  * @package PP\Properties
  */
-class EnvLoader {
+class EnvLoader
+{
+    public const TYPE_NOT_EMPTY = 0; // default
 
-	public const TYPE_NOT_EMPTY = 0; // default
+    /** @var string[] */
+    protected $errors;
 
-	/** @var string[] */
-	protected $errors;
+    /** @var string[int] */
+    protected $required;
 
-	/** @var string[int] */
-	protected $required;
+    /** @var bool */
+    protected $valid;
 
-	/** @var bool */
-	protected $valid;
+    /**
+     * EnvLoader constructor.
+     *
+     * @param string $path
+     * @param string $file
+     */
+    public function __construct(protected $path, protected $file = '.env')
+    {
+        $this->errors = [];
+        $this->required = [];
+    }
 
-	/** @var string */
-	protected $path;
+    /**
+     * Perform ENV injection
+     * it's safe to call it multiple times
+     */
+    public static function inject()
+    {
+        (new EnvLoader(BASEPATH))
+            ->addRequired(['DATABASE_DSN'])
+            ->load();
+    }
 
-	/** @var string */
-	protected $file;
+    /**
+     * Add key or list of keys to be required in environment,
+     * otherwise, exception will be raised.
+     *
+     * @param string|string[] $key
+     * @return $this
+     */
+    public function addRequired(string|array $key)
+    {
+        if (!is_array($key)) {
+            $key = [$key];
+        }
 
-	/**
-	 * EnvLoader constructor.
-	 *
-	 * @param string $path
-	 * @param string $file
-	 */
-	public function __construct($path, $file = '.env') {
-		$this->path = $path;
-		$this->file = $file;
+        foreach ($key as $item) {
+            $this->required[$item] = static::TYPE_NOT_EMPTY;
+        }
 
-		$this->errors = [];
-		$this->required = [];
-	}
+        return $this;
+    }
 
-	/**
-	 * Perform ENV injection
-	 * it's safe to call it multiple times
-	 */
-	public static function inject() {
-		(new EnvLoader(BASEPATH))
-			->addRequired(['DATABASE_DSN'])
-			->load();
-	}
+    /**
+     * Load environment variables
+     *
+     * @throws EnvLoaderException
+     */
+    public function load()
+    {
+        $envFile = join(DIRECTORY_SEPARATOR, [rtrim($this->path, DIRECTORY_SEPARATOR), $this->file]);
+        if (file_exists($envFile)) {
+            $dotenv = new Dotenv($this->path, $this->file);
+            $dotenv->overload();
+        }
 
-	/**
-	 * Add key or list of keys to be required in environment,
-	 * otherwise, exception will be raised.
-	 *
-	 * @param string|string[] $key
-	 * @return $this
-	 */
-	public function addRequired($key) {
-		if (!is_array($key)) {
-			$key = [$key];
-		}
+        $this->validate();
+        if (!$this->valid) {
+            throw new EnvLoaderException(join(', ', $this->errors));
+        }
+    }
 
-		foreach ($key as $item) {
-			$this->required[$item] = static::TYPE_NOT_EMPTY;
-		}
+    /**
+     * Build array from list of provided keys
+     *
+     * @param string[] $mappings
+     * @return array
+     */
+    public static function getMappedArray($mappings)
+    {
+        $result = [];
 
-		return $this;
-	}
+        foreach ($mappings as $key => $mapped) {
+            if (is_int($key)) { // list is here..
+                $key = $mapped;
+                $mapped = null;
+            }
 
-	/**
-	 * Load environment variables
-	 *
-	 * @throws EnvLoaderException
-	 */
-	public function load() {
-		$envFile = join(DIRECTORY_SEPARATOR, [rtrim($this->path, DIRECTORY_SEPARATOR), $this->file]);
-		if (file_exists($envFile)) {
-			$dotenv = new Dotenv($this->path, $this->file);
-			$dotenv->overload();
-		}
+            if (isset($_ENV[$key])) {
+                if ($mapped === null) {
+                    $result[$key] = $_ENV[$key];
+                } else {
+                    $result[$mapped] = $_ENV[$key];
+                }
+            }
+        }
 
-		$this->validate();
-		if (!$this->valid) {
-			throw new EnvLoaderException(join(', ', $this->errors));
-		}
-	}
+        return $result;
+    }
 
-	/**
-	 * Build array from list of provided keys
-	 *
-	 * @param string[] $mappings
-	 * @return array
-	 */
-	public static function getMappedArray($mappings) {
-		$result = [];
+    /**
+     * Return single value of key.
+     *
+     * @param string $key
+     * @return string
+     * @throws EnvLoaderException
+     */
+    public static function get($key)
+    {
+        if (isset($_ENV[$key])) {
+            return $_ENV[$key];
+        }
 
-		foreach ($mappings as $key => $mapped) {
-			if (is_int($key)) { // list is here..
-				$key = $mapped;
-				$mapped = null;
-			}
+        return null;
+    }
 
-			if (isset($_ENV[$key])) {
-				if ($mapped === null) {
-					$result[$key] = $_ENV[$key];
-				} else {
-					$result[$mapped] = $_ENV[$key];
-				}
-			}
-		}
+    /**
+     * Just validation loop
+     */
+    protected function validate()
+    {
+        $validationResult = true;
 
-		return $result;
-	}
+        foreach ($this->required as $key => $flags) {
+            switch (true) {
+                case ($flags & static::TYPE_NOT_EMPTY) == static::TYPE_NOT_EMPTY:
+                    $validationResult = $validationResult && $this->isNotEmpty($key);
+                    break;
+            }
+        }
 
-	/**
-	 * Return single value of key.
-	 *
-	 * @param string $key
-	 * @return string
-	 * @throws EnvLoaderException
-	 */
-	public static function get($key) {
-		if (isset($_ENV[$key])) {
-			return $_ENV[$key];
-		}
+        $this->valid = $validationResult;
+    }
 
-		return null;
-	}
+    /**
+     * @param string $key
+     * @return bool
+     */
+    protected function isNotEmpty($key)
+    {
+        $res = (isset($_ENV[$key])) && (strlen((string) $_ENV[$key]) > 0);
 
-	/**
-	 * Just validation loop
-	 */
-	protected function validate() {
-		$validationResult = true;
+        if (!$res) {
+            $this->errors[] = "${key} should not be empty";
+        }
 
-		foreach ($this->required as $key => $flags) {
-			switch (true) {
-				case ($flags & static::TYPE_NOT_EMPTY) == static::TYPE_NOT_EMPTY:
-					$validationResult = $validationResult && $this->isNotEmpty($key);
-					break;
-			}
-		}
-
-		$this->valid = $validationResult;
-	}
-
-	/**
-	 * @param string $key
-	 * @return bool
-	 */
-	protected function isNotEmpty($key) {
-		$res = (isset($_ENV[$key])) && (strlen($_ENV[$key]) > 0);
-
-		if (!$res) {
-			$this->errors[] = "${key} should not be empty";
-		}
-
-		return $res;
-	}
+        return $res;
+    }
 }

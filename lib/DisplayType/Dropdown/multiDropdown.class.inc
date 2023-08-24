@@ -8,9 +8,7 @@ class PXDisplayTypeMultiDropDown extends PXDisplayTypeDropdown
 			? $object[$field->name]
 			: NULL;
 
-		$size = isset($field->displayTypeArgs[0])
-			? $field->displayTypeArgs[0]
-			: NULL;
+		$size = $field->displayTypeArgs[0] ?? NULL;
 
 		$value = array_key_exists(0, (array)$value) && $value[0] == "NULL" ? "" : $value;
 
@@ -28,7 +26,7 @@ class PXDisplayTypeMultiDropDown extends PXDisplayTypeDropdown
 
 		$value = [];
 		if (is_array($object[$field->name])) {
-			$value = array_filter($object[$field->name], [$this, "_filterNULL"]);
+			$value = array_filter($object[$field->name], $this->_filterNULL(...));
 		}
 
 		$values = $field->values->values;

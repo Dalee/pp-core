@@ -1,5 +1,27 @@
 # Change log
 
+## [3.0.0] 2023-08-23
+- Обновлена версия php до 8.2
+- Обновление phpunit/phpunit до 9.0 lock = `9.6.11`
+- Обновление friendsofphp/php-cs-fixer до 3.23 lock = `3.23.0`
+- Обновлены мажорные версии зависимостей symfony:
+	- `symfony/http-foundation` `^6.0` lock = `6.3.2`
+	  https://github.com/symfony/http-foundation/blob/master/CHANGELOG.md
+	- `symfony/console` `^6.0` lock = `6.3.2`
+	  https://github.com/symfony/console/blob/master/CHANGELOG.md
+	- `symfony/event-dispatcher` `^6.0` lock = `6.3.2`
+	  https://github.com/symfony/event-dispatcher/blob/master/CHANGELOG.md
+	- `symfony/yaml` `^6.0` lock = `6.3.3`
+	  https://github.com/symfony/var-dumper/blob/master/CHANGELOG.md
+	- `symfony/config` `^6.0` lock = `6.3.2`
+	  https://github.com/symfony/config/blob/master/CHANGELOG.md
+	- `symfony/dependency-injection` `^6.0` lock = `6.3.2`
+	  https://github.com/symfony/dependency-injection/blob/master/CHANGELOG.md
+	- `symfony/finder` `^6.0` lock = `6.3.3`
+	  https://github.com/symfony/finder/blob/6.3/CHANGELOG.md
+	- `symfony/cache` `^6.0` lock = `6.3.2`
+	  https://github.com/symfony/cache/blob/6.3/CHANGELOG.md
+
 ## [2.4.11] 2023-03-20
 - Исправлено поведение плагина `PXPluginFilters` для полей линейки `PXDisplayTypeDropdown`, у которых отсутствуют загруженные значения для построения выпадающего списка. Для таких полей теперь используется обычный input.
 

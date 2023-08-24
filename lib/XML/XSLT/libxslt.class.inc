@@ -71,7 +71,7 @@ class PXLibXSLT extends PXXSLT
             '%C3%91' => '%FF'  // я
         ];
 
-        $result = utf8_decode($result);
+        $result = mb_convert_encoding((string) $result, 'ISO-8859-1');
         $result = strtr($result, array_flip(get_html_translation_table(HTML_ENTITIES)));
 
         return strtr($result, $rus_chars);
@@ -89,7 +89,7 @@ class PXLibXSLT extends PXXSLT
         $xsl->importStyleSheet($xslf);
 
         foreach ($this->parameters as $k => $v) {
-            $xsl->setParameter('', $k, utf8_encode($v));
+            $xsl->setParameter('', $k, mb_convert_encoding((string) $v, 'UTF-8', 'ISO-8859-1'));
         }
 
         return $xsl->transformToXML($xml);
@@ -106,5 +106,3 @@ class PXLibXSLT extends PXXSLT
         return $html;
     }
 }
-
-?>

@@ -8,10 +8,9 @@ namespace PP\Lib\Xml;
  */
 interface XmlInterface
 {
-
-	/**
-	 * @param string $query
-	 * @return XmlNodeInterface[]
-	 */
-	public function xpath($query);
+    /**
+     * @param string $query
+     * @return XmlNodeInterface[]
+     */
+    public function xpath($query);
 }

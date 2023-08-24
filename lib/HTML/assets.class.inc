@@ -165,7 +165,7 @@ final class PXHTMLAssets {
 		$filePath = null;
 		foreach ($this->allowedPaths as $_ => $path) {
 			$testPath = realpath($path . '/' . $fileURL);
-			if (strpos($testPath, $path) === 0 && file_exists($testPath)) {
+			if (str_starts_with($testPath, (string) $path) && file_exists($testPath)) {
 				$filePath = $testPath;
 				break;
 			}
@@ -190,7 +190,7 @@ final class PXHTMLAssets {
 			}
 		}
 
-		return str_replace($from, $to, $content);
+		return str_replace($from, $to, (string) $content);
 	}
 
 	public function makePlaceholder ($type, $group) {
@@ -207,7 +207,7 @@ final class PXHTMLAssets {
 			return $url;
 		}
 
-		$code = hexdec(substr(md5($url), -3)); // 1, 3, 5, 7 are the best values here relates on cdns qty
+		$code = hexdec(substr(md5((string) $url), -3)); // 1, 3, 5, 7 are the best values here relates on cdns qty
 		$domainIndex = ($code % $this->cdnCount);
 
 		return $this->cdnDomains[$domainIndex] . $url;
@@ -276,7 +276,7 @@ final class PXHTMLAssets {
 				case 'unique':
 					break;
 				default:
-					$extra_params[] = sprintf('%s="%s"', convertStringToDashed($param), htmlspecialchars($value, ENT_COMPAT|ENT_HTML401, DEFAULT_CHARSET));
+					$extra_params[] = sprintf('%s="%s"', convertStringToDashed($param), htmlspecialchars((string) $value, ENT_COMPAT|ENT_HTML401, DEFAULT_CHARSET));
 			}
 		}
 
@@ -286,11 +286,11 @@ final class PXHTMLAssets {
 
 		$asset_id     = '';
 		$assetH       = null;
-		$assets_group = isset($params['asset_group']) ? $params['asset_group'] : null;
+		$assets_group = $params['asset_group'] ?? null;
 		$assets_dir   = ''; //FIXME
 		$assets_print = !empty($params['print_asset']) || !empty($params['asset_print']);
 
-		$inline       = isset($params['inline']) ? $params['inline'] : null;
+		$inline       = $params['inline'] ?? null;
 
 		$assets_delayed = $this->delayed_print && empty($params['asset_print_delayed']);
 
@@ -300,7 +300,7 @@ final class PXHTMLAssets {
 
 		$is_bundle = false;
 		switch (true) {
-			case $inline && strpos($params['src'], 'http') !== 0:
+			case $inline && !str_starts_with((string) $params['src'], 'http'):
 				foreach ($this->allowedPaths as $localpath) {
 					if (file_exists($localfile = $localpath . $params['src'])) {
 						$params['content'] = file_get_contents($localfile);
@@ -326,7 +326,7 @@ final class PXHTMLAssets {
 				}
 				break;
 
-			case !empty($params['src']) && strpos($params['src'], 'http') !== 0:
+			case !empty($params['src']) && !str_starts_with((string) $params['src'], 'http'):
 				$print_tag = false;
 				foreach ($this->allowedPaths as $localpath) {
 					if (file_exists($localfile = $localpath . $params['src'])) {
@@ -370,7 +370,7 @@ final class PXHTMLAssets {
 			if ($this->findLocalPathByURL($resource_uri)) {
 				$resource_uri = $this->cdnize($resource_uri);
 			}
-			if ($asset_id && !$is_bundle && strpos($resource_uri, '?') === false) {
+			if ($asset_id && !$is_bundle && !str_contains((string) $resource_uri, '?')) {
 				$resource_uri .= sprintf('?_=%s', $asset_id);
 			}
 

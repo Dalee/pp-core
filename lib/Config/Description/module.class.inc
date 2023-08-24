@@ -98,7 +98,7 @@ class PXModuleDescription {
 	 * @return string|null
 	 */
 	public function getSetting($setting) {
-		return isset($this->settings[$setting])? $this->settings[$setting]: null;
+		return $this->settings[$setting] ?? null;
 	}
 
 	/**
@@ -119,4 +119,3 @@ class PXModuleDescription {
 	}
 
 }
-

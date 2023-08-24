@@ -33,8 +33,6 @@ class PXDisplayTypeFile extends PXDisplayType
             return '';
         }
 
-        return '<a href="' . $fileArray['fullpath'] . '" class="file ' . preg_replace('/^.+\./' . REGEX_MOD, '', $fileArray['filename']) . '">' . $fileArray['filename'] . '</a> ' . number_format($fileArray['size'] / 1024, 0, ',', ' ') . 'Кб</br>';
+        return '<a href="' . $fileArray['fullpath'] . '" class="file ' . preg_replace('/^.+\./' . REGEX_MOD, '', (string) $fileArray['filename']) . '">' . $fileArray['filename'] . '</a> ' . number_format($fileArray['size'] / 1024, 0, ',', ' ') . 'Кб</br>';
     }
 }
-
-?>
