@@ -43,7 +43,7 @@ class PXStorageTypeImage extends PXStorageTypeFile
 		// файл присутствует на диске, обновляем данные по файлу
 		//
 		if ($fileName !== null) {
-			if (!in_array(mb_strtolower(mb_substr($fileName, -3)), $allowedImageTypes)) {
+			if (!in_array(pathinfo(mb_strtolower($fileName), PATHINFO_EXTENSION), $allowedImageTypes)) {
 				return null;
 			}
 

@@ -1,5 +1,7 @@
 <?php
 
+include_once __DIR__ . '/SmartyTmplVarsBag.php';
+
 /**
  * Project:     Smarty: the PHP compiling template engine
  * File:        Smarty.class.php
@@ -408,7 +410,7 @@ class Smarty
 	 *
 	 * @var array
 	 */
-	public $_tpl_vars = [];
+	public $_tpl_vars = null;
 
 	/**
 	 * stores run-time $smarty.* vars
@@ -567,6 +569,8 @@ class Smarty
 	 */
 	public function __construct()
 	{
+		$this->_tpl_vars = new SmartyTmplVarsBag();
+
 		$this->assign('SCRIPT_NAME', isset($_SERVER['SCRIPT_NAME']) ? $_SERVER['SCRIPT_NAME']
 			: @$GLOBALS['HTTP_SERVER_VARS']['SCRIPT_NAME']);
 	}
@@ -600,7 +604,7 @@ class Smarty
 	public function assign_by_ref($tpl_var, &$value)
 	{
 		if ($tpl_var != '')
-			$this->_tpl_vars[$tpl_var] = &$value;
+			$this->_tpl_vars[$tpl_var] = $value;
 	}
 
 	/**
@@ -1860,7 +1864,7 @@ class Smarty
 			$included_tpls_idx = count($this->_smarty_debug_info) - 1;
 		}
 
-		$this->_tpl_vars = array_merge($this->_tpl_vars, $params['smarty_include_vars']);
+		$this->_tpl_vars->addVars($params['smarty_include_vars']);
 
 		// config vars are treated as local, so push a copy of the
 		// current ones onto the front of the stack

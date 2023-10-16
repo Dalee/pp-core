@@ -149,7 +149,7 @@ class NLDir
 		while (true) {
 			$entry = $this->_dirObject->read();
 
-			if ($entry[0] != '.') {
+			if (($entry[0] ?? '') != '.') {
 				break;
 			}
 		}
