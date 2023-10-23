@@ -4,6 +4,7 @@ namespace PP\Command;
 
 use PP\Lib\Command\AbstractCommand;
 use Ramsey\Uuid\Uuid;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -62,5 +63,7 @@ class SetPropertyCommand extends AbstractCommand
             $this->db->InsertObject(DT_PROPERTIES, $dbFields, $dbValues);
             $output->writeln("Property: ${key}: <info>inserted</info>");
         }
+
+        return Command::SUCCESS;
     }
 }

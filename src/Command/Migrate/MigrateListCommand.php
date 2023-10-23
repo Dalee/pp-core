@@ -3,6 +3,7 @@
 namespace PP\Command\Migrate;
 
 use PP\Lib\Command\MigrateAbstractCommand;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
@@ -30,12 +31,14 @@ class MigrateListCommand extends MigrateAbstractCommand
         $migrationList = $this->getPendingMigrations();
         if (count($migrationList) === 0) {
             $output->writeln("No pending migrations");
-            return 0;
+            return Command::SUCCESS;
         }
 
         $output->writeln("Pending migrations list:");
         foreach ($migrationList as $migration) {
             $output->writeln("<info>${migration}</info>");
         }
+
+        return Command::SUCCESS;
     }
 }

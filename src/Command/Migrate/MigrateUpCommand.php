@@ -4,6 +4,7 @@ namespace PP\Command\Migrate;
 
 use PP\Lib\Command\MigrateAbstractCommand;
 use PP\Migration\MigrationAbstract;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
@@ -31,7 +32,7 @@ class MigrateUpCommand extends MigrateAbstractCommand
         $migrationList = $this->getPendingMigrations();
         if (count($migrationList) === 0) {
             $output->writeln("No pending migrations");
-            return 0;
+            return Command::SUCCESS;
         }
 
         $this->dbDriver->transactionBegin();
@@ -69,6 +70,8 @@ class MigrateUpCommand extends MigrateAbstractCommand
             $this->dbDriver->transactionRollback();
             throw $e;
         }
+
+        return Command::SUCCESS;
     }
 
     /**

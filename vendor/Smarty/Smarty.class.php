@@ -1864,7 +1864,7 @@ class Smarty
 			$included_tpls_idx = count($this->_smarty_debug_info) - 1;
 		}
 
-		$this->_tpl_vars->addVars($params['smarty_include_vars']);
+		$this->_tpl_vars->merge($params['smarty_include_vars']);
 
 		// config vars are treated as local, so push a copy of the
 		// current ones onto the front of the stack

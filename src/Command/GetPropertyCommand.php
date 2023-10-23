@@ -3,6 +3,7 @@
 namespace PP\Command;
 
 use PP\Lib\Command\AbstractCommand;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\ConsoleOutputInterface;
@@ -51,7 +52,7 @@ class GetPropertyCommand extends AbstractCommand
         if (empty($key)) {
             if ($stderr instanceof OutputInterface) {
                 $stderr->writeln("Empty key passed");
-                return 2;
+                return Command::INVALID;
             }
         }
 
@@ -62,11 +63,11 @@ class GetPropertyCommand extends AbstractCommand
             if ($stderr instanceof OutputInterface) {
                 $stderr->writeln("Property: ${key} not found");
             }
-            return 1;
+            return Command::FAILURE;
         }
 
         $result = array_shift($result);
         $output->write($result['value']);
-        return 0;
+        return Command::SUCCESS;
     }
 }

@@ -3,6 +3,7 @@
 namespace PP\Command\Migrate;
 
 use PP\Lib\Command\MigrateAbstractCommand;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
@@ -50,5 +51,7 @@ class MigrateCreateCommand extends MigrateAbstractCommand
 
         file_put_contents($writePath, $migrationContent);
         $output->writeln("<info>Migration created:</info> ${fileName}");
+
+        return Command::SUCCESS;
     }
 }
