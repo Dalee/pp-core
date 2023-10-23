@@ -26,7 +26,7 @@ class MigrateListCommand extends MigrateAbstractCommand
     /**
      * {@inheritdoc}
      */
-    public function execute(InputInterface $input, OutputInterface $output)
+    public function execute(InputInterface $input, OutputInterface $output): int
     {
         $migrationList = $this->getPendingMigrations();
         if (count($migrationList) === 0) {

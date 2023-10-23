@@ -33,7 +33,7 @@ class CronCommand extends AbstractCommand
     /**
      * {@inheritdoc}
      */
-    public function execute(InputInterface $input, OutputInterface $output)
+    public function execute(InputInterface $input, OutputInterface $output): int
     {
         if (!isset($this->app->modules['cronrun'])) {
             return Command::SUCCESS;

@@ -39,7 +39,7 @@ class GetPropertyCommand extends AbstractCommand
     /**
      * {@inheritdoc}
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $key = $input->getArgument('key');
         $stderr = null;

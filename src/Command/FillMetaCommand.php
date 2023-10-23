@@ -26,7 +26,7 @@ class FillMetaCommand extends AbstractCommand
     /**
      * {@inheritdoc}
      */
-    public function execute(InputInterface $input, OutputInterface $output)
+    public function execute(InputInterface $input, OutputInterface $output): int
     {
         $limit = 100;
 

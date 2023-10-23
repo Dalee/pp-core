@@ -27,7 +27,7 @@ class FillUuidCommand extends AbstractCommand
     /**
      * {@inheritdoc}
      */
-    public function execute(InputInterface $input, OutputInterface $output)
+    public function execute(InputInterface $input, OutputInterface $output): int
     {
         $datatype = $input->getArgument('datatype');
         if ($datatype !== null) {

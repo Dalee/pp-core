@@ -26,7 +26,7 @@ class MigrateCreateCommand extends MigrateAbstractCommand
     /**
      * {@inheritdoc}
      */
-    public function execute(InputInterface $input, OutputInterface $output)
+    public function execute(InputInterface $input, OutputInterface $output): int
     {
         $fileName = sprintf("%f", microtime(true));
         $fileName = str_replace(',', '', $fileName);

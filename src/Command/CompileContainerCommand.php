@@ -34,7 +34,7 @@ class CompileContainerCommand extends AbstractCommand
      *
      * @throws \Exception
      */
-    public function execute(InputInterface $input, OutputInterface $output)
+    public function execute(InputInterface $input, OutputInterface $output): int
     {
         $file = CACHE_PATH . DIRECTORY_SEPARATOR . 'container.php';
         $containerConfigCache = new ConfigCache($file, false);
