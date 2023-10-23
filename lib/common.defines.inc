@@ -101,7 +101,8 @@ define('ENUM_ALLOWED_IMAGETYPES', [
 	'image/jpeg' => 'jpg',
 	'image/pjpeg' => 'jpg',
 	'image/png' => 'png',
-	'image/x-png' => 'png'
+	'image/x-png' => 'png',
+	'image/webp' => 'webp',
 ]);
 
 // разрешенные расширения для pathname объектов контентного уровня

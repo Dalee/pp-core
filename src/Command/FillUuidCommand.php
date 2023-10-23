@@ -3,6 +3,7 @@
 namespace PP\Command;
 
 use Ramsey\Uuid\Uuid;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -26,13 +27,13 @@ class FillUuidCommand extends AbstractCommand
     /**
      * {@inheritdoc}
      */
-    public function execute(InputInterface $input, OutputInterface $output)
+    public function execute(InputInterface $input, OutputInterface $output): int
     {
         $datatype = $input->getArgument('datatype');
         if ($datatype !== null) {
             if (!isset($this->app->types[$datatype])) {
                 $output->writeln('<error>Error:</error> Unknown datatype '.$datatype);
-                return 1;
+                return Command::FAILURE;
             }
 
             $datatype = $this->app->types[$datatype];
@@ -44,7 +45,7 @@ class FillUuidCommand extends AbstractCommand
             }
         }
 
-        return 0;
+        return Command::SUCCESS;
     }
 
     /**

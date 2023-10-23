@@ -2,6 +2,7 @@
 
 namespace PP\Command;
 
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -32,10 +33,10 @@ class CronCommand extends AbstractCommand
     /**
      * {@inheritdoc}
      */
-    public function execute(InputInterface $input, OutputInterface $output)
+    public function execute(InputInterface $input, OutputInterface $output): int
     {
         if (!isset($this->app->modules['cronrun'])) {
-            return;
+            return Command::SUCCESS;
         }
 
         /** @var \PP\Module\CronRunModule $cronModule */
@@ -78,8 +79,8 @@ class CronCommand extends AbstractCommand
                     '<comment>' . $title . '</comment>',
                     mb_str_pad($j['rule']->asString, 15),
                     $description,
-                    mb_str_pad(strftime("%Y-%m-%d %H:%M:%S", $stat['start']), 21),
-                    mb_str_pad(strftime("%Y-%m-%d %H:%M:%S", $stat['end']), 21),
+                    mb_str_pad(strftime("%Y-%m-%d %H:%M:%S", $stat['start'] ?? null), 21),
+                    mb_str_pad(strftime("%Y-%m-%d %H:%M:%S", $stat['end'] ?? null), 21),
                 ];
 
                 $output->writeln(implode(' | ', $row));
@@ -99,5 +100,7 @@ class CronCommand extends AbstractCommand
             $output->writeln('<info>Starting scheduled jobs..</info>');
             $cronModule->RunTasks($this->app, time());
         }
+
+        return Command::SUCCESS;
     }
 }

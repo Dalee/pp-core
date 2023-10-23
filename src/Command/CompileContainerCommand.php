@@ -2,6 +2,7 @@
 
 namespace PP\Command;
 
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -33,7 +34,7 @@ class CompileContainerCommand extends AbstractCommand
      *
      * @throws \Exception
      */
-    public function execute(InputInterface $input, OutputInterface $output)
+    public function execute(InputInterface $input, OutputInterface $output): int
     {
         $file = CACHE_PATH . DIRECTORY_SEPARATOR . 'container.php';
         $containerConfigCache = new ConfigCache($file, false);
@@ -50,6 +51,8 @@ class CompileContainerCommand extends AbstractCommand
             $dumper->dump(['class' => 'MyCachedContainer']),
             $container->getResources()
         );
+
+        return Command::SUCCESS;
     }
 
 }
