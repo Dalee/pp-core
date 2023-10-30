@@ -38,27 +38,8 @@ class PXStorageTypeSerialized extends PXStorageType
 		$v = null;
 
 		// skip empties and nulls
-		if ($w && $w !== 'null' && $w !== 'N;') {
-
-			// the first byte can be one of [b, i, d, s, a, O, C, N, r, R].
-			// the second byte can be one of [:, ;].
-			// see http://www.phpinternalsbook.com/classes_objects/serialization.html
-			// but json more simpler to check so we will do it.
-			$fb = $w[0];
-			$sb = $w[1];
-			$lb = substr((string) $w, -1); // last byte
-
-			// json_encoded data. not hardened check
-			$json = ctype_digit((string) $fb) || (!ctype_alpha((string) $fb) && !ctype_alpha((string) $fb));
-			// null equals 'N;', all other /^\w:.*;$/
-			$srlz = ctype_alpha((string) $fb) && $sb === ':' && ($lb === ';' || $lb === '}');
-
-			if ($srlz) {
-				$v = @unserialize($w);
-			} elseif ($json) {
-				$v = json_decode((string) $w, true, 512, JSON_THROW_ON_ERROR);
-			}
-
+		if ($w && $w !== 'null') {
+			$v = json_decode((string) $w, true);
 		}
 
 		return $v;
