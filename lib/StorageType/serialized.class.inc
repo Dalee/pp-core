@@ -56,7 +56,7 @@ class PXStorageTypeSerialized extends PXStorageType
 			if ($srlz) {
 				$v = @unserialize($w);
 			} elseif ($json) {
-				$v = json_decode((string) $w, true, 512, JSON_THROW_ON_ERROR);
+				$v = json_decode((string) $w, true);
 			}
 
 		}
