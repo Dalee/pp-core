@@ -27,9 +27,9 @@ class PXUserHTMLLayout implements LayoutInterface
 		$this->_filters = [];
 		$this->indexTemplate = 'index.tmpl';
 
-		$this->addTemplateFunction('property', $this->getProperty(...));
-		$this->addTemplateModifier('property', $this->getPropertyModifier(...));
-		$this->addTemplateFunction('pager', $this->pager(...));
+		$this->addTemplateFunction('property', [$this, 'getProperty']);
+		$this->addTemplateModifier('property', [$this, 'getPropertyModifier']);
+		$this->addTemplateFunction('pager', [$this, 'pager']);
 
 		$this->_initLang();
 	}
@@ -74,11 +74,11 @@ class PXUserHTMLLayout implements LayoutInterface
 		require_once PPLIBPATH . 'HTML/lang.class.inc';
 
 		$this->lang = new PXUserHTMLLang();
-		$this->addTemplateFunction('lang', $this->lang->lang(...));
-		$this->addTemplateModifier('lang', $this->lang->lang_modifier(...));
+		$this->addTemplateFunction('lang', [$this->lang, 'lang']);
+		$this->addTemplateModifier('lang', [$this->lang, 'lang_modifier']);
 
-		$this->addTemplateFunction('pager', $this->pager(...));
-		$this->addTemplateFunction('autopager', $this->autopager(...));
+		$this->addTemplateFunction('pager', [$this, 'pager']);
+		$this->addTemplateFunction('autopager', [$this, 'autopager']);
 	}
 
 	public function htmlPager($totalObjects, $objectsPerPage, &$smarty, $param)

@@ -1,5 +1,8 @@
 # Change log
 
+## [3.0.3] 2023-12-14
+- Исправлена ошибка в Smarty при использовании функции addTemplateFunction
+
 ## [3.0.2] 2023-10-30
 - Обновлена мажорная версия monolog/monolog до ^3.0 lock = `3.5.0`
 - Исправлена ошибка в PXStorageTypeSerialized при использовании некорректного json
