@@ -13,7 +13,7 @@ class AuditLogModule extends AbstractModule
     {
         parent::__construct($area, $settings);
 
-        if (is_callable($this->layout->setOneColumn(...))) {
+        if (is_callable([$this->layout, 'setOneColumn'])) {
             $this->layout->setOneColumn();
         }
     }
