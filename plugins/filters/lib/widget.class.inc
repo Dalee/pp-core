@@ -58,7 +58,7 @@ class PXFiltersAdminWidget extends PXAdminWidget
 					$filters_html .= sprintf('&ndash; <label>%s</label></div>', $field->description);
 					break;
 
-				case !empty($field->values->values):
+				case !empty($field->values->values) && (count($field->values->values) > 1 || !isset($field->values->values[""])):
 					$values = $field->values->values;
 
 					$option = array_map(function ($value) use ($filter_value) {
