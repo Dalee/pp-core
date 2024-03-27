@@ -324,8 +324,6 @@ class AclModule extends AbstractModule
             return null;
         }
 
-        $db = $this->db;
-
         // combining query
         $criteria = $this->_getSidCriteria($sid);
         $criteria['rule'] = sprintf('"objectrule" = \'%s\'', $this->objectRule);
@@ -347,7 +345,7 @@ class AclModule extends AbstractModule
         $order = sprintf($order, $this->orderingField);
         $query = sprintf('SELECT "%s", "id" FROM %s WHERE %s ORDER BY %s ', $this->orderingField, $this->sqlTable, $where, $order);
 
-        $objectsInDb = $db->query($query, false, [$limit, 0]);
+        $objectsInDb = $this->db->query($query, false, [$limit, 0]);
         if (!sizeof($objectsInDb)) {
             return null;
         }
@@ -402,9 +400,11 @@ class AclModule extends AbstractModule
 
     protected function setOrder($order, $criteria)
     {
-        if (($order[0] == '-' || $order[0] == '+') && ctype_digit(substr((string) $order, 1))) {
+        if (is_string($order) && ($order[0] == '-' || $order[0] == '+') && ctype_digit(substr((string) $order, 1))) {
             // makes -1, +1 sql-readable
             $order = sprintf('COALESCE("%s",0) %s', $this->orderingField, $order);
+        } else {
+            $order = (int)$order;
         }
 
         $where = match (true) {
@@ -419,7 +419,6 @@ class AclModule extends AbstractModule
 
         $query = "UPDATE {$this->sqlTable} SET {$set} WHERE {$where};";
 
-        // echo $query . PHP_EOL;return;
         $this->db->modifyingQuery($query);
     }
 
@@ -437,7 +436,6 @@ class AclModule extends AbstractModule
 
     protected function putRuleAfterRule($movingId, $afterId, $sid = false)
     {
-        $db = $this->db;
         $moving = null;
         $after = null;
         $changing = null;
