@@ -1,7 +1,7 @@
 <?php
 
 use PP\Lib\Http\Response;
-use Symfony\Component\DependencyInjection\ContainerAwareInterface;
+use PP\DependencyInjection\ContainerAwareInterface;
 use PP\Lib\Engine\AbstractEngine;
 use PP\Module\AbstractModule;
 

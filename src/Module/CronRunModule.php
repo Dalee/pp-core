@@ -3,7 +3,7 @@
 namespace PP\Module;
 
 use PP\Cron\AbstractCron;
-use Symfony\Component\DependencyInjection\ContainerAwareInterface;
+use PP\DependencyInjection\ContainerAwareInterface;
 use PP\Lib\Datastruct\Tree;
 use PP\Cron\CronRule;
 use PXRegistry;

@@ -18,7 +18,7 @@ use Symfony\Component\Console\Event\ConsoleTerminateEvent;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\Yaml\Yaml;
-use Symfony\Component\DependencyInjection\ContainerAwareTrait;
+use PP\DependencyInjection\ContainerAwareTrait;
 
 use PP\Command\GetPropertyCommand;
 use PP\Lib\Command\AbstractCommand;

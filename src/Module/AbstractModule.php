@@ -2,7 +2,7 @@
 
 namespace PP\Module;
 
-use Symfony\Component\DependencyInjection\ContainerAwareTrait;
+use PP\DependencyInjection\ContainerAwareTrait;
 
 /**
  * Class AbstractModule.

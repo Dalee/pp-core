@@ -1,5 +1,8 @@
 # Change log
 
+## [3.0.8] 2024-06-18
+- Перенесены устаревшие ContainerAwareTrait и ContainerAwareInterface из Symfony\DependencyInjection
+
 ## [3.0.7] 2024-03-27
 - Исправлены предупреждения в модуле ACL в сортировке правил
 
