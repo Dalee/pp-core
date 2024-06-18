@@ -3,8 +3,8 @@
 namespace PP\Cron;
 
 use PP\Lib\Datastruct\Tree;
-use Symfony\Component\DependencyInjection\ContainerAwareInterface;
-use Symfony\Component\DependencyInjection\ContainerAwareTrait;
+use PP\DependencyInjection\ContainerAwareInterface;
+use PP\DependencyInjection\ContainerAwareTrait;
 use PP\Lib\Database\Driver\PostgreSqlDriver;
 
 /**

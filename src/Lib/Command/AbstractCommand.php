@@ -2,8 +2,8 @@
 
 namespace PP\Lib\Command;
 
-use Symfony\Component\DependencyInjection\ContainerAwareInterface;
-use Symfony\Component\DependencyInjection\ContainerAwareTrait;
+use PP\DependencyInjection\ContainerAwareInterface;
+use PP\DependencyInjection\ContainerAwareTrait;
 use PP\Lib\Database\Driver\PostgreSqlDriver;
 
 /**

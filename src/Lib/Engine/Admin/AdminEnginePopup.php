@@ -2,7 +2,7 @@
 
 namespace PP\Lib\Engine\Admin;
 
-use Symfony\Component\DependencyInjection\ContainerAwareInterface;
+use PP\DependencyInjection\ContainerAwareInterface;
 
 /**
  * Class AdminEnginePopup.

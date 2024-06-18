@@ -2,7 +2,7 @@
 
 use PP\Lib\PersistentQueue;
 use PP\Cron\AbstractCron;
-use Symfony\Component\DependencyInjection\ContainerAwareInterface;
+use PP\DependencyInjection\ContainerAwareInterface;
 
 /**
  * Class PXCronRunQueue

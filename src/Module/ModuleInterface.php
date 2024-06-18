@@ -2,7 +2,7 @@
 
 namespace PP\Module;
 
-use Symfony\Component\DependencyInjection\ContainerAwareInterface;
+use PP\DependencyInjection\ContainerAwareInterface;
 
 /**
  * Interface ModuleInterface.

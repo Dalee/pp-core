@@ -3,7 +3,7 @@
 namespace PP\Lib\Engine\Admin;
 
 use PP\Lib\Http\Response;
-use Symfony\Component\DependencyInjection\ContainerAwareInterface;
+use PP\DependencyInjection\ContainerAwareInterface;
 
 /**
  * Class AdminEngineJson.
