@@ -23,7 +23,7 @@ class PXInputDropDown extends PXAdminWidget
 
     public function html()
     {
-        $selected = max($this->empty, @array_flip((array)$this->value));
+        $selected = $this->value ? @array_flip((array)$this->value) : $this->empty;
         $html = squeeze(sprintf('<select name="%s" %s %s %s>', $this->name, $this->disable, $this->multiple, $this->size), ' ');
         $optgroup = false;
 
