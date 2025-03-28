@@ -157,7 +157,7 @@ abstract class AuthAbstract implements AuthInterface
         return $passwd;
     }
 
-    public static function verifyPassword(string $plainPassword, string $hash): bool
+    public static function verifyPassword(string $plainPassword, ?string $hash): bool
     {
         return static::passwdToDB($plainPassword) === $hash;
     }
