@@ -79,5 +79,5 @@ interface AuthInterface
      * @param string $hash
      * @return bool
      */
-    public static function verifyPassword(string $plainPassword, string $hash): bool;
+    public static function verifyPassword(string $plainPassword, ?string $hash): bool;
 }

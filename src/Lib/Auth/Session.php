@@ -71,8 +71,8 @@ class Session extends AuthAbstract
         return password_hash($passwd, PASSWORD_BCRYPT);
     }
 
-    public static function verifyPassword(string $plainPassword, string $hash): bool
+    public static function verifyPassword(string $plainPassword, ?string $hash): bool
     {
-        return password_verify($plainPassword, $hash);
+        return $hash && password_verify($plainPassword, $hash);
     }
 }
