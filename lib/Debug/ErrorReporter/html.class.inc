@@ -2,16 +2,17 @@
 
 use PP\Lib\Cache\ObjectCache;
 use PP\Lib\Http\Response;
+use PP\Properties\EnvLoader;
 
 class PXErrorReporterHTML extends PXErrorReporter
 {
+	private string $toEmail;
+	private string $hostname;
 
 	public function __construct()
 	{
-		$this->computer = @rtrim((string) `hostname`);
-
-		$this->toEmail = !empty($_SERVER['SERVER_ADMIN']) ? $_SERVER['SERVER_ADMIN'] : 'support@dalee.ru';
-		$this->fromEmail = 'robot@' . $this->computer;
+		$this->hostname = @rtrim((string) `hostname`);
+		$this->toEmail = $_SERVER['SERVER_ADMIN'] ?? 'support@dalee.ru';
 	}
 
 	public function warning($error)
@@ -52,7 +53,7 @@ HTML
 		);
 	}
 
-	public function _throttling()
+	public function _throttling(): array
 	{
 		try {
 			$app = PXRegistry::getApp(); // APP may not be initialized yet and throws exception
@@ -79,7 +80,7 @@ HTML
 		return [is_array($curCount) ? $curCount[1] : null, $inLoop];
 	}
 
-	public function _getMailSubject($cyclesCount)
+	public function _getMailSubject($cyclesCount): string
 	{
 		$errorTypes = [];
 		foreach ($this->errors as $e) {
@@ -100,7 +101,7 @@ HTML
 			$subject[] = $type . '(' . $count . ')';
 		}
 
-		return sprintf("%s: %s%s", $this->computer, join(', ', $subject), $cyclesCount ? "; this message throttled $cyclesCount times" : '');
+		return sprintf("%s: %s%s", $this->hostname, join(', ', $subject), $cyclesCount ? "; this message throttled $cyclesCount times" : '');
 	}
 
 	public function sendReport()
@@ -114,11 +115,17 @@ HTML
 		$subject = $this->_getMailSubject($cyclesCount);
 
 		$mail = new NLMailMessage();
-		$this->mail =& $mail;
 
 		$mail->validateEmails(false);
 
-		$mail->setFrom('Error Reporter', $this->fromEmail);
+		try {
+			$app = PXRegistry::getApp(); // APP may not be initialized yet and throws exception
+			$fromEmail = $app->getProperty('PP_ERROR_REPORTER_FROM_MAIL', "robot@{$this->hostname}");
+		} catch (Exception) {
+			$fromEmail = "robot@{$this->hostname}";
+		}
+
+		$mail->setFrom('Error Reporter', $fromEmail);
 		$mail->setSubject($subject);
 		$mail->setTo($this->toEmail, $this->toEmail);
 		$mail->setFormat('html');
@@ -127,7 +134,7 @@ HTML
 		$errorsListHTML = [];
 		foreach ($this->errors as $errPos => $error) {
 			$cls = strtolower(str_replace(' ', '', (string) $error['type']));
-			$this->attachError($error, $errPos);
+			$this->attachError($error, $errPos, $mail);
 
 			$message = htmlspecialchars((string) $error['message'], ENT_QUOTES | ENT_DISALLOWED | ENT_SUBSTITUTE, 'UTF-8');
 			$errorsListHTML[] = <<<HTML
@@ -161,7 +168,7 @@ HTML;
 			</html>
 HTML;
 
-		$this->addEnvironments();
+		$this->addEnvironments($mail);
 		$mail->setBody($body);
 		$mail->send();
 	}
@@ -193,7 +200,7 @@ HTML;
 		return $xslt->transform($xml, false);
 	}
 
-	public function addEnvironments()
+	public function addEnvironments(NLMailMessage $mail): void
 	{
 		$xml = ['<?xml version="1.0" encoding="UTF-8"?>'];
 		$xml[] = '<?xml-stylesheet type="text/xsl" href="error_reporter.xsl"?>';
@@ -226,19 +233,19 @@ HTML;
 		$xml[] = '</environments>';
 
 		$html = $this->applyXSLT(implode("\n", $xml));
-		$this->mail->addFile(null, 'environments.debug.html', 'text/html', $html);
+		$mail->addFile(null, 'environments.debug.html', 'text/html', $html);
 	}
 
-	public function attachError($error, $errPos)
+	public function attachError(array $error, int $errPos, NLMailMessage $mail): void
 	{
 		if ($errPos < 15) {
 			$xml = $this->errorToXML($error);
 			$html = $this->applyXSLT($xml);
-			$this->mail->addFile(null, 'error_' . ($errPos + 1) . '.debug.html', 'text/html', $html);
+			$mail->addFile(null, 'error_' . ($errPos + 1) . '.debug.html', 'text/html', $html);
 		}
 	}
 
-	public function errorToXML($error)
+	public function errorToXML(array $error): string
 	{
 		$traceXML = $this->traceToXML($error['trace']);
 

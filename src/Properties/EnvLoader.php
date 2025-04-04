@@ -13,13 +13,13 @@ class EnvLoader
     public const TYPE_NOT_EMPTY = 0; // default
 
     /** @var string[] */
-    protected $errors;
+    protected array $errors;
 
-    /** @var string[int] */
-    protected $required;
+    /** @var array */
+    protected array $required;
 
     /** @var bool */
-    protected $valid;
+    protected bool $valid = false;
 
     /**
      * EnvLoader constructor.
@@ -27,7 +27,7 @@ class EnvLoader
      * @param string $path
      * @param string $file
      */
-    public function __construct(protected $path, protected $file = '.env')
+    public function __construct(protected string $path, protected string $file = '.env')
     {
         $this->errors = [];
         $this->required = [];
@@ -37,7 +37,7 @@ class EnvLoader
      * Perform ENV injection
      * it's safe to call it multiple times
      */
-    public static function inject()
+    public static function inject(): void
     {
         (new EnvLoader(BASEPATH))
             ->addRequired(['DATABASE_DSN'])
@@ -51,7 +51,7 @@ class EnvLoader
      * @param string|string[] $key
      * @return $this
      */
-    public function addRequired(string|array $key)
+    public function addRequired(string|array $key): static
     {
         if (!is_array($key)) {
             $key = [$key];
@@ -69,7 +69,7 @@ class EnvLoader
      *
      * @throws EnvLoaderException
      */
-    public function load()
+    public function load(): void
     {
         $envFile = join(DIRECTORY_SEPARATOR, [rtrim($this->path, DIRECTORY_SEPARATOR), $this->file]);
         if (file_exists($envFile)) {
@@ -89,12 +89,12 @@ class EnvLoader
      * @param string[] $mappings
      * @return array
      */
-    public static function getMappedArray($mappings)
+    public static function getMappedArray(array $mappings): array
     {
         $result = [];
 
         foreach ($mappings as $key => $mapped) {
-            if (is_int($key)) { // list is here..
+            if (is_int($key)) { // list is here
                 $key = $mapped;
                 $mapped = null;
             }
@@ -111,14 +111,13 @@ class EnvLoader
         return $result;
     }
 
-    /**
-     * Return single value of key.
-     *
-     * @param string $key
-     * @return string
-     * @throws EnvLoaderException
-     */
-    public static function get($key)
+	/**
+	 * Return single value of key.
+	 *
+	 * @param string $key
+	 * @return string|null
+	 */
+    public static function get(string $key): ?string
     {
         if (isset($_ENV[$key])) {
             return $_ENV[$key];
@@ -130,7 +129,7 @@ class EnvLoader
     /**
      * Just validation loop
      */
-    protected function validate()
+    protected function validate(): void
     {
         $validationResult = true;
 
@@ -149,12 +148,12 @@ class EnvLoader
      * @param string $key
      * @return bool
      */
-    protected function isNotEmpty($key)
+    protected function isNotEmpty(string $key): bool
     {
         $res = (isset($_ENV[$key])) && (strlen((string) $_ENV[$key]) > 0);
 
         if (!$res) {
-            $this->errors[] = "${key} should not be empty";
+            $this->errors[] = "{$key} should not be empty";
         }
 
         return $res;
