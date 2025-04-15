@@ -79,7 +79,7 @@ class PXAuditViewer
         $cols = array_map([$this->db, 'mapFields'], $this->cols);
         $selectSQL = "SELECT " . implode(", ", $cols) . " FROM log_audit_view " . $this->filterToSQL($this->filters) . "ORDER BY id DESC";
 
-        return $this->db->query($selectSQL, false, $limit_pair);
+        return $this->db->query($selectSQL, true, $limit_pair);
     }
 
     public function getErrorLevels()
