@@ -131,7 +131,7 @@ class Redis implements CacheInterface, SerializerAwareInterface
     {
         $data = $this->connection->get($this->key($key));
         $unserialized = $this->serializer->unserialize($data);
-        $unserialized = $unserialized === false ? null : $data;
+		$unserialized = $unserialized === false ? null : $unserialized;
 
         return $unserialized;
     }

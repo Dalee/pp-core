@@ -54,7 +54,7 @@ class PXAdminAuditTable extends PXAdminTableSimple
             $humanTitles = [];
 
             foreach ($diff as $code) {
-                isset($typeFields[$code]->description) && $humanTitles[] = $typeFields[$code]->description;
+				$humanTitles[] = $typeFields[$code]->description ?? $code;
             }
 
             if (!empty($humanTitles)) {

@@ -5,8 +5,9 @@ namespace PP\Module;
 use PP\Lib\UrlGenerator\ContextUrlGenerator;
 use PP\Lib\UrlGenerator\UrlGenerator;
 use PP\Properties\PropertyLoader;
+use PP\Properties\PropertyTypeBuilder;
+use PXAuditLogger;
 use Ramsey\Uuid\Uuid;
-use PP\Lib\Xml\SimpleXmlNode;
 
 /**
  * Class PropertiesModule.
@@ -16,8 +17,7 @@ use PP\Lib\Xml\SimpleXmlNode;
  */
 class PropertiesModule extends AbstractModule
 {
-    /** @var array */
-    protected $predefinedPropertyDefList = [];
+    protected array $predefinedPropertyDefList = [];
 
     /**
      * {@inheritdoc}
@@ -51,8 +51,8 @@ class PropertiesModule extends AbstractModule
     {
         // get sid
         $sid = $this->request->getSid();
-        $sid = (empty($sid)) ? 'pub' : $sid;
-        $sid = ($this->isPowerUser()) ? $sid : 'pub';
+        $sid = $sid ?: 'pub';
+        $sid = $this->isPowerUser() ? $sid : 'pub';
 
         // build menu
         $menu = [];
@@ -270,6 +270,9 @@ MASS_ACTIONS
 
         // protect from non-power users..
         if (!$this->isPowerUser() && $this->isPropertySystem($propertyDef)) {
+			$audit = PXAuditLogger::getLogger();
+			$audit->error('Отказано в доступе к параметру', $this->getAuditSource($propertyDef['id']));
+
             FatalError("Access denied");
         }
 
@@ -290,7 +293,20 @@ MASS_ACTIONS
         }
 
         $deleteQuery = sprintf("DELETE FROM %s WHERE id=%d", DT_PROPERTIES, $this->db->EscapeString($id));
-        $this->db->ModifyingQuery($deleteQuery, DT_PROPERTIES);
+        $countDeleted = $this->db->ModifyingQuery(
+			query: $deleteQuery,
+			table: DT_PROPERTIES,
+			retCount: true
+		);
+
+		$audit = PXAuditLogger::getLogger();
+		$auditSource = $this->getAuditSource($id);
+
+		if ($countDeleted > 0) {
+			$audit->info('Параметр удалён', $auditSource);
+		} else {
+			$audit->error('Ошибка удаления параметра', $auditSource);
+		}
     }
 
     /**
@@ -311,10 +327,33 @@ MASS_ACTIONS
         $values = array_values($object);
         $id = is_numeric($id) ? $id : null;
 
+		$audit = PXAuditLogger::getLogger();
+
         if (empty($id)) {
             $id = $this->db->InsertObject(DT_PROPERTIES, $fields, $values);
+
+			if ($id > 0) {
+				$audit->info('Параметр добавлен', $this->getAuditSource($id));
+			} else {
+				$audit->error('Ошибка добавления параметра', $this->getAuditSource());
+			}
         } else {
-            $this->db->UpdateObjectById(DT_PROPERTIES, $id, $fields, $values);
+			$propertyInDB = PropertyLoader::getPropertyById($id, $this->db);
+			$auditSource = $this->getAuditSource($id);
+
+			$result = $this->db->UpdateObjectById(DT_PROPERTIES, $id, $fields, $values);
+
+			if (!is_numeric($result)) {
+				$propertyDiff = array_diff(array_combine($fields, $values), $propertyInDB);
+
+				$audit->info(
+					description: 'Параметр изменен',
+					source: $auditSource,
+					diff: json_encode(array_keys($propertyDiff)),
+				);
+			} else {
+				$audit->error('Ошибка изменения параметра', $auditSource);
+			}
         }
 
         $context = new ContextUrlGenerator();
@@ -387,11 +426,9 @@ MASS_ACTIONS
 
         // filtering callable
         $propertySidFilter = function ($propertyDef) use (&$sid) {
-            if ($sid === 'pub') {
-                return $this->isPropertySystem($propertyDef) === false;
-            } else {
-                return $this->isPropertySystem($propertyDef);
-            }
+			return $sid === 'sys'
+				? $this->isPropertySystem($propertyDef)
+				: $this->isPropertySystem($propertyDef) === false;
         };
 
         // filter property list based on sid
@@ -461,10 +498,12 @@ MASS_ACTIONS
         return $table;
     }
 
-    /**
-     * @param array $object
-     * @return \PXTypeDescription
-     */
+	/**
+	 * @param array $object
+	 *
+	 * @return \PXTypeDescription
+	 * @throws \Exception
+	 */
     protected function getTypeDescription($object)
     {
         $name = $object['name'] ?? null;
@@ -474,91 +513,13 @@ MASS_ACTIONS
         if ($name !== null && isset($this->predefinedPropertyDefList[$name])) {
             $displayTypeDef = $this->predefinedPropertyDefList[$name];
         }
+		$displayType = $displayTypeDef['displaytype'] ?? 'TEXT';
 
-        $objectDef = [
-            'id' => [
-                'name' => 'id',
-                'description' => 'PK',
-                'displaytype' => 'HIDDEN',
-                'storagetype' => 'pk',
-            ],
-            OBJ_FIELD_UUID => [
-                'name' => 'sys_uuid',
-                'description' => '',
-                'displaytype' => 'HIDDEN',
-                'storagetype' => 'string',
-            ],
-            'name' => [
-                'name' => 'name',
-                'description' => $this->app->langTree->getByPath('module_properties.table.name.rus'),
-                'displaytype' => 'TEXT',
-                'storagetype' => 'string',
-            ],
-            'value' => [
-                'name' => 'value',
-                'description' => $this->app->langTree->getByPath('module_properties.table.value.rus'),
-                'displaytype' => $displayTypeDef['displaytype'] ?? 'TEXT',
-                'storagetype' => 'string',
-            ],
-            'description' => [
-                'name' => 'description',
-                'description' => $this->app->langTree->getByPath('module_properties.table.description.rus'),
-                'displaytype' => 'TEXT|500|100',
-                'storagetype' => 'string',
-            ],
-        ];
-
-        return $this->buildTypeFromArray($objectDef);
+        return PropertyTypeBuilder::create($this->app, $displayType);
     }
 
-    /**
-     * @param $objectDef
-     * @return \PXTypeDescription
-     */
-    protected function buildTypeFromArray($objectDef)
-    {
-        $typeDescription = new \PXTypeDescription();
-        $typeDescription->id = 'sys_property';
-        $typeDescription->title = $this->app->langTree->getByPath('module_properties.table.name.rus');
-
-        foreach ($objectDef as $dataDef) {
-            $_tmpSource = null;
-            if (isset($dataDef['source'], $this->app->directory[$dataDef['source']])) {
-                $_tmpSource = $dataDef['source'];
-                unset($dataDef['source']);
-            }
-
-            $field = new \PXFieldDescription(
-                $this->createAttributeNode($dataDef),
-                $this->app,
-                $typeDescription
-            );
-
-            $field->listed = false;
-            if ($_tmpSource !== null) {
-                $field->source = $_tmpSource;
-                $field->values = &$this->app->directory[$_tmpSource];
-            }
-
-            $typeDescription->addField($field);
-            $typeDescription->assignToGroup($field);
-        }
-
-        return $typeDescription;
-    }
-
-    /**
-     * @param array $data
-     * @return SimpleXmlNode
-     */
-    protected function createAttributeNode($data)
-    {
-        $attr = new \SimpleXMLElement("<attribute/>");
-        foreach ($data as $k => $v) {
-            $attr->addAttribute($k, $v);
-        }
-
-        return new SimpleXmlNode($attr);
-    }
-
+	private function getAuditSource(string|int|null $id = 0): string
+	{
+		return sprintf('%s/%s', PropertyTypeBuilder::TYPE_ID, (int) $id);
+	}
 }
