@@ -21,7 +21,7 @@ abstract class AbstractEngine implements EngineInterface
     /** @var string */
     protected $area;
 
-    /** @var ApplicationFactory */
+    /** @var \PXApplication */
     protected $app = ['factory' => \PP\ApplicationFactory::class, 'helper' => true];
 
     /** @var \PXRequest */

@@ -71,7 +71,7 @@ class PXCronRunQueue extends AbstractCron {
 				$processedIds[] = $jobId;
 
 				$this->log(Label('Successful with job: ' . $jobId));
-			} catch (Exception $ex) {
+			} catch (Throwable $ex) {
 				$db->transactionRollback();
 				$job->getResultBag()->addError(nl2br($ex->getMessage()));
 				$queue->failJob($job);
