@@ -202,7 +202,7 @@ MASS_ACTIONS
 
         switch ($this->request->getAction()) {
             case 'main':
-                $id = $this->request->getId();
+                $id = $this->request->getId() ?: null;
                 $redirect = $this->saveAction($id, $this->getPropertyFromRequest($id));
                 break;
 
@@ -224,11 +224,7 @@ MASS_ACTIONS
                     return null;
                 }
 
-                foreach ($props as $id => $value) {
-                    $this->request->setVar('value', $value);
-                    $prop = $this->getPropertyFromRequest($id);
-                    $this->saveAction($id, ['value' => $prop['value']]);
-                }
+				$this->saveAllAction($props);
 
                 break;
         }
@@ -236,19 +232,21 @@ MASS_ACTIONS
         return $redirect;
     }
 
-    protected function getPropertyFromRequest($id)
+    protected function getPropertyFromRequest($id, array $preloadPropertyList = [])
     {
-        $propertyDef = $this->getPropertyDefById($id);
+        $propertyDef = $this->getPropertyDefById($id, $preloadPropertyList);
         $typeDef = $this->getTypeDescription($propertyDef);
         return $this->request->getContentObject($typeDef);
     }
 
-    /**
-     * @param $id
-     * @return array|null
-     */
-    protected function getPropertyDefById($id)
-    {
+	/**
+	 * @param $id
+	 * @param array $preloadPropertyList
+	 *
+	 * @return array
+	 */
+    protected function getPropertyDefById($id, array $preloadPropertyList = []): array
+	{
         if (isset($this->predefinedPropertyDefList[$id])) {
             $propertyDef = $this->predefinedPropertyDefList[$id];
             $propertyDef['id'] = $propertyDef['name'];
@@ -256,7 +254,8 @@ MASS_ACTIONS
             $propertyDef['value'] = '';
 
         } else {
-            $propertyDef = PropertyLoader::getPropertyById($id, $this->db);
+			$propertyDef = $preloadPropertyList[$id] ?? PropertyLoader::getPropertyById($id, $this->db);
+
             if ($propertyDef === null) {
                 $propertyDef = [
                     'id' => null,
@@ -271,7 +270,8 @@ MASS_ACTIONS
         // protect from non-power users..
         if (!$this->isPowerUser() && $this->isPropertySystem($propertyDef)) {
 			$audit = PXAuditLogger::getLogger();
-			$audit->error('Отказано в доступе к параметру', $this->getAuditSource($propertyDef['id']));
+			$errMessage = sprintf('%s `%s`', 'Отказано в доступе к параметру ', $propertyDef['name']);
+			$audit->error($errMessage, $this->getAuditSource($propertyDef['id']));
 
             FatalError("Access denied");
         }
@@ -292,6 +292,8 @@ MASS_ACTIONS
             return;
         }
 
+		$propertyInDB = PropertyLoader::getPropertyById($id, $this->db);
+
         $deleteQuery = sprintf("DELETE FROM %s WHERE id=%d", DT_PROPERTIES, $this->db->EscapeString($id));
         $countDeleted = $this->db->ModifyingQuery(
 			query: $deleteQuery,
@@ -303,9 +305,11 @@ MASS_ACTIONS
 		$auditSource = $this->getAuditSource($id);
 
 		if ($countDeleted > 0) {
-			$audit->info('Параметр удалён', $auditSource);
+			$auditMessage = sprintf('%s `%s`', 'Параметр удалён', $propertyInDB['name']);
+			$audit->info($auditMessage, $auditSource);
 		} else {
-			$audit->error('Ошибка удаления параметра', $auditSource);
+			$errMessage = sprintf('%s `%s`', 'Ошибка удаления параметра', $propertyInDB['name']);
+			$audit->error($errMessage, $auditSource);
 		}
     }
 
@@ -316,57 +320,87 @@ MASS_ACTIONS
     * @param array $object
     * @return string
     */
-    protected function saveAction(mixed $id, $object)
+    protected function saveAction(?int $id, array $object): string
     {
-        unset($object['id']);
-        if (empty($object['sys_uuid'])) {
-            $object['sys_uuid'] = Uuid::uuid4()->toString();
-        }
+		$objectInDb = $id
+			? PropertyLoader::getPropertyById($id, $this->db)
+			: null;
 
-        $fields = array_keys($object);
-        $values = array_values($object);
-        $id = is_numeric($id) ? $id : null;
+        $propertyId = $this->saveAfterCompare($id, $object, $objectInDb);
+
+		$context = new ContextUrlGenerator();
+		$context->setCurrentModule($this->area);
+		$generator = new UrlGenerator($context);
+
+		$popupParams = [
+			'action' => 'main',
+			'id' => $propertyId,
+		];
+
+		return $generator->getAdminGenerator()->popupUrl($popupParams);
+    }
+
+	protected function saveAllAction(array $propertyList): void
+	{
+		$propertyIds = array_keys($propertyList);
+		$propertiesInDb = PropertyLoader::getRawPropertyListByIds($this->db, $propertyIds);
+
+		foreach ($propertyList as $id => $value) {
+			$this->request->setVar('value', $value);
+			$prop = $this->getPropertyFromRequest($id, $propertiesInDb);
+
+			$this->saveAfterCompare($id, ['value' => $prop['value']], $propertiesInDb[$id]);
+		}
+	}
+
+	protected function saveAfterCompare(?int $id, array $object, ?array $objectInDb = []): ?int
+	{
+		unset($object['id']);
+		if (empty($object['sys_uuid'])) {
+			$object['sys_uuid'] = Uuid::uuid4()->toString();
+		}
+
+		$fields = array_keys($object);
+		$values = array_values($object);
 
 		$audit = PXAuditLogger::getLogger();
 
-        if (empty($id)) {
-            $id = $this->db->InsertObject(DT_PROPERTIES, $fields, $values);
+		if (empty($id)) {
+			$id = $this->db->InsertObject(DT_PROPERTIES, $fields, $values);
 
 			if ($id > 0) {
-				$audit->info('Параметр добавлен', $this->getAuditSource($id));
+				$auditMessage = sprintf('%s `%s`', 'Параметр добавлен', $object['name']);
+				$audit->info($auditMessage, $this->getAuditSource($id));
 			} else {
-				$audit->error('Ошибка добавления параметра', $this->getAuditSource());
+				$id = null;
+				$errMessage = sprintf('%s `%s`', 'Ошибка добавления параметра', $object['name']);
+				$audit->error($errMessage, $this->getAuditSource());
 			}
-        } else {
-			$propertyInDB = PropertyLoader::getPropertyById($id, $this->db);
-			$auditSource = $this->getAuditSource($id);
+		} else {
+			unset($object['sys_uuid']);
+			$propertyDiff = array_keys(array_diff($object, $objectInDb));
 
-			$result = $this->db->UpdateObjectById(DT_PROPERTIES, $id, $fields, $values);
+			if (!empty($propertyDiff)) {
+				$auditSource = $this->getAuditSource($id);
 
-			if (!is_numeric($result)) {
-				$propertyDiff = array_diff(array_combine($fields, $values), $propertyInDB);
+				$result = $this->db->UpdateObjectById(DT_PROPERTIES, $id, $fields, $values);
 
-				$audit->info(
-					description: 'Параметр изменен',
-					source: $auditSource,
-					diff: json_encode(array_keys($propertyDiff)),
-				);
-			} else {
-				$audit->error('Ошибка изменения параметра', $auditSource);
+				if (!is_numeric($result)) {
+					$auditMessage = sprintf('%s `%s`', 'Параметр изменен', $objectInDb['name']);
+					$audit->info(
+						description: $auditMessage,
+						source: $auditSource,
+						diff: json_encode($propertyDiff),
+					);
+				} else {
+					$errMessage = sprintf('%s `%s`', 'Ошибка изменения параметра', $objectInDb['name']);
+					$audit->error($errMessage, $auditSource);
+				}
 			}
-        }
+		}
 
-        $context = new ContextUrlGenerator();
-        $context->setCurrentModule($this->area);
-        $generator = new UrlGenerator($context);
-
-        $popupParams = [
-            'action' => 'main',
-            'id' => $id,
-        ];
-
-        return $generator->getAdminGenerator()->popupUrl($popupParams);
-    }
+		return $id;
+	}
 
     protected function parsePredefinedProperties(array $publicProperties)
     {

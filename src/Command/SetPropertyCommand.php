@@ -3,6 +3,8 @@
 namespace PP\Command;
 
 use PP\Lib\Command\AbstractCommand;
+use PP\Properties\PropertyTypeBuilder;
+use PXAuditLogger;
 use Ramsey\Uuid\Uuid;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -48,22 +50,61 @@ class SetPropertyCommand extends AbstractCommand
             $dbValues[] = $description;
         }
 
-        $sql = sprintf('SELECT id FROM %s WHERE "name"=\'%s\'', DT_PROPERTIES, $this->db->EscapeString($key));
+        $sql = sprintf('SELECT id, value FROM %s WHERE "name"=\'%s\'', DT_PROPERTIES, $this->db->EscapeString($key));
         $result = $this->db->query($sql);
-        if ((is_countable($result) ? count($result) : 0) > 0) {
+
+		$audit = PXAuditLogger::getLogger();
+
+		if ((is_countable($result) ? count($result) : 0) > 0) {
             $result = array_flat($result[0], 'id');
 
-            $this->db->UpdateObjectById(DT_PROPERTIES, $result['id'], $dbFields, $dbValues);
-            $output->writeln("Property: ${key}: <info>updated</info>");
+			if ($result['value'] === $val) {
+				$output->writeln("Property: $key: <info>nothing to change</info>");
 
-        } else {
+				return Command::SUCCESS;
+			}
+
+			$updateResult = $this->db->UpdateObjectById(DT_PROPERTIES, $result['id'], $dbFields, $dbValues);
+            $output->writeln("Property: $key: <info>updated</info>");
+
+			$auditSource = $this->getAuditSource($result['id']);
+
+			if (!is_numeric($updateResult)) {
+				$auditMessage = sprintf('%s `%s`', 'Параметр изменен', $key);
+				$audit->info(
+					description: $auditMessage,
+					source: $auditSource,
+					diff: json_encode(['value']),
+				);
+			} else {
+				$errMessage = sprintf('%s `%s`', 'Ошибка изменения параметра', $key);
+				$audit->error($errMessage, $auditSource);
+
+				return Command::FAILURE;
+			}
+		} else {
             $dbFields[] = 'sys_uuid';
             $dbValues[] = Uuid::uuid4()->toString();
 
-            $this->db->InsertObject(DT_PROPERTIES, $dbFields, $dbValues);
-            $output->writeln("Property: ${key}: <info>inserted</info>");
+			$id = $this->db->InsertObject(DT_PROPERTIES, $dbFields, $dbValues);
+            $output->writeln("Property: $key: <info>inserted</info>");
+
+			if ($id > 0) {
+				$auditMessage = sprintf('%s `%s`', 'Параметр добавлен', $key);
+				$audit->info($auditMessage, $this->getAuditSource($id));
+			} else {
+				$errMessage = sprintf('%s `%s`', 'Ошибка добавления параметра', $key);
+				$audit->error($errMessage, $this->getAuditSource());
+
+				return Command::FAILURE;
+			}
         }
 
         return Command::SUCCESS;
     }
+
+	private function getAuditSource(int|null $id = 0): string
+	{
+		return sprintf('%s/%s', PropertyTypeBuilder::TYPE_ID, (int) $id);
+	}
 }
