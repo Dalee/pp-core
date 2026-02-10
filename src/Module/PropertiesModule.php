@@ -270,7 +270,7 @@ MASS_ACTIONS
         // protect from non-power users..
         if (!$this->isPowerUser() && $this->isPropertySystem($propertyDef)) {
 			$audit = PXAuditLogger::getLogger();
-			$errMessage = sprintf('%s `%s`', 'Отказано в доступе к параметру ', $propertyDef['name']);
+			$errMessage = sprintf('Отказано в доступе к параметру `%s`', $propertyDef['name']);
 			$audit->error($errMessage, $this->getAuditSource($propertyDef['id']));
 
             FatalError("Access denied");
@@ -305,10 +305,10 @@ MASS_ACTIONS
 		$auditSource = $this->getAuditSource($id);
 
 		if ($countDeleted > 0) {
-			$auditMessage = sprintf('%s `%s`', 'Параметр удалён', $propertyInDB['name']);
+			$auditMessage = sprintf('Параметр удалён `%s`', $propertyInDB['name']);
 			$audit->info($auditMessage, $auditSource);
 		} else {
-			$errMessage = sprintf('%s `%s`', 'Ошибка удаления параметра', $propertyInDB['name']);
+			$errMessage = sprintf('Ошибка удаления параметра `%s`', $propertyInDB['name']);
 			$audit->error($errMessage, $auditSource);
 		}
     }
@@ -345,11 +345,11 @@ MASS_ACTIONS
 		$propertyIds = array_keys($propertyList);
 		$propertiesInDb = PropertyLoader::getRawPropertyListByIds($this->db, $propertyIds);
 
-		foreach ($propertyList as $id => $value) {
-			$this->request->setVar('value', $value);
+		foreach ($propertiesInDb as $id => $propertyInDb) {
+			$this->request->setVar('value', $propertyList[$id]);
 			$prop = $this->getPropertyFromRequest($id, $propertiesInDb);
 
-			$this->saveAfterCompare($id, ['value' => $prop['value']], $propertiesInDb[$id]);
+			$this->saveAfterCompare($id, ['value' => $prop['value']], $propertyInDb);
 		}
 	}
 
@@ -369,11 +369,11 @@ MASS_ACTIONS
 			$id = $this->db->InsertObject(DT_PROPERTIES, $fields, $values);
 
 			if ($id > 0) {
-				$auditMessage = sprintf('%s `%s`', 'Параметр добавлен', $object['name']);
+				$auditMessage = sprintf('Параметр добавлен `%s`', $object['name']);
 				$audit->info($auditMessage, $this->getAuditSource($id));
 			} else {
 				$id = null;
-				$errMessage = sprintf('%s `%s`', 'Ошибка добавления параметра', $object['name']);
+				$errMessage = sprintf('Ошибка добавления параметра `%s`', $object['name']);
 				$audit->error($errMessage, $this->getAuditSource());
 			}
 		} else {
@@ -386,14 +386,14 @@ MASS_ACTIONS
 				$result = $this->db->UpdateObjectById(DT_PROPERTIES, $id, $fields, $values);
 
 				if (!is_numeric($result)) {
-					$auditMessage = sprintf('%s `%s`', 'Параметр изменен', $objectInDb['name']);
+					$auditMessage = sprintf('Параметр изменен `%s`', $objectInDb['name']);
 					$audit->info(
 						description: $auditMessage,
 						source: $auditSource,
 						diff: json_encode($propertyDiff),
 					);
 				} else {
-					$errMessage = sprintf('%s `%s`', 'Ошибка изменения параметра', $objectInDb['name']);
+					$errMessage = sprintf('Ошибка изменения параметра `%s`', $objectInDb['name']);
 					$audit->error($errMessage, $auditSource);
 				}
 			}

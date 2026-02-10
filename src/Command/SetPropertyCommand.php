@@ -70,14 +70,14 @@ class SetPropertyCommand extends AbstractCommand
 			$auditSource = $this->getAuditSource($result['id']);
 
 			if (!is_numeric($updateResult)) {
-				$auditMessage = sprintf('%s `%s`', 'Параметр изменен', $key);
+				$auditMessage = sprintf('Параметр изменен `%s`', $key);
 				$audit->info(
 					description: $auditMessage,
 					source: $auditSource,
 					diff: json_encode(['value']),
 				);
 			} else {
-				$errMessage = sprintf('%s `%s`', 'Ошибка изменения параметра', $key);
+				$errMessage = sprintf('Ошибка изменения параметра `%s`', $key);
 				$audit->error($errMessage, $auditSource);
 
 				return Command::FAILURE;
@@ -90,10 +90,10 @@ class SetPropertyCommand extends AbstractCommand
             $output->writeln("Property: $key: <info>inserted</info>");
 
 			if ($id > 0) {
-				$auditMessage = sprintf('%s `%s`', 'Параметр добавлен', $key);
+				$auditMessage = sprintf('Параметр добавлен `%s`', $key);
 				$audit->info($auditMessage, $this->getAuditSource($id));
 			} else {
-				$errMessage = sprintf('%s `%s`', 'Ошибка добавления параметра', $key);
+				$errMessage = sprintf('Ошибка добавления параметра `%s`', $key);
 				$audit->error($errMessage, $this->getAuditSource());
 
 				return Command::FAILURE;
