@@ -61,7 +61,7 @@ class PropertyLoader
 		$loadSql = sprintf(
 			'SELECT id, "name", description, "value", sys_uuid FROM %s WHERE id IN (%s) ORDER BY "name"',
 			DT_PROPERTIES,
-			$database->EscapeString(implode(', ', $ids))
+			join(', ', array_map('intval', $ids))
 		);
 		$propertyList = $database->Query($loadSql, true);
 

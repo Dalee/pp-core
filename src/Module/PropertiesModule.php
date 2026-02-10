@@ -224,7 +224,7 @@ MASS_ACTIONS
                     return null;
                 }
 
-				$this->saveAllAction($props);
+		$this->saveAllAction($props);
 
                 break;
         }
@@ -283,19 +283,20 @@ MASS_ACTIONS
     * Delete property by id.
     * Public defined properties will be displayed anyway.
     *
-    * @param array $object
+    * @param int|string|null $id
+    * @param $object
     */
-    protected function deleteAction(mixed $id, $object)
+    protected function deleteAction(int|string|null $id, $object)
     {
-        $id = is_numeric($id) ? $id : null;
-        if (empty($id)) {
-            return;
-        }
+		$id = is_numeric($id) ? $id : null;
+		if (empty($id)) {
+			return;
+		}
 
 		$propertyInDB = PropertyLoader::getPropertyById($id, $this->db);
 
-        $deleteQuery = sprintf("DELETE FROM %s WHERE id=%d", DT_PROPERTIES, $this->db->EscapeString($id));
-        $countDeleted = $this->db->ModifyingQuery(
+		$deleteQuery = sprintf("DELETE FROM %s WHERE id=%d", DT_PROPERTIES, $this->db->EscapeString($id));
+		$countDeleted = $this->db->ModifyingQuery(
 			query: $deleteQuery,
 			table: DT_PROPERTIES,
 			retCount: true
@@ -317,16 +318,19 @@ MASS_ACTIONS
     * Update/Insert new property to database.
     * Only power users can create new properties.
     *
+    * @param int|string|null $id
     * @param array $object
     * @return string
     */
-    protected function saveAction(?int $id, array $object): string
+    protected function saveAction(int|string|null $id, array $object): string
     {
 		$objectInDb = $id
 			? PropertyLoader::getPropertyById($id, $this->db)
 			: null;
 
-        $propertyId = $this->saveAfterCompare($id, $object, $objectInDb);
+		$id = is_numeric($id) ? $id : null;
+
+		$propertyId = $this->saveAfterCompare($id, $object, $objectInDb);
 
 		$context = new ContextUrlGenerator();
 		$context->setCurrentModule($this->area);
