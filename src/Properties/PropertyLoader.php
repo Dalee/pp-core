@@ -43,6 +43,31 @@ class PropertyLoader
         return $database->Query($loadSql, true);
     }
 
+	/**
+	 * Load raw property list with IDs filtering.
+	 *
+	 * @param \PXDatabase|PostgreSqlDriver $database
+	 * @param array $ids
+	 *
+	 * @return array
+	 * @internal should be used only in properties.module.inc
+	 */
+	public static function getRawPropertyListByIds(\PXDatabase|\PP\Lib\Database\Driver\PostgreSqlDriver $database, array $ids): array
+	{
+		if (empty($ids)) {
+			return [];
+		}
+
+		$loadSql = sprintf(
+			'SELECT id, "name", description, "value", sys_uuid FROM %s WHERE id IN (%s) ORDER BY "name"',
+			DT_PROPERTIES,
+			$database->EscapeString(implode(', ', $ids))
+		);
+		$propertyList = $database->Query($loadSql, true);
+
+		return array_column($propertyList, null, 'id');
+	}
+
     /**
     * Fetch property by id
     *
