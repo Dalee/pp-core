@@ -12,10 +12,10 @@
 
 						<TR>
 							<TD>
-								<FORM action="{LOGIN.FORMACTION}" method="{LOGIN.FORMMETHOD}">
+								<FORM id="form-login" action="{LOGIN.FORMACTION}" method="{LOGIN.FORMMETHOD}">
 									<INPUT type="hidden" name="{LOGIN.REFERERNAME}" value="{LOGIN.REFERERVALUE}">
 									<INPUT type="hidden" name="{LOGIN.AREANAME}" value="{LOGIN.AREAVALUE}">
-									<INPUT type="hidden" name="{CAPTCHA.KEYNAME}" value="{CAPTCHA.KEY}"/>
+									<INPUT type="hidden" name="{CAPTCHA.KEYNAME}" value=""/>
 
 									<TABLE border="0" cellpadding="0" cellspacing="10" width="300">
 										<TR>
@@ -37,13 +37,13 @@
 												<INPUT type="password" name="{LOGIN.PASSWDNAME}" style="width:100%;">
 											</TD>
 										</TR>
-										<TR>
+										<TR id="form-login-captcha-img" style="display: none">
 											<TD>Код безопасности</TD>
 											<TD>
-												<IMG width="100" height="40" src="/captcha/{CAPTCHA.KEY}.jpeg"/>
+												<IMG width="100" height="40" src=""/>
 											</TD>
 										</TR>
-										<TR>
+										<TR id="form-login-captcha-value" style="display: none">
 											<TD>
 												Вы точно не робот?
 											</TD>

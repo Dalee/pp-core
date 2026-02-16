@@ -13,13 +13,6 @@ class AuthModule extends AbstractModule
 {
     public function adminIndex()
     {
-
-        $captcha = new \NLBlockingNumbers();
-
-        $captchaKey = $captcha->CreateNew()
-            ? $captcha->getKey()
-            : 0;
-
         $captchaNote = $this->app->isDevelopmentMode()
             ? 'капча не требуется'
             : '';
@@ -40,10 +33,21 @@ class AuthModule extends AbstractModule
                 'passwd' => null,
                 'referer' => $this->request->getReferer(),
                 'area' => 'auth',
-                'captchaKey' => $captchaKey,
+                'captchaKey' => '',
                 'captchaNote' => $captchaNote,
             ]
         );
+
+		if (!$this->app->isDevelopmentMode()) {
+			$this->layout->assignInlineJS(<<<JS
+				$.post('/captcha/', {action: 'get_code'}, function (captchaKey) {
+					if (!captchaKey) return;
+					$('#form-login-captcha-img').find('img').attr('src', '/captcha/' + captchaKey + '.jpg');
+					$('#form-login').find('input[name=captchaKey]').val(captchaKey);
+					$('#form-login-captcha-img').add('#form-login-captcha-value').show();
+				});
+JS);
+		}
 
         if ($this->user->isAuthed()) {
             $this->user->unAuth();
@@ -71,14 +75,10 @@ class AuthModule extends AbstractModule
         $captchaKey = $this->request->GetPostVar('captchaKey');
         $captchaVal = $this->request->GetPostVar('captchaVal');
 
-        $captchaSolved = $this->app->isDevelopmentMode();
-        if ($captcha->CheckValueByKey($captchaKey, $captchaVal, true)) {
-            $captchaSolved = true;
-        }
+        $captchaSolved = $this->app->isDevelopmentMode() || $captcha->CheckValueByKey($captchaKey, $captchaVal);
 
         if (($captchaSolved === true) && ($this->_auth() == 0)) {
             $nextLocation = $this->request->getReferer();
-
         } else {
             $nextLocation = $this->request->getReferer();
 
