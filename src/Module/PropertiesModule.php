@@ -506,6 +506,8 @@ MASS_ACTIONS
             $propertyList
         );
 
+		array_walk($propertyList, [$this, 'escapeFields']);
+
         // resort all properties
         usort($propertyList, fn ($left, $right) => mb_strcasecmp($left['name'], $right['name']));
 
@@ -559,5 +561,16 @@ MASS_ACTIONS
 	private function getAuditSource(string|int|null $id = 0): string
 	{
 		return sprintf('%s/%s', PropertyTypeBuilder::TYPE_ID, (int) $id);
+	}
+
+	private function escapeFields(array &$propertyData): void
+	{
+		$escapingFieldList = ['name', 'description'];
+
+		array_walk($escapingFieldList, function ($field) use (&$propertyData) {
+			if (is_string(($propertyData[$field]))) {
+				$propertyData[$field] = htmlspecialchars($propertyData[$field]);
+			}
+		});
 	}
 }
