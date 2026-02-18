@@ -501,8 +501,8 @@ MASS_ACTIONS
 					$propertyRaw = reset($table);
                 }
 
-				$propertyRaw['name'] = htmlspecialchars($propertyRaw['name']);
-				$propertyRaw['description'] = htmlspecialchars($propertyRaw['description']);
+				$propertyRaw['name'] = htmlspecialchars($propertyRaw['name'] ?? '');
+				$propertyRaw['description'] = htmlspecialchars($propertyRaw['description'] ?? '');
 
                 return $propertyRaw;
             },
