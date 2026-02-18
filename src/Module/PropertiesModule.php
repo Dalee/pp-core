@@ -498,10 +498,13 @@ MASS_ACTIONS
                     $propertyDef = $createdDef[$key];
                     $format = $this->getTypeDescription($propertyDef);
                     $table = $this->normalizeType($propertyDef, $format);
-                    return reset($table);
+					$propertyRaw = reset($table);
                 }
 
-                return $this->escapeFields($propertyRaw);
+				$propertyRaw['name'] = htmlspecialchars($propertyRaw['name']);
+				$propertyRaw['description'] = htmlspecialchars($propertyRaw['description']);
+
+                return $propertyRaw;
             },
             $propertyList
         );
@@ -559,18 +562,5 @@ MASS_ACTIONS
 	private function getAuditSource(string|int|null $id = 0): string
 	{
 		return sprintf('%s/%s', PropertyTypeBuilder::TYPE_ID, (int) $id);
-	}
-
-	private function escapeFields(array $propertyData): array
-	{
-		$escapingFieldList = ['name', 'description'];
-
-		array_walk($escapingFieldList, function ($field) use (&$propertyData) {
-			if (is_string(($propertyData[$field]))) {
-				$propertyData[$field] = htmlspecialchars($propertyData[$field]);
-			}
-		});
-
-		return $propertyData;
 	}
 }
