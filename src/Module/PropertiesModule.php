@@ -498,8 +498,11 @@ MASS_ACTIONS
                     $propertyDef = $createdDef[$key];
                     $format = $this->getTypeDescription($propertyDef);
                     $table = $this->normalizeType($propertyDef, $format);
-                    return reset($table);
+					$propertyRaw = reset($table);
                 }
+
+				$propertyRaw['name'] = htmlspecialchars($propertyRaw['name'] ?? '');
+				$propertyRaw['description'] = htmlspecialchars($propertyRaw['description'] ?? '');
 
                 return $propertyRaw;
             },

@@ -253,7 +253,7 @@ class PXAdminForm extends PXAdminComplexWidget
 			$html[] = '<dl class="sysinfo">';
 			$html[] = isset($this->object['sys_created']) ? '<dt>Создан:  </dt><dd>' . mb_substr((string) $this->object['sys_created'], 0, 19) . '</dd>' : '';
 			$html[] = isset($this->object['sys_modified']) ? '<dt>Изменен: </dt><dd>' . mb_substr((string) $this->object['sys_modified'], 0, 19) . '</dd>' : '';
-			$html[] = isset($this->object['ownerlogin']) ? '<dt>Владелец:</dt><dd>' . $this->object['ownerlogin'] . '</dd>' : '';
+			$html[] = isset($this->object['ownerlogin']) ? '<dt>Владелец:</dt><dd>' . htmlspecialchars($this->object['ownerlogin']) . '</dd>' : '';
 			$html[] = '</dl>';
 		}
 

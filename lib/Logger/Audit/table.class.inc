@@ -37,8 +37,12 @@ class PXAdminAuditTable extends PXAdminTableSimple
         }
 
         if ($col == 'user' && $row[$col] !== 'UNKNOWN') {
-            $row[$col] = $this->__link('./?area=auditlog&user=' . $row[$col], $row[$col]);
+            $row[$col] = $this->__link('./?area=auditlog&user=' . $row[$col], htmlspecialchars($row[$col]));
         }
+
+		if ($col == 'description' && is_string($row[$col])) {
+			$row[$col] = htmlspecialchars($row[$col]);
+		}
 
         if ($col == 'diff') {
             if (!($row[$col] ?? false)) {
