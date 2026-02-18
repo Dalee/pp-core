@@ -288,7 +288,7 @@ abstract class LayoutAbstract implements LayoutInterface
     {
         $this->assign('OUTER.EXIT', $this->template('form-logout.tmpl'));
         $this->assign('LOGOUT.HREF', $href);
-        $this->assign('USER.TITLE', \PXRegistry::getUser()->getTitle());
+        $this->assign('USER.TITLE', htmlspecialchars(\PXRegistry::getUser()->getTitle()));
         return $this;
     }
 

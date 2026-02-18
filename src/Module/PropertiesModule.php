@@ -501,12 +501,10 @@ MASS_ACTIONS
                     return reset($table);
                 }
 
-                return $propertyRaw;
+                return $this->escapeFields($propertyRaw);
             },
             $propertyList
         );
-
-		array_walk($propertyList, [$this, 'escapeFields']);
 
         // resort all properties
         usort($propertyList, fn ($left, $right) => mb_strcasecmp($left['name'], $right['name']));
@@ -563,7 +561,7 @@ MASS_ACTIONS
 		return sprintf('%s/%s', PropertyTypeBuilder::TYPE_ID, (int) $id);
 	}
 
-	private function escapeFields(array &$propertyData): void
+	private function escapeFields(array $propertyData): array
 	{
 		$escapingFieldList = ['name', 'description'];
 
@@ -572,5 +570,7 @@ MASS_ACTIONS
 				$propertyData[$field] = htmlspecialchars($propertyData[$field]);
 			}
 		});
+
+		return $propertyData;
 	}
 }
