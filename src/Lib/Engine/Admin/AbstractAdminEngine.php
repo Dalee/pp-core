@@ -10,7 +10,7 @@ use Symfony\Component\HttpFoundation\Session\Session;
 
 abstract class AbstractAdminEngine extends AbstractEngine
 {
-    public const SESSION_NAME = 'sid';
+    public const SESSION_NAME = 'PXSID';
 
     // TODO: auth module should export authorizable behaviour, like this -> (bool)$module->thisIsAdminAuthModule()
     protected $authArea = 'auth';
@@ -32,11 +32,12 @@ abstract class AbstractAdminEngine extends AbstractEngine
         $storage = new NativeSessionStorage([
             'cookie_httponly' => true,
             'cookie_secure' => \PXRegistry::getRequest()->GetHttpProto() === 'https',
-            'use_strict_mode' => true,
+            'cookie_samesite' => 'Strict',
+			'sid_bits_per_character' => 6,
+			'name' => static::SESSION_NAME,
             ], new DatabaseHandler($this->db));
 
         $this->session = new $klass($storage);
-        $this->session->setName(static::SESSION_NAME);
         $this->session->start();
     }
 
